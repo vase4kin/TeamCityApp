@@ -1,0 +1,184 @@
+<!--
+  ~ Copyright 2016 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">TeamCityApp</string>
+
+    <!--default values-->
+    <string name="default_name_value">Name</string>
+    <string name="default_description_value">Description</string>
+
+    <!--agent tabs-->
+    <string name="tab_connected">Connected</string>
+    <string name="tab_disconnected">Disconnected</string>
+
+    <!--drawer items-->
+    <string name="projects_drawer_item">Projects</string>
+    <string name="running_builds_drawer_item">Running builds</string>
+    <string name="agents_drawer_item">Agents</string>
+    <string name="build_queue_drawer_item">Build queue</string>
+    <string name="about_drawer_item">About</string>
+
+    <!--Activity titles-->
+    <string name="title_activity_agent_tabs">@string/agents_drawer_item</string>
+    <string name="title_activity_project_and_build_type_navigator">@string/projects_drawer_item</string>
+    <string name="title_activity_build_list">Builds</string>
+    <string name="title_activity_build">Build</string>
+    <string name="title_activity_navigation">Project/BuildType</string>
+    <string name="title_activity_create_account">Create account</string>
+    <string name="title_activity_account_list">Manage Accounts</string>
+    <string name="title_activity_running_builds">@string/running_builds_drawer_item</string>
+    <string name="title_activity_queued_builds">@string/build_queue_drawer_item</string>
+    <string name="title_activity_about">@string/about_drawer_item</string>
+
+    <!--Build tabs-->
+    <string name="tab_overview">Overview</string>
+    <string name="tab_changes">Changes</string>
+    <string name="tab_tests">Tests</string>
+    <string name="tab_build_log">Build Log</string>
+    <string name="tab_artifacts">Artifacts</string>
+    <string name="tab_parameters">Parameters</string>
+
+    <!--progress creating new account dialog-->
+    <string name="progress_dialog_title">Checking</string>
+    <string name="progress_dialog_content">Please wait…</string>
+
+    <!--create new account dialog-->
+    <string name="create_new_account_dialog_title">New guest user account</string>
+    <string name="create_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
+    <string name="create_new_account_dialog_create_account_button_text">Create</string>
+
+    <string name="create_new_account_warning_dialog_content">In order to use application you should create new guest user account</string>
+
+    <string name="discard_dialog_content">Discard new user guest account?</string>
+    <string name="discard_dialog_positive_button_text">Discard</string>
+    <string name="discard_dialog_negative_button_text">Cancel</string>
+
+    <!--error_view-->
+    <string name="error_view_oops_message">Oops</string>
+    <string name="error_view_retry_button_text">TRY AGAIN</string>
+
+    <!--snack bar remove account-->
+    <string name="snack_bar_remove_account_undo_button_text">Undo</string>
+    <string name="snack_bar_remove_account_single_account_removed_text">User account removed</string>
+    <string name="snack_bar_remove_account_multiple_accounts_removed_text">user accounts removed</string>
+
+    <!--action mode-->
+    <string name="action_mode_selected_text">selected</string>
+
+    <!--dialog remove active account-->
+    <string name="dialog_remove_active_account_positive_button_text">Sure</string>
+    <string name="dialog_remove_active_account_positive_negative_text">Nope</string>
+    <string name="dialog_remove_active_account_positive_content_text">Are you sure to delete active user account?</string>
+
+    <!--All list empty message-->
+    <string name="empty">No data</string>
+
+    <!--Download artifact dialog -->
+    <string name="download_artifact_dialog_title">Downloading artifact file..</string>
+    <string name="download_artifact_dialog_cancel_text">Cancel</string>
+
+    <!--Download artifact retry snack-->
+    <string name="download_artifact_retry_snack_bar_text">We\'ve got problem with file</string>
+    <string name="download_artifact_retry_snack_bar_retry_button">RETRY</string>
+
+    <!--Retry load more snack-->
+    <string name="load_more_retry_snack_bar_text">Error loading more data</string>
+
+    <!--Empty list messages-->
+    <string name="empty_list_message_accounts">No accounts</string>
+    <string name="empty_list_message_artifacts">No artifacts</string>
+    <string name="empty_list_message_builds">No builds</string>
+    <string name="empty_list_message_running_builds">No running builds</string>
+    <string name="empty_list_message_build_queue">Build queue is empty</string>
+    <string name="empty_list_message_agents">No agents</string>
+    <string name="empty_list_message_parameters">No user defined parameters</string>
+    <string name="empty_list_message_changes">No changes</string>
+    <string name="empty_list_message_projects_or_build_types">No projects or build configurations</string>
+    <string name="empty_passed_tests">There are no failed tests</string>
+    <string name="empty_list_files">No files</string>
+
+    <string name="default_icon_text">{icon}</string>
+
+    <!--Build elements-->
+    <string name="unknown_trigger_type_text">Unknown trigger type!</string>
+    <string name="triggered_deleted_user_text">Deleted user</string>
+    <string name="build_result_section_text">Result</string>
+    <string name="build_wait_reason_section_text">Wait reason</string>
+    <string name="build_time_section_text">Time</string>
+    <string name="build_queued_time_section_text">Queued time</string>
+    <string name="build_time_to_start_section_text">Time to start</string>
+    <string name="build_branch_section_text">Branch</string>
+    <string name="build_agent_section_text">Agent</string>
+    <string name="build_triggered_by_section_text">Triggered by</string>
+
+    <!--Test occurrence-->
+    <string name="test_details_title">Details</string>
+
+    <!--Artifact-->
+    <!--bottom sheet menu-->
+    <string name="artifact_download">Download</string>
+    <string name="artifact_open">Open</string>
+    <string name="artifact_open_in_browser">Open in browser</string>
+    <!--permissions dialog-->
+    <string name="permissions_dialog_title">Permissions warning</string>
+    <string name="permissions_dialog_content">In order to download artifact the app requires to have WRITE_EXTERNAL_STORAGE permissions granted.</string>
+    <string name="permissions_dialog_text_no_permissions">The download artifacts functionality is disabled. Please enable required permissions.</string>
+
+    <!--Build element-->
+    <string name="build_element_copy">Copy</string>
+    <string name="build_element_copy_text">Text copied!</string>
+
+    <!--Default dialogs button titles-->
+    <string name="dialog_ok_title">OK</string>
+
+    <!--Create account values-->
+    <string name="server_field_hint">TeamCity server url</string>
+    <string name="server_reminder_text">Start your TeamCity server url with protocol http/https</string>
+    <string name="server_cannot_be_empty">Server url cannot be empty</string>
+    <string name="server_no_such_server">No TeamCity server associated with hostname</string>
+    <string name="server_correct_url">Please provide correct server url</string>
+    <string name="server_check_url">Please check server url</string>
+
+    <!--Managing account values-->
+    <string name="header_text_active_account">Active</string>
+    <string name="header_text_not_active_account">Not active</string>
+
+    <!--Tests-->
+    <string name="text_passed">Passed (%s)</string>
+    <string name="text_failed">Failed (%s)</string>
+    <string name="text_ignored">Ignored (%s)</string>
+
+    <!--Testing-->
+    <string name="navigate_up">Navigate up</string>
+
+    <!--About-->
+    <string name="about_app_description">
+        <![CDATA[
+        <b>TeamCity in your pocket</b><br />
+        <a href="https://github.com/vase4kin/TeamCityApp">Source Code</a><br />
+        <i>Contacts:</i><br />
+        <a href="mailto:andrey.tolpeev@gmail.com">Email</a><br />
+        <a href="https://telegram.me/vase4kin">Telegram</a><br />
+        ]]>
+    </string>
+
+    <!--Login activity-->
+    <string name="text_progress_bar_loading">Authenticating…</string>
+    <string name="info_unauthorized_dialog_title">Oh Snap!</string>
+    <string name="info_unauthorized_dialog_content">It seems that your TC server doesn\'t have Guest User enabled. In order to use the app make sure it is enabled. For more details see <a href="https://confluence.jetbrains.com/display/TCD10/Enabling+Guest+Login">TC help</a>.</string>
+
+</resources>

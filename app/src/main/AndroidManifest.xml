@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2016 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.vase4kin.teamcityapp">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".TeamCityApplication"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".splash.view.SplashActivity"
+            android:theme="@style/SplashTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".login.view.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".root.view.RootProjectsActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".buildlist.view.BuildListActivity"
+            android:label="@string/title_activity_build_list" />
+        <activity
+            android:name=".agenttabs.view.AgentTabsActivity"
+            android:label="@string/title_activity_agent_tabs"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".buildtabs.view.BuildTabsActivity"
+            android:label="@string/title_activity_build" />
+        <activity
+            android:name=".account.manage.view.AccountListActivity"
+            android:label="@string/title_activity_account_list"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".runningbuilds.view.RunningBuildsListActivity"
+            android:label="@string/title_activity_running_builds"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".queue.view.BuildQueueActivity"
+            android:label="@string/title_activity_queued_builds"
+            android:launchMode="singleTop" />
+        <activity
+            android:name=".navigation.view.NavigationActivity"
+            android:label="@string/title_activity_navigation" />
+        <activity
+            android:name=".account.create.view.CreateAccountActivity"
+            android:label="@string/title_activity_create_account" />
+        <activity android:name=".testdetails.view.TestDetailsActivity" />
+        <activity
+            android:name=".about.AboutActivity"
+            android:label="@string/about_drawer_item"
+            android:launchMode="singleTop" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="b910d4db65eb85253d9416783a99bb3595199e55" />
+    </application>
+
+</manifest>

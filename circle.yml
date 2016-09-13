@@ -1,0 +1,49 @@
+machine:
+  environment:
+    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
+dependencies:
+  pre:
+    - echo y | android update sdk --no-ui --all --filter android-24
+    - echo y | android update sdk --no-ui --all --filter "tools"
+    - echo y | android update sdk --no-ui --all --filter "build-tools-23.0.3"
+test:
+    override:
+    # create sd card for spoon screenshots support
+    - mksdcard -l e 512M mysdcard.img
+    # start the emulator
+    - emulator -avd circleci-android22 -no-audio -no-window -sdcard mysdcard.img:
+        background: true
+        parallel: true
+    # wait for it to have booted
+    - circle-android wait-for-boot
+    # waiting for miracle
+    - sleep 60
+    # disable all animation
+    - adb shell settings put global window_animation_scale 0
+    - adb shell settings put global transition_animation_scale 0
+    - adb shell settings put global animator_duration_scale 0
+    # unlocking the screen
+    - adb shell input keyevent 82
+    # running tests
+    - ./gradlew clean lintMockDebug pmd findbugs generateCodeCoverageReport
+    post:
+        # obtain test results artifacts
+        - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+        - find . -type f -regex ".*/build/test-results/mockDebug/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+        - find . -type f -regex ".*/build/outputs/androidTest-results/connected/flavors/MOCK/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+        - mkdir -p $CIRCLE_TEST_REPORTS/reports/
+        - mv app/build/spoon/ $CIRCLE_TEST_REPORTS/reports/
+        - find . -type f -regex ".*/build/outputs/androidTest-results/connected/flavors/MOCK/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+        # obtain coverage artifacts
+        - mkdir -p $CIRCLE_TEST_REPORTS/coverage/
+        - find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} $CIRCLE_TEST_REPORTS/coverage/ \;
+        - bash <(curl -s https://codecov.io/bash) -f './app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml'
+        # obtain lint report
+        - mkdir -p $CIRCLE_TEST_REPORTS/lint/
+        - mv app/build/reports/lint-report/ $CIRCLE_TEST_REPORTS/lint/
+        # obtain pmd report
+        - mkdir -p $CIRCLE_TEST_REPORTS/pmd/
+        - mv app/build/reports/pmd/ $CIRCLE_TEST_REPORTS/pmd/
+        # obtain findbugs report
+        - mkdir -p $CIRCLE_TEST_REPORTS/findbugs/
+        - mv app/build/reports/findbugs/ $CIRCLE_TEST_REPORTS/findbugs/
