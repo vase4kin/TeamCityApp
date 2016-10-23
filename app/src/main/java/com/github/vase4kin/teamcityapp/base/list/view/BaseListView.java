@@ -60,21 +60,6 @@ public interface BaseListView<T extends BaseDataModel> {
     void hideRefreshAnimation();
 
     /**
-     * Show recycler view
-     */
-    void showRecyclerView();
-
-    /**
-     * Hide recycler view
-     */
-    void hideRecyclerView();
-
-    /**
-     * Empty recycler view
-     */
-    void emptyRecyclerView();
-
-    /**
      * Show error view with error message
      *
      * @param error - Error message

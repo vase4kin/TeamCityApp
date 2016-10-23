@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.tests.router.TestsRouter;
 import com.github.vase4kin.teamcityapp.tests.view.OnTestsPresenterListener;
 import com.github.vase4kin.teamcityapp.tests.view.TestsView;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -153,7 +154,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
         mView.showProgressWheel();
         mView.hideErrorView();
         mView.hideEmpty();
-        mView.emptyRecyclerView();
+        mView.showData(new TestsDataModelImpl(Collections.<TestOccurrences.TestOccurrence>emptyList()));
         return mView.onOptionsItemSelected(item);
     }
 
