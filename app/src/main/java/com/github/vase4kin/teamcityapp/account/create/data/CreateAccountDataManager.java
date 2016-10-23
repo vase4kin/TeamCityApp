@@ -26,15 +26,27 @@ public interface CreateAccountDataManager {
     /**
      * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
      * @param url      - TeamCity server url
+     * @param userName - Username
+     * @param password - Password
+     * @param isGuestUser - Guest user
      */
-    void loadData(@NonNull CustomOnLoadingListener<String> listener, String url);
+    void loadData(@NonNull CustomOnLoadingListener<String> listener, String url, String userName, String password, boolean isGuestUser);
 
     /**
-     * Create new user account in the local storage
+     * Save user account in the local storage
+     *
+     * @param url - TeamCity server url
+     * @param userName - User name
+     * @param password - Password
+     */
+    void saveNewUserAccount(String serverUrl, String userName, String password);
+
+    /**
+     * Save guest user account in the local storage
      *
      * @param url - TeamCity server url
      */
-    void createNewUserAccount(String url);
+    void saveGuestUserAccount(String url);
 
     /**
      * Init {@link com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent}

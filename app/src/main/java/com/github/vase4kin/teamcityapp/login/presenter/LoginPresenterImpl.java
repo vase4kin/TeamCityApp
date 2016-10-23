@@ -86,14 +86,41 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      * {@inheritDoc}
      */
     @Override
-    public void onLoginButtonClick(String serverUrl) {
+    public void onUserLoginButtonClick(String serverUrl, final String userName, final String password) {
         mView.showProgressDialog();
         mDataManager.loadData(new CustomOnLoadingListener<String>() {
             @Override
-            public void onSuccess(String data) {
+            public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
-                mDataManager.createNewUserAccount(data);
-                mDataManager.initTeamCityService(data);
+                mDataManager.saveNewUserAccount(serverUrl, userName, password);
+                mDataManager.initTeamCityService(serverUrl);
+                mRouter.openProjectsRootPageForFirstStart();
+                mTracker.trackUserLoginSuccess();
+                mView.close();
+            }
+
+            @Override
+            public void onFail(int statusCode, String errorMessage) {
+                mView.dismissProgressDialog();
+                mView.setError(errorMessage);
+                mTracker.trackUserLoginFailed(errorMessage);
+                mView.hideKeyboard();
+            }
+        }, serverUrl, userName, password, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onGuestUserLoginButtonClick(String serverUrl) {
+        mView.showProgressDialog();
+        mDataManager.loadData(new CustomOnLoadingListener<String>() {
+            @Override
+            public void onSuccess(String serverUrl) {
+                mView.dismissProgressDialog();
+                mDataManager.saveGuestUserAccount(serverUrl);
+                mDataManager.initTeamCityService(serverUrl);
                 mRouter.openProjectsRootPageForFirstStart();
                 mTracker.trackUserLoginSuccess();
                 mView.close();
@@ -109,6 +136,6 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
                     mView.showUnauthorizedInfoDialog();
                 }
             }
-        }, serverUrl);
+        }, serverUrl, "", "", true);
     }
 }

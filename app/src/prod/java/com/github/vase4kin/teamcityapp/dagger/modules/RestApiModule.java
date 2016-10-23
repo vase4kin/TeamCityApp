@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.dagger.modules;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
@@ -26,10 +28,12 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
+
 @Module
 public class RestApiModule {
 
-    String mBaseUrl;
+    private String mBaseUrl;
 
     public RestApiModule(String mBaseUrl) {
         this.mBaseUrl = mBaseUrl;
@@ -37,7 +41,7 @@ public class RestApiModule {
 
     @Provides
     @UserScope
-    TeamCityService provideTeamCityService(OkHttpClient okHttpClient) {
+    TeamCityService provideTeamCityService(@Named(CLIENT_AUTH) OkHttpClient okHttpClient) {
         return new Retrofit.Builder()
                 .baseUrl(mBaseUrl)
                 .addConverterFactory(GsonConverterFactory.create())

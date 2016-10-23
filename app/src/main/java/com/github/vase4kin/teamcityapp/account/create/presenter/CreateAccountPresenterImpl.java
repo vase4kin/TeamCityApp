@@ -78,7 +78,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
      * {@inheritDoc}
      */
     @Override
-    public void validateUrl(String url) {
+    public void validateUrl(String url, final String userName, final String password) {
         mView.showProgressDialog();
         if (mDataModel.hasAccountWithUrl(url)) {
             mView.showNewAccountExistErrorMessage();
@@ -86,7 +86,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
             mDataManager.loadData(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    mDataManager.createNewUserAccount(url);
+                    mDataManager.saveNewUserAccount(url, userName, password);
                     mDataManager.initTeamCityService(url);
                     mView.dismissProgressDialog();
                     mView.finish();
@@ -100,7 +100,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
                     mView.dismissProgressDialog();
                     mTracker.trackUserLoginFailed(errorMessage);
                 }
-            }, url);
+            }, url, userName, password, false);
         }
     }
 

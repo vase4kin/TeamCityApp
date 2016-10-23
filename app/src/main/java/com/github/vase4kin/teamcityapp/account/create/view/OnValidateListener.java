@@ -26,5 +26,5 @@ public interface OnValidateListener {
      *
      * @param url - TeamCity server url
      */
-    void validateUrl(String url);
+    void validateUrl(String url, String userName, String password);
 }

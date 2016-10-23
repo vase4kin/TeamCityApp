@@ -89,7 +89,7 @@ public class LoginPresenterImplTest {
 
     @Test
     public void testOnLoginButtonClick() throws Exception {
-        mPresenter.onLoginButtonClick("url");
+        mPresenter.onUserLoginButtonClick("url");
         verify(mViewModel).showProgressDialog();
         verify(mDataManager).loadData(mArgumentCaptor.capture(), eq("url"));
 
@@ -97,7 +97,7 @@ public class LoginPresenterImplTest {
         listener.onSuccess("url");
 
         verify(mViewModel).dismissProgressDialog();
-        verify(mDataManager).createNewUserAccount("url");
+        verify(mDataManager).saveNewUserAccount("url");
         verify(mDataManager).initTeamCityService("url");
         verify(mRouter).openProjectsRootPageForFirstStart();
         verify(mTracker).trackUserLoginSuccess();

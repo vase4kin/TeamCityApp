@@ -178,6 +178,12 @@
 
     <!--Login activity-->
     <string name="text_progress_bar_loading">Authenticating…</string>
+    <string name="text_app_description">TeamCity in your pocket</string>
+    <string name="text_teamcity_url">https://</string>
+    <string name="text_guest_user_switch">Guest user</string>
+    <string name="text_login_button">Login</string>
+    <string name="hint_user_name">Username</string>
+    <string name="hint_password">Password</string>
     <string name="info_unauthorized_dialog_title">Oh Snap!</string>
     <string name="info_unauthorized_dialog_content">It seems that your TC server doesn\'t have Guest User enabled. In order to use the app make sure it is enabled. For more details see <a href="https://confluence.jetbrains.com/display/TCD10/Enabling+Guest+Login">TC help</a>.</string>
 

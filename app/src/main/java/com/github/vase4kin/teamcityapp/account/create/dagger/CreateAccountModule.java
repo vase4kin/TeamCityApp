@@ -31,9 +31,13 @@ import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
+
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
 
 @Module
 public class CreateAccountModule {
@@ -51,7 +55,7 @@ public class CreateAccountModule {
 
     @Provides
     CreateAccountDataManager providesCreateAccountDataManager(Context context,
-                                                              OkHttpClient okHttpClient,
+                                                              @Named(CLIENT_BASE) OkHttpClient okHttpClient,
                                                               SharedUserStorage sharedUserStorage) {
         return new CreateAccountDataManagerImpl(context, okHttpClient, sharedUserStorage);
     }

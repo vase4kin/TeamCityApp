@@ -20,11 +20,15 @@ import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.LoggingInterceptor;
+import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -35,7 +39,14 @@ import okhttp3.OkHttpClient;
 @Module
 public class AppModule {
 
-    TeamCityApplication mApplication;
+    private static final int CONNECTION_TIMEOUT = 10;
+    private static final int READ_TIMEOUT = 30;
+    private static final int WRITE_TIMEOUT = 10;
+
+    public static final String CLIENT_BASE = "base";
+    public static final String CLIENT_AUTH = "auth";
+
+    private TeamCityApplication mApplication;
 
     public AppModule(TeamCityApplication application) {
         mApplication = application;
@@ -56,13 +67,32 @@ public class AppModule {
     }
 
     @VisibleForTesting
-    @Provides
+    @Named(CLIENT_AUTH)
     @Singleton
-    public OkHttpClient provideOkHttpClient() {
+    @Provides
+    public OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
+                                               @Named(CLIENT_BASE) OkHttpClient okHttpClient) {
+        UserAccount userAccount = sharedUserStorage.getActiveUser();
+        if (userAccount.isGuestUser()) {
+            return okHttpClient.newBuilder()
+                    .addInterceptor(new GuestUserAuthInterceptor())
+                    .build();
+        } else {
+            return okHttpClient.newBuilder()
+                    .authenticator(new TeamCityAuthenticator(sharedUserStorage))
+                    .build();
+        }
+    }
+
+    @VisibleForTesting
+    @Named(CLIENT_BASE)
+    @Singleton
+    @Provides
+    public OkHttpClient providesBaseHttpClient() {
         return new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
                 .addInterceptor(new LoggingInterceptor())
                 .build();
     }

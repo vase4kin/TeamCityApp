@@ -35,7 +35,7 @@ public class OnCreateMenuItemClickListenerImpl implements Toolbar.OnMenuItemClic
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_create) {
-            mOnValidateListener.validateUrl(mTextView.getText().toString());
+            mOnValidateListener.validateUrl(mTextView.getText().toString(), "", "");
             return true;
         }
         return false;

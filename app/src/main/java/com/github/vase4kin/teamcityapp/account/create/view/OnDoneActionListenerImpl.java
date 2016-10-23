@@ -34,7 +34,7 @@ public class OnDoneActionListenerImpl implements TextView.OnEditorActionListener
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         if (actionId == EditorInfo.IME_ACTION_DONE) {
-            onValidateListener.validateUrl(v.getText().toString());
+            onValidateListener.validateUrl(v.getText().toString(), "", "");
             return true;
         }
         return false;

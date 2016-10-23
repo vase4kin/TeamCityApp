@@ -113,7 +113,7 @@ public class CreateAccountPresenterImplTest {
 
         CustomOnLoadingListener<String> listener = mOnLoadingListenerArgumentCaptor.getValue();
         listener.onSuccess("url");
-        verify(mDataManager).createNewUserAccount(eq("url"));
+        verify(mDataManager).saveNewUserAccount(eq("url"));
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mView).dismissProgressDialog();
         verify(mView).finish();

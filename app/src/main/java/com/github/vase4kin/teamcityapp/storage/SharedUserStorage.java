@@ -34,9 +34,7 @@ import java.util.List;
 public class SharedUserStorage implements Collectible<UserAccount> {
 
     private Context context;
-    private static final String GUEST_USER_USER_NAME = "Guest user";
     private static final String SHARED_PREF_NAME = "UserAccounts";
-    private static final String EMPTY_STRING = "";
 
     private UsersContainer usersContainer;
 
@@ -92,9 +90,16 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         return !getUserAccounts().isEmpty();
     }
 
-    public void createNewUserAccountAndSetItAsActive(String baseUrl) {
+    public void saveGuestUserAccountAndSetItAsActive(String baseUrl) {
         setActiveUserNotActive();
-        UserAccount userAccount = new UserAccount(GUEST_USER_USER_NAME, baseUrl, true);
+        UserAccount userAccount = UsersFactory.guestUser(baseUrl);
+        usersContainer.getUsersAccounts().add(userAccount);
+        commitUserChanges();
+    }
+
+    public void saveUserAccountAndSetItAsActive(String baseUrl, String userName, String password) {
+        setActiveUserNotActive();
+        UserAccount userAccount = UsersFactory.user(baseUrl, userName, password);
         usersContainer.getUsersAccounts().add(userAccount);
         commitUserChanges();
     }
@@ -111,7 +116,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                 return userAccount;
             }
         }
-        return new UserAccount(EMPTY_STRING, EMPTY_STRING, true);
+        return UsersFactory.emptyUser();
     }
 
     /**
@@ -164,7 +169,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      */
     private void commitUserChanges() {
         String usersJson = new Gson().toJson(usersContainer);
-        getSharedPreferences().edit().putString(SHARED_PREF_NAME, usersJson).commit();
+        getSharedPreferences().edit().putString(SHARED_PREF_NAME, usersJson).apply();
     }
 
     public List<UserAccount> getUserAccounts() {

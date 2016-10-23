@@ -23,34 +23,50 @@ import com.github.vase4kin.teamcityapp.base.api.Jsonable;
  */
 public class UserAccount implements Jsonable {
 
-    private String userName;
-    private String teamcityUrl;
-    private boolean isActive;
+    private String mTeamcityUrl;
+    private String mUserName;
+    private String mPassword;
+    private boolean mIsGuestUser;
+    private boolean mIsActive;
 
-    public UserAccount(String userName, String teamcityUrl, boolean isActive) {
-        this.userName = userName;
-        this.teamcityUrl = teamcityUrl;
-        this.isActive = isActive;
-    }
-
-    public String getUserName() {
-        return userName;
+    public UserAccount(String teamcityUrl,
+                       String userName,
+                       String password,
+                       boolean isGuestUser,
+                       boolean isActive) {
+        this.mUserName = userName;
+        this.mTeamcityUrl = teamcityUrl;
+        this.mPassword = password;
+        this.mIsGuestUser = isGuestUser;
+        this.mIsActive = isActive;
     }
 
     public String getTeamcityUrl() {
-        return teamcityUrl;
+        return mTeamcityUrl;
+    }
+
+    public String getUserName() {
+        return mUserName;
+    }
+
+    public String getPassword() {
+        return mPassword;
+    }
+
+    public boolean isGuestUser() {
+        return mIsGuestUser;
     }
 
     public boolean isActive() {
-        return isActive;
+        return mIsActive;
     }
 
     public void setIsActive(boolean isActive) {
-        this.isActive = isActive;
+        this.mIsActive = isActive;
     }
 
     @Override
     public String getId() {
-        return teamcityUrl;
+        return mTeamcityUrl;
     }
 }

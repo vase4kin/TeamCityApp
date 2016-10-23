@@ -81,7 +81,7 @@ public class SplashActivityTest {
     public void testUserNavigatesToRootProjectsActivityIgnored() throws Exception {
         // Prepate data
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.getAppInjector().sharedUserStorage().createNewUserAccountAndSetItAsActive(Mocks.URL);
+        app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
 
         // Launch activity
         mActivityRule.launchActivity(null);
@@ -114,7 +114,7 @@ public class SplashActivityTest {
     public void testUserNavigatesToRootProjectsActivity() throws Exception {
         // Prepate data
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.getAppInjector().sharedUserStorage().createNewUserAccountAndSetItAsActive(Mocks.URL);
+        app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
 
         // Launch activity
         mActivityRule.launchActivity(null);
