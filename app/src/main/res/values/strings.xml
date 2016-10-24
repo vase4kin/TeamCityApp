@@ -152,6 +152,8 @@
     <string name="server_no_such_server">No TeamCity server associated with hostname</string>
     <string name="server_correct_url">Please provide correct server url</string>
     <string name="server_check_url">Please check server url</string>
+    <string name="server_password_cannot_be_empty">Password cannot be empty</string>
+    <string name="server_user_name_cannot_be_empty">Username cannot be empty</string>
 
     <!--Managing account values-->
     <string name="header_text_active_account">Active</string>
@@ -180,7 +182,7 @@
     <string name="text_progress_bar_loading">Authenticating…</string>
     <string name="text_app_description">TeamCity in your pocket</string>
     <string name="text_teamcity_url">https://</string>
-    <string name="text_guest_user_switch">Guest user</string>
+    <string name="text_guest_user_switch">Login as guest user</string>
     <string name="text_login_button">Login</string>
     <string name="hint_user_name">Username</string>
     <string name="hint_password">Password</string>

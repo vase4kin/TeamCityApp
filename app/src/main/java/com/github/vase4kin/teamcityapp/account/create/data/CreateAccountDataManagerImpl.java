@@ -20,7 +20,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -73,84 +72,99 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                          final String userName,
                          final String password,
                          boolean isGuestUser) {
+        // do nothing
+    }
 
-        if (TextUtils.isEmpty(url)) {
-            listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_cannot_be_empty));
-            return;
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void authUser(@NonNull final CustomOnLoadingListener<String> listener,
+                         final String url,
+                         final String userName,
+                         final String password) {
+        // Creating okHttpClient with authenticator
+        OkHttpClient okHttpClient = mOkHttpClient.newBuilder().authenticator(new Authenticator() {
+            @Override
+            public Request authenticate(Route route, Response response) throws IOException {
+                String credential = Credentials.basic(userName, password);
 
-        if (!isGuestUser) {
-            if (TextUtils.isEmpty(userName)) {
-                listener.onFail(DEFAULT_ERROR_CODE, "Username cannot be empty!");
-                return;
+                if (credential.equals(response.request().header(TeamCityService.AUTHORIZATION))) {
+                    return null; // If we already failed with these credentials, don't retry.
+                }
+
+                return response.request().newBuilder()
+                        .header(TeamCityService.AUTHORIZATION, credential)
+                        .build();
             }
+        }).build();
+        // Handling request
+        handleAuthRequest(url, AUTH_URL, okHttpClient, listener);
+    }
 
-            if (TextUtils.isEmpty(password)) {
-                listener.onFail(DEFAULT_ERROR_CODE, "Password cannot be empty!");
-                return;
-            }
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void authGuestUser(@NonNull final CustomOnLoadingListener<String> listener, final String url) {
+        handleAuthRequest(url, AUTH_GUEST_URL, mOkHttpClient, listener);
+    }
 
+    /**
+     * Handle auth request
+     *
+     * @param serverUrl    - Server url
+     * @param authUrl      - Appended auth url
+     * @param okHttpClient - Client to make an auth
+     * @param listener     - Listener to receive callbacks
+     */
+    private void handleAuthRequest(final String serverUrl,
+                                   final String authUrl,
+                                   final OkHttpClient okHttpClient,
+                                   final CustomOnLoadingListener<String> listener) {
         final Handler handler = new Handler();
 
         try {
 
-            String serverUrl = Uri.parse(url).buildUpon()
-                    .appendEncodedPath(isGuestUser ? AUTH_GUEST_URL : AUTH_URL)
+            String serverAuthUrl = Uri.parse(serverUrl).buildUpon()
+                    .appendEncodedPath(authUrl)
                     .toString();
 
             final Request request = new Request.Builder()
-                    .url(serverUrl)
+                    .url(serverAuthUrl)
                     .build();
 
-            mOkHttpClient = isGuestUser
-                    ? mOkHttpClient
-                    : mOkHttpClient.newBuilder().authenticator(new Authenticator() {
-                @Override
-                public Request authenticate(Route route, Response response) throws IOException {
-                    String credential = Credentials.basic(userName, password);
-
-                    if (credential.equals(response.request().header(TeamCityService.AUTHORIZATION))) {
-                        return null; // If we already failed with these credentials, don't retry.
-                    }
-
-                    return response.request().newBuilder()
-                            .header(TeamCityService.AUTHORIZATION, credential)
-                            .build();
-                }
-            }).build();
-
-            mOkHttpClient
+            okHttpClient
                     .newCall(request)
                     .enqueue(new Callback() {
                         @Override
-                public void onFailure(final Call call, final IOException e) {
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (e instanceof UnknownHostException) {
-                                listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_no_such_server));
-                            } else {
-                                listener.onFail(DEFAULT_ERROR_CODE, e.getMessage());
-                            }
+                        public void onFailure(final Call call, final IOException e) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (e instanceof UnknownHostException) {
+                                        listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_no_such_server));
+                                    } else {
+                                        listener.onFail(DEFAULT_ERROR_CODE, e.getMessage());
+                                    }
+                                }
+                            });
                         }
-                    });
-                }
 
-                @Override
-                public void onResponse(Call call, final Response response) throws IOException {
-                    handler.post(new Runnable() {
                         @Override
-                        public void run() {
-                            if (response.isSuccessful()) {
-                                listener.onSuccess(url);
-                            } else {
-                                listener.onFail(response.code(), response.message());
-                            }
+                        public void onResponse(Call call, final Response response) throws IOException {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (response.isSuccessful()) {
+                                        listener.onSuccess(serverUrl);
+                                    } else {
+                                        listener.onFail(response.code(), response.message());
+                                    }
+                                }
+                            });
                         }
                     });
-                }
-            });
         } catch (IllegalArgumentException e) {
             listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_correct_url));
         } catch (Exception e) {

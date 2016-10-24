@@ -30,7 +30,26 @@ public interface CreateAccountDataManager {
      * @param password - Password
      * @param isGuestUser - Guest user
      */
+    @Deprecated
     void loadData(@NonNull CustomOnLoadingListener<String> listener, String url, String userName, String password, boolean isGuestUser);
+
+    /**
+     * Server auth with credentials
+     *
+     * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
+     * @param url      - TeamCity server url
+     * @param userName - Username
+     * @param password - Password
+     */
+    void authUser(@NonNull CustomOnLoadingListener<String> listener, String url, String userName, String password);
+
+    /**
+     * Server guest auth
+     *
+     * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
+     * @param url      - TeamCity server url
+     */
+    void authGuestUser(@NonNull CustomOnLoadingListener<String> listener, String url);
 
     /**
      * Save user account in the local storage

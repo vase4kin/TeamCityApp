@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:orientation="vertical"
-            android:paddingTop="170dp">
+            android:paddingTop="180dp">
 
             <TextView
                 android:layout_width="wrap_content"

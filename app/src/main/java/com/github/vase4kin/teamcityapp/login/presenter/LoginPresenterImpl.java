@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.login.presenter;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
@@ -87,8 +88,21 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      */
     @Override
     public void onUserLoginButtonClick(String serverUrl, final String userName, final String password) {
+        mView.hideError();
+        if (TextUtils.isEmpty(serverUrl)) {
+            mView.showServerUrlCanNotBeEmptyError();
+            return;
+        }
+        if (TextUtils.isEmpty(userName)) {
+            mView.showUserNameCanNotBeEmptyError();
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            mView.showPasswordCanNotBeEmptyError();
+            return;
+        }
         mView.showProgressDialog();
-        mDataManager.loadData(new CustomOnLoadingListener<String>() {
+        mDataManager.authUser(new CustomOnLoadingListener<String>() {
             @Override
             public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
@@ -102,11 +116,11 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
             @Override
             public void onFail(int statusCode, String errorMessage) {
                 mView.dismissProgressDialog();
-                mView.setError(errorMessage);
+                mView.showError(errorMessage);
                 mTracker.trackUserLoginFailed(errorMessage);
                 mView.hideKeyboard();
             }
-        }, serverUrl, userName, password, false);
+        }, serverUrl, userName, password);
     }
 
     /**
@@ -114,8 +128,13 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      */
     @Override
     public void onGuestUserLoginButtonClick(String serverUrl) {
+        mView.hideError();
+        if (TextUtils.isEmpty(serverUrl)) {
+            mView.showServerUrlCanNotBeEmptyError();
+            return;
+        }
         mView.showProgressDialog();
-        mDataManager.loadData(new CustomOnLoadingListener<String>() {
+        mDataManager.authGuestUser(new CustomOnLoadingListener<String>() {
             @Override
             public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
@@ -129,13 +148,13 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
             @Override
             public void onFail(int statusCode, String errorMessage) {
                 mView.dismissProgressDialog();
-                mView.setError(errorMessage);
+                mView.showError(errorMessage);
                 mTracker.trackUserLoginFailed(errorMessage);
                 mView.hideKeyboard();
                 if (statusCode == UNAUTHORIZED_STATUS_CODE) {
                     mView.showUnauthorizedInfoDialog();
                 }
             }
-        }, serverUrl, "", "", true);
+        }, serverUrl);
     }
 }

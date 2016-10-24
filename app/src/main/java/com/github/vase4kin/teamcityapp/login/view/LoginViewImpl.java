@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
@@ -250,8 +251,37 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void setError(String errorMessage) {
+    public void showError(String errorMessage) {
         mServerUrlWrapperLayout.setError(errorMessage);
+    }
+
+    @Override
+    public void hideError() {
+        mServerUrlWrapperLayout.setError(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showServerUrlCanNotBeEmptyError() {
+        setError(R.string.server_cannot_be_empty);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showUserNameCanNotBeEmptyError() {
+        setError(R.string.server_user_name_cannot_be_empty);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showPasswordCanNotBeEmptyError() {
+        setError(R.string.server_password_cannot_be_empty);
     }
 
     /**
@@ -294,5 +324,15 @@ public class LoginViewImpl implements LoginView {
                 .positiveText(R.string.dialog_ok_title)
                 .linkColor(mOrangeColor)
                 .show();
+    }
+
+    /**
+     * Set error with string resource id
+     *
+     * @param errorMessage - Error message resource id
+     */
+    private void setError(@StringRes int errorMessage) {
+        String errorMessageString = mActivity.getString(errorMessage);
+        mServerUrlWrapperLayout.setError(errorMessageString);
     }
 }

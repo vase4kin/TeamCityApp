@@ -95,7 +95,7 @@ public class CreateAccountPresenterImplTest {
     @Test
     public void testValidateUrlIfAccountExist() throws Exception {
         when(mDataModel.hasAccountWithUrl("url")).thenReturn(true);
-        mPresenter.validateUrl("url");
+        mPresenter.validateUrl("url", "", "");
         verify(mView).showProgressDialog();
         verify(mDataModel).hasAccountWithUrl(eq("url"));
         verify(mView).showNewAccountExistErrorMessage();
@@ -105,15 +105,15 @@ public class CreateAccountPresenterImplTest {
     @Test
     public void testValidateUrlIfAccountIsNotExist() throws Exception {
         when(mDataModel.hasAccountWithUrl("url")).thenReturn(false);
-        mPresenter.validateUrl("url");
+        mPresenter.validateUrl("url", "", "");
 
         verify(mDataModel).hasAccountWithUrl(eq("url"));
-        verify(mDataManager).loadData(mOnLoadingListenerArgumentCaptor.capture(), eq("url"));
+        verify(mDataManager).loadData(mOnLoadingListenerArgumentCaptor.capture(), eq("url"), null, null, false);
         verify(mView).showProgressDialog();
 
         CustomOnLoadingListener<String> listener = mOnLoadingListenerArgumentCaptor.getValue();
         listener.onSuccess("url");
-        verify(mDataManager).saveNewUserAccount(eq("url"));
+        verify(mDataManager).saveNewUserAccount(eq("url"), null, null);
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
