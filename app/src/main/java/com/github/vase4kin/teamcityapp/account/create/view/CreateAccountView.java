@@ -33,7 +33,27 @@ public interface CreateAccountView {
      *
      * @param errorMessage - Error message
      */
-    void setErrorText(String errorMessage);
+    void showError(String errorMessage);
+
+    /**
+     * Show server url cannot be empty error
+     */
+    void showServerUrlCanNotBeEmptyError();
+
+    /**
+     * Show server user name cannot be empty error
+     */
+    void showUserNameCanNotBeEmptyError();
+
+    /**
+     * Show server password cannot be empty error
+     */
+    void showPasswordCanNotBeEmptyError();
+
+    /**
+     * Hide error
+     */
+    void hideError();
 
     /**
      * Unbind all views

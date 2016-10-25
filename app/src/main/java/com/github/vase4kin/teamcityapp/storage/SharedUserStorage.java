@@ -70,13 +70,27 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     }
 
     /**
+     * Do we have guest user account with url
+     *
+     * @param url - TC url
+     */
+    public boolean hasGuestAccountWithUrl(String url) {
+        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+            if (userAccount.equals(UsersFactory.guestUser(url))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Do we have user account with url
      *
      * @param url - TC url
      */
-    public boolean hasAccountWithUrl(String url) {
+    public boolean hasAccountWithUrl(String url, String userName, String password) {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.getTeamcityUrl().equals(url)) {
+            if (userAccount.equals(UsersFactory.user(url, userName, password))) {
                 return true;
             }
         }
@@ -136,10 +150,10 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      *
      * @param url - TC url
      */
-    public void setUserActiveWithEmail(String url) {
+    public void setUserActiveWithEmail(String url, String userName) {
         setActiveUserNotActive();
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.getTeamcityUrl().equals(url)) {
+            if (userAccount.getTeamcityUrl().equals(url) && userAccount.getUserName().equals(userName)) {
                 userAccount.setIsActive(true);
             }
         }

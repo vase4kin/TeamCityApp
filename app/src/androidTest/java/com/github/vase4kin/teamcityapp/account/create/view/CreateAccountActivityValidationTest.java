@@ -76,7 +76,7 @@ public class CreateAccountActivityValidationTest {
 
     @Before
     public void setUp() {
-        when(mStorage.hasAccountWithUrl(URL)).thenReturn(true);
+        when(mStorage.hasGuestAccountWithUrl(URL)).thenReturn(true);
         mActivityRule.launchActivity(null);
     }
 
@@ -98,7 +98,7 @@ public class CreateAccountActivityValidationTest {
     public void testUserCanNotCreateAccountIfTheSameAccountExist() throws Exception {
         onView(withId(R.id.teamcity_url)).perform(typeText(URL));
         onView(withId(R.id.action_create)).perform(click());
-        onView(withText(R.string.create_new_account_dialog_account_exist_error_message)).check(matches(isDisplayed()));
+        onView(withText(R.string.add_new_account_dialog_account_exist_error_message)).check(matches(isDisplayed()));
     }
 
     @Test

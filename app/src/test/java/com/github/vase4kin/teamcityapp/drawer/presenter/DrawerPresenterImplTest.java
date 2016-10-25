@@ -120,16 +120,16 @@ public class DrawerPresenterImplTest {
 
     @Test
     public void testSetActiveUser() throws Exception {
-        mPresenter.setActiveUser("email");
-        verify(mDataManager).setActiveUser(eq("email"));
+        mPresenter.setActiveUser("email", "userName");
+        verify(mDataManager).setActiveUser(eq("email"), eq("userName"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 
     @Test
     public void testIsActiveProfile() throws Exception {
-        when(mDataManager.isActiveUser("email")).thenReturn(true);
-        assertThat(mPresenter.isActiveProfile("email"), is(equalTo(true)));
-        verify(mDataManager).isActiveUser(eq("email"));
+        when(mDataManager.isActiveUser("email", "userName")).thenReturn(true);
+        assertThat(mPresenter.isActiveProfile("email", "userName"), is(equalTo(true)));
+        verify(mDataManager).isActiveUser(eq("email"), eq("userName"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 

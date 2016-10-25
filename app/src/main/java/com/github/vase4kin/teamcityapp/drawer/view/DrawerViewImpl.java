@@ -129,7 +129,9 @@ public class DrawerViewImpl implements DrawerView {
      */
     private void setActiveProfile() {
         for (IProfile iProfile : getUserProfiles(mDrawerDataModel)) {
-            if (mOnDrawerPresenterListener.isActiveProfile(iProfile.getEmail().toString())) {
+            if (mOnDrawerPresenterListener.isActiveProfile(
+                    iProfile.getEmail().toString(),
+                    iProfile.getName().toString())) {
                 mHeaderResult.setActiveProfile(iProfile);
                 mHeaderResult.updateProfile(iProfile);
                 break;
@@ -144,7 +146,7 @@ public class DrawerViewImpl implements DrawerView {
         mProfileList.clear();
         for (IProfile iProfile : getUserProfiles(mDrawerDataModel)) {
             // Not show profile in the profile list, which is enabled
-            if (!mOnDrawerPresenterListener.isActiveProfile(iProfile.getEmail().toString())) {
+            if (!mOnDrawerPresenterListener.isActiveProfile(iProfile.getEmail().toString(), iProfile.getName().toString())) {
                 mProfileList.add(iProfile);
             }
         }
@@ -188,8 +190,12 @@ public class DrawerViewImpl implements DrawerView {
                                     mOnDrawerPresenterListener.startAccountListActivity();
                                     break;
                                 default:
-                                    if (!mOnDrawerPresenterListener.isActiveProfile(iProfile.getEmail().toString())) {
-                                        mOnDrawerPresenterListener.setActiveUser(iProfile.getEmail().toString());
+                                    if (!mOnDrawerPresenterListener.isActiveProfile(
+                                            iProfile.getEmail().toString(),
+                                            iProfile.getName().toString())) {
+                                        mOnDrawerPresenterListener.setActiveUser(
+                                                iProfile.getEmail().toString(),
+                                                iProfile.getName().toString());
                                         mOnDrawerPresenterListener.startRootProjectsActivityWhenSwitchingAccounts();
                                         mOnDrawerPresenterListener.onUserChange();
                                     }

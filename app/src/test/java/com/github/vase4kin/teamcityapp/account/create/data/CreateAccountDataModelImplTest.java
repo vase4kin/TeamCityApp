@@ -45,8 +45,8 @@ public class CreateAccountDataModelImplTest {
 
     @Test
     public void testHasAccountWithUrl() throws Exception {
-        mDataModel.hasAccountWithUrl("email");
-        verify(mSharedUserStorage).hasAccountWithUrl(eq("email"));
+        mDataModel.hasGuestAccountWithUrl("email");
+        verify(mSharedUserStorage).hasGuestAccountWithUrl(eq("email"));
         verifyNoMoreInteractions(mSharedUserStorage);
     }
 }

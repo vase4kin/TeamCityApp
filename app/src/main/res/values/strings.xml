@@ -57,13 +57,13 @@
     <string name="progress_dialog_content">Please wait…</string>
 
     <!--create new account dialog-->
-    <string name="create_new_account_dialog_title">New guest user account</string>
-    <string name="create_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
-    <string name="create_new_account_dialog_create_account_button_text">Create</string>
+    <string name="add_new_account_dialog_title">Add user account</string>
+    <string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
+    <string name="add_new_account_dialog_create_account_button_text">Add</string>
 
-    <string name="create_new_account_warning_dialog_content">In order to use application you should create new guest user account</string>
+    <string name="add_new_account_warning_dialog_content">In order to use application you should add user account</string>
 
-    <string name="discard_dialog_content">Discard new user guest account?</string>
+    <string name="discard_dialog_content">Discard user account?</string>
     <string name="discard_dialog_positive_button_text">Discard</string>
     <string name="discard_dialog_negative_button_text">Cancel</string>
 
@@ -147,7 +147,6 @@
 
     <!--Create account values-->
     <string name="server_field_hint">TeamCity server url</string>
-    <string name="server_reminder_text">Start your TeamCity server url with protocol http/https</string>
     <string name="server_cannot_be_empty">Server url cannot be empty</string>
     <string name="server_no_such_server">No TeamCity server associated with hostname</string>
     <string name="server_correct_url">Please provide correct server url</string>

@@ -234,9 +234,9 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
 
         mWarningDialog =
                 new MaterialDialog.Builder(mActivity)
-                        .title(R.string.create_new_account_dialog_title)
-                        .content(R.string.create_new_account_warning_dialog_content)
-                        .positiveText(R.string.create_new_account_dialog_create_account_button_text)
+                        .title(R.string.add_new_account_dialog_title)
+                        .content(R.string.add_new_account_warning_dialog_content)
+                        .positiveText(R.string.add_new_account_dialog_create_account_button_text)
                         .positiveColor(mActivity.getResources().getColor(R.color.snack_bar_action_color))
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override

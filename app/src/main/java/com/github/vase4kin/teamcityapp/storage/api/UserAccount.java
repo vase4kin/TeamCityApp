@@ -69,4 +69,31 @@ public class UserAccount implements Jsonable {
     public String getId() {
         return mTeamcityUrl;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserAccount userAccount = (UserAccount) o;
+
+        if (isGuestUser()) {
+            return mTeamcityUrl.equals(userAccount.getTeamcityUrl())
+                    && userAccount.isGuestUser();
+        } else {
+            return mTeamcityUrl.equals(userAccount.getTeamcityUrl())
+                    && mUserName.equals(userAccount.getUserName())
+                    && !userAccount.isGuestUser();
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        if (mIsGuestUser) {
+            result = 31 * result + mTeamcityUrl.length();
+        } else {
+            result = 31 * result + mTeamcityUrl.length() + mUserName.length();
+        }
+        return result;
+    }
 }

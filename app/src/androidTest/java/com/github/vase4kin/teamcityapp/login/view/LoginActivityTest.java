@@ -136,7 +136,7 @@ public class LoginActivityTest {
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
-        assertThat(storageUtils.hasAccountWithUrl(URL), is(true));
+        assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
 
         intended(allOf(

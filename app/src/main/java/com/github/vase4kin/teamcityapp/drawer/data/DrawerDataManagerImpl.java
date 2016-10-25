@@ -51,16 +51,18 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void setActiveUser(String url) {
-        mSharedUserStorage.setUserActiveWithEmail(url);
+    public void setActiveUser(String url, String userName) {
+        mSharedUserStorage.setUserActiveWithEmail(url, userName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isActiveUser(String url) {
-        return mSharedUserStorage.getActiveUser().getTeamcityUrl().equals(url);
+    public boolean isActiveUser(String url, String userName) {
+        UserAccount userAccount = mSharedUserStorage.getActiveUser();
+        return userAccount.getTeamcityUrl().equals(url) &&
+                userAccount.getUserName().equals(userName);
     }
 
     /**

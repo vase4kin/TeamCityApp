@@ -125,9 +125,9 @@ public class LoginViewImpl implements LoginView {
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     listener.onUserLoginButtonClick(
-                            mServerUrl.getText().toString(),
-                            mUserName.getText().toString(),
-                            mPassword.getText().toString());
+                            mServerUrl.getText().toString().trim(),
+                            mUserName.getText().toString().trim(),
+                            mPassword.getText().toString().trim());
                     return true;
                 }
                 return false;
@@ -164,7 +164,7 @@ public class LoginViewImpl implements LoginView {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        listener.onGuestUserLoginButtonClick(v.getText().toString());
+                        listener.onGuestUserLoginButtonClick(v.getText().toString().trim());
                         return true;
                     }
                     return false;
@@ -174,7 +174,7 @@ public class LoginViewImpl implements LoginView {
                 @Override
                 public void onClick(View v) {
                     listener.onGuestUserLoginButtonClick(
-                            mServerUrl.getText().toString());
+                            mServerUrl.getText().toString().trim());
                 }
             });
         } else {
@@ -185,9 +185,9 @@ public class LoginViewImpl implements LoginView {
                 @Override
                 public void onClick(View v) {
                     listener.onUserLoginButtonClick(
-                            mServerUrl.getText().toString(),
-                            mUserName.getText().toString(),
-                            mPassword.getText().toString());
+                            mServerUrl.getText().toString().trim(),
+                            mUserName.getText().toString().trim(),
+                            mPassword.getText().toString().trim());
                 }
             });
         }

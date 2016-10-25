@@ -35,15 +35,17 @@ public interface OnDrawerPresenterListener {
      * Set active user with url
      *
      * @param url - TC url
+     * @param userName - user name
      */
-    void setActiveUser(String url);
+    void setActiveUser(String url, String userName);
 
     /**
      * Is account active
      *
      * @param url - TC url
+     * @param userName - user name
      */
-    boolean isActiveProfile(String url);
+    boolean isActiveProfile(String url, String userName);
 
     /**
      * {@inheritDoc}

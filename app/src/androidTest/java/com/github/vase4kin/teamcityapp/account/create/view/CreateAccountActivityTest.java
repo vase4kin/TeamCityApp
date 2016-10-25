@@ -139,7 +139,7 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.action_create)).perform(click());
 
         SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity());
-        assertThat(storageUtils.hasAccountWithUrl(URL), is(true));
+        assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
 
         intended(allOf(
