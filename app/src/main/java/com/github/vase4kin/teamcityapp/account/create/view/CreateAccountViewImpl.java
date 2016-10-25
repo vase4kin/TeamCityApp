@@ -95,7 +95,6 @@ public class CreateAccountViewImpl implements CreateAccountView {
         mUnbinder = ButterKnife.bind(this, mActivity);
         initDialogs();
         initToolbar(listener);
-        mServerUrl.setOnFocusChangeListener(new OnDialogFocusChangeListenerImpl(mActivity));
 
         mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -279,6 +278,7 @@ public class CreateAccountViewImpl implements CreateAccountView {
                 .progress(true, 0)
                 .widgetColor(mWhiteColor)
                 .contentColor(mWhiteColor)
+                .titleColor(mWhiteColor)
                 .autoDismiss(false)
                 .backgroundColor(mPrimaryColor)
                 .build();
