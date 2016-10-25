@@ -68,7 +68,6 @@ public class AppModule {
 
     @VisibleForTesting
     @Named(CLIENT_AUTH)
-    @Singleton
     @Provides
     public OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
                                                @Named(CLIENT_BASE) OkHttpClient okHttpClient) {
