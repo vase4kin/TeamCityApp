@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class Mocks {
 
-    public static final String URL = "http://teamcity.server.com";
+    public static final String URL = "https://teamcity.server.com";
 
     /**
      * MOCK

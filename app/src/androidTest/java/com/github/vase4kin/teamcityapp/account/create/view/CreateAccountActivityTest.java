@@ -31,6 +31,7 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,8 @@ import okhttp3.Response;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
@@ -78,6 +81,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(AndroidJUnit4.class)
 public class CreateAccountActivityTest {
+
+    private static final String INPUT_URL = URL.replace("https://", "");
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
@@ -117,10 +122,10 @@ public class CreateAccountActivityTest {
     }
 
     /**
-     * Verifies that user can be logged in with correct account url
+     * Verifies that user can be logged in as guest user with correct account url
      */
     @Test
-    public void testUserCanCreateAccountWithCorrectUrl() throws Throwable {
+    public void testUserCanCreateGuestUserAccountWithCorrectUrl() throws Throwable {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -135,12 +140,9 @@ public class CreateAccountActivityTest {
             }
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
-        onView(withId(R.id.teamcity_url)).perform(typeText(URL));
+        onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.action_create)).perform(click());
-
-        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity());
-        assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
-        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
 
         intended(allOf(
                 hasComponent(RootProjectsActivity.class.getName()),
@@ -150,6 +152,44 @@ public class CreateAccountActivityTest {
                         hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)),
                         hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
                 toPackage("com.github.vase4kin.teamcityapp.mock")));
+
+        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity());
+        assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
+        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
+    }
+
+    /**
+     * Verifies that user can be logged in with correct account url and credentials
+     */
+    @Ignore
+    @Test
+    public void testUserCanCreateUserAccountWithCorrectUrlAndCredentials() throws Throwable {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                mCallbackArgumentCaptor.getValue().onResponse(
+                        mCall,
+                        new Response.Builder()
+                                .request(new Request.Builder().url(URL).build())
+                                .protocol(Protocol.HTTP_1_0)
+                                .code(200)
+                                .build());
+                return null;
+            }
+        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
+        onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton());
+        onView(withId(R.id.password)).perform(typeText("pass"), pressImeActionButton());
+
+        intended(allOf(
+                hasComponent(RootProjectsActivity.class.getName()),
+                hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
+
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
+        assertThat(storageUtils.hasAccountWithUrl(URL, "user", "pass"), is(true));
+        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
     }
 
     /**
@@ -172,7 +212,8 @@ public class CreateAccountActivityTest {
             }
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
-        onView(withId(R.id.teamcity_url)).perform(typeText(URL));
+        onView(withId(R.id.teamcity_url)).perform(typeText(URL), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.action_create)).perform(click());
         onView(withText(containsString("Client Error"))).check(matches(isDisplayed()));
     }

@@ -132,6 +132,6 @@ public class SplashActivityTest {
         mActivityRule.launchActivity(null);
 
         //Checking that Login Activity is opened
-        onView(withText(R.string.server_reminder_text)).check(matches(isDisplayed()));
+        onView(withText(R.string.text_app_description)).check(matches(isDisplayed()));
     }
 }

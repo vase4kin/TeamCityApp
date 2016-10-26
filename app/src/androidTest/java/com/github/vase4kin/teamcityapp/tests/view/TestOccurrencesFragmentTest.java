@@ -86,7 +86,7 @@ public class TestOccurrencesFragmentTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mRestComponentDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .providesMock(SharedUserStorage.class)
+            .provides(SharedUserStorage.class, SharedUserStorage.init(InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
                 @Override
                 public void setComponent(RestApiComponent restApiComponent) {
