@@ -31,6 +31,11 @@ import okhttp3.Route;
  */
 public class TeamCityAuthenticator implements okhttp3.Authenticator {
 
+    /**
+     * Count of attempts on 401
+     */
+    private static final int ATTEMPTS_COUNT = 3;
+
     private SharedUserStorage mSharedUserStorage;
 
     public TeamCityAuthenticator(SharedUserStorage sharedUserStorage) {
@@ -42,10 +47,29 @@ public class TeamCityAuthenticator implements okhttp3.Authenticator {
      */
     @Override
     public Request authenticate(Route route, Response response) throws IOException {
+        // by default do three attempts
+        if (responseCount(response) >= ATTEMPTS_COUNT) {
+            return null; // If we've failed 3 times, give up.
+        }
+        // Use user credentials
         UserAccount userAccount = mSharedUserStorage.getActiveUser();
         String credential = Credentials.basic(userAccount.getUserName(), userAccount.getPassword());
         return response.request().newBuilder()
                 .header(TeamCityService.AUTHORIZATION, credential)
                 .build();
+    }
+
+    /**
+     * Response count
+     *
+     * @param response - Response
+     * @return count of response tries failed by 401
+     */
+    private int responseCount(Response response) {
+        int result = 1;
+        while ((response = response.priorResponse()) != null) {
+            result++;
+        }
+        return result;
     }
 }
