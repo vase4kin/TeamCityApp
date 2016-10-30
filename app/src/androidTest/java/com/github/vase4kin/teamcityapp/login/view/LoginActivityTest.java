@@ -272,4 +272,10 @@ public class LoginActivityTest {
         onView(withText(R.string.info_unauthorized_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.info_unauthorized_dialog_content)).check(matches(isDisplayed()));
     }
+
+    @Ignore
+    @Test
+    public void testUserCanNotCreateAccountIfDataWasNotSaved() throws Throwable {
+        // You know what to do
+    }
 }

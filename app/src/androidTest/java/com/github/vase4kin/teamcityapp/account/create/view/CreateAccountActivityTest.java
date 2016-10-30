@@ -216,4 +216,10 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.action_create)).perform(click());
         onView(withText(containsString("Client Error"))).check(matches(isDisplayed()));
     }
+
+    @Ignore
+    @Test
+    public void testUserCanNotCreateAccountIfDataWasNotSaved() throws Throwable {
+        // You know what to do
+    }
 }
