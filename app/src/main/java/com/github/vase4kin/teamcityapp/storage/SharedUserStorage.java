@@ -139,7 +139,16 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     public UserAccount getActiveUser() {
         for (final UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.isActive()) {
-                if (userAccount.isGuestUser()) return userAccount;
+                // backward compatibility for old user accounts
+                // Who's gonna set 'Guest user' as real user name for TC user, right?
+                if (userAccount.getUserName().equals(UsersFactory.GUEST_USER_USER_NAME)) {
+                    return UsersFactory.guestUser(userAccount.getTeamcityUrl());
+                }
+                // Don't need to decrypt password of guest user
+                if (userAccount.isGuestUser()) {
+                    return userAccount;
+                }
+                // Decrypting password for user
                 byte[] decryptedPassword = mCryptoManager.decrypt(userAccount.getPasswordAsBytes());
                 if (!mCryptoManager.isFailed(decryptedPassword)) {
                     return UsersFactory.user(userAccount, decryptedPassword);

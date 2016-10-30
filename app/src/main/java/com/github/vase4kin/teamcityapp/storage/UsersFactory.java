@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
  */
 public class UsersFactory {
 
-    private static final String GUEST_USER_USER_NAME = "Guest user";
+    static final String GUEST_USER_USER_NAME = "Guest user";
     private static final String EMPTY_STRING = "";
     static final UserAccount EMPTY_USER = new UserAccount(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING.getBytes(), true, true);
 

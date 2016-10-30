@@ -23,55 +23,55 @@ import com.github.vase4kin.teamcityapp.base.api.Jsonable;
  */
 public class UserAccount implements Jsonable {
 
-    private String mTeamcityUrl;
-    private String mUserName;
-    private byte[] mPassword;
-    private boolean mIsGuestUser;
-    private boolean mIsActive;
+    private String teamcityUrl;
+    private String userName;
+    private byte[] password;
+    private boolean isGuestUser;
+    private boolean isActive;
 
     public UserAccount(String teamcityUrl,
                        String userName,
                        byte[] password,
                        boolean isGuestUser,
                        boolean isActive) {
-        this.mUserName = userName;
-        this.mTeamcityUrl = teamcityUrl;
-        this.mPassword = password;
-        this.mIsGuestUser = isGuestUser;
-        this.mIsActive = isActive;
+        this.userName = userName;
+        this.teamcityUrl = teamcityUrl;
+        this.password = password;
+        this.isGuestUser = isGuestUser;
+        this.isActive = isActive;
     }
 
     public String getTeamcityUrl() {
-        return mTeamcityUrl;
+        return teamcityUrl;
     }
 
     public String getUserName() {
-        return mUserName;
+        return userName;
     }
 
     public String getPasswordAsString() {
-        return new String(mPassword);
+        return new String(password);
     }
 
     public byte[] getPasswordAsBytes() {
-        return mPassword;
+        return password;
     }
 
     public boolean isGuestUser() {
-        return mIsGuestUser;
+        return isGuestUser;
     }
 
     public boolean isActive() {
-        return mIsActive;
+        return isActive;
     }
 
     public void setIsActive(boolean isActive) {
-        this.mIsActive = isActive;
+        this.isActive = isActive;
     }
 
     @Override
     public String getId() {
-        return mTeamcityUrl;
+        return teamcityUrl;
     }
 
     @Override
@@ -79,13 +79,13 @@ public class UserAccount implements Jsonable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserAccount userAccount = (UserAccount) o;
-        return mTeamcityUrl.equals(userAccount.getTeamcityUrl())
-                && mUserName.equals(userAccount.getUserName());
+        return teamcityUrl.equals(userAccount.getTeamcityUrl())
+                && userName.equals(userAccount.getUserName());
     }
 
     @Override
     public int hashCode() {
         int result = 17;
-        return 31 * result + mTeamcityUrl.length() + mUserName.length();
+        return 31 * result + teamcityUrl.length() + userName.length();
     }
 }
