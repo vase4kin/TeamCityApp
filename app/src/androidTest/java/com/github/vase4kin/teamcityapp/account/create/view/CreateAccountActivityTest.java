@@ -86,7 +86,6 @@ public class CreateAccountActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .provides(SharedUserStorage.class, SharedUserStorage.init(InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
                 @Override
                 public void setComponent(AppComponent appComponent) {
@@ -153,7 +152,7 @@ public class CreateAccountActivityTest {
                         hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
                 toPackage("com.github.vase4kin.teamcityapp.mock")));
 
-        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity());
+        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity(), null);
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
     }
@@ -188,7 +187,7 @@ public class CreateAccountActivityTest {
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
-        assertThat(storageUtils.hasAccountWithUrl(URL, "user", "pass"), is(true));
+        assertThat(storageUtils.hasAccountWithUrl(URL, "user"), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
     }
 

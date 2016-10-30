@@ -81,7 +81,7 @@ public class CreateAccountActivityValidationTest {
     @Before
     public void setUp() {
         when(mStorage.hasGuestAccountWithUrl(URL)).thenReturn(true);
-        when(mStorage.hasAccountWithUrl(URL, "user", "pass")).thenReturn(true);
+        when(mStorage.hasAccountWithUrl(URL, "user")).thenReturn(true);
         mActivityRule.launchActivity(null);
     }
 

@@ -25,13 +25,13 @@ public class UserAccount implements Jsonable {
 
     private String mTeamcityUrl;
     private String mUserName;
-    private String mPassword;
+    private byte[] mPassword;
     private boolean mIsGuestUser;
     private boolean mIsActive;
 
     public UserAccount(String teamcityUrl,
                        String userName,
-                       String password,
+                       byte[] password,
                        boolean isGuestUser,
                        boolean isActive) {
         this.mUserName = userName;
@@ -49,7 +49,11 @@ public class UserAccount implements Jsonable {
         return mUserName;
     }
 
-    public String getPassword() {
+    public String getPasswordAsString() {
+        return new String(mPassword);
+    }
+
+    public byte[] getPasswordAsBytes() {
         return mPassword;
     }
 
@@ -76,6 +80,7 @@ public class UserAccount implements Jsonable {
         if (o == null || getClass() != o.getClass()) return false;
         UserAccount userAccount = (UserAccount) o;
 
+        // TODO: no need to check for guest
         if (isGuestUser()) {
             return mTeamcityUrl.equals(userAccount.getTeamcityUrl())
                     && userAccount.isGuestUser();
@@ -89,6 +94,7 @@ public class UserAccount implements Jsonable {
     @Override
     public int hashCode() {
         int result = 17;
+        // TODO: no need to check for guest
         if (mIsGuestUser) {
             result = 31 * result + mTeamcityUrl.length();
         } else {

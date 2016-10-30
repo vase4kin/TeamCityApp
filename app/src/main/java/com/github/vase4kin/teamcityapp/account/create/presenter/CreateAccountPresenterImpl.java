@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView;
@@ -31,7 +32,7 @@ import javax.inject.Inject;
 /**
  * Impl of {@link CreateAccountPresenter}
  */
-public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCreateAccountPresenterListener {
+public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCreateAccountPresenterListener, OnLoadingListener<String> {
 
     private CreateAccountView mView;
     private CreateAccountDataManager mDataManager;
@@ -95,19 +96,14 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
             return;
         }
         mView.showProgressDialog();
-        if (mDataModel.hasAccountWithUrl(url, userName, password)) {
+        if (mDataModel.hasAccountWithUrl(url, userName)) {
             mView.showNewAccountExistErrorMessage();
             mView.dismissProgressDialog();
         } else {
             mDataManager.authUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    mDataManager.saveNewUserAccount(url, userName, password);
-                    mDataManager.initTeamCityService(url);
-                    mTracker.trackUserLoginSuccess();
-                    mView.dismissProgressDialog();
-                    mView.finish();
-                    mRouter.startRootProjectActivityWhenNewAccountIsCreated();
+                    mDataManager.saveNewUserAccount(url, userName, password, CreateAccountPresenterImpl.this);
                 }
 
                 @Override
@@ -120,6 +116,35 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
         }
     }
 
+    /**
+     * On data save success callback
+     *
+     * @param serverUrl - Server url
+     */
+    @Override
+    public void onSuccess(String serverUrl) {
+        mDataManager.initTeamCityService(serverUrl);
+        mTracker.trackUserLoginSuccess();
+        mView.dismissProgressDialog();
+        mView.finish();
+        mRouter.startRootProjectActivityWhenNewAccountIsCreated();
+    }
+
+    /**
+     * On data save fail callback
+     *
+     * @param errorMessage - Error message
+     */
+    @Override
+    public void onFail(String errorMessage) {
+        mView.showCouldNotSaveUserError();
+        mView.dismissProgressDialog();
+        mTracker.trackUserDataSaveFailed();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void validateGuestUserData(String url) {
         mView.hideError();
@@ -137,7 +162,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
                 public void onSuccess(String url) {
                     mDataManager.saveGuestUserAccount(url);
                     mDataManager.initTeamCityService(url);
-                    mTracker.trackUserLoginSuccess();
+                    mTracker.trackGuestUserLoginSuccess();
                     mView.dismissProgressDialog();
                     mView.finish();
                     mRouter.startRootProjectActivityWhenNewAccountIsCreated();
@@ -147,7 +172,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
                 public void onFail(int code, String errorMessage) {
                     mView.showError(errorMessage);
                     mView.dismissProgressDialog();
-                    mTracker.trackUserLoginFailed(errorMessage);
+                    mTracker.trackGuestUserLoginFailed(errorMessage);
                 }
             }, url);
         }

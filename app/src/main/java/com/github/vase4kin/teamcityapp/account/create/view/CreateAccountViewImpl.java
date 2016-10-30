@@ -191,6 +191,17 @@ public class CreateAccountViewImpl implements CreateAccountView {
         showError(mActivity.getString(R.string.server_password_cannot_be_empty));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showCouldNotSaveUserError() {
+        showError(mActivity.getString(R.string.error_save_account));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void hideError() {
         mUrlInputLayout.setError(null);

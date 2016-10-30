@@ -288,6 +288,14 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
+    public void showCouldNotSaveUserError() {
+        setError(R.string.error_save_account);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         if (!hasFocus) {
             return;

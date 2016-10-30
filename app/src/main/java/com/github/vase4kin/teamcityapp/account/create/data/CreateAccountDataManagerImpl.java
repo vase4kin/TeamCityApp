@@ -67,18 +67,6 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void loadData(@NonNull final CustomOnLoadingListener<String> listener,
-                         final String url,
-                         final String userName,
-                         final String password,
-                         boolean isGuestUser) {
-        // do nothing
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void authUser(@NonNull final CustomOnLoadingListener<String> listener,
                          final String url,
                          final String userName,
@@ -176,8 +164,20 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void saveNewUserAccount(String serverUrl, String userName, String password) {
-        mSharedUserStorage.saveUserAccountAndSetItAsActive(serverUrl, userName, password);
+    public void saveNewUserAccount(final String serverUrl, String userName, String password, final OnLoadingListener<String> listener) {
+        mSharedUserStorage.saveUserAccountAndSetItAsActive(serverUrl, userName, password, new SharedUserStorage.OnStorageListener() {
+            @Override
+            public void onSuccess() {
+                // On data save success
+                listener.onSuccess(serverUrl);
+            }
+
+            @Override
+            public void onFail() {
+                // On data save fail
+                listener.onFail("");
+            }
+        });
     }
 
     /**

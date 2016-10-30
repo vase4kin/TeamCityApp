@@ -38,7 +38,7 @@ public class CreateAccountDataModelImpl implements CreateAccountDataModel {
     }
 
     @Override
-    public boolean hasAccountWithUrl(String url, String userName, String password) {
-        return mSharedUserStorage.hasAccountWithUrl(url, userName, password);
+    public boolean hasAccountWithUrl(String url, String userName) {
+        return mSharedUserStorage.hasAccountWithUrl(url, userName);
     }
 }

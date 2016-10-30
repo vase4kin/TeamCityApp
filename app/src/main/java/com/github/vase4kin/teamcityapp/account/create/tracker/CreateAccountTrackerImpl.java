@@ -27,6 +27,9 @@ import io.fabric.sdk.android.Fabric;
  */
 public class CreateAccountTrackerImpl implements CreateAccountTracker {
 
+    private static final String USER_LOGIN_METHOD = "User";
+    private static final String GUEST_USER_LOGIN_METHOD = "GuestUser";
+
     /**
      * {@inheritDoc}
      */
@@ -34,6 +37,15 @@ public class CreateAccountTrackerImpl implements CreateAccountTracker {
     public void trackUserLoginSuccess() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logLogin(new LoginEvent()
+                .putMethod(USER_LOGIN_METHOD)
+                .putSuccess(true));
+    }
+
+    @Override
+    public void trackGuestUserLoginSuccess() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logLogin(new LoginEvent()
+                .putMethod(GUEST_USER_LOGIN_METHOD)
                 .putSuccess(true));
     }
 
@@ -44,8 +56,23 @@ public class CreateAccountTrackerImpl implements CreateAccountTracker {
     public void trackUserLoginFailed(String errorMessage) {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logLogin(new LoginEvent()
+                .putMethod(USER_LOGIN_METHOD)
                 .putSuccess(false)
                 .putCustomAttribute("errorMessage", errorMessage));
+    }
+
+    @Override
+    public void trackGuestUserLoginFailed(String errorMessage) {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logLogin(new LoginEvent()
+                .putMethod(GUEST_USER_LOGIN_METHOD)
+                .putSuccess(false)
+                .putCustomAttribute("errorMessage", errorMessage));
+    }
+
+    @Override
+    public void trackUserDataSaveFailed() {
+        trackUserLoginFailed("Failed to save user data!");
     }
 
     /**

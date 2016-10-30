@@ -25,25 +25,31 @@ public class UsersFactory {
 
     private static final String GUEST_USER_USER_NAME = "Guest user";
     private static final String EMPTY_STRING = "";
+    static final UserAccount EMPTY_USER = new UserAccount(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING.getBytes(), true, true);
 
     /**
      * @return Guest user
      */
     static UserAccount guestUser(String serverUrl) {
-        return new UserAccount(serverUrl, GUEST_USER_USER_NAME, EMPTY_STRING, true, true);
+        return new UserAccount(serverUrl, GUEST_USER_USER_NAME, EMPTY_STRING.getBytes(), true, true);
     }
 
     /**
      * @return Registered user
      */
-    static UserAccount user(String serverUrl, String userName, String password) {
+    static UserAccount user(String serverUrl, String userName, byte[] password) {
         return new UserAccount(serverUrl, userName, password, false, true);
     }
 
     /**
-     * @return Empty user
+     * @return Registered user with decrypted password
      */
-    static UserAccount emptyUser() {
-        return new UserAccount(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING, true, true);
+    static UserAccount user(UserAccount userAccount, byte[] decryptedPassword) {
+        return new UserAccount(
+                userAccount.getTeamcityUrl(),
+                userAccount.getUserName(),
+                decryptedPassword,
+                userAccount.isGuestUser(),
+                userAccount.isActive());
     }
 }

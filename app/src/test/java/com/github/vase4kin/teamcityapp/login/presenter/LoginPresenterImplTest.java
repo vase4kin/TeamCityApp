@@ -20,6 +20,7 @@ import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker;
 import com.github.vase4kin.teamcityapp.login.view.LoginView;
@@ -48,6 +49,9 @@ import static org.mockito.Mockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TextUtils.class)
 public class LoginPresenterImplTest {
+
+    @Captor
+    private ArgumentCaptor<OnLoadingListener<String>> mOnLoadingListenerArgumentCaptor;
 
     @Captor
     private ArgumentCaptor<CustomOnLoadingListener<String>> mArgumentCaptor;
@@ -116,22 +120,31 @@ public class LoginPresenterImplTest {
         verify(mView).showProgressDialog();
         verify(mDataManager).authUser(mArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"));
 
-        CustomOnLoadingListener<String> listener = mArgumentCaptor.getValue();
-        listener.onSuccess("url");
+        CustomOnLoadingListener<String> customOnLoadingListener = mArgumentCaptor.getValue();
+        customOnLoadingListener.onSuccess("url");
 
         verify(mView).dismissProgressDialog();
-        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"));
+        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), mOnLoadingListenerArgumentCaptor.capture());
+
+        OnLoadingListener<String> onLoadingListener = mOnLoadingListenerArgumentCaptor.getValue();
+        onLoadingListener.onSuccess("url");
+
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mRouter).openProjectsRootPageForFirstStart();
         verify(mTracker).trackUserLoginSuccess();
         verify(mView).close();
 
-        listener.onFail(0, "error");
-
+        onLoadingListener.onFail("error");
         verify(mView, times(2)).dismissProgressDialog();
+        verify(mView).showCouldNotSaveUserError();
+        verify(mTracker).trackUserDataSaveFailed();
+        verify(mView).hideKeyboard();
+
+        customOnLoadingListener.onFail(0, "error");
+        verify(mView, times(3)).dismissProgressDialog();
         verify(mView).showError(eq("error"));
         verify(mTracker).trackUserLoginFailed(eq("error"));
-        verify(mView).hideKeyboard();
+        verify(mView, times(2)).hideKeyboard();
     }
 
     @Test
@@ -169,20 +182,20 @@ public class LoginPresenterImplTest {
         verify(mDataManager).saveGuestUserAccount(eq("url"));
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mRouter).openProjectsRootPageForFirstStart();
-        verify(mTracker).trackUserLoginSuccess();
+        verify(mTracker).trackGuestUserLoginSuccess();
         verify(mView).close();
 
         listener.onFail(0, "error");
 
         verify(mView, times(2)).dismissProgressDialog();
         verify(mView).showError(eq("error"));
-        verify(mTracker).trackUserLoginFailed(eq("error"));
+        verify(mTracker).trackGuestUserLoginFailed(eq("error"));
         verify(mView).hideKeyboard();
 
         listener.onFail(401, "error");
         verify(mView, times(3)).dismissProgressDialog();
         verify(mView, times(2)).showError(eq("error"));
-        verify(mTracker, times(2)).trackUserLoginFailed(eq("error"));
+        verify(mTracker, times(2)).trackGuestUserLoginFailed(eq("error"));
         verify(mView, times(2)).hideKeyboard();
         verify(mView).showUnauthorizedInfoDialog();
     }

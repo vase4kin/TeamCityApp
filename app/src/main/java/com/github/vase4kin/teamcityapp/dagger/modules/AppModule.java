@@ -19,10 +19,17 @@ package com.github.vase4kin.teamcityapp.dagger.modules;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
+import com.facebook.android.crypto.keychain.AndroidConceal;
+import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
+import com.facebook.crypto.Crypto;
+import com.facebook.crypto.CryptoConfig;
+import com.facebook.crypto.keychain.KeyChain;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.LoggingInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
+import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
+import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
@@ -62,8 +69,8 @@ public class AppModule {
     @VisibleForTesting
     @Provides
     @Singleton
-    public SharedUserStorage provideSharedUserStorage() {
-        return SharedUserStorage.init(mApplication);
+    public SharedUserStorage provideSharedUserStorage(CryptoManager cryptoManager) {
+        return SharedUserStorage.init(mApplication.getApplicationContext(), cryptoManager);
     }
 
     @VisibleForTesting
@@ -101,5 +108,14 @@ public class AppModule {
     @Singleton
     protected EventBus providesEventBus() {
         return EventBus.getDefault();
+    }
+
+    @VisibleForTesting
+    @Provides
+    @Singleton
+    protected CryptoManager providesCryptoManager() {
+        KeyChain keyChain = new SharedPrefsBackedKeyChain(mApplication.getApplicationContext(), CryptoConfig.KEY_256);
+        Crypto crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
+        return new CryptoManagerImpl(crypto);
     }
 }

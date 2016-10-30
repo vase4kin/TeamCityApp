@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.data;
+package com.github.vase4kin.teamcityapp.crypto;
 
 /**
- * Model to handle interactions with local storage
+ * Crypto manager
  */
-public interface CreateAccountDataModel {
+public interface CryptoManager {
 
     /**
-     * Check if local storage has guest account with the same data
+     * Encrypt password
      *
-     * @param url - TeamCity server url
-     * @return boolean if account exists or not
+     * @param password to encrypt
+     * @return Encrypted password in byte array
      */
-    boolean hasGuestAccountWithUrl(String url);
+    byte[] encrypt(String password);
 
     /**
-     * Check if local storage has the account with the same data
+     * Decrypt password
      *
-     * @param url      - TeamCity server url
-     * @param userName - User name
-     * @return boolean if account exists or not
+     * @param password to encrypt
+     * @return Decrypted password in byte array
      */
-    boolean hasAccountWithUrl(String url, String userName);
+    byte[] decrypt(byte[] password);
+
+    /**
+     * Is encryption/decryption failed
+     *
+     * @param result - encryption/decryption result
+     * @return true if encryption/decryption is failed
+     */
+    boolean isFailed(byte[] result);
 }

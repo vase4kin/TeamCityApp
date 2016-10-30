@@ -80,6 +80,11 @@ public interface LoginView {
     void showPasswordCanNotBeEmptyError();
 
     /**
+     * Show could not save user data error
+     */
+    void showCouldNotSaveUserError();
+
+    /**
      * Handle activity callback
      */
     void onWindowFocusChanged(boolean hasFocus);

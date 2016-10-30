@@ -52,7 +52,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void setActiveUser(String url, String userName) {
-        mSharedUserStorage.setUserActiveWithEmail(url, userName);
+        mSharedUserStorage.setUserActive(url, userName);
     }
 
     /**

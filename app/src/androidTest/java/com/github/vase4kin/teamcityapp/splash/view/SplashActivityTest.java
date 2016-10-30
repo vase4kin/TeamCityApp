@@ -27,7 +27,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -55,7 +54,6 @@ public class SplashActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .provides(SharedUserStorage.class, SharedUserStorage.init(InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
                 @Override
                 public void setComponent(AppComponent appComponent) {

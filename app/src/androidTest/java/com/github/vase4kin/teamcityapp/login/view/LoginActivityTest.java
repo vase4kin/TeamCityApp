@@ -22,6 +22,7 @@ import android.support.test.runner.AndroidJUnit4;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
@@ -83,7 +84,6 @@ public class LoginActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .provides(SharedUserStorage.class, SharedUserStorage.init(InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
                 @Override
                 public void setComponent(AppComponent appComponent) {
@@ -106,6 +106,9 @@ public class LoginActivityTest {
 
     @Mock
     private UserAccount mUserAccount;
+
+    @Mock
+    private CryptoManager mCryptoManager;
 
     @Mock
     private Call mCall;
@@ -213,7 +216,7 @@ public class LoginActivityTest {
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
-        assertThat(storageUtils.hasAccountWithUrl(URL, "user", "pass"), is(true));
+        assertThat(storageUtils.hasAccountWithUrl(URL, "user"), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
     }
 

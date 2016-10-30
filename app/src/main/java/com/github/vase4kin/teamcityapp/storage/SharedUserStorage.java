@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
+import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.github.vase4kin.teamcityapp.storage.api.UsersContainer;
 import com.google.gson.Gson;
@@ -33,25 +34,27 @@ import java.util.List;
  */
 public class SharedUserStorage implements Collectible<UserAccount> {
 
-    private Context context;
     private static final String SHARED_PREF_NAME = "UserAccounts";
+    private Context mContext;
+    private CryptoManager mCryptoManager;
 
     private UsersContainer usersContainer;
 
-    private SharedUserStorage(Context context) {
-        this.context = context;
+    private SharedUserStorage(Context context, CryptoManager cryptoManager) {
+        this.mContext = context;
+        this.mCryptoManager = cryptoManager;
         initUserContainer();
     }
 
-    public static SharedUserStorage init(Context context) {
-        return new SharedUserStorage(context);
+    public static SharedUserStorage init(Context context, CryptoManager cryptoManager) {
+        return new SharedUserStorage(context, cryptoManager);
     }
 
     /**
      * @return default shared preferences instance
      */
     private SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(SHARED_PREF_NAME, 0);
+        return mContext.getSharedPreferences(SHARED_PREF_NAME, 0);
     }
 
     /**
@@ -88,9 +91,9 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      *
      * @param url - TC url
      */
-    public boolean hasAccountWithUrl(String url, String userName, String password) {
+    public boolean hasAccountWithUrl(String url, String userName) {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.equals(UsersFactory.user(url, userName, password))) {
+            if (userAccount.equals(UsersFactory.user(url, userName, null))) {
                 return true;
             }
         }
@@ -111,11 +114,20 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         commitUserChanges();
     }
 
-    public void saveUserAccountAndSetItAsActive(String baseUrl, String userName, String password) {
+    public void saveUserAccountAndSetItAsActive(final String baseUrl,
+                                                final String userName,
+                                                final String password,
+                                                OnStorageListener listener) {
         setActiveUserNotActive();
-        UserAccount userAccount = UsersFactory.user(baseUrl, userName, password);
-        usersContainer.getUsersAccounts().add(userAccount);
-        commitUserChanges();
+        byte[] encryptedPassword = mCryptoManager.encrypt(password);
+        if (!mCryptoManager.isFailed(encryptedPassword)) {
+            UserAccount userAccount = UsersFactory.user(baseUrl, userName, encryptedPassword);
+            usersContainer.getUsersAccounts().add(userAccount);
+            commitUserChanges();
+            listener.onSuccess();
+        } else {
+            listener.onFail();
+        }
     }
 
     /**
@@ -125,23 +137,25 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      */
     @NonNull
     public UserAccount getActiveUser() {
-        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+        for (final UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.isActive()) {
-                return userAccount;
+                if (userAccount.isGuestUser()) return userAccount;
+                byte[] decryptedPassword = mCryptoManager.decrypt(userAccount.getPasswordAsBytes());
+                if (!mCryptoManager.isFailed(decryptedPassword)) {
+                    return UsersFactory.user(userAccount, decryptedPassword);
+                } else {
+                    return UsersFactory.EMPTY_USER;
+                }
             }
         }
-        return UsersFactory.emptyUser();
+        return UsersFactory.EMPTY_USER;
     }
 
     /**
      * Set active user to inactive state
      */
     private void setActiveUserNotActive() {
-        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.isActive()) {
-                userAccount.setIsActive(false);
-            }
-        }
+        getActiveUser().setIsActive(false);
         commitUserChanges();
     }
 
@@ -150,7 +164,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      *
      * @param url - TC url
      */
-    public void setUserActiveWithEmail(String url, String userName) {
+    public void setUserActive(String url, String userName) {
         setActiveUserNotActive();
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.getTeamcityUrl().equals(url) && userAccount.getUserName().equals(userName)) {
@@ -168,7 +182,8 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     public void removeUserAccount(UserAccount userAccount) {
         List<UserAccount> modifiedCollection = new ArrayList<>(usersContainer.getUsersAccounts());
         for (UserAccount accountToRemove : modifiedCollection) {
-            if (accountToRemove.getTeamcityUrl().equals(userAccount.getTeamcityUrl())) {
+            if (accountToRemove.getTeamcityUrl().equals(userAccount.getTeamcityUrl())
+                    && accountToRemove.getUserName().equals(userAccount.getUserName())) {
                 usersContainer.getUsersAccounts().remove(accountToRemove);
             }
         }
@@ -207,5 +222,21 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     @Override
     public List<UserAccount> getObjects() {
         return usersContainer.getUsersAccounts();
+    }
+
+    /**
+     * On storage listener
+     */
+    public interface OnStorageListener {
+
+        /**
+         * On success user data save
+         */
+        void onSuccess();
+
+        /**
+         * On fail user data save
+         */
+        void onFail();
     }
 }

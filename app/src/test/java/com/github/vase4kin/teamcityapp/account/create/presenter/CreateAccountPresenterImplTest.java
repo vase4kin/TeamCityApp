@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView;
@@ -55,7 +56,10 @@ public class CreateAccountPresenterImplTest {
     private ArgumentCaptor<OnToolBarNavigationListener> mOnToolBarNavigationListenerArgumentCaptor;
 
     @Captor
-    private ArgumentCaptor<CustomOnLoadingListener<String>> mOnLoadingListenerArgumentCaptor;
+    private ArgumentCaptor<OnLoadingListener<String>> mOnLoadingListenerArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<CustomOnLoadingListener<String>> mCustomOnLoadingListenerArgumentCaptor;
 
     @Mock
     private CreateAccountView mView;
@@ -138,11 +142,11 @@ public class CreateAccountPresenterImplTest {
 
     @Test
     public void testValidateUserUrlIfAccountExist() throws Exception {
-        when(mDataModel.hasAccountWithUrl("url", "userName", "password")).thenReturn(true);
+        when(mDataModel.hasAccountWithUrl("url", "userName")).thenReturn(true);
         mPresenter.validateUserData("url", "userName", "password");
         verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"), eq("password"));
+        verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
         verify(mView).showNewAccountExistErrorMessage();
         verify(mView).dismissProgressDialog();
     }
@@ -166,45 +170,53 @@ public class CreateAccountPresenterImplTest {
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasGuestAccountWithUrl(eq("url"));
-        verify(mDataManager).authGuestUser(mOnLoadingListenerArgumentCaptor.capture(), eq("url"));
+        verify(mDataManager).authGuestUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"));
 
-        CustomOnLoadingListener<String> listener = mOnLoadingListenerArgumentCaptor.getValue();
+        CustomOnLoadingListener<String> listener = mCustomOnLoadingListenerArgumentCaptor.getValue();
         listener.onSuccess("url");
         verify(mDataManager).saveGuestUserAccount(eq("url"));
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
         verify(mRouter).startRootProjectActivityWhenNewAccountIsCreated();
-        verify(mTracker).trackUserLoginSuccess();
+        verify(mTracker).trackGuestUserLoginSuccess();
 
         listener.onFail(0, "error");
         verify(mView).showError(eq("error"));
         verify(mView, times(2)).dismissProgressDialog();
-        verify(mTracker).trackUserLoginFailed(eq("error"));
+        verify(mTracker).trackGuestUserLoginFailed(eq("error"));
     }
 
     @Test
     public void testValidateUserUrlIfAccountIsNotExist() throws Exception {
-        when(mDataModel.hasAccountWithUrl("url", "userName", "password")).thenReturn(false);
+        when(mDataModel.hasAccountWithUrl("url", "userName")).thenReturn(false);
         mPresenter.validateUserData("url", "userName", "password");
 
         verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"), eq("password"));
-        verify(mDataManager).authUser(mOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"));
+        verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
+        verify(mDataManager).authUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"));
 
-        CustomOnLoadingListener<String> listener = mOnLoadingListenerArgumentCaptor.getValue();
-        listener.onSuccess("url");
-        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"));
+        CustomOnLoadingListener<String> customOnLoadingListener = mCustomOnLoadingListenerArgumentCaptor.getValue();
+        customOnLoadingListener.onSuccess("url");
+        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), mOnLoadingListenerArgumentCaptor.capture());
+
+        OnLoadingListener<String> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
+        loadingListener.onSuccess("url");
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
         verify(mRouter).startRootProjectActivityWhenNewAccountIsCreated();
         verify(mTracker).trackUserLoginSuccess();
 
-        listener.onFail(0, "error");
-        verify(mView).showError(eq("error"));
+        loadingListener.onFail("");
+        verify(mView).showCouldNotSaveUserError();
         verify(mView, times(2)).dismissProgressDialog();
+        verify(mTracker).trackUserDataSaveFailed();
+
+        customOnLoadingListener.onFail(0, "error");
+        verify(mView).showError(eq("error"));
+        verify(mView, times(3)).dismissProgressDialog();
         verify(mTracker).trackUserLoginFailed(eq("error"));
     }
 

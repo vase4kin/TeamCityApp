@@ -53,7 +53,7 @@ public class TeamCityAuthenticator implements okhttp3.Authenticator {
         }
         // Use user credentials
         UserAccount userAccount = mSharedUserStorage.getActiveUser();
-        String credential = Credentials.basic(userAccount.getUserName(), userAccount.getPassword());
+        String credential = Credentials.basic(userAccount.getUserName(), userAccount.getPasswordAsString());
         return response.request().newBuilder()
                 .header(TeamCityService.AUTHORIZATION, credential)
                 .build();

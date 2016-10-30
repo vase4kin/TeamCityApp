@@ -21,6 +21,7 @@ import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker;
 import com.github.vase4kin.teamcityapp.login.view.LoginView;
@@ -31,7 +32,7 @@ import javax.inject.Inject;
 /**
  * Impl for {@link LoginPresenter}
  */
-public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickListener {
+public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickListener, OnLoadingListener<String> {
 
     private static final int UNAUTHORIZED_STATUS_CODE = 401;
 
@@ -106,11 +107,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
             @Override
             public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
-                mDataManager.saveNewUserAccount(serverUrl, userName, password);
-                mDataManager.initTeamCityService(serverUrl);
-                mRouter.openProjectsRootPageForFirstStart();
-                mTracker.trackUserLoginSuccess();
-                mView.close();
+                mDataManager.saveNewUserAccount(serverUrl, userName, password, LoginPresenterImpl.this);
             }
 
             @Override
@@ -121,6 +118,32 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
                 mView.hideKeyboard();
             }
         }, serverUrl, userName, password);
+    }
+
+    /**
+     * On data save success callback
+     *
+     * @param serverUrl - Server url
+     */
+    @Override
+    public void onSuccess(String serverUrl) {
+        mDataManager.initTeamCityService(serverUrl);
+        mRouter.openProjectsRootPageForFirstStart();
+        mTracker.trackUserLoginSuccess();
+        mView.close();
+    }
+
+    /**
+     * On data save fail callback
+     *
+     * @param errorMessage - Error message
+     */
+    @Override
+    public void onFail(String errorMessage) {
+        mView.dismissProgressDialog();
+        mView.showCouldNotSaveUserError();
+        mTracker.trackUserDataSaveFailed();
+        mView.hideKeyboard();
     }
 
     /**
@@ -141,7 +164,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
                 mDataManager.saveGuestUserAccount(serverUrl);
                 mDataManager.initTeamCityService(serverUrl);
                 mRouter.openProjectsRootPageForFirstStart();
-                mTracker.trackUserLoginSuccess();
+                mTracker.trackGuestUserLoginSuccess();
                 mView.close();
             }
 
@@ -149,7 +172,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
             public void onFail(int statusCode, String errorMessage) {
                 mView.dismissProgressDialog();
                 mView.showError(errorMessage);
-                mTracker.trackUserLoginFailed(errorMessage);
+                mTracker.trackGuestUserLoginFailed(errorMessage);
                 mView.hideKeyboard();
                 if (statusCode == UNAUTHORIZED_STATUS_CODE) {
                     mView.showUnauthorizedInfoDialog();

@@ -51,6 +51,11 @@ public interface CreateAccountView {
     void showPasswordCanNotBeEmptyError();
 
     /**
+     * Show could not save user data error
+     */
+    void showCouldNotSaveUserError();
+
+    /**
      * Hide error
      */
     void hideError();
