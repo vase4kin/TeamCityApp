@@ -164,7 +164,12 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      * Set active user to inactive state
      */
     private void setActiveUserNotActive() {
-        getActiveUser().setIsActive(false);
+        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+            if (userAccount.isActive()) {
+                userAccount.setIsActive(false);
+                break;
+            }
+        }
         commitUserChanges();
     }
 
@@ -178,6 +183,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.equals(UsersFactory.user(url, userName))) {
                 userAccount.setIsActive(true);
+                break;
             }
         }
         commitUserChanges();
