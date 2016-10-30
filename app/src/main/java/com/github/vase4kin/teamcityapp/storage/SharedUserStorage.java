@@ -93,7 +93,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      */
     public boolean hasAccountWithUrl(String url, String userName) {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.equals(UsersFactory.user(url, userName, null))) {
+            if (userAccount.equals(UsersFactory.user(url, userName))) {
                 return true;
             }
         }
@@ -167,7 +167,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     public void setUserActive(String url, String userName) {
         setActiveUserNotActive();
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.getTeamcityUrl().equals(url) && userAccount.getUserName().equals(userName)) {
+            if (userAccount.equals(UsersFactory.user(url, userName))) {
                 userAccount.setIsActive(true);
             }
         }
@@ -182,8 +182,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     public void removeUserAccount(UserAccount userAccount) {
         List<UserAccount> modifiedCollection = new ArrayList<>(usersContainer.getUsersAccounts());
         for (UserAccount accountToRemove : modifiedCollection) {
-            if (accountToRemove.getTeamcityUrl().equals(userAccount.getTeamcityUrl())
-                    && accountToRemove.getUserName().equals(userAccount.getUserName())) {
+            if (accountToRemove.equals(UsersFactory.user(userAccount.getTeamcityUrl(), userAccount.getUserName()))) {
                 usersContainer.getUsersAccounts().remove(accountToRemove);
             }
         }

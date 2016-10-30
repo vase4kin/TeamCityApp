@@ -42,6 +42,13 @@ public class UsersFactory {
     }
 
     /**
+     * @return User for equal operations
+     */
+    static UserAccount user(String serverUrl, String userName) {
+        return new UserAccount(serverUrl, userName, EMPTY_STRING.getBytes(), false, true);
+    }
+
+    /**
      * @return Registered user with decrypted password
      */
     static UserAccount user(UserAccount userAccount, byte[] decryptedPassword) {
