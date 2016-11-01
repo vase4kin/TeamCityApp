@@ -16,15 +16,20 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.dagger;
 
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment;
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+import android.content.Context;
 
-import dagger.Component;
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
-@PresenterScope
-@Component(dependencies = AppComponent.class, modules = {BuildLogModule.class, BuildLogInteractorModule.class})
-public interface BuildLogComponent {
+import dagger.Module;
+import dagger.Provides;
 
-    void inject(BuildLogFragment buildLogFragment);
+@Module
+public class BuildLogInteractorModule {
+
+    @Provides
+    BuildLogInteractor providesBuildLogInteractor(Context context, SharedUserStorage sharedUserStorage) {
+        return new BuildLogInteractorImpl(context, sharedUserStorage.getActiveUser());
+    }
 }

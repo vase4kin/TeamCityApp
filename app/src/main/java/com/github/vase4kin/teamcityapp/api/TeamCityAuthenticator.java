@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.api;
 
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import java.io.IOException;
@@ -35,11 +34,10 @@ public class TeamCityAuthenticator implements okhttp3.Authenticator {
      * Count of attempts on 401
      */
     private static final int ATTEMPTS_COUNT = 3;
+    private UserAccount mUserAccount;
 
-    private SharedUserStorage mSharedUserStorage;
-
-    public TeamCityAuthenticator(SharedUserStorage sharedUserStorage) {
-        this.mSharedUserStorage = sharedUserStorage;
+    public TeamCityAuthenticator(UserAccount userAccount) {
+        this.mUserAccount = userAccount;
     }
 
     /**
@@ -52,8 +50,7 @@ public class TeamCityAuthenticator implements okhttp3.Authenticator {
             return null; // If we've failed 3 times, give up.
         }
         // Use user credentials
-        UserAccount userAccount = mSharedUserStorage.getActiveUser();
-        String credential = Credentials.basic(userAccount.getUserName(), userAccount.getPasswordAsString());
+        String credential = Credentials.basic(mUserAccount.getUserName(), mUserAccount.getPasswordAsString());
         return response.request().newBuilder()
                 .header(TeamCityService.AUTHORIZATION, credential)
                 .build();

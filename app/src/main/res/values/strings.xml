@@ -178,6 +178,10 @@
         ]]>
     </string>
 
+    <!--Build log-->
+    <string name="text_login_again">In order to view build log please login</string>
+    <string name="text_button_login">Login</string>
+
     <!--Login activity-->
     <string name="text_progress_bar_loading">Authenticating…</string>
     <string name="text_app_description">TeamCity in your pocket</string>

@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.buildlog.view;
 /**
  * Handle view interactions of {@link BuildLogFragment}
  */
-public interface BuildLogViewModel {
+public interface BuildLogView {
 
     /**
      * Init view
@@ -39,4 +39,14 @@ public interface BuildLogViewModel {
      * @param buildLogUrl - Build log url
      */
     void loadBuildLog(String buildLogUrl);
+
+    /**
+     * Show need auth view
+     */
+    void showAuthView();
+
+    /**
+     * Hide need authDialog
+     */
+    void hideAuthView();
 }

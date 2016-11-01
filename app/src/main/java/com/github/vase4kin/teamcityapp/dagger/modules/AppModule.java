@@ -85,7 +85,7 @@ public class AppModule {
                     .build();
         } else {
             return okHttpClient.newBuilder()
-                    .authenticator(new TeamCityAuthenticator(sharedUserStorage))
+                    .authenticator(new TeamCityAuthenticator(userAccount))
                     .build();
         }
     }
