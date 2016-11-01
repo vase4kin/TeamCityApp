@@ -22,33 +22,27 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-    <com.github.vase4kin.teamcityapp.base.list.view.SwipeRefreshLayoutWithEmpty
+    <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/md_white_1000">
 
-        <FrameLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            style="@style/RecyclerView" />
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/my_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                style="@style/RecyclerView" />
+    </android.support.v4.widget.SwipeRefreshLayout>
 
-            <TextView
-                android:id="@android:id/empty"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:visibility="gone"
-                android:textColor="@color/main_text_color" />
-
-        </FrameLayout>
-
-    </com.github.vase4kin.teamcityapp.base.list.view.SwipeRefreshLayoutWithEmpty>
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textColor="@color/main_text_color" />
 
     <include layout="@layout/layout_progress_wheel" />
 
