@@ -64,7 +64,7 @@ public class AgentsAdapter extends RecyclerView.Adapter<AgentsAdapter.AgentViewH
     @Override
     public AgentViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = inflater.inflate(R.layout.item_with_title_list_not_clickable, viewGroup, false);
+        final View v = inflater.inflate(R.layout.item_with_title_list, viewGroup, false);
         return new AgentViewHolder(v);
     }
 
