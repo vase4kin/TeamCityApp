@@ -179,9 +179,8 @@ public class TestsPresenterImplTest {
         verify(mView).showProgressWheel();
         verify(mView).hideErrorView();
         verify(mView).hideEmpty();
-        verify(mView).emptyRecyclerView();
-        verify(mView).hideEmpty();
         verify(mView).onOptionsItemSelected(eq(mMenuItem));
+        verify(mView).showData(any(TestsDataModelImpl.class));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mMenuItem);
     }
 
