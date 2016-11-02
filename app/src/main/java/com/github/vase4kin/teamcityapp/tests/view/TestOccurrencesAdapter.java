@@ -56,9 +56,9 @@ public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrences
     @Override
     public int getItemViewType(int position) {
         if (mDataModel.isLoadMore(position)) {
-            return 2;
+            return 1;
         } else {
-            return mDataModel.isFailed(position) ? 0 : 1;
+            return 0;
         }
     }
 
@@ -76,9 +76,6 @@ public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrences
                 layout = R.layout.item_test_occurence_list;
                 break;
             case 1:
-                layout = R.layout.item_test_occurence_list_non_clickable;
-                break;
-            case 2:
             default:
                 layout = R.layout.item_load_more;
                 break;
