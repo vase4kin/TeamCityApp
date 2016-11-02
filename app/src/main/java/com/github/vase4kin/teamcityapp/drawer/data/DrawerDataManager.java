@@ -35,13 +35,15 @@ public interface DrawerDataManager {
      * Set user account as active
      *
      * @param url - User with this TC url
+     * @param userName - user name
      */
-    void setActiveUser(String url);
+    void setActiveUser(String url, String userName);
 
     /**
      * @param url - TC url of the user account
+     * @param userName - user name
      */
-    boolean isActiveUser(String url);
+    boolean isActiveUser(String url, String userName);
 
     /**
      * Load the number of running builds

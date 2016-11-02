@@ -17,9 +17,11 @@
 package com.github.vase4kin.teamcityapp.login.presenter;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker;
 import com.github.vase4kin.teamcityapp.login.view.LoginView;
@@ -30,7 +32,7 @@ import javax.inject.Inject;
 /**
  * Impl for {@link LoginPresenter}
  */
-public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickListener {
+public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickListener, OnLoadingListener<String> {
 
     private static final int UNAUTHORIZED_STATUS_CODE = 401;
 
@@ -86,24 +88,91 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      * {@inheritDoc}
      */
     @Override
-    public void onLoginButtonClick(String serverUrl) {
+    public void onUserLoginButtonClick(String serverUrl, final String userName, final String password) {
+        mView.hideError();
+        if (TextUtils.isEmpty(serverUrl)) {
+            mView.showServerUrlCanNotBeEmptyError();
+            return;
+        }
+        if (TextUtils.isEmpty(userName)) {
+            mView.showUserNameCanNotBeEmptyError();
+            return;
+        }
+        if (TextUtils.isEmpty(password)) {
+            mView.showPasswordCanNotBeEmptyError();
+            return;
+        }
         mView.showProgressDialog();
-        mDataManager.loadData(new CustomOnLoadingListener<String>() {
+        mDataManager.authUser(new CustomOnLoadingListener<String>() {
             @Override
-            public void onSuccess(String data) {
+            public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
-                mDataManager.createNewUserAccount(data);
-                mDataManager.initTeamCityService(data);
+                mDataManager.saveNewUserAccount(serverUrl, userName, password, LoginPresenterImpl.this);
+            }
+
+            @Override
+            public void onFail(int statusCode, String errorMessage) {
+                mView.dismissProgressDialog();
+                mView.showError(errorMessage);
+                mTracker.trackUserLoginFailed(errorMessage);
+                mView.hideKeyboard();
+            }
+        }, serverUrl, userName, password);
+    }
+
+    /**
+     * On data save success callback
+     *
+     * @param serverUrl - Server url
+     */
+    @Override
+    public void onSuccess(String serverUrl) {
+        mDataManager.initTeamCityService(serverUrl);
+        mRouter.openProjectsRootPageForFirstStart();
+        mTracker.trackUserLoginSuccess();
+        mView.close();
+    }
+
+    /**
+     * On data save fail callback
+     *
+     * @param errorMessage - Error message
+     */
+    @Override
+    public void onFail(String errorMessage) {
+        mView.dismissProgressDialog();
+        mView.showCouldNotSaveUserError();
+        mTracker.trackUserDataSaveFailed();
+        mView.hideKeyboard();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onGuestUserLoginButtonClick(String serverUrl) {
+        mView.hideError();
+        if (TextUtils.isEmpty(serverUrl)) {
+            mView.showServerUrlCanNotBeEmptyError();
+            return;
+        }
+        mView.showProgressDialog();
+        mDataManager.authGuestUser(new CustomOnLoadingListener<String>() {
+            @Override
+            public void onSuccess(String serverUrl) {
+                mView.dismissProgressDialog();
+                mDataManager.saveGuestUserAccount(serverUrl);
+                mDataManager.initTeamCityService(serverUrl);
                 mRouter.openProjectsRootPageForFirstStart();
-                mTracker.trackUserLoginSuccess();
+                mTracker.trackGuestUserLoginSuccess();
                 mView.close();
             }
 
             @Override
             public void onFail(int statusCode, String errorMessage) {
                 mView.dismissProgressDialog();
-                mView.setError(errorMessage);
-                mTracker.trackUserLoginFailed(errorMessage);
+                mView.showError(errorMessage);
+                mTracker.trackGuestUserLoginFailed(errorMessage);
                 mView.hideKeyboard();
                 if (statusCode == UNAUTHORIZED_STATUS_CODE) {
                     mView.showUnauthorizedInfoDialog();

@@ -24,17 +24,39 @@ import android.support.annotation.NonNull;
 public interface CreateAccountDataManager {
 
     /**
+     * Server auth with credentials
+     *
+     * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
+     * @param url      - TeamCity server url
+     * @param userName - Username
+     * @param password - Password
+     */
+    void authUser(@NonNull CustomOnLoadingListener<String> listener, String url, String userName, String password);
+
+    /**
+     * Server guest auth
+     *
      * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
      * @param url      - TeamCity server url
      */
-    void loadData(@NonNull CustomOnLoadingListener<String> listener, String url);
+    void authGuestUser(@NonNull CustomOnLoadingListener<String> listener, String url);
 
     /**
-     * Create new user account in the local storage
+     * Save user account in the local storage
+     *
+     * @param url - TeamCity server url
+     * @param userName - User name
+     * @param password - Password
+     * @param listener to receive data save callbacks§
+     */
+    void saveNewUserAccount(String serverUrl, String userName, String password, OnLoadingListener<String> listener);
+
+    /**
+     * Save guest user account in the local storage
      *
      * @param url - TeamCity server url
      */
-    void createNewUserAccount(String url);
+    void saveGuestUserAccount(String url);
 
     /**
      * Init {@link com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent}

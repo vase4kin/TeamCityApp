@@ -33,9 +33,11 @@ import org.junit.runner.RunWith;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
+import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -68,22 +70,43 @@ public class LoginActivityValidationTest {
 
     @Test
     public void testUserCanNotCreateAccountWithEmptyUrl() throws Exception {
-        onView(withId(R.id.teamcity_url)).perform(typeText(""), closeSoftKeyboard());
+        onView(withId(R.id.teamcity_url)).perform(clearText(), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.btn_login)).perform(click());
         onView(withText(R.string.server_cannot_be_empty)).check(matches(isDisplayed()));
     }
 
     @Test
     public void testUserCanNotCreateAccountWithIncorrectProvidedUrl() throws Exception {
-        onView(withId(R.id.teamcity_url)).perform(typeText("google.com"), closeSoftKeyboard());
+        onView(withId(R.id.teamcity_url)).perform(clearText(), typeText("google.com"), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.btn_login)).perform(click());
         onView(withText(R.string.server_correct_url)).check(matches(isDisplayed()));
     }
 
     @Test
     public void testUserCanSubmitDataByClickOnActionDone() {
-        onView(withId(R.id.teamcity_url)).perform(typeText(""), pressImeActionButton());
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        onView(withId(R.id.teamcity_url)).perform(clearText(), pressImeActionButton());
         onView(withText(R.string.server_cannot_be_empty)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserSeeProtocolInUrlField() {
+        onView(withId(R.id.teamcity_url)).check(matches(withText("https://")));
+    }
+
+    @Test
+    public void testUserCanNotCreateAccountWithEmptyUserName() throws Exception {
+        onView(withId(R.id.btn_login)).perform(scrollTo(), click());
+        onView(withText(R.string.server_user_name_cannot_be_empty)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserCanNotCreateAccountWithEmptyPasswordName() throws Exception {
+        onView(withId(R.id.user_name)).perform(typeText("user"), closeSoftKeyboard());
+        onView(withId(R.id.btn_login)).perform(scrollTo(), click());
+        onView(withText(R.string.server_password_cannot_be_empty)).check(matches(isDisplayed()));
     }
 
 }

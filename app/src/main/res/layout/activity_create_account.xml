@@ -18,54 +18,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_white_1000"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?colorPrimary"
     android:orientation="vertical"
     tools:context=".account.create.view.CreateAccountActivity">
 
     <include layout="@layout/layout_toolbar_with_elevation" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_gravity="left"
-        android:gravity="center">
-
-        <com.joanzapata.iconify.widget.IconTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="{mdi-alert-circle}"
-            android:textSize="24sp"
-            android:textColor="@color/sub_text_color" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/server_reminder_text"
-            android:textColor="@color/sub_text_color"
-            android:textSize="14sp"
-            android:layout_marginLeft="8dp" />
-
-    </LinearLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/teamcity_url_wrapper"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_margin">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/teamcity_url"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/server_field_hint"
-            android:imeOptions="actionDone"
-            android:inputType="textUri" />
+            android:orientation="vertical">
 
-    </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/teamcity_url_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
+                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+                app:errorTextAppearance="@style/LoginTextErrorAppearance"
+                style="@style/LoginEditTextLayout">
 
+                <EditText
+                    android:id="@+id/teamcity_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/server_field_hint"
+                    android:inputType="textUri"
+                    android:text="@string/text_teamcity_url"
+                    style="@style/LoginEditText" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Switch
+                android:id="@+id/guest_user_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
+                android:text="@string/text_guest_user_switch"
+                android:textColor="@color/md_white_1000" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/user_field_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
+                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+                app:errorTextAppearance="@style/LoginTextErrorAppearance"
+                style="@style/LoginEditTextLayout">
+
+                <EditText
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_user_name"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    style="@style/LoginEditText" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/password_field_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginRight="@dimen/default_margin"
+                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+                app:errorTextAppearance="@style/LoginTextErrorAppearance"
+                style="@style/LoginEditTextLayout">
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    style="@style/LoginEditText" />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

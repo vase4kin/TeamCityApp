@@ -22,10 +22,19 @@ package com.github.vase4kin.teamcityapp.account.create.data;
 public interface CreateAccountDataModel {
 
     /**
-     * Check if local storage has the account with the same name
+     * Check if local storage has guest account with the same data
      *
      * @param url - TeamCity server url
      * @return boolean if account exists or not
      */
-    boolean hasAccountWithUrl(String url);
+    boolean hasGuestAccountWithUrl(String url);
+
+    /**
+     * Check if local storage has the account with the same data
+     *
+     * @param url      - TeamCity server url
+     * @param userName - User name
+     * @return boolean if account exists or not
+     */
+    boolean hasAccountWithUrl(String url, String userName);
 }

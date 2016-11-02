@@ -22,9 +22,19 @@ package com.github.vase4kin.teamcityapp.login.view;
 public interface OnLoginButtonClickListener {
 
     /**
-     * Handle on login button click
+     * Handle on login button click for user creation
+     *
+     * @param serverUrl - TeamCity server url
+     * @param userName - User name
+     * @param password - User password
+     */
+    void onUserLoginButtonClick(String serverUrl, String userName, String password);
+
+    /**
+     * Handle on login button click for guest user creation
      *
      * @param serverUrl - TeamCity server url
      */
-    void onLoginButtonClick(String serverUrl);
+    void onGuestUserLoginButtonClick(String serverUrl);
+
 }

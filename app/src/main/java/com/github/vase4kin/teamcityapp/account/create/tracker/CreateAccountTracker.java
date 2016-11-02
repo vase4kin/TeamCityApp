@@ -29,9 +29,26 @@ public interface CreateAccountTracker extends ViewTracker {
     void trackUserLoginSuccess();
 
     /**
+     * Track guest user is logged in
+     */
+    void trackGuestUserLoginSuccess();
+
+    /**
      * Track user is failed to login
      *
      * @param errorMessage - Error message
      */
     void trackUserLoginFailed(String errorMessage);
+
+    /**
+     * Track guest user is failed to login
+     *
+     * @param errorMessage - Error message
+     */
+    void trackGuestUserLoginFailed(String errorMessage);
+
+    /**
+     * Track user data is failed to save
+     */
+    void trackUserDataSaveFailed();
 }

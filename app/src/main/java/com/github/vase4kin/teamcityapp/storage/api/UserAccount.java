@@ -23,22 +23,42 @@ import com.github.vase4kin.teamcityapp.base.api.Jsonable;
  */
 public class UserAccount implements Jsonable {
 
-    private String userName;
     private String teamcityUrl;
+    private String userName;
+    private byte[] password;
+    private boolean isGuestUser;
     private boolean isActive;
 
-    public UserAccount(String userName, String teamcityUrl, boolean isActive) {
+    public UserAccount(String teamcityUrl,
+                       String userName,
+                       byte[] password,
+                       boolean isGuestUser,
+                       boolean isActive) {
         this.userName = userName;
         this.teamcityUrl = teamcityUrl;
+        this.password = password;
+        this.isGuestUser = isGuestUser;
         this.isActive = isActive;
+    }
+
+    public String getTeamcityUrl() {
+        return teamcityUrl;
     }
 
     public String getUserName() {
         return userName;
     }
 
-    public String getTeamcityUrl() {
-        return teamcityUrl;
+    public String getPasswordAsString() {
+        return new String(password);
+    }
+
+    public byte[] getPasswordAsBytes() {
+        return password;
+    }
+
+    public boolean isGuestUser() {
+        return isGuestUser;
     }
 
     public boolean isActive() {
@@ -52,5 +72,20 @@ public class UserAccount implements Jsonable {
     @Override
     public String getId() {
         return teamcityUrl;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserAccount userAccount = (UserAccount) o;
+        return teamcityUrl.equals(userAccount.getTeamcityUrl())
+                && userName.equals(userAccount.getUserName());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        return 31 * result + teamcityUrl.length() + userName.length();
     }
 }

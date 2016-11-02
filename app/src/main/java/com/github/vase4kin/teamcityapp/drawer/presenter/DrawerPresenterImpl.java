@@ -76,16 +76,16 @@ public class DrawerPresenterImpl<V extends DrawerView, DM extends DrawerDataMana
      * {@inheritDoc}
      */
     @Override
-    public void setActiveUser(String url) {
-        mDataManager.setActiveUser(url);
+    public void setActiveUser(String url, String userName) {
+        mDataManager.setActiveUser(url, userName);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean isActiveProfile(String url) {
-        return mDataManager.isActiveUser(url);
+    public boolean isActiveProfile(String url, String userName) {
+        return mDataManager.isActiveUser(url, userName);
     }
 
     /**

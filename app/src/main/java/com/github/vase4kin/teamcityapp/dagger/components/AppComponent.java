@@ -21,11 +21,15 @@ import android.content.Context;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
 import de.greenrobot.event.EventBus;
 import okhttp3.OkHttpClient;
+
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
 
 @Singleton
 @Component(modules = AppModule.class)
@@ -35,7 +39,11 @@ public interface AppComponent {
 
     SharedUserStorage sharedUserStorage();
 
-    OkHttpClient okHttpClient();
+    @Named(CLIENT_BASE)
+    OkHttpClient baseOkHttpClient();
+
+    @Named(CLIENT_AUTH)
+    OkHttpClient authOkHttpClient();
 
     EventBus eventBus();
 }

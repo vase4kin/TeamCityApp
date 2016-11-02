@@ -18,8 +18,9 @@ package com.github.vase4kin.teamcityapp.buildlog.presenter;
 
 import android.support.annotation.NonNull;
 
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewModel;
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
 import com.github.vase4kin.teamcityapp.buildlog.view.OnBuildLogLoadListener;
 
 import javax.inject.Inject;
@@ -29,14 +30,17 @@ import javax.inject.Inject;
  */
 public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadListener {
 
-    private BuildLogViewModel mViewModel;
+    private BuildLogView mView;
     private BuildLogUrlProvider mBuildLogUrlProvider;
+    private BuildLogInteractor mInteractor;
 
     @Inject
-    BuildLogPresenterImpl(@NonNull BuildLogViewModel mViewModel,
-                          BuildLogUrlProvider buildLogUrlProvider) {
-        this.mViewModel = mViewModel;
+    BuildLogPresenterImpl(@NonNull BuildLogView view,
+                          BuildLogUrlProvider buildLogUrlProvider,
+                          BuildLogInteractor interactor) {
+        this.mView = view;
         this.mBuildLogUrlProvider = buildLogUrlProvider;
+        this.mInteractor = interactor;
     }
 
     /**
@@ -44,8 +48,12 @@ public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadL
      */
     @Override
     public void onCreateViews() {
-        mViewModel.initViews(this);
-        loadBuildLog();
+        mView.initViews(this);
+        if (!mInteractor.isAuthDialogShown() && !mInteractor.isGuestUser()) {
+            mView.showAuthView();
+        } else {
+            loadBuildLog();
+        }
     }
 
     /**
@@ -53,7 +61,7 @@ public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadL
      */
     @Override
     public void onDestroyViews() {
-        mViewModel.unBindViews();
+        mView.unBindViews();
     }
 
     /**
@@ -61,6 +69,13 @@ public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadL
      */
     @Override
     public void loadBuildLog() {
-        mViewModel.loadBuildLog(mBuildLogUrlProvider.provideUrl());
+        mView.loadBuildLog(mBuildLogUrlProvider.provideUrl());
+    }
+
+    @Override
+    public void onAuthButtonClick() {
+        mView.hideAuthView();
+        mInteractor.setAuthDialogStatus(true);
+        loadBuildLog();
     }
 }

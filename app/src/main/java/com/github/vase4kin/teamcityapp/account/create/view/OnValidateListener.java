@@ -22,9 +22,18 @@ package com.github.vase4kin.teamcityapp.account.create.view;
 public interface OnValidateListener {
 
     /**
-     * Validate url
+     * Validate guest user data
      *
      * @param url - TeamCity server url
      */
-    void validateUrl(String url);
+    void validateGuestUserData(String url);
+
+    /**
+     * Validate user data
+     *
+     * @param url      - TeamCity server url
+     * @param userName - User name
+     * @param password - User password
+     */
+    void validateUserData(String url, String userName, String password);
 }

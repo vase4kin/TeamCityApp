@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.root.dagger;
 
+import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
@@ -23,7 +24,7 @@ import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = RootModule.class)
+@Component(dependencies = RestApiComponent.class, modules = {RootModule.class, BuildLogInteractorModule.class})
 public interface RootComponent {
 
     void inject(RootProjectsActivity rootProjectsActivity);

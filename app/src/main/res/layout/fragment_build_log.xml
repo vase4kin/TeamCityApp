@@ -32,4 +32,38 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <LinearLayout
+        android:id="@+id/auth_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/default_margin"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="@dimen/default_margin"
+            android:background="@drawable/ic_accessible_black_24px"
+            android:backgroundTint="@color/main_text_color" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/default_margin"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/sub_text_color"
+            android:text="@string/text_login_again" />
+
+        <Button
+            android:id="@+id/auth_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_button_login" />
+
+    </LinearLayout>
+
 </FrameLayout>

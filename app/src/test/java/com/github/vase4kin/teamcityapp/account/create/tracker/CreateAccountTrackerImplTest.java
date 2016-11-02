@@ -20,6 +20,7 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.LoginEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,25 +55,39 @@ public class CreateAccountTrackerImplTest {
         mTracker = new CreateAccountTrackerImpl();
     }
 
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(mAnswers);
+    }
+
     @Test
     public void testTrackUserLoginSuccessIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
         mTracker.trackUserLoginSuccess();
-        verifyNoMoreInteractions(mAnswers);
+    }
+
+    @Test
+    public void testTrackGuestUserLoginSuccessIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackGuestUserLoginSuccess();
     }
 
     @Test
     public void testTrackUserLoginFailedIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
         mTracker.trackUserLoginFailed("error");
-        verifyNoMoreInteractions(mAnswers);
+    }
+
+    @Test
+    public void testTrackGuestUserLoginFailedIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackGuestUserLoginFailed("error");
     }
 
     @Test
     public void testTrackViewIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
         mTracker.trackView();
-        verifyNoMoreInteractions(mAnswers);
     }
 
     @Test
@@ -80,7 +95,13 @@ public class CreateAccountTrackerImplTest {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackUserLoginSuccess();
         verify(mAnswers).logLogin(any(LoginEvent.class));
-        verifyNoMoreInteractions(mAnswers);
+    }
+
+    @Test
+    public void testTrackGuestUserLoginSuccess() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackGuestUserLoginSuccess();
+        verify(mAnswers).logLogin(any(LoginEvent.class));
     }
 
     @Test
@@ -88,7 +109,13 @@ public class CreateAccountTrackerImplTest {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackUserLoginFailed("error");
         verify(mAnswers).logLogin(any(LoginEvent.class));
-        verifyNoMoreInteractions(mAnswers);
+    }
+
+    @Test
+    public void testTrackGuestUserLoginFailed() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackGuestUserLoginFailed("error");
+        verify(mAnswers).logLogin(any(LoginEvent.class));
     }
 
     @Test
@@ -96,6 +123,5 @@ public class CreateAccountTrackerImplTest {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackView();
         verify(mAnswers).logContentView(any(ContentViewEvent.class));
-        verifyNoMoreInteractions(mAnswers);
     }
 }

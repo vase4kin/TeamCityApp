@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.account.create.view;
 
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -25,17 +26,35 @@ import com.github.vase4kin.teamcityapp.R;
 public class OnCreateMenuItemClickListenerImpl implements Toolbar.OnMenuItemClickListener {
 
     private OnValidateListener mOnValidateListener;
-    private TextView mTextView;
+    private TextView mServerUrl;
+    private TextView mUserName;
+    private TextView mPassword;
+    private Switch mGuestUserSwitch;
 
-    public OnCreateMenuItemClickListenerImpl(OnValidateListener mOnValidateListener, TextView mTextView) {
+    public OnCreateMenuItemClickListenerImpl(OnValidateListener mOnValidateListener,
+                                             TextView serverUrl,
+                                             TextView userName,
+                                             TextView password,
+                                             Switch guestUserSwitch) {
         this.mOnValidateListener = mOnValidateListener;
-        this.mTextView = mTextView;
+        this.mServerUrl = serverUrl;
+        this.mUserName = userName;
+        this.mPassword = password;
+        this.mGuestUserSwitch = guestUserSwitch;
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_create) {
-            mOnValidateListener.validateUrl(mTextView.getText().toString());
+            if (mGuestUserSwitch.isChecked()) {
+                mOnValidateListener.validateGuestUserData(
+                        mServerUrl.getText().toString().trim());
+            } else {
+                mOnValidateListener.validateUserData(
+                        mServerUrl.getText().toString().trim(),
+                        mUserName.getText().toString().trim(),
+                        mPassword.getText().toString().trim());
+            }
             return true;
         }
         return false;

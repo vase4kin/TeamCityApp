@@ -27,7 +27,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -55,7 +54,6 @@ public class SplashActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .provides(SharedUserStorage.class, SharedUserStorage.init(InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
                 @Override
                 public void setComponent(AppComponent appComponent) {
@@ -81,7 +79,7 @@ public class SplashActivityTest {
     public void testUserNavigatesToRootProjectsActivityIgnored() throws Exception {
         // Prepate data
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.getAppInjector().sharedUserStorage().createNewUserAccountAndSetItAsActive(Mocks.URL);
+        app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
 
         // Launch activity
         mActivityRule.launchActivity(null);
@@ -114,7 +112,7 @@ public class SplashActivityTest {
     public void testUserNavigatesToRootProjectsActivity() throws Exception {
         // Prepate data
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.getAppInjector().sharedUserStorage().createNewUserAccountAndSetItAsActive(Mocks.URL);
+        app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
 
         // Launch activity
         mActivityRule.launchActivity(null);
@@ -132,6 +130,6 @@ public class SplashActivityTest {
         mActivityRule.launchActivity(null);
 
         //Checking that Login Activity is opened
-        onView(withText(R.string.server_reminder_text)).check(matches(isDisplayed()));
+        onView(withText(R.string.text_app_description)).check(matches(isDisplayed()));
     }
 }

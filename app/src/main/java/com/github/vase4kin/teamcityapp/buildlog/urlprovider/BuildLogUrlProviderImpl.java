@@ -17,21 +17,21 @@
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider;
 
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor;
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 /**
  * Impl of {@link BuildLogUrlProvider}
  */
 public class BuildLogUrlProviderImpl implements BuildLogUrlProvider {
 
-    private static final String BUILD_URL = "%s/viewLog.html?buildId=%s&tab=buildLog&guest=1";
+    private static final String BUILD_URL = "%s/viewLog.html?buildId=%s&tab=buildLog";
 
     private BuildLogValueExtractor mValueExtractor;
-    private SharedUserStorage mSharedUserStorage;
+    private UserAccount mUserAccount;
 
-    public BuildLogUrlProviderImpl(BuildLogValueExtractor valueExtractor, SharedUserStorage sharedUserStorage) {
+    public BuildLogUrlProviderImpl(BuildLogValueExtractor valueExtractor, UserAccount userAccount) {
         this.mValueExtractor = valueExtractor;
-        this.mSharedUserStorage = sharedUserStorage;
+        mUserAccount = userAccount;
     }
 
     /**
@@ -39,8 +39,11 @@ public class BuildLogUrlProviderImpl implements BuildLogUrlProvider {
      */
     @Override
     public String provideUrl() {
-        return String.format(
+        String serverUrl = String.format(
                 BUILD_URL,
-                mSharedUserStorage.getActiveUser().getTeamcityUrl(), mValueExtractor.getBuildId());
+                mUserAccount.getTeamcityUrl(), mValueExtractor.getBuildId());
+        return mUserAccount.isGuestUser()
+                ? serverUrl.concat("&guest=1")
+                : serverUrl;
     }
 }

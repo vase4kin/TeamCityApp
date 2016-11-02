@@ -17,17 +17,36 @@
 package com.github.vase4kin.teamcityapp.buildlog.view;
 
 /**
- * View build log listener
+ * Handle view interactions of {@link BuildLogFragment}
  */
-public interface OnBuildLogLoadListener {
+public interface BuildLogView {
+
+    /**
+     * Init view
+     *
+     * @param listener - Listener to receive view callbacks
+     */
+    void initViews(final OnBuildLogLoadListener listener);
+
+    /**
+     * Unbind views
+     */
+    void unBindViews();
 
     /**
      * Load build log
+     *
+     * @param buildLogUrl - Build log url
      */
-    void loadBuildLog();
+    void loadBuildLog(String buildLogUrl);
 
     /**
-     * On auth button click
+     * Show need auth view
      */
-    void onAuthButtonClick();
+    void showAuthView();
+
+    /**
+     * Hide need authDialog
+     */
+    void hideAuthView();
 }

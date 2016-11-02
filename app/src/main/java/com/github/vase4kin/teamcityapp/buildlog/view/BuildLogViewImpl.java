@@ -22,6 +22,7 @@ import android.graphics.PorterDuff;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Button;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -32,9 +33,9 @@ import butterknife.Unbinder;
 import tr.xip.errorview.ErrorView;
 
 /**
- * Impl of {@link BuildLogViewModel}
+ * Impl of {@link BuildLogView}
  */
-public class BuildLogViewModelImpl implements BuildLogViewModel, OnBuildLogViewListener {
+public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
 
     @BindView(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
@@ -42,6 +43,10 @@ public class BuildLogViewModelImpl implements BuildLogViewModel, OnBuildLogViewL
     ErrorView mErrorView;
     @BindView(R.id.web_view)
     WebView mWebView;
+    @BindView(R.id.auth_view)
+    View mAuthView;
+    @BindView(R.id.auth_button)
+    Button mAuthButton;
 
     private Unbinder mUnbinder;
 
@@ -49,7 +54,7 @@ public class BuildLogViewModelImpl implements BuildLogViewModel, OnBuildLogViewL
 
     private BuildLogWebViewClient mClient;
 
-    public BuildLogViewModelImpl(View mView) {
+    public BuildLogViewImpl(View mView) {
         this.mView = mView;
     }
 
@@ -68,6 +73,12 @@ public class BuildLogViewModelImpl implements BuildLogViewModel, OnBuildLogViewL
                 listener.loadBuildLog();
             }
         });
+        mAuthButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onAuthButtonClick();
+            }
+        });
 
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
@@ -75,8 +86,6 @@ public class BuildLogViewModelImpl implements BuildLogViewModel, OnBuildLogViewL
         mClient.setListener(this);
 
         mWebView.setWebViewClient(mClient);
-
-        showProgressWheel();
     }
 
     /**
@@ -84,7 +93,24 @@ public class BuildLogViewModelImpl implements BuildLogViewModel, OnBuildLogViewL
      */
     @Override
     public void loadBuildLog(String buildLogUrl) {
+        showProgressWheel();
         mWebView.loadUrl(buildLogUrl);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showAuthView() {
+        mAuthView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideAuthView() {
+        mAuthView.setVisibility(View.GONE);
     }
 
     /**

@@ -16,9 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.presenter;
 
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewModel;
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -32,10 +34,13 @@ import static org.mockito.Mockito.when;
 public class BuildLogPresenterImplTest {
 
     @Mock
-    private BuildLogViewModel mViewModel;
+    private BuildLogView mView;
 
     @Mock
     private BuildLogUrlProvider mBuildLogUrlProvider;
+
+    @Mock
+    private BuildLogInteractor mInteractor;
 
     private BuildLogPresenterImpl mPresenter;
 
@@ -43,30 +48,66 @@ public class BuildLogPresenterImplTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mBuildLogUrlProvider.provideUrl()).thenReturn("http://fake-teamcity-url");
-        mPresenter = new BuildLogPresenterImpl(mViewModel, mBuildLogUrlProvider);
+        mPresenter = new BuildLogPresenterImpl(mView, mBuildLogUrlProvider, mInteractor);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(mView, mBuildLogUrlProvider, mInteractor);
     }
 
     @Test
-    public void testHandleOnCreateView() throws Exception {
+    public void testHandleOnCreateViewIfDialogIsNotShown() throws Exception {
+        when(mInteractor.isAuthDialogShown()).thenReturn(true);
         mPresenter.onCreateViews();
-        verify(mViewModel).initViews(eq(mPresenter));
+        verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isAuthDialogShown();
         verify(mBuildLogUrlProvider).provideUrl();
-        verify(mViewModel).loadBuildLog(eq("http://fake-teamcity-url"));
-        verifyNoMoreInteractions(mViewModel, mBuildLogUrlProvider);
+        verify(mView).loadBuildLog(eq("http://fake-teamcity-url"));
+    }
+
+    @Test
+    public void testHandleOnCreateViewIfGuestUser() throws Exception {
+        when(mInteractor.isAuthDialogShown()).thenReturn(false);
+        when(mInteractor.isGuestUser()).thenReturn(true);
+        mPresenter.onCreateViews();
+        verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isAuthDialogShown();
+        verify(mInteractor).isGuestUser();
+        verify(mBuildLogUrlProvider).provideUrl();
+        verify(mView).loadBuildLog(eq("http://fake-teamcity-url"));
+    }
+
+    @Test
+    public void testHandleOnCreateViewIfNotGuest() throws Exception {
+        when(mInteractor.isGuestUser()).thenReturn(false);
+        when(mInteractor.isAuthDialogShown()).thenReturn(false);
+        mPresenter.onCreateViews();
+        verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isGuestUser();
+        verify(mInteractor).isAuthDialogShown();
+        verify(mView).showAuthView();
     }
 
     @Test
     public void testHandleOnDestroyView() throws Exception {
         mPresenter.onDestroyViews();
-        verify(mViewModel).unBindViews();
-        verifyNoMoreInteractions(mViewModel, mBuildLogUrlProvider);
+        verify(mView).unBindViews();
     }
 
     @Test
     public void testLoadBuildLog() throws Exception {
         mPresenter.loadBuildLog();
         verify(mBuildLogUrlProvider).provideUrl();
-        verify(mViewModel).loadBuildLog(eq("http://fake-teamcity-url"));
-        verifyNoMoreInteractions(mViewModel, mBuildLogUrlProvider);
+        verify(mView).loadBuildLog(eq("http://fake-teamcity-url"));
+    }
+
+    @Test
+    public void testOnAuthButtonClick() throws Exception {
+        mPresenter.onAuthButtonClick();
+        verify(mView).hideAuthView();
+        verify(mInteractor).setAuthDialogStatus(eq(true));
+        verify(mBuildLogUrlProvider).provideUrl();
+        verify(mView).loadBuildLog(eq("http://fake-teamcity-url"));
     }
 }

@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider;
 
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor;
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.junit.Before;
@@ -36,9 +35,6 @@ public class BuildLogUrlProviderImplTest {
     private BuildLogValueExtractor mValueExtractor;
 
     @Mock
-    private SharedUserStorage mSharedUserStorage;
-
-    @Mock
     private UserAccount mUserAccount;
 
     private BuildLogUrlProviderImpl mBuildLogUrlProvider;
@@ -46,14 +42,20 @@ public class BuildLogUrlProviderImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mBuildLogUrlProvider = new BuildLogUrlProviderImpl(mValueExtractor, mSharedUserStorage);
+        mBuildLogUrlProvider = new BuildLogUrlProviderImpl(mValueExtractor, mUserAccount);
         when(mValueExtractor.getBuildId()).thenReturn("1234");
-        when(mSharedUserStorage.getActiveUser()).thenReturn(mUserAccount);
         when(mUserAccount.getTeamcityUrl()).thenReturn("http://fake-url.com");
     }
 
     @Test
-    public void testProvideUrl() throws Exception {
+    public void testProvideUrlForGuestAccount() throws Exception {
+        when(mUserAccount.isGuestUser()).thenReturn(true);
         assertThat(mBuildLogUrlProvider.provideUrl(), is(equalTo("http://fake-url.com/viewLog.html?buildId=1234&tab=buildLog&guest=1")));
+    }
+
+    @Test
+    public void testProvideUrlForUserAccount() throws Exception {
+        when(mUserAccount.isGuestUser()).thenReturn(false);
+        assertThat(mBuildLogUrlProvider.provideUrl(), is(equalTo("http://fake-url.com/viewLog.html?buildId=1234&tab=buildLog")));
     }
 }
