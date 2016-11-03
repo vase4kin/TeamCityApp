@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorCompat;
@@ -28,8 +29,10 @@ import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -45,17 +48,17 @@ public class LoginViewImpl implements LoginView {
     /**
      * Animation startup delay
      */
-    public static final int STARTUP_DELAY = 300;
+    private static final int STARTUP_DELAY = 300;
 
     /**
      * Animation delay for logo
      */
-    public static final int ANIM_ITEM_DURATION = 1000;
+    private static final int ANIM_ITEM_DURATION = 1000;
 
     /**
      * Animation delay for small items such as buttons
      */
-    public static final int ITEM_DELAY = 300;
+    private static final int ITEM_DELAY = 300;
 
     @BindColor(R.color.md_white_1000)
     int mWhiteColor;
@@ -77,6 +80,15 @@ public class LoginViewImpl implements LoginView {
 
     @BindView(R.id.teamcity_url_wrapper)
     TextInputLayout mServerUrlWrapperLayout;
+
+    @BindView(R.id.user_name)
+    EditText mUserName;
+
+    @BindView(R.id.password)
+    EditText mPassword;
+
+    @BindView(R.id.guest_user_switch)
+    Switch mGuestUserSwitch;
 
     @BindView(R.id.btn_login)
     Button mLoginButton;
@@ -108,23 +120,77 @@ public class LoginViewImpl implements LoginView {
         mProgressDialog.setCancelable(false);
         mProgressDialog.setCanceledOnTouchOutside(false);
 
-        mLoginButton.setOnClickListener(new View.OnClickListener() {
+        mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                listener.onLoginButtonClick(mServerUrl.getText().toString());
-            }
-        });
-
-        mServerUrl.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    listener.onLoginButtonClick(v.getText().toString());
+                    listener.onUserLoginButtonClick(
+                            mServerUrl.getText().toString().trim(),
+                            mUserName.getText().toString().trim(),
+                            mPassword.getText().toString().trim());
                     return true;
                 }
                 return false;
             }
         });
+
+        mGuestUserSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
+                mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
+                setupViewsRegardingUserType(b, listener);
+                hideKeyboard();
+            }
+        });
+
+        setupViewsRegardingUserType(false, listener);
+
+        //Set text selection to the end
+        mServerUrl.setSelection(mServerUrl.getText().length());
+    }
+
+    /**
+     * Setup views regarding user type
+     *
+     * @param isGuestUser - Is guest user enabled
+     * @param listener    - listener
+     */
+    private void setupViewsRegardingUserType(boolean isGuestUser, final OnLoginButtonClickListener listener) {
+        if (isGuestUser) {
+            // guest user
+            mServerUrl.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            mServerUrl.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        listener.onGuestUserLoginButtonClick(v.getText().toString().trim());
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            mLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onGuestUserLoginButtonClick(
+                            mServerUrl.getText().toString().trim());
+                }
+            });
+        } else {
+            // not guest user
+            mServerUrl.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+            mServerUrl.setOnEditorActionListener(null);
+            mLoginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listener.onUserLoginButtonClick(
+                            mServerUrl.getText().toString().trim(),
+                            mUserName.getText().toString().trim(),
+                            mPassword.getText().toString().trim());
+                }
+            });
+        }
     }
 
     /**
@@ -164,19 +230,10 @@ public class LoginViewImpl implements LoginView {
 
         for (int i = 0; i < mContainer.getChildCount(); i++) {
             View v = mContainer.getChildAt(i);
-            ViewPropertyAnimatorCompat viewAnimator;
-
-            if (!(v instanceof Button)) {
-                viewAnimator = ViewCompat.animate(v)
-                        .translationY(50).alpha(1)
-                        .setStartDelay((ITEM_DELAY * i) + 500)
-                        .setDuration(1000);
-            } else {
-                viewAnimator = ViewCompat.animate(v)
-                        .scaleY(1).scaleX(1)
-                        .setStartDelay((ITEM_DELAY * i) + 500)
-                        .setDuration(500);
-            }
+            ViewPropertyAnimatorCompat viewAnimator = ViewCompat.animate(v)
+                    .translationY(0).alpha(1)
+                    .setStartDelay((ITEM_DELAY * i) + 500)
+                    .setDuration(1000);
 
             viewAnimator.setInterpolator(new DecelerateInterpolator()).start();
         }
@@ -194,8 +251,45 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void setError(String errorMessage) {
+    public void showError(String errorMessage) {
         mServerUrlWrapperLayout.setError(errorMessage);
+    }
+
+    @Override
+    public void hideError() {
+        mServerUrlWrapperLayout.setError(null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showServerUrlCanNotBeEmptyError() {
+        setError(R.string.server_cannot_be_empty);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showUserNameCanNotBeEmptyError() {
+        setError(R.string.server_user_name_cannot_be_empty);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showPasswordCanNotBeEmptyError() {
+        setError(R.string.server_password_cannot_be_empty);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showCouldNotSaveUserError() {
+        setError(R.string.error_save_account);
     }
 
     /**
@@ -238,5 +332,15 @@ public class LoginViewImpl implements LoginView {
                 .positiveText(R.string.dialog_ok_title)
                 .linkColor(mOrangeColor)
                 .show();
+    }
+
+    /**
+     * Set error with string resource id
+     *
+     * @param errorMessage - Error message resource id
+     */
+    private void setError(@StringRes int errorMessage) {
+        String errorMessageString = mActivity.getString(errorMessage);
+        mServerUrlWrapperLayout.setError(errorMessageString);
     }
 }

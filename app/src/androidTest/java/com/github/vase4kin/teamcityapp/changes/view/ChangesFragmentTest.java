@@ -35,7 +35,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +63,6 @@ public class ChangesFragmentTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .provides(SharedUserStorage.class, SharedUserStorage.init(InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
                 @Override
                 public void setComponent(AppComponent appComponent) {
@@ -76,7 +74,6 @@ public class ChangesFragmentTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mRestComponentDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .providesMock(SharedUserStorage.class)
             .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
                 @Override
                 public void setComponent(RestApiComponent restApiComponent) {

@@ -21,6 +21,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
+import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.github.vase4kin.teamcityapp.storage.api.UsersContainer;
 import com.google.gson.Gson;
@@ -33,27 +34,27 @@ import java.util.List;
  */
 public class SharedUserStorage implements Collectible<UserAccount> {
 
-    private Context context;
-    private static final String GUEST_USER_USER_NAME = "Guest user";
     private static final String SHARED_PREF_NAME = "UserAccounts";
-    private static final String EMPTY_STRING = "";
+    private Context mContext;
+    private CryptoManager mCryptoManager;
 
     private UsersContainer usersContainer;
 
-    private SharedUserStorage(Context context) {
-        this.context = context;
+    private SharedUserStorage(Context context, CryptoManager cryptoManager) {
+        this.mContext = context;
+        this.mCryptoManager = cryptoManager;
         initUserContainer();
     }
 
-    public static SharedUserStorage init(Context context) {
-        return new SharedUserStorage(context);
+    public static SharedUserStorage init(Context context, CryptoManager cryptoManager) {
+        return new SharedUserStorage(context, cryptoManager);
     }
 
     /**
      * @return default shared preferences instance
      */
     private SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(SHARED_PREF_NAME, 0);
+        return mContext.getSharedPreferences(SHARED_PREF_NAME, 0);
     }
 
     /**
@@ -72,13 +73,27 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     }
 
     /**
+     * Do we have guest user account with url
+     *
+     * @param url - TC url
+     */
+    public boolean hasGuestAccountWithUrl(String url) {
+        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+            if (userAccount.equals(UsersFactory.guestUser(url))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Do we have user account with url
      *
      * @param url - TC url
      */
-    public boolean hasAccountWithUrl(String url) {
+    public boolean hasAccountWithUrl(String url, String userName) {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.getTeamcityUrl().equals(url)) {
+            if (userAccount.equals(UsersFactory.user(url, userName))) {
                 return true;
             }
         }
@@ -92,11 +107,27 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         return !getUserAccounts().isEmpty();
     }
 
-    public void createNewUserAccountAndSetItAsActive(String baseUrl) {
+    public void saveGuestUserAccountAndSetItAsActive(String baseUrl) {
         setActiveUserNotActive();
-        UserAccount userAccount = new UserAccount(GUEST_USER_USER_NAME, baseUrl, true);
+        UserAccount userAccount = UsersFactory.guestUser(baseUrl);
         usersContainer.getUsersAccounts().add(userAccount);
         commitUserChanges();
+    }
+
+    public void saveUserAccountAndSetItAsActive(final String baseUrl,
+                                                final String userName,
+                                                final String password,
+                                                OnStorageListener listener) {
+        setActiveUserNotActive();
+        byte[] encryptedPassword = mCryptoManager.encrypt(password);
+        if (!mCryptoManager.isFailed(encryptedPassword)) {
+            UserAccount userAccount = UsersFactory.user(baseUrl, userName, encryptedPassword);
+            usersContainer.getUsersAccounts().add(userAccount);
+            commitUserChanges();
+            listener.onSuccess();
+        } else {
+            listener.onFail();
+        }
     }
 
     /**
@@ -106,12 +137,27 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      */
     @NonNull
     public UserAccount getActiveUser() {
-        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+        for (final UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.isActive()) {
-                return userAccount;
+                // backward compatibility for old user accounts
+                // Who's gonna set 'Guest user' as real user name for TC user, right?
+                if (userAccount.getUserName().equals(UsersFactory.GUEST_USER_USER_NAME)) {
+                    return UsersFactory.guestUser(userAccount.getTeamcityUrl());
+                }
+                // Don't need to decrypt password of guest user
+                if (userAccount.isGuestUser()) {
+                    return userAccount;
+                }
+                // Decrypting password for user
+                byte[] decryptedPassword = mCryptoManager.decrypt(userAccount.getPasswordAsBytes());
+                if (!mCryptoManager.isFailed(decryptedPassword)) {
+                    return UsersFactory.user(userAccount, decryptedPassword);
+                } else {
+                    return UsersFactory.EMPTY_USER;
+                }
             }
         }
-        return new UserAccount(EMPTY_STRING, EMPTY_STRING, true);
+        return UsersFactory.EMPTY_USER;
     }
 
     /**
@@ -121,6 +167,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.isActive()) {
                 userAccount.setIsActive(false);
+                break;
             }
         }
         commitUserChanges();
@@ -131,11 +178,12 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      *
      * @param url - TC url
      */
-    public void setUserActiveWithEmail(String url) {
+    public void setUserActive(String url, String userName) {
         setActiveUserNotActive();
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
-            if (userAccount.getTeamcityUrl().equals(url)) {
+            if (userAccount.equals(UsersFactory.user(url, userName))) {
                 userAccount.setIsActive(true);
+                break;
             }
         }
         commitUserChanges();
@@ -149,7 +197,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     public void removeUserAccount(UserAccount userAccount) {
         List<UserAccount> modifiedCollection = new ArrayList<>(usersContainer.getUsersAccounts());
         for (UserAccount accountToRemove : modifiedCollection) {
-            if (accountToRemove.getTeamcityUrl().equals(userAccount.getTeamcityUrl())) {
+            if (accountToRemove.equals(UsersFactory.user(userAccount.getTeamcityUrl(), userAccount.getUserName()))) {
                 usersContainer.getUsersAccounts().remove(accountToRemove);
             }
         }
@@ -164,7 +212,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
      */
     private void commitUserChanges() {
         String usersJson = new Gson().toJson(usersContainer);
-        getSharedPreferences().edit().putString(SHARED_PREF_NAME, usersJson).commit();
+        getSharedPreferences().edit().putString(SHARED_PREF_NAME, usersJson).apply();
     }
 
     public List<UserAccount> getUserAccounts() {
@@ -188,5 +236,21 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     @Override
     public List<UserAccount> getObjects() {
         return usersContainer.getUsersAccounts();
+    }
+
+    /**
+     * On storage listener
+     */
+    public interface OnStorageListener {
+
+        /**
+         * On success user data save
+         */
+        void onSuccess();
+
+        /**
+         * On fail user data save
+         */
+        void onFail();
     }
 }

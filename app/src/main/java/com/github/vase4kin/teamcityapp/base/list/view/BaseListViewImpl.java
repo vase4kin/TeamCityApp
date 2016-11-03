@@ -43,7 +43,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel> implements BaseL
     @BindView(R.id.my_recycler_view)
     protected RecyclerView mRecyclerView;
     @BindView(R.id.swiperefresh)
-    SwipeRefreshLayoutWithEmpty mSwipeRefreshLayout;
+    SwipeRefreshLayout mSwipeRefreshLayout;
     @BindView(R.id.error_view)
     ErrorView mErrorView;
     @BindView(android.R.id.empty)
@@ -128,30 +128,6 @@ public abstract class BaseListViewImpl<T extends BaseDataModel> implements BaseL
     @Override
     public void hideRefreshAnimation() {
         mSwipeRefreshLayout.setRefreshing(false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void emptyRecyclerView() {
-        mRecyclerView.setAdapter(null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showRecyclerView() {
-        mRecyclerView.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hideRecyclerView() {
-        mRecyclerView.setVisibility(View.GONE);
     }
 
     /**

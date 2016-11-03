@@ -57,13 +57,13 @@
     <string name="progress_dialog_content">Please wait…</string>
 
     <!--create new account dialog-->
-    <string name="create_new_account_dialog_title">New guest user account</string>
-    <string name="create_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
-    <string name="create_new_account_dialog_create_account_button_text">Create</string>
+    <string name="add_new_account_dialog_title">Add user account</string>
+    <string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
+    <string name="add_new_account_dialog_create_account_button_text">Add</string>
 
-    <string name="create_new_account_warning_dialog_content">In order to use application you should create new guest user account</string>
+    <string name="add_new_account_warning_dialog_content">In order to use application you should add user account</string>
 
-    <string name="discard_dialog_content">Discard new user guest account?</string>
+    <string name="discard_dialog_content">Discard user account?</string>
     <string name="discard_dialog_positive_button_text">Discard</string>
     <string name="discard_dialog_negative_button_text">Cancel</string>
 
@@ -147,11 +147,13 @@
 
     <!--Create account values-->
     <string name="server_field_hint">TeamCity server url</string>
-    <string name="server_reminder_text">Start your TeamCity server url with protocol http/https</string>
     <string name="server_cannot_be_empty">Server url cannot be empty</string>
     <string name="server_no_such_server">No TeamCity server associated with hostname</string>
     <string name="server_correct_url">Please provide correct server url</string>
     <string name="server_check_url">Please check server url</string>
+    <string name="server_password_cannot_be_empty">Password cannot be empty</string>
+    <string name="server_user_name_cannot_be_empty">Username cannot be empty</string>
+    <string name="error_save_account">Could not save user. Please try again</string>
 
     <!--Managing account values-->
     <string name="header_text_active_account">Active</string>
@@ -176,8 +178,18 @@
         ]]>
     </string>
 
+    <!--Build log-->
+    <string name="text_login_again">In order to view build log please login</string>
+    <string name="text_button_login">Login</string>
+
     <!--Login activity-->
     <string name="text_progress_bar_loading">Authenticating…</string>
+    <string name="text_app_description">TeamCity in your pocket</string>
+    <string name="text_teamcity_url">https://</string>
+    <string name="text_guest_user_switch">Login as guest user</string>
+    <string name="text_login_button">Login</string>
+    <string name="hint_user_name">Username</string>
+    <string name="hint_password">Password</string>
     <string name="info_unauthorized_dialog_title">Oh Snap!</string>
     <string name="info_unauthorized_dialog_content">It seems that your TC server doesn\'t have Guest User enabled. In order to use the app make sure it is enabled. For more details see <a href="https://confluence.jetbrains.com/display/TCD10/Enabling+Guest+Login">TC help</a>.</string>
 

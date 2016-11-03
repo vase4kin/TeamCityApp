@@ -43,6 +43,14 @@ public interface ChangesDataManager extends BaseListRxDataManager<Changes, Chang
     void load(@NonNull String url, @NonNull OnLoadingListener<List<Changes.Change>> loadingListener);
 
     /**
+     * Load limited number of changes (10)
+     *
+     * @param url - Url to load
+     * @param loadingListener - Listener to receive server callbacks
+     */
+    void loadLimited(@NonNull String url, @NonNull OnLoadingListener<List<Changes.Change>> loadingListener);
+
+    /**
      * Load more changes
      *
      * @param loadingListener - Listener to receive server callbacks

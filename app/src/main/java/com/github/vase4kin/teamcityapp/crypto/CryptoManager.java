@@ -14,29 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view;
+package com.github.vase4kin.teamcityapp.crypto;
 
 /**
- * Handle view interactions of {@link BuildLogFragment}
+ * Crypto manager
  */
-public interface BuildLogViewModel {
+public interface CryptoManager {
 
     /**
-     * Init view
+     * Encrypt password
      *
-     * @param listener - Listener to receive view callbacks
+     * @param password to encrypt
+     * @return Encrypted password in byte array
      */
-    void initViews(final OnBuildLogLoadListener listener);
+    byte[] encrypt(String password);
 
     /**
-     * Unbind views
-     */
-    void unBindViews();
-
-    /**
-     * Load build log
+     * Decrypt password
      *
-     * @param buildLogUrl - Build log url
+     * @param password to encrypt
+     * @return Decrypted password in byte array
      */
-    void loadBuildLog(String buildLogUrl);
+    byte[] decrypt(byte[] password);
+
+    /**
+     * Is encryption/decryption failed
+     *
+     * @param result - encryption/decryption result
+     * @return true if encryption/decryption is failed
+     */
+    boolean isFailed(byte[] result);
 }

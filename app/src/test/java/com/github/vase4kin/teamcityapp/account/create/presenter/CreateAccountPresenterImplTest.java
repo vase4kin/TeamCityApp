@@ -16,34 +16,50 @@
 
 package com.github.vase4kin.teamcityapp.account.create.presenter;
 
+import android.text.TextUtils;
+
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel;
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(TextUtils.class)
 public class CreateAccountPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnToolBarNavigationListener> mOnToolBarNavigationListenerArgumentCaptor;
 
     @Captor
-    private ArgumentCaptor<CustomOnLoadingListener<String>> mOnLoadingListenerArgumentCaptor;
+    private ArgumentCaptor<OnLoadingListener<String>> mOnLoadingListenerArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<CustomOnLoadingListener<String>> mCustomOnLoadingListenerArgumentCaptor;
 
     @Mock
     private CreateAccountView mView;
@@ -65,7 +81,21 @@ public class CreateAccountPresenterImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        MockitoAnnotations.initMocks(this);
+        PowerMockito.mockStatic(TextUtils.class);
+        when(TextUtils.isEmpty(anyString())).then(new Answer<Boolean>() {
+            @Override
+            public Boolean answer(InvocationOnMock invocation) throws Throwable {
+                CharSequence charSequence = (CharSequence) invocation.getArguments()[0];
+                return charSequence == null || charSequence.length() == 0;
+            }
+        });
         mPresenter = new CreateAccountPresenterImpl(mView, mDataManager, mDataModel, mRouter, mTracker);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mTracker);
     }
 
     @Test
@@ -73,7 +103,6 @@ public class CreateAccountPresenterImplTest {
         when(mView.isEmailEmpty()).thenReturn(true);
         mPresenter.handleOnCreateView();
         verify(mView).initViews(eq(mPresenter));
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
     }
 
     @Test
@@ -82,50 +111,120 @@ public class CreateAccountPresenterImplTest {
         mPresenter.onClick();
         verify(mView).isEmailEmpty();
         verify(mView).showDiscardDialog();
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
     }
 
     @Test
     public void testHandleOnDestroyView() throws Exception {
         mPresenter.handleOnDestroy();
         verify(mView).onDestroyView();
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
     }
 
     @Test
-    public void testValidateUrlIfAccountExist() throws Exception {
-        when(mDataModel.hasAccountWithUrl("url")).thenReturn(true);
-        mPresenter.validateUrl("url");
+    public void testOnUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
+        mPresenter.validateUserData("", "userName", "password");
+        verify(mView).hideError();
+        verify(mView).showServerUrlCanNotBeEmptyError();
+    }
+
+    @Test
+    public void testOnUserLoginButtonClickIfUserNameIsNotProvided() throws Exception {
+        mPresenter.validateUserData("url", "", "password");
+        verify(mView).hideError();
+        verify(mView).showUserNameCanNotBeEmptyError();
+    }
+
+    @Test
+    public void testOnUserLoginButtonClickIfPasswordIsNotProvided() throws Exception {
+        mPresenter.validateUserData("url", "userName", "");
+        verify(mView).hideError();
+        verify(mView).showPasswordCanNotBeEmptyError();
+    }
+
+    @Test
+    public void testValidateUserUrlIfAccountExist() throws Exception {
+        when(mDataModel.hasAccountWithUrl("url", "userName")).thenReturn(true);
+        mPresenter.validateUserData("url", "userName", "password");
+        verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataModel).hasAccountWithUrl(eq("url"));
+        verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
         verify(mView).showNewAccountExistErrorMessage();
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
+        verify(mView).dismissProgressDialog();
     }
 
     @Test
-    public void testValidateUrlIfAccountIsNotExist() throws Exception {
-        when(mDataModel.hasAccountWithUrl("url")).thenReturn(false);
-        mPresenter.validateUrl("url");
-
-        verify(mDataModel).hasAccountWithUrl(eq("url"));
-        verify(mDataManager).loadData(mOnLoadingListenerArgumentCaptor.capture(), eq("url"));
+    public void testValidateGuestUserUrlIfAccountExist() throws Exception {
+        when(mDataModel.hasGuestAccountWithUrl("url")).thenReturn(true);
+        mPresenter.validateGuestUserData("url");
+        verify(mView).hideError();
         verify(mView).showProgressDialog();
+        verify(mDataModel).hasGuestAccountWithUrl(eq("url"));
+        verify(mView).showNewAccountExistErrorMessage();
+        verify(mView).dismissProgressDialog();
+    }
 
-        CustomOnLoadingListener<String> listener = mOnLoadingListenerArgumentCaptor.getValue();
+    @Test
+    public void testValidateGuestUserUrlIfAccountIsNotExist() throws Exception {
+        when(mDataModel.hasGuestAccountWithUrl("url")).thenReturn(false);
+        mPresenter.validateGuestUserData("url");
+
+        verify(mView).hideError();
+        verify(mView).showProgressDialog();
+        verify(mDataModel).hasGuestAccountWithUrl(eq("url"));
+        verify(mDataManager).authGuestUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"));
+
+        CustomOnLoadingListener<String> listener = mCustomOnLoadingListenerArgumentCaptor.getValue();
         listener.onSuccess("url");
-        verify(mDataManager).createNewUserAccount(eq("url"));
+        verify(mDataManager).saveGuestUserAccount(eq("url"));
+        verify(mDataManager).initTeamCityService(eq("url"));
+        verify(mView).dismissProgressDialog();
+        verify(mView).finish();
+        verify(mRouter).startRootProjectActivityWhenNewAccountIsCreated();
+        verify(mTracker).trackGuestUserLoginSuccess();
+
+        listener.onFail(0, "error");
+        verify(mView).showError(eq("error"));
+        verify(mView, times(2)).dismissProgressDialog();
+        verify(mTracker).trackGuestUserLoginFailed(eq("error"));
+    }
+
+    @Test
+    public void testValidateUserUrlIfAccountIsNotExist() throws Exception {
+        when(mDataModel.hasAccountWithUrl("url", "userName")).thenReturn(false);
+        mPresenter.validateUserData("url", "userName", "password");
+
+        verify(mView).hideError();
+        verify(mView).showProgressDialog();
+        verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
+        verify(mDataManager).authUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"));
+
+        CustomOnLoadingListener<String> customOnLoadingListener = mCustomOnLoadingListenerArgumentCaptor.getValue();
+        customOnLoadingListener.onSuccess("url");
+        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), mOnLoadingListenerArgumentCaptor.capture());
+
+        OnLoadingListener<String> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
+        loadingListener.onSuccess("url");
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
         verify(mRouter).startRootProjectActivityWhenNewAccountIsCreated();
         verify(mTracker).trackUserLoginSuccess();
 
-        listener.onFail(0, "error");
-        verify(mView).setErrorText(eq("error"));
+        loadingListener.onFail("");
+        verify(mView).showCouldNotSaveUserError();
         verify(mView, times(2)).dismissProgressDialog();
-        verify(mTracker).trackUserLoginFailed(eq("error"));
+        verify(mTracker).trackUserDataSaveFailed();
 
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
+        customOnLoadingListener.onFail(0, "error");
+        verify(mView).showError(eq("error"));
+        verify(mView, times(3)).dismissProgressDialog();
+        verify(mTracker).trackUserLoginFailed(eq("error"));
+    }
+
+    @Test
+    public void testOnGuestUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
+        mPresenter.validateGuestUserData("");
+        verify(mView).hideError();
+        verify(mView).showServerUrlCanNotBeEmptyError();
     }
 
     @Test
@@ -134,7 +233,6 @@ public class CreateAccountPresenterImplTest {
         mPresenter.finish();
         verify(mView).isEmailEmpty();
         verify(mView).showDiscardDialog();
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
     }
 
     @Test
@@ -143,13 +241,11 @@ public class CreateAccountPresenterImplTest {
         mPresenter.finish();
         verify(mView).isEmailEmpty();
         verify(mView).finish();
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
     }
 
     @Test
     public void testHandleOnResume() throws Exception {
         mPresenter.handleOnResume();
         verify(mTracker).trackView();
-        verifyNoMoreInteractions(mView, mDataManager, mDataModel, mTracker);
     }
 }

@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.root.data;
 
 import android.content.Context;
+import android.webkit.CookieManager;
 
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -50,5 +51,13 @@ public class RootDataManagerImpl extends DrawerDataManagerImpl implements RootDa
     @Override
     public void initTeamCityService() {
         ((TeamCityApplication) mContext.getApplicationContext()).buildRestApiInjectorWithBaseUrl(mSharedUserStorage.getActiveUser().getTeamcityUrl());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void clearAllWebViewCookies() {
+        CookieManager.getInstance().removeAllCookie();
     }
 }

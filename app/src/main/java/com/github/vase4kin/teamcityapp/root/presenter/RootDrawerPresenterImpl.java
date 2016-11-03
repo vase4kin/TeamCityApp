@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.root.presenter;
 
 import android.text.TextUtils;
 
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
@@ -38,6 +39,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
     private OnAccountSwitchListener mListener;
     private RootBundleValueManager mValueExtractor;
     private RootRouter mRouter;
+    private BuildLogInteractor mInteractor;
 
     private String mBaseUrl;
 
@@ -46,11 +48,13 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
                             RootDataManager dataManager,
                             OnAccountSwitchListener listener,
                             RootBundleValueManager valueExtractor,
-                            RootRouter router) {
+                            RootRouter router,
+                            BuildLogInteractor interactor) {
         super(view, dataManager, router);
         this.mListener = listener;
         this.mValueExtractor = valueExtractor;
         this.mRouter = router;
+        this.mInteractor = interactor;
     }
 
     /**
@@ -99,6 +103,8 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         if (isNewAccountCreated) {
             mView.openDrawer();
+            mDataManager.clearAllWebViewCookies();
+            mInteractor.setAuthDialogStatus(false);
         }
     }
 
@@ -121,6 +127,8 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
             mDataManager.initTeamCityService();
             start();
             mListener.onAccountSwitch();
+            mDataManager.clearAllWebViewCookies();
+            mInteractor.setAuthDialogStatus(false);
         }
     }
 

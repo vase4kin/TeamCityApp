@@ -26,7 +26,7 @@ public interface RootRouter extends DrawerRouter {
     /**
      * TC root projects url
      */
-    String ROOT_PROJECTS_URL = "guestAuth/app/rest/projects/id:_Root";
+    String ROOT_PROJECTS_URL = "app/rest/projects/id:_Root";
 
     /**
      * Open root projects

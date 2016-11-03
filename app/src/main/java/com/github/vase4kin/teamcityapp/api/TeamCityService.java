@@ -40,6 +40,11 @@ import rx.Observable;
 public interface TeamCityService {
 
     /**
+     * Authorization header
+     */
+    String AUTHORIZATION = "Authorization";
+
+    /**
      * Base header for all requests
      */
     String APPLICATION_JSON = "Accept: application/json";
@@ -52,7 +57,7 @@ public interface TeamCityService {
      * @return {@link Observable} with {@link Agents}
      */
     @Headers(APPLICATION_JSON)
-    @GET("guestAuth/app/rest/agents")
+    @GET("app/rest/agents")
     Observable<Agents> listAgents(@Nullable @Query("includeDisconnected") Boolean includeDisconnected,
                                   @Nullable @Query("fields") String fields);
 
@@ -84,7 +89,7 @@ public interface TeamCityService {
      * @return {@link Observable} with {@link Builds}
      */
     @Headers(APPLICATION_JSON)
-    @GET("guestAuth/app/rest/buildTypes/id:{id}/builds")
+    @GET("app/rest/buildTypes/id:{id}/builds")
     Observable<Builds> listBuilds(@Path("id") String id,
                                   @Query("locator") String locator);
 
@@ -96,7 +101,7 @@ public interface TeamCityService {
      * @return {@link Observable} with {@link Builds}
      */
     @Headers(APPLICATION_JSON)
-    @GET("guestAuth/app/rest/builds")
+    @GET("app/rest/builds")
     Observable<Builds> listRunningBuilds(@Query("locator") String locator,
                                          @Query("fields") String fields);
 
@@ -107,7 +112,7 @@ public interface TeamCityService {
      * @return {@link Observable} with {@link Builds}
      */
     @Headers(APPLICATION_JSON)
-    @GET("guestAuth/app/rest/buildQueue")
+    @GET("app/rest/buildQueue")
     Observable<Builds> listQueueBuilds(@Query("fields") String fields);
 
     /**

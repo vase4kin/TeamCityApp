@@ -33,4 +33,9 @@ public interface RootDataManager extends DrawerDataManager {
      * Init TC rest service
      */
     void initTeamCityService();
+
+    /**
+     * Clear all webview cookies
+     */
+    void clearAllWebViewCookies();
 }

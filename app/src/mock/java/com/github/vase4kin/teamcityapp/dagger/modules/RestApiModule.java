@@ -21,9 +21,13 @@ import android.support.annotation.VisibleForTesting;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
+
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
 
 /**
  * Mocked rest api module
@@ -43,7 +47,7 @@ public class RestApiModule {
     @VisibleForTesting
     @Provides
     @UserScope
-    public TeamCityService provideTeamCityService(OkHttpClient okHttpClient) {
+    public TeamCityService provideTeamCityService(@Named(CLIENT_AUTH) OkHttpClient okHttpClient) {
         return new FakeTeamCityServiceImpl();
     }
 }

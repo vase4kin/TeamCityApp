@@ -28,6 +28,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
+import java.util.Collections;
 import java.util.List;
 
 import tr.xip.errorview.ErrorView;
@@ -105,7 +106,6 @@ public abstract class BaseListPresenterImpl<
                 mView.showProgressWheel();
                 mView.hideErrorView();
                 mView.hideEmpty();
-                mView.hideRecyclerView();
                 loadData(loadingListener);
             }
         };
@@ -147,13 +147,11 @@ public abstract class BaseListPresenterImpl<
         mView.hideErrorView();
         if (data.isEmpty()) {
             mView.showEmpty();
-            mView.emptyRecyclerView();
-            mView.hideRecyclerView();
+
         } else {
             mView.hideEmpty();
-            mView.showRecyclerView();
-            mView.showData(createModel(data));
         }
+        mView.showData(createModel(data));
 
         onCompleteLoading();
     }
@@ -166,8 +164,7 @@ public abstract class BaseListPresenterImpl<
     protected abstract T createModel(List<S> data);
 
     protected void onFailCallBack(String errorMessage) {
-        mView.emptyRecyclerView();
-        mView.hideRecyclerView();
+        mView.showData(createModel(Collections.<S>emptyList()));
         mView.hideEmpty();
         mView.showErrorView(errorMessage);
 

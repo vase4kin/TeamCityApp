@@ -53,11 +53,36 @@ public interface LoginView {
     void unbindViews();
 
     /**
-     * Set auth error
+     * Show auth error
      *
      * @param errorMessage - Error message which comes from server response
      */
-    void setError(String errorMessage);
+    void showError(String errorMessage);
+
+    /**
+     * Hide error
+     */
+    void hideError();
+
+    /**
+     * Show server url cannot be empty error
+     */
+    void showServerUrlCanNotBeEmptyError();
+
+    /**
+     * Show server user name cannot be empty error
+     */
+    void showUserNameCanNotBeEmptyError();
+
+    /**
+     * Show server password cannot be empty error
+     */
+    void showPasswordCanNotBeEmptyError();
+
+    /**
+     * Show could not save user data error
+     */
+    void showCouldNotSaveUserError();
 
     /**
      * Handle activity callback

@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view;
+package com.github.vase4kin.teamcityapp.buildlog.data;
 
 /**
- * View build log listener
+ * Build log interactor
  */
-public interface OnBuildLogLoadListener {
+public interface BuildLogInteractor {
 
     /**
-     * Load build log
+     * @return true if active user is guest
      */
-    void loadBuildLog();
+    boolean isGuestUser();
 
     /**
-     * On auth button click
+     * @return true if dialog is shown
      */
-    void onAuthButtonClick();
+    boolean isAuthDialogShown();
+
+    /**
+     * Set dialog status as shown
+     *
+     * @param isShown - status
+     */
+    void setAuthDialogStatus(boolean isShown);
+
 }

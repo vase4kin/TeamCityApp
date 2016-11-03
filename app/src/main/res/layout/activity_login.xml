@@ -15,114 +15,146 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?colorPrimary"
-    android:orientation="vertical">
+    android:background="?colorPrimary">
 
-    <LinearLayout
-        android:id="@+id/container"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:paddingTop="150dp"
-        tools:ignore="HardcodedText">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:alpha="0"
-            android:text="@string/app_name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
-            android:textColor="@android:color/white"
-            android:textSize="22sp"
-            tools:alpha="1" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="8dp"
-            android:alpha="0"
-            android:gravity="center"
-            android:text="TeamCity in your pocket"
-            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
-            android:textSize="20sp"
-            tools:alpha="1" />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/container"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="48dp"
-            android:layout_marginLeft="28dp"
-            android:layout_marginRight="28dp"
-            android:layout_gravity="left"
-            android:gravity="center"
-            android:alpha="0"
-            tools:alpha="1">
-
-            <com.joanzapata.iconify.widget.IconTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="{mdi-alert-circle}"
-                android:textSize="24sp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
+            android:layout_gravity="top"
+            android:orientation="vertical"
+            android:paddingTop="180dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/server_reminder_text"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/default_margin"
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
+                android:textColor="@android:color/white"
+                android:textSize="22sp"
+                android:alpha="0"
+                tools:alpha="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/small_margin"
+                android:gravity="center"
+                android:text="@string/text_app_description"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
-                android:textSize="14sp"
-                android:layout_marginLeft="8dp" />
+                android:textSize="20sp"
+                android:alpha="0"
+                tools:alpha="1" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/teamcity_url_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_screen_margin"
+                android:layout_marginLeft="@dimen/login_screen_margin"
+                android:layout_marginRight="@dimen/login_screen_margin"
+                android:alpha="0"
+                style="@style/LoginEditTextLayout"
+                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+                app:errorTextAppearance="@style/LoginTextErrorAppearance"
+                tools:alpha="1">
+
+                <EditText
+                    android:id="@+id/teamcity_url"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/server_field_hint"
+                    android:inputType="textUri"
+                    android:text="@string/text_teamcity_url"
+                    style="@style/LoginEditText" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Switch
+                android:id="@+id/guest_user_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/small_margin"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="@dimen/login_screen_margin"
+                android:textColor="@color/md_white_1000"
+                android:text="@string/text_guest_user_switch"
+                android:alpha="0"
+                tools:alpha="1" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/user_field_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/login_screen_margin"
+                android:layout_marginRight="@dimen/login_screen_margin"
+                style="@style/LoginEditTextLayout"
+                android:alpha="0"
+                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+                app:errorTextAppearance="@style/LoginTextErrorAppearance"
+                tools:alpha="1">
+
+                <EditText
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_user_name"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    style="@style/LoginEditText" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/password_field_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/login_screen_margin"
+                android:layout_marginRight="@dimen/login_screen_margin"
+                android:alpha="0"
+                style="@style/LoginEditTextLayout"
+                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+                app:errorTextAppearance="@style/LoginTextErrorAppearance"
+                tools:alpha="1">
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_password"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    style="@style/LoginEditText" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/login_screen_margin"
+                android:layout_marginLeft="@dimen/login_screen_margin"
+                android:layout_marginRight="@dimen/login_screen_margin"
+                android:layout_marginBottom="@dimen/login_screen_margin"
+                android:text="@string/text_login_button"
+                android:theme="@style/LoginButton"
+                android:alpha="0"
+                tools:alpha="1" />
 
         </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/teamcity_url_wrapper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:alpha="0"
-            style="@style/LoginEditTextLayout"
-            app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-            app:errorTextAppearance="@style/LoginTextErrorAppearance"
-            app:errorEnabled="true"
-            tools:alpha="1">
-
-            <EditText
-                android:id="@+id/teamcity_url"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/server_field_hint"
-                android:imeOptions="actionDone"
-                android:inputType="textUri"
-                style="@style/LoginEditText" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/btn_login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="64dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
-            android:scaleX="0"
-            android:scaleY="0"
-            android:text="Login"
-            android:theme="@style/LoginButton" />
-
-    </LinearLayout>
+    </ScrollView>
 
     <ImageView
         android:id="@+id/img_logo"
@@ -131,4 +163,5 @@
         android:layout_gravity="center"
         android:src="@drawable/launch_logo"
         tools:visibility="gone" />
+
 </FrameLayout>

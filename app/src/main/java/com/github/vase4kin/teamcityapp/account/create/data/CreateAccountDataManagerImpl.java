@@ -17,28 +17,34 @@
 package com.github.vase4kin.teamcityapp.account.create.data;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
-import com.github.vase4kin.teamcityapp.root.router.RootRouter;
+import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import okhttp3.Authenticator;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Credentials;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.Route;
 
 /**
  * Impl of {@link CreateAccountDataManager}
  */
 public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
+
+    private static final String AUTH_URL = "httpAuth/app/rest/server";
+    private static final String AUTH_GUEST_URL = "guestAuth/app/rest/server";
 
     /**
      * Default error code
@@ -49,7 +55,9 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
     private OkHttpClient mOkHttpClient;
     private SharedUserStorage mSharedUserStorage;
 
-    public CreateAccountDataManagerImpl(Context context, OkHttpClient okHttpClient, SharedUserStorage sharedUserStorage) {
+    public CreateAccountDataManagerImpl(Context context,
+                                        OkHttpClient okHttpClient,
+                                        SharedUserStorage sharedUserStorage) {
         this.mContext = context;
         this.mOkHttpClient = okHttpClient;
         this.mSharedUserStorage = sharedUserStorage;
@@ -59,49 +67,92 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void loadData(@NonNull final CustomOnLoadingListener<String> listener, final String url) {
+    public void authUser(@NonNull final CustomOnLoadingListener<String> listener,
+                         final String url,
+                         final String userName,
+                         final String password) {
+        // Creating okHttpClient with authenticator
+        OkHttpClient okHttpClient = mOkHttpClient.newBuilder().authenticator(new Authenticator() {
+            @Override
+            public Request authenticate(Route route, Response response) throws IOException {
+                String credential = Credentials.basic(userName, password);
 
-        if (TextUtils.isEmpty(url)) {
-            listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_cannot_be_empty));
-            return;
-        }
+                if (credential.equals(response.request().header(TeamCityService.AUTHORIZATION))) {
+                    return null; // If we already failed with these credentials, don't retry.
+                }
 
+                return response.request().newBuilder()
+                        .header(TeamCityService.AUTHORIZATION, credential)
+                        .build();
+            }
+        }).build();
+        // Handling request
+        handleAuthRequest(url, AUTH_URL, okHttpClient, listener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void authGuestUser(@NonNull final CustomOnLoadingListener<String> listener, final String url) {
+        handleAuthRequest(url, AUTH_GUEST_URL, mOkHttpClient, listener);
+    }
+
+    /**
+     * Handle auth request
+     *
+     * @param serverUrl    - Server url
+     * @param authUrl      - Appended auth url
+     * @param okHttpClient - Client to make an auth
+     * @param listener     - Listener to receive callbacks
+     */
+    private void handleAuthRequest(final String serverUrl,
+                                   final String authUrl,
+                                   final OkHttpClient okHttpClient,
+                                   final CustomOnLoadingListener<String> listener) {
         final Handler handler = new Handler();
 
         try {
+
+            String serverAuthUrl = Uri.parse(serverUrl).buildUpon()
+                    .appendEncodedPath(authUrl)
+                    .toString();
+
             final Request request = new Request.Builder()
-                    .url(url + "/" + RootRouter.ROOT_PROJECTS_URL)
+                    .url(serverAuthUrl)
                     .build();
 
-            mOkHttpClient.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(final Call call, final IOException e) {
-                    handler.post(new Runnable() {
+            okHttpClient
+                    .newCall(request)
+                    .enqueue(new Callback() {
                         @Override
-                        public void run() {
-                            if (e instanceof UnknownHostException) {
-                                listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_no_such_server));
-                            } else {
-                                listener.onFail(DEFAULT_ERROR_CODE, e.getMessage());
-                            }
+                        public void onFailure(final Call call, final IOException e) {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (e instanceof UnknownHostException) {
+                                        listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_no_such_server));
+                                    } else {
+                                        listener.onFail(DEFAULT_ERROR_CODE, e.getMessage());
+                                    }
+                                }
+                            });
                         }
-                    });
-                }
 
-                @Override
-                public void onResponse(Call call, final Response response) throws IOException {
-                    handler.post(new Runnable() {
                         @Override
-                        public void run() {
-                            if (response.isSuccessful()) {
-                                listener.onSuccess(url);
-                            } else {
-                                listener.onFail(response.code(), response.message());
-                            }
+                        public void onResponse(Call call, final Response response) throws IOException {
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (response.isSuccessful()) {
+                                        listener.onSuccess(serverUrl);
+                                    } else {
+                                        listener.onFail(response.code(), response.message());
+                                    }
+                                }
+                            });
                         }
                     });
-                }
-            });
         } catch (IllegalArgumentException e) {
             listener.onFail(DEFAULT_ERROR_CODE, mContext.getString(R.string.server_correct_url));
         } catch (Exception e) {
@@ -113,8 +164,28 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void createNewUserAccount(String url) {
-        mSharedUserStorage.createNewUserAccountAndSetItAsActive(url);
+    public void saveNewUserAccount(final String serverUrl, String userName, String password, final OnLoadingListener<String> listener) {
+        mSharedUserStorage.saveUserAccountAndSetItAsActive(serverUrl, userName, password, new SharedUserStorage.OnStorageListener() {
+            @Override
+            public void onSuccess() {
+                // On data save success
+                listener.onSuccess(serverUrl);
+            }
+
+            @Override
+            public void onFail() {
+                // On data save fail
+                listener.onFail("");
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveGuestUserAccount(String url) {
+        mSharedUserStorage.saveGuestUserAccountAndSetItAsActive(url);
     }
 
     /**

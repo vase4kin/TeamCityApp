@@ -15,10 +15,11 @@
   -->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".account.create.view.CreateAccountActivity">
     <item android:id="@+id/action_create"
-        android:title="@string/create_new_account_dialog_create_account_button_text"
+        android:title="@string/add_new_account_dialog_create_account_button_text"
+        android:icon="@drawable/ic_done_24px"
         app:showAsAction="always"/>
 </menu>

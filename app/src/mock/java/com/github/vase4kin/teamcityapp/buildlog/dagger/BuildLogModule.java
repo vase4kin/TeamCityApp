@@ -22,8 +22,8 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewModel;
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewModelImpl;
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import dagger.Module;
@@ -44,8 +44,8 @@ public class BuildLogModule {
     }
 
     @Provides
-    BuildLogViewModel providesBuildLogViewModel() {
-        return new BuildLogViewModelImpl(mView);
+    BuildLogView providesBuildLogViewModel() {
+        return new BuildLogViewImpl(mView);
     }
 
     @Provides
