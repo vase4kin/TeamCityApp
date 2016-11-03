@@ -87,11 +87,19 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
      * {@inheritDoc}
      */
     @Override
+    public void loadLimited(@NonNull String url, @NonNull OnLoadingListener<List<Changes.Change>> loadingListener) {
+        load(url + ",count:10", loadingListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void load(@NonNull String url, @NonNull final OnLoadingListener<List<Changes.Change>> loadingListener) {
         if (mLoadSubscription != null) {
             mSubscriptions.remove(mLoadSubscription);
         }
-        mLoadSubscription = mTeamCityService.listChanges(url + ",count:10")
+        mLoadSubscription = mTeamCityService.listChanges(url)
                 .flatMap(new Func1<Changes, Observable<Changes.Change>>() {
                     @Override
                     public Observable<Changes.Change> call(Changes changes) {
