@@ -108,8 +108,8 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     }
 
     public void saveGuestUserAccountAndSetItAsActive(String baseUrl) {
-        setActiveUserNotActive();
         UserAccount userAccount = UsersFactory.guestUser(baseUrl);
+        setActiveUserNotActive();
         usersContainer.getUsersAccounts().add(userAccount);
         commitUserChanges();
     }
@@ -118,10 +118,10 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                                                 final String userName,
                                                 final String password,
                                                 OnStorageListener listener) {
-        setActiveUserNotActive();
         byte[] encryptedPassword = mCryptoManager.encrypt(password);
         if (!mCryptoManager.isFailed(encryptedPassword)) {
             UserAccount userAccount = UsersFactory.user(baseUrl, userName, encryptedPassword);
+            setActiveUserNotActive();
             usersContainer.getUsersAccounts().add(userAccount);
             commitUserChanges();
             listener.onSuccess();
