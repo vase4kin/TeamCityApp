@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.base.list.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.view.ViewGroup;
 
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
@@ -38,7 +39,7 @@ public abstract class BaseAdapter<DM extends BaseDataModel> extends RecyclerView
     /**
      * View holders map
      */
-    protected Map<Integer, ViewHolderFactory<DM>> mViewHolderFactories;
+    private Map<Integer, ViewHolderFactory<DM>> mViewHolderFactories;
 
     /**
      * Constructor
@@ -56,5 +57,26 @@ public abstract class BaseAdapter<DM extends BaseDataModel> extends RecyclerView
      */
     public void setDataModel(DM dataModel) {
         this.mDataModel = dataModel;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getItemCount() {
+        return mDataModel.getItemCount();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BaseViewHolder<DM> onCreateViewHolder(ViewGroup parent, int viewType) {
+        return mViewHolderFactories.get(viewType).createViewHolder(parent);
+    }
+
+    @Override
+    public void onBindViewHolder(BaseViewHolder<DM> holder, int position) {
+        holder.bind(mDataModel, position);
     }
 }

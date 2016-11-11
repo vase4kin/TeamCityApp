@@ -17,10 +17,8 @@
 package com.github.vase4kin.teamcityapp.changes.view;
 
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
-import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseLoadMoreAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
@@ -31,7 +29,7 @@ import java.util.Map;
 /**
  * Changes adapter
  */
-public class ChangesAdapter extends BaseAdapter<ChangesDataModel> implements ViewLoadMore<ChangesDataModel> {
+public class ChangesAdapter extends BaseLoadMoreAdapter<ChangesDataModel> {
 
     private OnChangeClickListener mOnChangeClickListener;
 
@@ -65,25 +63,9 @@ public class ChangesAdapter extends BaseAdapter<ChangesDataModel> implements Vie
      * {@inheritDoc}
      */
     @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BaseViewHolder<ChangesDataModel> onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        return mViewHolderFactories.get(viewType).createViewHolder(viewGroup);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBindViewHolder(final BaseViewHolder<ChangesDataModel> holder, int position) {
+    public void onBindViewHolder(BaseViewHolder<ChangesDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
         final int adapterPosition = position;
-        holder.bind(mDataModel, adapterPosition);
         // Find the way how to make it through DI
         if (holder instanceof ChangesViewHolder) {
             ((ChangesViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
@@ -93,29 +75,5 @@ public class ChangesAdapter extends BaseAdapter<ChangesDataModel> implements Vie
                 }
             });
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addLoadMore() {
-        mDataModel.addLoadMore();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeLoadMore() {
-        mDataModel.removeLoadMore();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addMoreBuilds(ChangesDataModel dataModel) {
-        mDataModel.addMoreBuilds(dataModel);
     }
 }
