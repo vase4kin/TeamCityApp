@@ -21,15 +21,25 @@ import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManagerImpl;
+import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractorImpl;
+import com.github.vase4kin.teamcityapp.changes.view.ChangesAdapter;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
+import com.github.vase4kin.teamcityapp.changes.view.ChangesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewImpl;
+import com.github.vase4kin.teamcityapp.changes.view.LoadMoreViewHolderFactory;
+
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntKey;
+import dagger.multibindings.IntoMap;
 import de.greenrobot.event.EventBus;
 
 @Module
@@ -49,12 +59,31 @@ public class ChangesModule {
     }
 
     @Provides
-    ChangesView providesChangesView() {
-        return new ChangesViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_changes);
+    ChangesView providesChangesView(ChangesAdapter changesAdapter) {
+        return new ChangesViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_changes, changesAdapter);
     }
 
     @Provides
     ChangesValueExtractor providesChangesValueExtractor() {
         return new ChangesValueExtractorImpl(mFragment.getArguments());
+    }
+
+    @Provides
+    ChangesAdapter providesChangesAdapter(Map<Integer, ViewHolderFactory<ChangesDataModel>> viewHolderFactories) {
+        return new ChangesAdapter(viewHolderFactories);
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_LOAD_MORE)
+    @Provides
+    ViewHolderFactory<ChangesDataModel> providesLoadMoreViewHolderFactory() {
+        return new LoadMoreViewHolderFactory();
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    @Provides
+    ViewHolderFactory<ChangesDataModel> providesChangesViewHolderFactory() {
+        return new ChangesViewHolderFactory();
     }
 }

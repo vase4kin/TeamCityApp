@@ -21,13 +21,13 @@ import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModelImpl;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
+import com.mugen.MugenCallbacks;
 
 import java.util.List;
 
@@ -38,6 +38,8 @@ import javax.inject.Inject;
  */
 public class ChangesPresenterImpl extends BaseListPresenterImpl
         <ChangesDataModel, Changes.Change, ChangesView, ChangesDataManager, ChangesValueExtractor> {
+
+    private boolean mIsLoadMoreLoading = false;
 
     @Inject
     ChangesPresenterImpl(@NonNull ChangesView view,
@@ -52,27 +54,35 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setOnLoadMoreListener(new OnLoadMoreListener() {
+        mView.setLoadMoreListener(new MugenCallbacks() {
             @Override
-            public void loadMore() {
-                mView.addLoadMoreItem();
+            public void onLoadMore() {
+                mIsLoadMoreLoading = true;
+                mView.addLoadMore();
                 mDataManager.loadMore(new OnLoadingListener<List<Changes.Change>>() {
                     @Override
                     public void onSuccess(List<Changes.Change> data) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.addMoreBuilds(new ChangesDataModelImpl(data));
+                        mIsLoadMoreLoading = false;
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.showRetryLoadMoreSnackBar();
+                        mIsLoadMoreLoading = false;
                     }
                 });
             }
 
             @Override
-            public boolean isLoadedAllItems() {
+            public boolean isLoading() {
+                return mIsLoadMoreLoading;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
                 return !mDataManager.canLoadMore();
             }
         });

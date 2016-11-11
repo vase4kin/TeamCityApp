@@ -26,7 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 /**
  * Adapter for builds
  */
-public class BuildListAdapter extends RecyclerView.Adapter<BuildListAdapter.BuildViewHolder> implements LoadMore<BuildListDataModel> {
+public class BuildListAdapter extends RecyclerView.Adapter<BuildListAdapter.BuildViewHolder> implements ViewLoadMore<BuildListDataModel> {
 
     private BuildListDataModel mDataModel;
 
@@ -137,7 +137,7 @@ public class BuildListAdapter extends RecyclerView.Adapter<BuildListAdapter.Buil
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
+    public void addLoadMore() {
         mDataModel.add(mLoadMoreBuild);
     }
 
@@ -145,7 +145,7 @@ public class BuildListAdapter extends RecyclerView.Adapter<BuildListAdapter.Buil
      * {@inheritDoc}
      */
     @Override
-    public void removeLoadMoreItem() {
+    public void removeLoadMore() {
         mDataModel.remove(mLoadMoreBuild);
     }
 

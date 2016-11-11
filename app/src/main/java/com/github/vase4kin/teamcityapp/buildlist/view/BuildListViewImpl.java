@@ -127,8 +127,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
-        mBuildListAdapter.addLoadMoreItem();
+    public void addLoadMore() {
+        mBuildListAdapter.addLoadMore();
         mBuildListAdapter.notifyDataSetChanged();
         mIsLoadMoreLoading = true;
     }
@@ -137,8 +137,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      * {@inheritDoc}
      */
     @Override
-    public void removeLoadMoreItem() {
-        mBuildListAdapter.removeLoadMoreItem();
+    public void removeLoadMore() {
+        mBuildListAdapter.removeLoadMore();
         mBuildListAdapter.notifyDataSetChanged();
         mIsLoadMoreLoading = false;
     }

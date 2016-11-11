@@ -112,13 +112,13 @@ public class ChangesDataModelImplTest {
     @Test
     public void testAdd() throws Exception {
         Changes.Change change = new Changes.Change();
-        mDataModel.add(change);
+        mDataModel.addLoadMore(change);
         assertThat(mDataModel.getChange(1), is(change));
     }
 
     @Test
     public void testRemove() throws Exception {
-        mDataModel.remove(mChange);
+        mDataModel.removeLoadMore(mChange);
         assertThat(mDataModel.getItemCount(), is(0));
     }
 

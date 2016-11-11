@@ -25,7 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel;
 import com.joanzapata.iconify.widget.IconTextView;
@@ -36,7 +36,7 @@ import butterknife.ButterKnife;
 /**
  * Tests adapter
  */
-public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrencesAdapter.TestOccurrenceViewHolder> implements LoadMore<TestsDataModel> {
+public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrencesAdapter.TestOccurrenceViewHolder> implements ViewLoadMore<TestsDataModel> {
 
     private TestsDataModel mDataModel;
     private OnTestOccurrenceClickListener mOnClickListener;
@@ -126,7 +126,7 @@ public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrences
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
+    public void addLoadMore() {
         mDataModel.add(mLoadMore);
     }
 
@@ -134,7 +134,7 @@ public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrences
      * {@inheritDoc}
      */
     @Override
-    public void removeLoadMoreItem() {
+    public void removeLoadMore() {
         mDataModel.remove(mLoadMore);
     }
 

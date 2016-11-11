@@ -16,86 +16,78 @@
 
 package com.github.vase4kin.teamcityapp.changes.view;
 
-import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
-import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
-import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Changes adapter
  */
-public class ChangesAdapter extends RecyclerView.Adapter<ChangesAdapter.ChangesViewHolder> implements LoadMore<ChangesDataModel> {
+public class ChangesAdapter extends RecyclerView.Adapter<BaseViewHolder<ChangesDataModel>> implements ViewLoadMore<ChangesDataModel> {
 
     private ChangesDataModel mDataModel;
     private OnChangeClickListener mOnChangeClickListener;
+    private Map<Integer, ViewHolderFactory<ChangesDataModel>> mViewHolderFactories;
 
-    private LoadMore mLoadMore = new LoadMore() {
-        @Override
-        public String getId() {
-            return "012345731";
-        }
-    };
-
-    public ChangesAdapter(ChangesDataModel mDataModel, OnChangeClickListener mOnChangeClickListener) {
-        this.mDataModel = mDataModel;
-        this.mOnChangeClickListener = mOnChangeClickListener;
+    public ChangesAdapter(Map<Integer, ViewHolderFactory<ChangesDataModel>> viewHolderFactories) {
+        mViewHolderFactories = viewHolderFactories;
     }
 
+    public void setDataModel(ChangesDataModel changesDataModel) {
+        this.mDataModel = changesDataModel;
+    }
+
+    public void setOnChangeClickListener(OnChangeClickListener onChangeClickListener) {
+        this.mOnChangeClickListener = onChangeClickListener;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getItemViewType(int position) {
+        // some method to check
         if (mDataModel.isLoadMore(position)) {
-            return 1;
+            return BaseListView.TYPE_LOAD_MORE;
         } else {
-            return 0;
+            return BaseListView.TYPE_DEFAULT;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getItemCount() {
         return mDataModel.getItemCount();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public ChangesViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = viewType == 0
-                ? inflater.inflate(R.layout.item_changes_list, viewGroup, false)
-                : inflater.inflate(R.layout.item_load_more, viewGroup, false);
-        return new ChangesViewHolder(v);
+    public BaseViewHolder<ChangesDataModel> onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        return mViewHolderFactories.get(viewType).createViewHolder(viewGroup);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void onBindViewHolder(final ChangesViewHolder holder, int position) {
+    public void onBindViewHolder(final BaseViewHolder<ChangesDataModel> holder, int position) {
         final int adapterPosition = position;
-        if (holder.mIcon != null) {
-            holder.mIcon.setText(IconUtils.getCountIcon(mDataModel.getFilesCount(position)));
-        }
-        if (holder.mItemTitle != null) {
-            holder.mItemTitle.setText(mDataModel.getComment(position));
-        }
-        if (holder.mUserName != null) {
-            holder.mUserName.setText(mDataModel.getUserName(position));
-        }
-        if (holder.mDate != null) {
-            holder.mDate.setText(mDataModel.getDate(position));
-        }
-        if (holder.mItemSubTitle != null) {
-            holder.mItemSubTitle.setText(mDataModel.getVersion(position));
-        }
-        if (holder.mContainer != null) {
-            holder.mContainer.setOnClickListener(new View.OnClickListener() {
+        holder.bind(mDataModel, adapterPosition);
+        // Find the way how to make it through DI
+        if (holder instanceof ChangesViewHolder) {
+            ((ChangesViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mOnChangeClickListener.onClick(mDataModel.getChange(adapterPosition));
@@ -104,46 +96,20 @@ public class ChangesAdapter extends RecyclerView.Adapter<ChangesAdapter.ChangesV
         }
     }
 
-    public static class ChangesViewHolder extends RecyclerView.ViewHolder {
-        @Nullable
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @Nullable
-        @BindView(R.id.itemSubTitle)
-        TextView mItemSubTitle;
-        @Nullable
-        @BindView(R.id.itemTitle)
-        TextView mItemTitle;
-        @Nullable
-        @BindView(R.id.itemIcon)
-        TextView mIcon;
-        @Nullable
-        @BindView(R.id.userName)
-        TextView mUserName;
-        @Nullable
-        @BindView(R.id.date)
-        TextView mDate;
-
-        public ChangesViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addLoadMore() {
+        mDataModel.addLoadMore();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
-        mDataModel.add(mLoadMore);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeLoadMoreItem() {
-        mDataModel.remove(mLoadMore);
+    public void removeLoadMore() {
+        mDataModel.removeLoadMore();
     }
 
     /**
@@ -151,9 +117,6 @@ public class ChangesAdapter extends RecyclerView.Adapter<ChangesAdapter.ChangesV
      */
     @Override
     public void addMoreBuilds(ChangesDataModel dataModel) {
-        mDataModel.add(dataModel);
-    }
-
-    public static class LoadMore extends Changes.Change {
+        mDataModel.addMoreBuilds(dataModel);
     }
 }

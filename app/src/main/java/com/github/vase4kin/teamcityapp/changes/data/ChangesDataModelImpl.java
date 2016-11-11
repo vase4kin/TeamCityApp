@@ -18,15 +18,25 @@ package com.github.vase4kin.teamcityapp.changes.data;
 
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
-import com.github.vase4kin.teamcityapp.changes.view.ChangesAdapter;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Impl of {@link ChangesDataModel}
  */
 public class ChangesDataModelImpl implements ChangesDataModel {
+
+    /**
+     * Load more
+     */
+    private static final Changes.Change LOAD_MORE = new Changes.Change() {
+        @Override
+        public String getId() {
+            return UUID.randomUUID().toString();
+        }
+    };
 
     private List<Changes.Change> mChanges;
 
@@ -92,30 +102,30 @@ public class ChangesDataModelImpl implements ChangesDataModel {
      */
     @Override
     public boolean isLoadMore(int position) {
-        return mChanges.get(position) instanceof ChangesAdapter.LoadMore;
+        return mChanges.get(position).equals(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void add(Changes.Change change) {
-        mChanges.add(change);
+    public void addLoadMore() {
+        mChanges.add(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void remove(Changes.Change change) {
-        mChanges.remove(change);
+    public void removeLoadMore() {
+        mChanges.remove(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void add(ChangesDataModel dataModel) {
+    public void addMoreBuilds(ChangesDataModel dataModel) {
         for (Changes.Change change : dataModel) {
             mChanges.add(change);
         }

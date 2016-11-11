@@ -75,17 +75,17 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
 
             @Override
             public void loadMore() {
-                mView.addLoadMoreItem();
+                mView.addLoadMore();
                 mDataManager.loadMore(new OnLoadingListener<List<Build>>() {
                     @Override
                     public void onSuccess(List<Build> data) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.addMoreBuilds(new BuildListDataModelImpl(data));
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.showRetryLoadMoreSnackBar();
                     }
                 });

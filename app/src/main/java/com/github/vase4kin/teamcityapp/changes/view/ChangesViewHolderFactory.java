@@ -16,23 +16,22 @@
 
 package com.github.vase4kin.teamcityapp.changes.view;
 
-import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import android.view.ViewGroup;
+
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
-import com.mugen.MugenCallbacks;
 
 /**
- * View interactions of {@link ChangesFragment}
+ * Changes single item view factory
  */
-public interface ChangesView extends BaseListView<ChangesDataModel>, ViewLoadMore<ChangesDataModel>, OnChangeClickListener {
+public class ChangesViewHolderFactory implements ViewHolderFactory<ChangesDataModel> {
 
     /**
-     * @param loadMoreCallbacks - Listener to receive load more callbacks
+     * {@inheritDoc}
      */
-    void setLoadMoreListener(MugenCallbacks loadMoreCallbacks);
-
-    /**
-     * Show retry load more snack bar
-     */
-    void showRetryLoadMoreSnackBar();
+    @Override
+    public BaseViewHolder<ChangesDataModel> createViewHolder(ViewGroup parent) {
+        return new ChangesViewHolder(parent);
+    }
 }

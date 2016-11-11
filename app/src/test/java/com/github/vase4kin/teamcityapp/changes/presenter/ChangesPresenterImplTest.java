@@ -86,24 +86,24 @@ public class ChangesPresenterImplTest {
     public void testInitViews() throws Exception {
         when(mDataManager.canLoadMore()).thenReturn(false);
         mPresenter.initViews();
-        verify(mView).setOnLoadMoreListener(mOnLoadMoreListenerArgumentCaptor.capture());
+        verify(mView).setLoadMoreListener(mOnLoadMoreListenerArgumentCaptor.capture());
 
         OnLoadMoreListener onLoadMoreListener = mOnLoadMoreListenerArgumentCaptor.getValue();
         assertThat(onLoadMoreListener.isLoadedAllItems(), is(true));
         verify(mDataManager).canLoadMore();
 
         onLoadMoreListener.loadMore();
-        verify(mView).addLoadMoreItem();
+        verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnChangesLoadingListener.capture());
 
         OnLoadingListener<List<Changes.Change>> onChangesLoadingListener = mOnChangesLoadingListener.getValue();
         List<Changes.Change> changes = Collections.emptyList();
         onChangesLoadingListener.onSuccess(changes);
-        verify(mView).removeLoadMoreItem();
+        verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(ChangesDataModelImpl.class));
 
         onChangesLoadingListener.onFail("error");
-        verify(mView, times(2)).removeLoadMoreItem();
+        verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
     }
 

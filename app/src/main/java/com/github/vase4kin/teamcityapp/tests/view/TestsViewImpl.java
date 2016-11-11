@@ -249,7 +249,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
      */
     @Override
     public void addLoadMoreItem() {
-        mTestOccurrencesAdapter.addLoadMoreItem();
+        mTestOccurrencesAdapter.addLoadMore();
         mTestOccurrencesAdapter.notifyDataSetChanged();
         mIsLoadMoreLoading = true;
     }
@@ -259,7 +259,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
      */
     @Override
     public void removeLoadMoreItem() {
-        mTestOccurrencesAdapter.removeLoadMoreItem();
+        mTestOccurrencesAdapter.removeLoadMore();
         mTestOccurrencesAdapter.notifyDataSetChanged();
         mIsLoadMoreLoading = false;
     }

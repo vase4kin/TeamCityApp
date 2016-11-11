@@ -26,6 +26,16 @@ import tr.xip.errorview.ErrorView;
  */
 public interface BaseListView<T extends BaseDataModel> {
 
+    /**
+     * Default view holder type
+     */
+    int TYPE_DEFAULT = 0;
+
+    /**
+     * Load more view holder type
+     */
+    int TYPE_LOAD_MORE = 1;
+
     void initViews(@NonNull ErrorView.RetryListener retryListener,
                    @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener);
 
