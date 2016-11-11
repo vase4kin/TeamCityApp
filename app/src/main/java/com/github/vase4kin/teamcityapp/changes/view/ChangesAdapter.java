@@ -16,10 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.changes.view;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
@@ -31,21 +31,20 @@ import java.util.Map;
 /**
  * Changes adapter
  */
-public class ChangesAdapter extends RecyclerView.Adapter<BaseViewHolder<ChangesDataModel>> implements ViewLoadMore<ChangesDataModel> {
+public class ChangesAdapter extends BaseAdapter<ChangesDataModel> implements ViewLoadMore<ChangesDataModel> {
 
-    private ChangesDataModel mDataModel;
     private OnChangeClickListener mOnChangeClickListener;
-    private Map<Integer, ViewHolderFactory<ChangesDataModel>> mViewHolderFactories;
 
     public ChangesAdapter(Map<Integer, ViewHolderFactory<ChangesDataModel>> viewHolderFactories) {
-        mViewHolderFactories = viewHolderFactories;
+        super(viewHolderFactories);
     }
 
-    public void setDataModel(ChangesDataModel changesDataModel) {
-        this.mDataModel = changesDataModel;
-    }
-
-    public void setOnChangeClickListener(OnChangeClickListener onChangeClickListener) {
+    /**
+     * Set {@link OnChangeClickListener}
+     *
+     * @param onChangeClickListener - listener to set
+     */
+    void setOnChangeClickListener(OnChangeClickListener onChangeClickListener) {
         this.mOnChangeClickListener = onChangeClickListener;
     }
 
