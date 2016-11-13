@@ -27,26 +27,14 @@ import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListen
 public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoadMore<BuildListDataModel> {
 
     /**
-     * @param onBuildListPresenterListener - Listener to handle view callbacks
+     * @param mOnBuildListPresenterListener - Listener to handle view callbacks
      */
-    void setOnBuildListPresenterListener(OnBuildListPresenterListener onBuildListPresenterListener);
+    void setOnBuildListPresenterListener(OnBuildListPresenterListener mOnBuildListPresenterListener);
 
     /**
-     * {@inheritDoc}
+     * Show retry load more snack bar
      */
-    void addLoadMore();
-
-    /**
-     * {@inheritDoc}
-     */
-    void removeLoadMore();
-
     void showRetryLoadMoreSnackBar();
-
-    /**
-     * {@inheritDoc}
-     */
-    void addMoreBuilds(BuildListDataModel dataModel);
 
     /**
      * Set toolbar title

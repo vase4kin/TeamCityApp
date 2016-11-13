@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.data;
+package com.github.vase4kin.teamcityapp.buildlist.view;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.mugen.MugenCallbacks;
+import android.view.ViewGroup;
+
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 
 /**
- * On build item click listener
+ * Builds single item view factory
  */
-public interface OnBuildListPresenterListener extends MugenCallbacks {
+public class BuildsViewHolderFactory implements ViewHolderFactory<BuildListDataModel> {
 
     /**
-     * Handle click event on build item in adapter
-     *
-     * @param build - Build
+     * {@inheritDoc}
      */
-    void onClick(Build build);
+    @Override
+    public BaseViewHolder<BuildListDataModel> createViewHolder(ViewGroup parent) {
+        return new BuildViewHolder(parent);
+    }
 }

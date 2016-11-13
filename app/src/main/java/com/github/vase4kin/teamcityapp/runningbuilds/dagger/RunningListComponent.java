@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.runningbuilds.dagger;
 
+import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
@@ -24,7 +25,7 @@ import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActiv
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {RunningListModule.class, DrawerModule.class})
+@Component(dependencies = RestApiComponent.class, modules = {RunningListModule.class, BuildListAdapterModule.class, DrawerModule.class})
 public interface RunningListComponent {
 
     void inject(RunningBuildsListActivity runningBuildsListActivity);

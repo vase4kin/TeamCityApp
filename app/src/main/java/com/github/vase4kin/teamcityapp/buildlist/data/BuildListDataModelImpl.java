@@ -22,11 +22,22 @@ import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Impl of {@link BuildListDataModel}
  */
 public class BuildListDataModelImpl implements BuildListDataModel {
+
+    /**
+     * Load more
+     */
+    private static final Build LOAD_MORE = new Build() {
+        @Override
+        public String getId() {
+            return UUID.randomUUID().toString();
+        }
+    };
 
     private List<Build> mBuilds;
 
@@ -48,6 +59,11 @@ public class BuildListDataModelImpl implements BuildListDataModel {
     @Override
     public String getBranchName(int position) {
         return mBuilds.get(position).getBranchName();
+    }
+
+    @Override
+    public boolean hasBranch(int position) {
+        return mBuilds.get(position).getBranchName() != null;
     }
 
     /**
@@ -90,23 +106,31 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      * {@inheritDoc}
      */
     @Override
-    public void add(Build build) {
-        mBuilds.add(build);
+    public boolean isLoadMore(int position) {
+        return mBuilds.get(position).equals(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void remove(Build build) {
-        mBuilds.remove(build);
+    public void addLoadMore() {
+        mBuilds.add(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void add(BuildListDataModel dataModel) {
+    public void removeLoadMore() {
+        mBuilds.remove(LOAD_MORE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addMoreBuilds(BuildListDataModel dataModel) {
         for (Build build : dataModel) {
             mBuilds.add(build);
         }

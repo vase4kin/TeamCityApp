@@ -39,6 +39,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         BuildListDataModel, Build, V, DM, BaseValueExtractor> {
 
     private BuildListRouter mRouter;
+    private boolean mIsLoadMoreLoading = false;
 
     @Inject
     public BuildListPresenterImpl(@NonNull V view,
@@ -74,25 +75,33 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             }
 
             @Override
-            public void loadMore() {
+            public void onLoadMore() {
+                mIsLoadMoreLoading = true;
                 mView.addLoadMore();
                 mDataManager.loadMore(new OnLoadingListener<List<Build>>() {
                     @Override
                     public void onSuccess(List<Build> data) {
                         mView.removeLoadMore();
                         mView.addMoreBuilds(new BuildListDataModelImpl(data));
+                        mIsLoadMoreLoading = false;
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
                         mView.removeLoadMore();
                         mView.showRetryLoadMoreSnackBar();
+                        mIsLoadMoreLoading = false;
                     }
                 });
             }
 
             @Override
-            public boolean isLoadedAllItems() {
+            public boolean isLoading() {
+                return mIsLoadMoreLoading;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
                 return !mDataManager.canLoadMore();
             }
         });

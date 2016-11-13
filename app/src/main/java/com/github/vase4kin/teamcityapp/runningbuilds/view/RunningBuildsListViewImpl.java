@@ -34,8 +34,11 @@ import java.util.List;
  */
 public class RunningBuildsListViewImpl extends BuildListViewImpl implements RunningBuildListView {
 
-    public RunningBuildsListViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public RunningBuildsListViewImpl(View mView,
+                                     Activity activity,
+                                     @StringRes int emptyMessage,
+                                     SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
+        super(mView, activity, emptyMessage, adapter);
     }
 
     /**
@@ -44,7 +47,9 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
     @Override
     public void showData(BuildListDataModel dataModel) {
 
-        BuildListAdapter buildListAdapter = new BuildListAdapter(dataModel, onBuildListPresenterListener);
+        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.setDataModel(dataModel);
+        baseAdapter.setOnBuildListPresenterListener(mOnBuildListPresenterListener);
 
         List<SimpleSectionedRecyclerViewAdapter.Section> sections =
                 new ArrayList<>();
@@ -63,11 +68,9 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
             }
         }
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-        SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter<>(mActivity.getApplicationContext(), buildListAdapter);
-        mSectionedAdapter.setSections(sections.toArray(userStates));
+        mAdapter.setSections(sections.toArray(userStates));
 
-        mRecyclerView.setAdapter(mSectionedAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
