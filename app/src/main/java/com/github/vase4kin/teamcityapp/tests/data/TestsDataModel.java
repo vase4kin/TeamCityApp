@@ -16,13 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.tests.data;
 
+import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 /**
  * Data model to manage tests data
  */
-public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.TestOccurrence> {
+public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.TestOccurrence>, ModelLoadMore<TestsDataModel> {
 
     /**
      * @param position - Adapter position
@@ -61,32 +62,4 @@ public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.
      * @return String
      */
     String getStatus(int position);
-
-    /**
-     * Is load more
-     *
-     * @param position - Adapter position
-     */
-    boolean isLoadMore(int position);
-
-    /**
-     * Add test
-     *
-     * @param testOccurrence - Test to add
-     */
-    void add(TestOccurrences.TestOccurrence testOccurrence);
-
-    /**
-     * Remove test
-     *
-     * @param testOccurrence - Test to remove
-     */
-    void remove(TestOccurrences.TestOccurrence testOccurrence);
-
-    /**
-     * Add new model
-     *
-     * @param dataModel - Model to add
-     */
-    void add(TestsDataModel dataModel);
 }

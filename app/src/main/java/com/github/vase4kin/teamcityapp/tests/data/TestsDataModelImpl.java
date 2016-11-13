@@ -17,16 +17,26 @@
 package com.github.vase4kin.teamcityapp.tests.data;
 
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
-import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesAdapter;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Impl of {@link TestsDataModel}
  */
 public class TestsDataModelImpl implements TestsDataModel {
+
+    /**
+     * Load more
+     */
+    private static final TestOccurrences.TestOccurrence LOAD_MORE = new TestOccurrences.TestOccurrence() {
+        @Override
+        public String getId() {
+            return UUID.randomUUID().toString();
+        }
+    };
 
     private List<TestOccurrences.TestOccurrence> mTests;
 
@@ -95,30 +105,27 @@ public class TestsDataModelImpl implements TestsDataModel {
      */
     @Override
     public boolean isLoadMore(int position) {
-        return mTests.get(position) instanceof TestOccurrencesAdapter.LoadMore;
+        return mTests.get(position).equals(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void add(TestOccurrences.TestOccurrence testOccurrence) {
-        mTests.add(testOccurrence);
+    public void addLoadMore() {
+        mTests.add(LOAD_MORE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void remove(TestOccurrences.TestOccurrence testOccurrence) {
-        mTests.remove(testOccurrence);
+    public void removeLoadMore() {
+        mTests.remove(LOAD_MORE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void add(TestsDataModel dataModel) {
+    public void addMoreBuilds(TestsDataModel dataModel) {
         for (TestOccurrences.TestOccurrence testOccurrence : dataModel) {
             mTests.add(testOccurrence);
         }

@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.base.list.adapter;
 
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 
 import java.util.Map;
@@ -26,7 +27,7 @@ import java.util.Map;
  *
  * @param <DM> - Data model type
  */
-public abstract class BaseLoadMoreAdapter<DM extends BaseDataModel & ViewLoadMore<DM>> extends BaseAdapter<DM> implements ViewLoadMore<DM> {
+public abstract class BaseLoadMoreAdapter<DM extends BaseDataModel & ModelLoadMore<DM>> extends BaseAdapter<DM> implements ViewLoadMore<DM> {
 
     /**
      * Constructor
@@ -35,6 +36,19 @@ public abstract class BaseLoadMoreAdapter<DM extends BaseDataModel & ViewLoadMor
      */
     public BaseLoadMoreAdapter(Map<Integer, ViewHolderFactory<DM>> viewHolderFactories) {
         super(viewHolderFactories);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getItemViewType(int position) {
+        // some method to check
+        if (mDataModel.isLoadMore(position)) {
+            return BaseListView.TYPE_LOAD_MORE;
+        } else {
+            return BaseListView.TYPE_DEFAULT;
+        }
     }
 
     /**

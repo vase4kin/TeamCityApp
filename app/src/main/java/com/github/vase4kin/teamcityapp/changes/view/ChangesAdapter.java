@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.changes.view;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseLoadMoreAdapter;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
@@ -44,19 +43,6 @@ public class ChangesAdapter extends BaseLoadMoreAdapter<ChangesDataModel> {
      */
     void setOnChangeClickListener(OnChangeClickListener onChangeClickListener) {
         this.mOnChangeClickListener = onChangeClickListener;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemViewType(int position) {
-        // some method to check
-        if (mDataModel.isLoadMore(position)) {
-            return BaseListView.TYPE_LOAD_MORE;
-        } else {
-            return BaseListView.TYPE_DEFAULT;
-        }
     }
 
     /**

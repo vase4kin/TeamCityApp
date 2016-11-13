@@ -64,7 +64,7 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
         }
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
         SimpleSectionedRecyclerViewAdapter mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter(mActivity, R.layout.header_default, R.id.section_text, buildListAdapter);
+                SimpleSectionedRecyclerViewAdapter<>(mActivity.getApplicationContext(), buildListAdapter);
         mSectionedAdapter.setSections(sections.toArray(userStates));
 
         mRecyclerView.setAdapter(mSectionedAdapter);

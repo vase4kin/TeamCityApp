@@ -279,7 +279,7 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
         //Add your adapter to the sectionAdapter
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
         mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter(mActivity, R.layout.header_default, R.id.section_text, mAccountAdapter);
+                SimpleSectionedRecyclerViewAdapter<>(mActivity.getApplicationContext(), mAccountAdapter);
         mSectionedAdapter.setSections(sections.toArray(userStates));
 
         mRecyclerView.setAdapter(mSectionedAdapter);

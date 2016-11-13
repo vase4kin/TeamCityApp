@@ -29,7 +29,6 @@ import android.widget.TextView;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel;
 import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractor;
 import com.mugen.Mugen;
@@ -54,14 +53,12 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
     @BindString(R.string.text_ignored)
     String mIgnoredText;
 
-    private boolean mIsLoadMoreLoading = false;
-    private OnLoadMoreListener mOnLoadMoreListener;
+    private MugenCallbacks mLoadMoreCallbacks;
 
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
     private int mSelectedId = R.id.show_failed;
-    private TestOccurrencesAdapter mTestOccurrencesAdapter;
-    private SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
+    private SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> mAdapter;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections = new ArrayList<>();
     private TestsDataModel mTestsDataModel;
     private OnTestsPresenterListener mListener;
@@ -70,8 +67,13 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
     private int mFailed = 0;
     private int mIgnored = 0;
 
-    public TestsViewImpl(View mView, Activity activity, TestsValueExtractor valueExtractor, @StringRes int emptyMessage) {
+    public TestsViewImpl(View mView,
+                         Activity activity,
+                         TestsValueExtractor valueExtractor,
+                         @StringRes int emptyMessage,
+                         SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> adapter) {
         super(mView, activity, emptyMessage);
+        this.mAdapter = adapter;
         mPassed = valueExtractor.getPassedCount();
         mFailed = valueExtractor.getFailedCount();
         mIgnored = valueExtractor.getIgnoredCount();
@@ -91,35 +93,20 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
     @Override
     public void showData(TestsDataModel dataModel) {
         mTestsDataModel = dataModel;
-        mTestOccurrencesAdapter = new TestOccurrencesAdapter(dataModel, mListener);
+        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.setDataModel(dataModel);
+        baseAdapter.setOnClickListener(mListener);
         initSections();
         initSectionAdapter();
-        Mugen.with(mRecyclerView, new MugenCallbacks() {
-            @Override
-            public void onLoadMore() {
-                mOnLoadMoreListener.loadMore();
-            }
-
-            @Override
-            public boolean isLoading() {
-                return mIsLoadMoreLoading;
-            }
-
-            @Override
-            public boolean hasLoadedAllItems() {
-                return mOnLoadMoreListener.isLoadedAllItems();
-            }
-        }).start();
+        Mugen.with(mRecyclerView, mLoadMoreCallbacks).start();
     }
 
     /**
      * Init sectionAdapter
      */
     private void initSectionAdapter() {
-        mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter(mActivity, R.layout.header_default, R.id.section_text, mTestOccurrencesAdapter);
         setSections();
-        mRecyclerView.setAdapter(mSectionedAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -128,7 +115,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
      */
     private void setSections() {
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[mSections.size()];
-        mSectionedAdapter.setSections(mSections.toArray(userStates));
+        mAdapter.setSections(mSections.toArray(userStates));
     }
 
     /**
@@ -240,28 +227,28 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
      * {@inheritDoc}
      */
     @Override
-    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-        this.mOnLoadMoreListener = mOnLoadMoreListener;
+    public void setOnLoadMoreListener(MugenCallbacks loadMoreCallbacks) {
+        this.mLoadMoreCallbacks = loadMoreCallbacks;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
-        mTestOccurrencesAdapter.addLoadMore();
-        mTestOccurrencesAdapter.notifyDataSetChanged();
-        mIsLoadMoreLoading = true;
+    public void addLoadMore() {
+        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.addLoadMore();
+        baseAdapter.notifyDataSetChanged();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeLoadMoreItem() {
-        mTestOccurrencesAdapter.removeLoadMore();
-        mTestOccurrencesAdapter.notifyDataSetChanged();
-        mIsLoadMoreLoading = false;
+    public void removeLoadMore() {
+        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.removeLoadMore();
+        baseAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -269,8 +256,9 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
      */
     @Override
     public void addMoreBuilds(TestsDataModel dataModel) {
-        mTestOccurrencesAdapter.addMoreBuilds(dataModel);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.addMoreBuilds(dataModel);
+        baseAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -285,7 +273,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mOnLoadMoreListener.loadMore();
+                        mLoadMoreCallbacks.onLoadMore();
                     }
                 });
         TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);

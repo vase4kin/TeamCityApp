@@ -215,7 +215,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      */
     private void initSectionAdapter() {
         mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter(mActivity, R.layout.header_default, R.id.section_text, mBuildListAdapter);
+                SimpleSectionedRecyclerViewAdapter<>(mActivity.getApplicationContext(), mBuildListAdapter);
         setSections(mSections);
         mRecyclerView.setAdapter(mSectionedAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();

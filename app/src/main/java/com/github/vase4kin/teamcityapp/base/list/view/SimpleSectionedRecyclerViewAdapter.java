@@ -24,27 +24,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.vase4kin.teamcityapp.R;
+
 import java.util.Arrays;
 import java.util.Comparator;
 
 /**
  * Section adapter class from Google IO app
  */
-public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int SECTION_TYPE = 0;
     private final Context mContext;
     private boolean mValid = true;
     private int mSectionResourceId;
     private int mTextResourceId;
-    private RecyclerView.Adapter mBaseAdapter;
+    private T mBaseAdapter;
     private SparseArray<Section> mSections = new SparseArray<>();
 
-    public SimpleSectionedRecyclerViewAdapter(Context context, int sectionResourceId, int textResourceId,
-                                              RecyclerView.Adapter baseAdapter) {
-
-        mSectionResourceId = sectionResourceId;
-        mTextResourceId = textResourceId;
+    public SimpleSectionedRecyclerViewAdapter(Context context, T baseAdapter) {
+        mSectionResourceId = R.layout.header_default;
+        mTextResourceId = R.id.section_text;
         mBaseAdapter = baseAdapter;
         mContext = context;
 
@@ -192,4 +192,12 @@ public class SimpleSectionedRecyclerViewAdapter extends RecyclerView.Adapter<Rec
         }
     }
 
+    /**
+     * Get base adapter
+     *
+     * @return adapter of T type
+     */
+    public T getBaseAdapter() {
+        return mBaseAdapter;
+    }
 }
