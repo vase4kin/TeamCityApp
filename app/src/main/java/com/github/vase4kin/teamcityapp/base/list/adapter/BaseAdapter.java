@@ -20,6 +20,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 
@@ -78,5 +79,13 @@ public abstract class BaseAdapter<DM extends BaseDataModel> extends RecyclerView
     @Override
     public void onBindViewHolder(BaseViewHolder<DM> holder, int position) {
         holder.bind(mDataModel, position);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getItemViewType(int position) {
+        return BaseListView.TYPE_DEFAULT;
     }
 }

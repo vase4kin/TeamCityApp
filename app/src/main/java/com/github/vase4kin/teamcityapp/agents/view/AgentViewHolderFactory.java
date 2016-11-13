@@ -16,23 +16,22 @@
 
 package com.github.vase4kin.teamcityapp.agents.view;
 
+import android.view.ViewGroup;
+
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel;
-import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 
-import java.util.Map;
-
 /**
- * Agents adapter
+ * Agent single item view factory
  */
-public class AgentsAdapter extends BaseAdapter<AgentDataModel> {
+public class AgentViewHolderFactory implements ViewHolderFactory<AgentDataModel> {
 
     /**
-     * Constructor
-     *
-     * @param viewHolderFactories - view holder factories from DI
+     * {@inheritDoc}
      */
-    public AgentsAdapter(Map<Integer, ViewHolderFactory<AgentDataModel>> viewHolderFactories) {
-        super(viewHolderFactories);
+    @Override
+    public BaseViewHolder<AgentDataModel> createViewHolder(ViewGroup parent) {
+        return new AgentViewHolder(parent);
     }
 }

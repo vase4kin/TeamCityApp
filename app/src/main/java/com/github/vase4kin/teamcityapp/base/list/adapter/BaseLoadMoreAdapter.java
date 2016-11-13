@@ -43,7 +43,6 @@ public abstract class BaseLoadMoreAdapter<DM extends BaseDataModel & ModelLoadMo
      */
     @Override
     public int getItemViewType(int position) {
-        // some method to check
         if (mDataModel.isLoadMore(position)) {
             return BaseListView.TYPE_LOAD_MORE;
         } else {
