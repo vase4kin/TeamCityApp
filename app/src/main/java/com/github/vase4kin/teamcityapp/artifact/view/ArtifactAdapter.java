@@ -16,127 +16,62 @@
 
 package com.github.vase4kin.teamcityapp.artifact.view;
 
-import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.text.format.Formatter;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
-import com.joanzapata.iconify.widget.IconTextView;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.OnLongClick;
+import java.util.Map;
 
 /**
  * Adapter for artifact files
  */
-public class ArtifactAdapter extends RecyclerView.Adapter<ArtifactAdapter.ArtifactViewHolder> {
+public class ArtifactAdapter extends BaseAdapter<ArtifactDataModel> {
 
-    private static final String FILE_ICON = "{mdi-file}";
-    private static final String FOLDER_ICON = "{mdi-folder}";
+    private OnArtifactPresenterListener mOnClickListener;
 
-    private ArtifactDataModel mDataModel;
-    private OnArtifactPresenterListener onClickListener;
-    private Context mContext;
+    /**
+     * Constructor
+     *
+     * @param viewHolderFactories - view holder factories from DI
+     */
+    public ArtifactAdapter(Map<Integer, ViewHolderFactory<ArtifactDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
+    }
 
-    public ArtifactAdapter(ArtifactDataModel mDataModel, OnArtifactPresenterListener onClickListener, Context mContext) {
-        this.mDataModel = mDataModel;
-        this.onClickListener = onClickListener;
-        this.mContext = mContext;
+    /**
+     * Set {@link OnArtifactPresenterListener}
+     *
+     * @param onArtifactPresenterListener - listener to set
+     */
+    public void setOnClickListener(OnArtifactPresenterListener onArtifactPresenterListener) {
+        this.mOnClickListener = onArtifactPresenterListener;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public int getItemViewType(int position) {
-        if (mDataModel.getSize(position) == 0) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ArtifactViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = inflater.inflate(viewType == 0 ? R.layout.item_artifact_list : R.layout.item_artifact_list_without_size_, viewGroup, false);
-        return new ArtifactViewHolder(v);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBindViewHolder(ArtifactViewHolder holder, int position) {
+    public void onBindViewHolder(BaseViewHolder<ArtifactDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
         final File artifactFile = mDataModel.getFile(position);
-        holder.setArtifactFile(artifactFile);
-        if (artifactFile.getChildren() != null) {
-            holder.mIcon.setText(FOLDER_ICON);
-        } else {
-            holder.mIcon.setText(FILE_ICON);
-        }
-        if (artifactFile.getSize() != 0 && holder.mSize != null) {
-            holder.mSize.setText(Formatter.formatFileSize(mContext, artifactFile.getSize()));
-        }
-        holder.mFileName.setText(artifactFile.getName());
+        // Find the way how to make it through DI
+        ((ArtifactViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnClickListener.onClick(artifactFile);
+            }
+        });
+        ((ArtifactViewHolder) holder).mContainer.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                mOnClickListener.onLongClick(artifactFile);
+                return true;
+            }
+        });
     }
 
-    /**
-     * View holder for artifact filr
-     */
-    public class ArtifactViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @BindView(R.id.itemIcon)
-        IconTextView mIcon;
-        @BindView(R.id.itemTitle)
-        TextView mFileName;
-        @Nullable
-        @BindView(R.id.itemSubTitle)
-        TextView mSize;
-
-        private File artifactFile;
-
-        public ArtifactViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
-
-        public void setArtifactFile(File artifactFile) {
-            this.artifactFile = artifactFile;
-        }
-
-        @OnClick(R.id.container)
-        public void click() {
-            onClickListener.onClick(artifactFile);
-        }
-
-        @SuppressWarnings("SameReturnValue")
-        @OnLongClick(R.id.container)
-        public boolean longClick() {
-            onClickListener.onLongClick(artifactFile);
-            return true;
-        }
-    }
 }
