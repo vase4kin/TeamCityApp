@@ -31,10 +31,15 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
  */
 public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel> implements NavigationView {
 
+    private NavigationAdapter mAdapter;
     private OnNavigationItemClickListener mOnNavigationItemClickListener;
 
-    public NavigationViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public NavigationViewImpl(View view,
+                              Activity activity,
+                              @StringRes int emptyMessage,
+                              NavigationAdapter adapter) {
+        super(view, activity, emptyMessage);
+        this.mAdapter = adapter;
     }
 
     /**
@@ -61,7 +66,7 @@ public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel> im
      */
     @Override
     public void showData(NavigationDataModel dataModel) {
-        NavigationAdapter mAdapter = new NavigationAdapter(dataModel);
+        mAdapter.setDataModel(dataModel);
         mAdapter.setOnClickListener(mOnNavigationItemClickListener);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();

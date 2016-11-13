@@ -16,96 +16,51 @@
 
 package com.github.vase4kin.teamcityapp.navigation.view;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Navigation items adapter
  */
-public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.NavigationViewHolder> {
-
-    private static final String PROJECT = "{md-filter-none}";
-    private static final String BUILD_TYPE = "{md-crop-din}";
+public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
 
     private OnNavigationItemClickListener mOnClickListener;
-    private NavigationDataModel mDataModel;
 
-    public NavigationAdapter(NavigationDataModel mDataModel) {
-        this.mDataModel = mDataModel;
+    /**
+     * Constructor
+     *
+     * @param viewHolderFactories - view holder factories from DI
+     */
+    public NavigationAdapter(Map<Integer, ViewHolderFactory<NavigationDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
     }
 
+    /**
+     * Set {@link OnNavigationItemClickListener}
+     *
+     * @param mOnClickListener - listener to set
+     */
     public void setOnClickListener(OnNavigationItemClickListener mOnClickListener) {
         this.mOnClickListener = mOnClickListener;
     }
 
     @Override
-    public int getItemViewType(int position) {
-        // here you can item can return the view type (For example: project = 1, buildtype = 2)
-        if (mDataModel.getDescription(position) == null) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    @Override
-    public NavigationViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // here you can choose what item you need to add to adapter (For example: project = 1, buildtype = 2)
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = inflater.inflate((viewType == 0) ? R.layout.item_with_title_list : R.layout.item_with_title_and_sub_title_list, viewGroup, false);
-        return new NavigationViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(final NavigationViewHolder holder, int position) {
+    public void onBindViewHolder(BaseViewHolder<NavigationDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
+        // Find the way how to make it through DI
         final int adapterPosition = position;
-        holder.mContainer.setOnClickListener(new View.OnClickListener() {
+        ((NavigationViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnClickListener.onClick(mDataModel.getNavigationItem(adapterPosition));
             }
         });
-        holder.mTextView.setText(mDataModel.getName(position));
-        if (holder.mDescription != null) {
-            holder.mDescription.setText(mDataModel.getDescription(position));
-        }
-        if (mDataModel.isProject(position)) {
-            holder.mIcon.setText(PROJECT);
-        } else {
-            holder.mIcon.setText(BUILD_TYPE);
-        }
     }
 
-    public static class NavigationViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @BindView(R.id.itemTitle)
-        TextView mTextView;
-        @Nullable
-        @BindView(R.id.itemSubTitle)
-        TextView mDescription;
-        @BindView(R.id.itemIcon)
-        TextView mIcon;
-
-        public NavigationViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
-    }
 }
