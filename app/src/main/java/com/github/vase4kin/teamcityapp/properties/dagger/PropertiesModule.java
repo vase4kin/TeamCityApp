@@ -23,12 +23,20 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManagerImpl;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesAdapter;
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewImpl;
+
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntKey;
+import dagger.multibindings.IntoMap;
 
 @Module
 public class PropertiesModule {
@@ -52,7 +60,19 @@ public class PropertiesModule {
     }
 
     @Provides
-    BaseListView providesBaseListView() {
-        return new PropertiesViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_parameters);
+    BaseListView providesBaseListView(PropertiesAdapter adapter) {
+        return new PropertiesViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_parameters, adapter);
+    }
+
+    @Provides
+    PropertiesAdapter providesPropertiesAdapter(Map<Integer, ViewHolderFactory<PropertiesDataModel>> viewHolderFactories) {
+        return new PropertiesAdapter(viewHolderFactories);
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    @Provides
+    ViewHolderFactory<PropertiesDataModel> providesPropertiesViewHolderFactory() {
+        return new PropertiesViewHolderFactory();
     }
 }
