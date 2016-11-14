@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.testdetails.presenter;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
@@ -27,18 +28,25 @@ import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+@PrepareForTest(TextUtils.class)
+@RunWith(PowerMockRunner.class)
 public class TestOccurrencePresenterImplTest {
 
     @Captor
@@ -67,6 +75,7 @@ public class TestOccurrencePresenterImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        PowerMockito.mockStatic(TextUtils.class);
         mPresenter = new TestDetailsPresenterImpl(mViewModel, mDataManager, mTracker, mValueExtractor);
     }
 
@@ -79,13 +88,21 @@ public class TestOccurrencePresenterImplTest {
         verify(mDataManager).loadData(mArgumentCaptor.capture(), eq("url"));
         verify(mValueExtractor).getTestUrl();
 
+        when(mTestOccurrence.getDetails()).thenReturn("Test details");
+        when(TextUtils.isEmpty(anyString())).thenReturn(false);
         OnLoadingListener<TestOccurrences.TestOccurrence> listener = mArgumentCaptor.getValue();
         listener.onSuccess(mTestOccurrence);
         verify(mViewModel).hideProgress();
-        verify(mViewModel).setViews(eq(mTestOccurrence));
+        verify(mViewModel).showTestDetails(eq("Test details"));
+
+        when(mTestOccurrence.getDetails()).thenReturn("");
+        when(TextUtils.isEmpty(anyString())).thenReturn(true);
+        listener.onSuccess(mTestOccurrence);
+        verify(mViewModel, times(2)).hideProgress();
+        verify(mViewModel).showEmptyData();
 
         listener.onFail("error");
-        verify(mViewModel, times(2)).hideProgress();
+        verify(mViewModel, times(3)).hideProgress();
         verify(mViewModel).showRetryView(eq("error"));
 
         mPresenter.onRetry();

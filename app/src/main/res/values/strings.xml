@@ -164,6 +164,9 @@
     <string name="text_failed">Failed (%s)</string>
     <string name="text_ignored">Ignored (%s)</string>
 
+    <!--Test details-->
+    <string name="text_empty_test_details">No test details</string>
+
     <!--Testing-->
     <string name="navigate_up">Navigate up</string>
 
