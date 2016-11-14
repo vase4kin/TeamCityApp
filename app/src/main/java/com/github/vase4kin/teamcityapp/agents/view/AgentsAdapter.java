@@ -16,80 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.agents.view;
 
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel;
-import com.joanzapata.iconify.widget.IconTextView;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Agents adapter
  */
-public class AgentsAdapter extends RecyclerView.Adapter<AgentsAdapter.AgentViewHolder> {
-
-    private static final String ICON = "{md-directions-railway}";
-
-    private AgentDataModel mDataModel;
-
-    public AgentsAdapter(AgentDataModel mDataModel) {
-        this.mDataModel = mDataModel;
-    }
+public class AgentsAdapter extends BaseAdapter<AgentDataModel> {
 
     /**
-     * {@inheritDoc}
+     * Constructor
+     *
+     * @param viewHolderFactories - view holder factories from DI
      */
-    @Override
-    public int getItemViewType(int position) {
-        return 0;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public AgentViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = inflater.inflate(R.layout.item_with_title_list, viewGroup, false);
-        return new AgentViewHolder(v);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBindViewHolder(AgentViewHolder holder, int position) {
-        String name = mDataModel.getName(position);
-        holder.mTextView.setText(name);
-        holder.mIcon.setText(ICON);
-    }
-
-    /**
-     * Agent view holder
-     */
-    public static class AgentViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.itemTitle)
-        TextView mTextView;
-        @BindView(R.id.itemIcon)
-        IconTextView mIcon;
-
-        public AgentViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
+    public AgentsAdapter(Map<Integer, ViewHolderFactory<AgentDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
     }
 }

@@ -16,84 +16,38 @@
 
 package com.github.vase4kin.teamcityapp.properties.view;
 
-import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
-
-import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
-import com.joanzapata.iconify.widget.IconTextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Properties adapter
  */
-public class PropertiesAdapter extends RecyclerView.Adapter<PropertiesAdapter.PropertyViewHolder> {
+public class PropertiesAdapter extends BaseAdapter<PropertiesDataModel> {
 
-    private PropertiesDataModel mDataModel;
     private OnCopyActionClickListener mOnCopyActionClickListener;
 
-    public PropertiesAdapter(PropertiesDataModel mDataModel, OnCopyActionClickListener onPropertyClickListener) {
-        this.mDataModel = mDataModel;
-        this.mOnCopyActionClickListener = onPropertyClickListener;
+    public PropertiesAdapter(Map<Integer, ViewHolderFactory<PropertiesDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
+    }
+
+    public void setOnCopyActionClickListener(OnCopyActionClickListener onCopyActionClickListener) {
+        this.mOnCopyActionClickListener = onCopyActionClickListener;
     }
 
     @Override
-    public int getItemViewType(int position) {
-        return 0;
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    @Override
-    public PropertyViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = inflater.inflate(R.layout.item_simple_element_list, viewGroup, false);
-        return new PropertyViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(PropertyViewHolder holder, final int position) {
-        holder.mHeader.setText(mDataModel.getName(position));
-        holder.mTextView.setText(mDataModel.getValue(position));
-        if (mDataModel.isEmpty(position)) {
-            holder.mTextView.setTextColor(Color.LTGRAY);
-        } else {
-            int color = holder.mTextView.getContext().getResources().getColor(R.color.abc_primary_text_material_light);
-            holder.mTextView.setTextColor(color);
-        }
-        holder.mIcon.setVisibility(View.GONE);
-        OnCopyActionAdapterListenerImpl listener =
+    public void onBindViewHolder(BaseViewHolder<PropertiesDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
+        final OnCopyActionAdapterListenerImpl listener =
                 new OnCopyActionAdapterListenerImpl(
                         mDataModel.getName(position),
                         mDataModel.getValue(position),
                         mOnCopyActionClickListener);
-        holder.mContainer.setOnClickListener(listener);
-        holder.mContainer.setOnLongClickListener(listener);
+        ((PropertyViewHolder) holder).mContainer.setOnClickListener(listener);
+        ((PropertyViewHolder) holder).mContainer.setOnLongClickListener(listener);
     }
 
-    public static class PropertyViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @BindView(R.id.itemTitle)
-        TextView mTextView;
-        @BindView(R.id.itemHeader)
-        TextView mHeader;
-        @BindView(R.id.itemIcon)
-        IconTextView mIcon;
-
-        public PropertyViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
-    }
 }

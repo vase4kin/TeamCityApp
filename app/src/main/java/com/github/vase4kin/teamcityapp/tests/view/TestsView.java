@@ -20,14 +20,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel;
+import com.mugen.MugenCallbacks;
 
 /**
  * View to handle {@link TestOccurrencesFragment} interactions
  */
-public interface TestsView extends BaseListView<TestsDataModel> {
+public interface TestsView extends BaseListView<TestsDataModel>, ViewLoadMore<TestsDataModel> {
 
     /**
      * Invalidate options menu
@@ -65,26 +66,9 @@ public interface TestsView extends BaseListView<TestsDataModel> {
     /**
      * Set on load more listener
      *
-     * @param mOnLoadMoreListener - Listener to receive on load more callbacks
+     * @param loadMoreCallbacks - Listener to receive on load more callbacks
      */
-    void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener);
-
-    /**
-     * Add load more item
-     */
-    void addLoadMoreItem();
-
-    /**
-     * Remove load more item
-     */
-    void removeLoadMoreItem();
-
-    /**
-     * Add more builds
-     *
-     * @param dataModel - Data model to add
-     */
-    void addMoreBuilds(TestsDataModel dataModel);
+    void setOnLoadMoreListener(MugenCallbacks loadMoreCallbacks);
 
     /**
      * Show retry load more snack bar if server error happens

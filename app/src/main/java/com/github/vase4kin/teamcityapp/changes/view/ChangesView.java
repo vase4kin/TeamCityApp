@@ -16,35 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.changes.view;
 
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
+import com.mugen.MugenCallbacks;
 
 /**
  * View interactions of {@link ChangesFragment}
  */
-public interface ChangesView extends BaseListView<ChangesDataModel>, LoadMore<ChangesDataModel> {
+public interface ChangesView extends BaseListView<ChangesDataModel>, ViewLoadMore<ChangesDataModel>, OnChangeClickListener {
 
     /**
-     * @param mOnLoadMoreListener - Listener to receive load more callbacks
+     * @param loadMoreCallbacks - Listener to receive load more callbacks
      */
-    void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener);
+    void setLoadMoreListener(MugenCallbacks loadMoreCallbacks);
 
     /**
-     * {@inheritDoc}
+     * Show retry load more snack bar
      */
-    void addLoadMoreItem();
-
-    /**
-     * {@inheritDoc}
-     */
-    void removeLoadMoreItem();
-
-    /**
-     * {@inheritDoc}
-     */
-    void addMoreBuilds(ChangesDataModel dataModel);
-
     void showRetryLoadMoreSnackBar();
 }

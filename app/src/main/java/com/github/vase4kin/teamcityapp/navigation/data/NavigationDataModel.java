@@ -40,6 +40,12 @@ public interface NavigationDataModel extends BaseDataModel {
     String getDescription(int position);
 
     /**
+     * @param position - Adapter position
+     * @return true if description exists
+     */
+    boolean hasDescription(int position);
+
+    /**
      * Is project
      */
     boolean isProject(int position);

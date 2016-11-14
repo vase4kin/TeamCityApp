@@ -19,22 +19,16 @@ package com.github.vase4kin.teamcityapp.base.list.adapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 
 /**
- * Load more
+ * Load more for data model
+ *
+ * @param <T> - Base data model
  */
-public interface LoadMore<T extends BaseDataModel> {
+public interface ModelLoadMore<T extends BaseDataModel> extends ViewLoadMore<T> {
 
     /**
-     * Add load more
+     * Is load more
+     *
+     * @param position - data model position
      */
-    void addLoadMoreItem();
-
-    /**
-     * Remove load more
-     */
-    void removeLoadMoreItem();
-
-    /**
-     * Add model
-     */
-    void addMoreBuilds(T dataModel);
+    boolean isLoadMore(int position);
 }

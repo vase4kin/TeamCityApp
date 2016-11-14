@@ -22,19 +22,28 @@ import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManager;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManagerImpl;
+import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouterImpl;
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
+
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntKey;
+import dagger.multibindings.IntoMap;
 
 @Module
 public class NavigationModule {
@@ -43,15 +52,15 @@ public class NavigationModule {
     private Activity mActivity;
     private Bundle mBundle;
 
-    public NavigationModule(View mView, Activity mActivity, Bundle mBundle) {
-        this.mView = mView;
+    public NavigationModule(View view, Activity mActivity, Bundle mBundle) {
+        this.mView = view;
         this.mActivity = mActivity;
         this.mBundle = mBundle;
     }
 
     @Provides
-    NavigationView providesNavigationView() {
-        return new NavigationViewImpl(mView, mActivity, R.string.empty_list_message_projects_or_build_types);
+    NavigationView providesNavigationView(NavigationAdapter adapter) {
+        return new NavigationViewImpl(mView, mActivity, R.string.empty_list_message_projects_or_build_types, adapter);
     }
 
     @Provides
@@ -72,5 +81,17 @@ public class NavigationModule {
     @Provides
     ViewTracker providesViewTracker() {
         return new NavigationTrackerImpl();
+    }
+
+    @Provides
+    NavigationAdapter providesNavigationAdapter(Map<Integer, ViewHolderFactory<NavigationDataModel>> viewHolderFactories) {
+        return new NavigationAdapter(viewHolderFactories);
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    @Provides
+    ViewHolderFactory<NavigationDataModel> providesNavigationViewHolderFactory() {
+        return new NavigationViewHolderFactory();
     }
 }

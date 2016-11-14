@@ -15,6 +15,7 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/BaseItem">
 
     <FrameLayout
@@ -35,7 +36,8 @@
                 <include layout="@layout/layout_item_title" />
 
                 <TextView
-                    style="@style/ItemSubTitle" />
+                    style="@style/ItemSubTitle"
+                    tools:text="@string/default_description_value" />
 
             </LinearLayout>
 

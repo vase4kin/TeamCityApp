@@ -38,7 +38,7 @@ import tr.xip.errorview.ErrorView;
 /**
  * Base list view impl
  */
-public abstract class BaseListViewImpl<T extends BaseDataModel> implements BaseListView<T> {
+public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends RecyclerView.Adapter> implements BaseListView<T> {
 
     @BindView(R.id.my_recycler_view)
     protected RecyclerView mRecyclerView;
@@ -58,11 +58,16 @@ public abstract class BaseListViewImpl<T extends BaseDataModel> implements BaseL
 
     protected View mView;
     protected Activity mActivity;
+    protected RA mAdapter;
 
-    public BaseListViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
+    public BaseListViewImpl(View view,
+                            Activity activity,
+                            @StringRes int emptyMessage,
+                            RA adapter) {
         this.mEmptyMessage = emptyMessage;
-        this.mView = mView;
+        this.mView = view;
         this.mActivity = activity;
+        this.mAdapter = adapter;
     }
 
     /**

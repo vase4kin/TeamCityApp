@@ -57,4 +57,12 @@ public class ArtifactDataModelImpl implements ArtifactDataModel {
     public int getItemCount() {
         return mFiles.size();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasSize(int position) {
+        return mFiles.get(position).getSize() != 0;
+    }
 }

@@ -109,19 +109,22 @@ public class BuildListPresenterImplTest {
         verify(mRouter).openBuildPage(eq(mBuild));
 
         when(mDataManager.canLoadMore()).thenReturn(false);
-        assertThat(onBuildListPresenterListener.isLoadedAllItems(), is(true));
+        assertThat(onBuildListPresenterListener.hasLoadedAllItems(), is(true));
 
-        onBuildListPresenterListener.loadMore();
-        verify(mView).addLoadMoreItem();
+        onBuildListPresenterListener.onLoadMore();
+        assertThat(mPresenter.mIsLoadMoreLoading, is(true));
+        verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnLoadingListenerArgumentCaptor.capture());
         OnLoadingListener<List<Build>> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
         loadingListener.onSuccess(Collections.<Build>emptyList());
-        verify(mView).removeLoadMoreItem();
+        verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(BuildListDataModelImpl.class));
+        assertThat(mPresenter.mIsLoadMoreLoading, is(false));
 
         loadingListener.onFail("error");
-        verify(mView, times(2)).removeLoadMoreItem();
+        verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
+        assertThat(mPresenter.mIsLoadMoreLoading, is(false));
     }
 
     @Test

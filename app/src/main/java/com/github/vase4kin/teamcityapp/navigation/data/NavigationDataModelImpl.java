@@ -52,6 +52,14 @@ public class NavigationDataModelImpl implements NavigationDataModel {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasDescription(int position) {
+        return mItems.get(position).getDescription() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isProject(int position) {
         return mItems.get(position) instanceof Project;
     }

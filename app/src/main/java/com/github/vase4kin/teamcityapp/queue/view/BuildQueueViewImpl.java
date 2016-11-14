@@ -21,6 +21,8 @@ import android.support.annotation.StringRes;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl;
 
 /**
@@ -28,8 +30,11 @@ import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewI
  */
 public class BuildQueueViewImpl extends RunningBuildsListViewImpl {
 
-    public BuildQueueViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public BuildQueueViewImpl(View mView,
+                              Activity activity,
+                              @StringRes int emptyMessage,
+                              SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
+        super(mView, activity, emptyMessage, adapter);
     }
 
     /**

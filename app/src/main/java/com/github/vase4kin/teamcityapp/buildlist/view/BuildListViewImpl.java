@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.mugen.Mugen;
-import com.mugen.MugenCallbacks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,28 +47,27 @@ import tr.xip.errorview.ErrorView;
 /**
  * Impl of {@link BuildListView}
  */
-public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> implements BuildListView {
+public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, SimpleSectionedRecyclerViewAdapter<BuildListAdapter>> implements BuildListView {
 
     @BindView(R.id.floating_action_button)
     FloatingActionButton mFloatingActionButton;
-    private BuildListAdapter mBuildListAdapter;
-    private SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections;
+    private BuildListDataModel mDataModel;
 
-    private boolean mIsLoadMoreLoading = false;
+    protected OnBuildListPresenterListener mOnBuildListPresenterListener;
 
-    protected OnBuildListPresenterListener onBuildListPresenterListener;
-
-    public BuildListViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public BuildListViewImpl(View mView,
+                             Activity activity,
+                             @StringRes int emptyMessage,
+                             SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
+        super(mView, activity, emptyMessage, adapter);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public void setOnBuildListPresenterListener(OnBuildListPresenterListener onBuildListPresenterListener) {
-        this.onBuildListPresenterListener = onBuildListPresenterListener;
+        this.mOnBuildListPresenterListener = onBuildListPresenterListener;
     }
 
     /**
@@ -127,20 +125,20 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
-        mBuildListAdapter.addLoadMoreItem();
-        mBuildListAdapter.notifyDataSetChanged();
-        mIsLoadMoreLoading = true;
+    public void addLoadMore() {
+        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.addLoadMore();
+        baseAdapter.notifyDataSetChanged();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeLoadMoreItem() {
-        mBuildListAdapter.removeLoadMoreItem();
-        mBuildListAdapter.notifyDataSetChanged();
-        mIsLoadMoreLoading = false;
+    public void removeLoadMore() {
+        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.removeLoadMore();
+        baseAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -155,7 +153,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        onBuildListPresenterListener.loadMore();
+                        mOnBuildListPresenterListener.onLoadMore();
                     }
                 });
         TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
@@ -168,8 +166,9 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      */
     @Override
     public void addMoreBuilds(BuildListDataModel dataModel) {
-        mBuildListAdapter.addMoreBuilds(dataModel);
-        reInitSections(mBuildListAdapter.getDataModel());
+        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.addMoreBuilds(dataModel);
+        reInitSections(mDataModel);
         setSections(mSections);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -179,25 +178,13 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      */
     @Override
     public void showData(BuildListDataModel dataModel) {
-        mBuildListAdapter = new BuildListAdapter(dataModel, onBuildListPresenterListener);
+        this.mDataModel = dataModel;
         mSections = initSections(dataModel);
+        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.setDataModel(dataModel);
+        baseAdapter.setOnBuildListPresenterListener(mOnBuildListPresenterListener);
         initSectionAdapter();
-        Mugen.with(mRecyclerView, new MugenCallbacks() {
-            @Override
-            public void onLoadMore() {
-                onBuildListPresenterListener.loadMore();
-            }
-
-            @Override
-            public boolean isLoading() {
-                return mIsLoadMoreLoading;
-            }
-
-            @Override
-            public boolean hasLoadedAllItems() {
-                return onBuildListPresenterListener.isLoadedAllItems();
-            }
-        }).start();
+        Mugen.with(mRecyclerView, mOnBuildListPresenterListener).start();
     }
 
     /**
@@ -214,10 +201,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      * @param
      */
     private void initSectionAdapter() {
-        mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter(mActivity, R.layout.header_default, R.id.section_text, mBuildListAdapter);
         setSections(mSections);
-        mRecyclerView.setAdapter(mSectionedAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -228,13 +213,13 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
      */
     private void setSections(List<SimpleSectionedRecyclerViewAdapter.Section> sections) {
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-        mSectionedAdapter.setSections(sections.toArray(userStates));
+        mAdapter.setSections(sections.toArray(userStates));
     }
 
     /**
      * Return sections for build data
      *
-     * @param data
+     * @param dataModel
      * @return List<SimpleSectionedRecyclerViewAdapter.Section>
      */
     private List<SimpleSectionedRecyclerViewAdapter.Section> initSections(BuildListDataModel dataModel) {

@@ -27,7 +27,6 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
 import com.mugen.Mugen;
@@ -36,24 +35,23 @@ import com.mugen.MugenCallbacks;
 /**
  * Impl of {@link ChangesView}
  */
-public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implements ChangesView, OnChangeClickListener {
+public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesAdapter> implements ChangesView {
 
-    private boolean mIsLoadMoreLoading = false;
+    private MugenCallbacks mLoadMoreCallbacks;
 
-    private OnLoadMoreListener mOnLoadMoreListener;
-
-    private ChangesAdapter mChangesAdapter;
-
-    public ChangesViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public ChangesViewImpl(View view,
+                           Activity activity,
+                           @StringRes int emptyMessage,
+                           ChangesAdapter adapter) {
+        super(view, activity, emptyMessage, adapter);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener) {
-        this.mOnLoadMoreListener = mOnLoadMoreListener;
+    public void setLoadMoreListener(MugenCallbacks loadMoreCallbacks) {
+        this.mLoadMoreCallbacks = loadMoreCallbacks;
     }
 
     /**
@@ -61,45 +59,29 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
      */
     @Override
     public void showData(ChangesDataModel dataModel) {
-        mChangesAdapter = new ChangesAdapter(dataModel, this);
-        mRecyclerView.setAdapter(mChangesAdapter);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
-        Mugen.with(mRecyclerView, new MugenCallbacks() {
-            @Override
-            public void onLoadMore() {
-                mOnLoadMoreListener.loadMore();
-            }
-
-            @Override
-            public boolean isLoading() {
-                return mIsLoadMoreLoading;
-            }
-
-            @Override
-            public boolean hasLoadedAllItems() {
-                return mOnLoadMoreListener.isLoadedAllItems();
-            }
-        }).start();
+        Mugen.with(mRecyclerView, mLoadMoreCallbacks).start();
+        mAdapter.setOnChangeClickListener(this);
+        mAdapter.setDataModel(dataModel);
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
-        mChangesAdapter.addLoadMoreItem();
-        mChangesAdapter.notifyDataSetChanged();
-        mIsLoadMoreLoading = true;
+    public void addLoadMore() {
+        mAdapter.addLoadMore();
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void removeLoadMoreItem() {
-        mChangesAdapter.removeLoadMoreItem();
-        mChangesAdapter.notifyDataSetChanged();
-        mIsLoadMoreLoading = false;
+    public void removeLoadMore() {
+        mAdapter.removeLoadMore();
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -107,8 +89,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
      */
     @Override
     public void addMoreBuilds(ChangesDataModel dataModel) {
-        mChangesAdapter.addMoreBuilds(dataModel);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        mAdapter.addMoreBuilds(dataModel);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -123,7 +105,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        mOnLoadMoreListener.loadMore();
+                        mLoadMoreCallbacks.onLoadMore();
                     }
                 });
         TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);

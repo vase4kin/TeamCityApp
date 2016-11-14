@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -39,6 +40,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         BuildListDataModel, Build, V, DM, BaseValueExtractor> {
 
     private BuildListRouter mRouter;
+    @VisibleForTesting
+    boolean mIsLoadMoreLoading = false;
 
     @Inject
     public BuildListPresenterImpl(@NonNull V view,
@@ -74,25 +77,33 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             }
 
             @Override
-            public void loadMore() {
-                mView.addLoadMoreItem();
+            public void onLoadMore() {
+                mIsLoadMoreLoading = true;
+                mView.addLoadMore();
                 mDataManager.loadMore(new OnLoadingListener<List<Build>>() {
                     @Override
                     public void onSuccess(List<Build> data) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.addMoreBuilds(new BuildListDataModelImpl(data));
+                        mIsLoadMoreLoading = false;
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.showRetryLoadMoreSnackBar();
+                        mIsLoadMoreLoading = false;
                     }
                 });
             }
 
             @Override
-            public boolean isLoadedAllItems() {
+            public boolean isLoading() {
+                return mIsLoadMoreLoading;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
                 return !mDataManager.canLoadMore();
             }
         });

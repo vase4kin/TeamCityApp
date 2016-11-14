@@ -27,10 +27,13 @@ import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 /**
  * View to manage properties interactions
  */
-public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel> {
+public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, PropertiesAdapter> {
 
-    public PropertiesViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public PropertiesViewImpl(View view,
+                              Activity activity,
+                              @StringRes int emptyMessage,
+                              PropertiesAdapter adapter) {
+        super(view, activity, emptyMessage, adapter);
     }
 
     /**
@@ -38,8 +41,9 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel> {
      */
     @Override
     public void showData(PropertiesDataModel dataModel) {
-        PropertiesAdapter propertiesAdapter = new PropertiesAdapter(dataModel, new OnCopyActionClickListenerImpl(mActivity));
-        mRecyclerView.setAdapter(propertiesAdapter);
+        mAdapter.setDataModel(dataModel);
+        mAdapter.setOnCopyActionClickListener(new OnCopyActionClickListenerImpl(mActivity));
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 

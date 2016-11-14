@@ -90,7 +90,6 @@
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">false</item>
         <item name="android:maxLines">2</item>
-        <item name="android:text">@string/default_name_value</item>
         <item name="android:textColor">@color/main_text_color</item>
     </style>
 
@@ -101,7 +100,6 @@
         <item name="android:ellipsize">end</item>
         <item name="android:singleLine">false</item>
         <item name="android:maxLines">2</item>
-        <item name="android:text">@string/default_description_value</item>
         <item name="android:textColor">@color/sub_text_color</item>
     </style>
 
