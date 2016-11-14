@@ -55,6 +55,8 @@ import tr.xip.errorview.ErrorView;
 
 /**
  * View impl for account
+ *
+ * TODO: move all logic to presenter!
  */
 public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> implements AccountsView, OnUserAccountClickListener {
 
@@ -75,8 +77,7 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
     private ActionMode mActionMode;
     private boolean isSelectionDisabled = false;
     private AccountDataModel mDataModel;
-    private SimpleSectionedRecyclerViewAdapter mSectionedAdapter;
-    private AccountAdapter mAccountAdapter;
+    private SimpleSectionedRecyclerViewAdapter<AccountAdapter> mAdapter;
 
     // Select account logic
     private ModalMultiSelectorCallback mDeleteMode = new ModalMultiSelectorCallback(mMultiSelector) {
@@ -102,8 +103,8 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
         public boolean onActionItemClicked(final ActionMode actionMode, final MenuItem menuItem) {
             if (menuItem.getItemId() == R.id.delete) {
                 backUpAccountMap.clear();
-                for (int i = 0; i < mAccountAdapter.getItemCount(); i++) {
-                    int realPosition = mSectionedAdapter.positionToSectionedPosition(i);
+                for (int i = 0; i < mAdapter.getItemCount(); i++) {
+                    int realPosition = mAdapter.positionToSectionedPosition(i);
                     if (mMultiSelector.isSelected(realPosition, 0)) {
                         final UserAccount userAccount = mDataModel.get(i);
                         backUpAccountMap.put(i, userAccount);
@@ -203,9 +204,14 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
     };
     private OnAccountRemoveListener mOnAccountRemoveListener;
 
-    public AccountsViewImpl(View mView, Activity activity, SharedUserStorage sharedUserStorage, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public AccountsViewImpl(View view,
+                            Activity activity,
+                            SharedUserStorage sharedUserStorage,
+                            @StringRes int emptyMessage,
+                            SimpleSectionedRecyclerViewAdapter<AccountAdapter> adapter) {
+        super(view, activity, emptyMessage);
         this.mSharedUserStorage = sharedUserStorage;
+        this.mAdapter = adapter;
     }
 
     @OnClick(R.id.floating_action_button)
@@ -259,7 +265,10 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
         mDataModel = dataModel;
         mDataModel.sort();
 
-        mAccountAdapter = new AccountAdapter(mDataModel, mMultiSelector, this);
+        AccountAdapter baseAdapter = mAdapter.getBaseAdapter();
+        baseAdapter.setDataModel(dataModel);
+        baseAdapter.setListener(this);
+        baseAdapter.setMultiSelector(mMultiSelector);
 
         //This is the code to provide a sectioned list
         List<SimpleSectionedRecyclerViewAdapter.Section> sections =
@@ -276,13 +285,10 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
             sections.add(new SimpleSectionedRecyclerViewAdapter.Section(1, mNotActiveAccountHeaderText));
         }
 
-        //Add your adapter to the sectionAdapter
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-        mSectionedAdapter = new
-                SimpleSectionedRecyclerViewAdapter<>(mActivity.getApplicationContext(), mAccountAdapter);
-        mSectionedAdapter.setSections(sections.toArray(userStates));
+        mAdapter.setSections(sections.toArray(userStates));
 
-        mRecyclerView.setAdapter(mSectionedAdapter);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -293,7 +299,7 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
     public void click(int position) {
         if (!isSelectionDisabled) {
             mMultiSelector.setSelectable(true);
-            int realPosition = mSectionedAdapter.positionToSectionedPosition(position);
+            int realPosition = mAdapter.positionToSectionedPosition(position);
             if (mMultiSelector.tapSelection(realPosition, position)) {
                 if (mMultiSelector != null) {
                     if (mMultiSelector.isSelectable()) {
