@@ -29,8 +29,14 @@ import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
  */
 public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel> {
 
-    public OverviewViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    private OverviewAdapter mAdapter;
+
+    public OverviewViewImpl(View view,
+                            Activity activity,
+                            @StringRes int emptyMessage,
+                            OverviewAdapter adapter) {
+        super(view, activity, emptyMessage);
+        this.mAdapter = adapter;
     }
 
     /**
@@ -38,8 +44,9 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel> {
      */
     @Override
     public void showData(OverviewDataModel dataModel) {
-        BuildElementAdapter buildElementAdapter = new BuildElementAdapter(dataModel, new OnCustomCopyActionClickListenerImpl(mActivity));
-        mRecyclerView.setAdapter(buildElementAdapter);
+        mAdapter.setDataModel(dataModel);
+        mAdapter.setOnCopyActionClickListener(new OnCustomCopyActionClickListenerImpl(mActivity));
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
