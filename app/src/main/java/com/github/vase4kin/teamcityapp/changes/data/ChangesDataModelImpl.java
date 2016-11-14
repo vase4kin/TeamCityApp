@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.changes.data;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 
@@ -31,7 +33,8 @@ public class ChangesDataModelImpl implements ChangesDataModel {
     /**
      * Load more
      */
-    private static final Changes.Change LOAD_MORE = new Changes.Change() {
+    @VisibleForTesting
+    static final Changes.Change LOAD_MORE = new Changes.Change() {
         @Override
         public String getId() {
             return UUID.randomUUID().toString();

@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -39,7 +40,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         BuildListDataModel, Build, V, DM, BaseValueExtractor> {
 
     private BuildListRouter mRouter;
-    private boolean mIsLoadMoreLoading = false;
+    @VisibleForTesting
+    boolean mIsLoadMoreLoading = false;
 
     @Inject
     public BuildListPresenterImpl(@NonNull V view,

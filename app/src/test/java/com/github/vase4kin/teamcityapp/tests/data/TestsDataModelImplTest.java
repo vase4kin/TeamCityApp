@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.tests.data;
 
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
-import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesAdapter;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
 import org.junit.Before;
@@ -85,30 +84,25 @@ public class TestsDataModelImplTest {
     }
 
     @Test
-    public void testIsLoadMore() throws Exception {
-        List<TestOccurrences.TestOccurrence> tests = new ArrayList<>();
-        tests.add(new TestOccurrencesAdapter.LoadMore());
-        mDataModel = new TestsDataModelImpl(tests);
-        assertThat(mDataModel.isLoadMore(0), is(equalTo(true)));
-    }
-
-    @Test
-    public void testAdd() throws Exception {
-        TestOccurrences.TestOccurrence test = new TestOccurrences.TestOccurrence();
-        mDataModel.add(test);
-        assertThat(mDataModel.getItemCount(), is(equalTo(2)));
-    }
-
-    @Test
-    public void testRemove() throws Exception {
-        mDataModel.remove(mTest);
-        assertThat(mDataModel.getItemCount(), is(equalTo(0)));
-    }
-
-    @Test
     public void testAddTestDataModel() throws Exception {
         TestOccurrences.TestOccurrence testOccurrence = new TestOccurrences.TestOccurrence();
-        mDataModel.add(new TestsDataModelImpl(Collections.singletonList(testOccurrence)));
+        mDataModel.addMoreBuilds(new TestsDataModelImpl(Collections.singletonList(testOccurrence)));
         assertThat(mDataModel.getItemCount(), is(equalTo(2)));
+    }
+
+    @Test
+    public void testIsLoadMore() {
+        mDataModel = new TestsDataModelImpl(Collections.singletonList(TestsDataModelImpl.LOAD_MORE));
+        assertThat(mDataModel.isLoadMore(0), is(true));
+    }
+
+    @Test
+    public void testLoadMore() {
+        mDataModel.addLoadMore();
+        assertThat(mDataModel.isLoadMore(1), is(true));
+        assertThat(mDataModel.getItemCount(), is(2));
+        mDataModel.removeLoadMore();
+        assertThat(mDataModel.isLoadMore(0), is(false));
+        assertThat(mDataModel.getItemCount(), is(1));
     }
 }

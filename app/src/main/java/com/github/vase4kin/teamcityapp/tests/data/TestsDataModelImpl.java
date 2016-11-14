@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.tests.data;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
@@ -31,7 +33,8 @@ public class TestsDataModelImpl implements TestsDataModel {
     /**
      * Load more
      */
-    private static final TestOccurrences.TestOccurrence LOAD_MORE = new TestOccurrences.TestOccurrence() {
+    @VisibleForTesting
+    static final TestOccurrences.TestOccurrence LOAD_MORE = new TestOccurrences.TestOccurrence() {
         @Override
         public String getId() {
             return UUID.randomUUID().toString();

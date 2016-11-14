@@ -18,13 +18,13 @@ package com.github.vase4kin.teamcityapp.changes.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModelImpl;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.mugen.MugenCallbacks;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.when;
 public class ChangesPresenterImplTest {
 
     @Captor
-    private ArgumentCaptor<OnLoadMoreListener> mOnLoadMoreListenerArgumentCaptor;
+    private ArgumentCaptor<MugenCallbacks> mOnLoadMoreListenerArgumentCaptor;
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<Changes.Change>>> mOnChangesLoadingListener;
@@ -88,23 +88,26 @@ public class ChangesPresenterImplTest {
         mPresenter.initViews();
         verify(mView).setLoadMoreListener(mOnLoadMoreListenerArgumentCaptor.capture());
 
-        OnLoadMoreListener onLoadMoreListener = mOnLoadMoreListenerArgumentCaptor.getValue();
-        assertThat(onLoadMoreListener.isLoadedAllItems(), is(true));
+        MugenCallbacks onLoadMoreListener = mOnLoadMoreListenerArgumentCaptor.getValue();
+        assertThat(onLoadMoreListener.hasLoadedAllItems(), is(true));
         verify(mDataManager).canLoadMore();
 
-        onLoadMoreListener.loadMore();
+        onLoadMoreListener.onLoadMore();
         verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnChangesLoadingListener.capture());
+        assertThat(mPresenter.mIsLoadMoreLoading, is(true));
 
         OnLoadingListener<List<Changes.Change>> onChangesLoadingListener = mOnChangesLoadingListener.getValue();
         List<Changes.Change> changes = Collections.emptyList();
         onChangesLoadingListener.onSuccess(changes);
         verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(ChangesDataModelImpl.class));
+        assertThat(mPresenter.mIsLoadMoreLoading, is(false));
 
         onChangesLoadingListener.onFail("error");
         verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
+        assertThat(mPresenter.mIsLoadMoreLoading, is(false));
     }
 
     @Test

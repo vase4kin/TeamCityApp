@@ -92,26 +92,12 @@ public class BuildListDataModelImplTest {
     }
 
     @Test
-    public void testAdd() throws Exception {
-        Build build = new Build();
-        mDataModel.add(build);
-        assertThat(mDataModel.getBuild(1), is(build));
-        assertThat(mDataModel.getItemCount(), is(2));
-    }
-
-    @Test
     public void testAddDataModel() throws Exception {
         Build build = new Build();
         BuildListDataModel dataModel = new BuildListDataModelImpl(Collections.singletonList(build));
-        mDataModel.add(dataModel);
+        mDataModel.addMoreBuilds(dataModel);
         assertThat(mDataModel.getBuild(1), is(build));
         assertThat(mDataModel.getItemCount(), is(2));
-    }
-
-    @Test
-    public void testRemove() throws Exception {
-        mDataModel.remove(mBuild);
-        assertThat(mDataModel.getItemCount(), is(0));
     }
 
     @Test
@@ -130,4 +116,27 @@ public class BuildListDataModelImplTest {
         when(mBuild.getBuildTypeId()).thenReturn("id");
         assertThat(mDataModel.getBuildTypeId(0), is("id"));
     }
+
+    @Test
+    public void testHasBranch() {
+        when(mBuild.getBranchName()).thenReturn("");
+        assertThat(mDataModel.hasBranch(0), is(true));
+    }
+
+    @Test
+    public void testIsLoadMore() {
+        mDataModel = new BuildListDataModelImpl(Collections.singletonList(BuildListDataModelImpl.LOAD_MORE));
+        assertThat(mDataModel.isLoadMore(0), is(true));
+    }
+
+    @Test
+    public void testLoadMore() {
+        mDataModel.addLoadMore();
+        assertThat(mDataModel.isLoadMore(1), is(true));
+        assertThat(mDataModel.getItemCount(), is(2));
+        mDataModel.removeLoadMore();
+        assertThat(mDataModel.isLoadMore(0), is(false));
+        assertThat(mDataModel.getItemCount(), is(1));
+    }
+
 }

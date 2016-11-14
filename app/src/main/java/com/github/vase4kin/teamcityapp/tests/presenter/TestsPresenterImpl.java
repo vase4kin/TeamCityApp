@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.tests.presenter;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -51,7 +52,8 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
         TestsValueExtractor> implements TestsPresenter, OnTestsPresenterListener {
 
     private TestsRouter mRouter;
-    private boolean mIsLoadMoreLoading = false;
+    @VisibleForTesting
+    boolean mIsLoadMoreLoading = false;
 
     @Inject
     TestsPresenterImpl(@NonNull TestsView view,

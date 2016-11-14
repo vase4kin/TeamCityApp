@@ -22,7 +22,6 @@ import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataManager;
@@ -30,6 +29,7 @@ import com.github.vase4kin.teamcityapp.tests.data.TestsDataModelImpl;
 import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractor;
 import com.github.vase4kin.teamcityapp.tests.router.TestsRouter;
 import com.github.vase4kin.teamcityapp.tests.view.TestsView;
+import com.mugen.MugenCallbacks;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class TestsPresenterImplTest {
     private ArgumentCaptor<OnLoadingListener<Integer>> mOnLoadingIntegerListenerArgumentCaptor;
 
     @Captor
-    private ArgumentCaptor<OnLoadMoreListener> mOnLoadMoreListenerArgumentCaptor;
+    private ArgumentCaptor<MugenCallbacks> mOnLoadMoreListenerArgumentCaptor;
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<TestOccurrences.TestOccurrence>>> mOnLoadingListenerArgumentCaptor;
@@ -124,23 +124,26 @@ public class TestsPresenterImplTest {
         mPresenter.initViews();
         verify(mView).setOnLoadMoreListener(mOnLoadMoreListenerArgumentCaptor.capture());
 
-        OnLoadMoreListener onLoadMoreListener = mOnLoadMoreListenerArgumentCaptor.getValue();
-        assertThat(onLoadMoreListener.isLoadedAllItems(), is(true));
+        MugenCallbacks onLoadMoreListener = mOnLoadMoreListenerArgumentCaptor.getValue();
+        assertThat(onLoadMoreListener.hasLoadedAllItems(), is(true));
         verify(mDataManager).canLoadMore();
 
-        onLoadMoreListener.loadMore();
-        verify(mView).addLoadMoreItem();
+        onLoadMoreListener.onLoadMore();
+        verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnLoadingListenerArgumentCaptor.capture());
+        assertThat(mPresenter.mIsLoadMoreLoading, is(true));
 
         OnLoadingListener<List<TestOccurrences.TestOccurrence>> listOnLoadingListener = mOnLoadingListenerArgumentCaptor.getValue();
         List<TestOccurrences.TestOccurrence> tests = Collections.emptyList();
         listOnLoadingListener.onSuccess(tests);
-        verify(mView).removeLoadMoreItem();
+        verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(TestsDataModelImpl.class));
+        assertThat(mPresenter.mIsLoadMoreLoading, is(false));
 
         listOnLoadingListener.onFail("error");
-        verify(mView, times(2)).removeLoadMoreItem();
+        verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
+        assertThat(mPresenter.mIsLoadMoreLoading, is(false));
     }
 
     @Test

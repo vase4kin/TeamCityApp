@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.data;
 
+import android.support.annotation.VisibleForTesting;
+
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
@@ -32,7 +34,8 @@ public class BuildListDataModelImpl implements BuildListDataModel {
     /**
      * Load more
      */
-    private static final Build LOAD_MORE = new Build() {
+    @VisibleForTesting
+    static final Build LOAD_MORE = new Build() {
         @Override
         public String getId() {
             return UUID.randomUUID().toString();
