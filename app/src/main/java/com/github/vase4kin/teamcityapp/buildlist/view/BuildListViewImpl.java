@@ -47,11 +47,10 @@ import tr.xip.errorview.ErrorView;
 /**
  * Impl of {@link BuildListView}
  */
-public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> implements BuildListView {
+public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, SimpleSectionedRecyclerViewAdapter<BuildListAdapter>> implements BuildListView {
 
     @BindView(R.id.floating_action_button)
     FloatingActionButton mFloatingActionButton;
-    protected SimpleSectionedRecyclerViewAdapter<BuildListAdapter> mAdapter;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections;
     private BuildListDataModel mDataModel;
 
@@ -61,8 +60,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel> impl
                              Activity activity,
                              @StringRes int emptyMessage,
                              SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
-        super(mView, activity, emptyMessage);
-        this.mAdapter = adapter;
+        super(mView, activity, emptyMessage, adapter);
     }
 
     /**

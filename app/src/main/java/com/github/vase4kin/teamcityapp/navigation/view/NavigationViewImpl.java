@@ -29,17 +29,15 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 /**
  * Impl of {@link NavigationView}
  */
-public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel> implements NavigationView {
+public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel, NavigationAdapter> implements NavigationView {
 
-    private NavigationAdapter mAdapter;
     private OnNavigationItemClickListener mOnNavigationItemClickListener;
 
     public NavigationViewImpl(View view,
                               Activity activity,
                               @StringRes int emptyMessage,
                               NavigationAdapter adapter) {
-        super(view, activity, emptyMessage);
-        this.mAdapter = adapter;
+        super(view, activity, emptyMessage, adapter);
     }
 
     /**

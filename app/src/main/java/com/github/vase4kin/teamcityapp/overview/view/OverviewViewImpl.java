@@ -27,16 +27,13 @@ import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
 /**
  * View to manage {@link BuildOverviewElementsFragment}
  */
-public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel> {
-
-    private OverviewAdapter mAdapter;
+public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, OverviewAdapter> {
 
     public OverviewViewImpl(View view,
                             Activity activity,
                             @StringRes int emptyMessage,
                             OverviewAdapter adapter) {
-        super(view, activity, emptyMessage);
-        this.mAdapter = adapter;
+        super(view, activity, emptyMessage, adapter);
     }
 
     /**

@@ -42,7 +42,7 @@ import butterknife.BindString;
 /**
  * Impl of {@link TestsView}
  */
-public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements TestsView {
+public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter>> implements TestsView {
 
     @BindString(R.string.text_passed)
     String mPassedText;
@@ -58,7 +58,6 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
     private static final String SUCCESS = "SUCCESS";
     private static final String FAILURE = "FAILURE";
     private int mSelectedId = R.id.show_failed;
-    private SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> mAdapter;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections = new ArrayList<>();
     private TestsDataModel mTestsDataModel;
     private OnTestsPresenterListener mListener;
@@ -72,8 +71,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel> implements T
                          TestsValueExtractor valueExtractor,
                          @StringRes int emptyMessage,
                          SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> adapter) {
-        super(mView, activity, emptyMessage);
-        this.mAdapter = adapter;
+        super(mView, activity, emptyMessage, adapter);
         mPassed = valueExtractor.getPassedCount();
         mFailed = valueExtractor.getFailedCount();
         mIgnored = valueExtractor.getIgnoredCount();

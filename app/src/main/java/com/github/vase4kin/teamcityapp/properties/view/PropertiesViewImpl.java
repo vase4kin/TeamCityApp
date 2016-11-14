@@ -27,16 +27,13 @@ import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 /**
  * View to manage properties interactions
  */
-public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel> {
-
-    private PropertiesAdapter mAdapter;
+public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, PropertiesAdapter> {
 
     public PropertiesViewImpl(View view,
                               Activity activity,
                               @StringRes int emptyMessage,
                               PropertiesAdapter adapter) {
-        super(view, activity, emptyMessage);
-        this.mAdapter = adapter;
+        super(view, activity, emptyMessage, adapter);
     }
 
     /**

@@ -58,7 +58,7 @@ import tr.xip.errorview.ErrorView;
  *
  * TODO: move all logic to presenter!
  */
-public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> implements AccountsView, OnUserAccountClickListener {
+public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleSectionedRecyclerViewAdapter<AccountAdapter>> implements AccountsView, OnUserAccountClickListener {
 
     private SharedUserStorage mSharedUserStorage;
 
@@ -77,7 +77,6 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
     private ActionMode mActionMode;
     private boolean isSelectionDisabled = false;
     private AccountDataModel mDataModel;
-    private SimpleSectionedRecyclerViewAdapter<AccountAdapter> mAdapter;
 
     // Select account logic
     private ModalMultiSelectorCallback mDeleteMode = new ModalMultiSelectorCallback(mMultiSelector) {
@@ -209,9 +208,8 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel> impleme
                             SharedUserStorage sharedUserStorage,
                             @StringRes int emptyMessage,
                             SimpleSectionedRecyclerViewAdapter<AccountAdapter> adapter) {
-        super(view, activity, emptyMessage);
+        super(view, activity, emptyMessage, adapter);
         this.mSharedUserStorage = sharedUserStorage;
-        this.mAdapter = adapter;
     }
 
     @OnClick(R.id.floating_action_button)

@@ -35,17 +35,15 @@ import com.mugen.MugenCallbacks;
 /**
  * Impl of {@link ChangesView}
  */
-public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implements ChangesView {
+public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesAdapter> implements ChangesView {
 
     private MugenCallbacks mLoadMoreCallbacks;
-    private ChangesAdapter mChangesAdapter;
 
     public ChangesViewImpl(View view,
                            Activity activity,
                            @StringRes int emptyMessage,
-                           ChangesAdapter changesAdapter) {
-        super(view, activity, emptyMessage);
-        this.mChangesAdapter = changesAdapter;
+                           ChangesAdapter adapter) {
+        super(view, activity, emptyMessage, adapter);
     }
 
     /**
@@ -62,10 +60,10 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
     @Override
     public void showData(ChangesDataModel dataModel) {
         Mugen.with(mRecyclerView, mLoadMoreCallbacks).start();
-        mChangesAdapter.setOnChangeClickListener(this);
-        mChangesAdapter.setDataModel(dataModel);
-        mRecyclerView.setAdapter(mChangesAdapter);
-        mChangesAdapter.notifyDataSetChanged();
+        mAdapter.setOnChangeClickListener(this);
+        mAdapter.setDataModel(dataModel);
+        mRecyclerView.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -73,8 +71,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
      */
     @Override
     public void addLoadMore() {
-        mChangesAdapter.addLoadMore();
-        mChangesAdapter.notifyDataSetChanged();
+        mAdapter.addLoadMore();
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -82,8 +80,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
      */
     @Override
     public void removeLoadMore() {
-        mChangesAdapter.removeLoadMore();
-        mChangesAdapter.notifyDataSetChanged();
+        mAdapter.removeLoadMore();
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -91,8 +89,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel> implemen
      */
     @Override
     public void addMoreBuilds(ChangesDataModel dataModel) {
-        mChangesAdapter.addMoreBuilds(dataModel);
-        mChangesAdapter.notifyDataSetChanged();
+        mAdapter.addMoreBuilds(dataModel);
+        mAdapter.notifyDataSetChanged();
     }
 
     /**

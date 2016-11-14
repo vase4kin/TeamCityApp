@@ -41,19 +41,17 @@ import tr.xip.errorview.ErrorView;
 /**
  * Impl of {@link ArtifactView}
  */
-public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel> implements ArtifactView {
+public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, ArtifactAdapter> implements ArtifactView {
 
     private MaterialDialog mProgressDialog;
     private Snackbar mSnackBar;
-    private ArtifactAdapter mAdapter;
     private OnArtifactPresenterListener mListener;
 
     public ArtifactViewImpl(View mView,
                             Activity activity,
                             @StringRes int emptyMessage,
                             ArtifactAdapter adapter) {
-        super(mView, activity, emptyMessage);
-        this.mAdapter = adapter;
+        super(mView, activity, emptyMessage, adapter);
     }
 
     /**
