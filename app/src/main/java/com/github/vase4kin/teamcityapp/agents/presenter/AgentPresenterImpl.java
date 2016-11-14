@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.agents.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
@@ -28,6 +27,7 @@ import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsViewModelImpl;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import java.util.List;
 
@@ -36,13 +36,20 @@ import javax.inject.Inject;
 /**
  * Handles logic of {@link com.github.vase4kin.teamcityapp.agents.view.BaseAgentListFragment}
  */
-public class AgentPresenterImpl extends BaseListPresenterImpl<AgentDataModel, Agent, BaseListView, AgentsDataManager, AgentsValueExtractor> {
+public class AgentPresenterImpl extends BaseListPresenterImpl<
+        AgentDataModel,
+        Agent,
+        BaseListView,
+        AgentsDataManager,
+        ViewTracker,
+        AgentsValueExtractor> {
 
     @Inject
     AgentPresenterImpl(@NonNull BaseListView view,
                        @NonNull AgentsDataManager dataManager,
-                       @Nullable AgentsValueExtractor bundleExtractor) {
-        super(view, dataManager, null, bundleExtractor);
+                       @NonNull ViewTracker tracker,
+                       @NonNull AgentsValueExtractor valueExtractor) {
+        super(view, dataManager, tracker, valueExtractor);
     }
 
     /**

@@ -31,6 +31,7 @@ import com.github.vase4kin.teamcityapp.agents.view.AgentsAdapter;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import java.util.Map;
 
@@ -69,6 +70,11 @@ public class AgentModule {
     @Provides
     AgentsValueExtractor providesAgentsValueExtractor() {
         return new AgentsValueExtractorImpl(mFragment.getArguments());
+    }
+
+    @Provides
+    ViewTracker providesViewTracker() {
+        return ViewTracker.STUB;
     }
 
     @Provides

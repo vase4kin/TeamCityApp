@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.base.list.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -41,15 +40,16 @@ public abstract class BaseListPresenterImpl<
         S extends Jsonable,
         VM extends BaseListView,
         DM extends BaseListRxDataManager,
+        VT extends ViewTracker,
         BE extends BaseValueExtractor> implements BaseListPresenter {
 
     @NonNull
     protected VM mView;
     @NonNull
     protected DM mDataManager;
-    @Nullable
-    protected ViewTracker mTracker;
-    @Nullable
+    @NonNull
+    protected VT mTracker;
+    @NonNull
     protected BE mValueExtractor;
 
     /**
@@ -70,8 +70,8 @@ public abstract class BaseListPresenterImpl<
     public BaseListPresenterImpl(
             @NonNull VM view,
             @NonNull DM dataManager,
-            @Nullable ViewTracker tracker,
-            @Nullable BE valueExtractor) {
+            @NonNull VT tracker,
+            @NonNull BE valueExtractor) {
         this.mView = view;
         this.mDataManager = dataManager;
         this.mTracker = tracker;
@@ -134,9 +134,7 @@ public abstract class BaseListPresenterImpl<
      */
     @Override
     public void onResume() {
-        if (mTracker != null) {
-            mTracker.trackView();
-        }
+        mTracker.trackView();
     }
 
     /**

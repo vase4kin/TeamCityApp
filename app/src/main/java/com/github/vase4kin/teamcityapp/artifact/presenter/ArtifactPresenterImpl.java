@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.artifact.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
@@ -33,12 +32,19 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.OnArtifactPresenterListener;
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class ArtifactPresenterImpl extends BaseListPresenterImpl<ArtifactDataModel, File, ArtifactView, ArtifactDataManager, ArtifactValueExtractor>
+public class ArtifactPresenterImpl extends BaseListPresenterImpl<
+        ArtifactDataModel,
+        File,
+        ArtifactView,
+        ArtifactDataManager,
+        ViewTracker,
+        ArtifactValueExtractor>
         implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactTabChangeEventListener {
 
     private File mArtifactFile;
@@ -49,10 +55,11 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<ArtifactDataMod
     @Inject
     ArtifactPresenterImpl(@NonNull ArtifactView view,
                           @NonNull ArtifactDataManager dataManager,
-                          @NonNull ArtifactRouter router,
-                          @Nullable ArtifactValueExtractor valueExtractor,
-                          @NonNull PermissionManager permissionManager) {
-        super(view, dataManager, null, valueExtractor);
+                          @NonNull ViewTracker tracker,
+                          @NonNull ArtifactValueExtractor valueExtractor,
+                          ArtifactRouter router,
+                          PermissionManager permissionManager) {
+        super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
         this.mPermissionManager = permissionManager;
     }

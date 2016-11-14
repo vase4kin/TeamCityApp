@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.tests.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +48,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
         TestOccurrences.TestOccurrence,
         TestsView,
         TestsDataManager,
+        ViewTracker,
         TestsValueExtractor> implements TestsPresenter, OnTestsPresenterListener {
 
     private TestsRouter mRouter;
@@ -58,9 +58,9 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
     @Inject
     TestsPresenterImpl(@NonNull TestsView view,
                        @NonNull TestsDataManager dataManager,
-                       @Nullable ViewTracker tracker,
-                       @Nullable TestsValueExtractor valueExtractor,
-                       @NonNull TestsRouter router) {
+                       @NonNull ViewTracker tracker,
+                       @NonNull TestsValueExtractor valueExtractor,
+                       TestsRouter router) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
     }

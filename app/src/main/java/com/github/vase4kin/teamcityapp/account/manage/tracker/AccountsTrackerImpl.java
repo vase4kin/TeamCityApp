@@ -19,14 +19,13 @@ package com.github.vase4kin.teamcityapp.account.manage.tracker;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.CustomEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
  * Tracker class
  */
-public class AccountsTrackerImpl implements ViewTracker, ManageAccountsTracker {
+public class AccountsTrackerImpl implements ManageAccountsTracker {
 
     /**
      * {@inheritDoc}

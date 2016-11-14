@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.account.manage.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
@@ -28,7 +27,6 @@ import com.github.vase4kin.teamcityapp.account.manage.view.OnAccountRemoveListen
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import java.util.List;
@@ -41,13 +39,19 @@ import rx.Observable;
  * Presenter impl for managing {@link com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity}
  */
 public class AccountsPresenterImpl extends BaseListPresenterImpl<
-        AccountDataModel, UserAccount, AccountsView, BaseListRxDataManager, BaseValueExtractor> implements OnAccountRemoveListener {
+        AccountDataModel,
+        UserAccount,
+        AccountsView,
+        BaseListRxDataManager,
+        ManageAccountsTracker,
+        BaseValueExtractor> implements OnAccountRemoveListener {
 
     @Inject
     AccountsPresenterImpl(@NonNull AccountsView view,
                           @NonNull BaseListRxDataManager dataManager,
-                          @Nullable ViewTracker tracker) {
-        super(view, dataManager, tracker, null);
+                          @NonNull ManageAccountsTracker tracker,
+                          @NonNull BaseValueExtractor valueExtractor) {
+        super(view, dataManager, tracker, valueExtractor);
     }
 
     /**
@@ -72,9 +76,7 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onAccountRemove() {
-        if (mTracker != null) {
-            ((ManageAccountsTracker) mTracker).trackAccountRemove();
-        }
+        mTracker.trackAccountRemove();
     }
 
     /**

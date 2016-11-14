@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewImpl;
 import com.github.vase4kin.teamcityapp.changes.view.LoadMoreViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import java.util.Map;
 
@@ -66,6 +67,11 @@ public class ChangesModule {
     @Provides
     ChangesValueExtractor providesChangesValueExtractor() {
         return new ChangesValueExtractorImpl(mFragment.getArguments());
+    }
+
+    @Provides
+    ViewTracker providesViewTracker() {
+        return ViewTracker.STUB;
     }
 
     @Provides

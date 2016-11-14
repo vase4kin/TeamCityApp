@@ -29,6 +29,7 @@ import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouter;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -92,12 +93,15 @@ public class ArtifactPresenterImplTest {
     @Mock
     private PermissionManager mPermissionManager;
 
+    @Mock
+    private ViewTracker mTracker;
+
     private ArtifactPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new ArtifactPresenterImpl(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        mPresenter = new ArtifactPresenterImpl(mView, mDataManager, mTracker, mValueExtractor, mRouter, mPermissionManager);
     }
 
     @Test
@@ -107,7 +111,7 @@ public class ArtifactPresenterImplTest {
         ArtifactDataModel dataModel = mPresenter.createModel(files);
         assertThat(dataModel.getFile(0), is(mFile));
         assertThat(dataModel.getItemCount(), is(1));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -116,7 +120,7 @@ public class ArtifactPresenterImplTest {
         mPresenter.loadData(mLoadingListener);
         verify(mValueExtractor).getUrl();
         verify(mDataManager).load(eq("url"), eq(mLoadingListener));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -132,7 +136,7 @@ public class ArtifactPresenterImplTest {
         mPresenter.onClick(mFile);
         verify(mValueExtractor).getBuild();
         verify(mRouter).openArtifactFile(eq(mBuild), eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -149,7 +153,7 @@ public class ArtifactPresenterImplTest {
         verify(mValueExtractor, times(2)).getBuild();
         verify(mRouter, times(2)).startBrowser(eq(mBuild), eq(mFile));
 
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -181,7 +185,7 @@ public class ArtifactPresenterImplTest {
         verify(mView, times(2)).dismissProgressDialog();
         verify(mView).showRetryDownloadArtifactSnackBar(eq(mPresenter));
 
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -190,7 +194,7 @@ public class ArtifactPresenterImplTest {
         when(mFile.isFolder()).thenReturn(false);
         mPresenter.onLongClick(mFile);
         verify(mView).showFullBottomSheet(eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mTracker);
     }
 
     @Test
@@ -199,7 +203,7 @@ public class ArtifactPresenterImplTest {
         when(mFile.isFolder()).thenReturn(true);
         mPresenter.onLongClick(mFile);
         verify(mView).showFolderBottomSheet(eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -209,7 +213,7 @@ public class ArtifactPresenterImplTest {
         when(mFile.getHref()).thenReturn(".htm");
         mPresenter.onLongClick(mFile);
         verify(mView).showBrowserBottomSheet(eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -219,7 +223,7 @@ public class ArtifactPresenterImplTest {
         when(mFile.getHref()).thenReturn("url");
         mPresenter.onLongClick(mFile);
         verify(mView).showDefaultBottomSheet(eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -234,7 +238,7 @@ public class ArtifactPresenterImplTest {
         mPresenter.openArtifactFile(mFile);
         verify(mValueExtractor).getBuild();
         verify(mRouter).openArtifactFile(eq(mBuild), eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -243,14 +247,14 @@ public class ArtifactPresenterImplTest {
         mPresenter.startBrowser(mFile);
         verify(mValueExtractor).getBuild();
         verify(mRouter).startBrowser(eq(mBuild), eq(mFile));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
     public void testUnSubscribe() throws Exception {
         mPresenter.unSubscribe();
         verify(mDataManager).unsubscribe();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -258,7 +262,7 @@ public class ArtifactPresenterImplTest {
         mPresenter.onStart();
         verify(mDataManager).registerEventBus();
         verify(mDataManager).setListener(eq(mPresenter));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -266,14 +270,14 @@ public class ArtifactPresenterImplTest {
         mPresenter.OnStop();
         verify(mDataManager).unregisterEventBus();
         verify(mDataManager).setListener(null);
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
     public void testOnEventHappen() {
         mPresenter.onEventHappen();
         verify(mView).onArtifactTabChangeEvent();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -292,7 +296,7 @@ public class ArtifactPresenterImplTest {
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
         verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mPermissionManager).requestWriteStoragePermissions();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -306,7 +310,7 @@ public class ArtifactPresenterImplTest {
         OnPermissionsDialogListener listener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
         listener.onAllow();
         verify(mPermissionManager).requestWriteStoragePermissions();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
@@ -317,7 +321,7 @@ public class ArtifactPresenterImplTest {
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
         verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mPermissionManager).requestWriteStoragePermissions();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager);
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
 }

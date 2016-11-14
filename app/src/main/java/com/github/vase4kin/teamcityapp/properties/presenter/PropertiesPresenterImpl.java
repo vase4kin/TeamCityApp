@@ -17,12 +17,12 @@
 package com.github.vase4kin.teamcityapp.properties.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
@@ -36,13 +36,19 @@ import javax.inject.Inject;
  * Presenter handles logic of {@link com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment}
  */
 public class PropertiesPresenterImpl extends BaseListPresenterImpl<
-        PropertiesDataModel, Properties.Property, BaseListView, PropertiesDataManager, BaseValueExtractor> {
+        PropertiesDataModel,
+        Properties.Property,
+        BaseListView,
+        PropertiesDataManager,
+        ViewTracker,
+        BaseValueExtractor> {
 
     @Inject
     PropertiesPresenterImpl(@NonNull BaseListView view,
                             @NonNull PropertiesDataManager dataManager,
-                            @Nullable BaseValueExtractor valueExtractor) {
-        super(view, dataManager, null, valueExtractor);
+                            @NonNull ViewTracker tracker,
+                            @NonNull BaseValueExtractor valueExtractor) {
+        super(view, dataManager, tracker, valueExtractor);
     }
 
     /**

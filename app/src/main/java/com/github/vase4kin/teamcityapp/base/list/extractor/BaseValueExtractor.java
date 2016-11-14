@@ -42,4 +42,29 @@ public interface BaseValueExtractor {
      * @return determines if the bundle is null or not
      */
     boolean isBundleNull();
+
+    /**
+     * Base value extractor stub
+     */
+    BaseValueExtractor STUB = new BaseValueExtractor() {
+        @Override
+        public String getId() {
+            return "id";
+        }
+
+        @Override
+        public String getName() {
+            return "name";
+        }
+
+        @Override
+        public Build getBuild() {
+            return null;
+        }
+
+        @Override
+        public boolean isBundleNull() {
+            return true;
+        }
+    };
 }

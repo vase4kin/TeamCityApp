@@ -79,7 +79,7 @@ public class ChangesPresenterImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new ChangesPresenterImpl(mView, mDataManager, mValueExtractor);
+        mPresenter = new ChangesPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test
