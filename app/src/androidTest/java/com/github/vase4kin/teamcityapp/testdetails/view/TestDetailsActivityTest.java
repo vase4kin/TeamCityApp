@@ -37,6 +37,7 @@ import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
@@ -48,6 +49,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -74,10 +76,14 @@ public class TestDetailsActivityTest {
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
 
+    @Mock
+    private TestOccurrences.TestOccurrence mTest;
+
     @Test
     public void testUserSeesTestDetails() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.testOccurrence(anyString())).thenReturn(Observable.just(new TestOccurrences.TestOccurrence("exception")));
+        when(mTest.getDetails()).thenReturn("Test details");
+        when(mTeamCityService.testOccurrence(anyString())).thenReturn(Observable.just(mTest));
 
         // Prepare intent
         Intent intent = new Intent();
@@ -92,7 +98,29 @@ public class TestDetailsActivityTest {
         matchToolbarTitle("Details");
 
         // check details
-        onView(withId(R.id.test_occurrence_details)).check(matches(withText("exception")));
+        onView(withId(R.id.test_occurrence_details)).check(matches(allOf(withText("Test details"), isDisplayed())));
+    }
+
+    @Test
+    public void testUserSeesNoDataIfTestDetailsAreNotProvided() throws Exception {
+        // Prepare mocks
+        when(mTest.getDetails()).thenReturn("");
+        when(mTeamCityService.testOccurrence(anyString())).thenReturn(Observable.just(mTest));
+
+        // Prepare intent
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putString(BundleExtractorValues.TEST_URL, "/test");
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking toolbar title
+        matchToolbarTitle("Details");
+
+        // check no data message
+        onView(withId(R.id.empty)).check(matches(allOf(withText(R.string.text_empty_test_details), isDisplayed())));
     }
 
     @Test
