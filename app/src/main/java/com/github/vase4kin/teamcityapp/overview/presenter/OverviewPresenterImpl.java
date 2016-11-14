@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.overview.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -25,6 +24,7 @@ import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewDataManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
 
@@ -35,13 +35,20 @@ import javax.inject.Inject;
 /**
  * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.overview.view.BuildOverviewElementsFragment}
  */
-public class OverviewPresenterImpl extends BaseListPresenterImpl<BaseDataModel, BuildElement, BaseListView, OverViewDataManager, BaseValueExtractor> {
+public class OverviewPresenterImpl extends BaseListPresenterImpl<
+        BaseDataModel,
+        BuildElement,
+        BaseListView,
+        OverViewDataManager,
+        ViewTracker,
+        BaseValueExtractor> {
 
     @Inject
     OverviewPresenterImpl(@NonNull BaseListView view,
                           @NonNull OverViewDataManager dataManager,
-                          @Nullable BaseValueExtractor valueExtractor) {
-        super(view, dataManager, null, valueExtractor);
+                          @NonNull ViewTracker tracker,
+                          @NonNull BaseValueExtractor valueExtractor) {
+        super(view, dataManager, tracker, valueExtractor);
     }
 
     /**

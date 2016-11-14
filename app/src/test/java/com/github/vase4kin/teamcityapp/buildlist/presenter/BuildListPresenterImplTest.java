@@ -85,7 +85,7 @@ public class BuildListPresenterImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mRouter, mValueExtractor);
+        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
 
     @Test

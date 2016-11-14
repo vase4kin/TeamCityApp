@@ -24,15 +24,16 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.AccountsTrackerImpl;
+import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountViewHolderFactory;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
+import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.Map;
@@ -64,8 +65,13 @@ public class AccountsModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
+    ManageAccountsTracker providesViewTracker() {
         return new AccountsTrackerImpl();
+    }
+
+    @Provides
+    BaseValueExtractor providesBaseValueExtractor() {
+        return BaseValueExtractor.STUB;
     }
 
     @Provides

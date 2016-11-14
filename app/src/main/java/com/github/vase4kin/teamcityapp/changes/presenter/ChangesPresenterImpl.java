@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.changes.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -28,6 +27,7 @@ import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModelImpl;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.mugen.MugenCallbacks;
 
 import java.util.List;
@@ -37,8 +37,13 @@ import javax.inject.Inject;
 /**
  * Presenter manages logic of {@link com.github.vase4kin.teamcityapp.changes.view.ChangesFragment}
  */
-public class ChangesPresenterImpl extends BaseListPresenterImpl
-        <ChangesDataModel, Changes.Change, ChangesView, ChangesDataManager, ChangesValueExtractor> {
+public class ChangesPresenterImpl extends BaseListPresenterImpl<
+        ChangesDataModel,
+        Changes.Change,
+        ChangesView,
+        ChangesDataManager,
+        ViewTracker,
+        ChangesValueExtractor> {
 
     @VisibleForTesting
     boolean mIsLoadMoreLoading = false;
@@ -46,8 +51,9 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl
     @Inject
     ChangesPresenterImpl(@NonNull ChangesView view,
                          @NonNull ChangesDataManager dataManager,
-                         @Nullable ChangesValueExtractor valueExtractor) {
-        super(view, dataManager, null, valueExtractor);
+                         @NonNull ViewTracker tracker,
+                         @NonNull ChangesValueExtractor valueExtractor) {
+        super(view, dataManager, tracker, valueExtractor);
     }
 
     /**

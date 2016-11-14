@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -37,7 +36,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildListDataManager> extends BaseListPresenterImpl<
-        BuildListDataModel, Build, V, DM, BaseValueExtractor> {
+        BuildListDataModel,
+        Build,
+        V,
+        DM,
+        ViewTracker,
+        BaseValueExtractor> {
 
     private BuildListRouter mRouter;
     @VisibleForTesting
@@ -46,9 +50,9 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Inject
     public BuildListPresenterImpl(@NonNull V view,
                                   @NonNull DM dataManager,
-                                  @Nullable ViewTracker tracker,
-                                  @NonNull BuildListRouter router,
-                                  @Nullable BaseValueExtractor valueExtractor) {
+                                  @NonNull ViewTracker tracker,
+                                  @NonNull BaseValueExtractor valueExtractor,
+                                  BuildListRouter router) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
     }

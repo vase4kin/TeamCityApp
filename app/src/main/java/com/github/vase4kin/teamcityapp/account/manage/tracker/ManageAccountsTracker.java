@@ -16,7 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.tracker;
 
-public interface ManageAccountsTracker {
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+
+public interface ManageAccountsTracker extends ViewTracker {
 
     /**
      * Track account is removed

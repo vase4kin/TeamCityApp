@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.tests.dagger;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -85,11 +84,9 @@ public class TestsModule {
         return new TestsRouterImpl(mFragment.getActivity());
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Provides
-    @Nullable
     ViewTracker providesViewTracker() {
-        return null;
+        return ViewTracker.STUB;
     }
 
     @Provides
