@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManager;
 import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
 import com.github.vase4kin.teamcityapp.root.router.RootRouter;
+import com.github.vase4kin.teamcityapp.root.tracker.RootTracker;
 import com.github.vase4kin.teamcityapp.root.view.OnAccountSwitchListener;
 import com.github.vase4kin.teamcityapp.root.view.OnDrawerUpdateListener;
 import com.github.vase4kin.teamcityapp.root.view.RootDrawerView;
@@ -34,12 +35,13 @@ import javax.inject.Inject;
 /**
  * Impl of {@link RootDrawerPresenter}
  */
-public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter> implements RootDrawerPresenter, OnDrawerUpdateListener {
+public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter> implements RootDrawerPresenter, OnDrawerUpdateListener, RootDrawerView.OnAppRateListener {
 
     private OnAccountSwitchListener mListener;
     private RootBundleValueManager mValueExtractor;
     private RootRouter mRouter;
     private BuildLogInteractor mInteractor;
+    private RootTracker mTracker;
 
     private String mBaseUrl;
 
@@ -49,12 +51,14 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
                             OnAccountSwitchListener listener,
                             RootBundleValueManager valueExtractor,
                             RootRouter router,
-                            BuildLogInteractor interactor) {
+                            BuildLogInteractor interactor,
+                            RootTracker tracker) {
         super(view, dataManager, router);
         this.mListener = listener;
         this.mValueExtractor = valueExtractor;
         this.mRouter = router;
         this.mInteractor = interactor;
+        this.mTracker = tracker;
     }
 
     /**
@@ -106,6 +110,12 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
             mDataManager.clearAllWebViewCookies();
             mInteractor.setAuthDialogStatus(false);
         }
+
+        // track view
+        mTracker.trackView();
+
+        // Show rate app dialog
+        mView.showAppRateDialog(this);
     }
 
     /**
@@ -157,5 +167,29 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
         if (!TextUtils.isEmpty(mBaseUrl)) {
             mRouter.openRootProjects(mBaseUrl);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onNeutralButtonClick() {
+        mTracker.trackUserDecidedToRateTheAppLater();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onNegativeButtonClick() {
+        mTracker.trackUserDidNotRateTheApp();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPositiveButtonClick() {
+        mTracker.trackUserRatedTheApp();
     }
 }
