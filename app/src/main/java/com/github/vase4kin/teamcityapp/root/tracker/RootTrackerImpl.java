@@ -18,14 +18,14 @@ package com.github.vase4kin.teamcityapp.root.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.crashlytics.android.answers.CustomEvent;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
  * Root projects tracking class
  */
-public class RootTrackerImpl implements ViewTracker {
+public class RootTrackerImpl implements RootTracker {
 
     /**
      * {@inheritDoc}
@@ -34,6 +34,41 @@ public class RootTrackerImpl implements ViewTracker {
     public void trackView() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Projects root"));
+                .putContentName(CONTENT_NAME_ROOT));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRatedTheApp() {
+        logRateEvent(STATUS_RATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserDidNotRateTheApp() {
+        logRateEvent(STATUS_NOT_RATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserDecidedToRateTheAppLater() {
+        logRateEvent(STATUS_LATER);
+    }
+
+    /**
+     * Log rate event
+     *
+     * @param status - Rate status
+     */
+    private void logRateEvent(String status) {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_RATE_APP)
+                .putCustomAttribute(KEY_EVENT_STATUS, status));
     }
 }
