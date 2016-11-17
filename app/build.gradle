@@ -56,6 +56,10 @@ android {
         debug {
             testCoverageEnabled true
         }
+        showcase.initWith(buildTypes.release)
+        showcase {
+            applicationIdSuffix = ".showcase"
+        }
     }
 
     productFlavors {
@@ -69,6 +73,10 @@ android {
 
     android.variantFilter { variant ->
         if(variant.buildType.name.equals('release')
+                && variant.getFlavors().get(0).name.equals('mock')) {
+            variant.setIgnore(true);
+        }
+        if (variant.buildType.name.equals('showcase')
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true);
         }
@@ -204,7 +212,7 @@ dependencies {
     androidTestCompile "com.android.support:design:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     // Crashlytics
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.1@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
     compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.2@aar') {
