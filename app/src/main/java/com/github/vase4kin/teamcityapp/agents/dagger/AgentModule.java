@@ -20,16 +20,25 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor;
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractorImpl;
+import com.github.vase4kin.teamcityapp.agents.view.AgentViewHolderFactory;
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewImpl;
+import com.github.vase4kin.teamcityapp.agents.view.AgentsAdapter;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntKey;
+import dagger.multibindings.IntoMap;
 import de.greenrobot.event.EventBus;
 
 @Module
@@ -49,12 +58,34 @@ public class AgentModule {
     }
 
     @Provides
-    BaseListView providesBaseListView(AgentsValueExtractor agentsValueExtractor) {
-        return new AgentViewImpl(agentsValueExtractor, mView, mFragment.getActivity(), R.string.empty_list_message_agents);
+    BaseListView providesBaseListView(AgentsValueExtractor agentsValueExtractor, AgentsAdapter adapter) {
+        return new AgentViewImpl(
+                agentsValueExtractor,
+                mView,
+                mFragment.getActivity(),
+                R.string.empty_list_message_agents,
+                adapter);
     }
 
     @Provides
     AgentsValueExtractor providesAgentsValueExtractor() {
         return new AgentsValueExtractorImpl(mFragment.getArguments());
+    }
+
+    @Provides
+    ViewTracker providesViewTracker() {
+        return ViewTracker.STUB;
+    }
+
+    @Provides
+    AgentsAdapter providesAgentsAdapter(Map<Integer, ViewHolderFactory<AgentDataModel>> viewHolderFactories) {
+        return new AgentsAdapter(viewHolderFactories);
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    @Provides
+    ViewHolderFactory<AgentDataModel> providesAgentViewHolderFactory() {
+        return new AgentViewHolderFactory();
     }
 }

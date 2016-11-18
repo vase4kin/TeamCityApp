@@ -16,9 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.root.view;
 
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
+
+import hotchemi.android.rate.AppRate;
+import hotchemi.android.rate.OnClickButtonListener;
 
 /**
  * impl of {@link RootDrawerView}
@@ -43,5 +48,38 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
     @Override
     public void openDrawer() {
         mDrawerResult.openDrawer();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showAppRateDialog(final OnAppRateListener listener) {
+        AppRate.with(mActivity)
+                .setInstallDays(R.integer.install_days)
+                .setLaunchTimes(R.integer.launch_times)
+                .setRemindInterval(R.integer.remind_interval)
+                .setShowLaterButton(true)
+                .setOnClickButtonListener(new OnClickButtonListener() {
+                    @Override
+                    public void onClickButton(int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                listener.onNegativeButtonClick();
+                                break;
+                            case DialogInterface.BUTTON_NEUTRAL:
+                                listener.onNeutralButtonClick();
+                                break;
+                            case DialogInterface.BUTTON_POSITIVE:
+                                listener.onPositiveButtonClick();
+                                break;
+                            default:
+                                // Do nothing
+                                break;
+                        }
+                    }
+                })
+                .monitor();
+        AppRate.showRateDialogIfMeetsConditions(mActivity);
     }
 }

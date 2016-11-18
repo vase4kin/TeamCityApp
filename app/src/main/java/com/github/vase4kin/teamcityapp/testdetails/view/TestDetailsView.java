@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.view;
 
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
-
 import tr.xip.errorview.ErrorView;
 
 /**
@@ -45,9 +43,14 @@ public interface TestDetailsView {
     /**
      * Set views after loading
      *
-     * @param testOccurrence - Test details data
+     * @param testDetails - Test details data
      */
-    void setViews(TestOccurrences.TestOccurrence testOccurrence);
+    void showTestDetails(String testDetails);
+
+    /**
+     * Show empty data message if no test details is available
+     */
+    void showEmptyData();
 
     /**
      * Show error view

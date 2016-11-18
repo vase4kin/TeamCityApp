@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.runningbuilds.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -40,10 +39,10 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
     @Inject
     RunningBuildsListPresenterImpl(@NonNull RunningBuildListView view,
                                    @NonNull RunningBuildsDataManager dataManager,
-                                   @Nullable ViewTracker tracker,
+                                   @NonNull ViewTracker tracker,
                                    @NonNull BuildListRouter router,
-                                   @Nullable BaseValueExtractor valueExtractor) {
-        super(view, dataManager, tracker, router, valueExtractor);
+                                   @NonNull BaseValueExtractor valueExtractor) {
+        super(view, dataManager, tracker, valueExtractor, router);
     }
 
     /**

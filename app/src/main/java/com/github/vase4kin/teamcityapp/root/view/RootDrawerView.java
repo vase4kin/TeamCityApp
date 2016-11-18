@@ -34,4 +34,31 @@ public interface RootDrawerView extends DrawerView {
      * Open drawer
      */
     void openDrawer();
+
+    /**
+     * Show app rate dialog
+     *
+     * @param listener - Listener to receive dialog button callbacks
+     */
+    void showAppRateDialog(OnAppRateListener listener);
+
+    /**
+     * On app rate dialog listener
+     */
+    interface OnAppRateListener {
+        /**
+         * On remind later button click
+         */
+        void onNeutralButtonClick();
+
+        /**
+         * On negative button click
+         */
+        void onNegativeButtonClick();
+
+        /**
+         * On rate app button click();
+         */
+        void onPositiveButtonClick();
+    }
 }

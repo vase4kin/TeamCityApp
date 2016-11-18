@@ -16,16 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.data;
 
+import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 
 /**
  * Model managing build list data
  */
-public interface BuildListDataModel extends BaseDataModel, Iterable<Build> {
+public interface BuildListDataModel extends BaseDataModel, Iterable<Build>, ModelLoadMore<BuildListDataModel> {
 
     /**
-     * Is it an instance of {@link com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild} in adaper
+     * Is it an instance of {@link com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild} in adapter
      *
      * @param position - Adapter position
      */
@@ -38,6 +39,12 @@ public interface BuildListDataModel extends BaseDataModel, Iterable<Build> {
      * @return
      */
     String getBranchName(int position);
+
+    /**
+     * @param position - adapter position
+     * @return true if model has branch name
+     */
+    boolean hasBranch(int position);
 
     /**
      * Get build status icon
@@ -67,27 +74,6 @@ public interface BuildListDataModel extends BaseDataModel, Iterable<Build> {
      * @return
      */
     Build getBuild(int position);
-
-    /**
-     * Add build to data model
-     *
-     * @param build - Build to add
-     */
-    void add(Build build);
-
-    /**
-     * Remove build from data model
-     *
-     * @param build - Build to remove
-     */
-    void remove(Build build);
-
-    /**
-     * Add new model to current model
-     *
-     * @param dataModel
-     */
-    void add(BuildListDataModel dataModel);
 
     /**
      * @param position - Adapter position

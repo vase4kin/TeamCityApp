@@ -28,12 +28,16 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 /**
  * View managing for {@link BaseAgentListFragment}
  */
-public class AgentViewImpl extends BaseListViewImpl<AgentDataModel> {
+public class AgentViewImpl extends BaseListViewImpl<AgentDataModel, AgentsAdapter> {
 
     private AgentsValueExtractor mValueExtractor;
 
-    public AgentViewImpl(AgentsValueExtractor valueExtractor, View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public AgentViewImpl(AgentsValueExtractor valueExtractor,
+                         View view,
+                         Activity activity,
+                         @StringRes int emptyMessage,
+                         AgentsAdapter adapter) {
+        super(view, activity, emptyMessage, adapter);
         this.mValueExtractor = valueExtractor;
     }
 
@@ -42,7 +46,8 @@ public class AgentViewImpl extends BaseListViewImpl<AgentDataModel> {
      */
     @Override
     public void showData(AgentDataModel dataModel) {
-        mRecyclerView.setAdapter(new AgentsAdapter(dataModel));
+        mAdapter.setDataModel(dataModel);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 

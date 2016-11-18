@@ -41,15 +41,17 @@ import tr.xip.errorview.ErrorView;
 /**
  * Impl of {@link ArtifactView}
  */
-public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel> implements ArtifactView {
+public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, ArtifactAdapter> implements ArtifactView {
 
     private MaterialDialog mProgressDialog;
     private Snackbar mSnackBar;
-
     private OnArtifactPresenterListener mListener;
 
-    public ArtifactViewImpl(View mView, Activity activity, @StringRes int emptyMessage) {
-        super(mView, activity, emptyMessage);
+    public ArtifactViewImpl(View mView,
+                            Activity activity,
+                            @StringRes int emptyMessage,
+                            ArtifactAdapter adapter) {
+        super(mView, activity, emptyMessage, adapter);
     }
 
     /**
@@ -66,7 +68,6 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel> implem
     @Override
     public void initViews(@NonNull ErrorView.RetryListener retryListener, @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
         super.initViews(retryListener, refreshListener);
-
         mProgressDialog = new MaterialDialog.Builder(mActivity)
                 .title(R.string.download_artifact_dialog_title)
                 .content(R.string.progress_dialog_content)
@@ -82,7 +83,6 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel> implem
                     }
                 })
                 .build();
-
         mProgressDialog.setCanceledOnTouchOutside(false);
     }
 
@@ -91,8 +91,9 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel> implem
      */
     @Override
     public void showData(ArtifactDataModel dataModel) {
-        final ArtifactAdapter artifactAdapter = new ArtifactAdapter(dataModel, mListener, mActivity.getApplicationContext());
-        mRecyclerView.setAdapter(artifactAdapter);
+        mAdapter.setDataModel(dataModel);
+        mAdapter.setOnClickListener(mListener);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 

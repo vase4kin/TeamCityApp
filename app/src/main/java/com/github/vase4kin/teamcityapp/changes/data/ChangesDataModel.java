@@ -16,13 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.changes.data;
 
+import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 
 /**
  * Model to manage changes data
  */
-public interface ChangesDataModel extends BaseDataModel, Iterable<Changes.Change> {
+public interface ChangesDataModel extends BaseDataModel, Iterable<Changes.Change>, ModelLoadMore<ChangesDataModel> {
 
     /**
      * Get change version
@@ -71,32 +72,4 @@ public interface ChangesDataModel extends BaseDataModel, Iterable<Changes.Change
      * @return the whole change
      */
     Changes.Change getChange(int position);
-
-    /**
-     * Is load more build
-     *
-     * @param position - Adapter position
-     */
-    boolean isLoadMore(int position);
-
-    /**
-     * Add change
-     *
-     * @param change to add
-     */
-    void add(Changes.Change change);
-
-    /**
-     * Remove change
-     *
-     * @param change to remove
-     */
-    void remove(Changes.Change change);
-
-    /**
-     * Add the new datamodel
-     *
-     * @param dataModel to add
-     */
-    void add(ChangesDataModel dataModel);
 }

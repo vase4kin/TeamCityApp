@@ -20,6 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewDataManager;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 
@@ -55,12 +56,15 @@ public class OverviewPresenterImplTest {
     @Mock
     private BaseValueExtractor mValueExtractor;
 
+    @Mock
+    private ViewTracker mTracker;
+
     private OverviewPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mValueExtractor);
+        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test
@@ -70,7 +74,7 @@ public class OverviewPresenterImplTest {
         mPresenter.loadData(mLoadingListener);
         verify(mValueExtractor).getBuild();
         verify(mDataManager).load(eq("url"), eq(mLoadingListener));
-        verifyNoMoreInteractions(mView, mDataManager, mValueExtractor);
+        verifyNoMoreInteractions(mView, mDataManager, mValueExtractor, mTracker);
     }
 
     @Test

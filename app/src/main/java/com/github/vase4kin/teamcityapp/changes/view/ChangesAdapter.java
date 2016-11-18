@@ -16,144 +16,50 @@
 
 package com.github.vase4kin.teamcityapp.changes.view;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
-import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseLoadMoreAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
-import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Changes adapter
  */
-public class ChangesAdapter extends RecyclerView.Adapter<ChangesAdapter.ChangesViewHolder> implements LoadMore<ChangesDataModel> {
+public class ChangesAdapter extends BaseLoadMoreAdapter<ChangesDataModel> {
 
-    private ChangesDataModel mDataModel;
     private OnChangeClickListener mOnChangeClickListener;
 
-    private LoadMore mLoadMore = new LoadMore() {
-        @Override
-        public String getId() {
-            return "012345731";
-        }
-    };
-
-    public ChangesAdapter(ChangesDataModel mDataModel, OnChangeClickListener mOnChangeClickListener) {
-        this.mDataModel = mDataModel;
-        this.mOnChangeClickListener = mOnChangeClickListener;
+    public ChangesAdapter(Map<Integer, ViewHolderFactory<ChangesDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (mDataModel.isLoadMore(position)) {
-            return 1;
-        } else {
-            return 0;
-        }
+    /**
+     * Set {@link OnChangeClickListener}
+     *
+     * @param onChangeClickListener - listener to set
+     */
+    void setOnChangeClickListener(OnChangeClickListener onChangeClickListener) {
+        this.mOnChangeClickListener = onChangeClickListener;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    @Override
-    public ChangesViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        final View v = viewType == 0
-                ? inflater.inflate(R.layout.item_changes_list, viewGroup, false)
-                : inflater.inflate(R.layout.item_load_more, viewGroup, false);
-        return new ChangesViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(final ChangesViewHolder holder, int position) {
+    public void onBindViewHolder(BaseViewHolder<ChangesDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
         final int adapterPosition = position;
-        if (holder.mIcon != null) {
-            holder.mIcon.setText(IconUtils.getCountIcon(mDataModel.getFilesCount(position)));
-        }
-        if (holder.mItemTitle != null) {
-            holder.mItemTitle.setText(mDataModel.getComment(position));
-        }
-        if (holder.mUserName != null) {
-            holder.mUserName.setText(mDataModel.getUserName(position));
-        }
-        if (holder.mDate != null) {
-            holder.mDate.setText(mDataModel.getDate(position));
-        }
-        if (holder.mItemSubTitle != null) {
-            holder.mItemSubTitle.setText(mDataModel.getVersion(position));
-        }
-        if (holder.mContainer != null) {
-            holder.mContainer.setOnClickListener(new View.OnClickListener() {
+        // Find the way how to make it through DI
+        if (holder instanceof ChangesViewHolder) {
+            ((ChangesViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     mOnChangeClickListener.onClick(mDataModel.getChange(adapterPosition));
                 }
             });
         }
-    }
-
-    public static class ChangesViewHolder extends RecyclerView.ViewHolder {
-        @Nullable
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @Nullable
-        @BindView(R.id.itemSubTitle)
-        TextView mItemSubTitle;
-        @Nullable
-        @BindView(R.id.itemTitle)
-        TextView mItemTitle;
-        @Nullable
-        @BindView(R.id.itemIcon)
-        TextView mIcon;
-        @Nullable
-        @BindView(R.id.userName)
-        TextView mUserName;
-        @Nullable
-        @BindView(R.id.date)
-        TextView mDate;
-
-        public ChangesViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addLoadMoreItem() {
-        mDataModel.add(mLoadMore);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeLoadMoreItem() {
-        mDataModel.remove(mLoadMore);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addMoreBuilds(ChangesDataModel dataModel) {
-        mDataModel.add(dataModel);
-    }
-
-    public static class LoadMore extends Changes.Change {
     }
 }

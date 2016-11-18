@@ -25,4 +25,14 @@ public interface ViewTracker {
      * Track view
      */
     void trackView();
+
+    /**
+     * View tracker stub
+     */
+    ViewTracker STUB = new ViewTracker() {
+        @Override
+        public void trackView() {
+            // Do nothing
+        }
+    };
 }

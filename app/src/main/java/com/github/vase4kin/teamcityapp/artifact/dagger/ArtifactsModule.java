@@ -24,18 +24,28 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManagerImpl;
+import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
 import com.github.vase4kin.teamcityapp.artifact.extractor.ArtifactValueExtractor;
 import com.github.vase4kin.teamcityapp.artifact.extractor.ArtifactValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManager;
 import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManagerImpl;
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouter;
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouterImpl;
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactAdapter;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewHolderFactory;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewImpl;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntKey;
+import dagger.multibindings.IntoMap;
 import de.greenrobot.event.EventBus;
 
 @Module
@@ -55,8 +65,8 @@ public class ArtifactsModule {
     }
 
     @Provides
-    ArtifactView providesArtifactView() {
-        return new ArtifactViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_artifacts);
+    ArtifactView providesArtifactView(ArtifactAdapter adapter) {
+        return new ArtifactViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_artifacts, adapter);
     }
 
     @Provides
@@ -70,7 +80,24 @@ public class ArtifactsModule {
     }
 
     @Provides
+    ViewTracker providesViewTracker() {
+        return ViewTracker.STUB;
+    }
+
+    @Provides
     PermissionManager providesPermissionManager() {
         return new PermissionManagerImpl(mFragment);
+    }
+
+    @Provides
+    ArtifactAdapter providesArtifactAdapter(Map<Integer, ViewHolderFactory<ArtifactDataModel>> viewHolderFactories) {
+        return new ArtifactAdapter(viewHolderFactories);
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    @Provides
+    ViewHolderFactory<ArtifactDataModel> providesArtifactViewHolderFactory() {
+        return new ArtifactViewHolderFactory();
     }
 }

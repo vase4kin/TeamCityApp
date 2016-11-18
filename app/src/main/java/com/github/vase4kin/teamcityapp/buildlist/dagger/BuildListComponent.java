@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {BuildListModule.class, CustomDrawerModule.class})
+@Component(dependencies = RestApiComponent.class, modules = {BuildListModule.class, BuildListAdapterModule.class, CustomDrawerModule.class})
 public interface BuildListComponent {
 
     void inject(BuildListActivity buildListActivity);

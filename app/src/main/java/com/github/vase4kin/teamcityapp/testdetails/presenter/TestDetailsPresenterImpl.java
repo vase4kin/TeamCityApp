@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.testdetails.presenter;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
@@ -34,17 +35,17 @@ import tr.xip.errorview.ErrorView;
  */
 public class TestDetailsPresenterImpl implements TestDetailsPresenter, ErrorView.RetryListener {
 
-    private TestDetailsView mViewModel;
+    private TestDetailsView mView;
     private TestDetailsDataManager mDataManager;
     private ViewTracker mTracker;
     private TestDetailsValueExtractor mValueExtractor;
 
     @Inject
-    TestDetailsPresenterImpl(@NonNull TestDetailsView mViewModel,
+    TestDetailsPresenterImpl(@NonNull TestDetailsView view,
                              @NonNull TestDetailsDataManager mDataManager,
                              @NonNull ViewTracker tracker,
                              @NonNull TestDetailsValueExtractor valueExtractor) {
-        this.mViewModel = mViewModel;
+        this.mView = view;
         this.mDataManager = mDataManager;
         this.mTracker = tracker;
         this.mValueExtractor = valueExtractor;
@@ -55,8 +56,8 @@ public class TestDetailsPresenterImpl implements TestDetailsPresenter, ErrorView
      */
     @Override
     public void onCreate() {
-        mViewModel.initViews(this);
-        mViewModel.showProgress();
+        mView.initViews(this);
+        mView.showProgress();
         loadData();
     }
 
@@ -65,7 +66,7 @@ public class TestDetailsPresenterImpl implements TestDetailsPresenter, ErrorView
      */
     @Override
     public void onDestroy() {
-        mViewModel.unBindViews();
+        mView.unBindViews();
         mDataManager.unsubscribe();
     }
 
@@ -74,7 +75,7 @@ public class TestDetailsPresenterImpl implements TestDetailsPresenter, ErrorView
      */
     @Override
     public void onBackPressed() {
-        mViewModel.finish();
+        mView.finish();
     }
 
     /**
@@ -100,14 +101,19 @@ public class TestDetailsPresenterImpl implements TestDetailsPresenter, ErrorView
         mDataManager.loadData(new OnLoadingListener<TestOccurrences.TestOccurrence>() {
             @Override
             public void onSuccess(TestOccurrences.TestOccurrence data) {
-                mViewModel.hideProgress();
-                mViewModel.setViews(data);
+                mView.hideProgress();
+                String testDetails = data.getDetails();
+                if (TextUtils.isEmpty(testDetails)) {
+                    mView.showEmptyData();
+                } else {
+                    mView.showTestDetails(testDetails);
+                }
             }
 
             @Override
             public void onFail(String errorMessage) {
-                mViewModel.hideProgress();
-                mViewModel.showRetryView(errorMessage);
+                mView.hideProgress();
+                mView.showRetryView(errorMessage);
             }
         }, mValueExtractor.getTestUrl());
     }

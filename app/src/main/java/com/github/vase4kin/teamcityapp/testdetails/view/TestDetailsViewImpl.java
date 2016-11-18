@@ -28,7 +28,6 @@ import android.widget.TextView;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -52,6 +51,8 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
     ProgressWheel mProgressWheel;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+    @BindView(R.id.empty)
+    TextView mEmpty;
 
     private Unbinder mUnbinder;
 
@@ -116,9 +117,17 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
      * {@inheritDoc}
      */
     @Override
-    public void setViews(TestOccurrences.TestOccurrence testOccurrence) {
+    public void showTestDetails(String testDetails) {
         mTestDetailsTextView.setVisibility(View.VISIBLE);
-        mTestDetailsTextView.setText(testOccurrence.getDetails());
+        mTestDetailsTextView.setText(testDetails);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showEmptyData() {
+        mEmpty.setVisibility(View.VISIBLE);
     }
 
     /**

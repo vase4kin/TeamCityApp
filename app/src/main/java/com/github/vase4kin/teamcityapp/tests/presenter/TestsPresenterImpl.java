@@ -17,14 +17,13 @@
 package com.github.vase4kin.teamcityapp.tests.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataManager;
@@ -34,6 +33,7 @@ import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractor;
 import com.github.vase4kin.teamcityapp.tests.router.TestsRouter;
 import com.github.vase4kin.teamcityapp.tests.view.OnTestsPresenterListener;
 import com.github.vase4kin.teamcityapp.tests.view.TestsView;
+import com.mugen.MugenCallbacks;
 
 import java.util.Collections;
 import java.util.List;
@@ -48,16 +48,19 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
         TestOccurrences.TestOccurrence,
         TestsView,
         TestsDataManager,
+        ViewTracker,
         TestsValueExtractor> implements TestsPresenter, OnTestsPresenterListener {
 
     private TestsRouter mRouter;
+    @VisibleForTesting
+    boolean mIsLoadMoreLoading = false;
 
     @Inject
     TestsPresenterImpl(@NonNull TestsView view,
                        @NonNull TestsDataManager dataManager,
-                       @Nullable ViewTracker tracker,
-                       @Nullable TestsValueExtractor valueExtractor,
-                       @NonNull TestsRouter router) {
+                       @NonNull ViewTracker tracker,
+                       @NonNull TestsValueExtractor valueExtractor,
+                       TestsRouter router) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
     }
@@ -85,27 +88,35 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
     protected void initViews() {
         super.initViews();
         mView.setListener(this);
-        mView.setOnLoadMoreListener(new OnLoadMoreListener() {
+        mView.setOnLoadMoreListener(new MugenCallbacks() {
             @Override
-            public void loadMore() {
-                mView.addLoadMoreItem();
+            public void onLoadMore() {
+                mIsLoadMoreLoading = true;
+                mView.addLoadMore();
                 mDataManager.loadMore(new OnLoadingListener<List<TestOccurrences.TestOccurrence>>() {
                     @Override
                     public void onSuccess(List<TestOccurrences.TestOccurrence> data) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.addMoreBuilds(new TestsDataModelImpl(data));
+                        mIsLoadMoreLoading = false;
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
-                        mView.removeLoadMoreItem();
+                        mView.removeLoadMore();
                         mView.showRetryLoadMoreSnackBar();
+                        mIsLoadMoreLoading = false;
                     }
                 });
             }
 
             @Override
-            public boolean isLoadedAllItems() {
+            public boolean isLoading() {
+                return mIsLoadMoreLoading;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
                 return !mDataManager.canLoadMore();
             }
         });

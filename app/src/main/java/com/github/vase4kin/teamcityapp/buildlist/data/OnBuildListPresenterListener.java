@@ -17,12 +17,12 @@
 package com.github.vase4kin.teamcityapp.buildlist.data;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.view.OnLoadMoreListener;
+import com.mugen.MugenCallbacks;
 
 /**
  * On build item click listener
  */
-public interface OnBuildListPresenterListener extends OnLoadMoreListener {
+public interface OnBuildListPresenterListener extends MugenCallbacks {
 
     /**
      * Handle click event on build item in adapter

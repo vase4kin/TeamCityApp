@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.view;
 
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
@@ -24,29 +24,17 @@ import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListen
 /**
  * View for handling {@link BuildListActivity}
  */
-public interface BuildListView extends BaseListView<BuildListDataModel>, LoadMore<BuildListDataModel> {
+public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoadMore<BuildListDataModel> {
 
     /**
-     * @param onBuildListPresenterListener - Listener to handle view callbacks
+     * @param mOnBuildListPresenterListener - Listener to handle view callbacks
      */
-    void setOnBuildListPresenterListener(OnBuildListPresenterListener onBuildListPresenterListener);
+    void setOnBuildListPresenterListener(OnBuildListPresenterListener mOnBuildListPresenterListener);
 
     /**
-     * {@inheritDoc}
+     * Show retry load more snack bar
      */
-    void addLoadMoreItem();
-
-    /**
-     * {@inheritDoc}
-     */
-    void removeLoadMoreItem();
-
     void showRetryLoadMoreSnackBar();
-
-    /**
-     * {@inheritDoc}
-     */
-    void addMoreBuilds(BuildListDataModel dataModel);
 
     /**
      * Set toolbar title

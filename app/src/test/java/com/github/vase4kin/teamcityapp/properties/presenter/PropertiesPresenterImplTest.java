@@ -68,7 +68,7 @@ public class PropertiesPresenterImplTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new PropertiesPresenterImpl(mView, mDataManager, mValueExtractor);
+        mPresenter = new PropertiesPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test

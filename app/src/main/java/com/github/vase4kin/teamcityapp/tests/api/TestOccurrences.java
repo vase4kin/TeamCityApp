@@ -20,7 +20,6 @@ import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
-import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesAdapter;
 
 import java.util.Collections;
 import java.util.List;
@@ -110,7 +109,7 @@ public class TestOccurrences extends BaseObject implements Collectible<TestOccur
         }
 
         public boolean isFailed() {
-            return !(this instanceof TestOccurrencesAdapter.LoadMore) && status.equals("FAILURE");
+            return "FAILURE".equals(status);
         }
 
         //default

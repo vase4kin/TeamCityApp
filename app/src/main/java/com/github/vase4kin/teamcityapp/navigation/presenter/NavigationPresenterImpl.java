@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.navigation.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
@@ -40,16 +39,21 @@ import javax.inject.Inject;
  * Present to handle logic of {@link com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity}
  */
 public class NavigationPresenterImpl extends BaseListPresenterImpl<
-        NavigationDataModel, NavigationItem, NavigationView, NavigationDataManager, NavigationValueExtractor> implements OnNavigationItemClickListener {
+        NavigationDataModel,
+        NavigationItem,
+        NavigationView,
+        NavigationDataManager,
+        ViewTracker,
+        NavigationValueExtractor> implements OnNavigationItemClickListener {
 
     private NavigationRouter mRouter;
 
     @Inject
     NavigationPresenterImpl(@NonNull NavigationView view,
                             @NonNull NavigationDataManager dataManager,
-                            @Nullable ViewTracker tracker,
-                            @Nullable NavigationValueExtractor valueExtractor,
-                            @NonNull NavigationRouter router) {
+                            @NonNull ViewTracker tracker,
+                            @NonNull NavigationValueExtractor valueExtractor,
+                            NavigationRouter router) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
     }

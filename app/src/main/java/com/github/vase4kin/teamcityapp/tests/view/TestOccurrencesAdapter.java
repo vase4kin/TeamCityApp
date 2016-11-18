@@ -16,136 +16,50 @@
 
 package com.github.vase4kin.teamcityapp.tests.view;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseLoadMoreAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel;
-import com.joanzapata.iconify.widget.IconTextView;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Tests adapter
  */
-public class TestOccurrencesAdapter extends RecyclerView.Adapter<TestOccurrencesAdapter.TestOccurrenceViewHolder> implements LoadMore<TestsDataModel> {
+public class TestOccurrencesAdapter extends BaseLoadMoreAdapter<TestsDataModel> {
 
-    private TestsDataModel mDataModel;
     private OnTestOccurrenceClickListener mOnClickListener;
 
-    private LoadMore mLoadMore = new LoadMore() {
-        @Override
-        public String getId() {
-            return "012345731";
-        }
-    };
-
-    public TestOccurrencesAdapter(TestsDataModel mDataModel, OnTestOccurrenceClickListener mOnClickListener) {
-        this.mDataModel = mDataModel;
-        this.mOnClickListener = mOnClickListener;
+    public TestOccurrencesAdapter(Map<Integer, ViewHolderFactory<TestsDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (mDataModel.isLoadMore(position)) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    @Override
-    public TestOccurrenceViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        int layout;
-        switch (viewType) {
-            case 0:
-                layout = R.layout.item_test_occurence_list;
-                break;
-            case 1:
-            default:
-                layout = R.layout.item_load_more;
-                break;
-        }
-        final View v = inflater.inflate(layout, viewGroup, false);
-        return new TestOccurrenceViewHolder(v);
-    }
-
-    @Override
-    public void onBindViewHolder(final TestOccurrenceViewHolder holder, int position) {
-        if (holder.mTextView != null) {
-            holder.mTextView.setText(mDataModel.getName(position));
-        }
-        if (holder.mIcon != null) {
-            holder.mIcon.setText(mDataModel.getStatusIcon(position));
-        }
-        if (mDataModel.isFailed(position)) {
-            if (holder.mContainer != null) {
-                final int adapterPosition = position;
-                holder.mContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnClickListener.onFailedTestClick(mDataModel.getHref(adapterPosition));
-                    }
-                });
-            }
-        }
-    }
-
-    public static class TestOccurrenceViewHolder extends RecyclerView.ViewHolder {
-        @Nullable
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @Nullable
-        @BindView(R.id.itemTitle)
-        TextView mTextView;
-        @Nullable
-        @BindView(R.id.itemIcon)
-        IconTextView mIcon;
-
-        public TestOccurrenceViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
+    /**
+     * Set {@link OnTestOccurrenceClickListener}
+     *
+     * @param onTestOccurrenceClickListener - listener to set
+     */
+    public void setOnClickListener(OnTestOccurrenceClickListener onTestOccurrenceClickListener) {
+        this.mOnClickListener = onTestOccurrenceClickListener;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void addLoadMoreItem() {
-        mDataModel.add(mLoadMore);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeLoadMoreItem() {
-        mDataModel.remove(mLoadMore);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addMoreBuilds(TestsDataModel dataModel) {
-        mDataModel.add(dataModel);
-    }
-
-    public static class LoadMore extends TestOccurrences.TestOccurrence {
+    public void onBindViewHolder(BaseViewHolder<TestsDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
+        final int adapterPosition = position;
+        // Find the way how to make it through DI
+        if (holder instanceof TestOccurrenceViewHolder && mDataModel.isFailed(position)) {
+            ((TestOccurrenceViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnClickListener.onFailedTestClick(mDataModel.getHref(adapterPosition));
+                }
+            });
+        }
     }
 }

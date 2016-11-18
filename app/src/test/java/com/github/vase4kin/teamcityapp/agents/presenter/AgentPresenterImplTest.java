@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager;
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -72,12 +73,15 @@ public class AgentPresenterImplTest {
     @Mock
     private AgentsValueExtractor mValueExtractor;
 
+    @Mock
+    private ViewTracker mTracker;
+
     private AgentPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new AgentPresenterImpl(mView, mDataManager, mValueExtractor);
+        mPresenter = new AgentPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test
@@ -86,7 +90,7 @@ public class AgentPresenterImplTest {
         mPresenter.loadData(mLoadingListener);
         verify(mValueExtractor).includeDisconnected();
         verify(mDataManager).load(eq(true), eq(mLoadingListener));
-        verifyNoMoreInteractions(mView, mDataManager, mBundle, mValueExtractor);
+        verifyNoMoreInteractions(mView, mDataManager, mBundle, mTracker, mValueExtractor);
     }
 
     @Test
@@ -118,6 +122,6 @@ public class AgentPresenterImplTest {
         AgentDataModel dataModel = mPresenter.createModel(agents);
         assertThat(dataModel.getName(0), is("name"));
         assertThat(dataModel.getItemCount(), is(1));
-        verifyNoMoreInteractions(mView, mDataManager, mValueExtractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor);
     }
 }

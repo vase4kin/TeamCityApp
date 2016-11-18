@@ -37,4 +37,10 @@ public interface ArtifactDataModel extends BaseDataModel {
      * @return Artifact file
      */
     File getFile(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return true if the artifact file has size
+     */
+    boolean hasSize(int position);
 }

@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.changes.data;
 
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
-import com.github.vase4kin.teamcityapp.changes.view.ChangesAdapter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
@@ -102,34 +102,19 @@ public class ChangesDataModelImplTest {
     }
 
     @Test
-    public void testIsLoadMore() throws Exception {
-        List<Changes.Change> changes = new ArrayList<>();
-        changes.add(new ChangesAdapter.LoadMore());
-        mDataModel = new ChangesDataModelImpl(changes);
+    public void testIsLoadMore() {
+        mDataModel = new ChangesDataModelImpl(Collections.singletonList(ChangesDataModelImpl.LOAD_MORE));
         assertThat(mDataModel.isLoadMore(0), is(true));
     }
 
     @Test
-    public void testAdd() throws Exception {
-        Changes.Change change = new Changes.Change();
-        mDataModel.add(change);
-        assertThat(mDataModel.getChange(1), is(change));
-    }
-
-    @Test
-    public void testRemove() throws Exception {
-        mDataModel.remove(mChange);
-        assertThat(mDataModel.getItemCount(), is(0));
-    }
-
-    @Test
-    public void testAddDataModel() throws Exception {
-        List<Changes.Change> changes = new ArrayList<>();
-        ChangesAdapter.LoadMore loadMore = new ChangesAdapter.LoadMore();
-        changes.add(loadMore);
-        ChangesDataModel dataModel = new ChangesDataModelImpl(changes);
-        mDataModel.add(dataModel);
-        assertThat(mDataModel.getItemCount(), is(2));
+    public void testLoadMore() {
+        mDataModel.addLoadMore();
         assertThat(mDataModel.isLoadMore(1), is(true));
+        assertThat(mDataModel.getItemCount(), is(2));
+        mDataModel.removeLoadMore();
+        assertThat(mDataModel.isLoadMore(0), is(false));
+        assertThat(mDataModel.getItemCount(), is(1));
     }
+
 }

@@ -16,172 +16,53 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.view;
 
-import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.adapter.LoadMore;
-import com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseLoadMoreAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Adapter for builds
  */
-public class BuildListAdapter extends RecyclerView.Adapter<BuildListAdapter.BuildViewHolder> implements LoadMore<BuildListDataModel> {
-
-    private BuildListDataModel mDataModel;
-
-    private LoadMoreBuild mLoadMoreBuild = new LoadMoreBuild() {
-        @Override
-        public String getId() {
-            return "04532341";
-        }
-    };
+public class BuildListAdapter extends BaseLoadMoreAdapter<BuildListDataModel> {
 
     private OnBuildListPresenterListener mOnBuildListPresenterListener;
 
-    public BuildListAdapter(BuildListDataModel dataModel, OnBuildListPresenterListener listener) {
-        this.mDataModel = dataModel;
-        this.mOnBuildListPresenterListener = listener;
+    /**
+     * Constructor
+     *
+     * @param viewHolderFactories - view holder factories from DI
+     */
+    public BuildListAdapter(Map<Integer, ViewHolderFactory<BuildListDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
     }
 
     /**
-     * {@inheritDoc}
+     * Set {@link OnBuildListPresenterListener}
+     *
+     * @param onBuildListPresenterListener - listener to set
      */
-    @Override
-    public int getItemViewType(int position) {
-        if (mDataModel.isLoadMoreBuild(position)) {
-            return 2;
-        } else {
-            return (mDataModel.getBranchName(position) != null) ? 0 : 1;
-        }
+    public void setOnBuildListPresenterListener(OnBuildListPresenterListener onBuildListPresenterListener) {
+        this.mOnBuildListPresenterListener = onBuildListPresenterListener;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public int getItemCount() {
-        return mDataModel.getItemCount();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public BuildViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        final LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
-        View v = null;
-        switch (viewType) {
-            case 0:
-                v = inflater.inflate(R.layout.item_build_list_with_sub_title, viewGroup, false);
-                break;
-            case 1:
-                v = inflater.inflate(R.layout.item_build_list, viewGroup, false);
-                break;
-            case 2:
-                v = inflater.inflate(R.layout.item_load_more, viewGroup, false);
-                break;
-        }
-        return new BuildViewHolder(v);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBindViewHolder(final BuildViewHolder holder, int position) {
+    public void onBindViewHolder(BaseViewHolder<BuildListDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
         final int adapterPosition = position;
-        if (!(mDataModel.isLoadMoreBuild(position))) {
-            if (holder.mContainer != null) {
-                holder.mContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onClick(mDataModel.getBuild(adapterPosition));
-                    }
-                });
-            }
-            if (mDataModel.getBranchName(position) != null) {
-                if (holder.mBranchName != null) {
-                    holder.mBranchName.setText(mDataModel.getBranchName(position));
+        // Find the way how to make it through DI
+        if (holder instanceof BuildViewHolder) {
+            ((BuildViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnBuildListPresenterListener.onClick(mDataModel.getBuild(adapterPosition));
                 }
-            }
-            if (holder.mIcon != null) {
-                holder.mIcon.setText(mDataModel.getBuildStatusIcon(position));
-            }
-            if (holder.mStatusText != null) {
-                holder.mStatusText.setText(mDataModel.getStatusText(position));
-            }
-            if (holder.mBuildNumber != null) {
-                String buildNumber = mDataModel.getBuildNumber(position);
-                if (TextUtils.isEmpty(buildNumber)) {
-                    holder.mBuildNumber.setVisibility(View.GONE);
-                } else {
-                    holder.mBuildNumber.setText(mDataModel.getBuildNumber(position));
-                }
-            }
+            });
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addLoadMoreItem() {
-        mDataModel.add(mLoadMoreBuild);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void removeLoadMoreItem() {
-        mDataModel.remove(mLoadMoreBuild);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void addMoreBuilds(BuildListDataModel dataModel) {
-        mDataModel.add(dataModel);
-    }
-
-    public static class BuildViewHolder extends RecyclerView.ViewHolder {
-        @Nullable
-        @BindView(R.id.container)
-        FrameLayout mContainer;
-        @Nullable
-        @BindView(R.id.itemSubTitle)
-        TextView mBranchName;
-        @Nullable
-        @BindView(R.id.itemTitle)
-        TextView mStatusText;
-        @Nullable
-        @BindView(R.id.itemIcon)
-        TextView mIcon;
-        @Nullable
-        @BindView(R.id.buildNumber)
-        TextView mBuildNumber;
-
-
-        public BuildViewHolder(View v) {
-            super(v);
-            ButterKnife.bind(this, v);
-        }
-    }
-
-    public BuildListDataModel getDataModel() {
-        return mDataModel;
     }
 }
