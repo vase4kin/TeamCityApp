@@ -81,6 +81,11 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             }
 
             @Override
+            public void onRunBuildFabClick() {
+                mRouter.openRunBuildPage();
+            }
+
+            @Override
             public void onLoadMore() {
                 mIsLoadMoreLoading = true;
                 mView.addLoadMore();

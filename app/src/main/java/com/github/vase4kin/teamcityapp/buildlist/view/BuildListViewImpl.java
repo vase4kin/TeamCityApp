@@ -78,12 +78,13 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                           @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
         super.initViews(retryListener, refreshListener);
         mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_directions_run).color(Color.WHITE));
-
-        // <!---------------------------------------!>
-        // REMOVE THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
         mFloatingActionButton.hide();
-        // REMOVE THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnBuildListPresenterListener.onRunBuildFabClick();
+            }
+        });
     }
 
     /**
@@ -102,11 +103,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void showRunBuildFloatActionButton() {
-        // <!---------------------------------------!>
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // mFloatingActionButton.show();
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mFloatingActionButton.show();
     }
 
     /**
@@ -114,11 +111,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void hideRunBuildFloatActionButton() {
-        // <!---------------------------------------!>
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // mFloatingActionButton.hide();
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mFloatingActionButton.hide();
     }
 
     /**

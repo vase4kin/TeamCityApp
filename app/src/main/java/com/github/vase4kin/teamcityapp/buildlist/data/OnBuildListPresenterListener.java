@@ -30,4 +30,9 @@ public interface OnBuildListPresenterListener extends MugenCallbacks {
      * @param build - Build
      */
     void onClick(Build build);
+
+    /**
+     * On run build fab button click
+     */
+    void onRunBuildFabClick();
 }

@@ -78,6 +78,9 @@
             android:name=".about.AboutActivity"
             android:label="@string/about_drawer_item"
             android:launchMode="singleTop" />
+        <activity
+            android:name=".runbuild.RunBuildActivity"
+            android:label="@string/title_run_build" />
 
         <meta-data
             android:name="io.fabric.ApiKey"

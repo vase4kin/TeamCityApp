@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
+import com.github.vase4kin.teamcityapp.runbuild.RunBuildActivity;
 
 /**
  * impl of {@link BuildListRouter}
@@ -41,11 +42,20 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openBuildPage(Build build) {
+        // TODO: Move to activity as static public method
         Intent intent = new Intent(mActivity, BuildTabsActivity.class);
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, build);
         intent.putExtras(b);
         mActivity.startActivity(intent);
         mActivity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void openRunBuildPage() {
+        RunBuildActivity.start(mActivity);
     }
 }

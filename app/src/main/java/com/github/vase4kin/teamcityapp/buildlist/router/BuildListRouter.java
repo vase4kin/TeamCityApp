@@ -29,4 +29,9 @@ public interface BuildListRouter {
      * @param build - Build
      */
     void openBuildPage(Build build);
+
+    /**
+     * Open run build page
+     */
+    void openRunBuildPage();
 }
