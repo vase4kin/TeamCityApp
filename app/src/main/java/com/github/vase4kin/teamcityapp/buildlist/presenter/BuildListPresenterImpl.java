@@ -198,8 +198,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         if (requestCode == RunBuildActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             this.mQueuedBuildHref = queuedBuildHref;
             mView.showBuildRunSuccessSnackBar();
-            // refresh list
-            // TODO: do something
+            mView.showRefreshAnimation();
+            onSwipeToRefresh();
         }
     }
 }
