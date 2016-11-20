@@ -202,4 +202,11 @@
     <string name="text_no_branches_available">No branches available</string>
     <string name="text_loading_branches">Loading branches</string>
     <string name="hint_default_build_branch">Default branch</string>
+    <string name="error_base_error">We encountered problem running build</string>
+    <string name="error_forbidden_error">You don\'t have permissions to run build</string>
+    <string name="text_queueing_build">Running build..</string>
+    <string name="text_opening_build">Opening build..</string>
+    <string name="text_build_is_run">Build is added to build queue</string>
+    <string name="error_opening_build">We encountered problem opening build</string>
+    <string name="text_show_build">Show</string>
 </resources>

@@ -36,4 +36,8 @@ public class BuildType extends NavigationItem implements Serializable {
     public String getProjectName() {
         return projectName;
     }
+
+    public BuildType(String id) {
+        this.id = id;
+    }
 }

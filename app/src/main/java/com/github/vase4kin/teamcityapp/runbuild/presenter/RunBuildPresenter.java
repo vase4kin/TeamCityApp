@@ -14,26 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter;
 
 /**
- * Build list router
+ * Presenter to manage logic of {@link com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity}
  */
-public interface BuildListRouter {
-
-    /**
-     * Start build details activity
-     *
-     * @param build - Build
-     */
-    void openBuildPage(Build build);
-
-    /**
-     * Open run build page
-     *
-     * @param buildTypeId - Build type id
-     */
-    void openRunBuildPage(String buildTypeId);
+public interface RunBuildPresenter extends BasePresenter {
 }

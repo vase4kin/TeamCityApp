@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 
 /**
- * Build list router
+ * Custom loading listener
+ *
+ * @param <T> - Data type
  */
-public interface BuildListRouter {
+public interface RunBuildLoadingListener<T> extends OnLoadingListener<T> {
 
     /**
-     * Start build details activity
-     *
-     * @param build - Build
+     * On getting 403 error
      */
-    void openBuildPage(Build build);
-
-    /**
-     * Open run build page
-     *
-     * @param buildTypeId - Build type id
-     */
-    void openRunBuildPage(String buildTypeId);
+    void onForbiddenError();
 }

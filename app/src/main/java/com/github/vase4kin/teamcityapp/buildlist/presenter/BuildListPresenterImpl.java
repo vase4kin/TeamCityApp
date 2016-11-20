@@ -16,7 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -30,6 +32,7 @@ import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListen
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import java.util.List;
 
@@ -41,11 +44,15 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         V,
         DM,
         ViewTracker,
-        BaseValueExtractor> {
+        BaseValueExtractor> implements OnBuildListPresenterListener {
 
     private BuildListRouter mRouter;
     @VisibleForTesting
     boolean mIsLoadMoreLoading = false;
+    /**
+     * Saved local queued build href
+     */
+    private String mQueuedBuildHref;
 
     @Inject
     public BuildListPresenterImpl(@NonNull V view,
@@ -74,48 +81,84 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         if (!mValueExtractor.isBundleNull()) {
             mView.setTitle(mValueExtractor.getName());
         }
-        mView.setOnBuildListPresenterListener(new OnBuildListPresenterListener() {
+        mView.setOnBuildListPresenterListener(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBuildClick(Build build) {
+        mRouter.openBuildPage(build);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onRunBuildFabClick() {
+        mRouter.openRunBuildPage(mValueExtractor.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShowQueuedBuildSnackBarClick() {
+        mView.showBuildLoadingProgress();
+        mDataManager.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
             @Override
-            public void onClick(Build build) {
-                mRouter.openBuildPage(build);
+            public void onSuccess(Build data) {
+                mView.hideBuildLoadingProgress();
+                mRouter.openBuildPage(data);
             }
 
             @Override
-            public void onRunBuildFabClick() {
-                mRouter.openRunBuildPage();
-            }
-
-            @Override
-            public void onLoadMore() {
-                mIsLoadMoreLoading = true;
-                mView.addLoadMore();
-                mDataManager.loadMore(new OnLoadingListener<List<Build>>() {
-                    @Override
-                    public void onSuccess(List<Build> data) {
-                        mView.removeLoadMore();
-                        mView.addMoreBuilds(new BuildListDataModelImpl(data));
-                        mIsLoadMoreLoading = false;
-                    }
-
-                    @Override
-                    public void onFail(String errorMessage) {
-                        mView.removeLoadMore();
-                        mView.showRetryLoadMoreSnackBar();
-                        mIsLoadMoreLoading = false;
-                    }
-                });
-            }
-
-            @Override
-            public boolean isLoading() {
-                return mIsLoadMoreLoading;
-            }
-
-            @Override
-            public boolean hasLoadedAllItems() {
-                return !mDataManager.canLoadMore();
+            public void onFail(String errorMessage) {
+                mView.hideBuildLoadingProgress();
+                mView.showOpeningBuildErrorSnackBar();
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onLoadMore() {
+        mIsLoadMoreLoading = true;
+        mView.addLoadMore();
+        mDataManager.loadMore(new OnLoadingListener<List<Build>>() {
+            @Override
+            public void onSuccess(List<Build> data) {
+                mView.removeLoadMore();
+                mView.addMoreBuilds(new BuildListDataModelImpl(data));
+                mIsLoadMoreLoading = false;
+            }
+
+            @Override
+            public void onFail(String errorMessage) {
+                mView.removeLoadMore();
+                mView.showRetryLoadMoreSnackBar();
+                mIsLoadMoreLoading = false;
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isLoading() {
+        return mIsLoadMoreLoading;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasLoadedAllItems() {
+        return !mDataManager.canLoadMore();
     }
 
     /**
@@ -142,5 +185,21 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     protected void onFailCallBack(String errorMessage) {
         super.onFailCallBack(errorMessage);
         mView.hideRunBuildFloatActionButton();
+    }
+
+    /**
+     * On activity result
+     *
+     * @param requestCode     - Request code
+     * @param resultCode      - Result code
+     * @param queuedBuildHref - Queued build href
+     */
+    public void onActivityResult(int requestCode, int resultCode, @Nullable String queuedBuildHref) {
+        if (requestCode == RunBuildActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            this.mQueuedBuildHref = queuedBuildHref;
+            mView.showBuildRunSuccessSnackBar();
+            // refresh list
+            // TODO: do something
+        }
     }
 }

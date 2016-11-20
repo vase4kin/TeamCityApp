@@ -105,7 +105,7 @@ public class BuildListPresenterImplTest {
 
         verify(mView).setOnBuildListPresenterListener(mOnBuildListPresenterListenerArgumentCaptor.capture());
         OnBuildListPresenterListener onBuildListPresenterListener = mOnBuildListPresenterListenerArgumentCaptor.getValue();
-        onBuildListPresenterListener.onClick(mBuild);
+        onBuildListPresenterListener.onBuildClick(mBuild);
         verify(mRouter).openBuildPage(eq(mBuild));
 
         when(mDataManager.canLoadMore()).thenReturn(false);

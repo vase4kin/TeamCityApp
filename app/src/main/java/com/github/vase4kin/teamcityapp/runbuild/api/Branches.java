@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.runbuild.api;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import java.util.List;
 
 /**
- * Build list router
+ * Branches api object
  */
-public interface BuildListRouter {
+public class Branches {
 
-    /**
-     * Start build details activity
-     *
-     * @param build - Build
-     */
-    void openBuildPage(Build build);
+    private List<Branch> branch;
 
-    /**
-     * Open run build page
-     *
-     * @param buildTypeId - Build type id
-     */
-    void openRunBuildPage(String buildTypeId);
+    public List<Branch> getBranches() {
+        return branch;
+    }
 }

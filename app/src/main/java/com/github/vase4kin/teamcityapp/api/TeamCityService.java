@@ -24,11 +24,14 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
+import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import okhttp3.ResponseBody;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -186,4 +189,24 @@ public interface TeamCityService {
     @Headers(APPLICATION_JSON)
     @GET
     Observable<Changes.Change> change(@Url String url);
+
+    /**
+     * List branches
+     *
+     * @param id - Build type id
+     * @return {@link Observable} with {@link com.github.vase4kin.teamcityapp.changes.api.Changes.Change}
+     */
+    @Headers(APPLICATION_JSON)
+    @GET("/app/rest/buildTypes/id:{id}/branches?locator=policy:ALL_BRANCHES")
+    Observable<Branches> listBranches(@Path("id") String id);
+
+    /**
+     * Queue build
+     *
+     * @param build - Build to post
+     * @return {@link Observable} with {@link Build}
+     */
+    @Headers(APPLICATION_JSON)
+    @POST("app/rest/buildQueue")
+    Observable<Build> queueBuild(@Body Build build);
 }

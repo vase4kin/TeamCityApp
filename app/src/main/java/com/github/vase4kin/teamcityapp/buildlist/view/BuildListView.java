@@ -45,15 +45,31 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
 
     /**
      * Show float action button
-     *
-     * Disabled until run build feature is implemented
      */
     void showRunBuildFloatActionButton();
 
     /**
      * Hide float action button
-     *
-     * Disabled until run build feature is implemented
      */
     void hideRunBuildFloatActionButton();
+
+    /**
+     * Show build run success snack bar
+     */
+    void showBuildRunSuccessSnackBar();
+
+    /**
+     * Show error opeing build snack bar
+     */
+    void showOpeningBuildErrorSnackBar();
+
+    /**
+     * Show build loading progress
+     */
+    void showBuildLoadingProgress();
+
+    /**
+     * Hide build loading progress
+     */
+    void hideBuildLoadingProgress();
 }

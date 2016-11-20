@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.runbuild.api;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.google.gson.annotations.SerializedName;
 
 /**
- * Build list router
+ * Branch api object
  */
-public interface BuildListRouter {
+public class Branch {
 
-    /**
-     * Start build details activity
-     *
-     * @param build - Build
-     */
-    void openBuildPage(Build build);
+    private String name;
+    @SerializedName("default")
+    private Boolean isDefault;
 
-    /**
-     * Open run build page
-     *
-     * @param buildTypeId - Build type id
-     */
-    void openRunBuildPage(String buildTypeId);
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setisDefault(Boolean isDefault) {
+        this.isDefault = isDefault;
+    }
 }

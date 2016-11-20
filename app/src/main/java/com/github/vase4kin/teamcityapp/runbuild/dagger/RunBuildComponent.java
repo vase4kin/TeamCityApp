@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.runbuild.dagger;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
+import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
-/**
- * Build list router
- */
-public interface BuildListRouter {
+import dagger.Component;
 
-    /**
-     * Start build details activity
-     *
-     * @param build - Build
-     */
-    void openBuildPage(Build build);
+@PresenterScope
+@Component(dependencies = RestApiComponent.class, modules = RunBuildModule.class)
+public interface RunBuildComponent {
 
-    /**
-     * Open run build page
-     *
-     * @param buildTypeId - Build type id
-     */
-    void openRunBuildPage(String buildTypeId);
+    void inject(RunBuildActivity runBuildActivity);
 }

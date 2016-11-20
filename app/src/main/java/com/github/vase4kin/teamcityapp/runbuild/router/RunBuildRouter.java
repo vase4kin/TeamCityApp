@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
-
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+package com.github.vase4kin.teamcityapp.runbuild.router;
 
 /**
- * Build list router
+ * Run build activity router
  */
-public interface BuildListRouter {
+public interface RunBuildRouter {
 
     /**
-     * Start build details activity
-     *
-     * @param build - Build
+     * Bundle extra key
      */
-    void openBuildPage(Build build);
+    String EXTRA_HREF = "href";
 
     /**
-     * Open run build page
+     * Close activity with success result
      *
-     * @param buildTypeId - Build type id
+     * @param queuedBuildHref - href of queued build
      */
-    void openRunBuildPage(String buildTypeId);
+    void closeOnSuccess(String queuedBuildHref);
+
+    /**
+     * Close activity with cancel result
+     */
+    void closeOnCancel();
 }

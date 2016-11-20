@@ -14,51 +14,52 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild;
+package com.github.vase4kin.teamcityapp.runbuild.view;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.runbuild.dagger.DaggerRunBuildComponent;
+import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
+import com.github.vase4kin.teamcityapp.runbuild.presenter.RunBuildPresenterImpl;
+
+import javax.inject.Inject;
 
 /**
  * Run build activity
  */
-public class RunBuildActivity extends AppCompatActivity implements OnToolBarNavigationListener {
+public class RunBuildActivity extends AppCompatActivity {
+
+    public static final int REQUEST_CODE = 489;
+
+    @Inject
+    RunBuildPresenterImpl mPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run_build);
 
-        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
+        // Injecting presenter
+        DaggerRunBuildComponent.builder()
+                .runBuildModule(new RunBuildModule(this))
+                .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
+                .build()
+                .inject(this);
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(R.string.title_run_build);
-        }
-
-        // For ui testing purpose
-        mToolbar.setNavigationContentDescription(R.string.navigate_up);
-        mToolbar.setNavigationIcon(new IconDrawable(this, MaterialIcons.md_close).color(Color.WHITE).actionBarSize());
-        mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(this));
-
+        mPresenter.onCreate();
     }
 
     @Override
-    public void onClick() {
-        finish();
+    protected void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -72,9 +73,10 @@ public class RunBuildActivity extends AppCompatActivity implements OnToolBarNavi
      *
      * @param activity - Activity instance
      */
-    public static void start(@NonNull Activity activity) {
+    public static void startForResult(@NonNull Activity activity, String buildTypeId) {
         Intent intent = new Intent(activity, RunBuildActivity.class);
-        activity.startActivity(intent);
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, buildTypeId);
+        activity.startActivityForResult(intent, REQUEST_CODE);
         activity.overridePendingTransition(R.anim.slide_in_bottom, R.anim.hold);
     }
 }

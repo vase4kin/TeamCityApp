@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
-import com.github.vase4kin.teamcityapp.runbuild.RunBuildActivity;
+import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 /**
  * impl of {@link BuildListRouter}
@@ -55,7 +55,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      * {@inheritDoc}
      */
     @Override
-    public void openRunBuildPage() {
-        RunBuildActivity.start(mActivity);
+    public void openRunBuildPage(String buildTypeId) {
+        RunBuildActivity.startForResult(mActivity, buildTypeId);
     }
 }
