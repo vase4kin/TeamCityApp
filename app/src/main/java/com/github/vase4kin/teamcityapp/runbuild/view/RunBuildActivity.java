@@ -68,6 +68,12 @@ public class RunBuildActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.hold, R.anim.slide_out_bottom);
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(RESULT_CANCELED, new Intent());
+        super.onBackPressed();
+    }
+
     /**
      * Start run build activity
      *

@@ -81,7 +81,6 @@ public class BuildListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        this.setResult(RESULT_CANCELED, new Intent());
         mDrawerPresenter.onBackButtonPressed();
     }
 
