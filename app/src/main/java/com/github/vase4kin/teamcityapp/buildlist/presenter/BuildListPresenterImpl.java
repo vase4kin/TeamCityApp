@@ -52,7 +52,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     /**
      * Saved local queued build href
      */
-    private String mQueuedBuildHref;
+    @VisibleForTesting
+    String mQueuedBuildHref;
 
     @Inject
     public BuildListPresenterImpl(@NonNull V view,

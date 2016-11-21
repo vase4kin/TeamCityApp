@@ -162,7 +162,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     }
 
     public void setBuildTypeId(String buildTypeId) {
-        this.buildType = new BuildType(buildTypeId);
+        this.buildType = new BuildType();
+        this.buildType.setId(buildTypeId);
     }
 
     /**

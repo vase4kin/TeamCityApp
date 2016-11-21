@@ -37,7 +37,7 @@ public class BuildType extends NavigationItem implements Serializable {
         return projectName;
     }
 
-    public BuildType(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 }

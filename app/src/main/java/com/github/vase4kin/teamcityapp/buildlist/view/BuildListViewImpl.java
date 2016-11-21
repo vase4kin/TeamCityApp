@@ -225,13 +225,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         Snackbar snackBar = Snackbar.make(
                 mRecyclerView,
                 R.string.error_opening_build,
-                Snackbar.LENGTH_LONG)
-                .setAction(R.string.text_show_build, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
-                    }
-                });
+                Snackbar.LENGTH_LONG);
         TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackBar.show();
