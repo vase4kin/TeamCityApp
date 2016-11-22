@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.dagger;
+package com.github.vase4kin.teamcityapp.account.create.dagger;
 
-import com.github.vase4kin.teamcityapp.account.create.dagger.UrlFormatterModule;
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatterImpl;
 
-import dagger.Component;
+import dagger.Module;
+import dagger.Provides;
 
-@PresenterScope
-@Component(dependencies = AppComponent.class, modules = {LoginModule.class, UrlFormatterModule.class})
-public interface LoginComponent {
+@Module
+public class UrlFormatterModule {
 
-    void inject(LoginActivity loginActivity);
+    @Provides
+    UrlFormatter providesUrlFormatter() {
+        return new UrlFormatterImpl();
+    }
 }

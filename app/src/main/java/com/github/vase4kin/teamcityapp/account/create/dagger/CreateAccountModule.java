@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataMana
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModelImpl;
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter;
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouterImpl;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
@@ -56,8 +57,9 @@ public class CreateAccountModule {
     @Provides
     CreateAccountDataManager providesCreateAccountDataManager(Context context,
                                                               @Named(CLIENT_BASE) OkHttpClient okHttpClient,
-                                                              SharedUserStorage sharedUserStorage) {
-        return new CreateAccountDataManagerImpl(context, okHttpClient, sharedUserStorage);
+                                                              SharedUserStorage sharedUserStorage,
+                                                              UrlFormatter urlFormatter) {
+        return new CreateAccountDataManagerImpl(context, okHttpClient, sharedUserStorage, urlFormatter);
     }
 
     @Provides

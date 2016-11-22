@@ -126,6 +126,41 @@ public class LoginActivityTest {
      */
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrl() throws Throwable {
+        final String urlWithPath = "https://teamcity.com/server";
+        String savedUrl = urlWithPath.concat("/");
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                mCallbackArgumentCaptor.getValue().onResponse(
+                        mCall,
+                        new Response.Builder()
+                                .request(new Request.Builder().url(urlWithPath).build())
+                                .protocol(Protocol.HTTP_1_0)
+                                .code(200)
+                                .build());
+                return null;
+            }
+        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        onView(withId(R.id.teamcity_url)).perform(typeText(urlWithPath.replace("https://", "")), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        onView(withId(R.id.btn_login)).perform(click());
+
+        intended(allOf(
+                hasComponent(RootProjectsActivity.class.getName()),
+                hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
+
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
+        assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), is(true));
+        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(savedUrl));
+    }
+
+    /**
+     * Verifies that user can be logged in as guest with correct account url
+     */
+    @Test
+    public void testUserCanCreateAccountWithCorrectUrlByImeButton() throws Throwable {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -140,9 +175,8 @@ public class LoginActivityTest {
             }
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
-        onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
-        onView(withId(R.id.btn_login)).perform(click());
+        onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), pressImeActionButton());
 
         intended(allOf(
                 hasComponent(RootProjectsActivity.class.getName()),
@@ -158,7 +192,8 @@ public class LoginActivityTest {
      * Verifies that user can be logged in as guest with correct account url
      */
     @Test
-    public void testUserCanCreateAccountWithCorrectUrlByImeButton() throws Throwable {
+    public void testUserCanCreateAccountWithCorrectUrlWhichContainsPathByImeButton() throws Throwable {
+
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
