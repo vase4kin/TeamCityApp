@@ -201,7 +201,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void showBuildRunSuccessSnackBar() {
+    public void showBuildQueuedSuccessSnackBar() {
         Snackbar snackBar = Snackbar.make(
                 mRecyclerView,
                 R.string.text_build_is_run,
@@ -225,7 +225,13 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         Snackbar snackBar = Snackbar.make(
                 mRecyclerView,
                 R.string.error_opening_build,
-                Snackbar.LENGTH_LONG);
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
+                    }
+                });
         TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackBar.show();

@@ -116,4 +116,9 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     public void onClick() {
         mRouter.closeOnCancel();
     }
+
+    @Override
+    public void onBackPressed() {
+        mRouter.closeOnBackButtonPressed();
+    }
 }

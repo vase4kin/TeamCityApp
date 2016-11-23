@@ -93,7 +93,7 @@
 
     <!--Download artifact retry snack-->
     <string name="download_artifact_retry_snack_bar_text">We\'ve got problem with file</string>
-    <string name="download_artifact_retry_snack_bar_retry_button">RETRY</string>
+    <string name="download_artifact_retry_snack_bar_retry_button">Retry</string>
 
     <!--Retry load more snack-->
     <string name="load_more_retry_snack_bar_text">Error loading more data</string>
@@ -203,7 +203,7 @@
     <string name="text_loading_branches">Loading branches</string>
     <string name="hint_default_build_branch">Default branch</string>
     <string name="error_base_error">We encountered problem running build</string>
-    <string name="error_forbidden_error">You don\'t have permissions to run build</string>
+    <string name="error_forbidden_error">You don\'t have permissions to run a build</string>
     <string name="text_queueing_build">Running build..</string>
     <string name="text_opening_build">Opening build..</string>
     <string name="text_build_is_run">Build is added to build queue</string>

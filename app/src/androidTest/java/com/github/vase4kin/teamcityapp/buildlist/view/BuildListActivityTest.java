@@ -321,5 +321,11 @@ public class BuildListActivityTest {
 
         // Check error snack bar
         onView(withText(R.string.error_opening_build)).check(matches(isDisplayed()));
+
+        // Click on retry button
+        onView(withText(R.string.download_artifact_retry_snack_bar_retry_button)).perform(click());
+
+        // Check error snack bar again
+        onView(withText(R.string.error_opening_build)).check(matches(isDisplayed()));
     }
 }

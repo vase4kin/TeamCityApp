@@ -53,4 +53,12 @@ public class RunBuildRouterImpl implements RunBuildRouter {
         mActivity.setResult(RESULT_CANCELED, new Intent());
         mActivity.finish();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void closeOnBackButtonPressed() {
+        mActivity.setResult(RESULT_CANCELED, new Intent());
+    }
 }

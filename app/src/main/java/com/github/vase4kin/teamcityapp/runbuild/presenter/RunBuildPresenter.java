@@ -22,4 +22,9 @@ import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter;
  * Presenter to manage logic of {@link com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity}
  */
 public interface RunBuildPresenter extends BasePresenter {
+
+    /**
+     * Handle on back button pressed
+     */
+    void onBackPressed();
 }

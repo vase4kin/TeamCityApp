@@ -36,6 +36,9 @@ import javax.inject.Inject;
  */
 public class RunBuildActivity extends AppCompatActivity {
 
+    /**
+     * Activity request code
+     */
     public static final int REQUEST_CODE = 489;
 
     @Inject
@@ -70,7 +73,7 @@ public class RunBuildActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        setResult(RESULT_CANCELED, new Intent());
+        mPresenter.onBackPressed();
         super.onBackPressed();
     }
 

@@ -54,12 +54,12 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void hideRunBuildFloatActionButton();
 
     /**
-     * Show build run success snack bar
+     * Show build queued success snack bar
      */
-    void showBuildRunSuccessSnackBar();
+    void showBuildQueuedSuccessSnackBar();
 
     /**
-     * Show error opeing build snack bar
+     * Show error opening build snack bar
      */
     void showOpeningBuildErrorSnackBar();
 

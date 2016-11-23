@@ -175,7 +175,7 @@ public class BuildListPresenterImplTest {
         when(mValueExtractor.getId()).thenReturn("id");
         mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_OK, "href");
         assertThat(mPresenter.mQueuedBuildHref, is(equalTo("href")));
-        verify(mView).showBuildRunSuccessSnackBar();
+        verify(mView).showBuildQueuedSuccessSnackBar();
         verify(mView).showRefreshAnimation();
         verify(mView).hideErrorView();
         verify(mView).hideEmpty();

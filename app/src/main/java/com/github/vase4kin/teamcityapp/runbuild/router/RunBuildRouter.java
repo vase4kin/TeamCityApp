@@ -37,4 +37,9 @@ public interface RunBuildRouter {
      * Close activity with cancel result
      */
     void closeOnCancel();
+
+    /**
+     * On back button pressed
+     */
+    void closeOnBackButtonPressed();
 }

@@ -198,7 +198,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     public void onActivityResult(int requestCode, int resultCode, @Nullable String queuedBuildHref) {
         if (requestCode == RunBuildActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             this.mQueuedBuildHref = queuedBuildHref;
-            mView.showBuildRunSuccessSnackBar();
+            mView.showBuildQueuedSuccessSnackBar();
             mView.showRefreshAnimation();
             onSwipeToRefresh();
         }
