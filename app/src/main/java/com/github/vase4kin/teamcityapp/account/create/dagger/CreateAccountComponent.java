@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = AppComponent.class, modules = CreateAccountModule.class)
+@Component(dependencies = AppComponent.class, modules = {CreateAccountModule.class, UrlFormatterModule.class})
 public interface CreateAccountComponent {
 
     void inject(CreateAccountActivity createAccountActivity);

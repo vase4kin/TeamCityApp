@@ -21,6 +21,7 @@ import android.content.Context;
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager;
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl;
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouterImpl;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker;
@@ -54,8 +55,9 @@ public class LoginModule {
     @Provides
     CreateAccountDataManager providesCreateAccountDataManager(Context context,
                                                               @Named(CLIENT_BASE) OkHttpClient okHttpClient,
-                                                              SharedUserStorage sharedUserStorage) {
-        return new CreateAccountDataManagerImpl(context, okHttpClient, sharedUserStorage);
+                                                              SharedUserStorage sharedUserStorage,
+                                                              UrlFormatter urlFormatter) {
+        return new CreateAccountDataManagerImpl(context, okHttpClient, sharedUserStorage, urlFormatter);
     }
 
     @Provides
