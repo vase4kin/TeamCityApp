@@ -18,14 +18,28 @@ package com.github.vase4kin.teamcityapp.buildlist.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.crashlytics.android.answers.CustomEvent;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Tracking for build list
+ * Impl of {@link BuildListTracker}
  */
-public class BuildListTrackerImpl implements ViewTracker {
+public class BuildListTrackerImpl implements BuildListTracker {
+
+    /**
+     * Content name
+     */
+    private String mContentName;
+
+    /**
+     * Constructor
+     *
+     * @param contentName - Content name
+     */
+    public BuildListTrackerImpl(String contentName) {
+        this.mContentName = contentName;
+    }
 
     /**
      * {@inheritDoc}
@@ -34,6 +48,24 @@ public class BuildListTrackerImpl implements ViewTracker {
     public void trackView() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Build list"));
+                .putContentName(mContentName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackRunBuildButtonPressed() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_BUTTON_PRESSED));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserWantsToSeeQueuedBuildDetails() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS));
     }
 }

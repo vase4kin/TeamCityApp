@@ -28,11 +28,11 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import dagger.Module;
 import dagger.Provides;
@@ -59,8 +59,8 @@ public class BuildListModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new BuildListTrackerImpl();
+    BuildListTracker providesBuildListTracker() {
+        return new BuildListTrackerImpl(BuildListTracker.CONTENT_NAME_BUILD_LIST);
     }
 
     @Provides

@@ -27,8 +27,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import org.junit.Before;
@@ -79,7 +79,7 @@ public class BuildListPresenterImplTest {
     private BuildListDataManager mDataManager;
 
     @Mock
-    private ViewTracker mTracker;
+    private BuildListTracker mTracker;
 
     @Mock
     private BuildListRouter mRouter;
@@ -122,12 +122,14 @@ public class BuildListPresenterImplTest {
         when(mValueExtractor.getId()).thenReturn("id");
         mPresenter.onRunBuildFabClick();
         verify(mRouter).openRunBuildPage(eq("id"));
+        verify(mTracker).trackRunBuildButtonPressed();
     }
 
     @Test
     public void testOnShowQueuedBuildSnackBarClick() throws Exception {
         mPresenter.mQueuedBuildHref = "href";
         mPresenter.onShowQueuedBuildSnackBarClick();
+        verify(mTracker).trackUserWantsToSeeQueuedBuildDetails();
         verify(mView).showBuildLoadingProgress();
         verify(mDataManager).loadBuild(eq("href"), mBuildArgumentCaptor.capture());
         OnLoadingListener<Build> listener = mBuildArgumentCaptor.getValue();

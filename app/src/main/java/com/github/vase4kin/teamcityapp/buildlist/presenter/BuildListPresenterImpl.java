@@ -30,8 +30,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         Build,
         V,
         DM,
-        ViewTracker,
+        BuildListTracker,
         BaseValueExtractor> implements OnBuildListPresenterListener {
 
     private BuildListRouter mRouter;
@@ -58,7 +58,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Inject
     public BuildListPresenterImpl(@NonNull V view,
                                   @NonNull DM dataManager,
-                                  @NonNull ViewTracker tracker,
+                                  @NonNull BuildListTracker tracker,
                                   @NonNull BaseValueExtractor valueExtractor,
                                   BuildListRouter router) {
         super(view, dataManager, tracker, valueExtractor);
@@ -99,6 +99,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public void onRunBuildFabClick() {
         mRouter.openRunBuildPage(mValueExtractor.getId());
+        mTracker.trackRunBuildButtonPressed();
     }
 
     /**
@@ -106,6 +107,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onShowQueuedBuildSnackBarClick() {
+        mTracker.trackUserWantsToSeeQueuedBuildDetails();
         mView.showBuildLoadingProgress();
         mDataManager.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
             @Override

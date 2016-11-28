@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runningbuilds.tracker;
+package com.github.vase4kin.teamcityapp.buildlist.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +39,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class RunningBuildsViewTrackerImplTest {
+public class BuildListTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private RunningBuildsViewTrackerImpl mTracker;
+    private BuildListTracker mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -50,13 +52,11 @@ public class RunningBuildsViewTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new RunningBuildsViewTrackerImpl();
+        mTracker = new BuildListTrackerImpl(BuildListTracker.CONTENT_NAME_RUNNING_BUILD_LIST);
     }
 
-    @Test
-    public void testTrackViewIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackView();
+    @After
+    public void tearDown() throws Exception {
         verifyNoMoreInteractions(mAnswers);
     }
 
@@ -65,6 +65,37 @@ public class RunningBuildsViewTrackerImplTest {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackView();
         verify(mAnswers).logContentView(any(ContentViewEvent.class));
-        verifyNoMoreInteractions(mAnswers);
+    }
+
+    @Test
+    public void testTrackViewIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackView();
+    }
+
+    @Test
+    public void testTrackRunBuildButtonPressedIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackRunBuildButtonPressed();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void testTrackRunBuildButtonPressedIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackRunBuildButtonPressed();
+    }
+
+    @Test
+    public void testTrackUserWantsToSeeQueuedBuildDetailsIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserWantsToSeeQueuedBuildDetails();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void testTrackUserWantsToSeeQueuedBuildDetailsIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserWantsToSeeQueuedBuildDetails();
     }
 }

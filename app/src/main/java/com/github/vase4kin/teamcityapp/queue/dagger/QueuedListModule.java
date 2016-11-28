@@ -26,10 +26,10 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImp
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
-import com.github.vase4kin.teamcityapp.queue.tracker.BuildQueueViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueViewImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
@@ -59,8 +59,8 @@ public class QueuedListModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new BuildQueueViewTrackerImpl();
+    BuildListTracker providesViewTracker() {
+        return new BuildListTrackerImpl(BuildListTracker.CONTENT_NAME_QUEUED_BUILD_LIST);
     }
 
     @Provides
