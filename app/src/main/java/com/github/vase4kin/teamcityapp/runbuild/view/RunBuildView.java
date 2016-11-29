@@ -72,9 +72,9 @@ public interface RunBuildView {
     void hideQueuingBuildProgress();
 
     /**
-     * Show unauthorized error snackbar
+     * Show forbidden error snackbar
      */
-    void showUnauthorizedErrorSnackbar();
+    void showForbiddenErrorSnackbar();
 
     /**
      * show error snack bar

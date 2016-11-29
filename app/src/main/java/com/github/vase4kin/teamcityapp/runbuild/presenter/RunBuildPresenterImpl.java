@@ -20,6 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildLoadingListener;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
+import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 
 import java.util.List;
@@ -34,14 +35,17 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     private RunBuildView mView;
     private RunBuildInteractor mInteractor;
     private RunBuildRouter mRouter;
+    private RunBuildTracker mTracker;
 
     @Inject
     RunBuildPresenterImpl(RunBuildView view,
                           RunBuildInteractor interactor,
-                          RunBuildRouter router) {
+                          RunBuildRouter router,
+                          RunBuildTracker tracker) {
         this.mView = view;
         this.mInteractor = interactor;
         this.mRouter = router;
+        this.mTracker = tracker;
     }
 
     /**
@@ -85,6 +89,14 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
      * {@inheritDoc}
      */
     @Override
+    public void onResume() {
+        mTracker.trackView();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onBuildQueue(String branchName) {
         mView.showQueuingBuildProgress();
         mInteractor.queueBuild(branchName, new RunBuildLoadingListener<String>() {
@@ -92,6 +104,7 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
             @Override
             public void onSuccess(String data) {
                 mView.hideQueuingBuildProgress();
+                mTracker.trackUserRunBuildSuccess();
                 mRouter.closeOnSuccess(data);
             }
 
@@ -99,12 +112,14 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
             public void onFail(String errorMessage) {
                 mView.hideQueuingBuildProgress();
                 mView.showErrorSnackbar();
+                mTracker.trackUserRunBuildFailed();
             }
 
             @Override
             public void onForbiddenError() {
                 mView.hideQueuingBuildProgress();
-                mView.showUnauthorizedErrorSnackbar();
+                mView.showForbiddenErrorSnackbar();
+                mTracker.trackUserRunBuildFailedForbidden();
             }
         });
     }

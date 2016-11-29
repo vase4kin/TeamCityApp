@@ -24,6 +24,11 @@ import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter;
 public interface RunBuildPresenter extends BasePresenter {
 
     /**
+     * Handle on resume
+     */
+    void onResume();
+
+    /**
      * Handle on back button pressed
      */
     void onBackPressed();

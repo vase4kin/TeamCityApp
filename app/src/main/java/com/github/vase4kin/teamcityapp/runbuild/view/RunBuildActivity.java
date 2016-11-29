@@ -60,6 +60,12 @@ public class RunBuildActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
         mPresenter.onDestroy();
         super.onDestroy();

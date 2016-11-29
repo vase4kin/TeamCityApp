@@ -21,6 +21,8 @@ import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouterImpl;
+import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
+import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTrackerImpl;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildViewImpl;
@@ -50,6 +52,11 @@ public class RunBuildModule {
     @Provides
     RunBuildRouter providesRunBuildRouter() {
         return new RunBuildRouterImpl(mActivity);
+    }
+
+    @Provides
+    RunBuildTracker providesRunBuildTracker() {
+        return new RunBuildTrackerImpl();
     }
 
 }

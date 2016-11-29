@@ -164,7 +164,7 @@ public class RunBuildViewImpl implements RunBuildView {
      * {@inheritDoc}
      */
     @Override
-    public void showUnauthorizedErrorSnackbar() {
+    public void showForbiddenErrorSnackbar() {
         Snackbar snackBar = Snackbar.make(
                 mContainer,
                 R.string.error_forbidden_error,
