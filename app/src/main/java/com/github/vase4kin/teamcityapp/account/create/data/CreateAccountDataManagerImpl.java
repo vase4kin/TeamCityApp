@@ -23,6 +23,7 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
@@ -54,13 +55,16 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
     private Context mContext;
     private OkHttpClient mOkHttpClient;
     private SharedUserStorage mSharedUserStorage;
+    private UrlFormatter mUrlFormatter;
 
     public CreateAccountDataManagerImpl(Context context,
                                         OkHttpClient okHttpClient,
-                                        SharedUserStorage sharedUserStorage) {
+                                        SharedUserStorage sharedUserStorage,
+                                        UrlFormatter urlFormatter) {
         this.mContext = context;
         this.mOkHttpClient = okHttpClient;
         this.mSharedUserStorage = sharedUserStorage;
+        this.mUrlFormatter = urlFormatter;
     }
 
     /**
@@ -145,7 +149,8 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                                 @Override
                                 public void run() {
                                     if (response.isSuccessful()) {
-                                        listener.onSuccess(serverUrl);
+                                        String formattedServerUrl = mUrlFormatter.formatUrl(serverUrl);
+                                        listener.onSuccess(formattedServerUrl);
                                     } else {
                                         listener.onFail(response.code(), response.message());
                                     }
