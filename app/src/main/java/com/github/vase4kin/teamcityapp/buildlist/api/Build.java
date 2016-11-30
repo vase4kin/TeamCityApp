@@ -157,6 +157,15 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return Collections.emptyList();
     }
 
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public void setBuildTypeId(String buildTypeId) {
+        this.buildType = new BuildType();
+        this.buildType.setId(buildTypeId);
+    }
+
     /**
      * Default
      */

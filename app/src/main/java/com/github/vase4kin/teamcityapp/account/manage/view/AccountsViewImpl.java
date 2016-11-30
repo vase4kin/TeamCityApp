@@ -340,6 +340,8 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
 
     /**
      * Show create new account dialog
+     *
+     * TODO: move to the router
      */
     private void showCreateNewAccountDialog() {
         mActivity.startActivity(new Intent(mActivity, CreateAccountActivity.class));

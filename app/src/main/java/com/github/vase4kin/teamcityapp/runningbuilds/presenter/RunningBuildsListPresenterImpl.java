@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 
@@ -39,7 +39,7 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
     @Inject
     RunningBuildsListPresenterImpl(@NonNull RunningBuildListView view,
                                    @NonNull RunningBuildsDataManager dataManager,
-                                   @NonNull ViewTracker tracker,
+                                   @NonNull BuildListTracker tracker,
                                    @NonNull BuildListRouter router,
                                    @NonNull BaseValueExtractor valueExtractor) {
         super(view, dataManager, tracker, valueExtractor, router);

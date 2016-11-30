@@ -93,7 +93,7 @@
 
     <!--Download artifact retry snack-->
     <string name="download_artifact_retry_snack_bar_text">We\'ve got problem with file</string>
-    <string name="download_artifact_retry_snack_bar_retry_button">RETRY</string>
+    <string name="download_artifact_retry_snack_bar_retry_button">Retry</string>
 
     <!--Retry load more snack-->
     <string name="load_more_retry_snack_bar_text">Error loading more data</string>
@@ -196,4 +196,17 @@
     <string name="info_unauthorized_dialog_title">Oh Snap!</string>
     <string name="info_unauthorized_dialog_content">It seems that your TC server doesn\'t have Guest User enabled. In order to use the app make sure it is enabled. For more details see <a href="https://confluence.jetbrains.com/display/TCD10/Enabling+Guest+Login">TC help</a>.</string>
 
+    <!--Run build activity-->
+    <string name="title_run_build">Run build</string>
+    <string name="text_build_branch">Build branch</string>
+    <string name="text_no_branches_available">No branches available</string>
+    <string name="text_loading_branches">Loading branches</string>
+    <string name="hint_default_build_branch">Default branch</string>
+    <string name="error_base_error">We encountered problem running build</string>
+    <string name="error_forbidden_error">You don\'t have permissions to run a build</string>
+    <string name="text_queueing_build">Running build..</string>
+    <string name="text_opening_build">Opening build..</string>
+    <string name="text_build_is_run">Build is added to build queue</string>
+    <string name="error_opening_build">We encountered problem opening build</string>
+    <string name="text_show_build">Show</string>
 </resources>

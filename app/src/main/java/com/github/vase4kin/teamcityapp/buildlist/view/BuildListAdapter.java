@@ -60,7 +60,7 @@ public class BuildListAdapter extends BaseLoadMoreAdapter<BuildListDataModel> {
             ((BuildViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnBuildListPresenterListener.onClick(mDataModel.getBuild(adapterPosition));
+                    mOnBuildListPresenterListener.onBuildClick(mDataModel.getBuild(adapterPosition));
                 }
             });
         }

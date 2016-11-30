@@ -28,6 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
@@ -51,6 +52,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
 
     @BindView(R.id.floating_action_button)
     FloatingActionButton mFloatingActionButton;
+    private MaterialDialog mProgressDialog;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections;
     private BuildListDataModel mDataModel;
 
@@ -78,12 +80,20 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                           @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
         super.initViews(retryListener, refreshListener);
         mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_directions_run).color(Color.WHITE));
-
-        // <!---------------------------------------!>
-        // REMOVE THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
         mFloatingActionButton.hide();
-        // REMOVE THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOnBuildListPresenterListener.onRunBuildFabClick();
+            }
+        });
+        mProgressDialog = new MaterialDialog.Builder(mActivity)
+                .content(R.string.text_opening_build)
+                .progress(true, 0)
+                .autoDismiss(false)
+                .build();
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setCanceledOnTouchOutside(false);
     }
 
     /**
@@ -102,11 +112,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void showRunBuildFloatActionButton() {
-        // <!---------------------------------------!>
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // mFloatingActionButton.show();
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mFloatingActionButton.show();
     }
 
     /**
@@ -114,11 +120,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void hideRunBuildFloatActionButton() {
-        // <!---------------------------------------!>
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // mFloatingActionButton.hide();
-        // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mFloatingActionButton.hide();
     }
 
     /**
@@ -193,6 +195,62 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     protected int recyclerViewId() {
         return R.id.build_recycler_view;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildQueuedSuccessSnackBar() {
+        Snackbar snackBar = Snackbar.make(
+                mRecyclerView,
+                R.string.text_build_is_run,
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.text_show_build, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
+                    }
+                });
+        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showOpeningBuildErrorSnackBar() {
+        Snackbar snackBar = Snackbar.make(
+                mRecyclerView,
+                R.string.error_opening_build,
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
+                    }
+                });
+        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildLoadingProgress() {
+        mProgressDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideBuildLoadingProgress() {
+        mProgressDialog.dismiss();
     }
 
     /**

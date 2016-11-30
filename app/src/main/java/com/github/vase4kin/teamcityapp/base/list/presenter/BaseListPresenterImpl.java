@@ -112,12 +112,19 @@ public abstract class BaseListPresenterImpl<
         SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                mView.hideErrorView();
-                mView.hideEmpty();
-                loadData(loadingListener);
+                onSwipeToRefresh();
             }
         };
         mView.initViews(retryListener, refreshListener);
+    }
+
+    /**
+     * On swipe to refresh
+     */
+    protected void onSwipeToRefresh() {
+        mView.hideErrorView();
+        mView.hideEmpty();
+        loadData(loadingListener);
     }
 
     /**

@@ -94,6 +94,7 @@ public class RootProjectsActivityTest {
         project.setName("New project");
         project.setDescription("Contains a lof of projects");
         BuildType buildType = new BuildType();
+        buildType.setId("build_type_id");
         buildType.setName("Build and run tests");
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
