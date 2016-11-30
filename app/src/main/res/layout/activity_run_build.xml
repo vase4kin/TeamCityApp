@@ -52,6 +52,7 @@
                     android:layout_height="wrap_content"
                     android:lines="1"
                     android:hint="@string/hint_default_build_branch"
+                    android:completionThreshold="1"
                     android:theme="@style/Autocomplete"
                     android:visibility="gone" />
 
