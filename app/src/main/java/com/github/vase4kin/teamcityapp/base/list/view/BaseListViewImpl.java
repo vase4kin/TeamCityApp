@@ -135,6 +135,11 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+    @Override
+    public void showRefreshAnimation() {
+        mSwipeRefreshLayout.setRefreshing(true);
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -26,14 +27,16 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
@@ -41,6 +44,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
@@ -55,6 +59,9 @@ public class BuildListPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<Build>>> mOnLoadingListenerArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
 
     @Mock
     private Build mBuild;
@@ -72,7 +79,7 @@ public class BuildListPresenterImplTest {
     private BuildListDataManager mDataManager;
 
     @Mock
-    private ViewTracker mTracker;
+    private BuildListTracker mTracker;
 
     @Mock
     private BuildListRouter mRouter;
@@ -102,20 +109,46 @@ public class BuildListPresenterImplTest {
         when(mValueExtractor.getName()).thenReturn("name");
         mPresenter.initViews();
         verify(mView).setTitle(eq("name"));
+    }
 
-        verify(mView).setOnBuildListPresenterListener(mOnBuildListPresenterListenerArgumentCaptor.capture());
-        OnBuildListPresenterListener onBuildListPresenterListener = mOnBuildListPresenterListenerArgumentCaptor.getValue();
-        onBuildListPresenterListener.onClick(mBuild);
+    @Test
+    public void testOnBuildClick() throws Exception {
+        mPresenter.onBuildClick(mBuild);
         verify(mRouter).openBuildPage(eq(mBuild));
+    }
 
-        when(mDataManager.canLoadMore()).thenReturn(false);
-        assertThat(onBuildListPresenterListener.hasLoadedAllItems(), is(true));
+    @Test
+    public void testOnRunBuildFabClick() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        mPresenter.onRunBuildFabClick();
+        verify(mRouter).openRunBuildPage(eq("id"));
+        verify(mTracker).trackRunBuildButtonPressed();
+    }
 
-        onBuildListPresenterListener.onLoadMore();
+    @Test
+    public void testOnShowQueuedBuildSnackBarClick() throws Exception {
+        mPresenter.mQueuedBuildHref = "href";
+        mPresenter.onShowQueuedBuildSnackBarClick();
+        verify(mTracker).trackUserWantsToSeeQueuedBuildDetails();
+        verify(mView).showBuildLoadingProgress();
+        verify(mDataManager).loadBuild(eq("href"), mBuildArgumentCaptor.capture());
+        OnLoadingListener<Build> listener = mBuildArgumentCaptor.getValue();
+        listener.onSuccess(mBuild);
+        verify(mView).hideBuildLoadingProgress();
+        verify(mRouter).openBuildPage(eq(mBuild));
+        listener.onFail("");
+        verify(mView, times(2)).hideBuildLoadingProgress();
+        verify(mView).showOpeningBuildErrorSnackBar();
+    }
+
+    @Test
+    public void testOnLoadMore() throws Exception {
+        mPresenter.onLoadMore();
         assertThat(mPresenter.mIsLoadMoreLoading, is(true));
         verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnLoadingListenerArgumentCaptor.capture());
         OnLoadingListener<List<Build>> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
+
         loadingListener.onSuccess(Collections.<Build>emptyList());
         verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(BuildListDataModelImpl.class));
@@ -125,6 +158,38 @@ public class BuildListPresenterImplTest {
         verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
         assertThat(mPresenter.mIsLoadMoreLoading, is(false));
+    }
+
+    @Test
+    public void testHasLoadedAllItems() throws Exception {
+        when(mDataManager.canLoadMore()).thenReturn(false);
+        assertThat(mPresenter.hasLoadedAllItems(), is(true));
+    }
+
+    @Test
+    public void testOnActivityResultIfResultIsCanceled() throws Exception {
+        mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_CANCELED, null);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
+    }
+
+    @Test
+    public void testOnActivityResultIfResultIsOk() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_OK, "href");
+        assertThat(mPresenter.mQueuedBuildHref, is(equalTo("href")));
+        verify(mView).showBuildQueuedSuccessSnackBar();
+        verify(mView).showRefreshAnimation();
+        verify(mView).hideErrorView();
+        verify(mView).hideEmpty();
+        verify(mValueExtractor).getId();
+        verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
+    }
+
+    @Test
+    public void testIsLoading() throws Exception {
+        mPresenter.mIsLoadMoreLoading = true;
+        assertThat(mPresenter.isLoading(), is(equalTo(true)));
     }
 
     @Test

@@ -26,11 +26,11 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImp
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl;
-import com.github.vase4kin.teamcityapp.runningbuilds.tracker.RunningBuildsViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl;
 
@@ -59,8 +59,8 @@ public class RunningListModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new RunningBuildsViewTrackerImpl();
+    BuildListTracker providesViewTracker() {
+        return new BuildListTrackerImpl(BuildListTracker.CONTENT_NAME_RUNNING_BUILD_LIST);
     }
 
     @Provides

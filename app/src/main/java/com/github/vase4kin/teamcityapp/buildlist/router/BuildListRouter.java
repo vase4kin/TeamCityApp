@@ -29,4 +29,11 @@ public interface BuildListRouter {
      * @param build - Build
      */
     void openBuildPage(Build build);
+
+    /**
+     * Open run build page
+     *
+     * @param buildTypeId - Build type id
+     */
+    void openRunBuildPage(String buildTypeId);
 }

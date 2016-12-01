@@ -26,12 +26,16 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
+import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
+import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
+import retrofit2.http.Body;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -180,5 +184,15 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
             default:
                 return Observable.empty();
         }
+    }
+
+    @Override
+    public Observable<Branches> listBranches(@Path("id") String id) {
+        return Observable.just(new Branches(Collections.singletonList(new Branch("master"))));
+    }
+
+    @Override
+    public Observable<Build> queueBuild(@Body Build build) {
+        return Observable.just(Mocks.queuedBuild1());
     }
 }

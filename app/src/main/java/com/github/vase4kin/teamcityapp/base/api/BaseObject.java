@@ -23,7 +23,7 @@ import java.io.Serializable;
  */
 public class BaseObject implements Jsonable, Serializable {
 
-    private String id;
+    protected String id;
     protected String href;
 
     public String getId() {

@@ -79,6 +79,7 @@ public class Mocks {
         project.setName("Project");
         project.setDescription("Description");
         BuildType buildType = new BuildType();
+        buildType.setId("build_type_id");
         buildType.setName("build type");
         return new NavigationNode(
                 new Projects(Collections.singletonList(project)),

@@ -146,6 +146,8 @@
         <item name="colorButtonNormal">@color/pink_200</item>
     </style>
 
+    <style name="Hint" parent="LoginEditTextFloatingLabel" />
+
     <style name="LoginEditTextFloatingLabel" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
 
     <style name="LoginEditTextLayout" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
@@ -164,6 +166,15 @@
     <style name="LoginTextErrorAppearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/login_text_error_color</item>
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Autocomplete" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:background">@color/md_white_1000</item>
+        <item name="colorControlNormal">@color/md_white_1000</item>
+        <item name="colorControlActivated">?android:attr/textColorSecondaryInverse</item>
+        <item name="android:textColorHint">?android:attr/textColorSecondaryInverse</item>
+        <item name="android:lines">1</item>
+        <item name="android:textColorPrimary">@color/md_white_1000</item>
     </style>
 
 </resources>

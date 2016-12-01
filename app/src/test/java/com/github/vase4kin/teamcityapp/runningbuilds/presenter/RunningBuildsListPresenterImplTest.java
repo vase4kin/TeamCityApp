@@ -20,7 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 
@@ -48,7 +48,7 @@ public class RunningBuildsListPresenterImplTest {
     private RunningBuildsDataManager mDataManager;
 
     @Mock
-    private ViewTracker mTracker;
+    private BuildListTracker mTracker;
 
     @Mock
     private BuildListRouter mRouter;

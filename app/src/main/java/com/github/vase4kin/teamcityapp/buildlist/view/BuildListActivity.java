@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 
 import javax.inject.Inject;
 
@@ -81,6 +82,12 @@ public class BuildListActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         mDrawerPresenter.onBackButtonPressed();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mBuildListPresenter.onActivityResult(requestCode, resultCode, data.getStringExtra(RunBuildRouter.EXTRA_HREF));
     }
 
     /**

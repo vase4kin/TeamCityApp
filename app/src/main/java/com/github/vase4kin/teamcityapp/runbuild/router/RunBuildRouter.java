@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.queue.tracker;
-
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-
-import io.fabric.sdk.android.Fabric;
+package com.github.vase4kin.teamcityapp.runbuild.router;
 
 /**
- * Build queue tracking class
+ * Run build activity router
  */
-public class BuildQueueViewTrackerImpl implements ViewTracker {
+public interface RunBuildRouter {
 
     /**
-     * {@inheritDoc}
+     * Bundle extra key
      */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Build queue list"));
-    }
+    String EXTRA_HREF = "href";
+
+    /**
+     * Close activity with success result
+     *
+     * @param queuedBuildHref - href of queued build
+     */
+    void closeOnSuccess(String queuedBuildHref);
+
+    /**
+     * Close activity with cancel result
+     */
+    void closeOnCancel();
+
+    /**
+     * On back button pressed
+     */
+    void closeOnBackButtonPressed();
 }

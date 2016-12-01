@@ -31,6 +31,11 @@ import java.util.List;
 public interface BuildListDataManager extends BaseListRxDataManager<Builds, Build> {
 
     /**
+     * Build list location params
+     */
+    String LOCATIONS = "canceled:any,branch:branched:any,running:any,count:10";
+
+    /**
      * Load more builds
      *
      * @param loadingListener - Listener to receive callbacks on {@link com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl}
@@ -41,6 +46,14 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
      * {@inheritDoc}
      */
     void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener);
+
+    /**
+     * Load by by href
+     *
+     * @param href            - Build href
+     * @param loadingListener Listener to receive callbacks on {@link com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl}
+     */
+    void loadBuild(@NonNull String href, @NonNull OnLoadingListener<Build> loadingListener);
 
     /**
      * Is there any more builds to load

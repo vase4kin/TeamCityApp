@@ -70,6 +70,11 @@ public interface BaseListView<T extends BaseDataModel> {
     void hideRefreshAnimation();
 
     /**
+     * Show swipe refresh layout animation
+     */
+    void showRefreshAnimation();
+
+    /**
      * Show error view with error message
      *
      * @param error - Error message
