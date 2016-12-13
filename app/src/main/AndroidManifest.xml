@@ -82,6 +82,16 @@
             android:name=".runbuild.view.RunBuildActivity"
             android:label="@string/title_run_build" />
 
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="b910d4db65eb85253d9416783a99bb3595199e55" />
