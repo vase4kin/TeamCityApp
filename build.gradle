@@ -45,7 +45,7 @@ ext {
     buildToolsVersion = '25.0.2'
 
     // dependencies versions
-    supportLibraryVersion = '25.1.0'
+    supportLibraryVersion = '25.0.1'
     espressoRunnerVersion = '0.5'
     espressoVersion = '2.2.2'
     dexMakerVersion = '1.4'
