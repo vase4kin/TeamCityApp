@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.buildtabs.api;
 
 /**
- * Listener to handle changes of tab layout
+ * Build cancel request api object
  */
-public interface OnTabUnSelectListener {
+public class BuildCancelRequest {
 
-    /**
-     * When artifacts tab is unselected
-     */
-    void onArtifactTabUnSelect();
+    private String comment = "";
+    private boolean readdIntoQueue = false;
 }

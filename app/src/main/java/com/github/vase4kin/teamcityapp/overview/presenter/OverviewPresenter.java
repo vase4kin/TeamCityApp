@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.dagger;
+package com.github.vase4kin.teamcityapp.overview.presenter;
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
+import com.github.vase4kin.teamcityapp.tests.presenter.TestsPresenter;
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = OverviewModule.class)
-public interface OverviewComponent {
-
-    void inject(OverviewFragment overviewFragment);
+/**
+ * Presenter to handle logic for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}
+ */
+public interface OverviewPresenter extends TestsPresenter {
 }

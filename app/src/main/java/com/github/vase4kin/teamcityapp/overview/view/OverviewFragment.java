@@ -20,6 +20,9 @@ package com.github.vase4kin.teamcityapp.overview.view;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -36,13 +39,13 @@ import javax.inject.Inject;
 /**
  * Fragment to handle Build overview screen
  */
-public class BuildOverviewElementsFragment extends Fragment {
+public class OverviewFragment extends Fragment {
 
     @Inject
     OverviewPresenterImpl mPresenter;
 
-    public static BuildOverviewElementsFragment newInstance(Build build) {
-        BuildOverviewElementsFragment fragment = new BuildOverviewElementsFragment();
+    public static OverviewFragment newInstance(Build build) {
+        OverviewFragment fragment = new OverviewFragment();
         Bundle args = new Bundle();
         args.putSerializable(BundleExtractorValues.BUILD, build);
         fragment.setArguments(args);
@@ -52,6 +55,7 @@ public class BuildOverviewElementsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
+        setHasOptionsMenu(true);
 
         // Injecting presenter
         DaggerOverviewComponent.builder()
@@ -69,5 +73,20 @@ public class BuildOverviewElementsFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         mPresenter.onViewsDestroyed();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mPresenter.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        mPresenter.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mPresenter.onOptionsItemSelected(item);
     }
 }

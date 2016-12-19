@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.runbuild.interactor;
+
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 
 /**
- * Listener to handle fab visibility state changes
+ * Custom loading listener
+ *
+ * @param <T> - Data type
  */
-public interface OnFloatButtonChangeVisibilityEventListener {
+public interface LoadingListenerWithForbiddenSupport<T> extends OnLoadingListener<T> {
 
     /**
-     * Fab is visible
+     * On getting 403 error
      */
-    void onShow();
-
-    /**
-     * Fab is hidden
-     */
-    void onHide();
+    void onForbiddenError();
 }

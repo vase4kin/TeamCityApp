@@ -59,10 +59,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link BuildOverviewElementsFragment}
+ * Tests for {@link OverviewFragment}
  */
 @RunWith(AndroidJUnit4.class)
-public class BuildOverviewElementsFragmentTest {
+public class OverviewFragmentTest {
 
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.interactor;
-
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+package com.github.vase4kin.teamcityapp.buildtabs.view;
 
 /**
- * Custom loading listener
- *
- * @param <T> - Data type
+ * Listener to handle build tabs view UI updates
  */
-public interface RunBuildLoadingListener<T> extends OnLoadingListener<T> {
+public interface OnBuildTabsViewListener {
 
     /**
-     * On getting 403 error
+     * When artifacts tab is unselected
      */
-    void onForbiddenError();
+    void onArtifactTabUnSelect();
+
+    /**
+     * On confirming stop build click
+     */
+    void onConfirmCancelingBuild();
 }

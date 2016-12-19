@@ -74,7 +74,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
                 .progress(true, 0)
                 .widgetColor(Color.GRAY)
                 .autoDismiss(false)
-                .negativeText(R.string.download_artifact_dialog_cancel_text)
+                .negativeText(R.string.text_cancel_button)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onNegative(MaterialDialog dialog) {

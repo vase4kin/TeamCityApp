@@ -108,7 +108,7 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      * {@inheritDoc}
      */
     @Override
-    public void queueBuild(String branchName, final RunBuildLoadingListener<String> loadingListener) {
+    public void queueBuild(String branchName, final LoadingListenerWithForbiddenSupport<String> loadingListener) {
         Build build = new Build();
         build.setBranchName(branchName);
         build.setBuildTypeId(mBuildTypeId);

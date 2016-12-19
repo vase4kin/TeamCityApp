@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildtabs.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
@@ -209,4 +210,14 @@ public interface TeamCityService {
     @Headers(APPLICATION_JSON)
     @POST("app/rest/buildQueue")
     Observable<Build> queueBuild(@Body Build build);
+
+    /**
+     * Cancel/Removing build
+     *
+     * @param buildCancelRequest - request to stop a build
+     * @return {@link Observable} with {@link Build}
+     */
+    @Headers(APPLICATION_JSON)
+    @POST
+    Observable<Build> cancelBuild(@Url String url, @Body BuildCancelRequest buildCancelRequest);
 }

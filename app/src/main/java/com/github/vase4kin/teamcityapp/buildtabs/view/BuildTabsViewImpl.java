@@ -20,12 +20,18 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -34,7 +40,7 @@ import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment;
-import com.github.vase4kin.teamcityapp.overview.view.BuildOverviewElementsFragment;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
@@ -53,6 +59,8 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
 
     @BindView(R.id.floating_action_button)
     FloatingActionButton mFloatingActionButton;
+    @BindView(R.id.container)
+    View mContainer;
 
     private Build mBuild;
 
@@ -61,7 +69,13 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
     private String mTabTitle;
 
     private StatusBarUtils mStatusBarUtils;
-    private OnTabUnSelectListener mOnTabUnSelectListener;
+    private OnBuildTabsViewListener mOnBuildTabsViewListener;
+    private MaterialDialog mStoppingBuildProgressDialog;
+    private MaterialDialog mRemovingBuildFromQueueProgressDialog;
+    private MaterialDialog mYouAreAboutToStopBuildDialog;
+    private MaterialDialog mYouAreAboutToStopNotYoursBuildDialog;
+    private MaterialDialog mYouAreAboutToRemoveBuildFromQueueDialog;
+    private MaterialDialog mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog;
 
     public BuildTabsViewImpl(View mView,
                              AppCompatActivity mActivity,
@@ -77,7 +91,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      */
     @Override
     public void addFragments(FragmentAdapter fragmentAdapter) {
-        fragmentAdapter.add(R.string.tab_overview, BuildOverviewElementsFragment.newInstance(mBuild));
+        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.newInstance(mBuild));
         fragmentAdapter.add(R.string.tab_changes, ChangesFragment.newInstance(mBuild.getChanges().getHref()));
         if (mBuild.getTestOccurrences() != null) {
             fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.newInstance(
@@ -121,7 +135,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 if (tab.getText().toString().equals(artifactsTabTitle)) {
-                    mOnTabUnSelectListener.onArtifactTabUnSelect();
+                    mOnBuildTabsViewListener.onArtifactTabUnSelect();
                 }
             }
 
@@ -132,19 +146,179 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
         setTitle();
         setColorsByBuildType();
 
-        // <!---------------------------------------!>
-        // REMOVE THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        mFloatingActionButton.hide();
-        // REMOVE THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // <!---------------------------------------!>
+        mStoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build);
+        mRemovingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
+        mYouAreAboutToStopBuildDialog = createConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
+        mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialog(R.string.text_stop_the_build_2, R.string.text_stop_button);
+        mYouAreAboutToRemoveBuildFromQueueDialog = createConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
+        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setOnTabUnSelectListener(OnTabUnSelectListener onTabUnSelectListener) {
-        this.mOnTabUnSelectListener = onTabUnSelectListener;
+    public void setOnBuildTabsViewListener(OnBuildTabsViewListener onBuildTabsViewListener) {
+        this.mOnBuildTabsViewListener = onBuildTabsViewListener;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showYouAreAboutToStopBuildDialog() {
+        mYouAreAboutToStopBuildDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showYouAreAboutToStopNotYoursBuildDialog() {
+        mYouAreAboutToStopNotYoursBuildDialog.show();
+    }
+
+    @Override
+    public void showYouAreAboutToRemoveBuildFromQueueDialog() {
+        mYouAreAboutToRemoveBuildFromQueueDialog.show();
+    }
+
+    @Override
+    public void showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog() {
+        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showStoppingBuildProgressDialog() {
+        mStoppingBuildProgressDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideStoppingBuildProgressDialog() {
+        mStoppingBuildProgressDialog.dismiss();
+    }
+
+    @Override
+    public void showRemovingBuildFromQueueProgressDialog() {
+        mRemovingBuildFromQueueProgressDialog.show();
+    }
+
+    @Override
+    public void hideRemovingBuildFromQueueProgressDialog() {
+        mRemovingBuildFromQueueProgressDialog.dismiss();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildIsStoppedSnackBar() {
+        showSnackBarWithText(R.string.text_build_is_stopped);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildIsStoppedErrorSnackBar() {
+        showSnackBarWithText(R.string.error_base_stop_build_error);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showForbiddenToStopBuildSnackBar() {
+        showSnackBarWithText(R.string.error_stop_build_forbidden_error);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildIsRemovedFromQueueErrorSnackBar() {
+        showSnackBarWithText(R.string.text_build_is_removed_from_queue);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildIsRemovedFromQueueSnackBar() {
+        showSnackBarWithText(R.string.error_base_remove_build_from_queue_error);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showForbiddenToRemoveBuildFromQueueSnackBar() {
+        showSnackBarWithText(R.string.error_remove_build_from_queue_forbidden_error);
+    }
+
+    /**
+     * Create cancel/remove build from queue confirm dialog
+     *
+     * @param content      - Resource id content message
+     * @param positiveText - Resource id positive dialog text
+     * @return confirm dialog
+     */
+    private MaterialDialog createConfirmDialog(@StringRes int content, @StringRes int positiveText) {
+        return new MaterialDialog.Builder(mActivity)
+                .content(content)
+                .positiveText(positiveText)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mOnBuildTabsViewListener.onConfirmCancelingBuild();
+                    }
+                })
+                .negativeText(R.string.text_cancel_button)
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mYouAreAboutToStopBuildDialog.dismiss();
+                    }
+                })
+                .build();
+    }
+
+    /**
+     * Create progress dialog with custom content message
+     *
+     * @param content - resource id message
+     * @return progress dialog
+     */
+    private MaterialDialog createProgressDialogWithContent(@StringRes int content) {
+        MaterialDialog progressDialog = new MaterialDialog.Builder(mActivity)
+                .content(content)
+                .progress(true, 0)
+                .autoDismiss(false)
+                .build();
+        progressDialog.setCancelable(false);
+        progressDialog.setCanceledOnTouchOutside(false);
+        return progressDialog;
+    }
+
+    /**
+     * Show snack bar with text message
+     *
+     * @param text - Text message resource id
+     */
+    private void showSnackBarWithText(@StringRes int text) {
+        Snackbar snackBar = Snackbar.make(
+                mContainer,
+                text,
+                Snackbar.LENGTH_LONG);
+        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
     }
 
     /**

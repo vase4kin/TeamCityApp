@@ -17,38 +17,48 @@
 package com.github.vase4kin.teamcityapp.overview.presenter;
 
 import android.support.annotation.NonNull;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-import com.github.vase4kin.teamcityapp.overview.data.OverViewDataManager;
+import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 /**
- * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.overview.view.BuildOverviewElementsFragment}
+ * Presenter to handle logic of {@link OverviewFragment}
  */
 public class OverviewPresenterImpl extends BaseListPresenterImpl<
         BaseDataModel,
         BuildElement,
-        BaseListView,
-        OverViewDataManager,
+        OverviewView,
+        OverViewInteractor,
         ViewTracker,
-        BaseValueExtractor> {
+        BaseValueExtractor> implements OverviewPresenter, OverviewView.OverviewViewListener {
 
     @Inject
-    OverviewPresenterImpl(@NonNull BaseListView view,
-                          @NonNull OverViewDataManager dataManager,
+    OverviewPresenterImpl(@NonNull OverviewView view,
+                          @NonNull OverViewInteractor dataManager,
                           @NonNull ViewTracker tracker,
                           @NonNull BaseValueExtractor valueExtractor) {
         super(view, dataManager, tracker, valueExtractor);
+    }
+
+    @Override
+    protected void initViews() {
+        super.initViews();
+        mView.setOverViewListener(this);
     }
 
     /**
@@ -65,5 +75,42 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected BaseDataModel createModel(List<BuildElement> data) {
         return new OverviewDataModelImpl(data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (mValueExtractor.getBuild().isRunning()) {
+            mView.createStopBuildOptionsMenu(menu, inflater);
+        } else {
+            mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        if (mValueExtractor.getBuild().isRunning() || mValueExtractor.getBuild().isQueued()) {
+            mView.showOptionsMenu(menu);
+        } else {
+            mView.hideOptionsMenu(menu);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mView.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCancelBuildContextMenuClick() {
+        mDataManager.postStopBuildEvent();
     }
 }

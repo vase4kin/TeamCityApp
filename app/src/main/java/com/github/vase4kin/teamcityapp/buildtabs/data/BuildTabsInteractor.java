@@ -17,21 +17,44 @@
 package com.github.vase4kin.teamcityapp.buildtabs.data;
 
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 
 /**
- * Data manager for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+ * Interactor for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
  */
-public interface BuildTabsDataManager extends BaseTabsDataManager {
+public interface BuildTabsInteractor extends BaseTabsDataManager {
 
     /**
      * Set listener to handle floating action button visibility states
      *
      * @param listener - Listener to receive callbacks
      */
-    void setOnFloatButtonChangeVisibilityEventListener(OnFloatButtonChangeVisibilityEventListener listener);
+    void setOnBuildTabsEventsListener(OnBuildTabsEventsListener listener);
 
     /**
      * Post on artifact tab change event to {@link de.greenrobot.event.EventBus}
      */
     void postOnArtifactTabChangeEvent();
+
+    /**
+     * @return {true} if the build is running
+     */
+    boolean isBuildRunning();
+
+    /**
+     * @return {true} if the build was triggered by active user
+     */
+    boolean isBuildTriggeredByMe();
+
+    /**
+     * Cancel/Remove from queue the build
+     *
+     * @param loadingListener - Listener to receive callbacks on UI
+     */
+    void cancelBuild(LoadingListenerWithForbiddenSupport<String> loadingListener);
+
+    /**
+     * Unsubscribe Rx subscriptions
+     */
+    void unsubsribe();
 }

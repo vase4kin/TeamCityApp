@@ -21,7 +21,7 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-import com.github.vase4kin.teamcityapp.overview.data.OverViewDataManager;
+import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 
 import org.junit.Before;
@@ -51,7 +51,7 @@ public class OverviewPresenterImplTest {
     private OverviewViewImpl mView;
 
     @Mock
-    private OverViewDataManager mDataManager;
+    private OverViewInteractor mDataManager;
 
     @Mock
     private BaseValueExtractor mValueExtractor;

@@ -32,15 +32,16 @@ import com.github.vase4kin.teamcityapp.utils.IconUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Impl of {@link OverViewDataManager}
+ * Impl of {@link OverViewInteractor}
  */
-public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewDataManager {
+public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewInteractor {
 
     private static final String TIME_ICON = "{mdi-clock}";
     private static final String BRANCH_ICON = "{mdi-git}";
@@ -49,10 +50,14 @@ public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, Bu
 
     private TeamCityService mTeamCityService;
     private Context mContext;
+    private EventBus mEventBus;
 
-    public OverviewDataManagerImpl(TeamCityService teamCityService, Context context) {
+    public OverviewInteractorImpl(TeamCityService teamCityService,
+                                  Context context,
+                                  EventBus eventBus) {
         this.mTeamCityService = teamCityService;
         this.mContext = context;
+        this.mEventBus = eventBus;
     }
 
     /**
@@ -80,6 +85,14 @@ public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, Bu
                     }
                 });
         mSubscriptions.add(subscription);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postStopBuildEvent() {
+        mEventBus.post(new StopBuildEvent());
     }
 
     /**

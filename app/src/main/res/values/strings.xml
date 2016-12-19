@@ -89,7 +89,7 @@
 
     <!--Download artifact dialog -->
     <string name="download_artifact_dialog_title">Downloading artifact file..</string>
-    <string name="download_artifact_dialog_cancel_text">Cancel</string>
+    <string name="text_cancel_button">Cancel</string>
 
     <!--Download artifact retry snack-->
     <string name="download_artifact_retry_snack_bar_text">We\'ve got problem with file</string>
@@ -209,4 +209,20 @@
     <string name="text_build_is_run">Build is added to build queue</string>
     <string name="error_opening_build">We encountered problem opening build</string>
     <string name="text_show_build">Show</string>
+
+    <!--Build list activity-->
+    <string name="text_stopping_build">Stopping build..</string>
+    <string name="text_removing_build_from_queue">Removing build from queue..</string>
+    <string name="text_build_is_stopped">Build is stopped successfully</string>
+    <string name="text_build_is_removed_from_queue">Build is removed from queue successfully</string>
+    <string name="error_base_stop_build_error">We encountered problem stopping build</string>
+    <string name="error_base_remove_build_from_queue_error">We encountered problem removing build from queue</string>
+    <string name="error_stop_build_forbidden_error">You don\'t have permissions to stop a build</string>
+    <string name="error_remove_build_from_queue_forbidden_error">You don\'t have permissions to remove a build from queue</string>
+    <string name="text_stop_button">Stop</string>
+    <string name="text_remove_from_queue_button">Remove from queue</string>
+    <string name="text_stop_the_build">You are about to stop the build. Are you sure?</string>
+    <string name="text_remove_build_from_queue">You are about to remove the build from queue. Are you sure?</string>
+    <string name="text_stop_the_build_2">You are about to stop the build ran not by you. Are you sure?</string>
+    <string name="text_remove_build_from_queue_2">You are about to remove the build from queue triggered not by you. Are you sure?</string>
 </resources>
