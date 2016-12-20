@@ -16,12 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.overview.presenter;
 
-import com.github.vase4kin.teamcityapp.tests.presenter.TestsPresenter;
+import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter;
 
 /**
  * Presenter to handle logic for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}
  */
-public interface OverviewPresenter extends TestsPresenter {
+public interface OverviewPresenter extends BaseMenuPresenter {
 
     /**
      * Handle on start behavior
