@@ -32,6 +32,13 @@ import java.util.List;
 public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildElement> {
 
     /**
+     * Set listener to handle receiving events
+     *
+     * @param listener - Listener
+     */
+    void setListener(OnOverviewEventsListener listener);
+
+    /**
      * Load build details
      *
      * @param url             - Build ROOT_PROJECTS_URL
@@ -43,4 +50,24 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
      * Post {@link StopBuildEvent}
      */
     void postStopBuildEvent();
+
+    /**
+     * Subscribe to event bus events
+     */
+    void subscribeToEventBusEvents();
+
+    /**
+     * Unsubscribe to event bus events
+     */
+    void unsubsribeFromEventBusEvents();
+
+    /**
+     * Event listener
+     */
+    interface OnOverviewEventsListener {
+        /**
+         * On post data refresh event
+         */
+        void onDataRefreshEvent();
+    }
 }

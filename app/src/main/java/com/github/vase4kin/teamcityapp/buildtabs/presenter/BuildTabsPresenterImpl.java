@@ -141,8 +141,6 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
             public void onForbiddenError() {
                 hideProgress();
                 showForbiddenToCancelBuildSnackBar();
-                // Send event to refresh tab
-                // Make sure build object is updated
             }
 
             @Override
@@ -156,8 +154,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
             public void onFail(String errorMessage) {
                 hideProgress();
                 showBuildIsCancelledErrorSnackBar();
-                // Send event to refresh tab
-                // Make sure build object is updated
+                mDataManager.postRefreshOverViewDataEvent();
             }
         });
     }

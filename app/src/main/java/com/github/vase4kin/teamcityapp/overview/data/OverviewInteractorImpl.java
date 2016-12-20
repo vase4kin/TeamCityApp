@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
+import com.github.vase4kin.teamcityapp.buildtabs.data.OnOverviewDataRefreshEvent;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
@@ -51,6 +52,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     private TeamCityService mTeamCityService;
     private Context mContext;
     private EventBus mEventBus;
+    private OnOverviewEventsListener mListener;
 
     public OverviewInteractorImpl(TeamCityService teamCityService,
                                   Context context,
@@ -58,6 +60,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
         this.mTeamCityService = teamCityService;
         this.mContext = context;
         this.mEventBus = eventBus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setListener(OnOverviewEventsListener listener) {
+        this.mListener = listener;
     }
 
     /**
@@ -93,6 +103,33 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     @Override
     public void postStopBuildEvent() {
         mEventBus.post(new StopBuildEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void subscribeToEventBusEvents() {
+        mEventBus.register(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unsubsribeFromEventBusEvents() {
+        mEventBus.unregister(this);
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link OnOverviewDataRefreshEvent}
+     */
+    @SuppressWarnings("unused")
+    public void onEvent(OnOverviewDataRefreshEvent event) {
+        if (mListener == null) return;
+        mListener.onDataRefreshEvent();
     }
 
     /**

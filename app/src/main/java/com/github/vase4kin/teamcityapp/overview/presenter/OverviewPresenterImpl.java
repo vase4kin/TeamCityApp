@@ -45,7 +45,7 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
         OverviewView,
         OverViewInteractor,
         ViewTracker,
-        BaseValueExtractor> implements OverviewPresenter, OverviewView.OverviewViewListener {
+        BaseValueExtractor> implements OverviewPresenter, OverviewView.OverviewViewListener, OverViewInteractor.OnOverviewEventsListener {
 
     @Inject
     OverviewPresenterImpl(@NonNull OverviewView view,
@@ -59,6 +59,7 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     protected void initViews() {
         super.initViews();
         mView.setOverViewListener(this);
+        mDataManager.setListener(this);
     }
 
     /**
@@ -104,8 +105,37 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
         return mView.onOptionsItemSelected(item);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCancelBuildContextMenuClick() {
         mDataManager.postStopBuildEvent();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStart() {
+        mDataManager.subscribeToEventBusEvents();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStop() {
+        mDataManager.unsubsribeFromEventBusEvents();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDataRefreshEvent() {
+        mView.showRefreshAnimation();
+        onSwipeToRefresh();
+        // TODO: Disable cancel build menu when data is updated and build has finished status
     }
 }

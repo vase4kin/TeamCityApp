@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.presenter;
-
-import com.github.vase4kin.teamcityapp.tests.presenter.TestsPresenter;
+package com.github.vase4kin.teamcityapp.buildtabs.data;
 
 /**
- * Presenter to handle logic for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}
+ * Event to request {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment} data refresh
  */
-public interface OverviewPresenter extends TestsPresenter {
-
-    /**
-     * Handle on start behavior
-     */
-    void onStart();
-
-    /**
-     * Handle on stop behavior
-     */
-    void onStop();
+public class OnOverviewDataRefreshEvent {
 }

@@ -76,6 +76,18 @@ public class OverviewFragment extends Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mPresenter.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        mPresenter.onStop();
+        super.onStop();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         mPresenter.onCreateOptionsMenu(menu, inflater);
     }

@@ -38,6 +38,11 @@ public interface BuildTabsInteractor extends BaseTabsDataManager {
     void postOnArtifactTabChangeEvent();
 
     /**
+     * Post {@link OnOverviewDataRefreshEvent}
+     */
+    void postRefreshOverViewDataEvent();
+
+    /**
      * @return {true} if the build is running
      */
     boolean isBuildRunning();

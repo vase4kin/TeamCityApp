@@ -84,6 +84,14 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
      * {@inheritDoc}
      */
     @Override
+    public void postRefreshOverViewDataEvent() {
+        mEventBus.post(new OnOverviewDataRefreshEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isBuildRunning() {
         return mValueExtractor.getBuild().isRunning();
     }
