@@ -14,38 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.buildtabs.router;
 
 import android.app.Activity;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 /**
- * impl of {@link BuildListRouter}
+ * Impl of {@link BuildTabsRouter}
  */
-public class BuildListRouterImpl implements BuildListRouter {
+public class BuildTabsRouterImpl implements BuildTabsRouter {
 
     private Activity mActivity;
 
-    public BuildListRouterImpl(Activity mActivity) {
-        this.mActivity = mActivity;
+    public BuildTabsRouterImpl(Activity activity) {
+        this.mActivity = activity;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void openBuildPage(Build build) {
+    public void reopenBuildTabsActivity(Build build) {
         BuildTabsActivity.start(mActivity, build);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openRunBuildPage(String buildTypeId) {
-        RunBuildActivity.startForResult(mActivity, buildTypeId);
     }
 }

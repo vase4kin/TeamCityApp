@@ -102,7 +102,7 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
      * {@inheritDoc}
      */
     @Override
-    public void cancelBuild(final LoadingListenerWithForbiddenSupport<String> loadingListener) {
+    public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener) {
         mSubscription.clear();
         Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuild().getHref(), new BuildCancelRequest())
                 .subscribeOn(Schedulers.io())
@@ -128,7 +128,7 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
 
                     @Override
                     public void onNext(Build build) {
-                        loadingListener.onSuccess(build.getHref());
+                        loadingListener.onSuccess(build);
                     }
                 });
         mSubscription.add(queueBuildSubscription);

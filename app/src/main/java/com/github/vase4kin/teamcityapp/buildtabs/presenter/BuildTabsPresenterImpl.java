@@ -20,8 +20,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenterImpl;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.OnBuildTabsEventsListener;
+import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.OnBuildTabsViewListener;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
@@ -35,11 +37,15 @@ import javax.inject.Inject;
 public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView, BuildTabsInteractor>
         implements BuildTabsPresenter, OnBuildTabsEventsListener, OnBuildTabsViewListener {
 
+    private BuildTabsRouter mRouter;
+
     @Inject
     BuildTabsPresenterImpl(@NonNull BuildTabsView view,
                            @NonNull ViewTracker tracker,
-                           @NonNull BuildTabsInteractor dataManager) {
+                           @NonNull BuildTabsInteractor dataManager,
+                           @NonNull BuildTabsRouter router) {
         super(view, tracker, dataManager);
+        this.mRouter = router;
     }
 
     /**
@@ -130,7 +136,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
     @Override
     public void onConfirmCancelingBuild() {
         showProgress();
-        mDataManager.cancelBuild(new LoadingListenerWithForbiddenSupport<String>() {
+        mDataManager.cancelBuild(new LoadingListenerWithForbiddenSupport<Build>() {
             @Override
             public void onForbiddenError() {
                 hideProgress();
@@ -140,12 +146,10 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
             }
 
             @Override
-            public void onSuccess(String data) {
+            public void onSuccess(Build build) {
                 hideProgress();
                 showBuildIsCancelledSnackBar();
-                // hide menu option in the UI
-                // Send event to refresh tab or reload the whole activity with new intent. GOT IT, DOG?
-                // Make sure build object is updated
+                mRouter.reopenBuildTabsActivity(build);
             }
 
             @Override

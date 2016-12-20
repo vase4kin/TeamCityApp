@@ -24,6 +24,8 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractorImpl;
+import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
+import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouterImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildsTabViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsViewImpl;
@@ -71,5 +73,10 @@ public class BuildTabsModule {
                                                     BaseValueExtractor valueExtractor,
                                                     SharedUserStorage sharedUserStorage, TeamCityService teamCityService) {
         return new BuildTabsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, teamCityService);
+    }
+
+    @Provides
+    BuildTabsRouter providesBuildTabsRouter() {
+        return new BuildTabsRouterImpl(mActivity);
     }
 }

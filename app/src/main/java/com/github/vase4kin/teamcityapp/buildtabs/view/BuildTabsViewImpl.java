@@ -243,7 +243,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      */
     @Override
     public void showBuildIsRemovedFromQueueErrorSnackBar() {
-        showSnackBarWithText(R.string.text_build_is_removed_from_queue);
+        showSnackBarWithText(R.string.error_base_remove_build_from_queue_error);
     }
 
     /**
@@ -251,7 +251,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      */
     @Override
     public void showBuildIsRemovedFromQueueSnackBar() {
-        showSnackBarWithText(R.string.error_base_remove_build_from_queue_error);
+        showSnackBarWithText(R.string.text_build_is_removed_from_queue);
     }
 
     /**

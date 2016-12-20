@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildtabs.data;
 
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 
 /**
@@ -51,7 +52,7 @@ public interface BuildTabsInteractor extends BaseTabsDataManager {
      *
      * @param loadingListener - Listener to receive callbacks on UI
      */
-    void cancelBuild(LoadingListenerWithForbiddenSupport<String> loadingListener);
+    void cancelBuild(LoadingListenerWithForbiddenSupport<Build> loadingListener);
 
     /**
      * Unsubscribe Rx subscriptions
