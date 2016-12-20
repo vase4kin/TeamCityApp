@@ -81,11 +81,6 @@ public class OverviewFragment extends Fragment {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        mPresenter.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mPresenter.onOptionsItemSelected(item);
     }

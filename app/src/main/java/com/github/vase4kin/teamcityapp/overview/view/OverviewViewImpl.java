@@ -85,22 +85,6 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, Overvi
      * {@inheritDoc}
      */
     @Override
-    public void hideOptionsMenu(Menu menu) {
-        menu.findItem(R.id.cancel_build).setVisible(false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showOptionsMenu(Menu menu) {
-        menu.findItem(R.id.cancel_build).setVisible(true);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         mActivity.invalidateOptionsMenu();
         switch (item.getItemId()) {

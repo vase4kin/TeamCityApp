@@ -84,7 +84,7 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         if (mValueExtractor.getBuild().isRunning()) {
             mView.createStopBuildOptionsMenu(menu, inflater);
-        } else {
+        } else if (mValueExtractor.getBuild().isQueued()) {
             mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
         }
     }
@@ -94,11 +94,6 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        if (mValueExtractor.getBuild().isRunning() || mValueExtractor.getBuild().isQueued()) {
-            mView.showOptionsMenu(menu);
-        } else {
-            mView.hideOptionsMenu(menu);
-        }
     }
 
     /**

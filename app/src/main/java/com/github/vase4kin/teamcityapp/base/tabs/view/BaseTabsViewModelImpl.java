@@ -17,11 +17,16 @@
 package com.github.vase4kin.teamcityapp.base.tabs.view;
 
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,6 +53,8 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
     @Override
     public void initViews() {
         mUnbinder = ButterKnife.bind(this, mView);
+        // Make sure there're no fragments saved in fragment manager (in case the view was reloaded)
+        removeAllFragmentsFromFragmentManager();
         mAdapter = new FragmentAdapter(mActivity.getSupportFragmentManager(), mActivity);
         addFragments(mAdapter);
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -67,6 +74,21 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
         mViewPager.setAdapter(mAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
+    }
+
+    /**
+     * Remove all fragments from fragment manager
+     */
+    private void removeAllFragmentsFromFragmentManager() {
+        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        if (fragments != null) {
+            FragmentTransaction ft = fragmentManager.beginTransaction();
+            for (Fragment f : fragments) {
+                ft.remove(f);
+            }
+            ft.commitNow();
+        }
     }
 
     @Override

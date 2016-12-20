@@ -47,20 +47,6 @@ public interface OverviewView extends BaseListView<OverviewDataModel> {
     void createRemoveBuildFromQueueOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
-     * Show options menu
-     *
-     * @param menu - Menu options
-     */
-    void showOptionsMenu(Menu menu);
-
-    /**
-     * Hide options menu
-     *
-     * @param menu - Menu options
-     */
-    void hideOptionsMenu(Menu menu);
-
-    /**
      * {@inheritDoc}
      * <p>
      * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
