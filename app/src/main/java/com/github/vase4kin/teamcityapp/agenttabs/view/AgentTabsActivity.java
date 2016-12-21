@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import javax.inject.Inject;
 
@@ -46,7 +47,7 @@ public class AgentTabsActivity extends AppCompatActivity {
     @Inject
     DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter> mDrawerPresenter;
     @Inject
-    BaseTabsPresenterImpl<BaseTabsViewModel, BaseTabsDataManager> mBaseTabsPresenter;
+    BaseTabsPresenterImpl<BaseTabsViewModel, BaseTabsDataManager, ViewTracker> mBaseTabsPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

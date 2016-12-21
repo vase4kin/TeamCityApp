@@ -26,10 +26,10 @@ import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractorImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
 import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouterImpl;
-import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildsTabViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsTracker;
+import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsViewImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 
@@ -54,8 +54,8 @@ public class BuildTabsModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new BuildsTabViewTrackerImpl();
+    BuildTabsTracker providesViewTracker() {
+        return new BuildTabsViewTrackerImpl();
     }
 
     @Provides

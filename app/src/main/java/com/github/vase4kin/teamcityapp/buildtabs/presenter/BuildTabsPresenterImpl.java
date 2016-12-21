@@ -24,9 +24,9 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.OnBuildTabsEventsListener;
 import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
+import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsTracker;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.OnBuildTabsViewListener;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 
 import javax.inject.Inject;
@@ -34,14 +34,14 @@ import javax.inject.Inject;
 /**
  * Impl of {@link BuildTabsPresenter}
  */
-public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView, BuildTabsInteractor>
+public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView, BuildTabsInteractor, BuildTabsTracker>
         implements BuildTabsPresenter, OnBuildTabsEventsListener, OnBuildTabsViewListener {
 
     private BuildTabsRouter mRouter;
 
     @Inject
     BuildTabsPresenterImpl(@NonNull BuildTabsView view,
-                           @NonNull ViewTracker tracker,
+                           @NonNull BuildTabsTracker tracker,
                            @NonNull BuildTabsInteractor dataManager,
                            @NonNull BuildTabsRouter router) {
         super(view, tracker, dataManager);
@@ -135,16 +135,19 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      */
     @Override
     public void onConfirmCancelingBuild() {
+        mTracker.trackUserConfirmedCancel();
         showProgress();
         mDataManager.cancelBuild(new LoadingListenerWithForbiddenSupport<Build>() {
             @Override
             public void onForbiddenError() {
+                mTracker.trackUserGetsForbiddenErrorOnBuildCancel();
                 hideProgress();
                 showForbiddenToCancelBuildSnackBar();
             }
 
             @Override
             public void onSuccess(Build build) {
+                mTracker.trackUserCanceledBuildSuccessfully();
                 hideProgress();
                 showBuildIsCancelledSnackBar();
                 mRouter.reopenBuildTabsActivity(build);
@@ -152,6 +155,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
 
             @Override
             public void onFail(String errorMessage) {
+                mTracker.trackUserGetsServerErrorOnBuildCancel();
                 hideProgress();
                 showBuildIsCancelledErrorSnackBar();
                 mDataManager.postRefreshOverViewDataEvent();
