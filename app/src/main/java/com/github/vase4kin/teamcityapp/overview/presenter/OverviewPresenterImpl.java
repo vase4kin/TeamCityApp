@@ -25,10 +25,11 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
 
@@ -44,13 +45,13 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
         BuildElement,
         OverviewView,
         OverViewInteractor,
-        ViewTracker,
+        OverviewTracker,
         BaseValueExtractor> implements OverviewPresenter, OverviewView.OverviewViewListener, OverViewInteractor.OnOverviewEventsListener {
 
     @Inject
     OverviewPresenterImpl(@NonNull OverviewView view,
                           @NonNull OverViewInteractor dataManager,
-                          @NonNull ViewTracker tracker,
+                          @NonNull OverviewTracker tracker,
                           @NonNull BaseValueExtractor valueExtractor) {
         super(view, dataManager, tracker, valueExtractor);
     }
@@ -83,9 +84,10 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        if (mValueExtractor.getBuild().isRunning()) {
+        Build build = mValueExtractor.getBuild();
+        if (build.isRunning()) {
             mView.createStopBuildOptionsMenu(menu, inflater);
-        } else if (mValueExtractor.getBuild().isQueued()) {
+        } else if (build.isQueued()) {
             mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
         }
     }
@@ -111,6 +113,7 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onCancelBuildContextMenuClick() {
         mDataManager.postStopBuildEvent();
+        mTracker.trackUserClickedCancelBuildOption();
     }
 
     /**

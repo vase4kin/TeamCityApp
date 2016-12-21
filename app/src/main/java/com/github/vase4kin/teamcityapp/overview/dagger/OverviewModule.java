@@ -26,10 +26,11 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewInteractorImpl;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTrackerImpl;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewAdapter;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewHolderFactory;
@@ -70,8 +71,8 @@ public class OverviewModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return ViewTracker.STUB;
+    OverviewTracker providesViewTracker() {
+        return new OverviewTrackerImpl();
     }
 
     @Provides
