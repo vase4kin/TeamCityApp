@@ -85,7 +85,7 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
      */
     @Override
     public void postRefreshOverViewDataEvent() {
-        mEventBus.post(new OnOverviewDataRefreshEvent());
+        mEventBus.post(new OnOverviewRefreshDataEvent());
     }
 
     /**

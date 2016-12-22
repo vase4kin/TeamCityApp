@@ -38,7 +38,7 @@ public interface BuildTabsInteractor extends BaseTabsDataManager {
     void postOnArtifactTabChangeEvent();
 
     /**
-     * Post {@link OnOverviewDataRefreshEvent}
+     * Post {@link OnOverviewRefreshDataEvent}
      */
     void postRefreshOverViewDataEvent();
 

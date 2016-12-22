@@ -19,5 +19,5 @@ package com.github.vase4kin.teamcityapp.buildtabs.data;
 /**
  * Event to request {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment} data refresh
  */
-public class OnOverviewDataRefreshEvent {
+public class OnOverviewRefreshDataEvent {
 }
