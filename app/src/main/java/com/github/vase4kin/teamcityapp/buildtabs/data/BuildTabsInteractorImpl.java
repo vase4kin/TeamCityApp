@@ -102,7 +102,9 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
     @Override
     public boolean isBuildTriggeredByMe() {
         Triggered triggered = mValueExtractor.getBuild().getTriggered();
-        return triggered.isUser()
+        return triggered != null
+                && triggered.isUser()
+                && triggered.getUser() != null
                 && mSharedUserStorage.getActiveUser().getUserName().equals(mValueExtractor.getBuild().getTriggered().getUser().getUsername());
     }
 

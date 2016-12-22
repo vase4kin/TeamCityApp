@@ -19,5 +19,5 @@
     <item
         android:id="@+id/cancel_build"
         app:showAsAction="never"
-        android:title="Stop build"></item>
+        android:title="@string/text_menu_stop_build"></item>
 </menu>
