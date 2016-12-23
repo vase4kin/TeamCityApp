@@ -57,6 +57,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     private Changes changes;
     private String waitReason;
     private String startEstimate;
+    private CanceledInfo canceledInfo;
 
     public String getNumber() {
         return number;
@@ -152,6 +153,10 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return startEstimate;
     }
 
+    public CanceledInfo getCanceledInfo() {
+        return canceledInfo;
+    }
+
     @Override
     public List<BuildElement> getObjects() {
         return Collections.emptyList();
@@ -227,5 +232,10 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     @VisibleForTesting
     public void setTestOccurrences(TestOccurrences testOccurrences) {
         this.testOccurrences = testOccurrences;
+    }
+
+    @VisibleForTesting
+    public void setCanceledInfo(CanceledInfo canceledInfo) {
+        this.canceledInfo = canceledInfo;
     }
 }

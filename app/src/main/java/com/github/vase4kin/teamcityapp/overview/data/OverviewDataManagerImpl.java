@@ -24,7 +24,9 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
+import com.github.vase4kin.teamcityapp.buildlist.api.User;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
@@ -86,6 +88,8 @@ public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, Bu
      * Create list of build elements
      *
      * Can be not the proper place to have this method
+     *
+     * TODO: Move to presenter
      */
     private List<BuildElement> createElementsList(@NonNull Build build) {
         List<BuildElement> elements = new ArrayList<>();
@@ -99,6 +103,28 @@ public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, Bu
             elements.add(new BuildElement(IconUtils.getBuildStatusIcon(build.getStatus(), build.getState()),
                     build.getStatusText(),
                     mContext.getString(R.string.build_result_section_text)));
+        }
+        if (build.getCanceledInfo() != null) {
+            CanceledInfo canceledInfo = build.getCanceledInfo();
+            String userName = null;
+            if (canceledInfo.getUser() != null) {
+                User user = canceledInfo.getUser();
+                if (user.getName() != null) {
+                    userName = user.getName();
+                } else {
+                    userName = user.getUsername();
+                }
+            }
+            if (userName != null) {
+                elements.add(
+                        new BuildElement(IconUtils.getBuildStatusIcon(build.getStatus(), build.getState()),
+                                userName,
+                                mContext.getString(R.string.build_canceled_by_text)));
+            }
+            elements.add(new BuildElement(
+                    TIME_ICON,
+                    DateUtils.initWithDate(canceledInfo.getTimestamp()).formatStartDateToBuildTitle(),
+                    mContext.getString(R.string.build_cancellation_time_text)));
         }
         BuildElement timeBuildElement;
         if (build.isRunning()) {
