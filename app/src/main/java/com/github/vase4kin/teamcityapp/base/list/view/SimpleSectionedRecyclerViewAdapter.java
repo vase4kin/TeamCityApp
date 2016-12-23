@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.base.list.view;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -52,7 +53,12 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
             @Override
             public void onChanged() {
                 mValid = mBaseAdapter.getItemCount() > 0;
-                notifyDataSetChanged();
+                new Handler().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
             }
 
             @Override
