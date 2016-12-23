@@ -37,7 +37,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
-import com.squareup.spoon.Spoon;
+import com.jraska.falcon.FalconSpoon;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -494,30 +494,30 @@ public class CancelBuildTest {
     // <!- SCREENSHOT ACTIONS (To determine what the heck is happening on CI)-!>
 
     private void takeScreenshotWhenActivityIsStarted() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Activity_started");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Activity_started");
     }
 
     private void takeScreenshotWhenContextMenuIsOpened() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Context_menu_opened");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Context_menu_opened");
     }
 
     private void takeScreenshotWhenContextMenuOptionIsClicked() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Context_menu_option_clicked");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Context_menu_option_clicked");
     }
 
     private void takeScreenshotWhenDialogContentIsChecked() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Dialog_content_checked");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Dialog_content_checked");
     }
 
     private void takeScreenshotWhenCancelButtonIsClicked() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Cancel_button_clicked");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Cancel_button_clicked");
     }
 
     private void takeScreenshotWhenSnackBarIsDisplayed() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Checked_snack_bar_is_displayed");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Checked_snack_bar_is_displayed");
     }
 
     private void takeScreenshotWhenBuildWasReloaded() {
-        Spoon.screenshot(mActivityRule.getActivity(), "Checked_build_was_reloaded");
+        FalconSpoon.screenshot(mActivityRule.getActivity(), "Checked_build_was_reloaded");
     }
 }
