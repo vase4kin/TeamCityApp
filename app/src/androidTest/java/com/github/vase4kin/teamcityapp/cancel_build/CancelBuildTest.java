@@ -37,6 +37,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
+import com.squareup.spoon.Spoon;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -124,25 +125,39 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Check dialog text is displayed
         onView(withText(R.string.text_remove_build_from_queue)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenDialogContentIsChecked();
 
         // Click on cancel build
         onView(withText(R.string.text_remove_from_queue_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.text_build_is_removed_from_queue)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
 
         // Checking Result was changed
         onView(withRecyclerView(R.id.overview_recycler_view)
                 .atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("This build will not start because there are no compatible agents which can run it")));
+
+        takeScreenshotWhenBuildWasReloaded();
     }
 
     @Test
@@ -164,25 +179,39 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Check dialog text is displayed
         onView(withText(R.string.text_remove_build_from_queue_2)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenDialogContentIsChecked();
 
         // Click on cancel build
         onView(withText(R.string.text_remove_from_queue_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.text_build_is_removed_from_queue)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
 
         // Checking Result was changed
         onView(withRecyclerView(R.id.overview_recycler_view)
                 .atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("This build will not start because there are no compatible agents which can run it")));
+
+        takeScreenshotWhenBuildWasReloaded();
     }
 
     @Test
@@ -204,17 +233,27 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Click on cancel build
         onView(withText(R.string.text_remove_from_queue_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.error_remove_build_from_queue_forbidden_error)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
     }
 
     @Test
@@ -236,17 +275,27 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Click on cancel build
         onView(withText(R.string.text_remove_from_queue_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.error_base_remove_build_from_queue_error)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
     }
 
     @Test
@@ -268,25 +317,39 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_stop_build)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Check dialog text is displayed
         onView(withText(R.string.text_stop_the_build_2)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenDialogContentIsChecked();
 
         // Click on cancel build
         onView(withText(R.string.text_stop_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
 
         // Checking Result was changed
         onView(withRecyclerView(R.id.overview_recycler_view)
                 .atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Error with smth")));
+
+        takeScreenshotWhenBuildWasReloaded();
     }
 
     @Test
@@ -309,25 +372,39 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_stop_build)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Check dialog text is displayed
         onView(withText(R.string.text_stop_the_build)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenDialogContentIsChecked();
 
         // Click on cancel build
         onView(withText(R.string.text_stop_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
 
         // Checking Result was changed
         onView(withRecyclerView(R.id.overview_recycler_view)
                 .atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Error with smth")));
+
+        takeScreenshotWhenBuildWasReloaded();
     }
 
     @Test
@@ -349,17 +426,27 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_stop_build)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Click on cancel build
         onView(withText(R.string.text_stop_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.error_stop_build_forbidden_error)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
     }
 
     @Test
@@ -381,16 +468,56 @@ public class CancelBuildTest {
         // Start activity
         mActivityRule.launchActivity(intent);
 
+        takeScreenshotWhenActivityIsStarted();
+
         // Opening context menu
         openContextualActionModeOverflowMenu();
+
+        takeScreenshotWhenContextMenuIsOpened();
 
         // Click on context menu option
         onView(withText(R.string.text_menu_stop_build)).perform(click());
 
+        takeScreenshotWhenContextMenuOptionIsClicked();
+
         // Click on cancel build
         onView(withText(R.string.text_stop_button)).perform(click());
 
+        takeScreenshotWhenCancelButtonIsClicked();
+
         // Check snack bar is displayed
         onView(withText(R.string.error_base_stop_build_error)).check(matches(isDisplayed()));
+
+        takeScreenshotWhenSnackBarIsDisplayed();
+    }
+
+    // <!- SCREENSHOT ACTIONS (To determine what the heck is happening on CI)-!>
+
+    private void takeScreenshotWhenActivityIsStarted() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Activity_started");
+    }
+
+    private void takeScreenshotWhenContextMenuIsOpened() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Context_menu_opened");
+    }
+
+    private void takeScreenshotWhenContextMenuOptionIsClicked() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Context_menu_option_clicked");
+    }
+
+    private void takeScreenshotWhenDialogContentIsChecked() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Dialog_content_checked");
+    }
+
+    private void takeScreenshotWhenCancelButtonIsClicked() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Cancel_button_clicked");
+    }
+
+    private void takeScreenshotWhenSnackBarIsDisplayed() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Checked_snack_bar_is_displayed");
+    }
+
+    private void takeScreenshotWhenBuildWasReloaded() {
+        Spoon.screenshot(mActivityRule.getActivity(), "Checked_build_was_reloaded");
     }
 }
