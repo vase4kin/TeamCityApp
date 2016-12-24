@@ -26,6 +26,8 @@ import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
+import com.github.vase4kin.teamcityapp.buildlist.api.User;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
@@ -63,6 +65,8 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(AndroidJUnit4.class)
 public class OverviewFragmentTest {
+
+    private final static String CANCELED_TIME_STAMP = "20161223T151154+0300";
 
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
@@ -175,4 +179,74 @@ public class OverviewFragmentTest {
                 .inRoot(withDecorView(not(mActivityRule.getActivity().getWindow().getDecorView())))
                 .check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testUserCanSeeCanceledInfoAsUserRealName() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        mBuild.setCanceledInfo(new CanceledInfo(CANCELED_TIME_STAMP, new User("user.name", "User name")));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking Canceled by
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText(R.string.build_canceled_by_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("User name")));
+    }
+
+    @Test
+    public void testUserCanSeeCanceledInfoAsUserName() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        mBuild.setCanceledInfo(new CanceledInfo(CANCELED_TIME_STAMP, new User("user.name", null)));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking Canceled by
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText(R.string.build_canceled_by_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("user.name")));
+    }
+
+    @Test
+    public void testUserCanSeeCanceledInfoAsTimeStampOfCancellation() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        mBuild.setCanceledInfo(new CanceledInfo(CANCELED_TIME_STAMP, new User("user.name", null)));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking time stamp
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(matches(withText(R.string.build_cancellation_time_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemTitle)).check(matches(withText("23 Dec 16 15:11")));
+    }
+
 }

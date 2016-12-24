@@ -124,6 +124,8 @@
     <string name="build_branch_section_text">Branch</string>
     <string name="build_agent_section_text">Agent</string>
     <string name="build_triggered_by_section_text">Triggered by</string>
+    <string name="build_canceled_by_text">Canceled by</string>
+    <string name="build_cancellation_time_text">Cancellation time</string>
 
     <!--Test occurrence-->
     <string name="test_details_title">Details</string>

@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.buildlist.data;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -57,14 +56,6 @@ public class BuildListDataModelImplTest {
     public void testGetBuildNumberIfItIsNotNull() throws Exception {
         when(mBuild.getNumber()).thenReturn("123");
         assertThat(mDataModel.getBuildNumber(0), is("#123"));
-    }
-
-    @Test
-    public void testIsLoadMoreBuild() throws Exception {
-        List<Build> buildList = new ArrayList<>();
-        buildList.add(new LoadMoreBuild());
-        mDataModel = new BuildListDataModelImpl(buildList);
-        assertThat(mDataModel.isLoadMoreBuild(0), is(true));
     }
 
     @Test
