@@ -46,7 +46,7 @@ public class CustomActivityTestRule<T extends Activity> extends ActivityTestRule
         Espresso.setFailureHandler(new FailureHandler() {
             @Override
             public void handle(Throwable throwable, Matcher<View> matcher) {
-                SpoonScreenshotAction.perform("failure", testClassName, testMethodName);
+                FalconScreenshotAction.perform("failure", testClassName, testMethodName);
                 new DefaultFailureHandler(context).handle(throwable, matcher);
             }
         });
