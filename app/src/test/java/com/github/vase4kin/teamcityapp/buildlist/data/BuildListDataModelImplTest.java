@@ -77,7 +77,7 @@ public class BuildListDataModelImplTest {
     public void testGetBuildStatusIcon() throws Exception {
         when(mBuild.getStatus()).thenReturn("FAILURE");
         when(mBuild.getState()).thenReturn("running");
-        assertThat(mDataModel.getBuildStatusIcon(0), is("{fa-spinner spin}"));
+        assertThat(mDataModel.getBuildStatusIcon(0), is("{fa-spinner}"));
     }
 
     @Test
