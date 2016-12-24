@@ -26,13 +26,6 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 public interface BuildListDataModel extends BaseDataModel, Iterable<Build>, ModelLoadMore<BuildListDataModel> {
 
     /**
-     * Is it an instance of {@link com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild} in adapter
-     *
-     * @param position - Adapter position
-     */
-    boolean isLoadMoreBuild(int position);
-
-    /**
      * Get branch name
      *
      * @param position - Adapter position

@@ -16,8 +16,29 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.api;
 
+import android.support.annotation.VisibleForTesting;
+
+import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+
 /**
- * Class representing LoadMoreObject
+ * Build canceled info
  */
-public class LoadMoreBuild extends Build {
+public class CanceledInfo extends BaseObject {
+
+    private User user;
+    private String timestamp;
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    @VisibleForTesting
+    public CanceledInfo(String timestamp, User user) {
+        this.timestamp = timestamp;
+        this.user = user;
+    }
 }
