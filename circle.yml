@@ -23,7 +23,7 @@ test:
     # unlocking the screen
     - adb shell input keyevent 82
     # running tests
-    - ./gradlew clean lintMockDebug pmd findbugs generateCodeCoverageReport
+    - ./gradlew clean lintMockDebug pmd generateCodeCoverageReport
     post:
         # obtain test results artifacts
         - mkdir -p $CIRCLE_TEST_REPORTS/junit/
