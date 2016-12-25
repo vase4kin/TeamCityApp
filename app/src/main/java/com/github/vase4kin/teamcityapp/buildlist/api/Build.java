@@ -194,7 +194,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
                  String startDate,
                  String startEstimate,
                  String queuedDate,
-                 String finishDate) {
+                 String finishDate,
+                 String webUrl) {
         this.number = number;
         this.buildTypeId = buildTypeId;
         this.status = status;
@@ -207,7 +208,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.startEstimate = startEstimate;
         this.href = href;
         this.statusText = statusText;
-        this.webUrl = "http://www.google.com";
+        this.webUrl = webUrl;
     }
 
     @VisibleForTesting
