@@ -17,17 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildtabs.data;
 
 /**
- * Listener to handle fab visibility state changes
+ * Event to request {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment} data refresh
  */
-public interface OnFloatButtonChangeVisibilityEventListener {
-
-    /**
-     * Fab is visible
-     */
-    void onShow();
-
-    /**
-     * Fab is hidden
-     */
-    void onHide();
+public class OnOverviewRefreshDataEvent {
 }

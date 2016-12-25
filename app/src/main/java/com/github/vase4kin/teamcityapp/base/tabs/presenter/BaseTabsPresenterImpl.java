@@ -28,15 +28,18 @@ import javax.inject.Inject;
 /**
  * Base impl for {@link BaseTabsPresenter}
  */
-public class BaseTabsPresenterImpl<T extends BaseTabsViewModel, DT extends BaseTabsDataManager> implements BaseTabsPresenter, OnTextTabChangeEventListener {
+public class BaseTabsPresenterImpl<
+        T extends BaseTabsViewModel,
+        DT extends BaseTabsDataManager,
+        TR extends ViewTracker> implements BaseTabsPresenter, OnTextTabChangeEventListener {
 
     protected T mView;
-    private ViewTracker mTracker;
+    protected TR mTracker;
     protected DT mDataManager;
 
     @Inject
     public BaseTabsPresenterImpl(@NonNull T mView,
-                                 @NonNull ViewTracker tracker,
+                                 @NonNull TR tracker,
                                  @NonNull DT dataManager) {
         this.mView = mView;
         this.mTracker = tracker;

@@ -17,38 +17,50 @@
 package com.github.vase4kin.teamcityapp.overview.presenter;
 
 import android.support.annotation.NonNull;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-import com.github.vase4kin.teamcityapp.overview.data.OverViewDataManager;
+import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
 /**
- * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.overview.view.BuildOverviewElementsFragment}
+ * Presenter to handle logic of {@link OverviewFragment}
  */
 public class OverviewPresenterImpl extends BaseListPresenterImpl<
         BaseDataModel,
         BuildElement,
-        BaseListView,
-        OverViewDataManager,
-        ViewTracker,
-        BaseValueExtractor> {
+        OverviewView,
+        OverViewInteractor,
+        OverviewTracker,
+        BaseValueExtractor> implements OverviewPresenter, OverviewView.OverviewViewListener, OverViewInteractor.OnOverviewEventsListener {
 
     @Inject
-    OverviewPresenterImpl(@NonNull BaseListView view,
-                          @NonNull OverViewDataManager dataManager,
-                          @NonNull ViewTracker tracker,
+    OverviewPresenterImpl(@NonNull OverviewView view,
+                          @NonNull OverViewInteractor dataManager,
+                          @NonNull OverviewTracker tracker,
                           @NonNull BaseValueExtractor valueExtractor) {
         super(view, dataManager, tracker, valueExtractor);
+    }
+
+    @Override
+    protected void initViews() {
+        super.initViews();
+        mView.setOverViewListener(this);
+        mDataManager.setListener(this);
     }
 
     /**
@@ -65,5 +77,79 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected BaseDataModel createModel(List<BuildElement> data) {
         return new OverviewDataModelImpl(data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        Build build = mValueExtractor.getBuild();
+        if (build.isRunning()) {
+            mView.createStopBuildOptionsMenu(menu, inflater);
+        } else if (build.isQueued()) {
+            mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
+        } else {
+            mView.createDefaultOptionsMenu(menu, inflater);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mView.onOptionsItemSelected(item);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCancelBuildContextMenuClick() {
+        mDataManager.postStopBuildEvent();
+        mTracker.trackUserClickedCancelBuildOption();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShareButtonClick() {
+        mDataManager.postShareBuildInfoEvent();
+        mTracker.trackUserSharedBuild();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStart() {
+        mDataManager.subscribeToEventBusEvents();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStop() {
+        mDataManager.unsubsribeFromEventBusEvents();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDataRefreshEvent() {
+        mView.showRefreshAnimation();
+        onSwipeToRefresh();
+        // TODO: Disable cancel build menu when data is updated and build has finished status
     }
 }

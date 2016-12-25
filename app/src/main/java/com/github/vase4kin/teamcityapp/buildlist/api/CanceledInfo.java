@@ -14,15 +14,31 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.buildlist.api;
+
+import android.support.annotation.VisibleForTesting;
+
+import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 /**
- * Listener to handle changes of tab layout
+ * Build canceled info
  */
-public interface OnTabUnSelectListener {
+public class CanceledInfo extends BaseObject {
 
-    /**
-     * When artifacts tab is unselected
-     */
-    void onArtifactTabUnSelect();
+    private User user;
+    private String timestamp;
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    @VisibleForTesting
+    public CanceledInfo(String timestamp, User user) {
+        this.timestamp = timestamp;
+        this.user = user;
+    }
 }

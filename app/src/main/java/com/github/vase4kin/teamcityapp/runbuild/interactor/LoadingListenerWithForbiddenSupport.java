@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.tracker;
+package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-
-import io.fabric.sdk.android.Fabric;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 
 /**
- * Tracker class
+ * Custom loading listener
+ *
+ * @param <T> - Data type
  */
-public class BuildsTabViewTrackerImpl implements ViewTracker {
+public interface LoadingListenerWithForbiddenSupport<T> extends OnLoadingListener<T> {
 
     /**
-     * {@inheritDoc}
+     * On getting 403 error
      */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Build details"));
-    }
+    void onForbiddenError();
 }

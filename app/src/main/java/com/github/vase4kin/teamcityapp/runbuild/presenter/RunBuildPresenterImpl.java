@@ -17,8 +17,8 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildLoadingListener;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
@@ -99,7 +99,7 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     @Override
     public void onBuildQueue(String branchName) {
         mView.showQueuingBuildProgress();
-        mInteractor.queueBuild(branchName, new RunBuildLoadingListener<String>() {
+        mInteractor.queueBuild(branchName, new LoadingListenerWithForbiddenSupport<String>() {
 
             @Override
             public void onSuccess(String data) {

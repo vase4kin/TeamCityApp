@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.buildlist.data;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.api.LoadMoreBuild;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
 import java.util.Iterator;
@@ -46,14 +45,6 @@ public class BuildListDataModelImpl implements BuildListDataModel {
 
     public BuildListDataModelImpl(List<Build> mBuilds) {
         this.mBuilds = mBuilds;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isLoadMoreBuild(int position) {
-        return mBuilds.get(position) instanceof LoadMoreBuild;
     }
 
     /**

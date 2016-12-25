@@ -113,7 +113,6 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
                 MaterialDialog mSureToDeleteDialog = new MaterialDialog.Builder(mActivity)
                         .content(R.string.dialog_remove_active_account_positive_content_text)
                         .positiveText(R.string.dialog_remove_active_account_positive_button_text)
-                        .positiveColor(mActivity.getResources().getColor(R.color.md_blue_A100))
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
@@ -121,7 +120,6 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
                             }
                         })
                         .negativeText(R.string.dialog_remove_active_account_positive_negative_text)
-                        .negativeColor(mActivity.getResources().getColor(R.color.md_blue_A100))
                         .build();
 
                 boolean isActiveAccountToDelete = false;
@@ -241,7 +239,6 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
                         .title(R.string.add_new_account_dialog_title)
                         .content(R.string.add_new_account_warning_dialog_content)
                         .positiveText(R.string.add_new_account_dialog_create_account_button_text)
-                        .positiveColor(mActivity.getResources().getColor(R.color.snack_bar_action_color))
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {

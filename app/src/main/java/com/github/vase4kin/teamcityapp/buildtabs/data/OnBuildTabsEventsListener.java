@@ -16,22 +16,28 @@
 
 package com.github.vase4kin.teamcityapp.buildtabs.data;
 
-import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
-
 /**
- * Data manager for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+ * Listener to handle events
  */
-public interface BuildTabsDataManager extends BaseTabsDataManager {
+public interface OnBuildTabsEventsListener {
 
     /**
-     * Set listener to handle floating action button visibility states
-     *
-     * @param listener - Listener to receive callbacks
+     * Fab is visible
      */
-    void setOnFloatButtonChangeVisibilityEventListener(OnFloatButtonChangeVisibilityEventListener listener);
+    void onShow();
 
     /**
-     * Post on artifact tab change event to {@link de.greenrobot.event.EventBus}
+     * Fab is hidden
      */
-    void postOnArtifactTabChangeEvent();
+    void onHide();
+
+    /**
+     * When cancel/remove from queue build action is triggered
+     */
+    void onCancelBuildActionTriggered();
+
+    /**
+     * When share build action is triggered
+     */
+    void onShareBuildActionTriggered();
 }

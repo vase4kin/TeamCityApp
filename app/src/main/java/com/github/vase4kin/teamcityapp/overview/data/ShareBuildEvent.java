@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.api;
+package com.github.vase4kin.teamcityapp.overview.data;
 
 /**
- * Class representing LoadMoreObject
+ * Share build event sending/receiving by {@link de.greenrobot.event.EventBus}
  */
-public class LoadMoreBuild extends Build {
+public class ShareBuildEvent {
 }

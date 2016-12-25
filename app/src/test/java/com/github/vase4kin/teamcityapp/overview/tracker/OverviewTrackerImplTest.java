@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.tracker;
+package com.github.vase4kin.teamcityapp.overview.tracker;
 
 import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +38,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class BuildsTabViewTrackerImplTest {
+public class OverviewTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private BuildsTabViewTrackerImpl mTracker;
+    private OverviewTracker mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -50,21 +51,38 @@ public class BuildsTabViewTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new BuildsTabViewTrackerImpl();
+        mTracker = new OverviewTrackerImpl();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(mAnswers);
     }
 
     @Test
-    public void testTrackViewIfFabricIsNotInitialized() throws Exception {
+    public void trackUserClickedCancelBuildOptionIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackView();
-        verifyNoMoreInteractions(mAnswers);
+        mTracker.trackUserClickedCancelBuildOption();
     }
 
     @Test
-    public void testTrackViewIfFabricIsInitialized() throws Exception {
+    public void trackUserClickedCancelBuildOptionIfFabricIsInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackView();
-        verify(mAnswers).logContentView(any(ContentViewEvent.class));
-        verifyNoMoreInteractions(mAnswers);
+        mTracker.trackUserClickedCancelBuildOption();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
     }
+
+    @Test
+    public void trackUserSharedBuildIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserSharedBuild();
+    }
+
+    @Test
+    public void trackUserSharedBuildIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserSharedBuild();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
 }

@@ -26,11 +26,13 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-import com.github.vase4kin.teamcityapp.overview.data.OverViewDataManager;
-import com.github.vase4kin.teamcityapp.overview.data.OverviewDataManagerImpl;
+import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
+import com.github.vase4kin.teamcityapp.overview.data.OverviewInteractorImpl;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTrackerImpl;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewAdapter;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 
@@ -40,6 +42,7 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
+import de.greenrobot.event.EventBus;
 
 @Module
 public class OverviewModule {
@@ -53,8 +56,8 @@ public class OverviewModule {
     }
 
     @Provides
-    OverViewDataManager providesOverViewDataManager(TeamCityService teamCityService, Context context) {
-        return new OverviewDataManagerImpl(teamCityService, context);
+    OverViewInteractor providesOverViewDataManager(TeamCityService teamCityService, Context context, EventBus eventBus) {
+        return new OverviewInteractorImpl(teamCityService, context, eventBus);
     }
 
     @Provides
@@ -63,13 +66,13 @@ public class OverviewModule {
     }
 
     @Provides
-    BaseListView providesBaseListView(OverviewAdapter adapter) {
+    OverviewView providesBaseListView(OverviewAdapter adapter) {
         return new OverviewViewImpl(mView, mFragment.getActivity(), R.string.empty, adapter);
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return ViewTracker.STUB;
+    OverviewTracker providesViewTracker() {
+        return new OverviewTrackerImpl();
     }
 
     @Provides

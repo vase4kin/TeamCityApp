@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.overview.dagger;
 
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.overview.view.BuildOverviewElementsFragment;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 
 import dagger.Component;
 
@@ -26,5 +26,5 @@ import dagger.Component;
 @Component(dependencies = RestApiComponent.class, modules = OverviewModule.class)
 public interface OverviewComponent {
 
-    void inject(BuildOverviewElementsFragment buildOverviewElementsFragment);
+    void inject(OverviewFragment overviewFragment);
 }

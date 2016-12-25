@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.interactor;
+package com.github.vase4kin.teamcityapp.buildtabs.router;
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 
 /**
- * Custom loading listener
- *
- * @param <T> - Data type
+ * Router for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
  */
-public interface RunBuildLoadingListener<T> extends OnLoadingListener<T> {
+public interface BuildTabsRouter {
 
     /**
-     * On getting 403 error
+     * Reopen {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+     *
+     * @param build - Build is passed as new intent
      */
-    void onForbiddenError();
+    void reopenBuildTabsActivity(Build build);
+
+    /**
+     * Share build web url
+     *
+     * @param webUrl - url to share
+     */
+    void startShareBuildWebUrlActivity(String webUrl);
 }

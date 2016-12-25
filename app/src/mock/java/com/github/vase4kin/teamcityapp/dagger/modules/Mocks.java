@@ -287,7 +287,8 @@ public class Mocks {
                 startDate,
                 startEstimate,
                 queuedDate,
-                finishDate);
+                finishDate,
+                "http://www.google.com");
         build.setChanges(new Changes("/guestAuth/app/rest/changes?locator=build:(id:826073)"));
         build.setArtifacts(new Artifacts("/guestAuth/app/rest/builds/id:92912/artifacts/children/"));
         build.setAgent(new Agent("agent-love"));

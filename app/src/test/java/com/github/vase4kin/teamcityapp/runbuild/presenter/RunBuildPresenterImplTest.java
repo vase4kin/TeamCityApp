@@ -17,8 +17,8 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildLoadingListener;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class RunBuildPresenterImplTest {
 
     @Captor
-    private ArgumentCaptor<RunBuildLoadingListener<String>> mQueueLoadingListenerCaptor;
+    private ArgumentCaptor<LoadingListenerWithForbiddenSupport<String>> mQueueLoadingListenerCaptor;
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<String>>> mBranchLoadingListenerCaptor;
     @Mock
@@ -103,7 +103,7 @@ public class RunBuildPresenterImplTest {
         mPresenter.onBuildQueue("branch");
         verify(mView).showQueuingBuildProgress();
         verify(mInteractor).queueBuild(eq("branch"), mQueueLoadingListenerCaptor.capture());
-        RunBuildLoadingListener<String> loadingListener = mQueueLoadingListenerCaptor.getValue();
+        LoadingListenerWithForbiddenSupport<String> loadingListener = mQueueLoadingListenerCaptor.getValue();
         loadingListener.onSuccess("href");
         verify(mView).hideQueuingBuildProgress();
         verify(mRouter).closeOnSuccess(eq("href"));
