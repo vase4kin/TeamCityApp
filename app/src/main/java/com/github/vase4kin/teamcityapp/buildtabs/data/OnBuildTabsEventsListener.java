@@ -35,4 +35,9 @@ public interface OnBuildTabsEventsListener {
      * When cancel/remove from queue build action is triggered
      */
     void onCancelBuildActionTriggered();
+
+    /**
+     * When share build action is triggered
+     */
+    void onShareBuildActionTriggered();
 }

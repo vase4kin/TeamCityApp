@@ -17,7 +17,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/share_build"
+        android:icon="@drawable/ic_share_white_24px"
+        app:showAsAction="always"
+        android:title="@string/text_menu_share_build" />
+    <item
         android:id="@+id/cancel_build"
         app:showAsAction="never"
-        android:title="@string/text_menu_stop_build"></item>
+        android:title="@string/text_menu_stop_build" />
 </menu>

@@ -35,6 +35,12 @@ public class OverviewTrackerImpl implements OverviewTracker {
         Answers.getInstance().logCustom(new CustomEvent(EVENT_CANCEL_BUILD));
     }
 
+    @Override
+    public void trackUserSharedBuild() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHARE_BUILD));
+    }
+
     /**
      * {@inheritDoc}
      */

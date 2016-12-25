@@ -126,6 +126,15 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * {@inheritDoc}
      */
     @Override
+    public void onShareBuildActionTriggered() {
+        String buildWebUrl = mDataManager.getWebUrl();
+        mRouter.startShareBuildWebUrlActivity(buildWebUrl);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onArtifactTabUnSelect() {
         mDataManager.postOnArtifactTabChangeEvent();
     }

@@ -49,6 +49,13 @@ public interface OverviewView extends BaseListView<OverviewDataModel> {
     /**
      * {@inheritDoc}
      * <p>
+     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     */
+    void createDefaultOptionsMenu(Menu menu, MenuInflater inflater);
+
+    /**
+     * {@inheritDoc}
+     * <p>
      * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
      */
     boolean onOptionsItemSelected(MenuItem item);
@@ -61,5 +68,10 @@ public interface OverviewView extends BaseListView<OverviewDataModel> {
          * On stop build context menu clicked
          */
         void onCancelBuildContextMenuClick();
+
+        /**
+         * On menu share button click
+         */
+        void onShareButtonClick();
     }
 }

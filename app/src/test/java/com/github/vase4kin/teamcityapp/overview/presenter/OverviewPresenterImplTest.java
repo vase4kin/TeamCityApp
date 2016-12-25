@@ -125,6 +125,7 @@ public class OverviewPresenterImplTest {
         when(mBuild.isSuccess()).thenReturn(true);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
         verify(mValueExtractor).getBuild();
+        verify(mView).createDefaultOptionsMenu(eq(mMenu), eq(mMenuInflater));
         tearDown();
     }
 
@@ -147,6 +148,14 @@ public class OverviewPresenterImplTest {
         mPresenter.onCancelBuildContextMenuClick();
         verify(mDataManager).postStopBuildEvent();
         verify(mTracker).trackUserClickedCancelBuildOption();
+        tearDown();
+    }
+
+    @Test
+    public void testOnShareButtonClick() throws Exception {
+        mPresenter.onShareButtonClick();
+        verify(mDataManager).postShareBuildInfoEvent();
+        verify(mTracker).trackUserSharedBuild();
         tearDown();
     }
 

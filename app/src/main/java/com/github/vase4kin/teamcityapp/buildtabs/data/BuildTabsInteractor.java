@@ -60,6 +60,11 @@ public interface BuildTabsInteractor extends BaseTabsDataManager {
     void cancelBuild(LoadingListenerWithForbiddenSupport<Build> loadingListener);
 
     /**
+     * return {String} web url to share build
+     */
+    String getWebUrl();
+
+    /**
      * Unsubscribe Rx subscriptions
      */
     void unsubsribe();
