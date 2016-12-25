@@ -72,4 +72,17 @@ public class OverviewTrackerImplTest {
         verify(mAnswers).logCustom(any(CustomEvent.class));
     }
 
+    @Test
+    public void trackUserSharedBuildIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserSharedBuild();
+    }
+
+    @Test
+    public void trackUserSharedBuildIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserSharedBuild();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
 }

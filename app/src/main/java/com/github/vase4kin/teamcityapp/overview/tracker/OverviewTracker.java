@@ -29,7 +29,17 @@ public interface OverviewTracker extends ViewTracker {
     String EVENT_CANCEL_BUILD = "Cancel build option menu is clicked";
 
     /**
+     * Share build option menu is clicked event
+     */
+    String EVENT_SHARE_BUILD = "Share build option menu is clicked";
+
+    /**
      * Track that Cancel build option menu is clicked
      */
     void trackUserClickedCancelBuildOption();
+
+    /**
+     * Track that share build button is clicked
+     */
+    void trackUserSharedBuild();
 }

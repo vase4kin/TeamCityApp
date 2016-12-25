@@ -124,6 +124,7 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onShareButtonClick() {
         mDataManager.postShareBuildInfoEvent();
+        mTracker.trackUserSharedBuild();
     }
 
     /**

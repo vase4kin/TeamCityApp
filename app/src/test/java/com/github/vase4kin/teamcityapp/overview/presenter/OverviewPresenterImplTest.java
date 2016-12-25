@@ -155,6 +155,7 @@ public class OverviewPresenterImplTest {
     public void testOnShareButtonClick() throws Exception {
         mPresenter.onShareButtonClick();
         verify(mDataManager).postShareBuildInfoEvent();
+        verify(mTracker).trackUserSharedBuild();
         tearDown();
     }
 
