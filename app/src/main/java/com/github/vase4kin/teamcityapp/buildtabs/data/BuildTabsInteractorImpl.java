@@ -27,6 +27,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildtabs.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
+import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
@@ -148,6 +149,14 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
      * {@inheritDoc}
      */
     @Override
+    public String getWebUrl() {
+        return mValueExtractor.getBuild().getWebUrl();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void unsubsribe() {
         mSubscription.unsubscribe();
     }
@@ -181,5 +190,16 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
     public void onEvent(StopBuildEvent event) {
         if (mListener == null) return;
         mListener.onCancelBuildActionTriggered();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link ShareBuildEvent}
+     */
+    @SuppressWarnings("unused")
+    public void onEvent(ShareBuildEvent event) {
+        if (mListener == null) return;
+        mListener.onShareBuildActionTriggered();
     }
 }

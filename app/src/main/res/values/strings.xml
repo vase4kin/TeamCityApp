@@ -229,4 +229,6 @@
     <string name="text_remove_build_from_queue_2">You are about to remove the build from queue triggered not by you. Are you sure?</string>
     <string name="text_menu_remove_build_from_queue">Remove build from queue</string>
     <string name="text_menu_stop_build">Stop build</string>
+    <string name="text_menu_share_build">Share build</string>
+    <string name="text_share_build">Share build details</string>
 </resources>

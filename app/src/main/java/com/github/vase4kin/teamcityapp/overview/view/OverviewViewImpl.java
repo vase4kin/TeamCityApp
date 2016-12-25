@@ -76,9 +76,20 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, Overvi
         inflater.inflate(R.menu.menu_stop_build_tabs_activity, menu);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void createRemoveBuildFromQueueOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_remove_from_queue_build_tabs_activity, menu);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createDefaultOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_share_build_tabs_activity, menu);
     }
 
     /**
@@ -90,6 +101,9 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, Overvi
         switch (item.getItemId()) {
             case R.id.cancel_build:
                 mListener.onCancelBuildContextMenuClick();
+                return true;
+            case R.id.share_build:
+                mListener.onShareButtonClick();
                 return true;
             default:
                 return false;

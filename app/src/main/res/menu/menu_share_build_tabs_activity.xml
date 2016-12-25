@@ -21,8 +21,4 @@
         android:icon="@drawable/ic_share_white_24px"
         app:showAsAction="always"
         android:title="@string/text_menu_share_build" />
-    <item
-        android:id="@+id/cancel_build"
-        app:showAsAction="never"
-        android:title="@string/text_menu_remove_build_from_queue" />
 </menu>

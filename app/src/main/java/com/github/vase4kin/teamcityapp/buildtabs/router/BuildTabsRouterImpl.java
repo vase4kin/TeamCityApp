@@ -17,7 +17,9 @@
 package com.github.vase4kin.teamcityapp.buildtabs.router;
 
 import android.app.Activity;
+import android.content.Intent;
 
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 
@@ -38,5 +40,17 @@ public class BuildTabsRouterImpl implements BuildTabsRouter {
     @Override
     public void reopenBuildTabsActivity(Build build) {
         BuildTabsActivity.start(mActivity, build);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startShareBuildWebUrlActivity(String webUrl) {
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, webUrl);
+        sendIntent.setType("text/plain");
+        mActivity.startActivity(Intent.createChooser(sendIntent, mActivity.getString(R.string.text_share_build)));
     }
 }

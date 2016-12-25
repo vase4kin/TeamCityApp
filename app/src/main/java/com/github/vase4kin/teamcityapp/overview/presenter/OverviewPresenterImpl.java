@@ -89,6 +89,8 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
             mView.createStopBuildOptionsMenu(menu, inflater);
         } else if (build.isQueued()) {
             mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
+        } else {
+            mView.createDefaultOptionsMenu(menu, inflater);
         }
     }
 
@@ -114,6 +116,14 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     public void onCancelBuildContextMenuClick() {
         mDataManager.postStopBuildEvent();
         mTracker.trackUserClickedCancelBuildOption();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShareButtonClick() {
+        mDataManager.postShareBuildInfoEvent();
     }
 
     /**

@@ -58,6 +58,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     private String waitReason;
     private String startEstimate;
     private CanceledInfo canceledInfo;
+    private String webUrl;
 
     public String getNumber() {
         return number;
@@ -157,6 +158,10 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return canceledInfo;
     }
 
+    public String getWebUrl() {
+        return webUrl;
+    }
+
     @Override
     public List<BuildElement> getObjects() {
         return Collections.emptyList();
@@ -202,6 +207,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.startEstimate = startEstimate;
         this.href = href;
         this.statusText = statusText;
+        this.webUrl = "http://www.google.com";
     }
 
     @VisibleForTesting
