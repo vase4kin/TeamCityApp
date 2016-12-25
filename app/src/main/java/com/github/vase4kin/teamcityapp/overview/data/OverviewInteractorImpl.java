@@ -27,6 +27,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
+import com.github.vase4kin.teamcityapp.buildtabs.data.OnOverviewRefreshDataEvent;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
@@ -34,15 +35,16 @@ import com.github.vase4kin.teamcityapp.utils.IconUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
- * Impl of {@link OverViewDataManager}
+ * Impl of {@link OverViewInteractor}
  */
-public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewDataManager {
+public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewInteractor {
 
     private static final String TIME_ICON = "{mdi-clock}";
     private static final String BRANCH_ICON = "{mdi-git}";
@@ -51,10 +53,23 @@ public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, Bu
 
     private TeamCityService mTeamCityService;
     private Context mContext;
+    private EventBus mEventBus;
+    private OnOverviewEventsListener mListener;
 
-    public OverviewDataManagerImpl(TeamCityService teamCityService, Context context) {
+    public OverviewInteractorImpl(TeamCityService teamCityService,
+                                  Context context,
+                                  EventBus eventBus) {
         this.mTeamCityService = teamCityService;
         this.mContext = context;
+        this.mEventBus = eventBus;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setListener(OnOverviewEventsListener listener) {
+        this.mListener = listener;
     }
 
     /**
@@ -82,6 +97,41 @@ public class OverviewDataManagerImpl extends BaseListRxDataManagerImpl<Build, Bu
                     }
                 });
         mSubscriptions.add(subscription);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postStopBuildEvent() {
+        mEventBus.post(new StopBuildEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void subscribeToEventBusEvents() {
+        mEventBus.register(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unsubsribeFromEventBusEvents() {
+        mEventBus.unregister(this);
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link OnOverviewRefreshDataEvent}
+     */
+    @SuppressWarnings("unused")
+    public void onEvent(OnOverviewRefreshDataEvent event) {
+        if (mListener == null) return;
+        mListener.onDataRefreshEvent();
     }
 
     /**

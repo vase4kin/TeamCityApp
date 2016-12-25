@@ -28,7 +28,6 @@ public class IconUtils {
     private static final String ERROR = "{md-report-problem}";
     private static final String UNKNOWN = "{md-help}";
     private static final String SUCCESS = "{md-check-circle}";
-    private static final String RUNNING = "{fa-spinner spin}";
     private static final String QUEUE = "{mdi-clock-fast}";
 
     /**
@@ -37,7 +36,7 @@ public class IconUtils {
      * @return build status icon as String
      */
     public static String getBuildStatusIcon(String status, String state) {
-        if (state.equals("running")) return RUNNING;
+        if (state.equals("running")) return RunningBuildIconUtils.RUNNING;
         if (state.equals("queued")) return QUEUE;
         switch (status) {
             case "FAILURE":

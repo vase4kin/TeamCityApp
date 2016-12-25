@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.interactor;
+package com.github.vase4kin.teamcityapp.overview.tracker;
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 /**
- * Custom loading listener
- *
- * @param <T> - Data type
+ * Tracker for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}
  */
-public interface RunBuildLoadingListener<T> extends OnLoadingListener<T> {
+public interface OverviewTracker extends ViewTracker {
 
     /**
-     * On getting 403 error
+     * Cancel build option menu is clicked event
      */
-    void onForbiddenError();
+    String EVENT_CANCEL_BUILD = "Cancel build option menu is clicked";
+
+    /**
+     * Track that Cancel build option menu is clicked
+     */
+    void trackUserClickedCancelBuildOption();
 }

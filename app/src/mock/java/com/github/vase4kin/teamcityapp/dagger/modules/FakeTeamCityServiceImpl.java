@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildtabs.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
@@ -194,5 +195,10 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     @Override
     public Observable<Build> queueBuild(@Body Build build) {
         return Observable.just(Mocks.queuedBuild1());
+    }
+
+    @Override
+    public Observable<Build> cancelBuild(@Url String url, @Body BuildCancelRequest buildCancelRequest) {
+        return Observable.just(Mocks.failedBuild());
     }
 }

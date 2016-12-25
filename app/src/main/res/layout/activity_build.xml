@@ -21,6 +21,7 @@
     tools:context=".buildtabs.view.BuildTabsActivity">
 
     <LinearLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true"
@@ -32,6 +33,8 @@
 
     </LinearLayout>
 
-    <include layout="@layout/layout_float_button" />
+    <include
+        layout="@layout/layout_float_button"
+        style="@style/BaseFloatingActionButton.NotVisible" />
 
 </android.support.design.widget.CoordinatorLayout>

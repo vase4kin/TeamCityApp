@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.buildtabs.router;
+
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 
 /**
- * Listener to handle fab visibility state changes
+ * Router for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
  */
-public interface OnFloatButtonChangeVisibilityEventListener {
+public interface BuildTabsRouter {
 
     /**
-     * Fab is visible
+     * Reopen {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+     *
+     * @param build - Build is passed as new intent
      */
-    void onShow();
-
-    /**
-     * Fab is hidden
-     */
-    void onHide();
+    void reopenBuildTabsActivity(Build build);
 }

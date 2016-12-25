@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.dagger;
+package com.github.vase4kin.teamcityapp.buildtabs.api;
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
+/**
+ * Build cancel request api object
+ */
+public class BuildCancelRequest {
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = OverviewModule.class)
-public interface OverviewComponent {
-
-    void inject(OverviewFragment overviewFragment);
+    private String comment = "";
+    private boolean readdIntoQueue = false;
 }

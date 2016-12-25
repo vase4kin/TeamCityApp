@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.dagger;
+package com.github.vase4kin.teamcityapp.buildtabs.view;
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
+/**
+ * Listener to handle build tabs view UI updates
+ */
+public interface OnBuildTabsViewListener {
 
-import dagger.Component;
+    /**
+     * When artifacts tab is unselected
+     */
+    void onArtifactTabUnSelect();
 
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = OverviewModule.class)
-public interface OverviewComponent {
-
-    void inject(OverviewFragment overviewFragment);
+    /**
+     * On confirming stop build click
+     */
+    void onConfirmCancelingBuild();
 }

@@ -48,7 +48,7 @@ public interface RunBuildInteractor {
      * @param branchName      - with branch name
      * @param loadingListener - listener to receive callbacks
      */
-    void queueBuild(String branchName, RunBuildLoadingListener<String> loadingListener);
+    void queueBuild(String branchName, LoadingListenerWithForbiddenSupport<String> loadingListener);
 
     /**
      * Unsubscribe all rx subscriptions

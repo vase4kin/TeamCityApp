@@ -54,7 +54,77 @@ public interface BuildTabsView extends BaseTabsViewModel {
     void hideRunBuildFloatActionButton();
 
     /**
-     * @param onTabUnSelectListener - Listener to handle tab position changes
+     * @param onBuildTabsViewListener - Listener to handle view changes
      */
-    void setOnTabUnSelectListener(OnTabUnSelectListener onTabUnSelectListener);
+    void setOnBuildTabsViewListener(OnBuildTabsViewListener onBuildTabsViewListener);
+
+    /**
+     * Show you are about to stop build dialog
+     */
+    void showYouAreAboutToStopBuildDialog();
+
+    /**
+     * Show you are about to stop build not ran by you dialog
+     */
+    void showYouAreAboutToStopNotYoursBuildDialog();
+
+    /**
+     * Show you are about to remove build from queuedialog
+     */
+    void showYouAreAboutToRemoveBuildFromQueueDialog();
+
+    /**
+     * Show you are about to remove build from queue not triggered by you dialog
+     */
+    void showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog();
+
+    /**
+     * Show stopping build progress dialog
+     */
+    void showStoppingBuildProgressDialog();
+
+    /**
+     * Hide stopping build progress dialog
+     */
+    void hideStoppingBuildProgressDialog();
+
+    /**
+     * Show removing build from queue progress dialog
+     */
+    void showRemovingBuildFromQueueProgressDialog();
+
+    /**
+     * Hide removing build from queue progress dialog
+     */
+    void hideRemovingBuildFromQueueProgressDialog();
+
+    /**
+     * Show build is stopped snack bar
+     */
+    void showBuildIsStoppedSnackBar();
+
+    /**
+     * Show build stop error snack bar
+     */
+    void showBuildIsStoppedErrorSnackBar();
+
+    /**
+     * Show forbidden to stop snack bar
+     */
+    void showForbiddenToStopBuildSnackBar();
+
+    /**
+     * Show build is removed from queue snack bar
+     */
+    void showBuildIsRemovedFromQueueSnackBar();
+
+    /**
+     * Show build remove from queue error snack bar
+     */
+    void showBuildIsRemovedFromQueueErrorSnackBar();
+
+    /**
+     * Show forbidden to remove from queue snack bar
+     */
+    void showForbiddenToRemoveBuildFromQueueSnackBar();
 }

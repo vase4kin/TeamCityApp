@@ -22,13 +22,21 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 
 import java.util.List;
 
 /**
- * Data manager for {@link com.github.vase4kin.teamcityapp.overview.view.BuildOverviewElementsFragment}
+ * Data manager for {@link OverviewFragment}
  */
-public interface OverViewDataManager extends BaseListRxDataManager<Build, BuildElement> {
+public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildElement> {
+
+    /**
+     * Set listener to handle receiving events
+     *
+     * @param listener - Listener
+     */
+    void setListener(OnOverviewEventsListener listener);
 
     /**
      * Load build details
@@ -37,4 +45,29 @@ public interface OverViewDataManager extends BaseListRxDataManager<Build, BuildE
      * @param loadingListener - Listener to receive server callbacks
      */
     void load(@NonNull String url, @NonNull OnLoadingListener<List<BuildElement>> loadingListener);
+
+    /**
+     * Post {@link StopBuildEvent}
+     */
+    void postStopBuildEvent();
+
+    /**
+     * Subscribe to event bus events
+     */
+    void subscribeToEventBusEvents();
+
+    /**
+     * Unsubscribe to event bus events
+     */
+    void unsubsribeFromEventBusEvents();
+
+    /**
+     * Event listener
+     */
+    interface OnOverviewEventsListener {
+        /**
+         * On post data refresh event
+         */
+        void onDataRefreshEvent();
+    }
 }

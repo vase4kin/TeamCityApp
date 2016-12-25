@@ -16,12 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.buildtabs.view;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildtabs.dagger.BuildTabsModule;
 import com.github.vase4kin.teamcityapp.buildtabs.dagger.DaggerBuildTabsComponent;
 import com.github.vase4kin.teamcityapp.buildtabs.presenter.BuildTabsDrawerPresenterImpl;
@@ -45,19 +49,22 @@ public class BuildTabsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_build);
+        injectPresenters();
+        mDrawerPresenter.onCreate();
+        mBuildTabsPresenter.onViewsCreated();
+    }
 
+    /**
+     * Inject presenters
+     */
+    private void injectPresenters() {
         View view = findViewById(android.R.id.content);
-
-        // Injecting presenters
         DaggerBuildTabsComponent.builder()
                 .customDrawerModule(new CustomDrawerModule(this, true, DrawerView.PROJECTS))
                 .buildTabsModule(new BuildTabsModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
                 .inject(this);
-
-        mDrawerPresenter.onCreate();
-        mBuildTabsPresenter.onViewsCreated();
     }
 
     @Override
@@ -94,5 +101,29 @@ public class BuildTabsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         mDrawerPresenter.onBackButtonPressed();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        injectPresenters();
+        mBuildTabsPresenter.onViewsCreated();
+    }
+
+    /**
+     * Open {@link this} activity
+     *
+     * @param activity - Activity
+     * @param build    - Build to be passed
+     */
+    public static void start(Activity activity, Build build) {
+        Intent intent = new Intent(activity, BuildTabsActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, build);
+        intent.putExtras(b);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
 }

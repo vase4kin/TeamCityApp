@@ -19,14 +19,18 @@ package com.github.vase4kin.teamcityapp.buildtabs.dagger;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
-import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsDataManager;
-import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsDataManagerImpl;
-import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildsTabViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
+import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractorImpl;
+import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
+import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouterImpl;
+import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsTracker;
+import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsViewImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 
 import dagger.Module;
@@ -50,8 +54,8 @@ public class BuildTabsModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new BuildsTabViewTrackerImpl();
+    BuildTabsTracker providesViewTracker() {
+        return new BuildTabsViewTrackerImpl();
     }
 
     @Provides
@@ -65,7 +69,14 @@ public class BuildTabsModule {
     }
 
     @Provides
-    BuildTabsDataManager providesBaseTabsDataManager(EventBus eventBus) {
-        return new BuildTabsDataManagerImpl(eventBus);
+    BuildTabsInteractor providesBaseTabsDataManager(EventBus eventBus,
+                                                    BaseValueExtractor valueExtractor,
+                                                    SharedUserStorage sharedUserStorage, TeamCityService teamCityService) {
+        return new BuildTabsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, teamCityService);
+    }
+
+    @Provides
+    BuildTabsRouter providesBuildTabsRouter() {
+        return new BuildTabsRouterImpl(mActivity);
     }
 }

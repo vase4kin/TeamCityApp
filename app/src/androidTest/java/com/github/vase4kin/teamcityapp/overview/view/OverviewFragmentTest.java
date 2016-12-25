@@ -61,10 +61,10 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link BuildOverviewElementsFragment}
+ * Tests for {@link OverviewFragment}
  */
 @RunWith(AndroidJUnit4.class)
-public class BuildOverviewElementsFragmentTest {
+public class OverviewFragmentTest {
 
     private final static String CANCELED_TIME_STAMP = "20161223T151154+0300";
 

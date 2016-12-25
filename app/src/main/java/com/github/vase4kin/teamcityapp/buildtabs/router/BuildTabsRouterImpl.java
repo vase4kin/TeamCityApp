@@ -14,13 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.presenter;
+package com.github.vase4kin.teamcityapp.buildtabs.router;
 
-import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter;
-import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter;
+import android.app.Activity;
+
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 
 /**
- * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment}
+ * Impl of {@link BuildTabsRouter}
  */
-public interface TestsPresenter extends BaseListPresenter, BaseMenuPresenter {
+public class BuildTabsRouterImpl implements BuildTabsRouter {
+
+    private Activity mActivity;
+
+    public BuildTabsRouterImpl(Activity activity) {
+        this.mActivity = activity;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void reopenBuildTabsActivity(Build build) {
+        BuildTabsActivity.start(mActivity, build);
+    }
 }

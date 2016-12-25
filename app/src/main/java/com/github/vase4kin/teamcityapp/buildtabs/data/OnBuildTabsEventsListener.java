@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.dagger;
+package com.github.vase4kin.teamcityapp.buildtabs.data;
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
+/**
+ * Listener to handle events
+ */
+public interface OnBuildTabsEventsListener {
 
-import dagger.Component;
+    /**
+     * Fab is visible
+     */
+    void onShow();
 
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = OverviewModule.class)
-public interface OverviewComponent {
+    /**
+     * Fab is hidden
+     */
+    void onHide();
 
-    void inject(OverviewFragment overviewFragment);
+    /**
+     * When cancel/remove from queue build action is triggered
+     */
+    void onCancelBuildActionTriggered();
 }

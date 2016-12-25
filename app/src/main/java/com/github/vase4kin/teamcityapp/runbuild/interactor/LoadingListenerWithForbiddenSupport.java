@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.runbuild.interactor;
+
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 
 /**
- * Listener to handle changes of tab layout
+ * Custom loading listener
+ *
+ * @param <T> - Data type
  */
-public interface OnTabUnSelectListener {
+public interface LoadingListenerWithForbiddenSupport<T> extends OnLoadingListener<T> {
 
     /**
-     * When artifacts tab is unselected
+     * On getting 403 error
      */
-    void onArtifactTabUnSelect();
+    void onForbiddenError();
 }

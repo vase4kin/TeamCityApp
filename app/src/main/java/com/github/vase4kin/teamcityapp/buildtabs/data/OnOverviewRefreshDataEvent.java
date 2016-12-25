@@ -14,26 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.tracker;
-
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
-
-import io.fabric.sdk.android.Fabric;
+package com.github.vase4kin.teamcityapp.buildtabs.data;
 
 /**
- * Tracker class
+ * Event to request {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment} data refresh
  */
-public class BuildsTabViewTrackerImpl implements ViewTracker {
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Build details"));
-    }
+public class OnOverviewRefreshDataEvent {
 }

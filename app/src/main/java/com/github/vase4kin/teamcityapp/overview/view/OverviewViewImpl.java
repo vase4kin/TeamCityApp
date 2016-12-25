@@ -18,6 +18,9 @@ package com.github.vase4kin.teamcityapp.overview.view;
 
 import android.app.Activity;
 import android.support.annotation.StringRes;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -25,15 +28,25 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
 
 /**
- * View to manage {@link BuildOverviewElementsFragment}
+ * View to manage {@link OverviewFragment}
  */
-public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, OverviewAdapter> {
+public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, OverviewAdapter> implements OverviewView {
+
+    private OverviewViewListener mListener;
 
     public OverviewViewImpl(View view,
                             Activity activity,
                             @StringRes int emptyMessage,
                             OverviewAdapter adapter) {
         super(view, activity, emptyMessage, adapter);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOverViewListener(OverviewViewListener listener) {
+        this.mListener = listener;
     }
 
     /**
@@ -53,5 +66,33 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, Overvi
     @Override
     protected int recyclerViewId() {
         return R.id.overview_recycler_view;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createStopBuildOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_stop_build_tabs_activity, menu);
+    }
+
+    @Override
+    public void createRemoveBuildFromQueueOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_remove_from_queue_build_tabs_activity, menu);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mActivity.invalidateOptionsMenu();
+        switch (item.getItemId()) {
+            case R.id.cancel_build:
+                mListener.onCancelBuildContextMenuClick();
+                return true;
+            default:
+                return false;
+        }
     }
 }
