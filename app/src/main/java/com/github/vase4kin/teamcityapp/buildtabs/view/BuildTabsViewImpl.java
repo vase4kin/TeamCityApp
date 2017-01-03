@@ -148,8 +148,8 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
 
         mStoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build);
         mRemovingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
-        mYouAreAboutToStopBuildDialog = createConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
-        mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialog(R.string.text_stop_the_build_2, R.string.text_stop_button);
+        mYouAreAboutToStopBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build, R.string.text_stop_button);
+        mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build_2, R.string.text_stop_button);
         mYouAreAboutToRemoveBuildFromQueueDialog = createConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
         mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
     }
@@ -263,20 +263,45 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
     }
 
     /**
-     * Create cancel/remove build from queue confirm dialog
+     * Create remove build from queue confirm dialog
      *
      * @param content      - Resource id content message
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
     private MaterialDialog createConfirmDialog(@StringRes int content, @StringRes int positiveText) {
+        return createConfirmDialogBuilder(content, positiveText)
+                .build();
+    }
+
+    /**
+     * Create stopping build confirm dialog with re-add build to queue checkbox
+     *
+     * @param content      - Resource id content message
+     * @param positiveText - Resource id positive dialog text
+     * @return confirm dialog
+     */
+    private MaterialDialog createConfirmDialogWithReAddCheckbox(@StringRes int content, @StringRes int positiveText) {
+        return createConfirmDialogBuilder(content, positiveText)
+                .checkBoxPromptRes(R.string.text_re_add_build, false, null)
+                .build();
+    }
+
+    /**
+     * Create cancel build confirm dialog builder
+     *
+     * @param content      - Resource id content message
+     * @param positiveText - Resource id positive dialog text
+     * @return confirm dialog builder
+     */
+    private MaterialDialog.Builder createConfirmDialogBuilder(@StringRes int content, @StringRes int positiveText) {
         return new MaterialDialog.Builder(mActivity)
                 .content(content)
                 .positiveText(positiveText)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mOnBuildTabsViewListener.onConfirmCancelingBuild();
+                        mOnBuildTabsViewListener.onConfirmCancelingBuild(dialog.isPromptCheckBoxChecked());
                     }
                 })
                 .negativeText(R.string.text_cancel_button)
@@ -285,8 +310,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         mYouAreAboutToStopBuildDialog.dismiss();
                     }
-                })
-                .build();
+                });
     }
 
     /**

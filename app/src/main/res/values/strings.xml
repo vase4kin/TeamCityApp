@@ -212,7 +212,7 @@
     <string name="error_opening_build">We encountered problem opening build</string>
     <string name="text_show_build">Show</string>
 
-    <!--Build list activity-->
+    <!--Build details activity-->
     <string name="text_stopping_build">Stopping build..</string>
     <string name="text_removing_build_from_queue">Removing build from queue..</string>
     <string name="text_build_is_stopped">Build is stopped successfully</string>
@@ -231,4 +231,6 @@
     <string name="text_menu_stop_build">Stop build</string>
     <string name="text_menu_share_build">Share build</string>
     <string name="text_share_build">Share build details</string>
+    <string name="text_re_add_build">Re-add build to the queue</string>
+
 </resources>
