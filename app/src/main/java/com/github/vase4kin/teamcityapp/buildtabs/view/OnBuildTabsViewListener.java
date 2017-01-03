@@ -28,6 +28,8 @@ public interface OnBuildTabsViewListener {
 
     /**
      * On confirming stop build click
+     *
+     * @param isReAddToTheQueue - Re-add build to the queue flag
      */
-    void onConfirmCancelingBuild();
+    void onConfirmCancelingBuild(boolean isReAddToTheQueue);
 }

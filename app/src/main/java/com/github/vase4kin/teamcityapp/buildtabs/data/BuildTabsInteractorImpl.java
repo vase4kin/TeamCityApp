@@ -113,9 +113,9 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
      * {@inheritDoc}
      */
     @Override
-    public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener) {
+    public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener, boolean isReAddToTheQueue) {
         mSubscription.clear();
-        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuild().getHref(), new BuildCancelRequest())
+        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuild().getHref(), new BuildCancelRequest(isReAddToTheQueue))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {

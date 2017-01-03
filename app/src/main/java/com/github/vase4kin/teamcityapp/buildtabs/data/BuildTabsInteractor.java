@@ -55,9 +55,10 @@ public interface BuildTabsInteractor extends BaseTabsDataManager {
     /**
      * Cancel/Remove from queue the build
      *
-     * @param loadingListener - Listener to receive callbacks on UI
+     * @param loadingListener   - Listener to receive callbacks on UI
+     * @param isReAddToTheQueue - Re-add build to the queue flag
      */
-    void cancelBuild(LoadingListenerWithForbiddenSupport<Build> loadingListener);
+    void cancelBuild(LoadingListenerWithForbiddenSupport<Build> loadingListener, boolean isReAddToTheQueue);
 
     /**
      * return {String} web url to share build

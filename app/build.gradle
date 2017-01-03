@@ -156,9 +156,7 @@ dependencies {
     compile 'com.joanzapata.iconify:android-iconify-fontawesome:2.2.2'
     compile 'com.joanzapata.iconify:android-iconify-material-community:2.2.2'
     // Dialogs
-    compile('com.github.afollestad.material-dialogs:core:0.8.5.6@aar') {
-        transitive = true
-    }
+    compile 'com.afollestad.material-dialogs:core:0.9.1.0'
     // Views
     compile 'com.github.xiprox.errorview:library:2.2.0'
     compile 'com.pnikosis:materialish-progress:1.5'
