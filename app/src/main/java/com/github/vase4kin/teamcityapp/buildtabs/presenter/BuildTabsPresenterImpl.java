@@ -19,15 +19,19 @@ package com.github.vase4kin.teamcityapp.buildtabs.presenter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.OnBuildTabsEventsListener;
 import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
 import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsTracker;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.OnBuildTabsViewListener;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 
 import javax.inject.Inject;
 
@@ -37,15 +41,26 @@ import javax.inject.Inject;
 public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView, BuildTabsInteractor, BuildTabsTracker>
         implements BuildTabsPresenter, OnBuildTabsEventsListener, OnBuildTabsViewListener {
 
+    /**
+     * Queued build href
+     */
+    private String mQueuedBuildHref;
+
     private BuildTabsRouter mRouter;
+    private RunBuildInteractor mRunBuildInteractor;
+    private BuildInteractor mBuildInteractor;
 
     @Inject
     BuildTabsPresenterImpl(@NonNull BuildTabsView view,
                            @NonNull BuildTabsTracker tracker,
                            @NonNull BuildTabsInteractor dataManager,
-                           @NonNull BuildTabsRouter router) {
+                           @NonNull BuildTabsRouter router,
+                           @NonNull RunBuildInteractor runBuildInteractor,
+                           @NonNull BuildInteractor interactor) {
         super(view, tracker, dataManager);
         this.mRouter = router;
+        this.mRunBuildInteractor = runBuildInteractor;
+        this.mBuildInteractor = interactor;
     }
 
     /**
@@ -60,7 +75,9 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
     @Override
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
-        mDataManager.unsubsribe();
+        mInteractor.unsubsribe();
+        mRunBuildInteractor.unsubscribe();
+        mBuildInteractor.unsubscribe();
     }
 
     @Override
@@ -82,7 +99,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
     @Override
     public void onResume() {
         super.onResume();
-        mDataManager.setOnBuildTabsEventsListener(this);
+        mInteractor.setOnBuildTabsEventsListener(this);
     }
 
     /**
@@ -91,7 +108,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
     @Override
     public void onPause() {
         super.onPause();
-        mDataManager.setOnBuildTabsEventsListener(null);
+        mInteractor.setOnBuildTabsEventsListener(null);
     }
 
     /**
@@ -115,7 +132,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      */
     @Override
     public void onCancelBuildActionTriggered() {
-        if (mDataManager.isBuildTriggeredByMe()) {
+        if (mInteractor.isBuildTriggeredByMe()) {
             showYouAreAboutToCancelBuildDialog();
         } else {
             showYouAreAboutToCancelBuildDialogTriggeredNotByYou();
@@ -127,7 +144,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      */
     @Override
     public void onShareBuildActionTriggered() {
-        String buildWebUrl = mDataManager.getWebUrl();
+        String buildWebUrl = mInteractor.getWebUrl();
         mRouter.startShareBuildWebUrlActivity(buildWebUrl);
     }
 
@@ -135,8 +152,16 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * {@inheritDoc}
      */
     @Override
+    public void onRestartBuildActionTriggered() {
+        mView.showYouAreAboutToRestartBuildDialog();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onArtifactTabUnSelect() {
-        mDataManager.postOnArtifactTabChangeEvent();
+        mInteractor.postOnArtifactTabChangeEvent();
     }
 
     /**
@@ -146,7 +171,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
     public void onConfirmCancelingBuild() {
         mTracker.trackUserConfirmedCancel();
         showProgress();
-        mDataManager.cancelBuild(new LoadingListenerWithForbiddenSupport<Build>() {
+        mInteractor.cancelBuild(new LoadingListenerWithForbiddenSupport<Build>() {
             @Override
             public void onForbiddenError() {
                 mTracker.trackUserGetsForbiddenErrorOnBuildCancel();
@@ -167,7 +192,63 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
                 mTracker.trackUserGetsServerErrorOnBuildCancel();
                 hideProgress();
                 showBuildIsCancelledErrorSnackBar();
-                mDataManager.postRefreshOverViewDataEvent();
+                mInteractor.postRefreshOverViewDataEvent();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onConfirmRestartBuild() {
+        Properties properties = mInteractor.getBuildProperties();
+        String branchName = mInteractor.getBuildBranchName();
+        mView.showRestartingBuildProgressDialog();
+        mRunBuildInteractor.queueBuild(branchName, properties, new LoadingListenerWithForbiddenSupport<String>() {
+            @Override
+            public void onForbiddenError() {
+                // track
+                mView.hideRestartingBuildProgressDialog();
+                mView.showForbiddenToRestartBuildSnackBar();
+            }
+
+            @Override
+            public void onSuccess(String queuedBuildHref) {
+                mQueuedBuildHref = queuedBuildHref;
+                // track
+                mView.hideRestartingBuildProgressDialog();
+                mView.showBuildRestartSuccessSnackBar();
+            }
+
+            @Override
+            public void onFail(String errorMessage) {
+                // track
+                mView.hideRestartingBuildProgressDialog();
+                mView.showBuildRestartErrorSnackBar();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShowQueuedBuild() {
+        mView.showBuildLoadingProgress();
+        mBuildInteractor.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
+            @Override
+            public void onSuccess(Build queuedBuild) {
+                // track
+                mView.hideBuildLoadingProgress();
+                mRouter.reopenBuildTabsActivity(queuedBuild);
+            }
+
+            @Override
+            public void onFail(String errorMessage) {
+                // track
+                mView.hideBuildLoadingProgress();
+                mView.showOpeningBuildErrorSnackBar();
             }
         });
     }
@@ -176,7 +257,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Show forbidden to cancel build snack bar
      */
     private void showForbiddenToCancelBuildSnackBar() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.showForbiddenToStopBuildSnackBar();
         } else {
             mView.showForbiddenToRemoveBuildFromQueueSnackBar();
@@ -187,7 +268,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Show build is cancelled snack bar
      */
     private void showBuildIsCancelledSnackBar() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.showBuildIsStoppedSnackBar();
         } else {
             mView.showBuildIsRemovedFromQueueSnackBar();
@@ -198,7 +279,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Show build isn't cancelled due an error snack bar
      */
     private void showBuildIsCancelledErrorSnackBar() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.showBuildIsStoppedErrorSnackBar();
         } else {
             mView.showBuildIsRemovedFromQueueErrorSnackBar();
@@ -209,7 +290,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Show you are about to cancel build dialog
      */
     private void showYouAreAboutToCancelBuildDialog() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.showYouAreAboutToStopBuildDialog();
         } else {
             mView.showYouAreAboutToRemoveBuildFromQueueDialog();
@@ -220,7 +301,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Show you are about to cancel build which wasn't triggered by you dialog
      */
     private void showYouAreAboutToCancelBuildDialogTriggeredNotByYou() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.showYouAreAboutToStopNotYoursBuildDialog();
         } else {
             mView.showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog();
@@ -231,7 +312,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Show stop/removing from queue build progress
      */
     private void showProgress() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.showStoppingBuildProgressDialog();
         } else {
             mView.showRemovingBuildFromQueueProgressDialog();
@@ -242,7 +323,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * Hide stop/removing from queue build progress
      */
     private void hideProgress() {
-        if (mDataManager.isBuildRunning()) {
+        if (mInteractor.isBuildRunning()) {
             mView.hideStoppingBuildProgressDialog();
         } else {
             mView.hideRemovingBuildFromQueueProgressDialog();

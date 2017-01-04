@@ -77,7 +77,7 @@ public class OverviewPresenterImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
+        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mTracker, mValueExtractor, mRunBuildInteractor);
     }
 
     @Test

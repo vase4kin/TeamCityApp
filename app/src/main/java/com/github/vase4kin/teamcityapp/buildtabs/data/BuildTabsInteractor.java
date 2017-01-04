@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.buildtabs.data;
 
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 
 /**
@@ -51,6 +52,16 @@ public interface BuildTabsInteractor extends BaseTabsDataManager {
      * @return {true} if the build was triggered by active user
      */
     boolean isBuildTriggeredByMe();
+
+    /**
+     * @return {String} branch name
+     */
+    String getBuildBranchName();
+
+    /**
+     * @return {Properties} custom build parameters
+     */
+    Properties getBuildProperties();
 
     /**
      * Cancel/Remove from queue the build

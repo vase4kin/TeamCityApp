@@ -72,7 +72,10 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
     private OnBuildTabsViewListener mOnBuildTabsViewListener;
     private MaterialDialog mStoppingBuildProgressDialog;
     private MaterialDialog mRemovingBuildFromQueueProgressDialog;
+    private MaterialDialog mRestartingBuildProgressDialog;
+    private MaterialDialog mOpeningBuildProgressDialog;
     private MaterialDialog mYouAreAboutToStopBuildDialog;
+    private MaterialDialog mYouAreAboutToRestartBuildDialog;
     private MaterialDialog mYouAreAboutToStopNotYoursBuildDialog;
     private MaterialDialog mYouAreAboutToRemoveBuildFromQueueDialog;
     private MaterialDialog mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog;
@@ -148,10 +151,21 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
 
         mStoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build);
         mRemovingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
-        mYouAreAboutToStopBuildDialog = createConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
-        mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialog(R.string.text_stop_the_build_2, R.string.text_stop_button);
-        mYouAreAboutToRemoveBuildFromQueueDialog = createConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
-        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
+        mRestartingBuildProgressDialog = createProgressDialogWithContent(R.string.text_queueing_build);
+        mOpeningBuildProgressDialog = createProgressDialogWithContent(R.string.text_opening_build);
+        mYouAreAboutToStopBuildDialog = createCancelConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
+        mYouAreAboutToStopBuildDialog = createCancelConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
+        mYouAreAboutToStopNotYoursBuildDialog = createCancelConfirmDialog(R.string.text_stop_the_build_2, R.string.text_stop_button);
+        mYouAreAboutToRemoveBuildFromQueueDialog = createCancelConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
+        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createCancelConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
+        mYouAreAboutToRestartBuildDialog = createConfirmDialogBuilder(R.string.text_restart_the_build, R.string.text_restart_button)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mOnBuildTabsViewListener.onConfirmRestartBuild();
+                    }
+                })
+                .build();
     }
 
     /**
@@ -160,6 +174,14 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
     @Override
     public void setOnBuildTabsViewListener(OnBuildTabsViewListener onBuildTabsViewListener) {
         this.mOnBuildTabsViewListener = onBuildTabsViewListener;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showYouAreAboutToRestartBuildDialog() {
+        mYouAreAboutToRestartBuildDialog.show();
     }
 
     /**
@@ -178,14 +200,36 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
         mYouAreAboutToStopNotYoursBuildDialog.show();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void showYouAreAboutToRemoveBuildFromQueueDialog() {
         mYouAreAboutToRemoveBuildFromQueueDialog.show();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog() {
         mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showRestartingBuildProgressDialog() {
+        mRestartingBuildProgressDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideRestartingBuildProgressDialog() {
+        mRestartingBuildProgressDialog.dismiss();
     }
 
     /**
@@ -258,8 +302,68 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      * {@inheritDoc}
      */
     @Override
+    public void showBuildRestartSuccessSnackBar() {
+        createSnackBarWithText(R.string.text_build_is_restarted)
+                .setAction(R.string.text_show_build, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnBuildTabsViewListener.onShowQueuedBuild();
+                    }
+                }).show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void showForbiddenToRemoveBuildFromQueueSnackBar() {
         showSnackBarWithText(R.string.error_remove_build_from_queue_forbidden_error);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildRestartErrorSnackBar() {
+        showSnackBarWithText(R.string.error_base_restart_build_error);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showForbiddenToRestartBuildSnackBar() {
+        showSnackBarWithText(R.string.error_restart_build_forbidden_error);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildLoadingProgress() {
+        mOpeningBuildProgressDialog.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideBuildLoadingProgress() {
+        mOpeningBuildProgressDialog.dismiss();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showOpeningBuildErrorSnackBar() {
+        createSnackBarWithText(R.string.error_opening_build)
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnBuildTabsViewListener.onShowQueuedBuild();
+                    }
+                }).show();
     }
 
     /**
@@ -269,24 +373,35 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
-    private MaterialDialog createConfirmDialog(@StringRes int content, @StringRes int positiveText) {
-        return new MaterialDialog.Builder(mActivity)
-                .content(content)
-                .positiveText(positiveText)
+    private MaterialDialog createCancelConfirmDialog(@StringRes int content, @StringRes int positiveText) {
+        return createConfirmDialogBuilder(content, positiveText)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         mOnBuildTabsViewListener.onConfirmCancelingBuild();
                     }
                 })
+                .build();
+    }
+
+    /**
+     * Create confirm dialog builder
+     *
+     * @param content      - Resource id content message
+     * @param positiveText - Resource id positive dialog text
+     * @return confirm dialog builder
+     */
+    private MaterialDialog.Builder createConfirmDialogBuilder(@StringRes int content, @StringRes int positiveText) {
+        return new MaterialDialog.Builder(mActivity)
+                .content(content)
+                .positiveText(positiveText)
                 .negativeText(R.string.text_cancel_button)
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         mYouAreAboutToStopBuildDialog.dismiss();
                     }
-                })
-                .build();
+                });
     }
 
     /**
@@ -312,13 +427,22 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      * @param text - Text message resource id
      */
     private void showSnackBarWithText(@StringRes int text) {
+        createSnackBarWithText(text).show();
+    }
+
+    /**
+     * Create snack bar with text message
+     *
+     * @param text - Text message resource id
+     */
+    private Snackbar createSnackBarWithText(@StringRes int text) {
         Snackbar snackBar = Snackbar.make(
                 mContainer,
                 text,
                 Snackbar.LENGTH_LONG);
         TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
-        snackBar.show();
+        return snackBar;
     }
 
     /**

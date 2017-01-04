@@ -22,6 +22,8 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
 import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractorImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
@@ -30,6 +32,8 @@ import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsTracker;
 import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
 import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsViewImpl;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 
@@ -78,5 +82,15 @@ public class BuildTabsModule {
     @Provides
     BuildTabsRouter providesBuildTabsRouter() {
         return new BuildTabsRouterImpl(mActivity);
+    }
+
+    @Provides
+    RunBuildInteractor providesRunBuildInteractor(TeamCityService teamCityService, BaseValueExtractor valueExtractor) {
+        return new RunBuildInteractorImpl(teamCityService, valueExtractor.getBuild().getBuildTypeId());
+    }
+
+    @Provides
+    BuildInteractor providesBuildInteractor(TeamCityService teamCityService) {
+        return new BuildInteractorImpl(teamCityService);
     }
 }

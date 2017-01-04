@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
@@ -47,6 +48,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         BaseValueExtractor> implements OnBuildListPresenterListener {
 
     private BuildListRouter mRouter;
+    private BuildInteractor mBuildInteractor;
     @VisibleForTesting
     boolean mIsLoadMoreLoading = false;
     /**
@@ -60,9 +62,11 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
                                   @NonNull DM dataManager,
                                   @NonNull BuildListTracker tracker,
                                   @NonNull BaseValueExtractor valueExtractor,
-                                  BuildListRouter router) {
+                                  @NonNull BuildListRouter router,
+                                  @NonNull BuildInteractor interactor) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
+        this.mBuildInteractor = interactor;
     }
 
     /**
@@ -109,7 +113,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     public void onShowQueuedBuildSnackBarClick() {
         mTracker.trackUserWantsToSeeQueuedBuildDetails();
         mView.showBuildLoadingProgress();
-        mDataManager.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
+        mBuildInteractor.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
             @Override
             public void onSuccess(Build data) {
                 mView.hideBuildLoadingProgress();
@@ -204,5 +208,14 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             mView.showRefreshAnimation();
             onSwipeToRefresh();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onViewsDestroyed() {
+        super.onViewsDestroyed();
+        mBuildInteractor.unsubscribe();
     }
 }

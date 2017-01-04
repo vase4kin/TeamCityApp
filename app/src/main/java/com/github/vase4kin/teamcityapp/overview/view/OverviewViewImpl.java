@@ -105,6 +105,9 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, Overvi
             case R.id.share_build:
                 mListener.onShareButtonClick();
                 return true;
+            case R.id.restart_build:
+                mListener.onRestartBuildButtonClick();
+                return true;
             default:
                 return false;
         }

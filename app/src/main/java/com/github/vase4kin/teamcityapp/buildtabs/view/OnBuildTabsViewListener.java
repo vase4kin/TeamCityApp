@@ -30,4 +30,14 @@ public interface OnBuildTabsViewListener {
      * On confirming stop build click
      */
     void onConfirmCancelingBuild();
+
+    /**
+     * On confirming restarting build click
+     */
+    void onConfirmRestartBuild();
+
+    /**
+     * On showing queued build
+     */
+    void onShowQueuedBuild();
 }

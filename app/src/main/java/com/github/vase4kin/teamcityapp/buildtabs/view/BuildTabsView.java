@@ -59,6 +59,11 @@ public interface BuildTabsView extends BaseTabsViewModel {
     void setOnBuildTabsViewListener(OnBuildTabsViewListener onBuildTabsViewListener);
 
     /**
+     * Show you are about to restart build dialog
+     */
+    void showYouAreAboutToRestartBuildDialog();
+
+    /**
      * Show you are about to stop build dialog
      */
     void showYouAreAboutToStopBuildDialog();
@@ -77,6 +82,16 @@ public interface BuildTabsView extends BaseTabsViewModel {
      * Show you are about to remove build from queue not triggered by you dialog
      */
     void showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog();
+
+    /**
+     * Show restarting build progress dialog
+     */
+    void showRestartingBuildProgressDialog();
+
+    /**
+     * Hide restarting build progress dialog
+     */
+    void hideRestartingBuildProgressDialog();
 
     /**
      * Show stopping build progress dialog
@@ -127,4 +142,34 @@ public interface BuildTabsView extends BaseTabsViewModel {
      * Show forbidden to remove from queue snack bar
      */
     void showForbiddenToRemoveBuildFromQueueSnackBar();
+
+    /**
+     * Show build restart success snack bar
+     */
+    void showBuildRestartSuccessSnackBar();
+
+    /**
+     * Show build restart error snack bar
+     */
+    void showBuildRestartErrorSnackBar();
+
+    /**
+     * Show forbidden to restart snack bar
+     */
+    void showForbiddenToRestartBuildSnackBar();
+
+    /**
+     * Show build loading progress
+     */
+    void showBuildLoadingProgress();
+
+    /**
+     * Hide build loading progress
+     */
+    void hideBuildLoadingProgress();
+
+    /**
+     * Show error opening build snack bar
+     */
+    void showOpeningBuildErrorSnackBar();
 }

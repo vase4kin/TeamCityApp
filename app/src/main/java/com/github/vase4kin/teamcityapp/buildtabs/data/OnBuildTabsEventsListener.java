@@ -40,4 +40,9 @@ public interface OnBuildTabsEventsListener {
      * When share build action is triggered
      */
     void onShareBuildActionTriggered();
+
+    /**
+     * When restart build action is triggered
+     */
+    void onRestartBuildActionTriggered();
 }
