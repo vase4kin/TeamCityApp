@@ -130,7 +130,7 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onRestartBuildButtonClick() {
         mDataManager.postRestartBuildEvent();
-        // mTracker.trackUserClickedRestartBuildOption();
+        mTracker.trackUserRestartedBuild();
     }
 
     /**

@@ -77,7 +77,7 @@ public class OverviewPresenterImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mTracker, mValueExtractor, mRunBuildInteractor);
+        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test
@@ -156,6 +156,14 @@ public class OverviewPresenterImplTest {
         mPresenter.onShareButtonClick();
         verify(mDataManager).postShareBuildInfoEvent();
         verify(mTracker).trackUserSharedBuild();
+        tearDown();
+    }
+
+    @Test
+    public void testOnRestartBuildButtonClick() throws Exception {
+        mPresenter.onRestartBuildButtonClick();
+        verify(mDataManager).postRestartBuildEvent();
+        verify(mTracker).trackUserRestartedBuild();
         tearDown();
     }
 

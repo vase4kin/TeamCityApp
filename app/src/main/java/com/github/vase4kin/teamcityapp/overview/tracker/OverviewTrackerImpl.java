@@ -35,6 +35,9 @@ public class OverviewTrackerImpl implements OverviewTracker {
         Answers.getInstance().logCustom(new CustomEvent(EVENT_CANCEL_BUILD));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackUserSharedBuild() {
         if (!Fabric.isInitialized()) return;
@@ -47,5 +50,14 @@ public class OverviewTrackerImpl implements OverviewTracker {
     @Override
     public void trackView() {
         // Do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRestartedBuild() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_RESTART_BUILD));
     }
 }

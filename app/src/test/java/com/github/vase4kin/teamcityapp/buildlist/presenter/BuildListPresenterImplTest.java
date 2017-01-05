@@ -22,6 +22,7 @@ import android.os.Bundle;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
@@ -87,12 +88,15 @@ public class BuildListPresenterImplTest {
     @Mock
     private BaseValueExtractor mValueExtractor;
 
+    @Mock
+    private BuildInteractor mInteractor;
+
     private BuildListPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter);
+        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
     @Test
@@ -101,7 +105,7 @@ public class BuildListPresenterImplTest {
         mPresenter.loadData(mLoadingListener);
         verify(mValueExtractor).getId();
         verify(mDataManager).load(eq("id"), eq(mLoadingListener));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
     }
 
     @Test
@@ -131,7 +135,7 @@ public class BuildListPresenterImplTest {
         mPresenter.onShowQueuedBuildSnackBarClick();
         verify(mTracker).trackUserWantsToSeeQueuedBuildDetails();
         verify(mView).showBuildLoadingProgress();
-        verify(mDataManager).loadBuild(eq("href"), mBuildArgumentCaptor.capture());
+        verify(mInteractor).loadBuild(eq("href"), mBuildArgumentCaptor.capture());
         OnLoadingListener<Build> listener = mBuildArgumentCaptor.getValue();
         listener.onSuccess(mBuild);
         verify(mView).hideBuildLoadingProgress();
@@ -169,7 +173,7 @@ public class BuildListPresenterImplTest {
     @Test
     public void testOnActivityResultIfResultIsCanceled() throws Exception {
         mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_CANCELED, null);
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
     @Test
@@ -183,7 +187,7 @@ public class BuildListPresenterImplTest {
         verify(mView).hideEmpty();
         verify(mValueExtractor).getId();
         verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
     @Test

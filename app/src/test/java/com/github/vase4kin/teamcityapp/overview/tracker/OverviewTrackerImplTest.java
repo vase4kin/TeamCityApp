@@ -85,4 +85,17 @@ public class OverviewTrackerImplTest {
         verify(mAnswers).logCustom(any(CustomEvent.class));
     }
 
+    @Test
+    public void trackUserRestartedBuildIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserRestartedBuild();
+    }
+
+    @Test
+    public void trackUserRestartedBuildIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserRestartedBuild();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
 }
