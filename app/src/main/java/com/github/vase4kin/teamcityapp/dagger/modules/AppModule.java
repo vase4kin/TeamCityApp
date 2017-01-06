@@ -24,9 +24,9 @@ import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
 import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.keychain.KeyChain;
+import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
-import com.github.vase4kin.teamcityapp.api.LoggingInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
@@ -42,6 +42,7 @@ import dagger.Module;
 import dagger.Provides;
 import de.greenrobot.event.EventBus;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 @Module
 public class AppModule {
@@ -95,12 +96,17 @@ public class AppModule {
     @Singleton
     @Provides
     public OkHttpClient providesBaseHttpClient() {
-        return new OkHttpClient.Builder()
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-                .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-                .addInterceptor(new LoggingInterceptor())
-                .build();
+                .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
+        // TODO: Use DI separated modules for debug and release which will be holding this interceptor
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            clientBuilder.addInterceptor(loggingInterceptor);
+        }
+        return clientBuilder.build();
     }
 
     @VisibleForTesting
