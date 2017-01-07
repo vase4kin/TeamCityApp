@@ -28,9 +28,12 @@ import java.io.Serializable;
 public class Triggered implements Serializable {
 
     private static final String TRIGGER_TYPE_VCS = "vcs";
-    private static final String TRIGGER_TYPE_USER = "user";
+    @VisibleForTesting
+    public static final String TRIGGER_TYPE_USER = "user";
     private static final String TRIGGER_TYPE_UNKNOWN = "unknown";
-    private static final String TRIGGER_TYPE_BUILD_TYPE = "buildType";
+    @VisibleForTesting
+    public static final String TRIGGER_TYPE_BUILD_TYPE = "buildType";
+    @VisibleForTesting
     public static final String TRIGGER_TYPE_RESTARTED = "restarted";
 
     private String type;

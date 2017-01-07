@@ -54,7 +54,9 @@ import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_BUILD_TYPE;
 import static com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_RESTARTED;
+import static com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_USER;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
@@ -254,7 +256,61 @@ public class OverviewFragmentTest {
     }
 
     @Test
-    public void testUserCanSeeRestartedBuildInfoIfUserHasName() {
+    public void testUserCanSeeUserWhatUserTriggeredBuildIfUserHasName() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, NAME));
+        mBuild.setTriggered(triggered);
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(4));
+
+        // Checking restarted by
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(NAME)));
+    }
+
+    @Test
+    public void testUserCanSeeUserWhatUserTriggeredBuildIfUserHasOnLyName() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, null));
+        mBuild.setTriggered(triggered);
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(4));
+
+        // Checking restarted by
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(USER_NAME)));
+    }
+
+    @Test
+    public void testUserCanSeeWhatUserRestartedBuildIfUserHasName() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_RESTARTED, null, new User(USER_NAME, NAME));
@@ -281,7 +337,7 @@ public class OverviewFragmentTest {
     }
 
     @Test
-    public void testUserCanSeeRestartedBuildInfoIfUserHasOnlyUserName() {
+    public void testUserCanSeeWhatUserRestartedBuildIfUserHasOnlyUserName() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_RESTARTED, null, new User(USER_NAME, null));
@@ -305,6 +361,33 @@ public class OverviewFragmentTest {
         // Checking restarted by
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_restarted_by_section_text)));
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(USER_NAME)));
+    }
+
+    @Test
+    public void testUserCanSeeWhatConfigurationTriggeredBuildIfConfigurationIsDeleted() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        Triggered triggered = new Triggered(TRIGGER_TYPE_BUILD_TYPE, null, null);
+        mBuild.setTriggered(triggered);
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(4));
+
+        // Checking restarted by
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(R.string.triggered_deleted_configuration_text)));
     }
 
 }
