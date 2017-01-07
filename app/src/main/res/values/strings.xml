@@ -116,6 +116,7 @@
     <!--Build elements-->
     <string name="unknown_trigger_type_text">Unknown trigger type!</string>
     <string name="triggered_deleted_user_text">Deleted user</string>
+    <string name="triggered_deleted_configuration_text">Deleted configuration</string>
     <string name="build_result_section_text">Result</string>
     <string name="build_wait_reason_section_text">Wait reason</string>
     <string name="build_time_section_text">Time</string>
@@ -124,6 +125,7 @@
     <string name="build_branch_section_text">Branch</string>
     <string name="build_agent_section_text">Agent</string>
     <string name="build_triggered_by_section_text">Triggered by</string>
+    <string name="build_restarted_by_section_text">Restarted by</string>
     <string name="build_canceled_by_text">Canceled by</string>
     <string name="build_cancellation_time_text">Cancellation time</string>
 

@@ -27,10 +27,14 @@ import java.io.Serializable;
  */
 public class Triggered implements Serializable {
 
-    private static final String VCS_TRIGGER_TYPE = "vcs";
-    private static final String USER_TRIGGER_TYPE = "user";
-    private static final String UNKNOWN_TRIGGER_TYPE = "unknown";
-    private static final String BUILD_TYPE_TRIGGER_TYPE = "buildType";
+    private static final String TRIGGER_TYPE_VCS = "vcs";
+    @VisibleForTesting
+    public static final String TRIGGER_TYPE_USER = "user";
+    private static final String TRIGGER_TYPE_UNKNOWN = "unknown";
+    @VisibleForTesting
+    public static final String TRIGGER_TYPE_BUILD_TYPE = "buildType";
+    @VisibleForTesting
+    public static final String TRIGGER_TYPE_RESTARTED = "restarted";
 
     private String type;
     private String date;
@@ -67,18 +71,22 @@ public class Triggered implements Serializable {
     }
 
     public boolean isVcs() {
-        return VCS_TRIGGER_TYPE.equals(type);
+        return TRIGGER_TYPE_VCS.equals(type);
     }
 
     public boolean isUser() {
-        return USER_TRIGGER_TYPE.equals(type);
+        return TRIGGER_TYPE_USER.equals(type);
     }
 
     public boolean isUnknown() {
-        return UNKNOWN_TRIGGER_TYPE.equals(type);
+        return TRIGGER_TYPE_UNKNOWN.equals(type);
     }
 
     public boolean isBuildType() {
-        return BUILD_TYPE_TRIGGER_TYPE.equals(type);
+        return TRIGGER_TYPE_BUILD_TYPE.equals(type);
+    }
+
+    public boolean isRestarted() {
+        return TRIGGER_TYPE_RESTARTED.equals(type);
     }
 }
