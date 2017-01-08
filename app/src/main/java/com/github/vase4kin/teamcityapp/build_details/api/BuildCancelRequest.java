@@ -14,10 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.build_details.api;
+
+import android.support.annotation.VisibleForTesting;
 
 /**
- * Artifact tab change bus event
+ * Build cancel request api object
  */
-public class OnArtifactTabChangeEvent {
+public class BuildCancelRequest {
+
+    private String comment = "";
+    private final boolean readdIntoQueue;
+
+    /**
+     * Default constructor
+     *
+     * @param reAddIntoQueue - Re-add build to the queue flag
+     */
+    public BuildCancelRequest(boolean reAddIntoQueue) {
+        this.readdIntoQueue = reAddIntoQueue;
+    }
+
+    @VisibleForTesting
+    public boolean isReaddIntoQueue() {
+        return readdIntoQueue;
+    }
 }

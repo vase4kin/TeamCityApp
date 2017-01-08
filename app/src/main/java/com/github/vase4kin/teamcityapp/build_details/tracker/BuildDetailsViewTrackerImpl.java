@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.tracker;
+package com.github.vase4kin.teamcityapp.build_details.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
@@ -25,7 +25,7 @@ import io.fabric.sdk.android.Fabric;
 /**
  * Tracker class
  */
-public class BuildTabsViewTrackerImpl implements BuildTabsTracker {
+public class BuildDetailsViewTrackerImpl implements BuildDetailsTracker {
 
     /**
      * {@inheritDoc}

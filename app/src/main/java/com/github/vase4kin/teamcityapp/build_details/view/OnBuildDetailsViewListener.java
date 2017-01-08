@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.build_details.view;
 
 /**
  * Listener to handle build tabs view UI updates
  */
-public interface OnBuildTabsViewListener {
+public interface OnBuildDetailsViewListener {
 
     /**
      * When artifacts tab is unselected

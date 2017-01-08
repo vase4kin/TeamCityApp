@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.build_details.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -25,11 +25,11 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule;
+import com.github.vase4kin.teamcityapp.build_details.dagger.DaggerBuildDetailsComponent;
+import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsDrawerPresenterImpl;
+import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.dagger.BuildTabsModule;
-import com.github.vase4kin.teamcityapp.buildtabs.dagger.DaggerBuildTabsComponent;
-import com.github.vase4kin.teamcityapp.buildtabs.presenter.BuildTabsDrawerPresenterImpl;
-import com.github.vase4kin.teamcityapp.buildtabs.presenter.BuildTabsPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 
@@ -38,12 +38,12 @@ import javax.inject.Inject;
 /**
  * Activity to manage build details info
  */
-public class BuildTabsActivity extends AppCompatActivity {
+public class BuildDetailsActivity extends AppCompatActivity {
 
     @Inject
-    BuildTabsDrawerPresenterImpl mDrawerPresenter;
+    BuildDetailsDrawerPresenterImpl mDrawerPresenter;
     @Inject
-    BuildTabsPresenterImpl mBuildTabsPresenter;
+    BuildDetailsPresenterImpl mBuildTabsPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +59,9 @@ public class BuildTabsActivity extends AppCompatActivity {
      */
     private void injectPresenters() {
         View view = findViewById(android.R.id.content);
-        DaggerBuildTabsComponent.builder()
+        DaggerBuildDetailsComponent.builder()
                 .customDrawerModule(new CustomDrawerModule(this, true, DrawerView.PROJECTS))
-                .buildTabsModule(new BuildTabsModule(view, this))
+                .buildDetailsModule(new BuildDetailsModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
                 .inject(this);
@@ -118,7 +118,7 @@ public class BuildTabsActivity extends AppCompatActivity {
      * @param build    - Build to be passed
      */
     public static void start(Activity activity, Build build) {
-        Intent intent = new Intent(activity, BuildTabsActivity.class)
+        Intent intent = new Intent(activity, BuildDetailsActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, build);

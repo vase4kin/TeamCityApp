@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.tracker;
+package com.github.vase4kin.teamcityapp.build_details.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
@@ -44,7 +44,7 @@ public class BuildTabsViewTrackerImplTest {
     @Mock
     private Answers mAnswers;
 
-    private BuildTabsViewTrackerImpl mTracker;
+    private BuildDetailsViewTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class BuildTabsViewTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new BuildTabsViewTrackerImpl();
+        mTracker = new BuildDetailsViewTrackerImpl();
     }
 
     @After

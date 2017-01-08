@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.dagger;
+package com.github.vase4kin.teamcityapp.build_details.dagger;
 
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
@@ -24,8 +24,8 @@ import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {BuildTabsModule.class, CustomDrawerModule.class})
-public interface BuildTabsComponent {
+@Component(dependencies = RestApiComponent.class, modules = {BuildDetailsModule.class, CustomDrawerModule.class})
+public interface BuildDetailsComponent {
 
-    void inject(BuildTabsActivity buildTabsActivity);
+    void inject(BuildDetailsActivity buildTabsActivity);
 }

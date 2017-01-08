@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.router;
+package com.github.vase4kin.teamcityapp.build_details.router;
 
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 
 /**
- * Router for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+ * Router for {@link BuildDetailsActivity}
  */
-public interface BuildTabsRouter {
+public interface BuildDetailsRouter {
 
     /**
-     * Reopen {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+     * Reopen {@link BuildDetailsActivity}
      *
      * @param build - Build is passed as new intent
      */

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.build_details.view;
 
 import android.os.Bundle;
 
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel;
 
 /**
- * View interactions of {@link BuildTabsActivity}
+ * View interactions of {@link BuildDetailsActivity}
  */
-public interface BuildTabsView extends BaseTabsViewModel {
+public interface BuildDetailsView extends BaseTabsViewModel {
 
     /**
      * On save activity state
@@ -54,9 +54,9 @@ public interface BuildTabsView extends BaseTabsViewModel {
     void hideRunBuildFloatActionButton();
 
     /**
-     * @param onBuildTabsViewListener - Listener to handle view changes
+     * @param onBuildDetailsViewListener - Listener to handle view changes
      */
-    void setOnBuildTabsViewListener(OnBuildTabsViewListener onBuildTabsViewListener);
+    void setOnBuildTabsViewListener(OnBuildDetailsViewListener onBuildDetailsViewListener);
 
     /**
      * Show you are about to restart build dialog

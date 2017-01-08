@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.router;
+package com.github.vase4kin.teamcityapp.build_details.router;
 
 import android.app.Activity;
 import android.content.Intent;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 
 /**
- * Impl of {@link BuildTabsRouter}
+ * Impl of {@link BuildDetailsRouter}
  */
-public class BuildTabsRouterImpl implements BuildTabsRouter {
+public class BuildDetailsRouterImpl implements BuildDetailsRouter {
 
     private Activity mActivity;
 
-    public BuildTabsRouterImpl(Activity activity) {
+    public BuildDetailsRouterImpl(Activity activity) {
         this.mActivity = activity;
     }
 
@@ -39,7 +39,7 @@ public class BuildTabsRouterImpl implements BuildTabsRouter {
      */
     @Override
     public void reopenBuildTabsActivity(Build build) {
-        BuildTabsActivity.start(mActivity, build);
+        BuildDetailsActivity.start(mActivity, build);
     }
 
     /**

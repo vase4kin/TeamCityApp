@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.presenter;
+package com.github.vase4kin.teamcityapp.build_details.presenter;
 
 import android.os.Bundle;
 
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenter;
 
 /**
- * Presenter to handle {@link BuildTabsPresenter} logic
+ * Presenter to handle {@link BuildDetailsPresenter} logic
  */
-public interface BuildTabsPresenter extends BaseTabsPresenter {
+public interface BuildDetailsPresenter extends BaseTabsPresenter {
 
     /**
      * Changes tab position

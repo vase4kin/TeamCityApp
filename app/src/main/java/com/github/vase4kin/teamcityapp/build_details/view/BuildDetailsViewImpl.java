@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.view;
+package com.github.vase4kin.teamcityapp.build_details.view;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -51,9 +51,9 @@ import com.joanzapata.iconify.fonts.MaterialIcons;
 import butterknife.BindView;
 
 /**
- * Impl of {@link BuildTabsView}
+ * Impl of {@link BuildDetailsView}
  */
-public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTabsView {
+public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements BuildDetailsView {
 
     private static final String TAB_TITLE = "tabTitle";
 
@@ -69,7 +69,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
     private String mTabTitle;
 
     private StatusBarUtils mStatusBarUtils;
-    private OnBuildTabsViewListener mOnBuildTabsViewListener;
+    private OnBuildDetailsViewListener mOnBuildDetailsViewListener;
     private MaterialDialog mStoppingBuildProgressDialog;
     private MaterialDialog mRemovingBuildFromQueueProgressDialog;
     private MaterialDialog mRestartingBuildProgressDialog;
@@ -80,10 +80,10 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
     private MaterialDialog mYouAreAboutToRemoveBuildFromQueueDialog;
     private MaterialDialog mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog;
 
-    public BuildTabsViewImpl(View mView,
-                             AppCompatActivity mActivity,
-                             StatusBarUtils statusBarUtils,
-                             BaseValueExtractor valueExtractor) {
+    public BuildDetailsViewImpl(View mView,
+                                AppCompatActivity mActivity,
+                                StatusBarUtils statusBarUtils,
+                                BaseValueExtractor valueExtractor) {
         super(mView, mActivity);
         this.mStatusBarUtils = statusBarUtils;
         this.mBuild = valueExtractor.getBuild();
@@ -138,7 +138,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 if (tab.getText().toString().equals(artifactsTabTitle)) {
-                    mOnBuildTabsViewListener.onArtifactTabUnSelect();
+                    mOnBuildDetailsViewListener.onArtifactTabUnSelect();
                 }
             }
 
@@ -161,7 +161,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mOnBuildTabsViewListener.onConfirmRestartBuild();
+                        mOnBuildDetailsViewListener.onConfirmRestartBuild();
                     }
                 })
                 .build();
@@ -171,8 +171,8 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      * {@inheritDoc}
      */
     @Override
-    public void setOnBuildTabsViewListener(OnBuildTabsViewListener onBuildTabsViewListener) {
-        this.mOnBuildTabsViewListener = onBuildTabsViewListener;
+    public void setOnBuildTabsViewListener(OnBuildDetailsViewListener onBuildDetailsViewListener) {
+        this.mOnBuildDetailsViewListener = onBuildDetailsViewListener;
     }
 
     /**
@@ -306,7 +306,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
                 .setAction(R.string.text_show_build, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mOnBuildTabsViewListener.onShowQueuedBuild();
+                        mOnBuildDetailsViewListener.onShowQueuedBuild();
                     }
                 }).show();
     }
@@ -360,7 +360,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        mOnBuildTabsViewListener.onShowQueuedBuild();
+                        mOnBuildDetailsViewListener.onShowQueuedBuild();
                     }
                 }).show();
     }
@@ -404,7 +404,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mOnBuildTabsViewListener.onConfirmCancelingBuild(dialog.isPromptCheckBoxChecked());
+                        mOnBuildDetailsViewListener.onConfirmCancelingBuild(dialog.isPromptCheckBoxChecked());
                     }
                 })
                 .negativeText(R.string.text_cancel_button);

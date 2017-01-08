@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.build_details.data;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -23,9 +23,9 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
+import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
-import com.github.vase4kin.teamcityapp.buildtabs.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
@@ -45,22 +45,22 @@ import rx.subscriptions.CompositeSubscription;
 import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
 
 /**
- * Impl of {@link BuildTabsInteractor}
+ * Impl of {@link BuildDetailsInteractor}
  */
-public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements BuildTabsInteractor {
+public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implements BuildDetailsInteractor {
 
     @Nullable
-    private OnBuildTabsEventsListener mListener;
+    private OnBuildDetailsEventsListener mListener;
     private BaseValueExtractor mValueExtractor;
     private SharedUserStorage mSharedUserStorage;
     private TeamCityService mTeamCityService;
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
-    public BuildTabsInteractorImpl(@NonNull EventBus mEventBus,
-                                   BaseValueExtractor valueExtractor,
-                                   SharedUserStorage sharedUserStorage,
-                                   TeamCityService teamCityService) {
+    public BuildDetailsInteractorImpl(@NonNull EventBus mEventBus,
+                                      BaseValueExtractor valueExtractor,
+                                      SharedUserStorage sharedUserStorage,
+                                      TeamCityService teamCityService) {
         super(mEventBus);
         this.mValueExtractor = valueExtractor;
         this.mSharedUserStorage = sharedUserStorage;
@@ -71,7 +71,7 @@ public class BuildTabsInteractorImpl extends BaseTabsDataManagerImpl implements 
      * {@inheritDoc}
      */
     @Override
-    public void setOnBuildTabsEventsListener(OnBuildTabsEventsListener listener) {
+    public void setOnBuildTabsEventsListener(OnBuildDetailsEventsListener listener) {
         this.mListener = listener;
     }
 

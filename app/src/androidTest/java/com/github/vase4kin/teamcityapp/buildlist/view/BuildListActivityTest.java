@@ -26,9 +26,9 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
@@ -287,7 +287,7 @@ public class BuildListActivityTest {
 
         // Check build is opened
         intended(allOf(
-                hasComponent(BuildTabsActivity.class.getName()),
+                hasComponent(BuildDetailsActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.BUILD), equalTo(build)))));
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.build_details.data;
 
 /**
  * Event to request {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment} data refresh

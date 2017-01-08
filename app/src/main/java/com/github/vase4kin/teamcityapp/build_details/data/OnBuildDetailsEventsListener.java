@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.api;
-
-import android.support.annotation.VisibleForTesting;
+package com.github.vase4kin.teamcityapp.build_details.data;
 
 /**
- * Build cancel request api object
+ * Listener to handle events
  */
-public class BuildCancelRequest {
-
-    private String comment = "";
-    private final boolean readdIntoQueue;
+public interface OnBuildDetailsEventsListener {
 
     /**
-     * Default constructor
-     *
-     * @param reAddIntoQueue - Re-add build to the queue flag
+     * Fab is visible
      */
-    public BuildCancelRequest(boolean reAddIntoQueue) {
-        this.readdIntoQueue = reAddIntoQueue;
-    }
+    void onShow();
 
-    @VisibleForTesting
-    public boolean isReaddIntoQueue() {
-        return readdIntoQueue;
-    }
+    /**
+     * Fab is hidden
+     */
+    void onHide();
+
+    /**
+     * When cancel/remove from queue build action is triggered
+     */
+    void onCancelBuildActionTriggered();
+
+    /**
+     * When share build action is triggered
+     */
+    void onShareBuildActionTriggered();
+
+    /**
+     * When restart build action is triggered
+     */
+    void onRestartBuildActionTriggered();
 }

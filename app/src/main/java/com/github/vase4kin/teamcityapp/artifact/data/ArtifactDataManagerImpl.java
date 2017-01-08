@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
-import com.github.vase4kin.teamcityapp.buildtabs.data.OnArtifactTabChangeEvent;
+import com.github.vase4kin.teamcityapp.build_details.data.OnArtifactTabChangeEvent;
 
 import java.util.List;
 

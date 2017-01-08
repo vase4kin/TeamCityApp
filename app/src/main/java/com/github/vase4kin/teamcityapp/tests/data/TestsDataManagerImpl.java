@@ -22,7 +22,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
-import com.github.vase4kin.teamcityapp.buildtabs.presenter.BuildTabsPresenter;
+import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import java.util.List;
@@ -184,6 +184,6 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      */
     @Override
     public void postChangeTabTitleEvent(Integer size) {
-        mEventBus.post(new OnTextTabChangeEvent(size, BuildTabsPresenter.TESTS_TAB));
+        mEventBus.post(new OnTextTabChangeEvent(size, BuildDetailsPresenter.TESTS_TAB));
     }
 }

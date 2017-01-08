@@ -14,35 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.build_details.data;
 
 /**
- * Listener to handle events
+ * Artifact tab change bus event
  */
-public interface OnBuildTabsEventsListener {
-
-    /**
-     * Fab is visible
-     */
-    void onShow();
-
-    /**
-     * Fab is hidden
-     */
-    void onHide();
-
-    /**
-     * When cancel/remove from queue build action is triggered
-     */
-    void onCancelBuildActionTriggered();
-
-    /**
-     * When share build action is triggered
-     */
-    void onShareBuildActionTriggered();
-
-    /**
-     * When restart build action is triggered
-     */
-    void onRestartBuildActionTriggered();
+public class OnArtifactTabChangeEvent {
 }

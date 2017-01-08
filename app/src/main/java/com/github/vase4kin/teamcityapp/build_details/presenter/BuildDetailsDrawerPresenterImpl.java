@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.presenter;
+package com.github.vase4kin.teamcityapp.build_details.presenter;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
@@ -27,17 +28,17 @@ import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import javax.inject.Inject;
 
 /**
- * Drawer presenter impl special for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+ * Drawer presenter impl special for {@link BuildDetailsActivity}
  */
-public class BuildTabsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter> {
+public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter> {
 
     private BaseValueExtractor mValueExtractor;
 
     @Inject
-    BuildTabsDrawerPresenterImpl(DrawerView mViewModel,
-                                 DrawerDataManager dataManager,
-                                 BaseValueExtractor valueExtractor,
-                                 DrawerRouter router) {
+    BuildDetailsDrawerPresenterImpl(DrawerView mViewModel,
+                                    DrawerDataManager dataManager,
+                                    BaseValueExtractor valueExtractor,
+                                    DrawerRouter router) {
         super(mViewModel, dataManager, router);
         this.mValueExtractor = valueExtractor;
     }

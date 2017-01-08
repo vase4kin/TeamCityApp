@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.tracker;
+package com.github.vase4kin.teamcityapp.build_details.tracker;
 
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 /**
- * Tracker for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+ * Tracker for {@link BuildDetailsActivity}
  */
-public interface BuildTabsTracker extends ViewTracker {
+public interface BuildDetailsTracker extends ViewTracker {
 
     /**
      * Event content name

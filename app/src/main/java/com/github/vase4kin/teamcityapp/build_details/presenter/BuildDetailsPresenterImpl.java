@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.presenter;
+package com.github.vase4kin.teamcityapp.build_details.presenter;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenterImpl;
+import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsInteractor;
+import com.github.vase4kin.teamcityapp.build_details.data.OnBuildDetailsEventsListener;
+import com.github.vase4kin.teamcityapp.build_details.router.BuildDetailsRouter;
+import com.github.vase4kin.teamcityapp.build_details.tracker.BuildDetailsTracker;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsView;
+import com.github.vase4kin.teamcityapp.build_details.view.OnBuildDetailsViewListener;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
-import com.github.vase4kin.teamcityapp.buildtabs.data.BuildTabsInteractor;
-import com.github.vase4kin.teamcityapp.buildtabs.data.OnBuildTabsEventsListener;
-import com.github.vase4kin.teamcityapp.buildtabs.router.BuildTabsRouter;
-import com.github.vase4kin.teamcityapp.buildtabs.tracker.BuildTabsTracker;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsView;
-import com.github.vase4kin.teamcityapp.buildtabs.view.OnBuildTabsViewListener;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -36,27 +36,27 @@ import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import javax.inject.Inject;
 
 /**
- * Impl of {@link BuildTabsPresenter}
+ * Impl of {@link BuildDetailsPresenter}
  */
-public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView, BuildTabsInteractor, BuildTabsTracker>
-        implements BuildTabsPresenter, OnBuildTabsEventsListener, OnBuildTabsViewListener {
+public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetailsView, BuildDetailsInteractor, BuildDetailsTracker>
+        implements BuildDetailsPresenter, OnBuildDetailsEventsListener, OnBuildDetailsViewListener {
 
     /**
      * Queued build href
      */
     private String mQueuedBuildHref;
 
-    private BuildTabsRouter mRouter;
+    private BuildDetailsRouter mRouter;
     private RunBuildInteractor mRunBuildInteractor;
     private BuildInteractor mBuildInteractor;
 
     @Inject
-    BuildTabsPresenterImpl(@NonNull BuildTabsView view,
-                           @NonNull BuildTabsTracker tracker,
-                           @NonNull BuildTabsInteractor dataManager,
-                           @NonNull BuildTabsRouter router,
-                           @NonNull RunBuildInteractor runBuildInteractor,
-                           @NonNull BuildInteractor interactor) {
+    BuildDetailsPresenterImpl(@NonNull BuildDetailsView view,
+                              @NonNull BuildDetailsTracker tracker,
+                              @NonNull BuildDetailsInteractor dataManager,
+                              @NonNull BuildDetailsRouter router,
+                              @NonNull RunBuildInteractor runBuildInteractor,
+                              @NonNull BuildInteractor interactor) {
         super(view, tracker, dataManager);
         this.mRouter = router;
         this.mRunBuildInteractor = runBuildInteractor;

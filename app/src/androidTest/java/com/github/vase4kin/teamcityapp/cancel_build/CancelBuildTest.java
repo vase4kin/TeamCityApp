@@ -25,9 +25,9 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.api.BuildCancelRequest;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
@@ -88,7 +88,7 @@ public class CancelBuildTest {
             });
 
     @Rule
-    public CustomActivityTestRule<BuildTabsActivity> mActivityRule = new CustomActivityTestRule<>(BuildTabsActivity.class);
+    public CustomActivityTestRule<BuildDetailsActivity> mActivityRule = new CustomActivityTestRule<>(BuildDetailsActivity.class);
 
     @Captor
     private ArgumentCaptor<BuildCancelRequest> mBuildCancelRequestArgumentCaptor;

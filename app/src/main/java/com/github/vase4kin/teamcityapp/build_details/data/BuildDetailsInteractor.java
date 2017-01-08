@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildtabs.data;
+package com.github.vase4kin.teamcityapp.build_details.data;
 
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 
 /**
- * Interactor for {@link com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity}
+ * Interactor for {@link BuildDetailsActivity}
  */
-public interface BuildTabsInteractor extends BaseTabsDataManager {
+public interface BuildDetailsInteractor extends BaseTabsDataManager {
 
     /**
      * Set listener to handle floating action button visibility states
      *
      * @param listener - Listener to receive callbacks
      */
-    void setOnBuildTabsEventsListener(OnBuildTabsEventsListener listener);
+    void setOnBuildTabsEventsListener(OnBuildDetailsEventsListener listener);
 
     /**
      * Post on artifact tab change event to {@link de.greenrobot.event.EventBus}

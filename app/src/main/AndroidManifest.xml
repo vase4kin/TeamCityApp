@@ -53,7 +53,7 @@
             android:label="@string/title_activity_agent_tabs"
             android:launchMode="singleTop" />
         <activity
-            android:name=".buildtabs.view.BuildTabsActivity"
+            android:name=".build_details.view.BuildDetailsActivity"
             android:label="@string/title_activity_build" />
         <activity
             android:name=".account.manage.view.AccountListActivity"
