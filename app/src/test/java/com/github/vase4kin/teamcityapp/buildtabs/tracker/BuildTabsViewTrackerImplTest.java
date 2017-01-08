@@ -124,4 +124,69 @@ public class BuildTabsViewTrackerImplTest {
         mTracker.trackUserCanceledBuildSuccessfully();
         verify(mAnswers).logCustom(any(CustomEvent.class));
     }
+
+    @Test
+    public void testTrackUserGetsForbiddenErrorOnBuildRestartIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserGetsForbiddenErrorOnBuildRestart();
+    }
+
+    @Test
+    public void testTrackUserGetsForbiddenErrorOnBuildRestartIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserGetsForbiddenErrorOnBuildRestart();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void testTrackUserGetsServerErrorOnBuildRestartIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserGetsServerErrorOnBuildRestart();
+    }
+
+    @Test
+    public void testTrackUserGetsServerErrorOnBuildRestartIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserGetsServerErrorOnBuildRestart();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void testTrackUserRestartedBuildSuccessfullyIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserRestartedBuildSuccessfully();
+    }
+
+    @Test
+    public void testUserRestartedBuildSuccessfullyIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserRestartedBuildSuccessfully();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void trackUserWantsToSeeQueuedBuildDetailsIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserWantsToSeeQueuedBuildDetails();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void trackUserFailedToSeeQueuedBuildDetailsIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserFailedToSeeQueuedBuildDetails();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void trackUserWantsToSeeQueuedBuildDetailsIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserWantsToSeeQueuedBuildDetails();
+    }
+
+    @Test
+    public void trackUserFailedToSeeQueuedBuildDetailsIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserFailedToSeeQueuedBuildDetails();
+    }
 }

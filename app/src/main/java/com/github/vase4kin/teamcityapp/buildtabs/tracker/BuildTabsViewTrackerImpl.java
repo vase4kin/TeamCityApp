@@ -74,4 +74,49 @@ public class BuildTabsViewTrackerImpl implements BuildTabsTracker {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_CANCELLED_BUILD_SUCCESSFULLY));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserGetsForbiddenErrorOnBuildRestart() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_RESTARTING));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserGetsServerErrorOnBuildRestart() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_RESTARTING));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRestartedBuildSuccessfully() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_RESTARTED_BUILD_SUCCESSFULLY));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserWantsToSeeQueuedBuildDetails() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS_AFTER_RESTARTING));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserFailedToSeeQueuedBuildDetails() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS_FAILED_AFTER_RESTARTING));
+    }
 }

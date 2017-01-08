@@ -208,7 +208,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
         mRunBuildInteractor.queueBuild(branchName, properties, new LoadingListenerWithForbiddenSupport<String>() {
             @Override
             public void onForbiddenError() {
-                // track
+                mTracker.trackUserGetsForbiddenErrorOnBuildRestart();
                 mView.hideRestartingBuildProgressDialog();
                 mView.showForbiddenToRestartBuildSnackBar();
             }
@@ -216,14 +216,14 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
             @Override
             public void onSuccess(String queuedBuildHref) {
                 mQueuedBuildHref = queuedBuildHref;
-                // track
+                mTracker.trackUserRestartedBuildSuccessfully();
                 mView.hideRestartingBuildProgressDialog();
                 mView.showBuildRestartSuccessSnackBar();
             }
 
             @Override
             public void onFail(String errorMessage) {
-                // track
+                mTracker.trackUserGetsServerErrorOnBuildRestart();
                 mView.hideRestartingBuildProgressDialog();
                 mView.showBuildRestartErrorSnackBar();
             }
@@ -239,14 +239,14 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
         mBuildInteractor.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
             @Override
             public void onSuccess(Build queuedBuild) {
-                // track
+                mTracker.trackUserWantsToSeeQueuedBuildDetails();
                 mView.hideBuildLoadingProgress();
                 mRouter.reopenBuildTabsActivity(queuedBuild);
             }
 
             @Override
             public void onFail(String errorMessage) {
-                // track
+                mTracker.trackUserFailedToSeeQueuedBuildDetails();
                 mView.hideBuildLoadingProgress();
                 mView.showOpeningBuildErrorSnackBar();
             }

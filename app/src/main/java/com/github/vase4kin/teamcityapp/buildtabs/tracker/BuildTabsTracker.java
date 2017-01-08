@@ -54,6 +54,31 @@ public interface BuildTabsTracker extends ViewTracker {
     String EVENT_USER_CANCELLED_BUILD_SUCCESSFULLY = "Build cancelled successfully";
 
     /**
+     * User gets forbidden error on build restarting
+     */
+    String EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_RESTARTING = "Forbidden error on build restarting";
+
+    /**
+     * User gets server error on build restarting
+     */
+    String EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_RESTARTING = "Server error on build restarting";
+
+    /**
+     * User restarted build successfully
+     */
+    String EVENT_USER_RESTARTED_BUILD_SUCCESSFULLY = "Build restarted successfully";
+
+    /**
+     * Event for show queued build details
+     */
+    String EVENT_SHOW_QUEUED_BUILD_DETAILS_AFTER_RESTARTING = "Show queued build details succeed after restarting";
+
+    /**
+     * Event for show queued build details
+     */
+    String EVENT_SHOW_QUEUED_BUILD_DETAILS_FAILED_AFTER_RESTARTING = "Show queued build details failed after restarting";
+
+    /**
      * Track user confirmed build cancellation
      *
      * @param isReAddToTheQueue - Re-add build to the queue flag
@@ -74,4 +99,29 @@ public interface BuildTabsTracker extends ViewTracker {
      * Track user cancelled build successfully
      */
     void trackUserCanceledBuildSuccessfully();
+
+    /**
+     * Track user gets server error on build restarting
+     */
+    void trackUserGetsForbiddenErrorOnBuildRestart();
+
+    /**
+     * Track user gets server error on build restarting
+     */
+    void trackUserGetsServerErrorOnBuildRestart();
+
+    /**
+     * Track user restarted build successfully
+     */
+    void trackUserRestartedBuildSuccessfully();
+
+    /**
+     * Track user wants to see queued build details after restarting it
+     */
+    void trackUserWantsToSeeQueuedBuildDetails();
+
+    /**
+     * Track user failed to see queued build details after restarting it
+     */
+    void trackUserFailedToSeeQueuedBuildDetails();
 }

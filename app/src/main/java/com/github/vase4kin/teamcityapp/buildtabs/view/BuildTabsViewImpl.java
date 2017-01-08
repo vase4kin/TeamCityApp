@@ -151,7 +151,7 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
 
         mStoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build);
         mRemovingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
-        mRestartingBuildProgressDialog = createProgressDialogWithContent(R.string.text_queueing_build);
+        mRestartingBuildProgressDialog = createProgressDialogWithContent(R.string.text_restarting_build);
         mOpeningBuildProgressDialog = createProgressDialogWithContent(R.string.text_opening_build);
         mYouAreAboutToStopBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build, R.string.text_stop_button);
         mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build_2, R.string.text_stop_button);
