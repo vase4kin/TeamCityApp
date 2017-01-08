@@ -153,11 +153,10 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
         mRemovingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
         mRestartingBuildProgressDialog = createProgressDialogWithContent(R.string.text_queueing_build);
         mOpeningBuildProgressDialog = createProgressDialogWithContent(R.string.text_opening_build);
-        mYouAreAboutToStopBuildDialog = createCancelConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
-        mYouAreAboutToStopBuildDialog = createCancelConfirmDialog(R.string.text_stop_the_build, R.string.text_stop_button);
-        mYouAreAboutToStopNotYoursBuildDialog = createCancelConfirmDialog(R.string.text_stop_the_build_2, R.string.text_stop_button);
-        mYouAreAboutToRemoveBuildFromQueueDialog = createCancelConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
-        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createCancelConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
+        mYouAreAboutToStopBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build, R.string.text_stop_button);
+        mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build_2, R.string.text_stop_button);
+        mYouAreAboutToRemoveBuildFromQueueDialog = createConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
+        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
         mYouAreAboutToRestartBuildDialog = createConfirmDialogBuilder(R.string.text_restart_the_build, R.string.text_restart_button)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
@@ -373,19 +372,26 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
-    private MaterialDialog createCancelConfirmDialog(@StringRes int content, @StringRes int positiveText) {
+    private MaterialDialog createConfirmDialog(@StringRes int content, @StringRes int positiveText) {
         return createConfirmDialogBuilder(content, positiveText)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mOnBuildTabsViewListener.onConfirmCancelingBuild();
-                    }
-                })
                 .build();
     }
 
     /**
-     * Create confirm dialog builder
+     * Create stopping build confirm dialog with re-add build to queue checkbox
+     *
+     * @param content      - Resource id content message
+     * @param positiveText - Resource id positive dialog text
+     * @return confirm dialog
+     */
+    private MaterialDialog createConfirmDialogWithReAddCheckbox(@StringRes int content, @StringRes int positiveText) {
+        return createConfirmDialogBuilder(content, positiveText)
+                .checkBoxPromptRes(R.string.text_re_add_build, false, null)
+                .build();
+    }
+
+    /**
+     * Create cancel build confirm dialog builder
      *
      * @param content      - Resource id content message
      * @param positiveText - Resource id positive dialog text
@@ -395,13 +401,13 @@ public class BuildTabsViewImpl extends BaseTabsViewModelImpl implements BuildTab
         return new MaterialDialog.Builder(mActivity)
                 .content(content)
                 .positiveText(positiveText)
-                .negativeText(R.string.text_cancel_button)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mYouAreAboutToStopBuildDialog.dismiss();
+                        mOnBuildTabsViewListener.onConfirmCancelingBuild(dialog.isPromptCheckBoxChecked());
                     }
-                });
+                })
+                .negativeText(R.string.text_cancel_button);
     }
 
     /**

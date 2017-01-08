@@ -34,6 +34,11 @@ public interface BuildTabsTracker extends ViewTracker {
     String EVENT_USER_CONFIRMED_BUILD_CANCELLATION = "Confirmed build cancellation";
 
     /**
+     * Event param isReAddToTheQueue
+     */
+    String PARAM_IS_RE_ADD_TO_QUEUE = "Re-add to the queue";
+
+    /**
      * User gets forbidden error on build cancellation
      */
     String EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_CANCELLATION = "Forbidden error on build cancellation";
@@ -50,8 +55,10 @@ public interface BuildTabsTracker extends ViewTracker {
 
     /**
      * Track user confirmed build cancellation
+     *
+     * @param isReAddToTheQueue - Re-add build to the queue flag
      */
-    void trackUserConfirmedCancel();
+    void trackUserConfirmedCancel(boolean isReAddToTheQueue);
 
     /**
      * Track user gets server error on build cancellation

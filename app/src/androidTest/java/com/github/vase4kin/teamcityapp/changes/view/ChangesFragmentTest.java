@@ -127,7 +127,7 @@ public class ChangesFragmentTest {
         onView(withRecyclerView(R.id.changes_recycler_view).atPosition(0)).perform(click());
 
         // Сhecking dialog content
-        onView(withId(R.id.content)).check(matches(withText("john-117 on 30 Jul 16 00:36")));
+        onView(withId(R.id.md_content)).check(matches(withText("john-117 on 30 Jul 16 00:36")));
         // Сheck files
         onView(withText("filename!")).check(matches(isDisplayed()));
     }

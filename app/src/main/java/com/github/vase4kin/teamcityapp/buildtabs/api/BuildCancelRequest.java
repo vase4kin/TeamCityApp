@@ -16,11 +16,27 @@
 
 package com.github.vase4kin.teamcityapp.buildtabs.api;
 
+import android.support.annotation.VisibleForTesting;
+
 /**
  * Build cancel request api object
  */
 public class BuildCancelRequest {
 
     private String comment = "";
-    private boolean readdIntoQueue = false;
+    private final boolean readdIntoQueue;
+
+    /**
+     * Default constructor
+     *
+     * @param reAddIntoQueue - Re-add build to the queue flag
+     */
+    public BuildCancelRequest(boolean reAddIntoQueue) {
+        this.readdIntoQueue = reAddIntoQueue;
+    }
+
+    @VisibleForTesting
+    public boolean isReaddIntoQueue() {
+        return readdIntoQueue;
+    }
 }

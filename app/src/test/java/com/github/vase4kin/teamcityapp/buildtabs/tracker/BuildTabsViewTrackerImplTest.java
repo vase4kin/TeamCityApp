@@ -76,13 +76,13 @@ public class BuildTabsViewTrackerImplTest {
     @Test
     public void testTrackUserConfirmedCancelIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserConfirmedCancel();
+        mTracker.trackUserConfirmedCancel(true);
     }
 
     @Test
     public void testTrackUserConfirmedCancelIfFabricIsInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserConfirmedCancel();
+        mTracker.trackUserConfirmedCancel(false);
         verify(mAnswers).logCustom(any(CustomEvent.class));
     }
 

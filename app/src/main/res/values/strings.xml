@@ -116,6 +116,7 @@
     <!--Build elements-->
     <string name="unknown_trigger_type_text">Unknown trigger type!</string>
     <string name="triggered_deleted_user_text">Deleted user</string>
+    <string name="triggered_deleted_configuration_text">Deleted configuration</string>
     <string name="build_result_section_text">Result</string>
     <string name="build_wait_reason_section_text">Wait reason</string>
     <string name="build_time_section_text">Time</string>
@@ -124,6 +125,7 @@
     <string name="build_branch_section_text">Branch</string>
     <string name="build_agent_section_text">Agent</string>
     <string name="build_triggered_by_section_text">Triggered by</string>
+    <string name="build_restarted_by_section_text">Restarted by</string>
     <string name="build_canceled_by_text">Canceled by</string>
     <string name="build_cancellation_time_text">Cancellation time</string>
 
@@ -212,7 +214,7 @@
     <string name="error_opening_build">We encountered problem opening build</string>
     <string name="text_show_build">Show</string>
 
-    <!--Build list activity-->
+    <!--Build details activity-->
     <string name="text_stopping_build">Stopping build..</string>
     <string name="text_removing_build_from_queue">Removing build from queue..</string>
     <string name="text_build_is_stopped">Build is stopped successfully</string>
@@ -237,4 +239,6 @@
     <string name="text_menu_share_build">Share build</string>
     <string name="text_menu_restart_build">Restart build</string>
     <string name="text_share_build">Share build details</string>
+    <string name="text_re_add_build">Re-add build to the queue</string>
+
 </resources>

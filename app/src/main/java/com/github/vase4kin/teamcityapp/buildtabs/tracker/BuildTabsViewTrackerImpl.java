@@ -41,9 +41,11 @@ public class BuildTabsViewTrackerImpl implements BuildTabsTracker {
      * {@inheritDoc}
      */
     @Override
-    public void trackUserConfirmedCancel() {
+    public void trackUserConfirmedCancel(boolean isReAddToTheQueue) {
         if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_CONFIRMED_BUILD_CANCELLATION));
+        Answers.getInstance().logCustom(
+                new CustomEvent(EVENT_USER_CONFIRMED_BUILD_CANCELLATION)
+                        .putCustomAttribute(PARAM_IS_RE_ADD_TO_QUEUE, Boolean.toString(isReAddToTheQueue)));
     }
 
     /**

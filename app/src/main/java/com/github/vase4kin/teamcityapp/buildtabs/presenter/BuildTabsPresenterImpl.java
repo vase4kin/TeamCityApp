@@ -168,8 +168,8 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
      * {@inheritDoc}
      */
     @Override
-    public void onConfirmCancelingBuild() {
-        mTracker.trackUserConfirmedCancel();
+    public void onConfirmCancelingBuild(boolean isReAddToTheQueue) {
+        mTracker.trackUserConfirmedCancel(isReAddToTheQueue);
         showProgress();
         mInteractor.cancelBuild(new LoadingListenerWithForbiddenSupport<Build>() {
             @Override
@@ -194,7 +194,7 @@ public class BuildTabsPresenterImpl extends BaseTabsPresenterImpl<BuildTabsView,
                 showBuildIsCancelledErrorSnackBar();
                 mInteractor.postRefreshOverViewDataEvent();
             }
-        });
+        }, isReAddToTheQueue);
     }
 
     /**
