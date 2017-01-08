@@ -25,9 +25,9 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.api.BuildCancelRequest;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
@@ -42,6 +42,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -55,12 +57,17 @@ import rx.Observable;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openContextualActionModeOverflowMenu;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -81,7 +88,10 @@ public class CancelBuildTest {
             });
 
     @Rule
-    public CustomActivityTestRule<BuildTabsActivity> mActivityRule = new CustomActivityTestRule<>(BuildTabsActivity.class);
+    public CustomActivityTestRule<BuildDetailsActivity> mActivityRule = new CustomActivityTestRule<>(BuildDetailsActivity.class);
+
+    @Captor
+    private ArgumentCaptor<BuildCancelRequest> mBuildCancelRequestArgumentCaptor;
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
@@ -392,5 +402,98 @@ public class CancelBuildTest {
 
         // Check snack bar is displayed
         onView(withText(R.string.error_base_stop_build_error)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserCanReAddBuildWhenStoppingIt() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()))
+                .thenReturn(Observable.just(Mocks.failedBuild()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.failedBuild()));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.runningBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Opening context menu
+        openContextualActionModeOverflowMenu();
+
+        // Click on context menu option
+        onView(withText(R.string.text_menu_stop_build)).perform(click());
+
+        // Check re-add text is displayed and click on it
+        onView(withText(R.string.text_re_add_build))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Click on cancel build
+        onView(withText(R.string.text_stop_button)).perform(click());
+
+        // Check snack bar is displayed
+        onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()));
+
+        // Checking Result was changed
+        onView(withRecyclerView(R.id.overview_recycler_view)
+                .atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("Error with smth")));
+
+        // Verify build was re-added
+        verify(mTeamCityService).cancelBuild(anyString(), mBuildCancelRequestArgumentCaptor.capture());
+        BuildCancelRequest buildCancelRequest = mBuildCancelRequestArgumentCaptor.getValue();
+        assertThat(buildCancelRequest.isReaddIntoQueue(), is(equalTo(true)));
+    }
+
+    @Test
+    public void testUserCanNotReAddBuildToQueueWhenRemovingItFromQueue() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild))
+                .thenReturn(Observable.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.queuedBuild2()));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.queuedBuild1());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Opening context menu
+        openContextualActionModeOverflowMenu();
+
+        // Click on context menu option
+        onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click());
+
+        // Check re-add text is displayed and click on it
+        onView(withText(R.string.text_re_add_build))
+                .check(doesNotExist());
+
+        // Click on cancel build
+        onView(withText(R.string.text_remove_from_queue_button)).perform(click());
+
+        // Check snack bar is displayed
+        onView(withText(R.string.text_build_is_removed_from_queue)).check(matches(isDisplayed()));
+
+        // Checking Result was changed
+        onView(withRecyclerView(R.id.overview_recycler_view)
+                .atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("This build will not start because there are no compatible agents which can run it")));
+
+        // Verify build wasn't re-added
+        verify(mTeamCityService).cancelBuild(anyString(), mBuildCancelRequestArgumentCaptor.capture());
+        BuildCancelRequest buildCancelRequest = mBuildCancelRequestArgumentCaptor.getValue();
+        assertThat(buildCancelRequest.isReaddIntoQueue(), is(equalTo(false)));
     }
 }

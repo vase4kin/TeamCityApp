@@ -34,6 +34,11 @@ public interface OverviewTracker extends ViewTracker {
     String EVENT_SHARE_BUILD = "Share build option menu is clicked";
 
     /**
+     * Restart build option menu is clicked event
+     */
+    String EVENT_RESTART_BUILD = "Restart build option menu is clicked";
+
+    /**
      * Track that Cancel build option menu is clicked
      */
     void trackUserClickedCancelBuildOption();
@@ -42,4 +47,9 @@ public interface OverviewTracker extends ViewTracker {
      * Track that share build button is clicked
      */
     void trackUserSharedBuild();
+
+    /**
+     * Track that restart build button is clicked
+     */
+    void trackUserRestartedBuild();
 }

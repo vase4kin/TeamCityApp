@@ -22,7 +22,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
-import com.github.vase4kin.teamcityapp.buildtabs.presenter.BuildTabsPresenter;
+import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 
 import java.util.Collections;
@@ -159,6 +159,6 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
      */
     @Override
     public void postChangeTabTitleEvent(Integer size) {
-        mEventBus.post(new OnTextTabChangeEvent(size, BuildTabsPresenter.CHANGES_TAB));
+        mEventBus.post(new OnTextTabChangeEvent(size, BuildDetailsPresenter.CHANGES_TAB));
     }
 }

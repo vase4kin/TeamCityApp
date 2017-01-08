@@ -48,14 +48,6 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
     void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener);
 
     /**
-     * Load by by href
-     *
-     * @param href            - Build href
-     * @param loadingListener Listener to receive callbacks on {@link com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl}
-     */
-    void loadBuild(@NonNull String href, @NonNull OnLoadingListener<Build> loadingListener);
-
-    /**
      * Is there any more builds to load
      */
     boolean canLoadMore();

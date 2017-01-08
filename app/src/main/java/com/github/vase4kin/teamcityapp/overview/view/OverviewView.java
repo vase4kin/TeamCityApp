@@ -73,5 +73,10 @@ public interface OverviewView extends BaseListView<OverviewDataModel> {
          * On menu share button click
          */
         void onShareButtonClick();
+
+        /**
+         * On menu restart build button click
+         */
+        void onRestartBuildButtonClick();
     }
 }

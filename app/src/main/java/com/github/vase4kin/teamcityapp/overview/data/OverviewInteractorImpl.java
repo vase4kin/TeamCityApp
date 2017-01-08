@@ -23,11 +23,11 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
+import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataEvent;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
-import com.github.vase4kin.teamcityapp.buildtabs.data.OnOverviewRefreshDataEvent;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
@@ -113,6 +113,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     @Override
     public void postShareBuildInfoEvent() {
         mEventBus.post(new ShareBuildEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postRestartBuildEvent() {
+        mEventBus.post(new RestartBuildEvent());
     }
 
     /**
@@ -212,14 +220,8 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
         if (triggered.isVcs()) {
             // TODO: change icon to git
             triggeredBy = build.getTriggered().getDetails();
-        } else if (triggered.isUser()) {
-            if (triggered.getUser() == null) {
-                triggeredBy = mContext.getString(R.string.triggered_deleted_user_text);
-            } else {
-                triggeredBy = triggered.getUser().getName() == null
-                        ? build.getTriggered().getUser().getUsername()
-                        : build.getTriggered().getUser().getName();
-            }
+        } else if (triggered.isUser() || triggered.isRestarted()) {
+            triggeredBy = getUserName(triggered.getUser());
         } else if (triggered.isUnknown()) {
             // TODO: Change icon for schedule
             triggeredBy = build.getTriggered().getDetails();
@@ -229,14 +231,33 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
             // TODO: navigate by clicking to triggered build
             // TODO: move to resources
             if (build.getTriggered().getBuildType() == null) {
-                triggeredBy = "Deleted configuration";
+                triggeredBy = mContext.getString(R.string.triggered_deleted_configuration_text);
             } else {
                 triggeredBy = build.getTriggered().getBuildType().getProjectName() + " " + build.getTriggered().getBuildType().getName();
             }
         } else {
             triggeredBy = mContext.getString(R.string.unknown_trigger_type_text);
         }
-        elements.add(new BuildElement(TRIGGER_BY_ICON, triggeredBy, mContext.getString(R.string.build_triggered_by_section_text)));
+        String sectionName = triggered.isRestarted()
+                ? mContext.getString(R.string.build_restarted_by_section_text)
+                : mContext.getString(R.string.build_triggered_by_section_text);
+        elements.add(new BuildElement(TRIGGER_BY_ICON, triggeredBy, sectionName));
         return elements;
+    }
+
+    /**
+     * Get user name of User
+     *
+     * @param user - User
+     * @return User name
+     */
+    private String getUserName(User user) {
+        if (user == null) {
+            return mContext.getString(R.string.triggered_deleted_user_text);
+        } else {
+            return user.getName() == null
+                    ? user.getUsername()
+                    : user.getName();
+        }
     }
 }

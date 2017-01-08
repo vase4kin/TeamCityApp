@@ -33,7 +33,6 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Impl of {@link BuildListDataManager}
@@ -48,10 +47,6 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      * TeamCity Rest Api instance
      */
     protected TeamCityService mTeamCityService;
-    /**
-     * Load build subscription to manage load builds rx operations
-     */
-    private CompositeSubscription mLoadBuildSubscription = new CompositeSubscription();
 
     public BuildListDataManagerImpl(TeamCityService teamCityService) {
         this.mTeamCityService = teamCityService;
@@ -63,33 +58,6 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     @Override
     public void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener) {
         load(mTeamCityService.listBuilds(id, LOCATIONS), loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadBuild(@NonNull String href, @NonNull final OnLoadingListener<Build> loadingListener) {
-        mLoadBuildSubscription.clear();
-        Subscription loadBuildSubscriptions = mTeamCityService.build(href)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<Build>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loadingListener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(Build build) {
-                        loadingListener.onSuccess(build);
-                    }
-                });
-        mLoadBuildSubscription.add(loadBuildSubscriptions);
     }
 
     /**
@@ -183,14 +151,5 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     @Override
     public void loadMore(@NonNull final OnLoadingListener<List<Build>> loadingListener) {
         load(mTeamCityService.listMoreBuilds(mLoadMoreUrl), loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void unsubscribe() {
-        super.unsubscribe();
-        mLoadBuildSubscription.unsubscribe();
     }
 }
