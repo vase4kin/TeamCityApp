@@ -127,6 +127,12 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
         mTracker.trackUserSharedBuild();
     }
 
+    @Override
+    public void onRestartBuildButtonClick() {
+        mDataManager.postRestartBuildEvent();
+        mTracker.trackUserRestartedBuild();
+    }
+
     /**
      * {@inheritDoc}
      */

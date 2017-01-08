@@ -160,6 +160,14 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
+    public void testOnRestartBuildButtonClick() throws Exception {
+        mPresenter.onRestartBuildButtonClick();
+        verify(mDataManager).postRestartBuildEvent();
+        verify(mTracker).trackUserRestartedBuild();
+        tearDown();
+    }
+
+    @Test
     public void testOnStart() throws Exception {
         mPresenter.onStart();
         verify(mDataManager).subscribeToEventBusEvents();

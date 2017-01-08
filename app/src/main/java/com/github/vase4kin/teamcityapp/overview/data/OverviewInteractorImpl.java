@@ -23,11 +23,11 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
+import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataEvent;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
-import com.github.vase4kin.teamcityapp.buildtabs.data.OnOverviewRefreshDataEvent;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
@@ -113,6 +113,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     @Override
     public void postShareBuildInfoEvent() {
         mEventBus.post(new ShareBuildEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postRestartBuildEvent() {
+        mEventBus.post(new RestartBuildEvent());
     }
 
     /**

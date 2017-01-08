@@ -24,6 +24,8 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
@@ -71,6 +73,11 @@ public class BuildListModule {
     @Provides
     BaseValueExtractor providesBuildListValueExtractor() {
         return new BaseValueExtractorImpl(mActivity.getIntent().getExtras());
+    }
+
+    @Provides
+    BuildInteractor providesBuildInteractor(TeamCityService teamCityService) {
+        return new BuildInteractorImpl(teamCityService);
     }
 
 }

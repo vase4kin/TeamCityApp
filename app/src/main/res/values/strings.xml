@@ -209,6 +209,7 @@
     <string name="error_base_error">We encountered problem running build</string>
     <string name="error_forbidden_error">You don\'t have permissions to run a build</string>
     <string name="text_queueing_build">Running build..</string>
+    <string name="text_restarting_build">Restarting build..</string>
     <string name="text_opening_build">Opening build..</string>
     <string name="text_build_is_run">Build is added to build queue</string>
     <string name="error_opening_build">We encountered problem opening build</string>
@@ -219,12 +220,17 @@
     <string name="text_removing_build_from_queue">Removing build from queue..</string>
     <string name="text_build_is_stopped">Build is stopped successfully</string>
     <string name="text_build_is_removed_from_queue">Build is removed from queue successfully</string>
+    <string name="text_build_is_restarted">Build is restarted successfully</string>
     <string name="error_base_stop_build_error">We encountered problem stopping build</string>
     <string name="error_base_remove_build_from_queue_error">We encountered problem removing build from queue</string>
+    <string name="error_base_restart_build_error">We encountered problem restarting build</string>
     <string name="error_stop_build_forbidden_error">You don\'t have permissions to stop a build</string>
     <string name="error_remove_build_from_queue_forbidden_error">You don\'t have permissions to remove a build from queue</string>
+    <string name="error_restart_build_forbidden_error">You don\'t have permissions to restart a build</string>
+    <string name="text_restart_button">Restart</string>
     <string name="text_stop_button">Stop</string>
     <string name="text_remove_from_queue_button">Remove from queue</string>
+    <string name="text_restart_the_build">You are about to restart the build with the same parameters. Are you sure?</string>
     <string name="text_stop_the_build">You are about to stop the build. Are you sure?</string>
     <string name="text_remove_build_from_queue">You are about to remove the build from queue. Are you sure?</string>
     <string name="text_stop_the_build_2">You are about to stop the build ran not by you. Are you sure?</string>
@@ -232,6 +238,7 @@
     <string name="text_menu_remove_build_from_queue">Remove build from queue</string>
     <string name="text_menu_stop_build">Stop build</string>
     <string name="text_menu_share_build">Share build</string>
+    <string name="text_menu_restart_build">Restart build</string>
     <string name="text_share_build">Share build details</string>
     <string name="text_re_add_build">Re-add build to the queue</string>
 

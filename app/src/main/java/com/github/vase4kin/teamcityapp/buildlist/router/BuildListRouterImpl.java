@@ -18,8 +18,8 @@ package com.github.vase4kin.teamcityapp.buildlist.router;
 
 import android.app.Activity;
 
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 /**
@@ -38,7 +38,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openBuildPage(Build build) {
-        BuildTabsActivity.start(mActivity, build);
+        BuildDetailsActivity.start(mActivity, build);
     }
 
     /**

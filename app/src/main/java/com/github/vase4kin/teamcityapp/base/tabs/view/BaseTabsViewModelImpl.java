@@ -85,7 +85,9 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
         if (fragments != null) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
             for (Fragment f : fragments) {
-                ft.remove(f);
+                if (f != null) {
+                    ft.remove(f);
+                }
             }
             ft.commitNow();
         }

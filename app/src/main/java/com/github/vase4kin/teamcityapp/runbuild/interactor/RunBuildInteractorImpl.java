@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 
@@ -112,6 +113,28 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
         Build build = new Build();
         build.setBranchName(branchName);
         build.setBuildTypeId(mBuildTypeId);
+        queueBuild(build, loadingListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void queueBuild(String branchName, Properties properties, final LoadingListenerWithForbiddenSupport<String> loadingListener) {
+        Build build = new Build();
+        build.setBuildTypeId(mBuildTypeId);
+        build.setBranchName(branchName);
+        build.setProperties(properties);
+        queueBuild(build, loadingListener);
+    }
+
+    /**
+     * Queue build
+     *
+     * @param build           - Build to queue
+     * @param loadingListener - listener to receive callbacks on UI
+     */
+    private void queueBuild(Build build, final LoadingListenerWithForbiddenSupport<String> loadingListener) {
         Subscription queueBuildSubscription = mTeamCityService.queueBuild(build)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

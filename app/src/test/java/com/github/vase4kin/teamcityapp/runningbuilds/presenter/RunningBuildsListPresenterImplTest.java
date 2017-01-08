@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.runningbuilds.presenter;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
@@ -56,19 +57,22 @@ public class RunningBuildsListPresenterImplTest {
     @Mock
     private BaseValueExtractor mValueExtractor;
 
+    @Mock
+    private BuildInteractor mInteractor;
+
     private RunningBuildsListPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new RunningBuildsListPresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor);
+        mPresenter = new RunningBuildsListPresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
     }
 
     @Test
     public void testLoadData() throws Exception {
         mPresenter.loadData(mLoadingListener);
         verify(mDataManager).load(mLoadingListener);
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
     }
 
     @Test

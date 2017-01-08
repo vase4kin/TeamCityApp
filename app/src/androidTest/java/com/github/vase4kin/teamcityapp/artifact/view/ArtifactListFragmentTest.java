@@ -27,8 +27,8 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
@@ -90,7 +90,7 @@ public class ArtifactListFragmentTest {
             });
 
     @Rule
-    public CustomActivityTestRule<BuildTabsActivity> mActivityRule = new CustomActivityTestRule<>(BuildTabsActivity.class);
+    public CustomActivityTestRule<BuildDetailsActivity> mActivityRule = new CustomActivityTestRule<>(BuildDetailsActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();

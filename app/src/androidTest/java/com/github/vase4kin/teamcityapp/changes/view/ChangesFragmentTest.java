@@ -25,8 +25,8 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildtabs.view.BuildTabsActivity;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
@@ -83,7 +83,7 @@ public class ChangesFragmentTest {
             });
 
     @Rule
-    public CustomActivityTestRule<BuildTabsActivity> mActivityRule = new CustomActivityTestRule<>(BuildTabsActivity.class);
+    public CustomActivityTestRule<BuildDetailsActivity> mActivityRule = new CustomActivityTestRule<>(BuildDetailsActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();

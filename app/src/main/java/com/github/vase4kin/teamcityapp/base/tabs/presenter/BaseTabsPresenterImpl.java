@@ -35,15 +35,15 @@ public class BaseTabsPresenterImpl<
 
     protected T mView;
     protected TR mTracker;
-    protected DT mDataManager;
+    protected DT mInteractor;
 
     @Inject
     public BaseTabsPresenterImpl(@NonNull T mView,
                                  @NonNull TR tracker,
-                                 @NonNull DT dataManager) {
+                                 @NonNull DT interactor) {
         this.mView = mView;
         this.mTracker = tracker;
-        this.mDataManager = dataManager;
+        this.mInteractor = interactor;
     }
 
     /**
@@ -67,8 +67,8 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onResume() {
-        mDataManager.registerEventBus();
-        mDataManager.setListener(this);
+        mInteractor.registerEventBus();
+        mInteractor.setListener(this);
         mTracker.trackView();
     }
 
@@ -77,8 +77,8 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onPause() {
-        mDataManager.unregisterEventBus();
-        mDataManager.setListener(null);
+        mInteractor.unregisterEventBus();
+        mInteractor.setListener(null);
     }
 
     /**
