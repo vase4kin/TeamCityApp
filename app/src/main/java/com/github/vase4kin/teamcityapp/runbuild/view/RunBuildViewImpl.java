@@ -257,7 +257,7 @@ public class RunBuildViewImpl implements RunBuildView {
                 } else {
                     List<String> newValues = new ArrayList<>();
                     for (String branch : branches) {
-                        if (branch.toLowerCase().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (branch.toLowerCase().contains(constraint.toString().toLowerCase())) {
                             newValues.add(branch);
                         }
                     }
