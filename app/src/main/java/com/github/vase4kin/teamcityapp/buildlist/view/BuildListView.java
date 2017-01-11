@@ -16,6 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.view;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
 import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
@@ -72,4 +76,18 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
      * Hide build loading progress
      */
     void hideBuildLoadingProgress();
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     */
+    void createOptionsMenu(Menu menu, MenuInflater inflater);
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
+     */
+    boolean onOptionsItemSelected(MenuItem item);
 }

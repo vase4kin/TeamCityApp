@@ -40,4 +40,9 @@ public interface OnBuildListPresenterListener extends MugenCallbacks {
      * Show queued build snack bar
      */
     void onShowQueuedBuildSnackBarClick();
+
+    /**
+     * On filter builds option menu click
+     */
+    void onFilterBuildsOptionMenuClick();
 }

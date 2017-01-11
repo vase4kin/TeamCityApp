@@ -17,10 +17,12 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
+import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 
 import org.junit.After;
@@ -39,6 +41,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 public class RunBuildPresenterImplTest {
 
@@ -54,13 +57,17 @@ public class RunBuildPresenterImplTest {
     private RunBuildRouter mRouter;
     @Mock
     private RunBuildTracker mTracker;
+    @Mock
+    private BranchesComponentView mBranchesComponentView;
+    @Mock
+    private BranchesInteractor mBranchesInteractor;
 
     private RunBuildPresenterImpl mPresenter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new RunBuildPresenterImpl(mView, mInteractor, mRouter, mTracker);
+        mPresenter = new RunBuildPresenterImpl(mView, mInteractor, mRouter, mTracker, mBranchesComponentView, mBranchesInteractor);
     }
 
     @After
@@ -72,35 +79,38 @@ public class RunBuildPresenterImplTest {
     public void testOnCreate() throws Exception {
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
-        verify(mInteractor).loadBranches(mBranchLoadingListenerCaptor.capture());
+        verify(mBranchesInteractor).loadBranches(mBranchLoadingListenerCaptor.capture());
         OnLoadingListener<List<String>> loadingListener = mBranchLoadingListenerCaptor.getValue();
         List<String> singleBranchList = Collections.singletonList("Branch");
         loadingListener.onSuccess(singleBranchList);
-        verify(mView).hideBranchesLoadingProgress();
-        verify(mView).setupAutoCompleteForSingleBranch(eq(singleBranchList));
-        verify(mView).showBranchesAutoComplete();
+        verify(mBranchesComponentView).hideBranchesLoadingProgress();
+        verify(mBranchesComponentView).setupAutoCompleteForSingleBranch(eq(singleBranchList));
+        verify(mBranchesComponentView).showBranchesAutoComplete();
         List<String> multipleBranchList = new ArrayList<>();
         multipleBranchList.add("branch1");
         multipleBranchList.add("branch2");
         loadingListener.onSuccess(multipleBranchList);
-        verify(mView, times(2)).hideBranchesLoadingProgress();
-        verify(mView).setupAutoComplete(eq(multipleBranchList));
-        verify(mView, times(2)).showBranchesAutoComplete();
+        verify(mBranchesComponentView, times(2)).hideBranchesLoadingProgress();
+        verify(mBranchesComponentView).setupAutoComplete(eq(multipleBranchList));
+        verify(mBranchesComponentView, times(2)).showBranchesAutoComplete();
         loadingListener.onFail("");
-        verify(mView, times(3)).hideBranchesLoadingProgress();
-        verify(mView).showNoBranchesAvailable();
+        verify(mBranchesComponentView, times(3)).hideBranchesLoadingProgress();
+        verify(mBranchesComponentView).showNoBranchesAvailable();
     }
 
     @Test
     public void testOnDestroy() throws Exception {
         mPresenter.onDestroy();
         verify(mInteractor).unsubscribe();
+        verify(mBranchesInteractor).unsubscribe();
         verify(mView).unbindViews();
     }
 
     @Test
     public void testOnBuildQueue() throws Exception {
-        mPresenter.onBuildQueue("branch");
+        when(mBranchesComponentView.getBranchName()).thenReturn("branch");
+        mPresenter.onBuildQueue();
+        verify(mBranchesComponentView).getBranchName();
         verify(mView).showQueuingBuildProgress();
         verify(mInteractor).queueBuild(eq("branch"), mQueueLoadingListenerCaptor.capture());
         LoadingListenerWithForbiddenSupport<String> loadingListener = mQueueLoadingListenerCaptor.getValue();

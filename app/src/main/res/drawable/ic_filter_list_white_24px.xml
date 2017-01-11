@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Copyright 2016 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,12 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <dimen name="default_margin">16dp</dimen>
-    <dimen name="small_margin">8dp</dimen>
-    <dimen name="recycler_view_horizontal_margin">0dp</dimen>
-    <dimen name="recycler_view_vertical_margin">0dp</dimen>
-    <dimen name="default_elevation">4dp</dimen>
-    <dimen name="default_item_margin_top">4dp</dimen>
-    <dimen name="other_dp">2dp</dimen>
-    <dimen name="login_screen_margin">24dp</dimen>
-    <integer name="logo_move">-400</integer>
-    <dimen name="toolbar_with_fab_height">170dp</dimen>
-</resources>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24.0"
+    android:viewportHeight="24.0">
+    <path
+        android:pathData="M10,18h4v-2h-4v2zM3,6v2h18L21,6L3,6zM6,13h12v-2L6,11v2z"
+        android:fillColor="#FFFFFF" />
+</vector>

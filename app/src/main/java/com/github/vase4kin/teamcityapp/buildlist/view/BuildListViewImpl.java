@@ -25,6 +25,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -251,6 +254,29 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void hideBuildLoadingProgress() {
         mProgressDialog.dismiss();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_filter_builds_activity, menu);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mActivity.invalidateOptionsMenu();
+        switch (item.getItemId()) {
+            case R.id.filter_builds:
+                mOnBuildListPresenterListener.onFilterBuildsOptionMenuClick();
+                return true;
+            default:
+                return false;
+        }
     }
 
     /**

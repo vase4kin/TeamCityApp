@@ -16,39 +16,18 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.view;
 
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
+
+import java.util.List;
 
 /**
- * View to handle interaction with {@link RunBuildActivity}
+ * Interface to handle view interactions with branches view component
  */
-public interface RunBuildView {
+public interface BranchesComponentView {
 
     /**
      * Init views
-     *
-     * @param listener - to handle view interactions
      */
-    void initViews(ViewListener listener);
-
-    /**
-     * Show posting build progress
-     */
-    void showQueuingBuildProgress();
-
-    /**
-     * Hide posting build progress
-     */
-    void hideQueuingBuildProgress();
-
-    /**
-     * Show forbidden error snackbar
-     */
-    void showForbiddenErrorSnackbar();
-
-    /**
-     * show error snack bar
-     */
-    void showErrorSnackbar();
+    void initViews();
 
     /**
      * Unbind views
@@ -56,10 +35,36 @@ public interface RunBuildView {
     void unbindViews();
 
     /**
-     * Listener to receive callbacks to presenter
+     * Hide branches loading progress
      */
-    interface ViewListener extends OnToolBarNavigationListener {
+    void hideBranchesLoadingProgress();
 
-        void onBuildQueue();
-    }
+    /**
+     * Setup autocomplete
+     *
+     * @param branches - List of branches
+     */
+    void setupAutoComplete(List<String> branches);
+
+    /**
+     * Setup autocomplete for single branch
+     *
+     * @param branches - List containing single branch
+     */
+    void setupAutoCompleteForSingleBranch(List<String> branches);
+
+    /**
+     * Show no branches available
+     */
+    void showNoBranchesAvailable();
+
+    /**
+     * Show branches auto complete
+     */
+    void showBranchesAutoComplete();
+
+    /**
+     * @return Current selected branch
+     */
+    String getBranchName();
 }

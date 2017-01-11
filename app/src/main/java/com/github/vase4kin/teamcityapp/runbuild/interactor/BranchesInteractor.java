@@ -16,39 +16,21 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
-import com.github.vase4kin.teamcityapp.properties.api.Properties;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+
+import java.util.List;
 
 /**
- * Run build interactor
+ * Interactor to handle fetching branches
  */
-public interface RunBuildInteractor {
+public interface BranchesInteractor {
 
     /**
-     * Forbidden code error
-     */
-    int CODE_FORBIDDEN = 403;
-
-    /**
-     * Extra bundle key
-     */
-    String EXTRA_BUILD_TYPE_ID = "BuildTypeId";
-
-    /**
-     * Queue new build
+     * Load branches
      *
-     * @param branchName      - with branch name
      * @param loadingListener - listener to receive callbacks
      */
-    void queueBuild(String branchName, LoadingListenerWithForbiddenSupport<String> loadingListener);
-
-    /**
-     * Queue new build with parameters
-     *
-     * @param branchName      - with branch name
-     * @param properties      - properties to use for new build
-     * @param loadingListener - listener to receive callbacks
-     */
-    void queueBuild(String branchName, Properties properties, LoadingListenerWithForbiddenSupport<String> loadingListener);
+    void loadBranches(OnLoadingListener<List<String>> loadingListener);
 
     /**
      * Unsubscribe all rx subscriptions

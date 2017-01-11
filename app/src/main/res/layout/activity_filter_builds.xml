@@ -40,13 +40,13 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_queue_build"
+        android:id="@+id/fab_filter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         android:layout_gravity="center"
-        app:srcCompat="@drawable/ic_directions_run_white_24px"
+        app:srcCompat="@drawable/ic_done_24px"
         style="@style/BaseFloatingActionButton" />
 
     <android.support.v4.widget.NestedScrollView
@@ -60,7 +60,55 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/default_margin">
 
-            <include layout="@layout/layout_param_stub" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/main_text_color"
+                        android:text="Status" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="All" />
+
+                </LinearLayout>
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Personal" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Cancelled" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Failed to start" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Running" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="Pinned" />
+
+            </LinearLayout>
 
         </FrameLayout>
 

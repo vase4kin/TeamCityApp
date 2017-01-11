@@ -21,6 +21,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -88,6 +90,17 @@ public class BuildListActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mBuildListPresenter.onActivityResult(requestCode, resultCode, data.getStringExtra(RunBuildRouter.EXTRA_HREF));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mBuildListPresenter.onCreateOptionsMenu(menu, getMenuInflater());
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mBuildListPresenter.onOptionsItemSelected(item);
     }
 
     /**

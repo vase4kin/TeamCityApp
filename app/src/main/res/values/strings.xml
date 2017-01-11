@@ -242,4 +242,9 @@
     <string name="text_share_build">Share build details</string>
     <string name="text_re_add_build">Re-add build to the queue</string>
 
+    <!--Build list activity-->
+    <string name="text_menu_filter_builds">Filter builds</string>
+
+    <!--Filter builds activity-->
+    <string name="title_filter_builds">Run build</string>
 </resources>

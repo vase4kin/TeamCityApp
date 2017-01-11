@@ -18,6 +18,9 @@ package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -63,6 +66,15 @@ public class BuildListPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
+
+    @Mock
+    private MenuItem mMenuItem;
+
+    @Mock
+    private Menu mMenu;
+
+    @Mock
+    private MenuInflater mMenuInflater;
 
     @Mock
     private Build mBuild;
@@ -212,5 +224,33 @@ public class BuildListPresenterImplTest {
     public void testOnFailCallBack() throws Exception {
         mPresenter.onFailCallBack("");
         verify(mView).hideRunBuildFloatActionButton();
+    }
+
+    @Test
+    public void testOnFilterBuildsOptionMenuClick() throws Exception {
+        mPresenter.onFilterBuildsOptionMenuClick();
+        verify(mRouter).openFilterBuildsPage();
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnCreateOptions() throws Exception {
+        mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
+        verify(mView).createOptionsMenu(eq(mMenu), eq(mMenuInflater));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnPrepareOptionsMenu() throws Exception {
+        mPresenter.onPrepareOptionsMenu(mMenu);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnOptionsItemSelected() throws Exception {
+        when(mView.onOptionsItemSelected(mMenuItem)).thenReturn(true);
+        assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
+        verify(mView).onOptionsItemSelected(eq(mMenuItem));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 }

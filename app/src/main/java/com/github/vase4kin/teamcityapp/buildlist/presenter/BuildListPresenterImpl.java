@@ -20,6 +20,9 @@ import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -45,7 +48,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         V,
         DM,
         BuildListTracker,
-        BaseValueExtractor> implements OnBuildListPresenterListener {
+        BaseValueExtractor> implements BuildListPresenter, OnBuildListPresenterListener {
 
     private BuildListRouter mRouter;
     private BuildInteractor mBuildInteractor;
@@ -126,6 +129,14 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
                 mView.showOpeningBuildErrorSnackBar();
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onFilterBuildsOptionMenuClick() {
+        mRouter.openFilterBuildsPage();
     }
 
     /**
@@ -217,5 +228,28 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
         mBuildInteractor.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mView.createOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mView.onOptionsItemSelected(item);
     }
 }
