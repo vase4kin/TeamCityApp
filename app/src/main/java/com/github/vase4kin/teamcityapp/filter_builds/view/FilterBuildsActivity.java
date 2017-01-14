@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.filter_builds;
+package com.github.vase4kin.teamcityapp.filter_builds.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -23,6 +23,13 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.filter_builds.dagger.DaggerFilterBuildsComponent;
+import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule;
+import com.github.vase4kin.teamcityapp.filter_builds.presenter.FilterBuildsPresenterImpl;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
+
+import javax.inject.Inject;
 
 /**
  * Activity to manage builds filtering logic
@@ -34,10 +41,34 @@ public class FilterBuildsActivity extends AppCompatActivity {
      */
     public static final int REQUEST_CODE = 12921;
 
+    @Inject
+    FilterBuildsPresenterImpl mPresenter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter_builds);
+
+        // Injecting presenter
+        DaggerFilterBuildsComponent.builder()
+                .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
+                .filterBuildsModule(new FilterBuildsModule(this))
+                .build()
+                .inject(this);
+
+        mPresenter.onCreate();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -48,18 +79,19 @@ public class FilterBuildsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        mPresenter.onBackPressed();
         super.onBackPressed();
     }
 
-
     /**
-     * Start run build activity
+     * Start filter builds activity
      *
      * @param activity - Activity instance
      */
     public static void startForResult(@NonNull Activity activity, String buildTypeId) {
         Intent intent = new Intent(activity, FilterBuildsActivity.class);
-        activity.startActivity(intent);
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, buildTypeId);
+        activity.startActivityForResult(intent, REQUEST_CODE);
         activity.overridePendingTransition(R.anim.slide_in_bottom, R.anim.hold);
     }
 }

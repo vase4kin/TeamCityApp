@@ -82,7 +82,7 @@
             android:name=".runbuild.view.RunBuildActivity"
             android:label="@string/title_run_build" />
         <activity
-            android:name=".filter_builds.FilterBuildsActivity"
+            android:name=".filter_builds.view.FilterBuildsActivity"
             android:label="@string/title_filter_builds" />
 
         <provider

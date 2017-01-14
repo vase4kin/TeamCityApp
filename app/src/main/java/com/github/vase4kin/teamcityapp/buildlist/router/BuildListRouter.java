@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildlist.router;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 
 /**
  * Build list router
@@ -38,7 +39,7 @@ public interface BuildListRouter {
     void openRunBuildPage(String buildTypeId);
 
     /**
-     * Open filter builds page {@link com.github.vase4kin.teamcityapp.filter_builds.FilterBuildsActivity}
+     * Open filter builds page {@link FilterBuildsActivity}
      */
     void openFilterBuildsPage();
 }

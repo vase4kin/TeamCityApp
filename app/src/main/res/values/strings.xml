@@ -246,5 +246,5 @@
     <string name="text_menu_filter_builds">Filter builds</string>
 
     <!--Filter builds activity-->
-    <string name="title_filter_builds">Run build</string>
+    <string name="title_filter_builds">Filter builds</string>
 </resources>

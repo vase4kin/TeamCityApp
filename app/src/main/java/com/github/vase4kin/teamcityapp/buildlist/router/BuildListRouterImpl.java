@@ -20,7 +20,7 @@ import android.app.Activity;
 
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.filter_builds.FilterBuildsActivity;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 /**

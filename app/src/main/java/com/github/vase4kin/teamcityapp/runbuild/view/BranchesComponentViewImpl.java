@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.runbuild.view;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -47,10 +48,10 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
     @BindView(R.id.progress_branches_loading)
     View mBranchesLoadingProgress;
 
-    private RunBuildActivity mActivity;
+    private AppCompatActivity mActivity;
     private Unbinder mUnbinder;
 
-    public BranchesComponentViewImpl(RunBuildActivity activity) {
+    public BranchesComponentViewImpl(AppCompatActivity activity) {
         this.mActivity = activity;
     }
 
