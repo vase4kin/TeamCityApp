@@ -58,7 +58,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     @Override
     public void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listBuilds(id, LOCATIONS), loadingListener);
+        load(mTeamCityService.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR), loadingListener);
     }
 
     /**

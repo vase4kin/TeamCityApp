@@ -223,6 +223,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     public void onFilterBuildsActivityResult(BuildListFilter filter) {
         mView.showBuildFilterAppliedSnackBar();
+        mView.disableSwipeToRefresh();
         mView.showProgressWheel();
         mView.hideErrorView();
         mView.hideEmpty();

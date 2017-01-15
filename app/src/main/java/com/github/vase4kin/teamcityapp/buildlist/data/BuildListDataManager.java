@@ -32,11 +32,6 @@ import java.util.List;
 public interface BuildListDataManager extends BaseListRxDataManager<Builds, Build> {
 
     /**
-     * Build list location params
-     */
-    String LOCATIONS = "branch:default:any,running:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10";
-
-    /**
      * Load more builds
      *
      * @param loadingListener - Listener to receive callbacks on {@link com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl}

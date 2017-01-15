@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,7 +32,6 @@ import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListen
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -183,15 +181,9 @@ public class BuildListPresenterImplTest {
     }
 
     @Test
-    public void testOnActivityResultIfResultIsCanceled() throws Exception {
-        mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_CANCELED, null);
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
-    }
-
-    @Test
     public void testOnActivityResultIfResultIsOk() throws Exception {
         when(mValueExtractor.getId()).thenReturn("id");
-        mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_OK, "href");
+        mPresenter.onRunBuildActivityResult("href");
         assertThat(mPresenter.mQueuedBuildHref, is(equalTo("href")));
         verify(mView).showBuildQueuedSuccessSnackBar();
         verify(mView).showRefreshAnimation();
@@ -228,8 +220,9 @@ public class BuildListPresenterImplTest {
 
     @Test
     public void testOnFilterBuildsOptionMenuClick() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
         mPresenter.onFilterBuildsOptionMenuClick();
-        verify(mRouter).openFilterBuildsPage();
+        verify(mRouter).openFilterBuildsPage(eq("id"));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 

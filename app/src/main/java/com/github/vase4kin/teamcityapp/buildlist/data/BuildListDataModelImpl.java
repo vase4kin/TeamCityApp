@@ -150,6 +150,22 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      * {@inheritDoc}
      */
     @Override
+    public boolean isPersonal(int position) {
+        return mBuilds.get(position).isPersonal();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPinned(int position) {
+        return mBuilds.get(position).isPinned();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getItemCount() {
         return mBuilds.size();
     }

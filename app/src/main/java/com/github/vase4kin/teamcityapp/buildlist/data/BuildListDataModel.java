@@ -79,4 +79,16 @@ public interface BuildListDataModel extends BaseDataModel, Iterable<Build>, Mode
      * @return Build type id
      */
     String getBuildTypeId(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return {true} if build is personal
+     */
+    boolean isPersonal(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return {true} if build is pinned
+     */
+    boolean isPinned(int position);
 }

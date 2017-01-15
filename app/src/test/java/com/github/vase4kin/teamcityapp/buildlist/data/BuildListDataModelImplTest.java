@@ -115,6 +115,18 @@ public class BuildListDataModelImplTest {
     }
 
     @Test
+    public void testIsPersonal() {
+        when(mBuild.isPersonal()).thenReturn(true);
+        assertThat(mDataModel.isPersonal(0), is(true));
+    }
+
+    @Test
+    public void testIsPinned() {
+        when(mBuild.isPinned()).thenReturn(true);
+        assertThat(mDataModel.isPinned(0), is(true));
+    }
+
+    @Test
     public void testIsLoadMore() {
         mDataModel = new BuildListDataModelImpl(Collections.singletonList(BuildListDataModelImpl.LOAD_MORE));
         assertThat(mDataModel.isLoadMore(0), is(true));

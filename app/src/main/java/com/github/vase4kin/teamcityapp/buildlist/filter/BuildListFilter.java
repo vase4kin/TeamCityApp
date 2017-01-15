@@ -24,6 +24,11 @@ import java.io.Serializable;
 public interface BuildListFilter extends Serializable {
 
     /**
+     * Default build list filter
+     */
+    String DEFAULT_FILTER_LOCATOR = "branch:default:any,running:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10";
+
+    /**
      * Set filter type
      *
      * @param filter - filter to set
