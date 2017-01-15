@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.filter;
 
+import android.text.TextUtils;
+
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 
 /**
@@ -77,7 +79,7 @@ public class BuildListFilterImpl implements BuildListFilter {
                 locatorBuilder.append("status:ERROR");
                 break;
             case FilterBuildsView.FILTER_CANCELLED:
-                locatorBuilder.append("cancelled:true");
+                locatorBuilder.append("canceled:true");
                 break;
             case FilterBuildsView.FILTER_FAILED_TO_START:
                 locatorBuilder.append("failedToStart:true");
@@ -90,11 +92,11 @@ public class BuildListFilterImpl implements BuildListFilter {
                 break;
         }
         locatorBuilder.append(",");
-        locatorBuilder.append("branch:name:");
-        if (mBranch != null) {
+        if (!TextUtils.isEmpty(mBranch)) {
+            locatorBuilder.append("branch:name:");
             locatorBuilder.append(mBranch);
         } else {
-            locatorBuilder.append("branch:branched:any");
+            locatorBuilder.append("branch:default:any");
         }
         locatorBuilder.append(",");
         locatorBuilder.append("personal:");

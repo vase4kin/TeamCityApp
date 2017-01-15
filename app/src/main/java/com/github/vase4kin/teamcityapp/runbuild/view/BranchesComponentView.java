@@ -59,6 +59,11 @@ public interface BranchesComponentView {
     void showNoBranchesAvailable();
 
     /**
+     * Show no branches available to filter
+     */
+    void showNoBranchesAvailableToFilter();
+
+    /**
      * Show branches auto complete
      */
     void showBranchesAutoComplete();
@@ -67,4 +72,9 @@ public interface BranchesComponentView {
      * @return Current selected branch
      */
     String getBranchName();
+
+    /**
+     * Set autocomplete field for filter
+     */
+    void setAutocompleteHintForFilter();
 }

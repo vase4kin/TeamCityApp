@@ -45,6 +45,8 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
     AutoCompleteTextView mBranchAutocomplete;
     @BindView(R.id.text_no_branches_available)
     TextView mNoBranchesAvailable;
+    @BindView(R.id.text_no_branches_available_to_filter)
+    TextView mNoBranchesAvailableToFilter;
     @BindView(R.id.progress_branches_loading)
     View mBranchesLoadingProgress;
 
@@ -111,6 +113,14 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
      * {@inheritDoc}
      */
     @Override
+    public void showNoBranchesAvailableToFilter() {
+        mNoBranchesAvailableToFilter.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void showBranchesAutoComplete() {
         mBranchAutocomplete.setVisibility(View.VISIBLE);
     }
@@ -121,6 +131,14 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
     @Override
     public String getBranchName() {
         return mBranchAutocomplete.getText().toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAutocompleteHintForFilter() {
+        mBranchAutocomplete.setHint(R.string.hint_default_filter_branch);
     }
 
     /**

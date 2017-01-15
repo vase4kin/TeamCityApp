@@ -60,15 +60,14 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
             @Override
             public void onSuccess(List<String> branches) {
                 mBranchesComponentView.hideBranchesLoadingProgress();
-                if (branches.size() == 1) {
-                    // set this branch as default and disable the field
-                    mBranchesComponentView.setupAutoCompleteForSingleBranch(branches);
+                if (branches.isEmpty() || branches.size() == 1) {
+                    // If branch is single no need to show it, cause it can be default one, and you can not filter by default one
+                    mBranchesComponentView.showNoBranchesAvailableToFilter();
                 } else {
-                    // for all other leave the hint as default
-                    // TODO: set different hint
                     mBranchesComponentView.setupAutoComplete(branches);
+                    mBranchesComponentView.setAutocompleteHintForFilter();
+                    mBranchesComponentView.showBranchesAutoComplete();
                 }
-                mBranchesComponentView.showBranchesAutoComplete();
             }
 
             @Override

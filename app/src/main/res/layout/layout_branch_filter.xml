@@ -48,6 +48,16 @@
         android:visibility="gone"
         style="@style/Hint" />
 
+    <TextView
+        android:id="@+id/text_no_branches_available_to_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:text="@string/text_no_branches_available_to_filter"
+        android:textSize="18sp"
+        android:visibility="gone"
+        style="@style/Hint" />
+
     <LinearLayout
         android:id="@+id/progress_branches_loading"
         android:layout_width="match_parent"

@@ -204,6 +204,7 @@
     <string name="title_run_build">Run build</string>
     <string name="text_build_branch">Build branch</string>
     <string name="text_no_branches_available">No branches available</string>
+    <string name="text_no_branches_available_to_filter">No branches available to filter</string>
     <string name="text_loading_branches">Loading branches</string>
     <string name="hint_default_build_branch">Default branch</string>
     <string name="error_base_error">We encountered problem running build</string>
@@ -253,5 +254,6 @@
     <string name="text_switcher_for_personal">Personal</string>
     <string name="text_filters">Filters</string>
     <string name="text_filters_none">None</string>
+    <string name="hint_default_filter_branch">Any</string>
 
 </resources>
