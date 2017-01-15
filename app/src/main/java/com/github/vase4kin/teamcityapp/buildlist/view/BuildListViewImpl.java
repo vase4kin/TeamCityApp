@@ -220,6 +220,17 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         snackBar.show();
     }
 
+    @Override
+    public void showBuildFilterAppliedSnackBar() {
+        Snackbar snackBar = Snackbar.make(
+                mRecyclerView,
+                R.string.text_filters_applied,
+                Snackbar.LENGTH_LONG);
+        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
+    }
+
     /**
      * {@inheritDoc}
      */

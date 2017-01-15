@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +59,14 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     @Override
     public void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener) {
         load(mTeamCityService.listBuilds(id, LOCATIONS), loadingListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<Build>> loadingListener) {
+        load(mTeamCityService.listBuilds(id, filter.toLocator()), loadingListener);
     }
 
     /**

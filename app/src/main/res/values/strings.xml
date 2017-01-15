@@ -244,6 +244,7 @@
 
     <!--Build list activity-->
     <string name="text_menu_filter_builds">Filter builds</string>
+    <string name="text_filters_applied">Build filters have been applied</string>
 
     <!--Filter builds activity-->
     <string name="title_filter_builds">Filter builds</string>

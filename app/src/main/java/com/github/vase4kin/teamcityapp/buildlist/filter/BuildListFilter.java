@@ -14,34 +14,45 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.filter_builds.router;
+package com.github.vase4kin.teamcityapp.buildlist.filter;
 
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import java.io.Serializable;
 
 /**
- * Router to manage {@link com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity} navigation
+ * Filter for build list
  */
-public interface FilterBuildsRouter {
+public interface BuildListFilter extends Serializable {
 
     /**
-     * Bundle extra key
-     */
-    String EXTRA_FILTER = "filter";
-
-    /**
-     * Close activity with success result
+     * Set filter type
      *
-     * @param filter - filter locator
+     * @param filter - filter to set
      */
-    void closeOnSuccess(BuildListFilter filter);
+    void setFilter(int filter);
 
     /**
-     * Close activity with cancel result
+     * Set branch
+     *
+     * @param branch - branch to filter with
      */
-    void closeOnCancel();
+    void setBranch(String branch);
 
     /**
-     * On back button pressed
+     * Filter personal
+     *
+     * @param isPersonal - flag
      */
-    void closeOnBackButtonPressed();
+    void setPersonal(boolean isPersonal);
+
+    /**
+     * Filter pinned
+     *
+     * @param isPinned - flag
+     */
+    void setPinned(boolean isPinned);
+
+    /**
+     * @return {String} as param locator
+     */
+    String toLocator();
 }

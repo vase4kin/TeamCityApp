@@ -63,6 +63,11 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void showBuildQueuedSuccessSnackBar();
 
     /**
+     * Show build filters've applied snack bar
+     */
+    void showBuildFilterAppliedSnackBar();
+
+    /**
      * Show error opening build snack bar
      */
     void showOpeningBuildErrorSnackBar();

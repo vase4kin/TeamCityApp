@@ -16,9 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,11 +31,12 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -206,19 +205,29 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     }
 
     /**
-     * On activity result
+     * On run build activity result
      *
-     * @param requestCode     - Request code
-     * @param resultCode      - Result code
      * @param queuedBuildHref - Queued build href
      */
-    public void onActivityResult(int requestCode, int resultCode, @Nullable String queuedBuildHref) {
-        if (requestCode == RunBuildActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            this.mQueuedBuildHref = queuedBuildHref;
-            mView.showBuildQueuedSuccessSnackBar();
-            mView.showRefreshAnimation();
-            onSwipeToRefresh();
-        }
+    public void onRunBuildActivityResult(String queuedBuildHref) {
+        this.mQueuedBuildHref = queuedBuildHref;
+        mView.showBuildQueuedSuccessSnackBar();
+        mView.showRefreshAnimation();
+        onSwipeToRefresh();
+    }
+
+    /**
+     * On filter builds activity result
+     *
+     * @param filter - filter to filter builds
+     */
+    public void onFilterBuildsActivityResult(BuildListFilter filter) {
+        mView.showBuildFilterAppliedSnackBar();
+        mView.showProgressWheel();
+        mView.hideErrorView();
+        mView.hideEmpty();
+        mView.showData(new BuildListDataModelImpl(Collections.<Build>emptyList()));
+        mDataManager.load(mValueExtractor.getId(), filter, loadingListener);
     }
 
     /**

@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 
 import java.util.List;
 
@@ -46,6 +47,11 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
      * {@inheritDoc}
      */
     void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener);
+
+    /**
+     * {@inheritDoc}
+     */
+    void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<Build>> loadingListener);
 
     /**
      * Is there any more builds to load

@@ -55,7 +55,7 @@ public abstract class BaseListPresenterImpl<
     /**
      * On loading listener
      */
-    private OnLoadingListener<List<S>> loadingListener = new OnLoadingListener<List<S>>() {
+    protected OnLoadingListener<List<S>> loadingListener = new OnLoadingListener<List<S>>() {
         @Override
         public void onSuccess(List<S> data) {
             onSuccessCallBack(data);

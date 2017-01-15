@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.vase4kin.teamcityapp.filter_builds.router;
 
 import android.content.Intent;
 
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter.EXTRA_HREF;
 
 /**
  * Impl of {@link FilterBuildsRouter}
@@ -38,9 +39,9 @@ public class FilterBuildsRouterImpl implements FilterBuildsRouter {
      * {@inheritDoc}
      */
     @Override
-    public void closeOnSuccess(String queuedBuildHref) {
+    public void closeOnSuccess(BuildListFilter filter) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_HREF, queuedBuildHref);
+        intent.putExtra(EXTRA_FILTER, filter);
         mActivity.setResult(RESULT_OK, intent);
         mActivity.finish();
     }

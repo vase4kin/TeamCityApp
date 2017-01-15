@@ -17,6 +17,8 @@
 package com.github.vase4kin.teamcityapp.filter_builds.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
@@ -112,8 +114,12 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
     }
 
     @Override
-    public void onFilterFabClick(int filter, boolean isPersonal, boolean isPinned) {
-        // prepare locator to be passed to intent
-        mRouter.closeOnSuccess("");
+    public void onFilterFabClick(int filterType, boolean isPersonal, boolean isPinned) {
+        BuildListFilter filter = new BuildListFilterImpl();
+        filter.setFilter(filterType);
+        filter.setBranch(mBranchesComponentView.getBranchName());
+        filter.setPersonal(isPersonal);
+        filter.setPinned(isPinned);
+        mRouter.closeOnSuccess(filter);
     }
 }
