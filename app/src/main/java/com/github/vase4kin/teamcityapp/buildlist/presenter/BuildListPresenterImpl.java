@@ -136,7 +136,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onFilterBuildsOptionMenuClick() {
-        mRouter.openFilterBuildsPage();
+        mRouter.openFilterBuildsPage(mValueExtractor.getId());
     }
 
     /**

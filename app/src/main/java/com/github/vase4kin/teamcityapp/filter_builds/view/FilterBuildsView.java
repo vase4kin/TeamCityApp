@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.vase4kin.teamcityapp.filter_builds.view;
 
 
@@ -22,6 +23,15 @@ import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationLi
  * {@link FilterBuildsActivity} view interactions
  */
 public interface FilterBuildsView {
+
+    // Available build filters
+    int FILTER_SUCCESS = 0;
+    int FILTER_FAILED = 1;
+    int FILTER_ERROR = 2;
+    int FILTER_CANCELLED = 3;
+    int FILTER_FAILED_TO_START = 4;
+    int FILTER_RUNNING = 5;
+    int FILTER_NONE = 6;
 
     /**
      * Init views
@@ -39,5 +49,16 @@ public interface FilterBuildsView {
      * Listener to receive callbacks to presenter
      */
     interface ViewListener extends OnToolBarNavigationListener {
+
+        /**
+         * On filter float action button click
+         *
+         * @param filter     - how to filter builds
+         * @param isPersonal - show personal
+         * @param isPinned   - show pinned
+         */
+        void onFilterFabClick(int filter,
+                              boolean isPersonal,
+                              boolean isPinned);
     }
 }

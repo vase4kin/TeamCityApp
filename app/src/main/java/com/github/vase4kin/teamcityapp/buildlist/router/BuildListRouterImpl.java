@@ -54,7 +54,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      * {@inheritDoc}
      */
     @Override
-    public void openFilterBuildsPage() {
-        FilterBuildsActivity.startForResult(mActivity, "");
+    public void openFilterBuildsPage(String buildTypeId) {
+        FilterBuildsActivity.startForResult(mActivity, buildTypeId);
     }
 }

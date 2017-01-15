@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.vase4kin.teamcityapp.filter_builds.view;
 
 import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Switch;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -32,15 +40,36 @@ import butterknife.Unbinder;
  */
 public class FilterBuildsViewImpl implements FilterBuildsView {
 
+    @BindView(R.id.fab_filter)
+    FloatingActionButton mFilterFab;
+
+    @BindView(R.id.selected_filter)
+    TextView mSelectedFilterStatus;
+
+    @BindView(R.id.switcher_is_personal)
+    Switch mPersonalSwitch;
+
+    @BindView(R.id.switcher_is_pinned)
+    Switch mPinnedSwitch;
+
+    @OnClick(R.id.chooser_filter)
+    public void onFilterChooserClick() {
+        mFilterChooser.show();
+    }
+
     private FilterBuildsActivity mActivity;
     private Unbinder mUnbinder;
+
+    private MaterialDialog mFilterChooser;
+
+    private int mSelectedFilter = FILTER_NONE;
 
     public FilterBuildsViewImpl(FilterBuildsActivity activity) {
         this.mActivity = activity;
     }
 
     @Override
-    public void initViews(ViewListener listener) {
+    public void initViews(final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
 
         Toolbar mToolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
@@ -55,6 +84,25 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
         mToolbar.setNavigationContentDescription(R.string.navigate_up);
         mToolbar.setNavigationIcon(new IconDrawable(mActivity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize());
         mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(listener));
+
+        mFilterFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onFilterFabClick(mSelectedFilter, mPersonalSwitch.isChecked(), mPinnedSwitch.isChecked());
+            }
+        });
+
+        mFilterChooser = new MaterialDialog.Builder(mActivity)
+                .title(R.string.title_filter_chooser_dialog)
+                .items(R.array.build_filters)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        mSelectedFilterStatus.setText(text);
+                        mSelectedFilter = position;
+                    }
+                })
+                .build();
     }
 
     @Override

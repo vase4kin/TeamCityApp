@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.github.vase4kin.teamcityapp.filter_builds.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -62,6 +63,7 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
                     mBranchesComponentView.setupAutoCompleteForSingleBranch(branches);
                 } else {
                     // for all other leave the hint as default
+                    // TODO: set different hint
                     mBranchesComponentView.setupAutoComplete(branches);
                 }
                 mBranchesComponentView.showBranchesAutoComplete();
@@ -107,5 +109,11 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
     @Override
     public void onClick() {
         mRouter.closeOnCancel();
+    }
+
+    @Override
+    public void onFilterFabClick(int filter, boolean isPersonal, boolean isPinned) {
+        // prepare locator to be passed to intent
+        mRouter.closeOnSuccess("");
     }
 }

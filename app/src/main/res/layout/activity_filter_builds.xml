@@ -66,47 +66,49 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:id="@+id/chooser_filter"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:background="?attr/selectableItemBackground">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/main_text_color"
-                        android:text="Status" />
+                        android:text="@string/text_filters"
+                        android:textSize="18sp" />
 
                     <TextView
+                        android:id="@+id/selected_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="All" />
+                        android:text="@string/text_filters_none" />
 
                 </LinearLayout>
 
-                <android.support.v7.widget.SwitchCompat
+                <Switch
+                    android:id="@+id/switcher_is_personal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Personal" />
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/text_switcher_for_personal"
+                    android:textSize="18sp"
+                    android:background="?attr/selectableItemBackground" />
 
-                <android.support.v7.widget.SwitchCompat
+                <Switch
+                    android:id="@+id/switcher_is_pinned"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="Cancelled" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Failed to start" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Running" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:text="Pinned" />
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/text_switcher_for_pinned"
+                    android:textSize="18sp"
+                    android:background="?attr/selectableItemBackground" />
 
             </LinearLayout>
 

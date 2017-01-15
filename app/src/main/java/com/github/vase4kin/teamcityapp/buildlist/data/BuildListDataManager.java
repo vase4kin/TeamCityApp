@@ -33,7 +33,7 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
     /**
      * Build list location params
      */
-    String LOCATIONS = "canceled:any,branch:branched:any,running:any,count:10";
+    String LOCATIONS = "branch:branched:any,running:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10";
 
     /**
      * Load more builds

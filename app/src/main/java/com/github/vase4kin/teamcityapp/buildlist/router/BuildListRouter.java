@@ -40,6 +40,8 @@ public interface BuildListRouter {
 
     /**
      * Open filter builds page {@link FilterBuildsActivity}
+     *
+     * @param buildTypeId - Build type id
      */
-    void openFilterBuildsPage();
+    void openFilterBuildsPage(String buildTypeId);
 }

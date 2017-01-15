@@ -247,4 +247,10 @@
 
     <!--Filter builds activity-->
     <string name="title_filter_builds">Filter builds</string>
+    <string name="title_filter_chooser_dialog">Choose filter</string>
+    <string name="text_switcher_for_pinned">Pinned</string>
+    <string name="text_switcher_for_personal">Personal</string>
+    <string name="text_filters">Filters</string>
+    <string name="text_filters_none">None</string>
+
 </resources>

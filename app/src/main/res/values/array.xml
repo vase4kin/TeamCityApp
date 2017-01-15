@@ -25,4 +25,12 @@
     <array name="artifact_menu_download">
         <item>Download</item>
     </array>
+    <array name="build_filters">
+        <item>Success</item>
+        <item>Failed</item>
+        <item>Failed due server error</item>
+        <item>Cancelled</item>
+        <item>Failed to start</item>
+        <item>Running</item>
+    </array>
 </resources>
