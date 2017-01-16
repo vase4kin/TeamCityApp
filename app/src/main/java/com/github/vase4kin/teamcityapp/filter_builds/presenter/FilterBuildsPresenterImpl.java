@@ -121,4 +121,20 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
         filter.setPinned(isPinned);
         mRouter.closeOnSuccess(filter);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onQueuedFilterSelected() {
+        mView.hideSwitchForPinnedFilter();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onOtherFiltersSelected() {
+        mView.showSwitchForPinnedFilter();
+    }
 }

@@ -91,4 +91,10 @@ public interface BuildListDataModel extends BaseDataModel, Iterable<Build>, Mode
      * @return {true} if build is pinned
      */
     boolean isPinned(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return {true} if build is queued
+     */
+    boolean isQueued(int position);
 }

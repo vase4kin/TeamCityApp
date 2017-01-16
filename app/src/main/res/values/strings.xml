@@ -246,13 +246,14 @@
     <!--Build list activity-->
     <string name="text_menu_filter_builds">Filter builds</string>
     <string name="text_filters_applied">Build filters have been applied</string>
+    <string name="text_queued_header">Queued</string>
 
     <!--Filter builds activity-->
     <string name="title_filter_builds">Filter builds</string>
     <string name="title_filter_chooser_dialog">Choose filter</string>
     <string name="text_switcher_for_pinned">Pinned</string>
     <string name="text_switcher_for_personal">Personal</string>
-    <string name="text_filters">Filters</string>
+    <string name="text_filters">Filter</string>
     <string name="text_filters_none">None</string>
     <string name="hint_default_filter_branch">Any</string>
 

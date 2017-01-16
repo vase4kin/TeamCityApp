@@ -87,8 +87,12 @@ public class BuildListFilterImpl implements BuildListFilter {
             case FilterBuildsView.FILTER_RUNNING:
                 locatorBuilder.append("running:true");
                 break;
+            case FilterBuildsView.FILTER_QUEUED:
+                locatorBuilder.append("state:queued");
+                break;
             case FilterBuildsView.FILTER_NONE:
-                locatorBuilder.append("running:any,canceled:any,failedToStart:any");
+            default:
+                locatorBuilder.append("state:any,canceled:any,failedToStart:any");
                 break;
         }
         locatorBuilder.append(",");
@@ -103,7 +107,13 @@ public class BuildListFilterImpl implements BuildListFilter {
         locatorBuilder.append(String.valueOf(mIsPersonal));
         locatorBuilder.append(",");
         locatorBuilder.append("pinned:");
-        locatorBuilder.append(String.valueOf(mIsPinned));
+        // Queued builds can be shown if only pinned:any, because queued builds can't be pinned
+        // ONLY DO SO FOR QUEUED BUILDS FILTER (For now it's expected behavior)
+        if (mFilterType == FilterBuildsView.FILTER_QUEUED) {
+            locatorBuilder.append("any");
+        } else {
+            locatorBuilder.append(String.valueOf(mIsPinned));
+        }
         locatorBuilder.append(",");
         locatorBuilder.append("count:10");
         return locatorBuilder.toString();

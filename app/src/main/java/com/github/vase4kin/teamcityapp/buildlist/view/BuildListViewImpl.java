@@ -45,6 +45,7 @@ import com.mugen.Mugen;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import tr.xip.errorview.ErrorView;
 
@@ -53,6 +54,8 @@ import tr.xip.errorview.ErrorView;
  */
 public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, SimpleSectionedRecyclerViewAdapter<BuildListAdapter>> implements BuildListView {
 
+    @BindString(R.string.text_queued_header)
+    String mQueuedHeaderText;
     @BindView(R.id.floating_action_button)
     FloatingActionButton mFloatingActionButton;
     private MaterialDialog mProgressDialog;
@@ -318,19 +321,19 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * @return List<SimpleSectionedRecyclerViewAdapter.Section>
      */
     private List<SimpleSectionedRecyclerViewAdapter.Section> initSections(BuildListDataModel dataModel) {
-        List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-                new ArrayList<>();
+        List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>();
 
         if (dataModel.getItemCount() != 0) {
             for (int i = 0; i < dataModel.getItemCount(); i++) {
-                String buildDate = DateUtils.initWithDate(dataModel.getStartDate(i)).formatStartDateToBuildListItemHeader();
+                String sectionTitle = dataModel.isQueued(i) ? mQueuedHeaderText
+                        : DateUtils.initWithDate(dataModel.getStartDate(i)).formatStartDateToBuildListItemHeader();
                 if (sections.size() != 0) {
                     SimpleSectionedRecyclerViewAdapter.Section prevSection = sections.get(sections.size() - 1);
-                    if (!prevSection.getTitle().equals(buildDate)) {
-                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildDate));
+                    if (!prevSection.getTitle().equals(sectionTitle)) {
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, sectionTitle));
                     }
                 } else {
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildDate));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, sectionTitle));
                 }
             }
         }

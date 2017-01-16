@@ -127,6 +127,12 @@ public class BuildListDataModelImplTest {
     }
 
     @Test
+    public void testIsQueued() {
+        when(mBuild.isQueued()).thenReturn(true);
+        assertThat(mDataModel.isQueued(0), is(true));
+    }
+
+    @Test
     public void testIsLoadMore() {
         mDataModel = new BuildListDataModelImpl(Collections.singletonList(BuildListDataModelImpl.LOAD_MORE));
         assertThat(mDataModel.isLoadMore(0), is(true));

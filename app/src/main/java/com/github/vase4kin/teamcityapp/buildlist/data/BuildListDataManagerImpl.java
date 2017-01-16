@@ -33,6 +33,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 /**
@@ -103,8 +104,18 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                         return mTeamCityService.build(build.getHref());
                     }
                 })
-                // putting them all to the list
-                .toList()
+                // putting them all to the sorted list
+                // where queued builds go first
+                .toSortedList(new Func2<Build, Build, Integer>() {
+                    @Override
+                    public Integer call(Build build, Build build2) {
+                        return (build.isQueued() == build2.isQueued())
+                                ? 0
+                                : (build.isQueued()
+                                ? -1
+                                : 1);
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Build>>() {

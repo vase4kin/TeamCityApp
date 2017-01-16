@@ -31,7 +31,8 @@ public interface FilterBuildsView {
     int FILTER_CANCELLED = 3;
     int FILTER_FAILED_TO_START = 4;
     int FILTER_RUNNING = 5;
-    int FILTER_NONE = 6;
+    int FILTER_QUEUED = 6;
+    int FILTER_NONE = 7;
 
     /**
      * Init views
@@ -44,6 +45,16 @@ public interface FilterBuildsView {
      * Unbind views
      */
     void unbindViews();
+
+    /**
+     * Hide switch which enables pinned build filter
+     */
+    void hideSwitchForPinnedFilter();
+
+    /**
+     * Show switch which enables pinned build filter
+     */
+    void showSwitchForPinnedFilter();
 
     /**
      * Listener to receive callbacks to presenter
@@ -60,5 +71,15 @@ public interface FilterBuildsView {
         void onFilterFabClick(int filter,
                               boolean isPersonal,
                               boolean isPinned);
+
+        /**
+         * On queued filter selected
+         */
+        void onQueuedFilterSelected();
+
+        /**
+         * On other filters selected (not queued)
+         */
+        void onOtherFiltersSelected();
     }
 }

@@ -32,5 +32,6 @@
         <item>Cancelled</item>
         <item>Failed to start</item>
         <item>Running</item>
+        <item>Queued</item>
     </array>
 </resources>

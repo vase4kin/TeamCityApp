@@ -49,9 +49,8 @@
                         android:id="@+id/container_icons"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
+                        android:layout_centerVertical="@+id/buildNumber"
                         android:layout_alignParentRight="true"
-                        android:layout_alignParentEnd="true"
                         android:orientation="horizontal">
 
                         <com.joanzapata.iconify.widget.IconTextView
@@ -59,14 +58,16 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
-                            android:text="{md-person}" />
+                            android:text="{md-person}"
+                            android:textColor="@color/sub_text_color" />
 
                         <com.joanzapata.iconify.widget.IconTextView
                             android:id="@+id/icon_pinned"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="8dp"
-                            android:text="{mdi-pin}" />
+                            android:text="{mdi-pin}"
+                            android:textColor="@color/sub_text_color" />
 
                     </LinearLayout>
 

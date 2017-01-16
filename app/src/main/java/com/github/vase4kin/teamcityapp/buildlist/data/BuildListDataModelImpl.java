@@ -166,6 +166,14 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      * {@inheritDoc}
      */
     @Override
+    public boolean isQueued(int position) {
+        return mBuilds.get(position).isQueued();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getItemCount() {
         return mBuilds.size();
     }

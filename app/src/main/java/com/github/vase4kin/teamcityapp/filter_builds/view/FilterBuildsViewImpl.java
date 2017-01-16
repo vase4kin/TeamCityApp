@@ -68,6 +68,9 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
         this.mActivity = activity;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initViews(final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
@@ -98,6 +101,11 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
                 .itemsCallback(new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        if (position == FILTER_QUEUED) {
+                            listener.onQueuedFilterSelected();
+                        } else {
+                            listener.onOtherFiltersSelected();
+                        }
                         mSelectedFilterStatus.setText(text);
                         mSelectedFilter = position;
                     }
@@ -105,8 +113,27 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
                 .build();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void unbindViews() {
         mUnbinder.unbind();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideSwitchForPinnedFilter() {
+        mPinnedSwitch.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showSwitchForPinnedFilter() {
+        mPinnedSwitch.setVisibility(View.VISIBLE);
     }
 }
