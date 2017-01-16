@@ -29,6 +29,7 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
@@ -64,6 +65,9 @@ public class BuildListPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
+
+    @Mock
+    private BuildListFilter mFilter;
 
     @Mock
     private MenuItem mMenuItem;
@@ -195,6 +199,21 @@ public class BuildListPresenterImplTest {
     }
 
     @Test
+    public void testOnFilterBuildsResultIfResultIsOk() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        mPresenter.onFilterBuildsActivityResult(mFilter);
+        verify(mView).showBuildFilterAppliedSnackBar();
+        verify(mView).disableSwipeToRefresh();
+        verify(mView).showProgressWheel();
+        verify(mView).hideErrorView();
+        verify(mView).hideEmpty();
+        verify(mView).showData(any(BuildListDataModel.class));
+        verify(mValueExtractor).getId();
+        verify(mDataManager).load(eq("id"), eq(mFilter), Mockito.any(OnLoadingListener.class));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
     public void testIsLoading() throws Exception {
         mPresenter.mIsLoadMoreLoading = true;
         assertThat(mPresenter.isLoading(), is(equalTo(true)));
@@ -222,6 +241,7 @@ public class BuildListPresenterImplTest {
     public void testOnFilterBuildsOptionMenuClick() throws Exception {
         when(mValueExtractor.getId()).thenReturn("id");
         mPresenter.onFilterBuildsOptionMenuClick();
+        verify(mValueExtractor).getId();
         verify(mRouter).openFilterBuildsPage(eq("id"));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }

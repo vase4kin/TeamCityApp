@@ -205,10 +205,9 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     }
 
     /**
-     * On run build activity result
-     *
-     * @param queuedBuildHref - Queued build href
+     * {@inheritDoc}
      */
+    @Override
     public void onRunBuildActivityResult(String queuedBuildHref) {
         this.mQueuedBuildHref = queuedBuildHref;
         mView.showBuildQueuedSuccessSnackBar();
@@ -217,10 +216,9 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     }
 
     /**
-     * On filter builds activity result
-     *
-     * @param filter - filter to filter builds
+     * {@inheritDoc}
      */
+    @Override
     public void onFilterBuildsActivityResult(BuildListFilter filter) {
         mView.showBuildFilterAppliedSnackBar();
         mView.disableSwipeToRefresh();
