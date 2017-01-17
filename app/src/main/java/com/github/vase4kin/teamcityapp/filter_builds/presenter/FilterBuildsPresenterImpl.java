@@ -20,6 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
+import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTracker;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
@@ -37,16 +38,19 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
     private FilterBuildsRouter mRouter;
     private BranchesInteractor mBranchesInteractor;
     private BranchesComponentView mBranchesComponentView;
+    private FilterBuildsTracker mTracker;
 
     @Inject
     FilterBuildsPresenterImpl(FilterBuildsView view,
                               FilterBuildsRouter router,
                               BranchesInteractor branchesInteractor,
-                              BranchesComponentView branchesComponentView) {
+                              BranchesComponentView branchesComponentView,
+                              FilterBuildsTracker tracker) {
         this.mView = view;
         this.mRouter = router;
         this.mBranchesInteractor = branchesInteractor;
         this.mBranchesComponentView = branchesComponentView;
+        this.mTracker = tracker;
     }
 
     /**
@@ -83,7 +87,7 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
      */
     @Override
     public void onResume() {
-        //track view
+        mTracker.trackView();
     }
 
     /**
@@ -119,6 +123,7 @@ public class FilterBuildsPresenterImpl implements FilterBuildsPresenter, FilterB
         filter.setBranch(mBranchesComponentView.getBranchName());
         filter.setPersonal(isPersonal);
         filter.setPinned(isPinned);
+        mTracker.trackUserFilteredBuilds();
         mRouter.closeOnSuccess(filter);
     }
 

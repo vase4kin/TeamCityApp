@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.filter_builds.dagger;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouterImpl;
+import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTracker;
+import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTrackerImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsViewImpl;
@@ -58,6 +60,11 @@ public class FilterBuildsModule {
     @Provides
     FilterBuildsRouter providesFilterBuildsRouter() {
         return new FilterBuildsRouterImpl(mActivity);
+    }
+
+    @Provides
+    FilterBuildsTracker providesFilterBuildsTracker() {
+        return new FilterBuildsTrackerImpl();
     }
 
 }

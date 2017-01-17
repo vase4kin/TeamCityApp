@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
+import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTracker;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
@@ -69,6 +70,8 @@ public class FilterBuildsPresenterImplTest {
     private BranchesInteractor mBranchesInteractor;
     @Mock
     private BranchesComponentView mBranchesComponentView;
+    @Mock
+    private FilterBuildsTracker mTracker;
 
     private FilterBuildsPresenterImpl mPresenter;
 
@@ -83,12 +86,12 @@ public class FilterBuildsPresenterImplTest {
                 return charSequence == null || charSequence.length() == 0;
             }
         });
-        mPresenter = new FilterBuildsPresenterImpl(mView, mRouter, mBranchesInteractor, mBranchesComponentView);
+        mPresenter = new FilterBuildsPresenterImpl(mView, mRouter, mBranchesInteractor, mBranchesComponentView, mTracker);
     }
 
     @After
     public void tearDown() throws Exception {
-        verifyNoMoreInteractions(mView, mRouter, mBranchesInteractor, mBranchesComponentView);
+        verifyNoMoreInteractions(mView, mRouter, mBranchesInteractor, mBranchesComponentView, mTracker);
     }
 
     @Test
@@ -119,7 +122,8 @@ public class FilterBuildsPresenterImplTest {
 
     @Test
     public void onResume() throws Exception {
-        //test track view
+        mPresenter.onResume();
+        verify(mTracker).trackView();
     }
 
     @Test
@@ -147,6 +151,7 @@ public class FilterBuildsPresenterImplTest {
         when(mBranchesComponentView.getBranchName()).thenReturn("branch");
         mPresenter.onFilterFabClick(FilterBuildsView.FILTER_CANCELLED, true, true);
         verify(mBranchesComponentView).getBranchName();
+        verify(mTracker).trackUserFilteredBuilds();
         verify(mRouter).closeOnSuccess(mBuildListFilterCaptor.capture());
         BuildListFilter capturedFilter = mBuildListFilterCaptor.getValue();
         assertThat(capturedFilter.toLocator(), is(equalTo("canceled:true,branch:name:branch,personal:true,pinned:true,count:10")));
