@@ -18,8 +18,6 @@ package com.github.vase4kin.teamcityapp.runbuild.view;
 
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
 
-import java.util.List;
-
 /**
  * View to handle interaction with {@link RunBuildActivity}
  */
@@ -31,35 +29,6 @@ public interface RunBuildView {
      * @param listener - to handle view interactions
      */
     void initViews(ViewListener listener);
-
-    /**
-     * Hide branches loading progress
-     */
-    void hideBranchesLoadingProgress();
-
-    /**
-     * Setup autocomplete
-     *
-     * @param branches - List of branches
-     */
-    void setupAutoComplete(List<String> branches);
-
-    /**
-     * Setup autocomplete for single branch
-     *
-     * @param branches - List containing single branch
-     */
-    void setupAutoCompleteForSingleBranch(List<String> branches);
-
-    /**
-     * Show no branches available
-     */
-    void showNoBranchesAvailable();
-
-    /**
-     * Show branches auto complete
-     */
-    void showBranchesAutoComplete();
 
     /**
      * Show posting build progress
@@ -91,6 +60,6 @@ public interface RunBuildView {
      */
     interface ViewListener extends OnToolBarNavigationListener {
 
-        void onBuildQueue(String branchName);
+        void onBuildQueue();
     }
 }

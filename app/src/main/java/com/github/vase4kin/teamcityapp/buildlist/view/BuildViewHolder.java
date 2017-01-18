@@ -44,6 +44,10 @@ public class BuildViewHolder extends BaseViewHolder<BuildListDataModel> {
     TextView mIcon;
     @BindView(R.id.buildNumber)
     TextView mBuildNumber;
+    @BindView(R.id.icon_personal)
+    View mIconPersonal;
+    @BindView(R.id.icon_pinned)
+    View mIconPinned;
 
     /**
      * Constructor
@@ -65,10 +69,20 @@ public class BuildViewHolder extends BaseViewHolder<BuildListDataModel> {
         } else {
             mBuildNumber.setText(dataModel.getBuildNumber(position));
         }
-        if (!dataModel.hasBranch(position)) {
-            mBranchName.setVisibility(View.GONE);
-            return;
+        if (dataModel.isPersonal(position)) {
+            mIconPersonal.setVisibility(View.VISIBLE);
+        } else {
+            mIconPersonal.setVisibility(View.GONE);
         }
-        mBranchName.setText(dataModel.getBranchName(position));
+        if (dataModel.isPinned(position)) {
+            mIconPinned.setVisibility(View.VISIBLE);
+        } else {
+            mIconPinned.setVisibility(View.GONE);
+        }
+        if (dataModel.hasBranch(position)) {
+            mBranchName.setText(dataModel.getBranchName(position));
+        } else {
+            mBranchName.setVisibility(View.GONE);
+        }
     }
 }

@@ -25,6 +25,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -42,6 +45,7 @@ import com.mugen.Mugen;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import tr.xip.errorview.ErrorView;
 
@@ -50,6 +54,8 @@ import tr.xip.errorview.ErrorView;
  */
 public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, SimpleSectionedRecyclerViewAdapter<BuildListAdapter>> implements BuildListView {
 
+    @BindString(R.string.text_queued_header)
+    String mQueuedHeaderText;
     @BindView(R.id.floating_action_button)
     FloatingActionButton mFloatingActionButton;
     private MaterialDialog mProgressDialog;
@@ -217,6 +223,17 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         snackBar.show();
     }
 
+    @Override
+    public void showBuildFilterAppliedSnackBar() {
+        Snackbar snackBar = Snackbar.make(
+                mRecyclerView,
+                R.string.text_filters_applied,
+                Snackbar.LENGTH_LONG);
+        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -254,6 +271,29 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_filter_builds_activity, menu);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        mActivity.invalidateOptionsMenu();
+        switch (item.getItemId()) {
+            case R.id.filter_builds:
+                mOnBuildListPresenterListener.onFilterBuildsOptionMenuClick();
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    /**
      * Init sectionAdapter
      *
      * @param
@@ -281,19 +321,19 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * @return List<SimpleSectionedRecyclerViewAdapter.Section>
      */
     private List<SimpleSectionedRecyclerViewAdapter.Section> initSections(BuildListDataModel dataModel) {
-        List<SimpleSectionedRecyclerViewAdapter.Section> sections =
-                new ArrayList<>();
+        List<SimpleSectionedRecyclerViewAdapter.Section> sections = new ArrayList<>();
 
         if (dataModel.getItemCount() != 0) {
             for (int i = 0; i < dataModel.getItemCount(); i++) {
-                String buildDate = DateUtils.initWithDate(dataModel.getStartDate(i)).formatStartDateToBuildListItemHeader();
+                String sectionTitle = dataModel.isQueued(i) ? mQueuedHeaderText
+                        : DateUtils.initWithDate(dataModel.getStartDate(i)).formatStartDateToBuildListItemHeader();
                 if (sections.size() != 0) {
                     SimpleSectionedRecyclerViewAdapter.Section prevSection = sections.get(sections.size() - 1);
-                    if (!prevSection.getTitle().equals(buildDate)) {
-                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildDate));
+                    if (!prevSection.getTitle().equals(sectionTitle)) {
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, sectionTitle));
                     }
                 } else {
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildDate));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, sectionTitle));
                 }
             }
         }

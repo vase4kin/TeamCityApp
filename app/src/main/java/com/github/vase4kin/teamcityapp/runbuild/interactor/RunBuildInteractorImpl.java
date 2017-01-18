@@ -18,21 +18,14 @@ package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
 import android.support.annotation.NonNull;
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
-import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
-import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
-
-import java.util.List;
 
 import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -58,51 +51,6 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
     public RunBuildInteractorImpl(TeamCityService teamCityService, @NonNull String buildTypeId) {
         this.mTeamCityService = teamCityService;
         this.mBuildTypeId = buildTypeId;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadBranches(final OnLoadingListener<List<String>> loadingListener) {
-        Subscription loadBranchesSubsription = mTeamCityService.listBranches(mBuildTypeId)
-                .flatMap(new Func1<Branches, Observable<Branch>>() {
-                    @Override
-                    public Observable<Branch> call(Branches branches) {
-                        return Observable.from(branches.getBranches());
-                    }
-                })
-                .flatMap(new Func1<Branch, Observable<Branch>>() {
-                    @Override
-                    public Observable<Branch> call(Branch branch) {
-                        return Observable.just(branch);
-                    }
-                })
-                .flatMap(new Func1<Branch, Observable<String>>() {
-                    @Override
-                    public Observable<String> call(Branch branch) {
-                        return Observable.just(branch.getName());
-                    }
-                })
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<String>>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loadingListener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<String> branches) {
-                        loadingListener.onSuccess(branches);
-                    }
-                });
-        mSubscription.add(loadBranchesSubsription);
     }
 
     /**

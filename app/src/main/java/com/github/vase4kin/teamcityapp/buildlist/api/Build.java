@@ -59,6 +59,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     private String startEstimate;
     private CanceledInfo canceledInfo;
     private String webUrl;
+    private boolean pinned;
+    private boolean personal;
 
     public String getNumber() {
         return number;
@@ -174,6 +176,14 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     public void setBuildTypeId(String buildTypeId) {
         this.buildType = new BuildType();
         this.buildType.setId(buildTypeId);
+    }
+
+    public boolean isPersonal() {
+        return personal;
+    }
+
+    public boolean isPinned() {
+        return pinned;
     }
 
     /**

@@ -29,12 +29,17 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
+import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -69,6 +74,8 @@ import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -327,5 +334,59 @@ public class BuildListActivityTest {
 
         // Check error snack bar again
         onView(withText(R.string.error_opening_build)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserCanOpenFilterBuilds() throws Exception {
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+
+        mActivityRule.launchActivity(null);
+
+        // Open build type
+        onView(withText("build type"))
+                .perform(click());
+
+        // Pressing filter builds toolbar item
+        onView(withId(R.id.filter_builds))
+                .perform(click());
+
+        // Check filter builds activity is opened
+        intended(allOf(
+                hasComponent(FilterBuildsActivity.class.getName()),
+                hasExtras(hasEntry(equalTo(RunBuildInteractor.EXTRA_BUILD_TYPE_ID), equalTo("build_type_id")))));
+    }
+
+    @Test
+    public void testUserCanSeeSnackBarIfBuildFiltersHaveBeenApplied() throws Exception {
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+
+        // Preparing stubbing intent
+        Intent resultData = new Intent();
+        BuildListFilter filter = new BuildListFilterImpl();
+        filter.setFilter(FilterBuildsView.FILTER_CANCELLED);
+        filter.setBranch("branch");
+        filter.setPersonal(true);
+        filter.setPinned(true);
+        resultData.putExtra(FilterBuildsRouter.EXTRA_FILTER, filter);
+        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
+
+        mActivityRule.launchActivity(null);
+
+        // Open build type
+        onView(withText("build type"))
+                .perform(click());
+
+        // Set up result stubbing
+        intending(hasComponent(FilterBuildsActivity.class.getName())).respondWith(result);
+
+        // Pressing filter builds toolbar item
+        onView(withId(R.id.filter_builds))
+                .perform(click());
+
+        // Check snack bar text
+        onView(withText(R.string.text_filters_applied)).check(matches(isDisplayed()));
+
+        // Check data was loaded with new filter
+        verify(mTeamCityService).listBuilds(eq("build_type_id"), eq("canceled:true,branch:name:branch,personal:true,pinned:true,count:10"));
     }
 }
