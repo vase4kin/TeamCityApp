@@ -24,7 +24,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="170dp">
+        android:layout_height="@dimen/toolbar_with_fab_height">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -33,65 +33,7 @@
 
             <include layout="@layout/layout_toolbar" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/default_margin"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/text_build_branch"
-                    style="@style/Hint" />
-
-                <AutoCompleteTextView
-                    android:id="@+id/autocomplete_branches"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:lines="1"
-                    android:hint="@string/hint_default_build_branch"
-                    android:completionThreshold="1"
-                    android:theme="@style/Autocomplete"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/text_no_branches_available"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:text="@string/text_no_branches_available"
-                    android:textSize="18sp"
-                    android:visibility="gone"
-                    style="@style/Hint" />
-
-                <LinearLayout
-                    android:id="@+id/progress_branches_loading"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/default_margin"
-                        android:text="@string/text_loading_branches"
-                        android:textSize="18sp"
-                        style="@style/Hint" />
-
-                    <com.pnikosis.materialishprogress.ProgressWheel
-                        android:id="@+id/progress_wheel"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        app:matProg_barColor="@color/md_white_1000"
-                        app:matProg_progressIndeterminate="true" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <include layout="@layout/layout_branch_filter" />
 
         </LinearLayout>
 

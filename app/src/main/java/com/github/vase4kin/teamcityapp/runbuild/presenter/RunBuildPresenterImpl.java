@@ -17,10 +17,12 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
+import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 
 import java.util.List;
@@ -36,16 +38,22 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     private RunBuildInteractor mInteractor;
     private RunBuildRouter mRouter;
     private RunBuildTracker mTracker;
+    private BranchesComponentView mBranchesComponentView;
+    private BranchesInteractor mBranchesInteractor;
 
     @Inject
     RunBuildPresenterImpl(RunBuildView view,
                           RunBuildInteractor interactor,
                           RunBuildRouter router,
-                          RunBuildTracker tracker) {
+                          RunBuildTracker tracker,
+                          BranchesComponentView branchesComponentView,
+                          BranchesInteractor branchesInteractor) {
         this.mView = view;
         this.mInteractor = interactor;
         this.mRouter = router;
         this.mTracker = tracker;
+        this.mBranchesComponentView = branchesComponentView;
+        this.mBranchesInteractor = branchesInteractor;
     }
 
     /**
@@ -54,24 +62,25 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     @Override
     public void onCreate() {
         mView.initViews(this);
-        mInteractor.loadBranches(new OnLoadingListener<List<String>>() {
+        mBranchesComponentView.initViews();
+        mBranchesInteractor.loadBranches(new OnLoadingListener<List<String>>() {
             @Override
             public void onSuccess(List<String> branches) {
-                mView.hideBranchesLoadingProgress();
+                mBranchesComponentView.hideBranchesLoadingProgress();
                 if (branches.size() == 1) {
                     // set this branch as default and disable the field
-                    mView.setupAutoCompleteForSingleBranch(branches);
+                    mBranchesComponentView.setupAutoCompleteForSingleBranch(branches);
                 } else {
                     // for all other leave the hint as default
-                    mView.setupAutoComplete(branches);
+                    mBranchesComponentView.setupAutoComplete(branches);
                 }
-                mView.showBranchesAutoComplete();
+                mBranchesComponentView.showBranchesAutoComplete();
             }
 
             @Override
             public void onFail(String errorMessage) {
-                mView.hideBranchesLoadingProgress();
-                mView.showNoBranchesAvailable();
+                mBranchesComponentView.hideBranchesLoadingProgress();
+                mBranchesComponentView.showNoBranchesAvailable();
             }
         });
     }
@@ -82,7 +91,9 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     @Override
     public void onDestroy() {
         mInteractor.unsubscribe();
+        mBranchesInteractor.unsubscribe();
         mView.unbindViews();
+        mBranchesComponentView.unbindViews();
     }
 
     /**
@@ -97,7 +108,8 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
      * {@inheritDoc}
      */
     @Override
-    public void onBuildQueue(String branchName) {
+    public void onBuildQueue() {
+        String branchName = mBranchesComponentView.getBranchName();
         mView.showQueuingBuildProgress();
         mInteractor.queueBuild(branchName, new LoadingListenerWithForbiddenSupport<String>() {
 

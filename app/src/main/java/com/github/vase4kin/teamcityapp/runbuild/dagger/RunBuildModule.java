@@ -17,12 +17,16 @@
 package com.github.vase4kin.teamcityapp.runbuild.dagger;
 
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
+import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractorImpl;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouterImpl;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTrackerImpl;
+import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
+import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentViewImpl;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildViewImpl;
@@ -45,8 +49,18 @@ public class RunBuildModule {
     }
 
     @Provides
+    BranchesComponentView providesBranchesComponentView() {
+        return new BranchesComponentViewImpl(mActivity);
+    }
+
+    @Provides
     RunBuildInteractor providesRunBuildInteractor(TeamCityService teamCityService) {
         return new RunBuildInteractorImpl(teamCityService, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
+    }
+
+    @Provides
+    BranchesInteractor providesBranchesInteractor(TeamCityService teamCityService) {
+        return new BranchesInteractorImpl(teamCityService, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides

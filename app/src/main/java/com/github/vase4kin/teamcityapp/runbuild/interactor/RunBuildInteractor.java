@@ -16,10 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
-
-import java.util.List;
 
 /**
  * Run build interactor
@@ -35,13 +32,6 @@ public interface RunBuildInteractor {
      * Extra bundle key
      */
     String EXTRA_BUILD_TYPE_ID = "BuildTypeId";
-
-    /**
-     * Load branches
-     *
-     * @param loadingListener - listener to receive callbacks
-     */
-    void loadBranches(OnLoadingListener<List<String>> loadingListener);
 
     /**
      * Queue new build

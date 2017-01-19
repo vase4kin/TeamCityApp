@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +33,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 /**
@@ -57,7 +59,15 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     @Override
     public void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listBuilds(id, LOCATIONS), loadingListener);
+        load(mTeamCityService.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR), loadingListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<Build>> loadingListener) {
+        load(mTeamCityService.listBuilds(id, filter.toLocator()), loadingListener);
     }
 
     /**
@@ -94,8 +104,18 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                         return mTeamCityService.build(build.getHref());
                     }
                 })
-                // putting them all to the list
-                .toList()
+                // putting them all to the sorted list
+                // where queued builds go first
+                .toSortedList(new Func2<Build, Build, Integer>() {
+                    @Override
+                    public Integer call(Build build, Build build2) {
+                        return (build.isQueued() == build2.isQueued())
+                                ? 0
+                                : (build.isQueued()
+                                ? -1
+                                : 1);
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<Build>>() {

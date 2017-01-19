@@ -16,10 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -30,11 +31,12 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -45,7 +47,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         V,
         DM,
         BuildListTracker,
-        BaseValueExtractor> implements OnBuildListPresenterListener {
+        BaseValueExtractor> implements BuildListPresenter, OnBuildListPresenterListener {
 
     private BuildListRouter mRouter;
     private BuildInteractor mBuildInteractor;
@@ -132,6 +134,14 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
+    public void onFilterBuildsOptionMenuClick() {
+        mRouter.openFilterBuildsPage(mValueExtractor.getId());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onLoadMore() {
         mIsLoadMoreLoading = true;
         mView.addLoadMore();
@@ -195,19 +205,28 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     }
 
     /**
-     * On activity result
-     *
-     * @param requestCode     - Request code
-     * @param resultCode      - Result code
-     * @param queuedBuildHref - Queued build href
+     * {@inheritDoc}
      */
-    public void onActivityResult(int requestCode, int resultCode, @Nullable String queuedBuildHref) {
-        if (requestCode == RunBuildActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            this.mQueuedBuildHref = queuedBuildHref;
-            mView.showBuildQueuedSuccessSnackBar();
-            mView.showRefreshAnimation();
-            onSwipeToRefresh();
-        }
+    @Override
+    public void onRunBuildActivityResult(String queuedBuildHref) {
+        this.mQueuedBuildHref = queuedBuildHref;
+        mView.showBuildQueuedSuccessSnackBar();
+        mView.showRefreshAnimation();
+        onSwipeToRefresh();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onFilterBuildsActivityResult(BuildListFilter filter) {
+        mView.showBuildFilterAppliedSnackBar();
+        mView.disableSwipeToRefresh();
+        mView.showProgressWheel();
+        mView.hideErrorView();
+        mView.hideEmpty();
+        mView.showData(new BuildListDataModelImpl(Collections.<Build>emptyList()));
+        mDataManager.load(mValueExtractor.getId(), filter, loadingListener);
     }
 
     /**
@@ -217,5 +236,28 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
         mBuildInteractor.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        mView.createOptionsMenu(menu, inflater);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        return mView.onOptionsItemSelected(item);
     }
 }

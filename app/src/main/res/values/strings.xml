@@ -204,6 +204,7 @@
     <string name="title_run_build">Run build</string>
     <string name="text_build_branch">Build branch</string>
     <string name="text_no_branches_available">No branches available</string>
+    <string name="text_no_branches_available_to_filter">No branches available to filter</string>
     <string name="text_loading_branches">Loading branches</string>
     <string name="hint_default_build_branch">Default branch</string>
     <string name="error_base_error">We encountered problem running build</string>
@@ -241,5 +242,19 @@
     <string name="text_menu_restart_build">Restart build</string>
     <string name="text_share_build">Share build details</string>
     <string name="text_re_add_build">Re-add build to the queue</string>
+
+    <!--Build list activity-->
+    <string name="text_menu_filter_builds">Filter builds</string>
+    <string name="text_filters_applied">Build filters have been applied</string>
+    <string name="text_queued_header">Queued</string>
+
+    <!--Filter builds activity-->
+    <string name="title_filter_builds">Filter builds</string>
+    <string name="title_filter_chooser_dialog">Choose filter</string>
+    <string name="text_switcher_for_pinned">Pinned</string>
+    <string name="text_switcher_for_personal">Personal</string>
+    <string name="text_filters">Filter</string>
+    <string name="text_filters_none">None</string>
+    <string name="hint_default_filter_branch">Any</string>
 
 </resources>

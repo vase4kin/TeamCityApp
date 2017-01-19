@@ -24,4 +24,5 @@
     <dimen name="other_dp">2dp</dimen>
     <dimen name="login_screen_margin">24dp</dimen>
     <integer name="logo_move">-400</integer>
+    <dimen name="toolbar_with_fab_height">170dp</dimen>
 </resources>

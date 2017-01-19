@@ -29,10 +29,49 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/buildNumber"
-                    style="@style/ItemSubTitle"
-                    tools:text="#1234567890" />
+                <!--TODO: Improve this layout-->
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/buildNumber"
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_toLeftOf="@+id/container_icons"
+                        android:maxLines="1"
+                        style="@style/ItemSubTitle"
+                        tools:text="#1234567890" />
+
+                    <LinearLayout
+                        android:id="@+id/container_icons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="@+id/buildNumber"
+                        android:layout_alignParentRight="true"
+                        android:orientation="horizontal">
+
+                        <com.joanzapata.iconify.widget.IconTextView
+                            android:id="@+id/icon_personal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:text="{md-person}"
+                            android:textColor="@color/sub_text_color" />
+
+                        <com.joanzapata.iconify.widget.IconTextView
+                            android:id="@+id/icon_pinned"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:text="{mdi-pin}"
+                            android:textColor="@color/sub_text_color" />
+
+                    </LinearLayout>
+
+                </RelativeLayout>
 
                 <include layout="@layout/layout_item_title" />
 

@@ -16,8 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -27,10 +29,10 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +65,18 @@ public class BuildListPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
+
+    @Mock
+    private BuildListFilter mFilter;
+
+    @Mock
+    private MenuItem mMenuItem;
+
+    @Mock
+    private Menu mMenu;
+
+    @Mock
+    private MenuInflater mMenuInflater;
 
     @Mock
     private Build mBuild;
@@ -171,15 +185,9 @@ public class BuildListPresenterImplTest {
     }
 
     @Test
-    public void testOnActivityResultIfResultIsCanceled() throws Exception {
-        mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_CANCELED, null);
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
-    }
-
-    @Test
     public void testOnActivityResultIfResultIsOk() throws Exception {
         when(mValueExtractor.getId()).thenReturn("id");
-        mPresenter.onActivityResult(RunBuildActivity.REQUEST_CODE, Activity.RESULT_OK, "href");
+        mPresenter.onRunBuildActivityResult("href");
         assertThat(mPresenter.mQueuedBuildHref, is(equalTo("href")));
         verify(mView).showBuildQueuedSuccessSnackBar();
         verify(mView).showRefreshAnimation();
@@ -187,6 +195,21 @@ public class BuildListPresenterImplTest {
         verify(mView).hideEmpty();
         verify(mValueExtractor).getId();
         verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnFilterBuildsResultIfResultIsOk() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        mPresenter.onFilterBuildsActivityResult(mFilter);
+        verify(mView).showBuildFilterAppliedSnackBar();
+        verify(mView).disableSwipeToRefresh();
+        verify(mView).showProgressWheel();
+        verify(mView).hideErrorView();
+        verify(mView).hideEmpty();
+        verify(mView).showData(any(BuildListDataModel.class));
+        verify(mValueExtractor).getId();
+        verify(mDataManager).load(eq("id"), eq(mFilter), Mockito.any(OnLoadingListener.class));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
@@ -212,5 +235,35 @@ public class BuildListPresenterImplTest {
     public void testOnFailCallBack() throws Exception {
         mPresenter.onFailCallBack("");
         verify(mView).hideRunBuildFloatActionButton();
+    }
+
+    @Test
+    public void testOnFilterBuildsOptionMenuClick() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        mPresenter.onFilterBuildsOptionMenuClick();
+        verify(mValueExtractor).getId();
+        verify(mRouter).openFilterBuildsPage(eq("id"));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnCreateOptions() throws Exception {
+        mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
+        verify(mView).createOptionsMenu(eq(mMenu), eq(mMenuInflater));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnPrepareOptionsMenu() throws Exception {
+        mPresenter.onPrepareOptionsMenu(mMenu);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnOptionsItemSelected() throws Exception {
+        when(mView.onOptionsItemSelected(mMenuItem)).thenReturn(true);
+        assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
+        verify(mView).onOptionsItemSelected(eq(mMenuItem));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 }

@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 
 import java.util.List;
 
@@ -29,11 +30,6 @@ import java.util.List;
  * Data manager for {@link com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity}
  */
 public interface BuildListDataManager extends BaseListRxDataManager<Builds, Build> {
-
-    /**
-     * Build list location params
-     */
-    String LOCATIONS = "canceled:any,branch:branched:any,running:any,count:10";
 
     /**
      * Load more builds
@@ -46,6 +42,11 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
      * {@inheritDoc}
      */
     void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener);
+
+    /**
+     * {@inheritDoc}
+     */
+    void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<Build>> loadingListener);
 
     /**
      * Is there any more builds to load
