@@ -21,19 +21,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,81 +56,65 @@ public class OverviewPresenterImplTest {
     private OnLoadingListener<List<BuildElement>> mLoadingListener;
 
     @Mock
-    private Build mBuild;
-
-    @Mock
     private OverviewViewImpl mView;
 
     @Mock
-    private OverViewInteractor mDataManager;
-
-    @Mock
-    private BaseValueExtractor mValueExtractor;
+    private OverViewInteractor mInteractor;
 
     @Mock
     private OverviewTracker mTracker;
+
+    @Mock
+    private OverViewInteractor.BuildDetails mBuildDetails;
 
     private OverviewPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new OverviewPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
+        mPresenter = new OverviewPresenterImpl(mView, mInteractor, mTracker);
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
     }
 
-    @Test
-    public void testLoadData() throws Exception {
-        when(mBuild.getHref()).thenReturn("url");
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
-        mPresenter.loadData(mLoadingListener);
-        verify(mValueExtractor).getBuild();
-        verify(mDataManager).load(eq("url"), eq(mLoadingListener));
-        tearDown();
-    }
-
-    @Test
-    public void testCreateModel() throws Exception {
-        List<BuildElement> elements = Collections.emptyList();
-        assertThat(mPresenter.createModel(elements).getItemCount(), is(0));
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(mView, mInteractor, mTracker, mBuildDetails);
     }
 
     @Test
     public void testOnCreateOptionsMenuIfBuildIsRunning() throws Exception {
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
-        when(mBuild.isRunning()).thenReturn(true);
+        when(mBuildDetails.isRunning()).thenReturn(true);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
-        verify(mValueExtractor).getBuild();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isRunning();
         verify(mView).createStopBuildOptionsMenu(eq(mMenu), eq(mMenuInflater));
-        tearDown();
     }
 
     @Test
     public void testOnCreateOptionsMenuIfBuildIsQueued() throws Exception {
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
-        when(mBuild.isRunning()).thenReturn(false);
-        when(mBuild.isQueued()).thenReturn(true);
+        when(mBuildDetails.isRunning()).thenReturn(false);
+        when(mBuildDetails.isQueued()).thenReturn(true);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
-        verify(mValueExtractor).getBuild();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isRunning();
+        verify(mBuildDetails).isQueued();
         verify(mView).createRemoveBuildFromQueueOptionsMenu(eq(mMenu), eq(mMenuInflater));
-        tearDown();
     }
 
     @Test
     public void testOnCreateOptionsMenuIfBuildIsFinished() throws Exception {
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
-        when(mBuild.isRunning()).thenReturn(false);
-        when(mBuild.isQueued()).thenReturn(false);
-        when(mBuild.isSuccess()).thenReturn(true);
+        when(mBuildDetails.isRunning()).thenReturn(false);
+        when(mBuildDetails.isQueued()).thenReturn(false);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
-        verify(mValueExtractor).getBuild();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isRunning();
+        verify(mBuildDetails).isQueued();
         verify(mView).createDefaultOptionsMenu(eq(mMenu), eq(mMenuInflater));
-        tearDown();
     }
 
     @Test
     public void testOnPrepareOptionsMenu() throws Exception {
         mPresenter.onPrepareOptionsMenu(mMenu);
-        tearDown();
     }
 
     @Test
@@ -140,48 +122,39 @@ public class OverviewPresenterImplTest {
         when(mView.onOptionsItemSelected(mMenuItem)).thenReturn(true);
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
         verify(mView).onOptionsItemSelected(eq(mMenuItem));
-        tearDown();
     }
 
     @Test
     public void testOnCancelBuildContextMenuClick() throws Exception {
         mPresenter.onCancelBuildContextMenuClick();
-        verify(mDataManager).postStopBuildEvent();
+        verify(mInteractor).postStopBuildEvent();
         verify(mTracker).trackUserClickedCancelBuildOption();
-        tearDown();
     }
 
     @Test
     public void testOnShareButtonClick() throws Exception {
         mPresenter.onShareButtonClick();
-        verify(mDataManager).postShareBuildInfoEvent();
+        verify(mInteractor).postShareBuildInfoEvent();
         verify(mTracker).trackUserSharedBuild();
-        tearDown();
     }
 
     @Test
     public void testOnRestartBuildButtonClick() throws Exception {
         mPresenter.onRestartBuildButtonClick();
-        verify(mDataManager).postRestartBuildEvent();
+        verify(mInteractor).postRestartBuildEvent();
         verify(mTracker).trackUserRestartedBuild();
-        tearDown();
     }
 
     @Test
     public void testOnStart() throws Exception {
         mPresenter.onStart();
-        verify(mDataManager).subscribeToEventBusEvents();
-        tearDown();
+        verify(mInteractor).subscribeToEventBusEvents();
     }
 
     @Test
     public void testOnStop() throws Exception {
         mPresenter.onStop();
-        verify(mDataManager).unsubsribeFromEventBusEvents();
-        tearDown();
+        verify(mInteractor).unsubsribeFromEventBusEvents();
     }
 
-    private void tearDown() {
-        verifyNoMoreInteractions(mView, mDataManager, mValueExtractor, mTracker);
-    }
 }

@@ -16,67 +16,77 @@
 
 package com.github.vase4kin.teamcityapp.overview.presenter;
 
-import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
-import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
-import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
-import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
 /**
- * Presenter to handle logic of {@link OverviewFragment}
+ * Impl of {@link OverviewPresenter}
  */
-public class OverviewPresenterImpl extends BaseListPresenterImpl<
-        BaseDataModel,
-        BuildElement,
-        OverviewView,
-        OverViewInteractor,
-        OverviewTracker,
-        BaseValueExtractor> implements OverviewPresenter, OverviewView.OverviewViewListener, OverViewInteractor.OnOverviewEventsListener {
+public class OverviewPresenterImpl implements OverviewPresenter,
+        OverviewView.OverviewViewListener,
+        OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<OverViewInteractor.BuildDetails> {
+
+    private OverviewView mView;
+    private OverViewInteractor mInteractor;
+    private OverviewTracker mTracker;
 
     @Inject
-    OverviewPresenterImpl(@NonNull OverviewView view,
-                          @NonNull OverViewInteractor dataManager,
-                          @NonNull OverviewTracker tracker,
-                          @NonNull BaseValueExtractor valueExtractor) {
-        super(view, dataManager, tracker, valueExtractor);
-    }
-
-    @Override
-    protected void initViews() {
-        super.initViews();
-        mView.setOverViewListener(this);
-        mDataManager.setListener(this);
+    OverviewPresenterImpl(OverviewView view,
+                          OverViewInteractor interactor,
+                          OverviewTracker tracker) {
+        this.mView = view;
+        this.mInteractor = interactor;
+        this.mTracker = tracker;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<BuildElement>> loadingListener) {
-        mDataManager.load(mValueExtractor.getBuild().getHref(), loadingListener);
+    public void onCreate() {
+        mView.initViews(this);
+        mInteractor.setListener(this);
+        mView.showProgressWheel();
+        loadBuildDetails();
+    }
+
+    /**
+     * Load build details
+     */
+    private void loadBuildDetails() {
+        String buildHref = mInteractor.getBuildDetails().getHref();
+        mInteractor.load(buildHref, this);
+    }
+
+    @Override
+    public void onDestroy() {
+        mView.unbindViews();
+        mInteractor.unsubscribe();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected BaseDataModel createModel(List<BuildElement> data) {
-        return new OverviewDataModelImpl(data);
+    public void onStart() {
+        mInteractor.subscribeToEventBusEvents();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStop() {
+        mInteractor.unsubsribeFromEventBusEvents();
     }
 
     /**
@@ -84,10 +94,10 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        Build build = mValueExtractor.getBuild();
-        if (build.isRunning()) {
+        OverViewInteractor.BuildDetails buildDetails = mInteractor.getBuildDetails();
+        if (buildDetails.isRunning()) {
             mView.createStopBuildOptionsMenu(menu, inflater);
-        } else if (build.isQueued()) {
+        } else if (buildDetails.isQueued()) {
             mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
         } else {
             mView.createDefaultOptionsMenu(menu, inflater);
@@ -109,12 +119,20 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
         return mView.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDataRefreshEvent() {
+        mView.showRefreshingProgress();
+        mView.hideErrorView();
+        loadBuildDetails();
+        // TODO: Disable cancel build menu when data is updated and build has finished status
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void onCancelBuildContextMenuClick() {
-        mDataManager.postStopBuildEvent();
+        mInteractor.postStopBuildEvent();
         mTracker.trackUserClickedCancelBuildOption();
     }
 
@@ -123,39 +141,111 @@ public class OverviewPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onShareButtonClick() {
-        mDataManager.postShareBuildInfoEvent();
+        mInteractor.postShareBuildInfoEvent();
         mTracker.trackUserSharedBuild();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onRestartBuildButtonClick() {
-        mDataManager.postRestartBuildEvent();
+        mInteractor.postRestartBuildEvent();
         mTracker.trackUserRestartedBuild();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onStart() {
-        mDataManager.subscribeToEventBusEvents();
+    public void onRefresh() {
+        mView.hideErrorView();
+        loadBuildDetails();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onStop() {
-        mDataManager.unsubsribeFromEventBusEvents();
+    public void onRetry() {
+        mView.hideErrorView();
+        mView.showRefreshingProgress();
+        loadBuildDetails();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void onDataRefreshEvent() {
-        mView.showRefreshAnimation();
-        onSwipeToRefresh();
-        // TODO: Disable cancel build menu when data is updated and build has finished status
+    public void onSuccess(OverViewInteractor.BuildDetails buildDetails) {
+        mView.hideCards();
+        mView.hideProgressWheel();
+        mView.hideRefreshingProgress();
+        // Status
+        String statusIcon = buildDetails.getStatusIcon();
+        String statusText = buildDetails.getStatusText();
+        if (buildDetails.isQueued()) {
+            mView.addWaitReasonStatusCard(statusIcon, statusText);
+        } else {
+            mView.addResultStatusCard(statusIcon, statusText);
+        }
+        // Cancellation info
+        if (buildDetails.hasCancellationInfo()) {
+            // Cancelled by user
+            if (buildDetails.hasUserInfoWhoCancelledBuild()) {
+                String userName = buildDetails.getUserNameWhoCancelledBuild();
+                mView.addCancelledByCard(statusIcon, userName);
+            }
+            // Cancellation time
+            String cancellationTime = buildDetails.getCancellationTime();
+            mView.addCancellationTimeCard(cancellationTime);
+        }
+        // Time
+        if (buildDetails.isRunning()) {
+            String startTime = buildDetails.getStartDate();
+            mView.addTimeCard(startTime);
+        } else if (buildDetails.isQueued()) {
+            String queuedTime = buildDetails.getQueuedDate();
+            mView.addQueuedTimeCard(queuedTime);
+        } else {
+            String finishTime = buildDetails.getFinishTime();
+            mView.addTimeCard(finishTime);
+        }
+        // Estimated start time
+        if (buildDetails.isQueued() && !TextUtils.isEmpty(buildDetails.getEstimatedStartTime())) {
+            String estimatedStartTime = buildDetails.getEstimatedStartTime();
+            mView.addEstimatedTimeToStartCard(estimatedStartTime);
+        }
+        // Branch
+        if (!TextUtils.isEmpty(buildDetails.getBranchName())) {
+            String branchName = buildDetails.getBranchName();
+            mView.addBranchCard(branchName);
+        }
+        // Agent
+        if (buildDetails.hasAgentInfo()) {
+            String agentName = buildDetails.getAgentName();
+            mView.addAgentCard(agentName);
+        }
+        // Triggered by
+        if (buildDetails.isTriggeredByVcs()) {
+            String vcsName = buildDetails.getTriggeredDetails();
+            mView.addTriggeredByCard(vcsName);
+        } else if (buildDetails.isTriggeredByUnknown()) {
+            String unknownConfigurationInfo = buildDetails.getTriggeredDetails();
+            mView.addTriggeredByCard(unknownConfigurationInfo);
+        } else if (buildDetails.isTriggeredByUser()) {
+            String triggeredUserNameInfo = buildDetails.getUserNameOfUserWhoTriggeredBuild();
+            mView.addTriggeredByCard(triggeredUserNameInfo);
+        } else if (buildDetails.isRestarted()) {
+            String restartedUserInfo = buildDetails.getUserNameOfUserWhoTriggeredBuild();
+            mView.addRestartedByCard(restartedUserInfo);
+        } else if (buildDetails.isTriggeredByBuildType()) {
+            String buildTypeName = buildDetails.getNameOfTriggeredBuildType();
+            mView.addTriggeredByCard(buildTypeName);
+        } else {
+            mView.addTriggeredByUnknownTriggerTypeCard();
+        }
+
+        // Show all added cards
+        mView.showCards();
+    }
+
+    @Override
+    public void onFail(String errorMessage) {
+        mView.hideCards();
+        mView.hideProgressWheel();
+        mView.hideRefreshingProgress();
+        mView.showErrorView(errorMessage);
     }
 }

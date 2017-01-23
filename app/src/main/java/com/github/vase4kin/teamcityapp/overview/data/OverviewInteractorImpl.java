@@ -19,21 +19,13 @@ package com.github.vase4kin.teamcityapp.overview.data;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
+import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataEvent;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
-import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
-import com.github.vase4kin.teamcityapp.buildlist.api.User;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
-import com.github.vase4kin.teamcityapp.utils.DateUtils;
-import com.github.vase4kin.teamcityapp.utils.IconUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import de.greenrobot.event.EventBus;
 import rx.Observer;
@@ -46,22 +38,20 @@ import rx.schedulers.Schedulers;
  */
 public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewInteractor {
 
-    private static final String TIME_ICON = "{mdi-clock}";
-    private static final String BRANCH_ICON = "{mdi-git}";
-    private static final String AGENT_ICON = "{md-directions-railway}";
-    private static final String TRIGGER_BY_ICON = "{md-account-circle}";
-
     private TeamCityService mTeamCityService;
     private Context mContext;
     private EventBus mEventBus;
+    private BaseValueExtractor mValueExtractor;
     private OnOverviewEventsListener mListener;
 
     public OverviewInteractorImpl(TeamCityService teamCityService,
                                   Context context,
-                                  EventBus eventBus) {
+                                  EventBus eventBus,
+                                  BaseValueExtractor valueExtractor) {
         this.mTeamCityService = teamCityService;
         this.mContext = context;
         this.mEventBus = eventBus;
+        this.mValueExtractor = valueExtractor;
     }
 
     /**
@@ -76,7 +66,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull final OnLoadingListener<List<BuildElement>> loadingListener) {
+    public void load(@NonNull String url, @NonNull final OnLoadingListener<BuildDetails> loadingListener) {
         mSubscriptions.clear();
         Subscription subscription = mTeamCityService.build(url)
                 .subscribeOn(Schedulers.io())
@@ -93,7 +83,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
 
                     @Override
                     public void onNext(Build response) {
-                        loadingListener.onSuccess(createElementsList(response));
+                        loadingListener.onSuccess(new BuildDetailsImpl(response, mContext));
                     }
                 });
         mSubscriptions.add(subscription);
@@ -139,6 +129,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
         mEventBus.unregister(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BuildDetails getBuildDetails() {
+        return new BuildDetailsImpl(mValueExtractor.getBuild(), mContext);
+    }
+
     /***
      * Handle receiving post events from {@link EventBus}
      *
@@ -150,114 +148,4 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
         mListener.onDataRefreshEvent();
     }
 
-    /**
-     * Create list of build elements
-     *
-     * Can be not the proper place to have this method
-     *
-     * TODO: Move to presenter
-     */
-    private List<BuildElement> createElementsList(@NonNull Build build) {
-        List<BuildElement> elements = new ArrayList<>();
-        if (build.isQueued()) {
-            if (build.getWaitReason() != null) {
-                elements.add(new BuildElement(IconUtils.getBuildStatusIcon(build.getStatus(), build.getState()),
-                        build.getStatusText(),
-                        mContext.getString(R.string.build_wait_reason_section_text)));
-            }
-        } else {
-            elements.add(new BuildElement(IconUtils.getBuildStatusIcon(build.getStatus(), build.getState()),
-                    build.getStatusText(),
-                    mContext.getString(R.string.build_result_section_text)));
-        }
-        if (build.getCanceledInfo() != null) {
-            CanceledInfo canceledInfo = build.getCanceledInfo();
-            String userName = null;
-            if (canceledInfo.getUser() != null) {
-                User user = canceledInfo.getUser();
-                if (user.getName() != null) {
-                    userName = user.getName();
-                } else {
-                    userName = user.getUsername();
-                }
-            }
-            if (userName != null) {
-                elements.add(
-                        new BuildElement(IconUtils.getBuildStatusIcon(build.getStatus(), build.getState()),
-                                userName,
-                                mContext.getString(R.string.build_canceled_by_text)));
-            }
-            elements.add(new BuildElement(
-                    TIME_ICON,
-                    DateUtils.initWithDate(canceledInfo.getTimestamp()).formatStartDateToBuildTitle(),
-                    mContext.getString(R.string.build_cancellation_time_text)));
-        }
-        BuildElement timeBuildElement;
-        if (build.isRunning()) {
-            timeBuildElement = new BuildElement(TIME_ICON,
-                    DateUtils.initWithDate(build.getStartDate()).formatStartDateToBuildTitle(), mContext.getString(R.string.build_time_section_text));
-        } else if (build.isQueued()) {
-            timeBuildElement = new BuildElement(TIME_ICON,
-                    DateUtils.initWithDate(build.getQueuedDate()).formatStartDateToBuildTitle(), mContext.getString(R.string.build_queued_time_section_text));
-        } else {
-            timeBuildElement = new BuildElement(TIME_ICON,
-                    DateUtils.initWithDate(build.getStartDate(), build.getFinishDate()).formatDateToOverview(), mContext.getString(R.string.build_time_section_text));
-        }
-        elements.add(timeBuildElement);
-        if (build.isQueued() && build.getStartEstimate() != null) {
-            BuildElement estimatedTimeBuildElement = new BuildElement(TIME_ICON,
-                    DateUtils.initWithDate(build.getStartEstimate()).formatStartDateToBuildTitle(), mContext.getString(R.string.build_time_to_start_section_text));
-            elements.add(estimatedTimeBuildElement);
-        }
-        if (build.getBranchName() != null) {
-            elements.add(new BuildElement(BRANCH_ICON, build.getBranchName(), mContext.getString(R.string.build_branch_section_text)));
-        }
-        if (build.getAgent() != null) {
-            elements.add(new BuildElement(AGENT_ICON, build.getAgent().getName(), mContext.getString(R.string.build_agent_section_text)));
-        }
-        String triggeredBy;
-        Triggered triggered = build.getTriggered();
-        if (triggered.isVcs()) {
-            // TODO: change icon to git
-            triggeredBy = build.getTriggered().getDetails();
-        } else if (triggered.isUser() || triggered.isRestarted()) {
-            triggeredBy = getUserName(triggered.getUser());
-        } else if (triggered.isUnknown()) {
-            // TODO: Change icon for schedule
-            triggeredBy = build.getTriggered().getDetails();
-        } else if (triggered.isBuildType()) {
-            // TODO: Get buildType call to get triggered by
-            // TODO: get the userName of triggered configuration
-            // TODO: navigate by clicking to triggered build
-            // TODO: move to resources
-            if (build.getTriggered().getBuildType() == null) {
-                triggeredBy = mContext.getString(R.string.triggered_deleted_configuration_text);
-            } else {
-                triggeredBy = build.getTriggered().getBuildType().getProjectName() + " " + build.getTriggered().getBuildType().getName();
-            }
-        } else {
-            triggeredBy = mContext.getString(R.string.unknown_trigger_type_text);
-        }
-        String sectionName = triggered.isRestarted()
-                ? mContext.getString(R.string.build_restarted_by_section_text)
-                : mContext.getString(R.string.build_triggered_by_section_text);
-        elements.add(new BuildElement(TRIGGER_BY_ICON, triggeredBy, sectionName));
-        return elements;
-    }
-
-    /**
-     * Get user name of User
-     *
-     * @param user - User
-     * @return User name
-     */
-    private String getUserName(User user) {
-        if (user == null) {
-            return mContext.getString(R.string.triggered_deleted_user_text);
-        } else {
-            return user.getName() == null
-                    ? user.getUsername()
-                    : user.getName();
-        }
-    }
 }

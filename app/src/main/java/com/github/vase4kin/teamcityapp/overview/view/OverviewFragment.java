@@ -64,7 +64,7 @@ public class OverviewFragment extends Fragment {
                 .build()
                 .inject(this);
 
-        mPresenter.onViewsCreated();
+        mPresenter.onCreate();
 
         return view;
     }
@@ -72,7 +72,7 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mPresenter.onViewsDestroyed();
+        mPresenter.onDestroy();
     }
 
     @Override

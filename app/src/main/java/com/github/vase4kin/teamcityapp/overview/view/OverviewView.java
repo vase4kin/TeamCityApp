@@ -16,21 +16,153 @@
 
 package com.github.vase4kin.teamcityapp.overview.view;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
+import tr.xip.errorview.ErrorView;
 
-public interface OverviewView extends BaseListView<OverviewDataModel> {
+public interface OverviewView {
 
     /**
-     * Set {@link OverviewViewListener}
+     * Init views and set listener {@link OverviewViewListener}
      *
      * @param listener - listener to receive UI updates
      */
-    void setOverViewListener(OverviewViewListener listener);
+    void initViews(OverviewViewListener listener);
+
+    /**
+     * Show progress loading wheel
+     */
+    void showProgressWheel();
+
+    /**
+     * Hide progress loading wheel
+     */
+    void hideProgressWheel();
+
+    /**
+     * Show refreshing progress
+     */
+    void showRefreshingProgress();
+
+    /**
+     * Hide refreshing progress
+     */
+    void hideRefreshingProgress();
+
+    /**
+     * Show error view with error message
+     *
+     * @param error - Error message
+     */
+    void showErrorView(String error);
+
+    /**
+     * Hide error view
+     */
+    void hideErrorView();
+
+    /**
+     * Unbind views
+     */
+    void unbindViews();
+
+    /**
+     * Add wait reason card
+     *
+     * @param icon       - icon to setup with
+     * @param waitReason - text with setup with
+     */
+    void addWaitReasonStatusCard(String icon, String waitReason);
+
+    /**
+     * Add result status card
+     *
+     * @param icon   - icon to setup with
+     * @param result - text with setup with
+     */
+    void addResultStatusCard(String icon, String result);
+
+    /**
+     * Add cancelled by card
+     *
+     * @param icon     - icon to setup with
+     * @param userName - text with setup with
+     */
+    void addCancelledByCard(String icon, String userName);
+
+    /**
+     * Add cancellation time card
+     *
+     * @param cancellationTime - text with setup with
+     */
+    void addCancellationTimeCard(String cancellationTime);
+
+    /**
+     * Add time card
+     *
+     * @param time - text with setup with
+     */
+    void addTimeCard(String time);
+
+    /**
+     * Add queued time card
+     *
+     * @param time - text with setup with
+     */
+    void addQueuedTimeCard(String time);
+
+    /**
+     * Add estimated time to start card
+     *
+     * @param time - text with setup with
+     */
+    void addEstimatedTimeToStartCard(String time);
+
+    /**
+     * Add branch card
+     *
+     * @param branchName - branch name with setup with
+     */
+    void addBranchCard(String branchName);
+
+    /**
+     * Add agent card
+     *
+     * @param agentName - agent name with setup with
+     */
+    void addAgentCard(String agentName);
+
+    /**
+     * Add triggered by card
+     *
+     * @param triggeredBy - trigger name with setup with
+     */
+    void addTriggeredByCard(String triggeredBy);
+
+    /**
+     * Add triggered by unknown card
+     */
+    void addTriggeredByUnknownTriggerTypeCard();
+
+    /**
+     * Add restarted by card
+     *
+     * @param restartedBy - restarted with setup with
+     */
+    void addRestartedByCard(String restartedBy);
+
+    /**
+     * Show build details cards
+     */
+    void showCards();
+
+    /**
+     * Hide build details cards
+     */
+    void hideCards();
 
     /**
      * {@inheritDoc}
@@ -63,7 +195,7 @@ public interface OverviewView extends BaseListView<OverviewDataModel> {
     /**
      * Listener to handle interactions between view and presenter
      */
-    interface OverviewViewListener {
+    interface OverviewViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
         /**
          * On stop build context menu clicked
          */
