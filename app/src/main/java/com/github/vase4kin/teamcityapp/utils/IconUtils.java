@@ -27,7 +27,7 @@ public class IconUtils {
     public static final String FAILURE = "{md-error}";
     private static final String ERROR = "{md-report-problem}";
     private static final String UNKNOWN = "{md-help}";
-    private static final String SUCCESS = "{md-check-circle}";
+    public static final String SUCCESS = "{md-check-circle}";
     private static final String QUEUE = "{mdi-clock-fast}";
 
     /**
