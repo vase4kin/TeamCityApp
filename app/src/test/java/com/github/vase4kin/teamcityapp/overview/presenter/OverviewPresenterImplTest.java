@@ -43,6 +43,8 @@ import static org.mockito.Mockito.when;
 
 public class OverviewPresenterImplTest {
 
+    private static final String HREF = "href";
+
     @Mock
     private MenuItem mMenuItem;
 
@@ -157,4 +159,67 @@ public class OverviewPresenterImplTest {
         verify(mInteractor).unsubsribeFromEventBusEvents();
     }
 
+    @Test
+    public void testOnCreate() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.getHref()).thenReturn(HREF);
+        mPresenter.onCreate();
+        verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).setListener(eq(mPresenter));
+        verify(mView).showProgressWheel();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).getHref();
+        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+    }
+
+    @Test
+    public void testOnDestroy() throws Exception {
+        mPresenter.onDestroy();
+        verify(mView).unbindViews();
+        verify(mInteractor).unsubscribe();
+    }
+
+    @Test
+    public void testOnDataRefreshEvent() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.getHref()).thenReturn(HREF);
+        mPresenter.onDataRefreshEvent();
+        verify(mView).showRefreshingProgress();
+        verify(mView).hideErrorView();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).getHref();
+        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+    }
+
+    @Test
+    public void testOnRefresh() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.getHref()).thenReturn(HREF);
+        mPresenter.onRefresh();
+        verify(mView).hideErrorView();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).getHref();
+        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+    }
+
+    @Test
+    public void testOnRetry() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.getHref()).thenReturn(HREF);
+        mPresenter.onRetry();
+        verify(mView).hideErrorView();
+        verify(mView).showRefreshingProgress();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).getHref();
+        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+    }
+
+    @Test
+    public void testOnFail() throws Exception {
+        mPresenter.onFail("error");
+        verify(mView).hideCards();
+        verify(mView).hideProgressWheel();
+        verify(mView).hideRefreshingProgress();
+        verify(mView).showErrorView(eq("error"));
+    }
 }
