@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import java.util.List;
 
@@ -36,17 +37,17 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
      *
      * @param loadingListener - Listener to receive callbacks on {@link com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl}
      */
-    void loadMore(@NonNull OnLoadingListener<List<Build>> loadingListener);
+    void loadMore(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
 
     /**
      * {@inheritDoc}
      */
-    void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener);
+    void load(@NonNull String id, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
 
     /**
      * {@inheritDoc}
      */
-    void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<Build>> loadingListener);
+    void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
 
     /**
      * Is there any more builds to load

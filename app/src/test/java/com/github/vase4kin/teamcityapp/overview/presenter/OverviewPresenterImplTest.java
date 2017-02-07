@@ -22,6 +22,7 @@ import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
@@ -67,7 +68,7 @@ public class OverviewPresenterImplTest {
     private OverviewTracker mTracker;
 
     @Mock
-    private OverViewInteractor.BuildDetails mBuildDetails;
+    private BuildDetails mBuildDetails;
 
     private OverviewPresenterImpl mPresenter;
 

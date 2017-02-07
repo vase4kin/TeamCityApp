@@ -26,9 +26,9 @@ import android.webkit.MimeTypeMap;
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs;
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.io.File;
@@ -91,9 +91,9 @@ public class ArtifactRouterImpl implements ArtifactRouter {
      * {@inheritDoc}
      */
     @Override
-    public void openArtifactFile(Build build, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile) {
+    public void openArtifactFile(BuildDetails buildDetails, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile) {
         FragmentTransaction fragmentTransaction = mActivity.getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.artifact_fragment_list, ArtifactListFragment.newInstance(build, artifactFile.getChildren().getHref()));
+        fragmentTransaction.add(R.id.artifact_fragment_list, ArtifactListFragment.newInstance(buildDetails.toBuild(), artifactFile.getChildren().getHref()));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
@@ -110,12 +110,12 @@ public class ArtifactRouterImpl implements ArtifactRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startBrowser(Build build, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile) {
+    public void startBrowser(BuildDetails buildDetails, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile) {
         String pathToFile = artifactFile.getHref().split("/metadata/")[1];
         String url = String.format(FILE_URL_PATTERN,
                 mSharedUserStorage.getActiveUser().getTeamcityUrl(),
-                build.getBuildType().getId(),
-                build.getId(),
+                buildDetails.getBuildTypeId(),
+                buildDetails.getId(),
                 pathToFile);
         mChromeCustomTabs.launchUrl(url);
     }

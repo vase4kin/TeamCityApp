@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
@@ -33,7 +34,7 @@ import javax.inject.Inject;
  */
 public class OverviewPresenterImpl implements OverviewPresenter,
         OverviewView.OverviewViewListener,
-        OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<OverViewInteractor.BuildDetails> {
+        OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<BuildDetails> {
 
     private OverviewView mView;
     private OverViewInteractor mInteractor;
@@ -94,7 +95,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        OverViewInteractor.BuildDetails buildDetails = mInteractor.getBuildDetails();
+        BuildDetails buildDetails = mInteractor.getBuildDetails();
         if (buildDetails.isRunning()) {
             mView.createStopBuildOptionsMenu(menu, inflater);
         } else if (buildDetails.isQueued()) {
@@ -168,7 +169,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     }
 
     @Override
-    public void onSuccess(OverViewInteractor.BuildDetails buildDetails) {
+    public void onSuccess(BuildDetails buildDetails) {
         mView.hideCards();
         mView.hideProgressWheel();
         mView.hideRefreshingProgress();

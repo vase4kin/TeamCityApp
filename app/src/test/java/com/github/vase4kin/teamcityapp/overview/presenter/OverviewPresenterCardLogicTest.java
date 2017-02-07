@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.overview.presenter;
 
 import android.text.TextUtils;
 
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
@@ -60,7 +61,7 @@ public class OverviewPresenterCardLogicTest {
     private OverviewTracker mTracker;
 
     @Mock
-    private OverViewInteractor.BuildDetails mBuildDetails;
+    private BuildDetails mBuildDetails;
 
     private OverviewPresenterImpl mPresenter;
 

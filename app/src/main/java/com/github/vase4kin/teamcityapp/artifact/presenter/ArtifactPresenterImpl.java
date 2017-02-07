@@ -95,9 +95,9 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onClick(File artifactFile) {
         if (artifactFile.hasChildren()) {
-            mRouter.openArtifactFile(mValueExtractor.getBuild(), artifactFile);
+            mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
         } else if (isBrowserUrl(artifactFile.getHref())) {
-            mRouter.startBrowser(mValueExtractor.getBuild(), artifactFile);
+            mRouter.startBrowser(mValueExtractor.getBuildDetails(), artifactFile);
         } else if (!artifactFile.hasChildren()) {
             downloadArtifactFile(artifactFile);
         }
@@ -188,7 +188,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void openArtifactFile(File artifactFile) {
-        mRouter.openArtifactFile(mValueExtractor.getBuild(), artifactFile);
+        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
     }
 
     /**
@@ -196,7 +196,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void startBrowser(File artifactFile) {
-        mRouter.startBrowser(mValueExtractor.getBuild(), artifactFile);
+        mRouter.startBrowser(mValueExtractor.getBuildDetails(), artifactFile);
     }
 
     /**

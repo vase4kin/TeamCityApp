@@ -19,8 +19,8 @@ package com.github.vase4kin.teamcityapp.properties.presenter;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 
@@ -46,7 +46,7 @@ public class PropertiesPresenterImplTest {
     private Properties.Property mProperty;
 
     @Mock
-    private Build mBuild;
+    private BuildDetails mBuildDetails;
 
     @Mock
     private OnLoadingListener<List<Properties.Property>> mLoadingListener;
@@ -73,10 +73,10 @@ public class PropertiesPresenterImplTest {
 
     @Test
     public void testLoadData() throws Exception {
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.loadData(mLoadingListener);
-        verify(mValueExtractor).getBuild();
-        verify(mDataManager).load(eq(mBuild), eq(mLoadingListener));
+        verify(mValueExtractor).getBuildDetails();
+        verify(mDataManager).load(eq(mBuildDetails), eq(mLoadingListener));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor);
     }
 

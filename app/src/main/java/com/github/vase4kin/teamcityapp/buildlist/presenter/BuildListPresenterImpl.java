@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,7 +44,7 @@ import javax.inject.Inject;
 
 public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildListDataManager> extends BaseListPresenterImpl<
         BuildListDataModel,
-        Build,
+        BuildDetails,
         V,
         DM,
         BuildListTracker,
@@ -75,7 +76,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<Build>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
         mDataManager.load(mValueExtractor.getId(), loadingListener);
     }
 
@@ -145,9 +146,9 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     public void onLoadMore() {
         mIsLoadMoreLoading = true;
         mView.addLoadMore();
-        mDataManager.loadMore(new OnLoadingListener<List<Build>>() {
+        mDataManager.loadMore(new OnLoadingListener<List<BuildDetails>>() {
             @Override
-            public void onSuccess(List<Build> data) {
+            public void onSuccess(List<BuildDetails> data) {
                 mView.removeLoadMore();
                 mView.addMoreBuilds(new BuildListDataModelImpl(data));
                 mIsLoadMoreLoading = false;
@@ -182,7 +183,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
-    protected BuildListDataModel createModel(List<Build> data) {
+    protected BuildListDataModel createModel(List<BuildDetails> data) {
         return new BuildListDataModelImpl(data);
     }
 
@@ -190,7 +191,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
-    protected void onSuccessCallBack(List<Build> data) {
+    protected void onSuccessCallBack(List<BuildDetails> data) {
         super.onSuccessCallBack(data);
         mView.showRunBuildFloatActionButton();
     }
@@ -225,7 +226,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         mView.showProgressWheel();
         mView.hideErrorView();
         mView.hideEmpty();
-        mView.showData(new BuildListDataModelImpl(Collections.<Build>emptyList()));
+        mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
         mDataManager.load(mValueExtractor.getId(), filter, loadingListener);
     }
 

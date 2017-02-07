@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -39,17 +38,14 @@ import rx.schedulers.Schedulers;
 public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewInteractor {
 
     private TeamCityService mTeamCityService;
-    private Context mContext;
     private EventBus mEventBus;
     private BaseValueExtractor mValueExtractor;
     private OnOverviewEventsListener mListener;
 
     public OverviewInteractorImpl(TeamCityService teamCityService,
-                                  Context context,
                                   EventBus eventBus,
                                   BaseValueExtractor valueExtractor) {
         this.mTeamCityService = teamCityService;
-        this.mContext = context;
         this.mEventBus = eventBus;
         this.mValueExtractor = valueExtractor;
     }
@@ -83,7 +79,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
 
                     @Override
                     public void onNext(Build response) {
-                        loadingListener.onSuccess(new BuildDetailsImpl(response, mContext));
+                        loadingListener.onSuccess(new BuildDetailsImpl(response));
                     }
                 });
         mSubscriptions.add(subscription);
@@ -134,7 +130,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      */
     @Override
     public BuildDetails getBuildDetails() {
-        return new BuildDetailsImpl(mValueExtractor.getBuild(), mContext);
+        return mValueExtractor.getBuildDetails();
     }
 
     /***

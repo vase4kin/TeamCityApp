@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.dagger;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -56,10 +55,9 @@ public class OverviewModule {
 
     @Provides
     OverViewInteractor providesOverViewDataManager(TeamCityService teamCityService,
-                                                   Context context,
                                                    EventBus eventBus,
                                                    BaseValueExtractor valueExtractor) {
-        return new OverviewInteractorImpl(teamCityService, context, eventBus, valueExtractor);
+        return new OverviewInteractorImpl(teamCityService, eventBus, valueExtractor);
     }
 
     @Provides

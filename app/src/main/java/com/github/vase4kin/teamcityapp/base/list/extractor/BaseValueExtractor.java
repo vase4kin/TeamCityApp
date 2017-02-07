@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.base.list.extractor;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 /**
  * Base bundle value extractor interface
@@ -34,9 +34,9 @@ public interface BaseValueExtractor {
     String getName();
 
     /**
-     * @return Build
+     * @return {@link BuildDetails}
      */
-    Build getBuild();
+    BuildDetails getBuildDetails();
 
     /**
      * @return determines if the bundle is null or not
@@ -58,8 +58,8 @@ public interface BaseValueExtractor {
         }
 
         @Override
-        public Build getBuild() {
-            return null;
+        public BuildDetails getBuildDetails() {
+            return BuildDetails.STUB;
         }
 
         @Override

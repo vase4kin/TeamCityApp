@@ -20,8 +20,11 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import java.util.List;
 
@@ -30,16 +33,26 @@ import java.util.List;
  */
 public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl implements RunningBuildsDataManager {
 
+    /**
+     * Filter to show only running builds
+     */
+    private BuildListFilter mFilter;
+
     public RunningBuildsDataManagerImpl(TeamCityService teamCityService) {
         super(teamCityService);
+        // Creating running filter
+        mFilter = new BuildListFilterImpl();
+        mFilter.setFilter(FilterBuildsView.FILTER_RUNNING);
     }
 
     /**
      * {@inheritDoc}
+     *
+     * TODO: WTF RUNNING BUILDS?
      */
     @Override
-    public void load(@NonNull OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listRunningBuilds("running:true,canceled:any,branch:default:any", null), loadingListener);
+    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
+        loadBuilds(mTeamCityService.listRunningBuilds(mFilter.toLocator(), null), loadingListener);
     }
 
     /**
@@ -47,6 +60,6 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     @Override
     public void loadCount(@NonNull OnLoadingListener<Integer> loadingListener) {
-        loadCount(mTeamCityService.listRunningBuilds("running:true,canceled:any,branch:default:any", "count"), loadingListener);
+        loadCount(mTeamCityService.listRunningBuilds(mFilter.toLocator(), "count"), loadingListener);
     }
 }

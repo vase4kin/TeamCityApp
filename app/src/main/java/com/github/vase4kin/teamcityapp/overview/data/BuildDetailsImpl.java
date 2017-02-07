@@ -16,27 +16,34 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.IconUtils;
 
 /**
- * Impl of {@link com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor.BuildDetails}
+ * Impl of {@link BuildDetails}
  */
-public class BuildDetailsImpl implements OverViewInteractor.BuildDetails {
+public class BuildDetailsImpl implements BuildDetails {
+
+    // TODO: Use from resources
+    //R.string.triggered_deleted_configuration_text
+    static final String DELETED_CONFIGURATION = "Deleted configuration";
+    // TODO: Use from resources
+    //R.string.triggered_deleted_user_text
+    static final String DELETED_USER = "Deleted user";
+    // TODO: Use from resources
+    static final String NO_NUMBER = "No number";
 
     private Build mBuild;
-    private Context mContext;
 
-    public BuildDetailsImpl(Build build, Context context) {
+    public BuildDetailsImpl(Build build) {
         this.mBuild = build;
-        this.mContext = context;
     }
 
     /**
@@ -45,6 +52,22 @@ public class BuildDetailsImpl implements OverViewInteractor.BuildDetails {
     @Override
     public String getHref() {
         return mBuild.getHref();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getWebUrl() {
+        return mBuild.getWebUrl();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getChangesHref() {
+        return mBuild.getChanges().getHref();
     }
 
     /**
@@ -77,6 +100,22 @@ public class BuildDetailsImpl implements OverViewInteractor.BuildDetails {
     @Override
     public boolean isQueued() {
         return mBuild.isQueued();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSuccess() {
+        return mBuild.isSuccess();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFailed() {
+        return mBuild.isFailed();
     }
 
     /**
@@ -237,10 +276,128 @@ public class BuildDetailsImpl implements OverViewInteractor.BuildDetails {
     public String getNameOfTriggeredBuildType() {
         BuildType buildType = mBuild.getTriggered().getBuildType();
         if (buildType == null) {
-            return mContext.getString(R.string.triggered_deleted_configuration_text);
+            return DELETED_CONFIGURATION;
         } else {
             return buildType.getProjectName() + " " + buildType.getName();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getBuildTypeId() {
+        return mBuild.getBuildTypeId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getId() {
+        return mBuild.getId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Properties getProperties() {
+        return mBuild.getProperties();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTriggeredByUser(String userName) {
+        Triggered triggered = mBuild.getTriggered();
+        return triggered != null
+                && triggered.isUser()
+                && triggered.getUser() != null
+                && userName.equals(triggered.getUser().getUsername());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasTests() {
+        return mBuild.getTestOccurrences() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getTestsHref() {
+        return mBuild.getTestOccurrences().getHref();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getPassedTestCount() {
+        return mBuild.getTestOccurrences().getPassed();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getFailedTestCount() {
+        return mBuild.getTestOccurrences().getFailed();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getIgnoredTestCount() {
+        return mBuild.getTestOccurrences().getIgnored();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getArtifactsHref() {
+        return mBuild.getArtifacts().getHref();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getNumber() {
+        return mBuild.getNumber() == null
+                ? NO_NUMBER
+                : mBuild.getNumber();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPersonal() {
+        return mBuild.isPersonal();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPinned() {
+        return mBuild.isPinned();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Build toBuild() {
+        return mBuild;
     }
 
     /**
@@ -251,7 +408,7 @@ public class BuildDetailsImpl implements OverViewInteractor.BuildDetails {
      */
     private String getUserName(User user) {
         if (user == null) {
-            return mContext.getString(R.string.triggered_deleted_user_text);
+            return DELETED_USER;
         } else {
             return user.getName() == null
                     ? user.getUsername()

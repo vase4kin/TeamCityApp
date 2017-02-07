@@ -21,6 +21,8 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 
 /**
  * Base impl of {@link BaseValueExtractor}
@@ -53,8 +55,9 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      * {@inheritDoc}
      */
     @Override
-    public Build getBuild() {
-        return (Build) mBundle.getSerializable(BundleExtractorValues.BUILD);
+    public BuildDetails getBuildDetails() {
+        Build build = (Build) mBundle.getSerializable(BundleExtractorValues.BUILD);
+        return new BuildDetailsImpl(build);
     }
 
     /**
