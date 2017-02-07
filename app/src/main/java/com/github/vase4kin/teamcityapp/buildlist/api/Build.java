@@ -36,15 +36,6 @@ import java.util.List;
  */
 public class Build extends BaseObject implements Collectible<BuildElement> {
 
-    /**
-     * TODO: Move to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    private static final String SUCCESS = "SUCCESS";
-    /**
-     * TODO: Move to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    private static final String FAILURE = "FAILURE";
-
     private String number;
     private String status;
     private String state;
@@ -116,50 +107,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return buildTypeId;
     }
 
-    /**
-     * TODO: Move all logic to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    @Deprecated
-    public boolean isQueued() {
-        return state.equals("queued");
-    }
-
-    /**
-     * TODO: Move all logic to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    @Deprecated
-    public boolean isRunning() {
-        return state.equals("running");
-    }
-
-    /**
-     * TODO: Move all logic to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    @Deprecated
-    public boolean isFailed() {
-        return status.equals(FAILURE);
-    }
-
-    /**
-     * TODO: Move all logic to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    @Deprecated
-    public boolean isSuccess() {
-        return status.equals(SUCCESS);
-    }
-
-    /**
-     * TODO: Move all logic to {@link com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl}
-     */
-    @Deprecated
     public String getStatusText() {
-        if (isQueued()) {
-            return waitReason != null
-                    ? waitReason
-                    : "Queued build";
-        } else {
-            return statusText;
-        }
+        return statusText;
     }
 
     public String getFinishDate() {

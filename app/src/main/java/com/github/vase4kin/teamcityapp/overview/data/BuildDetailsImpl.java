@@ -33,12 +33,14 @@ public class BuildDetailsImpl implements BuildDetails {
 
     // TODO: Use from resources
     //R.string.triggered_deleted_configuration_text
-    static final String DELETED_CONFIGURATION = "Deleted configuration";
+    static final String TEXT_DELETED_CONFIGURATION = "Deleted configuration";
     // TODO: Use from resources
     //R.string.triggered_deleted_user_text
-    static final String DELETED_USER = "Deleted user";
+    static final String TEXT_DELETED_USER = "Deleted user";
     // TODO: Use from resources
-    static final String NO_NUMBER = "No number";
+    static final String TEXT_NO_NUMBER = "No number";
+    // TODO: Use from resources
+    static final String TEXT_QUEUED_BUILD = "Queued build";
 
     private Build mBuild;
 
@@ -75,7 +77,14 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public String getStatusText() {
-        return mBuild.getStatusText();
+        if (isQueued()) {
+            String waitReason = mBuild.getWaitReason();
+            return waitReason != null
+                    ? waitReason
+                    : TEXT_QUEUED_BUILD;
+        } else {
+            return mBuild.getStatusText();
+        }
     }
 
     /**
@@ -91,7 +100,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isRunning() {
-        return mBuild.isRunning();
+        return mBuild.getState().equals(STATE_RUNNING);
     }
 
     /**
@@ -99,7 +108,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isQueued() {
-        return mBuild.isQueued();
+        return mBuild.getState().equals(STATE_QUEUED);
     }
 
     /**
@@ -107,7 +116,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isSuccess() {
-        return mBuild.isSuccess();
+        return mBuild.getStatus().equals(STATUS_SUCCESS);
     }
 
     /**
@@ -115,7 +124,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isFailed() {
-        return mBuild.isFailed();
+        return mBuild.getStatus().equals(STATUS_FAILURE);
     }
 
     /**
@@ -276,7 +285,7 @@ public class BuildDetailsImpl implements BuildDetails {
     public String getNameOfTriggeredBuildType() {
         BuildType buildType = mBuild.getTriggered().getBuildType();
         if (buildType == null) {
-            return DELETED_CONFIGURATION;
+            return TEXT_DELETED_CONFIGURATION;
         } else {
             return buildType.getProjectName() + " " + buildType.getName();
         }
@@ -372,7 +381,7 @@ public class BuildDetailsImpl implements BuildDetails {
     @Override
     public String getNumber() {
         return mBuild.getNumber() == null
-                ? NO_NUMBER
+                ? TEXT_NO_NUMBER
                 : mBuild.getNumber();
     }
 
@@ -408,7 +417,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     private String getUserName(User user) {
         if (user == null) {
-            return DELETED_USER;
+            return TEXT_DELETED_USER;
         } else {
             return user.getName() == null
                     ? user.getUsername()

@@ -33,7 +33,12 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.NO_NUMBER;
+import static com.github.vase4kin.teamcityapp.overview.data.BuildDetails.STATE_QUEUED;
+import static com.github.vase4kin.teamcityapp.overview.data.BuildDetails.STATE_RUNNING;
+import static com.github.vase4kin.teamcityapp.overview.data.BuildDetails.STATUS_FAILURE;
+import static com.github.vase4kin.teamcityapp.overview.data.BuildDetails.STATUS_SUCCESS;
+import static com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.TEXT_NO_NUMBER;
+import static com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.TEXT_QUEUED_BUILD;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -107,7 +112,21 @@ public class BuildDetailsImplTest {
     @Test
     public void testGetStatusTextIfBuildIsNotQueued() throws Exception {
         when(mBuild.getStatusText()).thenReturn("status");
+        when(mBuild.getState()).thenReturn("state");
         assertThat(mBuildDetails.getStatusText(), is(equalTo("status")));
+    }
+
+    @Test
+    public void testGetStatusTextIfBuildIsQueuedButDoesNotHaveWaitReason() throws Exception {
+        when(mBuild.getState()).thenReturn(STATE_QUEUED);
+        assertThat(mBuildDetails.getStatusText(), is(equalTo(TEXT_QUEUED_BUILD)));
+    }
+
+    @Test
+    public void testGetStatusTextIfBuildIsQueuedButHasWaitReason() throws Exception {
+        when(mBuild.getState()).thenReturn(STATE_QUEUED);
+        when(mBuild.getWaitReason()).thenReturn("waitReason");
+        assertThat(mBuildDetails.getStatusText(), is(equalTo("waitReason")));
     }
 
     @Test
@@ -119,25 +138,25 @@ public class BuildDetailsImplTest {
 
     @Test
     public void testIsRunning() throws Exception {
-        when(mBuild.isRunning()).thenReturn(true);
+        when(mBuild.getState()).thenReturn(STATE_RUNNING);
         assertThat(mBuildDetails.isRunning(), is(equalTo(true)));
     }
 
     @Test
     public void testIsQueued() throws Exception {
-        when(mBuild.isQueued()).thenReturn(true);
+        when(mBuild.getState()).thenReturn(STATE_QUEUED);
         assertThat(mBuildDetails.isQueued(), is(equalTo(true)));
     }
 
     @Test
     public void testIsSuccess() throws Exception {
-        when(mBuild.isSuccess()).thenReturn(true);
+        when(mBuild.getStatus()).thenReturn(STATUS_SUCCESS);
         assertThat(mBuildDetails.isSuccess(), is(equalTo(true)));
     }
 
     @Test
     public void testIsFailed() throws Exception {
-        when(mBuild.isFailed()).thenReturn(true);
+        when(mBuild.getStatus()).thenReturn(STATUS_FAILURE);
         assertThat(mBuildDetails.isFailed(), is(equalTo(true)));
     }
 
@@ -267,7 +286,7 @@ public class BuildDetailsImplTest {
     public void testGetNameOfTriggeredBuildTypeIfBuildTypeIsDeleted() throws Exception {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.getBuildType()).thenReturn(null);
-        assertThat(mBuildDetails.getNameOfTriggeredBuildType(), is(equalTo(BuildDetailsImpl.DELETED_CONFIGURATION)));
+        assertThat(mBuildDetails.getNameOfTriggeredBuildType(), is(equalTo(BuildDetailsImpl.TEXT_DELETED_CONFIGURATION)));
     }
 
     @Test
@@ -376,7 +395,7 @@ public class BuildDetailsImplTest {
     @Test
     public void testGetNumberIfNumberIsNull() throws Exception {
         when(mBuild.getNumber()).thenReturn(null);
-        assertThat(mBuildDetails.getNumber(), is(equalTo(NO_NUMBER)));
+        assertThat(mBuildDetails.getNumber(), is(equalTo(TEXT_NO_NUMBER)));
     }
 
     @Test

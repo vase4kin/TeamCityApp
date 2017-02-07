@@ -22,12 +22,29 @@ import com.github.vase4kin.teamcityapp.base.api.Jsonable;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 
-import java.io.Serializable;
-
 /**
  * Interface to handle build details
  */
-public interface BuildDetails extends Jsonable, Serializable {
+public interface BuildDetails extends Jsonable {
+
+    /**
+     * Build queued state
+     */
+    String STATE_QUEUED = "queued";
+
+    /**
+     * Build running state
+     */
+    String STATE_RUNNING = "running";
+    /**
+     * Build success status
+     */
+    String STATUS_SUCCESS = "SUCCESS";
+    /**
+     * Build failure status
+     */
+    String STATUS_FAILURE = "FAILURE";
+
     /**
      * @return {String} as server build url
      */
