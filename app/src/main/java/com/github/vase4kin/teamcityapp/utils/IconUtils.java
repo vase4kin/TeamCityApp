@@ -18,17 +18,19 @@ package com.github.vase4kin.teamcityapp.utils;
 
 import android.support.annotation.VisibleForTesting;
 
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+
 /**
  * Icon utils class
  */
 public class IconUtils {
 
     @VisibleForTesting
-    public static final String FAILURE = "{md-error}";
-    private static final String ERROR = "{md-report-problem}";
-    private static final String UNKNOWN = "{md-help}";
-    public static final String SUCCESS = "{md-check-circle}";
-    private static final String QUEUE = "{mdi-clock-fast}";
+    public static final String ICON_FAILURE = "{md-error}";
+    private static final String ICON_ERROR = "{md-report-problem}";
+    private static final String ICON_UNKNOWN = "{md-help}";
+    public static final String ICON_SUCCESS = "{md-check-circle}";
+    private static final String ICON_QUEUE = "{mdi-clock-fast}";
 
     /**
      * @param status - Build status
@@ -36,18 +38,18 @@ public class IconUtils {
      * @return build status icon as String
      */
     public static String getBuildStatusIcon(String status, String state) {
-        if (state.equals("running")) return RunningBuildIconUtils.RUNNING;
-        if (state.equals("queued")) return QUEUE;
+        if (state.equals(BuildDetails.STATE_RUNNING)) return RunningBuildIconUtils.RUNNING;
+        if (state.equals(BuildDetails.STATE_QUEUED)) return ICON_QUEUE;
         switch (status) {
-            case "FAILURE":
-                return FAILURE;
-            case "ERROR":
-                return ERROR;
-            case "UNKNOWN":
-                return UNKNOWN;
-            case "SUCCESS":
+            case BuildDetails.STATUS_FAILURE:
+                return ICON_FAILURE;
+            case BuildDetails.STATUS_ERROR:
+                return ICON_ERROR;
+            case BuildDetails.STATUS_UNKNOWN:
+                return ICON_UNKNOWN;
+            case BuildDetails.STATUS_SUCCESS:
             default:
-                return SUCCESS;
+                return ICON_SUCCESS;
         }
     }
 

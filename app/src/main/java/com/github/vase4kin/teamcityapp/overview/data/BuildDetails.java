@@ -44,6 +44,14 @@ public interface BuildDetails extends Jsonable {
      * Build failure status
      */
     String STATUS_FAILURE = "FAILURE";
+    /**
+     * Build error status
+     */
+    String STATUS_ERROR = "ERROR";
+    /**
+     * Build unknown status
+     */
+    String STATUS_UNKNOWN = "UNKNOWN";
 
     /**
      * @return {String} as server build url

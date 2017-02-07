@@ -133,7 +133,7 @@ public class BuildDetailsImplTest {
     public void testGetStatusIcon() throws Exception {
         when(mBuild.getState()).thenReturn("");
         when(mBuild.getStatus()).thenReturn("");
-        assertThat(mBuildDetails.getStatusIcon(), is(equalTo(IconUtils.SUCCESS)));
+        assertThat(mBuildDetails.getStatusIcon(), is(equalTo(IconUtils.ICON_SUCCESS)));
     }
 
     @Test
