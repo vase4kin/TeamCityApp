@@ -124,6 +124,11 @@ public interface BuildDetails extends Jsonable {
     String getStartDate();
 
     /**
+     * @return start date as {String} formatted specifically for header
+     */
+    String getStartDateFormattedAsHeader();
+
+    /**
      * @return queued date as {String}
      */
     String getQueuedDate();
@@ -334,6 +339,11 @@ public interface BuildDetails extends Jsonable {
 
         @Override
         public String getStartDate() {
+            return null;
+        }
+
+        @Override
+        public String getStartDateFormattedAsHeader() {
             return null;
         }
 

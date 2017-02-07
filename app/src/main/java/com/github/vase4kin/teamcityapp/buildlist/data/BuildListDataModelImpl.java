@@ -135,7 +135,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getStartDate(int position) {
-        return mBuildDetailsList.get(position).getStartDate();
+        return mBuildDetailsList.get(position).getStartDateFormattedAsHeader();
     }
 
     /**

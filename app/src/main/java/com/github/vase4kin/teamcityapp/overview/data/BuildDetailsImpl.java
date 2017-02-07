@@ -173,6 +173,14 @@ public class BuildDetailsImpl implements BuildDetails {
      * {@inheritDoc}
      */
     @Override
+    public String getStartDateFormattedAsHeader() {
+        return DateUtils.initWithDate(mBuild.getStartDate()).formatStartDateToBuildListItemHeader();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getQueuedDate() {
         return DateUtils.initWithDate(mBuild.getQueuedDate()).formatStartDateToBuildTitle();
     }

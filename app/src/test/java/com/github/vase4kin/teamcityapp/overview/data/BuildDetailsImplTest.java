@@ -195,6 +195,12 @@ public class BuildDetailsImplTest {
     }
 
     @Test
+    public void testGetStartDateFormattedAsHeader() throws Exception {
+        when(mBuild.getStartDate()).thenReturn(TIME_STAMP);
+        assertThat(mBuildDetails.getStartDateFormattedAsHeader(), is(equalTo("21 June")));
+    }
+
+    @Test
     public void testGetQueuedDate() throws Exception {
         when(mBuild.getQueuedDate()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getQueuedDate(), is(equalTo(TIME_FORMATTED)));
