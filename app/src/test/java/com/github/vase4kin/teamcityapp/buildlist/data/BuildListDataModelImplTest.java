@@ -103,7 +103,7 @@ public class BuildListDataModelImplTest {
 
     @Test
     public void testGetStartDate() throws Exception {
-        when(mBuildDetails.getStartDate()).thenReturn("date");
+        when(mBuildDetails.getStartDateFormattedAsHeader()).thenReturn("date");
         assertThat(mDataModel.getStartDate(0), is("date"));
     }
 
