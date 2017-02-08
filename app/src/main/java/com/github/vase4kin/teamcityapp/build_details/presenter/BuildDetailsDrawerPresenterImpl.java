@@ -19,11 +19,11 @@ package com.github.vase4kin.teamcityapp.build_details.presenter;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import javax.inject.Inject;
 
@@ -57,15 +57,14 @@ public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerV
      */
     private void setBuildTabColor() {
         if (!mValueExtractor.isBundleNull()) {
-            Build build = mValueExtractor.getBuild();
-            if (build == null) return;
-            if (build.isRunning()) {
+            BuildDetails buildDetails = mValueExtractor.getBuildDetails();
+            if (buildDetails.isRunning()) {
                 mView.setDefaultColors(R.color.running_tool_bar_color);
-            } else if (build.isQueued()) {
+            } else if (buildDetails.isQueued()) {
                 mView.setDefaultColors(R.color.queued_tool_bar_color);
-            } else if (build.isSuccess()) {
+            } else if (buildDetails.isSuccess()) {
                 mView.setDefaultColors(R.color.success_tool_bar_color);
-            } else if (build.isFailed()) {
+            } else if (buildDetails.isFailed()) {
                 mView.setDefaultColors(R.color.failed_tool_bar_color);
             } else {
                 mView.setDefaultColors(R.color.queued_tool_bar_color);

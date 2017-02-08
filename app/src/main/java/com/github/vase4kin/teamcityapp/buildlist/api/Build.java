@@ -36,9 +36,6 @@ import java.util.List;
  */
 public class Build extends BaseObject implements Collectible<BuildElement> {
 
-    private static final String SUCCESS = "SUCCESS";
-    private static final String FAILURE = "FAILURE";
-
     private String number;
     private String status;
     private String state;
@@ -110,30 +107,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return buildTypeId;
     }
 
-    public boolean isQueued() {
-        return state.equals("queued");
-    }
-
-    public boolean isRunning() {
-        return state.equals("running");
-    }
-
-    public boolean isFailed() {
-        return status.equals(FAILURE);
-    }
-
-    public boolean isSuccess() {
-        return status.equals(SUCCESS);
-    }
-
     public String getStatusText() {
-        if (isQueued()) {
-            return waitReason != null
-                    ? waitReason
-                    : "Queued build";
-        } else {
-            return statusText;
-        }
+        return statusText;
     }
 
     public String getFinishDate() {

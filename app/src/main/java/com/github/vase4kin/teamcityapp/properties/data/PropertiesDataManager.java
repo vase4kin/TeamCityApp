@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public interface PropertiesDataManager extends BaseListRxDataManager<Properties,
     /**
      * Load properties build values
      *
-     * @param build           - Build with properties
+     * @param buildDetails    - Build details with properties
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull Build build, OnLoadingListener<List<Properties.Property>> loadingListener);
+    void load(@NonNull BuildDetails buildDetails, OnLoadingListener<List<Properties.Property>> loadingListener);
 }

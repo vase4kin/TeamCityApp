@@ -17,6 +17,8 @@
 package com.github.vase4kin.teamcityapp.buildlist.data;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,58 +38,61 @@ public class BuildListDataModelImplTest {
     @Mock
     private Build mBuild;
 
+    @Mock
+    private BuildDetails mBuildDetails;
+
     private BuildListDataModelImpl mDataModel;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        List<Build> buildList = new ArrayList<>();
-        buildList.add(mBuild);
+        List<BuildDetails> buildList = new ArrayList<>();
+        buildList.add(mBuildDetails);
         mDataModel = new BuildListDataModelImpl(buildList);
     }
 
     @Test
     public void testGetBuildNumberIfItIsNull() throws Exception {
-        when(mBuild.getNumber()).thenReturn(null);
+        when(mBuildDetails.getNumber()).thenReturn(null);
         assertThat(mDataModel.getBuildNumber(0), is(""));
     }
 
     @Test
     public void testGetBuildNumberIfItIsNotNull() throws Exception {
-        when(mBuild.getNumber()).thenReturn("123");
+        when(mBuildDetails.getNumber()).thenReturn("123");
         assertThat(mDataModel.getBuildNumber(0), is("#123"));
     }
 
     @Test
     public void testGetBranchName() throws Exception {
-        when(mBuild.getBranchName()).thenReturn("branch");
+        when(mBuildDetails.getBranchName()).thenReturn("branch");
         assertThat(mDataModel.getBranchName(0), is("branch"));
     }
 
     @Test
     public void testGetBuildStatusIcon() throws Exception {
-        when(mBuild.getStatus()).thenReturn("FAILURE");
-        when(mBuild.getState()).thenReturn("running");
-        assertThat(mDataModel.getBuildStatusIcon(0), is("{fa-spinner}"));
+        when(mBuildDetails.getStatusIcon()).thenReturn("icon");
+        assertThat(mDataModel.getBuildStatusIcon(0), is("icon"));
     }
 
     @Test
     public void testGetStatusText() throws Exception {
-        when(mBuild.getStatusText()).thenReturn("text");
+        when(mBuildDetails.getStatusText()).thenReturn("text");
         assertThat(mDataModel.getStatusText(0), is("text"));
     }
 
     @Test
     public void testGetBuild() throws Exception {
+        when(mBuildDetails.toBuild()).thenReturn(mBuild);
         assertThat(mDataModel.getBuild(0), is(mBuild));
     }
 
     @Test
     public void testAddDataModel() throws Exception {
-        Build build = new Build();
+        BuildDetails build = new BuildDetailsImpl(mBuild);
         BuildListDataModel dataModel = new BuildListDataModelImpl(Collections.singletonList(build));
         mDataModel.addMoreBuilds(dataModel);
-        assertThat(mDataModel.getBuild(1), is(build));
+        assertThat(mDataModel.getBuild(1), is(mBuild));
         assertThat(mDataModel.getItemCount(), is(2));
     }
 
@@ -98,37 +103,37 @@ public class BuildListDataModelImplTest {
 
     @Test
     public void testGetStartDate() throws Exception {
-        when(mBuild.getStartDate()).thenReturn("date");
+        when(mBuildDetails.getStartDateFormattedAsHeader()).thenReturn("date");
         assertThat(mDataModel.getStartDate(0), is("date"));
     }
 
     @Test
     public void testGetBuildTypeId() throws Exception {
-        when(mBuild.getBuildTypeId()).thenReturn("id");
+        when(mBuildDetails.getBuildTypeId()).thenReturn("id");
         assertThat(mDataModel.getBuildTypeId(0), is("id"));
     }
 
     @Test
     public void testHasBranch() {
-        when(mBuild.getBranchName()).thenReturn("");
+        when(mBuildDetails.getBranchName()).thenReturn("");
         assertThat(mDataModel.hasBranch(0), is(true));
     }
 
     @Test
     public void testIsPersonal() {
-        when(mBuild.isPersonal()).thenReturn(true);
+        when(mBuildDetails.isPersonal()).thenReturn(true);
         assertThat(mDataModel.isPersonal(0), is(true));
     }
 
     @Test
     public void testIsPinned() {
-        when(mBuild.isPinned()).thenReturn(true);
+        when(mBuildDetails.isPinned()).thenReturn(true);
         assertThat(mDataModel.isPinned(0), is(true));
     }
 
     @Test
     public void testIsQueued() {
-        when(mBuild.isQueued()).thenReturn(true);
+        when(mBuildDetails.isQueued()).thenReturn(true);
         assertThat(mDataModel.isQueued(0), is(true));
     }
 

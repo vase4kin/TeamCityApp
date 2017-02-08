@@ -22,6 +22,8 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 
@@ -40,7 +42,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public class RunningBuildsListPresenterImplTest {
 
     @Mock
-    private OnLoadingListener<List<Build>> mLoadingListener;
+    private Build mBuild;
+
+    @Mock
+    private OnLoadingListener<List<BuildDetails>> mLoadingListener;
 
     @Mock
     private RunningBuildListView mView;
@@ -77,7 +82,7 @@ public class RunningBuildsListPresenterImplTest {
 
     @Test
     public void testOnSuccessCallBack() throws Exception {
-        mPresenter.onSuccessCallBack(Collections.singletonList(new Build()));
+        mPresenter.onSuccessCallBack(Collections.<BuildDetails>singletonList(new BuildDetailsImpl(mBuild)));
         verify(mView).updateTitle(eq(1));
     }
 

@@ -19,7 +19,8 @@ package com.github.vase4kin.teamcityapp.buildlist.data;
 import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.utils.IconUtils;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 
 import java.util.Iterator;
 import java.util.List;
@@ -34,17 +35,17 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      * Load more
      */
     @VisibleForTesting
-    static final Build LOAD_MORE = new Build() {
+    static final BuildDetails LOAD_MORE = new BuildDetailsImpl(new Build() {
         @Override
         public String getId() {
             return UUID.randomUUID().toString();
         }
-    };
+    });
 
-    private List<Build> mBuilds;
+    private List<BuildDetails> mBuildDetailsList;
 
-    public BuildListDataModelImpl(List<Build> mBuilds) {
-        this.mBuilds = mBuilds;
+    public BuildListDataModelImpl(List<BuildDetails> builds) {
+        this.mBuildDetailsList = builds;
     }
 
     /**
@@ -52,12 +53,12 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getBranchName(int position) {
-        return mBuilds.get(position).getBranchName();
+        return mBuildDetailsList.get(position).getBranchName();
     }
 
     @Override
     public boolean hasBranch(int position) {
-        return mBuilds.get(position).getBranchName() != null;
+        return mBuildDetailsList.get(position).getBranchName() != null;
     }
 
     /**
@@ -65,8 +66,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getBuildStatusIcon(int position) {
-        Build build = mBuilds.get(position);
-        return IconUtils.getBuildStatusIcon(build.getStatus(), build.getState());
+        return mBuildDetailsList.get(position).getStatusIcon();
     }
 
     /**
@@ -74,7 +74,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getStatusText(int position) {
-        return mBuilds.get(position).getStatusText();
+        return mBuildDetailsList.get(position).getStatusText();
     }
 
     /**
@@ -82,7 +82,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getBuildNumber(int position) {
-        String buildNumber = mBuilds.get(position).getNumber();
+        String buildNumber = mBuildDetailsList.get(position).getNumber();
         return buildNumber != null
                 ? String.format("#%s", buildNumber)
                 : "";
@@ -93,7 +93,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public Build getBuild(int position) {
-        return mBuilds.get(position);
+        return mBuildDetailsList.get(position).toBuild();
     }
 
     /**
@@ -101,7 +101,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public boolean isLoadMore(int position) {
-        return mBuilds.get(position).equals(LOAD_MORE);
+        return mBuildDetailsList.get(position).equals(LOAD_MORE);
     }
 
     /**
@@ -109,7 +109,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public void addLoadMore() {
-        mBuilds.add(LOAD_MORE);
+        mBuildDetailsList.add(LOAD_MORE);
     }
 
     /**
@@ -117,7 +117,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public void removeLoadMore() {
-        mBuilds.remove(LOAD_MORE);
+        mBuildDetailsList.remove(LOAD_MORE);
     }
 
     /**
@@ -125,8 +125,8 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public void addMoreBuilds(BuildListDataModel dataModel) {
-        for (Build build : dataModel) {
-            mBuilds.add(build);
+        for (BuildDetails build : dataModel) {
+            mBuildDetailsList.add(build);
         }
     }
 
@@ -135,7 +135,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getStartDate(int position) {
-        return mBuilds.get(position).getStartDate();
+        return mBuildDetailsList.get(position).getStartDateFormattedAsHeader();
     }
 
     /**
@@ -143,7 +143,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public String getBuildTypeId(int position) {
-        return mBuilds.get(position).getBuildTypeId();
+        return mBuildDetailsList.get(position).getBuildTypeId();
     }
 
     /**
@@ -151,7 +151,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public boolean isPersonal(int position) {
-        return mBuilds.get(position).isPersonal();
+        return mBuildDetailsList.get(position).isPersonal();
     }
 
     /**
@@ -159,7 +159,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public boolean isPinned(int position) {
-        return mBuilds.get(position).isPinned();
+        return mBuildDetailsList.get(position).isPinned();
     }
 
     /**
@@ -167,7 +167,7 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public boolean isQueued(int position) {
-        return mBuilds.get(position).isQueued();
+        return mBuildDetailsList.get(position).isQueued();
     }
 
     /**
@@ -175,14 +175,14 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      */
     @Override
     public int getItemCount() {
-        return mBuilds.size();
+        return mBuildDetailsList.size();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Iterator<Build> iterator() {
-        return mBuilds.iterator();
+    public Iterator<BuildDetails> iterator() {
+        return mBuildDetailsList.iterator();
     }
 }

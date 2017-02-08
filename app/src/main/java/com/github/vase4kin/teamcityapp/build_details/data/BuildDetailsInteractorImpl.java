@@ -25,7 +25,6 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
@@ -96,7 +95,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public boolean isBuildRunning() {
-        return mValueExtractor.getBuild().isRunning();
+        return mValueExtractor.getBuildDetails().isRunning();
     }
 
     /**
@@ -104,11 +103,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public boolean isBuildTriggeredByMe() {
-        Triggered triggered = mValueExtractor.getBuild().getTriggered();
-        return triggered != null
-                && triggered.isUser()
-                && triggered.getUser() != null
-                && mSharedUserStorage.getActiveUser().getUserName().equals(mValueExtractor.getBuild().getTriggered().getUser().getUsername());
+        return mValueExtractor.getBuildDetails().isTriggeredByUser(mSharedUserStorage.getActiveUser().getUserName());
     }
 
     /**
@@ -116,7 +111,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public String getBuildBranchName() {
-        return mValueExtractor.getBuild().getBranchName();
+        return mValueExtractor.getBuildDetails().getBranchName();
     }
 
     /**
@@ -124,7 +119,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public Properties getBuildProperties() {
-        return mValueExtractor.getBuild().getProperties();
+        return mValueExtractor.getBuildDetails().getProperties();
     }
 
     /**
@@ -133,7 +128,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     @Override
     public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener, boolean isReAddToTheQueue) {
         mSubscription.clear();
-        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuild().getHref(), new BuildCancelRequest(isReAddToTheQueue))
+        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuildDetails().getHref(), new BuildCancelRequest(isReAddToTheQueue))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {
@@ -168,7 +163,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public String getWebUrl() {
-        return mValueExtractor.getBuild().getWebUrl();
+        return mValueExtractor.getBuildDetails().getWebUrl();
     }
 
     /**

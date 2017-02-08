@@ -61,7 +61,7 @@ public class BaseValueExtractorImplTest {
     @Test
     public void testGetBuild() throws Exception {
         when(mBundle.getSerializable(BundleExtractorValues.BUILD)).thenReturn(mBuild);
-        assertThat(mValueExtractor.getBuild(), is(mBuild));
+        assertThat(mValueExtractor.getBuildDetails().toBuild(), is(mBuild));
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 
 import java.util.Collections;
@@ -35,9 +35,9 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull Build build, OnLoadingListener<List<Properties.Property>> loadingListener) {
+    public void load(@NonNull BuildDetails buildDetails, OnLoadingListener<List<Properties.Property>> loadingListener) {
         // Getting properties from the build
-        Properties properties = build.getProperties();
+        Properties properties = buildDetails.getProperties();
         if (properties == null) {
             // Return empty collections if properties are empty
             Properties emptyProperties = new Properties() {
@@ -48,7 +48,7 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
             };
             loadingListener.onSuccess(emptyProperties.getObjects());
         } else {
-            loadingListener.onSuccess(build.getProperties().getObjects());
+            loadingListener.onSuccess(buildDetails.getProperties().getObjects());
         }
     }
 }

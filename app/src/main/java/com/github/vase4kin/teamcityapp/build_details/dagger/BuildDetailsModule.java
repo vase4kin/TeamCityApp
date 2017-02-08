@@ -86,7 +86,7 @@ public class BuildDetailsModule {
 
     @Provides
     RunBuildInteractor providesRunBuildInteractor(TeamCityService teamCityService, BaseValueExtractor valueExtractor) {
-        return new RunBuildInteractorImpl(teamCityService, valueExtractor.getBuild().getBuildTypeId());
+        return new RunBuildInteractorImpl(teamCityService, valueExtractor.getBuildDetails().getBuildTypeId());
     }
 
     @Provides

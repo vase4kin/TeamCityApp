@@ -37,13 +37,12 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
-import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -62,7 +61,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     @BindView(R.id.container)
     View mContainer;
 
-    private Build mBuild;
+    private BuildDetails mBuildDetails;
 
     private String overviewTabTitle;
     private String artifactsTabTitle;
@@ -86,34 +85,38 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
                                 BaseValueExtractor valueExtractor) {
         super(mView, mActivity);
         this.mStatusBarUtils = statusBarUtils;
-        this.mBuild = valueExtractor.getBuild();
+        this.mBuildDetails = valueExtractor.getBuildDetails();
     }
 
     /**
      * {@inheritDoc}
+     *
+     * TODO: Move logic to presenter
      */
     @Override
     public void addFragments(FragmentAdapter fragmentAdapter) {
-        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.newInstance(mBuild));
-        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.newInstance(mBuild.getChanges().getHref()));
-        if (mBuild.getTestOccurrences() != null) {
+        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.newInstance(mBuildDetails.toBuild()));
+        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.newInstance(mBuildDetails.getChangesHref()));
+        if (mBuildDetails.hasTests()) {
             fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.newInstance(
-                    mBuild.getTestOccurrences().getHref(),
-                    mBuild.getTestOccurrences().getPassed(),
-                    mBuild.getTestOccurrences().getFailed(),
-                    mBuild.getTestOccurrences().getIgnored()));
+                    mBuildDetails.getTestsHref(),
+                    mBuildDetails.getPassedTestCount(),
+                    mBuildDetails.getFailedTestCount(),
+                    mBuildDetails.getIgnoredTestCount()));
         }
-        if (!mBuild.isQueued()) {
-            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.newInstance(mBuild.getId()));
+        if (!mBuildDetails.isQueued()) {
+            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.newInstance(mBuildDetails.getId()));
         }
-        fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.newInstance(mBuild));
-        if (!mBuild.isQueued() && !mBuild.isRunning()) {
-            fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.newInstance(mBuild, mBuild.getArtifacts().getHref()));
+        fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.newInstance(mBuildDetails.toBuild()));
+        if (!mBuildDetails.isQueued() && !mBuildDetails.isRunning()) {
+            fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.newInstance(mBuildDetails.toBuild(), mBuildDetails.getArtifactsHref()));
         }
     }
 
     /**
      * {@inheritDoc}
+     *
+     * TODO: Move logic to presenter
      */
     @Override
     public void initViews() {
@@ -455,25 +458,25 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * Setting proper color for different build types
      */
     private void setColorsByBuildType() {
-        if (mBuild.isQueued()) {
+        if (mBuildDetails.isQueued()) {
             mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_status_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_queued_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
-        } else if (mBuild.isRunning()) {
+        } else if (mBuildDetails.isRunning()) {
             mStatusBarUtils.changeStatusBarColor(mActivity, R.color.running_status_bar_color);
             setToolBarAndTabLayoutColor(R.color.running_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_running_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
-        } else if (mBuild.isFailed()) {
+        } else if (mBuildDetails.isFailed()) {
             mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_status_bar_color);
             setToolBarAndTabLayoutColor(R.color.failed_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_failed_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
-        } else if (mBuild.isSuccess()) {
+        } else if (mBuildDetails.isSuccess()) {
             mStatusBarUtils.changeStatusBarColor(mActivity, R.color.success_status_bar_color);
             setToolBarAndTabLayoutColor(R.color.success_tool_bar_color);
             mTabLayout.setTabTextColors(
@@ -506,12 +509,12 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     private void setTitle() {
         String startDate;
-        if (mBuild.isQueued()) {
-            startDate = DateUtils.initWithDate(mBuild.getQueuedDate()).formatStartDateToBuildTitle();
+        if (mBuildDetails.isQueued()) {
+            startDate = mBuildDetails.getQueuedDate();
         } else {
-            startDate = DateUtils.initWithDate(mBuild.getStartDate()).formatStartDateToBuildTitle();
+            startDate = mBuildDetails.getStartDate();
         }
-        String title = String.format("#%s (%s)", mBuild.getNumber() == null ? "No number" : mBuild.getNumber(), startDate);
+        String title = String.format("#%s (%s)", mBuildDetails.getNumber(), startDate);
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);

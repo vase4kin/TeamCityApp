@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,7 @@ public class BuildListPresenterImplTest {
     private ArgumentCaptor<OnBuildListPresenterListener> mOnBuildListPresenterListenerArgumentCaptor;
 
     @Captor
-    private ArgumentCaptor<OnLoadingListener<List<Build>>> mOnLoadingListenerArgumentCaptor;
+    private ArgumentCaptor<OnLoadingListener<List<BuildDetails>>> mOnLoadingListenerArgumentCaptor;
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
@@ -82,7 +83,7 @@ public class BuildListPresenterImplTest {
     private Build mBuild;
 
     @Mock
-    private OnLoadingListener<List<Build>> mLoadingListener;
+    private OnLoadingListener<List<BuildDetails>> mLoadingListener;
 
     @Mock
     private Bundle mBundle;
@@ -165,9 +166,9 @@ public class BuildListPresenterImplTest {
         assertThat(mPresenter.mIsLoadMoreLoading, is(true));
         verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnLoadingListenerArgumentCaptor.capture());
-        OnLoadingListener<List<Build>> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
+        OnLoadingListener<List<BuildDetails>> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
 
-        loadingListener.onSuccess(Collections.<Build>emptyList());
+        loadingListener.onSuccess(Collections.<BuildDetails>emptyList());
         verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(BuildListDataModelImpl.class));
         assertThat(mPresenter.mIsLoadMoreLoading, is(false));

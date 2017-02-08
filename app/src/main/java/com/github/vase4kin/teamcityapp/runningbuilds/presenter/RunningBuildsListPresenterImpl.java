@@ -20,11 +20,11 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 
@@ -51,7 +51,7 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<Build>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
         mDataManager.load(loadingListener);
     }
 
@@ -59,7 +59,7 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
      * {@inheritDoc}
      */
     @Override
-    protected void onSuccessCallBack(List<Build> data) {
+    protected void onSuccessCallBack(List<BuildDetails> data) {
         super.onSuccessCallBack(data);
         mView.updateTitle(data.size());
     }

@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.artifact.router;
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import java.io.File;
 
@@ -35,10 +35,10 @@ public interface ArtifactRouter {
     /**
      * Open artifact file (navigate deeper)
      *
-     * @param build        - Build with artifacts
+     * @param buildDetails - Build details
      * @param artifactFile - Artifact file
      */
-    void openArtifactFile(Build build, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile);
+    void openArtifactFile(BuildDetails buildDetails, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile);
 
     /**
      * Unbind customs chrome tabs
@@ -48,8 +48,8 @@ public interface ArtifactRouter {
     /**
      * Start the browser
      *
-     * @param build - Build with artifacts
+     * @param buildDetails - Build details
      * @param artifactFile - Artifact file
      */
-    void startBrowser(Build build, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile);
+    void startBrowser(BuildDetails buildDetails, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile);
 }
