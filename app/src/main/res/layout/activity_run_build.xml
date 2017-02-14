@@ -57,10 +57,111 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/default_margin">
+            android:layout_height="match_parent">
 
-            <include layout="@layout/layout_param_stub" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/chooser_agent"
+                    android:layout_width="match_parent"
+                    android:layout_height="82dp"
+                    android:paddingTop="@dimen/padding_switch"
+                    android:paddingBottom="@dimen/padding_switch"
+                    android:paddingLeft="@dimen/default_margin"
+                    android:paddingRight="@dimen/default_margin"
+                    android:orientation="vertical"
+                    android:clickable="true"
+                    android:background="?attr/selectableItemBackground">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textColor="@color/main_text_color"
+                        android:text="@string/text_agents"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/selected_agent"
+                        android:layout_marginTop="4dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hint_default_filter_agent"
+                        android:textSize="16sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:visibility="gone"
+                        tools:visibility="visible" />
+
+                    <TextView
+                        android:id="@+id/text_no_agents_available"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:text="@string/text_no_agents_available"
+                        android:textSize="18sp"
+                        android:visibility="gone" />
+
+                    <LinearLayout
+                        android:id="@+id/progress_agents_loading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="visible"
+                        tools:visibility="gone">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/default_margin"
+                            android:text="@string/text_loading_agents"
+                            android:textSize="18sp" />
+
+                        <com.pnikosis.materialishprogress.ProgressWheel
+                            android:id="@+id/progress_wheel"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            app:matProg_progressIndeterminate="true" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <include layout="@layout/layout_divider" />
+
+                <Switch
+                    android:id="@+id/switcher_is_personal"
+                    style="@style/Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/text_switcher_run_as_personal" />
+
+                <include layout="@layout/layout_divider" />
+
+                <Switch
+                    android:id="@+id/switcher_queueAtTop"
+                    style="@style/Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/text_switcher_run_as_queue_at_the_top" />
+
+                <include layout="@layout/layout_divider" />
+
+                <Switch
+                    android:id="@+id/switcher_clean_all_files"
+                    style="@style/Switch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/text_switcher_run_as_clean_all_files"
+                    android:checked="true" />
+
+                <include layout="@layout/layout_divider" />
+
+            </LinearLayout>
 
         </FrameLayout>
 

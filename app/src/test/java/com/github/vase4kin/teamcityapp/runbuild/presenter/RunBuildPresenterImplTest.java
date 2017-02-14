@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -49,6 +50,8 @@ public class RunBuildPresenterImplTest {
     private ArgumentCaptor<LoadingListenerWithForbiddenSupport<String>> mQueueLoadingListenerCaptor;
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<String>>> mBranchLoadingListenerCaptor;
+    @Mock
+    private Agent mAgent;
     @Mock
     private RunBuildView mView;
     @Mock
@@ -108,11 +111,12 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnBuildQueue() throws Exception {
+        mPresenter.mSelectedAgent = mAgent;
         when(mBranchesComponentView.getBranchName()).thenReturn("branch");
-        mPresenter.onBuildQueue();
+        mPresenter.onBuildQueue(true, true, true);
         verify(mBranchesComponentView).getBranchName();
         verify(mView).showQueuingBuildProgress();
-        verify(mInteractor).queueBuild(eq("branch"), mQueueLoadingListenerCaptor.capture());
+        verify(mInteractor).queueBuild(eq("branch"), eq(mAgent), eq(true), eq(true), eq(true), mQueueLoadingListenerCaptor.capture());
         LoadingListenerWithForbiddenSupport<String> loadingListener = mQueueLoadingListenerCaptor.getValue();
         loadingListener.onSuccess("href");
         verify(mView).hideQueuingBuildProgress();
