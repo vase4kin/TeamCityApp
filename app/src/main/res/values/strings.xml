@@ -128,6 +128,7 @@
     <string name="build_restarted_by_section_text">Restarted by</string>
     <string name="build_canceled_by_text">Canceled by</string>
     <string name="build_cancellation_time_text">Cancellation time</string>
+    <string name="build_personal_text">Personal of</string>
 
     <!--Test occurrence-->
     <string name="test_details_title">Details</string>

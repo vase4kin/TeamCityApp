@@ -140,12 +140,10 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
 
     /**
      * {@inheritDoc}
-     * <p>
-     * TODO: load agents only authorized and connected
      */
     @Override
     public void loadAgents(final OnLoadingListener<List<Agent>> loadingListener) {
-        Subscription queueBuildSubscription = mTeamCityService.listAgents(null, null)
+        Subscription queueBuildSubscription = mTeamCityService.listAgents(false, null)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Agents>() {

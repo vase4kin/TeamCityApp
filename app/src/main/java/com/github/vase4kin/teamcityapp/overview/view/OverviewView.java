@@ -148,6 +148,13 @@ public interface OverviewView {
     void addTriggeredByUnknownTriggerTypeCard();
 
     /**
+     * Add card showing that build is personal
+     *
+     * @param userName - user who triggered personal build
+     */
+    void addPersonalCard(String userName);
+
+    /**
      * Add restarted by card
      *
      * @param restartedBy - restarted with setup with
