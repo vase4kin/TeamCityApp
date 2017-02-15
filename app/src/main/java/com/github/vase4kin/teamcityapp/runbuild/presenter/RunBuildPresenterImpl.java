@@ -35,7 +35,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -55,7 +54,8 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     @VisibleForTesting
     @Nullable
     Agent mSelectedAgent;
-    private List<Agent> mAgents;
+    @VisibleForTesting
+    List<Agent> mAgents;
 
     @Inject
     RunBuildPresenterImpl(RunBuildView view,
@@ -114,7 +114,6 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
                         })
                         .toList()
                         .subscribeOn(Schedulers.immediate())
-                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Action1<List<String>>() {
                             @Override
                             public void call(List<String> agentNames) {
