@@ -244,4 +244,14 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     public void setQueueAtTop(boolean queueAtTop) {
         this.queueAtTop = queueAtTop;
     }
+
+    @VisibleForTesting
+    public boolean isCleanSources() {
+        return cleanSources;
+    }
+
+    @VisibleForTesting
+    public boolean isQueueAtTop() {
+        return queueAtTop;
+    }
 }
