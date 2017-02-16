@@ -22,6 +22,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -30,8 +31,11 @@ import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationLi
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -41,13 +45,35 @@ public class RunBuildViewImpl implements RunBuildView {
 
     @BindView(R.id.fab_queue_build)
     FloatingActionButton mQueueBuildFab;
+    @BindView(R.id.switcher_is_personal)
+    Switch mPersonalBuildSwitch;
+    @BindView(R.id.switcher_queueAtTop)
+    Switch mQueueToTheTopSwitch;
+    @BindView(R.id.switcher_clean_all_files)
+    Switch mCleanAllFilesSwitch;
     @BindView(R.id.container)
     View mContainer;
+    @BindView(R.id.chooser_agent)
+    View mAgentChooserView;
+    @BindView(R.id.selected_agent)
+    TextView mSelectedAgent;
+    @BindView(R.id.text_no_agents_available)
+    View mNoAgentsAvailable;
+    @BindView(R.id.progress_agents_loading)
+    View mLoadingAgentsProgress;
+
+    @OnClick(R.id.chooser_agent)
+    public void onAgentSelect() {
+        mAgentSelectionDialog.show();
+    }
 
     private MaterialDialog mProgressDialog;
+    private MaterialDialog mAgentSelectionDialog;
 
     private RunBuildActivity mActivity;
     private Unbinder mUnbinder;
+
+    private ViewListener mListener;
 
     public RunBuildViewImpl(RunBuildActivity activity) {
         this.mActivity = activity;
@@ -59,6 +85,7 @@ public class RunBuildViewImpl implements RunBuildView {
     @Override
     public void initViews(final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
+        mListener = listener;
 
         Toolbar mToolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
         mActivity.setSupportActionBar(mToolbar);
@@ -76,7 +103,10 @@ public class RunBuildViewImpl implements RunBuildView {
         mQueueBuildFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onBuildQueue();
+                listener.onBuildQueue(
+                        mPersonalBuildSwitch.isChecked(),
+                        mQueueToTheTopSwitch.isChecked(),
+                        mCleanAllFilesSwitch.isChecked());
             }
         });
 
@@ -141,4 +171,58 @@ public class RunBuildViewImpl implements RunBuildView {
         mUnbinder.unbind();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void disableAgentSelectionControl() {
+        mAgentChooserView.setEnabled(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void enableAgentSelectionControl() {
+        mAgentChooserView.setEnabled(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showSelectedAgentView() {
+        mSelectedAgent.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void setAgentListDialogWithAgentsList(List<String> agents) {
+        mAgentSelectionDialog = new MaterialDialog.Builder(mActivity)
+                .title(R.string.title_agent_chooser_dialog)
+                .items(agents)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        mListener.onAgentSelected(position);
+                        mSelectedAgent.setText(text);
+                    }
+                })
+                .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideLoadingAgentsProgress() {
+        mLoadingAgentsProgress.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showNoAgentsAvailable() {
+        mNoAgentsAvailable.setVisibility(View.VISIBLE);
+    }
 }

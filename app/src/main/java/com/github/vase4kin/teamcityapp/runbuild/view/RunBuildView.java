@@ -18,6 +18,8 @@ package com.github.vase4kin.teamcityapp.runbuild.view;
 
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
 
+import java.util.List;
+
 /**
  * View to handle interaction with {@link RunBuildActivity}
  */
@@ -56,10 +58,58 @@ public interface RunBuildView {
     void unbindViews();
 
     /**
+     * Disable agent selection control
+     */
+    void disableAgentSelectionControl();
+
+    /**
+     * Enable agent selection control
+     */
+    void enableAgentSelectionControl();
+
+    /**
+     * Show selected agent view
+     */
+    void showSelectedAgentView();
+
+    /**
+     * Set agent selection dialog with agents list
+     *
+     * @param agents - to set with
+     */
+    void setAgentListDialogWithAgentsList(List<String> agents);
+
+    /**
+     * Hide loading progress
+     */
+    void hideLoadingAgentsProgress();
+
+    /**
+     * Show no agent available
+     */
+    void showNoAgentsAvailable();
+
+    /**
      * Listener to receive callbacks to presenter
      */
     interface ViewListener extends OnToolBarNavigationListener {
 
-        void onBuildQueue();
+        /**
+         * On build queue
+         *
+         * @param isPersonal    - Is personal flag
+         * @param queueToTheTop - Queue to the top
+         * @param cleanAllFiles - Clean all files in the checkout directory
+         */
+        void onBuildQueue(boolean isPersonal,
+                          boolean queueToTheTop,
+                          boolean cleanAllFiles);
+
+        /**
+         * On agent selected in the dialog list
+         *
+         * @param agentPosition - item position which was selected
+         */
+        void onAgentSelected(int agentPosition);
     }
 }

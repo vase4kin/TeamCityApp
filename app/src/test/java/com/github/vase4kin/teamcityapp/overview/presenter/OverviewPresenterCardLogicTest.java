@@ -318,4 +318,14 @@ public class OverviewPresenterCardLogicTest {
         verify(mView).addTriggeredByUnknownTriggerTypeCard();
     }
 
+    @Test
+    public void testAddPersonalCardIfBuildWasTriggeredByUser() throws Exception {
+        when(mBuildDetails.isPersonal()).thenReturn(true);
+        when(mBuildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
+        mPresenter.onSuccess(mBuildDetails);
+        verify(mBuildDetails).isPersonal();
+        verify(mBuildDetails).getUserNameOfUserWhoTriggeredBuild();
+        verify(mView).addPersonalCard(eq(USER));
+    }
+
 }

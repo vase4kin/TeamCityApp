@@ -444,4 +444,34 @@ public class OverviewFragmentTest {
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(R.string.triggered_deleted_user_text)));
     }
 
+    @Test
+    public void testUserCanSeePersonalInfoIfBuildIsPersonal() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, null));
+        mBuild.setTriggered(triggered);
+        mBuild.setPersonal(true);
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        Build successBuild = Mocks.successBuild();
+        successBuild.setPersonal(true);
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(5));
+
+        // Checking Personal of
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(matches(withText(R.string.build_personal_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemTitle)).check(matches(withText(USER_NAME)));
+    }
+
 }

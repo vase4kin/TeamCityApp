@@ -243,20 +243,37 @@ public class OverviewViewImpl implements OverviewView {
         addCard(R.string.build_agent_section_text, ICON_AGENT, agentName);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addTriggeredByCard(String triggeredBy) {
         addCard(R.string.build_triggered_by_section_text, ICON_TRIGGER_BY, triggeredBy);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addRestartedByCard(String restartedBy) {
         addCard(R.string.build_restarted_by_section_text, ICON_TRIGGER_BY, restartedBy);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void addTriggeredByUnknownTriggerTypeCard() {
         String unknownTrigger = mActivity.getString(R.string.unknown_trigger_type_text);
         addTriggeredByCard(unknownTrigger);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addPersonalCard(String userName) {
+        addCard(R.string.build_personal_text, ICON_TRIGGER_BY, userName);
     }
 
     /**

@@ -16,7 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -25,9 +29,15 @@ import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
+
+import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Impl of {@link RunBuildPresenter}
@@ -40,6 +50,12 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     private RunBuildTracker mTracker;
     private BranchesComponentView mBranchesComponentView;
     private BranchesInteractor mBranchesInteractor;
+
+    @VisibleForTesting
+    @Nullable
+    Agent mSelectedAgent;
+    @VisibleForTesting
+    List<Agent> mAgents;
 
     @Inject
     RunBuildPresenterImpl(RunBuildView view,
@@ -83,6 +99,40 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
                 mBranchesComponentView.showNoBranchesAvailable();
             }
         });
+
+        mView.disableAgentSelectionControl();
+        mInteractor.loadAgents(new OnLoadingListener<List<Agent>>() {
+            @Override
+            public void onSuccess(List<Agent> agents) {
+                // Setting dialog list
+                Observable.from(agents)
+                        .flatMap(new Func1<Agent, Observable<String>>() {
+                            @Override
+                            public Observable<String> call(Agent agent) {
+                                return Observable.just(agent.getName());
+                            }
+                        })
+                        .toList()
+                        .subscribeOn(Schedulers.immediate())
+                        .subscribe(new Action1<List<String>>() {
+                            @Override
+                            public void call(List<String> agentNames) {
+                                mView.setAgentListDialogWithAgentsList(agentNames);
+                            }
+                        });
+                mAgents = agents;
+                mView.hideLoadingAgentsProgress();
+                mView.showSelectedAgentView();
+                mView.enableAgentSelectionControl();
+            }
+
+            @Override
+            public void onFail(String errorMessage) {
+                mAgents = Collections.emptyList();
+                mView.hideLoadingAgentsProgress();
+                mView.showNoAgentsAvailable();
+            }
+        });
     }
 
     /**
@@ -108,10 +158,17 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
      * {@inheritDoc}
      */
     @Override
-    public void onBuildQueue() {
+    public void onBuildQueue(boolean isPersonal,
+                             boolean queueToTheTop,
+                             boolean cleanAllFiles) {
         String branchName = mBranchesComponentView.getBranchName();
         mView.showQueuingBuildProgress();
-        mInteractor.queueBuild(branchName, new LoadingListenerWithForbiddenSupport<String>() {
+        mInteractor.queueBuild(
+                branchName,
+                mSelectedAgent,
+                isPersonal,
+                queueToTheTop,
+                cleanAllFiles, new LoadingListenerWithForbiddenSupport<String>() {
 
             @Override
             public void onSuccess(String data) {
@@ -134,6 +191,15 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
                 mTracker.trackUserRunBuildFailedForbidden();
             }
         });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onAgentSelected(int agentPosition) {
+        if (mAgents.isEmpty()) return;
+        mSelectedAgent = mAgents.get(agentPosition);
     }
 
     /**

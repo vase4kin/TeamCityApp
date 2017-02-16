@@ -120,6 +120,9 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         return mView.onOptionsItemSelected(item);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onDataRefreshEvent() {
         mView.showRefreshingProgress();
@@ -155,12 +158,18 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         mTracker.trackUserRestartedBuild();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onRefresh() {
         mView.hideErrorView();
         loadBuildDetails();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onRetry() {
         mView.hideErrorView();
@@ -168,6 +177,9 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         loadBuildDetails();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onSuccess(BuildDetails buildDetails) {
         mView.hideCards();
@@ -238,10 +250,19 @@ public class OverviewPresenterImpl implements OverviewPresenter,
             mView.addTriggeredByUnknownTriggerTypeCard();
         }
 
+        // Is personal build
+        if (buildDetails.isPersonal()) {
+            String userWhoTriggeredBuild = buildDetails.getUserNameOfUserWhoTriggeredBuild();
+            mView.addPersonalCard(userWhoTriggeredBuild);
+        }
+
         // Show all added cards
         mView.showCards();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onFail(String errorMessage) {
         mView.hideCards();

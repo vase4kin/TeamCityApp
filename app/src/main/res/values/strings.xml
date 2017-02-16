@@ -128,6 +128,7 @@
     <string name="build_restarted_by_section_text">Restarted by</string>
     <string name="build_canceled_by_text">Canceled by</string>
     <string name="build_cancellation_time_text">Cancellation time</string>
+    <string name="build_personal_text">Personal of</string>
 
     <!--Test occurrence-->
     <string name="test_details_title">Details</string>
@@ -215,6 +216,15 @@
     <string name="text_build_is_run">Build is added to build queue</string>
     <string name="error_opening_build">We encountered problem opening build</string>
     <string name="text_show_build">Show</string>
+    <string name="text_switcher_run_as_personal">Personal</string>
+    <string name="text_switcher_run_as_queue_at_the_top">Queue to the top</string>
+    <string name="text_switcher_run_as_clean_all_files">Clean all files before the build</string>
+    <string name="text_agents">Agent</string>
+    <string name="hint_default_filter_agent">The fastest idle agent</string>
+    <string name="text_no_agents_available">No agents available</string>
+    <string name="text_loading_agents">Loading agents</string>
+    <string name="title_agent_chooser_dialog">Choose agent</string>
+
 
     <!--Build details activity-->
     <string name="text_stopping_build">Stopping build..</string>
