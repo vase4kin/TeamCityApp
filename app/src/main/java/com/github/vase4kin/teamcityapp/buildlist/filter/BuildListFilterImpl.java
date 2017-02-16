@@ -114,6 +114,13 @@ public class BuildListFilterImpl implements BuildListFilter {
         } else {
             locatorBuilder.append(String.valueOf(mIsPinned));
         }
+        // Remove count for queued and running build cause they don't have next href
+        if (mFilterType == FilterBuildsView.FILTER_RUNNING) {
+            return locatorBuilder.toString();
+        }
+        if (mFilterType == FilterBuildsView.FILTER_QUEUED) {
+            return locatorBuilder.toString();
+        }
         locatorBuilder.append(",");
         locatorBuilder.append("count:10");
         return locatorBuilder.toString();

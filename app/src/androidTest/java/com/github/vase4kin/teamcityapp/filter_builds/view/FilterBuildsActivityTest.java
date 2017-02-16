@@ -368,7 +368,7 @@ public class FilterBuildsActivityTest {
         onView(withId(R.id.fab_filter)).perform(click());
 
         // Check data was loaded with new filter
-        verify(mTeamCityService).listBuilds(anyString(), eq("running:true,branch:default:any,personal:false,pinned:false,count:10"));
+        verify(mTeamCityService).listBuilds(anyString(), eq("running:true,branch:default:any,personal:false,pinned:false"));
     }
 
     @Test
@@ -393,7 +393,7 @@ public class FilterBuildsActivityTest {
         onView(withId(R.id.fab_filter)).perform(click());
 
         // Check data was loaded with new filter
-        verify(mTeamCityService).listBuilds(anyString(), eq("state:queued,branch:default:any,personal:false,pinned:any,count:10"));
+        verify(mTeamCityService).listBuilds(anyString(), eq("state:queued,branch:default:any,personal:false,pinned:any"));
     }
 
 }
