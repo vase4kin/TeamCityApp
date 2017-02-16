@@ -122,8 +122,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
         MaterialDialog.Builder builder = new MaterialDialog.Builder(mActivity)
                 .title(change.getComment())
                 .content(content)
-                .positiveText(R.string.dialog_ok_title)
-                .positiveColor(mActivity.getResources().getColor(R.color.md_blue_A100));
+                .positiveText(R.string.dialog_ok_title);
         if (change.getFiles().getFiles().isEmpty()) {
             builder.items(new String[]{mActivity.getString(R.string.empty_list_files)});
         } else {
