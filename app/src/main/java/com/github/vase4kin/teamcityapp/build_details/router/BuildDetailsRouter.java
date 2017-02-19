@@ -27,9 +27,10 @@ public interface BuildDetailsRouter {
     /**
      * Reopen {@link BuildDetailsActivity}
      *
-     * @param build - Build is passed as new intent
+     * @param build         - Build is passed as new intent
+     * @param buildTypeName - Build type name
      */
-    void reopenBuildTabsActivity(Build build);
+    void reopenBuildTabsActivity(Build build, String buildTypeName);
 
     /**
      * Share build web url

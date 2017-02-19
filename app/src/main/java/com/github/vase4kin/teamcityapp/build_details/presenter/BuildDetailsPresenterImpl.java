@@ -184,7 +184,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
                 mTracker.trackUserCanceledBuildSuccessfully();
                 hideProgress();
                 showBuildIsCancelledSnackBar();
-                mRouter.reopenBuildTabsActivity(build);
+                String buildTypeName = mInteractor.getBuildTypeName();
+                mRouter.reopenBuildTabsActivity(build, buildTypeName);
             }
 
             @Override
@@ -241,7 +242,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
             public void onSuccess(Build queuedBuild) {
                 mTracker.trackUserWantsToSeeQueuedBuildDetails();
                 mView.hideBuildLoadingProgress();
-                mRouter.reopenBuildTabsActivity(queuedBuild);
+                String buildTypeName = mInteractor.getBuildTypeName();
+                mRouter.reopenBuildTabsActivity(queuedBuild, buildTypeName);
             }
 
             @Override
@@ -258,8 +260,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      */
     @Override
     public void onStartBuildListActivityEventTriggered() {
-        // TODO: get build type name
-        String name = mInteractor.getBuildDetails().getAgentName();
+        String name = mInteractor.getBuildTypeName();
         String id = mInteractor.getBuildDetails().getBuildTypeId();
         mRouter.startBuildListActivity(name, id);
     }

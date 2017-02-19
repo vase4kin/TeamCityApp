@@ -132,8 +132,10 @@ public class BuildListPresenterImplTest {
 
     @Test
     public void testOnBuildClick() throws Exception {
+        when(mValueExtractor.getName()).thenReturn("name");
         mPresenter.onBuildClick(mBuild);
-        verify(mRouter).openBuildPage(eq(mBuild));
+        verify(mValueExtractor).getName();
+        verify(mRouter).openBuildPage(eq(mBuild), eq("name"));
     }
 
     @Test
@@ -146,6 +148,7 @@ public class BuildListPresenterImplTest {
 
     @Test
     public void testOnShowQueuedBuildSnackBarClick() throws Exception {
+        when(mValueExtractor.getName()).thenReturn("name");
         mPresenter.mQueuedBuildHref = "href";
         mPresenter.onShowQueuedBuildSnackBarClick();
         verify(mTracker).trackUserWantsToSeeQueuedBuildDetails();
@@ -154,7 +157,8 @@ public class BuildListPresenterImplTest {
         OnLoadingListener<Build> listener = mBuildArgumentCaptor.getValue();
         listener.onSuccess(mBuild);
         verify(mView).hideBuildLoadingProgress();
-        verify(mRouter).openBuildPage(eq(mBuild));
+        verify(mValueExtractor).getName();
+        verify(mRouter).openBuildPage(eq(mBuild), eq("name"));
         listener.onFail("");
         verify(mView, times(2)).hideBuildLoadingProgress();
         verify(mView).showOpeningBuildErrorSnackBar();

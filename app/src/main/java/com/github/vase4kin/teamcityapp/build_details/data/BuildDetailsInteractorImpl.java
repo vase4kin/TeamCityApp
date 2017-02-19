@@ -111,6 +111,14 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      * {@inheritDoc}
      */
     @Override
+    public String getBuildTypeName() {
+        return mValueExtractor.getName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener, boolean isReAddToTheQueue) {
         mSubscription.clear();
         Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuildDetails().getHref(), new BuildCancelRequest(isReAddToTheQueue))

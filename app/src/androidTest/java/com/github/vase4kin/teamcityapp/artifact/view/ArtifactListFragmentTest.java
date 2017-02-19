@@ -68,6 +68,8 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ArtifactListFragmentTest {
 
+    private static final String BUILD_TYPE_NAME = "name";
+
     @Rule
     public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
@@ -110,6 +112,7 @@ public class ArtifactListFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -125,9 +128,9 @@ public class ArtifactListFragmentTest {
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(3));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle)).check(matches(withText("res")));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("AndroidManifest.xml")));
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("7.59KB")));
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("7.59 KB")));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(2, R.id.itemTitle)).check(matches(withText("index.html")));
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(2, R.id.itemSubTitle)).check(matches(withText("681KB")));
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(2, R.id.itemSubTitle)).check(matches(withText("681 KB")));
     }
 
     @Test
@@ -143,6 +146,7 @@ public class ArtifactListFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -171,6 +175,7 @@ public class ArtifactListFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -208,6 +213,7 @@ public class ArtifactListFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity

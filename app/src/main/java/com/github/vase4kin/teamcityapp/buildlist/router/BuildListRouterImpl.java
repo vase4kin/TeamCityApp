@@ -38,8 +38,8 @@ public class BuildListRouterImpl implements BuildListRouter {
      * {@inheritDoc}
      */
     @Override
-    public void openBuildPage(Build build) {
-        BuildDetailsActivity.start(mActivity, build);
+    public void openBuildPage(Build build, String buildTypeName) {
+        BuildDetailsActivity.start(mActivity, build, buildTypeName);
     }
 
     /**

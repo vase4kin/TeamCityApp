@@ -55,6 +55,11 @@ public interface BuildDetailsInteractor extends BaseTabsDataManager {
     BuildDetails getBuildDetails();
 
     /**
+     * @return build type name
+     */
+    String getBuildTypeName();
+
+    /**
      * Cancel/Remove from queue the build
      *
      * @param loadingListener   - Listener to receive callbacks on UI

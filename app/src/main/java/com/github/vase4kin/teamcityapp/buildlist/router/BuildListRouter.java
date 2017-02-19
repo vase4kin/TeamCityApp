@@ -27,9 +27,10 @@ public interface BuildListRouter {
     /**
      * Start build details activity {@link com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity}
      *
-     * @param build - Build
+     * @param build         - Build
+     * @param buildTypeName - Build type name
      */
-    void openBuildPage(Build build);
+    void openBuildPage(Build build, String buildTypeName);
 
     /**
      * Open run build page {@link com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity}
