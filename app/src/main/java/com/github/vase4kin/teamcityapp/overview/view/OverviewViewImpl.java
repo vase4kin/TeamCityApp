@@ -384,7 +384,7 @@ public class OverviewViewImpl implements OverviewView {
         bottomSheet.getMenu().findItem(R.id.copy)
                 .setIcon(new IconDrawable(mActivity, MaterialIcons.md_content_copy));
         bottomSheet.getMenu().findItem(R.id.show_builds_built_branch)
-                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_filter_list));
+                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_list));
         bottomSheet.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialog) {
