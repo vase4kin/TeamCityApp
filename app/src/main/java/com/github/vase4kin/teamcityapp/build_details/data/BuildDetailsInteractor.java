@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.build_details.data;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.properties.api.Properties;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 
 /**
@@ -45,24 +45,14 @@ public interface BuildDetailsInteractor extends BaseTabsDataManager {
     void postRefreshOverViewDataEvent();
 
     /**
-     * @return {true} if the build is running
-     */
-    boolean isBuildRunning();
-
-    /**
      * @return {true} if the build was triggered by active user
      */
     boolean isBuildTriggeredByMe();
 
     /**
-     * @return {String} branch name
+     * @return build details
      */
-    String getBuildBranchName();
-
-    /**
-     * @return {Properties} custom build parameters
-     */
-    Properties getBuildProperties();
+    BuildDetails getBuildDetails();
 
     /**
      * Cancel/Remove from queue the build

@@ -37,4 +37,12 @@ public interface BuildDetailsRouter {
      * @param webUrl - url to share
      */
     void startShareBuildWebUrlActivity(String webUrl);
+
+    /**
+     * Start build list activity
+     *
+     * @param name - build type name
+     * @param id   - build type id
+     */
+    void startBuildListActivity(String name, String id);
 }

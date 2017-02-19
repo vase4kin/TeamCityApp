@@ -45,4 +45,9 @@ public interface OnBuildDetailsEventsListener {
      * When restart build action is triggered
      */
     void onRestartBuildActionTriggered();
+
+    /**
+     * When start build list activity event is triggered
+     */
+    void onStartBuildListActivityEventTriggered();
 }

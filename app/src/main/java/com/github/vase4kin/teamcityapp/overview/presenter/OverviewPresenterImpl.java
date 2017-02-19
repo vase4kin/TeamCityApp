@@ -171,7 +171,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onShowBuildsActionClick() {
-        // TODO: post event to start activity
+        mInteractor.postStartBuildListActivityEvent();
     }
 
     /**

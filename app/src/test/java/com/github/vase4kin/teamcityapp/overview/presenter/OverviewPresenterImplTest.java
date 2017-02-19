@@ -233,6 +233,7 @@ public class OverviewPresenterImplTest {
     @Test
     public void testOnShowBuildsActionClick() throws Exception {
         mPresenter.onShowBuildsActionClick();
+        verify(mInteractor).postStartBuildListActivityEvent();
     }
 
     @Test

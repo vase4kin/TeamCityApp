@@ -177,6 +177,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
+    public void postStartBuildListActivityEvent() {
+        mEventBus.post(new StartBuildsListActivityEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public BuildDetails getBuildDetails() {
         return mValueExtractor.getBuildDetails();
     }

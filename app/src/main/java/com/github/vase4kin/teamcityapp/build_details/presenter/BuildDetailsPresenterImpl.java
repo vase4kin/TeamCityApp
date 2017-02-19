@@ -202,8 +202,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      */
     @Override
     public void onConfirmRestartBuild() {
-        Properties properties = mInteractor.getBuildProperties();
-        String branchName = mInteractor.getBuildBranchName();
+        Properties properties = mInteractor.getBuildDetails().getProperties();
+        String branchName = mInteractor.getBuildDetails().getBranchName();
         mView.showRestartingBuildProgressDialog();
         mRunBuildInteractor.queueBuild(branchName, properties, new LoadingListenerWithForbiddenSupport<String>() {
             @Override
@@ -254,10 +254,21 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStartBuildListActivityEventTriggered() {
+        // TODO: get build type name
+        String name = mInteractor.getBuildDetails().getAgentName();
+        String id = mInteractor.getBuildDetails().getBuildTypeId();
+        mRouter.startBuildListActivity(name, id);
+    }
+
+    /**
      * Show forbidden to cancel build snack bar
      */
     private void showForbiddenToCancelBuildSnackBar() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showForbiddenToStopBuildSnackBar();
         } else {
             mView.showForbiddenToRemoveBuildFromQueueSnackBar();
@@ -268,7 +279,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show build is cancelled snack bar
      */
     private void showBuildIsCancelledSnackBar() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showBuildIsStoppedSnackBar();
         } else {
             mView.showBuildIsRemovedFromQueueSnackBar();
@@ -279,7 +290,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show build isn't cancelled due an error snack bar
      */
     private void showBuildIsCancelledErrorSnackBar() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showBuildIsStoppedErrorSnackBar();
         } else {
             mView.showBuildIsRemovedFromQueueErrorSnackBar();
@@ -290,7 +301,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show you are about to cancel build dialog
      */
     private void showYouAreAboutToCancelBuildDialog() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showYouAreAboutToStopBuildDialog();
         } else {
             mView.showYouAreAboutToRemoveBuildFromQueueDialog();
@@ -301,7 +312,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show you are about to cancel build which wasn't triggered by you dialog
      */
     private void showYouAreAboutToCancelBuildDialogTriggeredNotByYou() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showYouAreAboutToStopNotYoursBuildDialog();
         } else {
             mView.showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog();
@@ -312,7 +323,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show stop/removing from queue build progress
      */
     private void showProgress() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showStoppingBuildProgressDialog();
         } else {
             mView.showRemovingBuildFromQueueProgressDialog();
@@ -323,7 +334,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Hide stop/removing from queue build progress
      */
     private void hideProgress() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.hideStoppingBuildProgressDialog();
         } else {
             mView.hideRemovingBuildFromQueueProgressDialog();
