@@ -16,8 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.view.View;
+import android.widget.Toast;
 
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
@@ -37,17 +45,25 @@ import rx.schedulers.Schedulers;
  */
 public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, BuildElement> implements OverViewInteractor {
 
+    /**
+     * Delay of posting event
+     */
+    private static final int DELAY = 500;
+
     private TeamCityService mTeamCityService;
     private EventBus mEventBus;
     private BaseValueExtractor mValueExtractor;
+    private Context mContext;
     private OnOverviewEventsListener mListener;
 
     public OverviewInteractorImpl(TeamCityService teamCityService,
                                   EventBus eventBus,
-                                  BaseValueExtractor valueExtractor) {
+                                  BaseValueExtractor valueExtractor,
+                                  Context context) {
         this.mTeamCityService = teamCityService;
         this.mEventBus = eventBus;
         this.mValueExtractor = valueExtractor;
+        this.mContext = context;
     }
 
     /**
@@ -123,6 +139,38 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     @Override
     public void unsubsribeFromEventBusEvents() {
         mEventBus.unregister(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyTextToClipBoard(String textToCopy) {
+        ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("", textToCopy);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(mContext, R.string.build_element_copy_text, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postFABGoneEvent() {
+        mEventBus.post(new FloatButtonChangeVisibilityEvent(View.GONE));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postFABVisibleEvent() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mEventBus.post(new FloatButtonChangeVisibilityEvent(View.VISIBLE));
+            }
+        }, DELAY);
     }
 
     /**

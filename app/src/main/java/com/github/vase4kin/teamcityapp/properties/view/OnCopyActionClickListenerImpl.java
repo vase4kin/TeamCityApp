@@ -75,10 +75,10 @@ public class OnCopyActionClickListenerImpl implements OnCopyActionClickListener 
                         switch (item.getItemId()) {
                             case R.id.copy:
                                 copy(textToCopy);
+                                return true;
                             default:
-                                break;
+                                return false;
                         }
-                        return false;
                     }
                 }).build();
         bottomSheet.getMenu().findItem(R.id.copy)

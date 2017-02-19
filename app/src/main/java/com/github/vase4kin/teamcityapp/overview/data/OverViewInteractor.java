@@ -70,6 +70,23 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void unsubsribeFromEventBusEvents();
 
     /**
+     * Copy text to the clipboard
+     *
+     * @param textToCopy - text to copy
+     */
+    void copyTextToClipBoard(String textToCopy);
+
+    /**
+     * Post {@link FloatButtonChangeVisibilityEvent} GONE event
+     */
+    void postFABGoneEvent();
+
+    /**
+     * Post {@link FloatButtonChangeVisibilityEvent} VISIBLE event
+     */
+    void postFABVisibleEvent();
+
+    /**
      * @return {@link BuildDetails} passed through intent
      */
     BuildDetails getBuildDetails();

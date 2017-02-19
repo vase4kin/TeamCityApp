@@ -145,6 +145,7 @@
 
     <!--Build element-->
     <string name="build_element_copy">Copy</string>
+    <string name="build_element_show_all_builds_built_branch">Show builds built on this branch</string>
     <string name="build_element_copy_text">Text copied!</string>
 
     <!--Default dialogs button titles-->

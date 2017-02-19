@@ -26,11 +26,11 @@ import tr.xip.errorview.ErrorView;
 public interface OverviewView {
 
     /**
-     * Init views and set listener {@link OverviewViewListener}
+     * Init views and set listener {@link ViewListener}
      *
      * @param listener - listener to receive UI updates
      */
-    void initViews(OverviewViewListener listener);
+    void initViews(ViewListener listener);
 
     /**
      * Show progress loading wheel
@@ -200,9 +200,24 @@ public interface OverviewView {
     boolean onOptionsItemSelected(MenuItem item);
 
     /**
+     * Show bottom sheet dialog for default card
+     *
+     * @param header      - header of the card
+     * @param description - description of the card
+     */
+    void showDefaultCardBottomSheetDialog(String header, String description);
+
+    /**
+     * Show bottom sheet dialog for branch card
+     *
+     * @param description - description of the card
+     */
+    void showBranchCardBottomSheetDialog(String description);
+
+    /**
      * Listener to handle interactions between view and presenter
      */
-    interface OverviewViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
+    interface ViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
         /**
          * On stop build context menu clicked
          */
@@ -217,5 +232,37 @@ public interface OverviewView {
          * On menu restart build button click
          */
         void onRestartBuildButtonClick();
+
+        /**
+         * On card click
+         */
+        void onCardClick(String header, String value);
+
+        /**
+         * On branch card click
+         */
+        void onBranchCardClick(String value);
+
+        /**
+         * On show builds built on this branch click
+         */
+        void onShowBuildsActionClick();
+
+        /**
+         * On copy action click
+         *
+         * @param valueToCopy - text to copy
+         */
+        void onCopyActionClick(String valueToCopy);
+
+        /**
+         * On bottom sheet show
+         */
+        void onBottomSheetShow();
+
+        /**
+         * On bottom sheet dismiss
+         */
+        void onBottomSheetDismiss();
     }
 }
