@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
+import android.content.Context;
+
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 
 import org.junit.Before;
@@ -34,6 +37,8 @@ public class OverviewDataModelImplTest {
 
     @Mock
     private BuildElement mElement;
+    @Mock
+    private Context mContext;
 
     private OverviewDataModelImpl mDataModel;
 
@@ -42,7 +47,7 @@ public class OverviewDataModelImplTest {
         MockitoAnnotations.initMocks(this);
         List<BuildElement> elements = new ArrayList<>();
         elements.add(mElement);
-        mDataModel = new OverviewDataModelImpl(elements);
+        mDataModel = new OverviewDataModelImpl(elements, mContext);
     }
 
     @Test
@@ -66,5 +71,12 @@ public class OverviewDataModelImplTest {
     @Test
     public void testGetItemCount() throws Exception {
         assertThat(mDataModel.getItemCount(), is(1));
+    }
+
+    @Test
+    public void testIsBranchCard() throws Exception {
+        when(mElement.getSectionName()).thenReturn("section");
+        when(mContext.getString(R.string.build_branch_section_text)).thenReturn("section");
+        assertThat(mDataModel.isBranchCard(0), is(true));
     }
 }

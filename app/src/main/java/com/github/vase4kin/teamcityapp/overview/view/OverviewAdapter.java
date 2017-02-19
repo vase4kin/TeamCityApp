@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.overview.view;
 
 import android.view.View;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
@@ -49,9 +48,7 @@ public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
         super.onBindViewHolder(holder, position);
         final String header = mDataModel.getHeaderName(position);
         final String description = mDataModel.getDescription(position);
-        // TODO: move to data model, pass context there
-        // Simplify click listeners setter
-        if (mDataModel.getHeaderName(position).equals(holder.itemView.getResources().getString(R.string.build_branch_section_text))) {
+        if (mDataModel.isBranchCard(position)) {
             ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

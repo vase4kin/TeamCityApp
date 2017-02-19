@@ -40,4 +40,10 @@ public interface OverviewDataModel extends BaseDataModel {
      * @return Title of element
      */
     String getHeaderName(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return {true} if card is branch one
+     */
+    boolean isBranchCard(int position);
 }

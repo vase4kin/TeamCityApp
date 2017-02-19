@@ -16,11 +16,11 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/copy"
-        android:icon="@mipmap/ic_launcher"
-        android:title="@string/build_element_copy" />
-    <item
         android:id="@+id/show_builds_built_branch"
         android:icon="@mipmap/ic_launcher"
         android:title="@string/build_element_show_all_builds_built_branch" />
+    <item
+        android:id="@+id/copy"
+        android:icon="@mipmap/ic_launcher"
+        android:title="@string/build_element_copy" />
 </menu>

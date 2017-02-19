@@ -102,7 +102,7 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showCards() {
-        mAdapter.setDataModel(new OverviewDataModelImpl(mElements));
+        mAdapter.setDataModel(new OverviewDataModelImpl(mElements, mActivity.getApplicationContext()));
         mAdapter.setViewListener(mListener);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
@@ -114,7 +114,7 @@ public class OverviewViewImpl implements OverviewView {
     @Override
     public void hideCards() {
         mElements.clear();
-        mAdapter.setDataModel(new OverviewDataModelImpl(mElements));
+        mAdapter.setDataModel(new OverviewDataModelImpl(mElements, mActivity.getApplicationContext()));
         mAdapter.notifyDataSetChanged();
     }
 
