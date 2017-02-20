@@ -170,8 +170,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      * {@inheritDoc}
      */
     @Override
-    public void onShowBuildsActionClick() {
-        mInteractor.postStartBuildListActivityEvent();
+    public void onShowBuildsActionClick(String branchName) {
+        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
     }
 
     /**

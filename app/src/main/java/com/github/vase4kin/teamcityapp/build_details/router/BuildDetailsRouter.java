@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.build_details.router;
 
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 
 /**
  * Router for {@link BuildDetailsActivity}
@@ -42,8 +43,9 @@ public interface BuildDetailsRouter {
     /**
      * Start build list activity
      *
-     * @param name - build type name
-     * @param id   - build type id
+     * @param name   - build type name
+     * @param id     - build type id
+     * @param filter - build list filter
      */
-    void startBuildListActivity(String name, String id);
+    void startBuildListActivity(String name, String id, BuildListFilter filter);
 }

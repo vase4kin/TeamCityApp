@@ -87,9 +87,11 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void postFABVisibleEvent();
 
     /**
-     * Post {@link StartBuildsListActivityEvent}
+     * Post {@link StartBuildsListActivityFilteredByBranchEvent}
+     *
+     * @param branchName - branch name
      */
-    void postStartBuildListActivityEvent();
+    void postStartBuildListActivityFilteredByBranchEvent(String branchName);
 
     /**
      * @return {@link BuildDetails} passed through intent

@@ -77,7 +77,13 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mDataManager.load(mValueExtractor.getId(), loadingListener);
+        String buildTypeId = mValueExtractor.getId();
+        BuildListFilter filter = mValueExtractor.getBuildListFilter();
+        if (filter != null) {
+            mDataManager.load(buildTypeId, filter, loadingListener);
+        } else {
+            mDataManager.load(buildTypeId, loadingListener);
+        }
     }
 
     /**

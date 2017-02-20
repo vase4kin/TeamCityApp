@@ -29,7 +29,7 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
-import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityEvent;
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
@@ -223,11 +223,11 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     /***
      * Handle receiving post events from {@link EventBus}
      *
-     * @param event {@link com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityEvent}
+     * @param event {@link StartBuildsListActivityFilteredByBranchEvent}
      */
     @SuppressWarnings("unused")
-    public void onEvent(StartBuildsListActivityEvent event) {
+    public void onEvent(StartBuildsListActivityFilteredByBranchEvent event) {
         if (mListener == null) return;
-        mListener.onStartBuildListActivityEventTriggered();
+        mListener.onStartBuildListActivityFilteredByBranchEventTriggered(event.getBranchName());
     }
 }

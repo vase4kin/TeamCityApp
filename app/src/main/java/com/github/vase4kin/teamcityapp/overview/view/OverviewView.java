@@ -245,8 +245,10 @@ public interface OverviewView {
 
         /**
          * On show builds built on this branch click
+         *
+         * @param branchName - branch name
          */
-        void onShowBuildsActionClick();
+        void onShowBuildsActionClick(String branchName);
 
         /**
          * On copy action click

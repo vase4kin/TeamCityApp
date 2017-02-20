@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -121,11 +122,12 @@ public class BuildListActivity extends AppCompatActivity {
      * @param id       - Build type id
      * @param activity - Activity context
      */
-    public static void start(@NonNull String name, @NonNull String id, @NonNull Activity activity) {
+    public static void start(@NonNull String name, @NonNull String id, @Nullable BuildListFilter filter, @NonNull Activity activity) {
         Bundle bundle = new Bundle();
         bundle.putString(BundleExtractorValues.NAME, name);
         Intent intent = new Intent(activity, BuildListActivity.class);
         bundle.putString(BundleExtractorValues.ID, id);
+        bundle.putSerializable(BundleExtractorValues.BUILD_LIST_FILTER, filter);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);

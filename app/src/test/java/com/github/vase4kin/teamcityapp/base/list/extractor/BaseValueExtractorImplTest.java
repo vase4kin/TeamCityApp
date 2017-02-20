@@ -20,6 +20,7 @@ import android.os.Bundle;
 
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,9 @@ public class BaseValueExtractorImplTest {
 
     @Mock
     private Bundle mBundle;
+
+    @Mock
+    private BuildListFilter mFilter;
 
     private BaseValueExtractorImpl mValueExtractor;
 
@@ -62,6 +66,12 @@ public class BaseValueExtractorImplTest {
     public void testGetBuild() throws Exception {
         when(mBundle.getSerializable(BundleExtractorValues.BUILD)).thenReturn(mBuild);
         assertThat(mValueExtractor.getBuildDetails().toBuild(), is(mBuild));
+    }
+
+    @Test
+    public void testGetBuildListFilter() throws Exception {
+        when(mBundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER)).thenReturn(mFilter);
+        assertThat(mValueExtractor.getBuildListFilter(), is(mFilter));
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -33,4 +33,5 @@ public interface BundleExtractorValues {
     String IGNORED_COUNT_PARAM = "ignoredCount";
     String TEST_URL = "testUrl";
     String BUILD_ID = "buildId";
+    String BUILD_LIST_FILTER = "filter";
 }

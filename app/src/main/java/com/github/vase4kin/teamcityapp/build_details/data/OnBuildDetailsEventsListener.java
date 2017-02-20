@@ -47,7 +47,7 @@ public interface OnBuildDetailsEventsListener {
     void onRestartBuildActionTriggered();
 
     /**
-     * When start build list activity event is triggered
+     * When start build list activity filtered by branch event is triggered
      */
-    void onStartBuildListActivityEventTriggered();
+    void onStartBuildListActivityFilteredByBranchEventTriggered(String branchName);
 }

@@ -374,7 +374,7 @@ public class OverviewViewImpl implements OverviewView {
                                 mListener.onCopyActionClick(description);
                                 return true;
                             case R.id.show_builds_built_branch:
-                                mListener.onShowBuildsActionClick();
+                                mListener.onShowBuildsActionClick(description);
                                 return true;
                             default:
                                 return false;

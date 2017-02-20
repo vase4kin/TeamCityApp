@@ -17,7 +17,28 @@
 package com.github.vase4kin.teamcityapp.overview.data;
 
 /**
- * Start build list activity event sending/receiving by {@link de.greenrobot.event.EventBus}
+ * Start build list activity filtered by branch event sending/receiving by {@link de.greenrobot.event.EventBus}
  */
-public class StartBuildsListActivityEvent {
+public class StartBuildsListActivityFilteredByBranchEvent {
+
+    /**
+     * Branch name
+     */
+    private final String mBranchName;
+
+    /**
+     * Constructor
+     *
+     * @param branchName - Branch name
+     */
+    public StartBuildsListActivityFilteredByBranchEvent(String branchName) {
+        this.mBranchName = branchName;
+    }
+
+    /**
+     * @return branch name
+     */
+    public String getBranchName() {
+        return mBranchName;
+    }
 }

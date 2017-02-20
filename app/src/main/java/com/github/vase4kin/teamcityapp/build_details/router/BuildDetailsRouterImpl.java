@@ -22,6 +22,7 @@ import android.content.Intent;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 
 /**
@@ -59,7 +60,7 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startBuildListActivity(String name, String id) {
-        BuildListActivity.start(name, id, mActivity);
+    public void startBuildListActivity(String name, String id, BuildListFilter filter) {
+        BuildListActivity.start(name, id, filter, mActivity);
     }
 }

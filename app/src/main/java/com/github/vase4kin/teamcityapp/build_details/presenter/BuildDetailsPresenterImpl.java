@@ -29,6 +29,9 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsView;
 import com.github.vase4kin.teamcityapp.build_details.view.OnBuildDetailsViewListener;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -259,10 +262,13 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * {@inheritDoc}
      */
     @Override
-    public void onStartBuildListActivityEventTriggered() {
+    public void onStartBuildListActivityFilteredByBranchEventTriggered(String branchName) {
         String name = mInteractor.getBuildTypeName();
         String id = mInteractor.getBuildDetails().getBuildTypeId();
-        mRouter.startBuildListActivity(name, id);
+        BuildListFilter filter = new BuildListFilterImpl();
+        filter.setFilter(FilterBuildsView.FILTER_NONE);
+        filter.setBranch(branchName);
+        mRouter.startBuildListActivity(name, id, filter);
     }
 
     /**
