@@ -55,6 +55,7 @@ android {
         }
         debug {
             testCoverageEnabled true
+            applicationIdSuffix = ".debug"
         }
         showcase.initWith(buildTypes.release)
         showcase {
@@ -225,3 +226,5 @@ crashlytics {
     androidNdkOut 'src/main/obj'
     androidNdkLibsOut 'src/main/libs'
 }
+
+apply plugin: 'com.google.gms.google-services'
