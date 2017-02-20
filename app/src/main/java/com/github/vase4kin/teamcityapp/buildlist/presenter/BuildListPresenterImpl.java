@@ -103,8 +103,12 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onBuildClick(Build build) {
-        String buildTypeName = mValueExtractor.getName();
-        mRouter.openBuildPage(build, buildTypeName);
+        if (mValueExtractor.isBundleNull()) {
+            mRouter.openBuildPage(build, null);
+        } else {
+            String buildTypeName = mValueExtractor.getName();
+            mRouter.openBuildPage(build, buildTypeName);
+        }
     }
 
     /**

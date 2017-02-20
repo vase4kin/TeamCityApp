@@ -151,6 +151,14 @@ public class BuildListPresenterImplTest {
     }
 
     @Test
+    public void testOnBuildClickIfBundleIsNull() throws Exception {
+        when(mValueExtractor.isBundleNull()).thenReturn(true);
+        mPresenter.onBuildClick(mBuild);
+        verify(mValueExtractor).isBundleNull();
+        verify(mRouter).openBuildPage(mBuild, null);
+    }
+
+    @Test
     public void testOnRunBuildFabClick() throws Exception {
         when(mValueExtractor.getId()).thenReturn("id");
         mPresenter.onRunBuildFabClick();

@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.router;
 
+import android.support.annotation.Nullable;
+
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 
@@ -30,7 +32,7 @@ public interface BuildListRouter {
      * @param build         - Build
      * @param buildTypeName - Build type name
      */
-    void openBuildPage(Build build, String buildTypeName);
+    void openBuildPage(Build build, @Nullable String buildTypeName);
 
     /**
      * Open run build page {@link com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity}
