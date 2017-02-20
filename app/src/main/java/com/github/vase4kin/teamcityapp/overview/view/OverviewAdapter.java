@@ -16,12 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.overview.view;
 
+import android.view.View;
+
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
-import com.github.vase4kin.teamcityapp.properties.view.OnCopyActionAdapterListenerImpl;
-import com.github.vase4kin.teamcityapp.properties.view.OnCopyActionClickListener;
 
 import java.util.Map;
 
@@ -30,14 +30,14 @@ import java.util.Map;
  */
 public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
 
-    private OnCopyActionClickListener mOnCopyActionClickListener;
+    private OverviewView.ViewListener mViewListener;
 
     public OverviewAdapter(Map<Integer, ViewHolderFactory<OverviewDataModel>> viewHolderFactories) {
         super(viewHolderFactories);
     }
 
-    public void setOnCopyActionClickListener(OnCopyActionClickListener onCopyActionClickListener) {
-        this.mOnCopyActionClickListener = onCopyActionClickListener;
+    public void setViewListener(OverviewView.ViewListener onViewListener) {
+        this.mViewListener = onViewListener;
     }
 
     /**
@@ -46,13 +46,37 @@ public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
     @Override
     public void onBindViewHolder(BaseViewHolder<OverviewDataModel> holder, int position) {
         super.onBindViewHolder(holder, position);
-        final OnCopyActionAdapterListenerImpl listener =
-                new OnCopyActionAdapterListenerImpl(
-                        mDataModel.getHeaderName(position),
-                        mDataModel.getDescription(position),
-                        mOnCopyActionClickListener);
-        ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(listener);
-        ((OverviewViewHolder) holder).mFrameLayout.setOnLongClickListener(listener);
+        final String header = mDataModel.getHeaderName(position);
+        final String description = mDataModel.getDescription(position);
+        if (mDataModel.isBranchCard(position)) {
+            ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mViewListener.onBranchCardClick(description);
+                }
+            });
+            ((OverviewViewHolder) holder).mFrameLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mViewListener.onBranchCardClick(description);
+                    return true;
+                }
+            });
+        } else {
+            ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mViewListener.onCardClick(header, description);
+                }
+            });
+            ((OverviewViewHolder) holder).mFrameLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mViewListener.onCardClick(header, description);
+                    return true;
+                }
+            });
+        }
     }
 
 }

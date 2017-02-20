@@ -77,7 +77,13 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mDataManager.load(mValueExtractor.getId(), loadingListener);
+        String buildTypeId = mValueExtractor.getId();
+        BuildListFilter filter = mValueExtractor.getBuildListFilter();
+        if (filter != null) {
+            mDataManager.load(buildTypeId, filter, loadingListener);
+        } else {
+            mDataManager.load(buildTypeId, loadingListener);
+        }
     }
 
     /**
@@ -97,7 +103,12 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onBuildClick(Build build) {
-        mRouter.openBuildPage(build);
+        if (mValueExtractor.isBundleNull()) {
+            mRouter.openBuildPage(build, null);
+        } else {
+            String buildTypeName = mValueExtractor.getName();
+            mRouter.openBuildPage(build, buildTypeName);
+        }
     }
 
     /**
@@ -120,7 +131,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             @Override
             public void onSuccess(Build data) {
                 mView.hideBuildLoadingProgress();
-                mRouter.openBuildPage(data);
+                String buildTypeName = mValueExtractor.getName();
+                mRouter.openBuildPage(data, buildTypeName);
             }
 
             @Override

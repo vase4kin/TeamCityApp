@@ -16,34 +16,29 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
-import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-
 /**
- * Data model to manage build details items
+ * Start build list activity filtered by branch event sending/receiving by {@link de.greenrobot.event.EventBus}
  */
-public interface OverviewDataModel extends BaseDataModel {
+public class StartBuildsListActivityFilteredByBranchEvent {
 
     /**
-     * @param position - Adapter position
-     * @return Icon
+     * Branch name
      */
-    String getIcon(int position);
+    private final String mBranchName;
 
     /**
-     * @param position - Adapter position
-     * @return Description for element
+     * Constructor
+     *
+     * @param branchName - Branch name
      */
-    String getDescription(int position);
+    public StartBuildsListActivityFilteredByBranchEvent(String branchName) {
+        this.mBranchName = branchName;
+    }
 
     /**
-     * @param position - Adapter position
-     * @return Title of element
+     * @return branch name
      */
-    String getHeaderName(int position);
-
-    /**
-     * @param position - Adapter position
-     * @return {true} if card is branch one
-     */
-    boolean isBranchCard(int position);
+    public String getBranchName() {
+        return mBranchName;
+    }
 }

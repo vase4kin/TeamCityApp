@@ -25,11 +25,12 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent;
-import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
@@ -94,14 +95,6 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      * {@inheritDoc}
      */
     @Override
-    public boolean isBuildRunning() {
-        return mValueExtractor.getBuildDetails().isRunning();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isBuildTriggeredByMe() {
         return mValueExtractor.getBuildDetails().isTriggeredByUser(mSharedUserStorage.getActiveUser().getUserName());
     }
@@ -110,16 +103,16 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      * {@inheritDoc}
      */
     @Override
-    public String getBuildBranchName() {
-        return mValueExtractor.getBuildDetails().getBranchName();
+    public BuildDetails getBuildDetails() {
+        return mValueExtractor.getBuildDetails();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Properties getBuildProperties() {
-        return mValueExtractor.getBuildDetails().getProperties();
+    public String getBuildTypeName() {
+        return mValueExtractor.getName();
     }
 
     /**
@@ -225,5 +218,16 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     public void onEvent(RestartBuildEvent event) {
         if (mListener == null) return;
         mListener.onRestartBuildActionTriggered();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link StartBuildsListActivityFilteredByBranchEvent}
+     */
+    @SuppressWarnings("unused")
+    public void onEvent(StartBuildsListActivityFilteredByBranchEvent event) {
+        if (mListener == null) return;
+        mListener.onStartBuildListActivityFilteredByBranchEventTriggered(event.getBranchName());
     }
 }

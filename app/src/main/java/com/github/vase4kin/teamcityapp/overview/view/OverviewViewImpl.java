@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.overview.view;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.StringRes;
@@ -28,9 +29,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
@@ -62,7 +66,7 @@ public class OverviewViewImpl implements OverviewView {
 
     private Unbinder mUnbinder;
 
-    private OverviewViewListener mListener;
+    private ViewListener mListener;
 
     private Activity mActivity;
     private View mView;
@@ -82,7 +86,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(OverviewViewListener listener) {
+    public void initViews(ViewListener listener) {
         this.mListener = listener;
         mUnbinder = ButterKnife.bind(this, mView);
         mErrorView.getImage().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
@@ -98,8 +102,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showCards() {
-        mAdapter.setDataModel(new OverviewDataModelImpl(mElements));
-        mAdapter.setOnCopyActionClickListener(new OnCustomCopyActionClickListenerImpl(mActivity));
+        mAdapter.setDataModel(new OverviewDataModelImpl(mElements, mActivity.getApplicationContext()));
+        mAdapter.setViewListener(mListener);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
     }
@@ -110,7 +114,7 @@ public class OverviewViewImpl implements OverviewView {
     @Override
     public void hideCards() {
         mElements.clear();
-        mAdapter.setDataModel(new OverviewDataModelImpl(mElements));
+        mAdapter.setDataModel(new OverviewDataModelImpl(mElements, mActivity.getApplicationContext()));
         mAdapter.notifyDataSetChanged();
     }
 
@@ -331,4 +335,69 @@ public class OverviewViewImpl implements OverviewView {
                 return false;
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showDefaultCardBottomSheetDialog(String header, final String description) {
+        BottomSheet bottomSheet = createBottomSheet(header, description);
+        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch).setVisible(false);
+        bottomSheet.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBranchCardBottomSheetDialog(String description) {
+        BottomSheet bottomSheet = createBottomSheet(mActivity.getString(R.string.build_branch_section_text), description);
+        bottomSheet.show();
+    }
+
+    /**
+     * Create bottom sheet
+     *
+     * @param header      - bottom sheet header
+     * @param description - description to use
+     * @return
+     */
+    private BottomSheet createBottomSheet(String header, final String description) {
+        BottomSheet bottomSheet = new BottomSheet.Builder(mActivity)
+                .title(header)
+                .sheet(R.menu.menu_item_overview)
+                .listener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.copy:
+                                mListener.onCopyActionClick(description);
+                                return true;
+                            case R.id.show_builds_built_branch:
+                                mListener.onShowBuildsActionClick(description);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                }).build();
+        bottomSheet.getMenu().findItem(R.id.copy)
+                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_content_copy));
+        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch)
+                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_list));
+        bottomSheet.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                mListener.onBottomSheetShow();
+            }
+        });
+        bottomSheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                mListener.onBottomSheetDismiss();
+            }
+        });
+        return bottomSheet;
+    }
+
 }

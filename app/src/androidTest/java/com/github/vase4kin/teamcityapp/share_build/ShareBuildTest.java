@@ -64,6 +64,8 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class ShareBuildTest {
 
+    private static final String BUILD_TYPE_NAME = "name";
+
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
@@ -96,6 +98,7 @@ public class ShareBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity

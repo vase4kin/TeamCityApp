@@ -33,7 +33,7 @@ import javax.inject.Inject;
  * Impl of {@link OverviewPresenter}
  */
 public class OverviewPresenterImpl implements OverviewPresenter,
-        OverviewView.OverviewViewListener,
+        OverviewView.ViewListener,
         OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<BuildDetails> {
 
     private OverviewView mView;
@@ -156,6 +156,55 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     public void onRestartBuildButtonClick() {
         mInteractor.postRestartBuildEvent();
         mTracker.trackUserRestartedBuild();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBranchCardClick(String branch) {
+        mView.showBranchCardBottomSheetDialog(branch);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShowBuildsActionClick(String branchName) {
+        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
+        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCopyActionClick(String textToCopy) {
+        mInteractor.copyTextToClipBoard(textToCopy);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCardClick(String header, String value) {
+        mView.showDefaultCardBottomSheetDialog(header, value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBottomSheetDismiss() {
+        mInteractor.postFABVisibleEvent();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBottomSheetShow() {
+        mInteractor.postFABGoneEvent();
     }
 
     /**

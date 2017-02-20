@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.base.list.extractor;
 
+import android.support.annotation.Nullable;
+
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 /**
@@ -37,6 +40,12 @@ public interface BaseValueExtractor {
      * @return {@link BuildDetails}
      */
     BuildDetails getBuildDetails();
+
+    /**
+     * @return {@link BuildListFilter}
+     */
+    @Nullable
+    BuildListFilter getBuildListFilter();
 
     /**
      * @return determines if the bundle is null or not
@@ -65,6 +74,12 @@ public interface BaseValueExtractor {
         @Override
         public boolean isBundleNull() {
             return true;
+        }
+
+        @Nullable
+        @Override
+        public BuildListFilter getBuildListFilter() {
+            return null;
         }
     };
 }

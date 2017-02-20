@@ -223,4 +223,42 @@ public class OverviewPresenterImplTest {
         verify(mView).hideRefreshingProgress();
         verify(mView).showErrorView(eq("error"));
     }
+
+    @Test
+    public void testOnBranchCardClick() throws Exception {
+        mPresenter.onBranchCardClick("br");
+        verify(mView).showBranchCardBottomSheetDialog(eq("br"));
+    }
+
+    @Test
+    public void testOnShowBuildsActionClick() throws Exception {
+        mPresenter.onShowBuildsActionClick("branch");
+        verify(mInteractor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
+        verify(mTracker).trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    @Test
+    public void testOnCopyActionClick() throws Exception {
+        mPresenter.onCopyActionClick("br");
+        verify(mInteractor).copyTextToClipBoard(eq("br"));
+    }
+
+    @Test
+    public void testOnCardClick() throws Exception {
+        mPresenter.onCardClick("head", "descr");
+        verify(mView).showDefaultCardBottomSheetDialog(eq("head"), eq("descr"));
+    }
+
+    @Test
+    public void testOnBottomSheetDismiss() throws Exception {
+        mPresenter.onBottomSheetDismiss();
+        verify(mInteractor).postFABVisibleEvent();
+    }
+
+    @Test
+    public void testOnBottomSheetShow() throws Exception {
+        mPresenter.onBottomSheetShow();
+        verify(mInteractor).postFABGoneEvent();
+    }
+
 }

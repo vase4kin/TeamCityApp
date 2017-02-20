@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
+import android.content.Context;
+
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 
 import java.util.List;
@@ -26,9 +29,11 @@ import java.util.List;
 public class OverviewDataModelImpl implements OverviewDataModel {
 
     private List<BuildElement> elements;
+    private Context mContext;
 
-    public OverviewDataModelImpl(List<BuildElement> elements) {
+    public OverviewDataModelImpl(List<BuildElement> elements, Context context) {
         this.elements = elements;
+        this.mContext = context;
     }
 
     /**
@@ -53,6 +58,14 @@ public class OverviewDataModelImpl implements OverviewDataModel {
     @Override
     public String getHeaderName(int position) {
         return elements.get(position).getSectionName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBranchCard(int position) {
+        return mContext.getString(R.string.build_branch_section_text).equals(getHeaderName(position));
     }
 
     /**
