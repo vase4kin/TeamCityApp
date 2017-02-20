@@ -172,6 +172,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onShowBuildsActionClick(String branchName) {
         mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
+        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
     }
 
     /**

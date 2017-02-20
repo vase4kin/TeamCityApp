@@ -60,4 +60,13 @@ public class OverviewTrackerImpl implements OverviewTracker {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logCustom(new CustomEvent(EVENT_RESTART_BUILD));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserWantsToSeeBuildListFilteredByBranch() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH));
+    }
 }

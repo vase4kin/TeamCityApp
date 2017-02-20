@@ -234,6 +234,7 @@ public class OverviewPresenterImplTest {
     public void testOnShowBuildsActionClick() throws Exception {
         mPresenter.onShowBuildsActionClick("branch");
         verify(mInteractor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
+        verify(mTracker).trackUserWantsToSeeBuildListFilteredByBranch();
     }
 
     @Test

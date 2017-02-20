@@ -98,4 +98,17 @@ public class OverviewTrackerImplTest {
         verify(mAnswers).logCustom(any(CustomEvent.class));
     }
 
+    @Test
+    public void trackUserWantsToSeeBuildsFilteredByBranchIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    @Test
+    public void trackUserWantsToSeeBuildsFilteredByBranchIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
 }
