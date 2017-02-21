@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -37,6 +38,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -49,6 +53,10 @@ public class RunBuildPresenterImplTest {
     private ArgumentCaptor<LoadingListenerWithForbiddenSupport<String>> mQueueLoadingListenerCaptor;
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<String>>> mBranchLoadingListenerCaptor;
+    @Captor
+    private ArgumentCaptor<OnLoadingListener<List<Agent>>> mAgentsLoadingListenerCaptor;
+    @Mock
+    private Agent mAgent;
     @Mock
     private RunBuildView mView;
     @Mock
@@ -77,6 +85,7 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnCreate() throws Exception {
+        when(mAgent.getName()).thenReturn("agentName");
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mBranchesInteractor).loadBranches(mBranchLoadingListenerCaptor.capture());
@@ -96,6 +105,20 @@ public class RunBuildPresenterImplTest {
         loadingListener.onFail("");
         verify(mBranchesComponentView, times(3)).hideBranchesLoadingProgress();
         verify(mBranchesComponentView).showNoBranchesAvailable();
+        verify(mView).disableAgentSelectionControl();
+        verify(mInteractor).loadAgents(mAgentsLoadingListenerCaptor.capture());
+        OnLoadingListener<List<Agent>> agentListOnLoadingListener = mAgentsLoadingListenerCaptor.getValue();
+        agentListOnLoadingListener.onFail("fail");
+        assertThat(mPresenter.mAgents.isEmpty(), is(equalTo(true)));
+        verify(mView).hideLoadingAgentsProgress();
+        verify(mView).showNoAgentsAvailable();
+        agentListOnLoadingListener.onSuccess(Collections.singletonList(mAgent));
+        assertThat(mPresenter.mAgents.size(), is(equalTo(1)));
+        assertThat(mPresenter.mAgents.get(0), is(equalTo(mAgent)));
+        verify(mView, times(2)).hideLoadingAgentsProgress();
+        verify(mView).showSelectedAgentView();
+        verify(mView).enableAgentSelectionControl();
+        verify(mView).setAgentListDialogWithAgentsList(Collections.singletonList("agentName"));
     }
 
     @Test
@@ -108,11 +131,12 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnBuildQueue() throws Exception {
+        mPresenter.mSelectedAgent = mAgent;
         when(mBranchesComponentView.getBranchName()).thenReturn("branch");
-        mPresenter.onBuildQueue();
+        mPresenter.onBuildQueue(true, true, true);
         verify(mBranchesComponentView).getBranchName();
         verify(mView).showQueuingBuildProgress();
-        verify(mInteractor).queueBuild(eq("branch"), mQueueLoadingListenerCaptor.capture());
+        verify(mInteractor).queueBuild(eq("branch"), eq(mAgent), eq(true), eq(true), eq(true), mQueueLoadingListenerCaptor.capture());
         LoadingListenerWithForbiddenSupport<String> loadingListener = mQueueLoadingListenerCaptor.getValue();
         loadingListener.onSuccess("href");
         verify(mView).hideQueuingBuildProgress();
@@ -144,6 +168,19 @@ public class RunBuildPresenterImplTest {
     public void testOnResume() throws Exception {
         mPresenter.onResume();
         verify(mTracker).trackView();
+    }
+
+    @Test
+    public void testOnAgentSelectedIfAgentsAreEmpty() throws Exception {
+        mPresenter.mAgents = Collections.emptyList();
+        mPresenter.onAgentSelected(0);
+    }
+
+    @Test
+    public void testOnAgentSelectedIfAgentsAreNotEmpty() throws Exception {
+        mPresenter.mAgents = Collections.singletonList(mAgent);
+        mPresenter.onAgentSelected(0);
+        assertThat(mPresenter.mSelectedAgent, is(equalTo(mAgent)));
     }
 
 }

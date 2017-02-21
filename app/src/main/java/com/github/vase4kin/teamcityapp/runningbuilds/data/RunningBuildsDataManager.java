@@ -19,8 +19,8 @@ package com.github.vase4kin.teamcityapp.runningbuilds.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ public interface RunningBuildsDataManager extends BuildListDataManager {
      *
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull OnLoadingListener<List<Build>> loadingListener);
+    void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
 
     /**
      * Load running builds count

@@ -30,13 +30,14 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
-import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,6 +51,8 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -62,6 +65,8 @@ import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -73,6 +78,7 @@ public class OverviewFragmentTest {
     private final static String CANCELED_TIME_STAMP = "20161223T151154+0300";
     private static final String USER_NAME = "john.117";
     private static final String NAME = "John one one seven";
+    private static final String BUILD_TYPE_NAME = "name";
 
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
@@ -86,7 +92,7 @@ public class OverviewFragmentTest {
             });
 
     @Rule
-    public CustomActivityTestRule<BuildDetailsActivity> mActivityRule = new CustomActivityTestRule<>(BuildDetailsActivity.class);
+    public CustomIntentsTestRule<BuildDetailsActivity> mActivityRule = new CustomIntentsTestRule<>(BuildDetailsActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
@@ -106,6 +112,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -148,6 +155,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -169,6 +177,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -199,6 +208,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -222,6 +232,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -245,6 +256,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -269,6 +281,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -296,6 +309,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -323,6 +337,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -350,6 +365,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -377,6 +393,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -404,6 +421,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -431,6 +449,7 @@ public class OverviewFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -442,6 +461,68 @@ public class OverviewFragmentTest {
         // Checking restarted by
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)));
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(R.string.triggered_deleted_user_text)));
+    }
+
+    @Test
+    public void testUserCanSeePersonalInfoIfBuildIsPersonal() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, null));
+        mBuild.setTriggered(triggered);
+        mBuild.setPersonal(true);
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        Build successBuild = Mocks.successBuild();
+        successBuild.setPersonal(true);
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(5));
+
+        // Checking Personal of
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(matches(withText(R.string.build_personal_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemTitle)).check(matches(withText(USER_NAME)));
+    }
+
+    @Test
+    public void testUserCanViewBuildListFilteredByBranch() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Click on Branch card
+        onView(withRecyclerView(R.id.overview_recycler_view).atPosition(2)).perform(click());
+
+        // Clicking on show all builds
+        onView(withText(R.string.build_element_show_all_builds_built_branch)).perform(click());
+
+        // Check builds list activity is opened
+        intended(hasComponent(BuildListActivity.class.getName()));
+
+        // Check buid list filter is applied
+        verify(mTeamCityService).listBuilds(eq("Checkstyle_IdeaInspectionsPullRequest"), eq("state:any,canceled:any,failedToStart:any,branch:name:refs/heads/master,personal:false,pinned:false,count:10"));
     }
 
 }

@@ -20,8 +20,8 @@ import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 
 import java.util.List;
@@ -39,8 +39,8 @@ public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implemen
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listQueueBuilds(null), loadingListener);
+    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
+        loadBuilds(mTeamCityService.listQueueBuilds(null), loadingListener);
     }
 
     /**

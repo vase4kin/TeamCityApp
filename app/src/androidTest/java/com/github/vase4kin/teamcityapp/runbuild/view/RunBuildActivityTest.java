@@ -23,6 +23,8 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.agents.api.Agent;
+import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
@@ -40,6 +42,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
@@ -57,18 +61,22 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -90,6 +98,9 @@ public class RunBuildActivityTest {
 
     @Rule
     public CustomActivityTestRule<RunBuildActivity> mActivityRule = new CustomActivityTestRule<>(RunBuildActivity.class);
+
+    @Captor
+    private ArgumentCaptor<Build> mBuildCaptor;
 
     @Mock
     ResponseBody mResponseBody;
@@ -147,6 +158,15 @@ public class RunBuildActivityTest {
         mActivityRule.launchActivity(intent);
         // Starting the build
         onView(withId(R.id.fab_queue_build)).perform(click());
+        // Checking triggered build
+        verify(mTeamCityService).queueBuild(mBuildCaptor.capture());
+        Build capturedBuild = mBuildCaptor.getValue();
+        assertThat(capturedBuild.getBranchName(), is("master"));
+        assertThat(capturedBuild.getAgent(), is(nullValue()));
+        assertThat(capturedBuild.isPersonal(), is(equalTo(false)));
+        assertThat(capturedBuild.isQueueAtTop(), is(equalTo(false)));
+        assertThat(capturedBuild.isCleanSources(), is(equalTo(true)));
+        // Checking activity is finishing
         assertThat(mActivityRule.getActivity().isFinishing(), is(true));
     }
 
@@ -179,5 +199,92 @@ public class RunBuildActivityTest {
         onView(withId(R.id.fab_queue_build)).perform(click());
         // Checking the error snackbar text
         onView(withText(R.string.error_forbidden_error)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserCanSeeChooseAgentIfAgentsAvailable() throws Exception {
+        // Prepare mocks
+        List<Agent> agents = new ArrayList<>();
+        Agent agent = new Agent("agent 1");
+        agents.add(agent);
+        when(mTeamCityService.listAgents(false, null)).thenReturn(Observable.just(new Agents(1, agents)));
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Choose agent
+        onView(withId(R.id.chooser_agent)).perform(click());
+        onView(withText("agent 1")).perform(click());
+        // Starting the build
+        onView(withId(R.id.fab_queue_build)).perform(click());
+        // Checking that build was triggered with agent
+        verify(mTeamCityService).queueBuild(mBuildCaptor.capture());
+        Build capturedBuild = mBuildCaptor.getValue();
+        assertThat(capturedBuild.getAgent(), is(agent));
+        // Checking activity is finishing
+        assertThat(mActivityRule.getActivity().isFinishing(), is(true));
+    }
+
+    @Test
+    public void testUserCanSeeChooseDefaultAgentIfAgentsAvailable() throws Exception {
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Check hint for selected agent
+        onView(withId(R.id.selected_agent)).check(matches(withText(R.string.hint_default_filter_agent)));
+    }
+
+    @Test
+    public void testUserCanSeeNoAgentsAvailableTextIfNoAgentsAvailable() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.listAgents(false, null)).thenReturn(Observable.<Agents>error(new RuntimeException()));
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Check no agents
+        onView(withId(R.id.text_no_agents_available)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserCleanAllFilesCheckBoxIsCheckedByDefault() throws Exception {
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Check clean all files is checked by default
+        onView(withId(R.id.switcher_clean_all_files)).check(matches(isChecked()));
+    }
+
+    @Test
+    public void testUserCanStartTheBuildWithDefaultParams() throws Exception {
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Check personal
+        onView(withId(R.id.switcher_is_personal)).perform(click());
+        // Check queue to the top
+        onView(withId(R.id.switcher_queueAtTop)).perform(click());
+        // Check clean all files
+        onView(withId(R.id.switcher_clean_all_files)).perform(click());
+        // Starting the build
+        onView(withId(R.id.fab_queue_build)).perform(click());
+        // Checking triggered build
+        verify(mTeamCityService).queueBuild(mBuildCaptor.capture());
+        Build capturedBuild = mBuildCaptor.getValue();
+        assertThat(capturedBuild.getBranchName(), is("master"));
+        assertThat(capturedBuild.getAgent(), is(nullValue()));
+        assertThat(capturedBuild.isPersonal(), is(equalTo(true)));
+        assertThat(capturedBuild.isQueueAtTop(), is(equalTo(true)));
+        assertThat(capturedBuild.isCleanSources(), is(equalTo(false)));
+        // Checking activity is finishing
+        assertThat(mActivityRule.getActivity().isFinishing(), is(true));
     }
 }

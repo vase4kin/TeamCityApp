@@ -39,6 +39,11 @@ public interface OverviewTracker extends ViewTracker {
     String EVENT_RESTART_BUILD = "Restart build option menu is clicked";
 
     /**
+     * Show builds filtered by branch action is clicked
+     */
+    String EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH = "Show builds filtered by branch action is clicked";
+
+    /**
      * Track that Cancel build option menu is clicked
      */
     void trackUserClickedCancelBuildOption();
@@ -52,4 +57,9 @@ public interface OverviewTracker extends ViewTracker {
      * Track that restart build button is clicked
      */
     void trackUserRestartedBuild();
+
+    /**
+     * Track that user wants to see build list filtered by specific branch name
+     */
+    void trackUserWantsToSeeBuildListFilteredByBranch();
 }

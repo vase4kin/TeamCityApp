@@ -105,6 +105,7 @@ public class BuildLogFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, "name");
         intent.putExtras(b);
 
         // Start activity

@@ -68,6 +68,7 @@ public class BuildViewHolder extends BaseViewHolder<BuildListDataModel> {
             mBuildNumber.setVisibility(View.GONE);
         } else {
             mBuildNumber.setText(dataModel.getBuildNumber(position));
+            mBuildNumber.setVisibility(View.VISIBLE);
         }
         if (dataModel.isPersonal(position)) {
             mIconPersonal.setVisibility(View.VISIBLE);
@@ -81,6 +82,7 @@ public class BuildViewHolder extends BaseViewHolder<BuildListDataModel> {
         }
         if (dataModel.hasBranch(position)) {
             mBranchName.setText(dataModel.getBranchName(position));
+            mBranchName.setVisibility(View.VISIBLE);
         } else {
             mBranchName.setVisibility(View.GONE);
         }

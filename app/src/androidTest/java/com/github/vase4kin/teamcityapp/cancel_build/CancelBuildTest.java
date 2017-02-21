@@ -76,6 +76,8 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class CancelBuildTest {
 
+    private static final String NAME = "name";
+
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
@@ -129,6 +131,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.queuedBuild1());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -169,6 +172,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.queuedBuild1());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -209,6 +213,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.queuedBuild1());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -241,6 +246,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.queuedBuild1());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -273,6 +279,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.runningBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -314,6 +321,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.runningBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -354,6 +362,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.runningBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -386,6 +395,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.runningBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -418,6 +428,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.runningBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -465,6 +476,7 @@ public class CancelBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.queuedBuild1());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity

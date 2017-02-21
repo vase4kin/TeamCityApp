@@ -17,55 +17,278 @@
 package com.github.vase4kin.teamcityapp.overview.view;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.annotation.StringRes;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
-import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
+import com.pnikosis.materialishprogress.ProgressWheel;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+import tr.xip.errorview.ErrorView;
 
 /**
  * View to manage {@link OverviewFragment}
  */
-public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, OverviewAdapter> implements OverviewView {
+public class OverviewViewImpl implements OverviewView {
 
-    private OverviewViewListener mListener;
+    private static final String ICON_TIME = "{mdi-clock}";
+    private static final String ICON_BRANCH = "{mdi-git}";
+    private static final String ICON_AGENT = "{md-directions-railway}";
+    private static final String ICON_TRIGGER_BY = "{md-account-circle}";
+
+    @BindView(R.id.swiperefresh)
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    @BindView(R.id.my_recycler_view)
+    RecyclerView mRecyclerView;
+    @BindView(R.id.error_view)
+    ErrorView mErrorView;
+    @BindView(R.id.progress_wheel)
+    ProgressWheel mProgressWheel;
+
+    private Unbinder mUnbinder;
+
+    private ViewListener mListener;
+
+    private Activity mActivity;
+    private View mView;
+    private OverviewAdapter mAdapter;
+
+    private final List<BuildElement> mElements = new ArrayList<>();
 
     public OverviewViewImpl(View view,
                             Activity activity,
-                            @StringRes int emptyMessage,
-                            OverviewAdapter adapter) {
-        super(view, activity, emptyMessage, adapter);
+                            OverviewAdapter overviewAdapter) {
+        this.mActivity = activity;
+        this.mView = view;
+        this.mAdapter = overviewAdapter;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setOverViewListener(OverviewViewListener listener) {
+    public void initViews(ViewListener listener) {
         this.mListener = listener;
+        mUnbinder = ButterKnife.bind(this, mView);
+        mErrorView.getImage().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+        mErrorView.setOnRetryListener(listener);
+        mSwipeRefreshLayout.setOnRefreshListener(listener);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+        // For testing purposes
+        mRecyclerView.setId(R.id.overview_recycler_view);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void showData(OverviewDataModel dataModel) {
-        mAdapter.setDataModel(dataModel);
-        mAdapter.setOnCopyActionClickListener(new OnCustomCopyActionClickListenerImpl(mActivity));
+    public void showCards() {
+        mAdapter.setDataModel(new OverviewDataModelImpl(mElements, mActivity.getApplicationContext()));
+        mAdapter.setViewListener(mListener);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    protected int recyclerViewId() {
-        return R.id.overview_recycler_view;
+    public void hideCards() {
+        mElements.clear();
+        mAdapter.setDataModel(new OverviewDataModelImpl(mElements, mActivity.getApplicationContext()));
+        mAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showProgressWheel() {
+        mProgressWheel.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideProgressWheel() {
+        mProgressWheel.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showRefreshingProgress() {
+        mSwipeRefreshLayout.setRefreshing(true);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideRefreshingProgress() {
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showErrorView(String errorMessage) {
+        mErrorView.setVisibility(View.VISIBLE);
+        mErrorView.setSubtitle(errorMessage);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideErrorView() {
+        mErrorView.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void unbindViews() {
+        mUnbinder.unbind();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addWaitReasonStatusCard(String icon, String waitReason) {
+        addCard(R.string.build_wait_reason_section_text, icon, waitReason);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addResultStatusCard(String icon, String result) {
+        addCard(R.string.build_result_section_text, icon, result);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addCancelledByCard(String icon, String userName) {
+        addCard(R.string.build_canceled_by_text, icon, userName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addCancellationTimeCard(String time) {
+        addCard(R.string.build_cancellation_time_text, ICON_TIME, time);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addTimeCard(String time) {
+        addCard(R.string.build_time_section_text, ICON_TIME, time);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addQueuedTimeCard(String time) {
+        addCard(R.string.build_queued_time_section_text, ICON_TIME, time);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addEstimatedTimeToStartCard(String time) {
+        addCard(R.string.build_time_to_start_section_text, ICON_TIME, time);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addBranchCard(String branchName) {
+        addCard(R.string.build_branch_section_text, ICON_BRANCH, branchName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addAgentCard(String agentName) {
+        addCard(R.string.build_agent_section_text, ICON_AGENT, agentName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addTriggeredByCard(String triggeredBy) {
+        addCard(R.string.build_triggered_by_section_text, ICON_TRIGGER_BY, triggeredBy);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addRestartedByCard(String restartedBy) {
+        addCard(R.string.build_restarted_by_section_text, ICON_TRIGGER_BY, restartedBy);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addTriggeredByUnknownTriggerTypeCard() {
+        String unknownTrigger = mActivity.getString(R.string.unknown_trigger_type_text);
+        addTriggeredByCard(unknownTrigger);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addPersonalCard(String userName) {
+        addCard(R.string.build_personal_text, ICON_TRIGGER_BY, userName);
+    }
+
+    /**
+     * Add card
+     *
+     * @param header - Header
+     * @param icon   - Icon
+     * @param text   - Text
+     */
+    private void addCard(@StringRes int header, String icon, String text) {
+        mElements.add(new BuildElement(icon, text, mActivity.getString(header)));
     }
 
     /**
@@ -112,4 +335,69 @@ public class OverviewViewImpl extends BaseListViewImpl<OverviewDataModel, Overvi
                 return false;
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showDefaultCardBottomSheetDialog(String header, final String description) {
+        BottomSheet bottomSheet = createBottomSheet(header, description);
+        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch).setVisible(false);
+        bottomSheet.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBranchCardBottomSheetDialog(String description) {
+        BottomSheet bottomSheet = createBottomSheet(mActivity.getString(R.string.build_branch_section_text), description);
+        bottomSheet.show();
+    }
+
+    /**
+     * Create bottom sheet
+     *
+     * @param header      - bottom sheet header
+     * @param description - description to use
+     * @return
+     */
+    private BottomSheet createBottomSheet(String header, final String description) {
+        BottomSheet bottomSheet = new BottomSheet.Builder(mActivity)
+                .title(header)
+                .sheet(R.menu.menu_item_overview)
+                .listener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.copy:
+                                mListener.onCopyActionClick(description);
+                                return true;
+                            case R.id.show_builds_built_branch:
+                                mListener.onShowBuildsActionClick(description);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                }).build();
+        bottomSheet.getMenu().findItem(R.id.copy)
+                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_content_copy));
+        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch)
+                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_list));
+        bottomSheet.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+                mListener.onBottomSheetShow();
+            }
+        });
+        bottomSheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                mListener.onBottomSheetDismiss();
+            }
+        });
+        return bottomSheet;
+    }
+
 }

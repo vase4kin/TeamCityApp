@@ -18,7 +18,10 @@ package com.github.vase4kin.teamcityapp.properties.view;
 
 /**
  * Listener to handle on copy clicks
+ *
+ * TODO: Move logic to presenter
  */
+@Deprecated
 public interface OnCopyActionClickListener {
 
     /**

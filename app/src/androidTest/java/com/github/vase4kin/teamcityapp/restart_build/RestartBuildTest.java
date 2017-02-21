@@ -84,6 +84,7 @@ public class RestartBuildTest {
     private static final String BRANCH_NAME = "refs/heads/dev";
     private static final String PROPERTY_NAME = "property";
     private static final String PROPERTY_VALUE = "true";
+    private static final String BUILD_TYPE_NAME = "name";
 
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
@@ -134,6 +135,7 @@ public class RestartBuildTest {
         buildToRestart.setBranchName(BRANCH_NAME);
         buildToRestart.setProperties(new Properties(Collections.singletonList(property)));
         b.putSerializable(BundleExtractorValues.BUILD, buildToRestart);
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -197,6 +199,7 @@ public class RestartBuildTest {
         buildToRestart.setBranchName(BRANCH_NAME);
         buildToRestart.setProperties(new Properties(Collections.singletonList(property)));
         b.putSerializable(BundleExtractorValues.BUILD, buildToRestart);
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -241,6 +244,7 @@ public class RestartBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -273,6 +277,7 @@ public class RestartBuildTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity

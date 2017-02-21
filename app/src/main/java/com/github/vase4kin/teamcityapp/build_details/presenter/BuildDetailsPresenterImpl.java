@@ -29,6 +29,9 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsView;
 import com.github.vase4kin.teamcityapp.build_details.view.OnBuildDetailsViewListener;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -184,7 +187,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
                 mTracker.trackUserCanceledBuildSuccessfully();
                 hideProgress();
                 showBuildIsCancelledSnackBar();
-                mRouter.reopenBuildTabsActivity(build);
+                String buildTypeName = mInteractor.getBuildTypeName();
+                mRouter.reopenBuildTabsActivity(build, buildTypeName);
             }
 
             @Override
@@ -202,8 +206,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      */
     @Override
     public void onConfirmRestartBuild() {
-        Properties properties = mInteractor.getBuildProperties();
-        String branchName = mInteractor.getBuildBranchName();
+        Properties properties = mInteractor.getBuildDetails().getProperties();
+        String branchName = mInteractor.getBuildDetails().getBranchName();
         mView.showRestartingBuildProgressDialog();
         mRunBuildInteractor.queueBuild(branchName, properties, new LoadingListenerWithForbiddenSupport<String>() {
             @Override
@@ -241,7 +245,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
             public void onSuccess(Build queuedBuild) {
                 mTracker.trackUserWantsToSeeQueuedBuildDetails();
                 mView.hideBuildLoadingProgress();
-                mRouter.reopenBuildTabsActivity(queuedBuild);
+                String buildTypeName = mInteractor.getBuildTypeName();
+                mRouter.reopenBuildTabsActivity(queuedBuild, buildTypeName);
             }
 
             @Override
@@ -254,10 +259,23 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStartBuildListActivityFilteredByBranchEventTriggered(String branchName) {
+        String name = mInteractor.getBuildTypeName();
+        String id = mInteractor.getBuildDetails().getBuildTypeId();
+        BuildListFilter filter = new BuildListFilterImpl();
+        filter.setFilter(FilterBuildsView.FILTER_NONE);
+        filter.setBranch(branchName);
+        mRouter.startBuildListActivity(name, id, filter);
+    }
+
+    /**
      * Show forbidden to cancel build snack bar
      */
     private void showForbiddenToCancelBuildSnackBar() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showForbiddenToStopBuildSnackBar();
         } else {
             mView.showForbiddenToRemoveBuildFromQueueSnackBar();
@@ -268,7 +286,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show build is cancelled snack bar
      */
     private void showBuildIsCancelledSnackBar() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showBuildIsStoppedSnackBar();
         } else {
             mView.showBuildIsRemovedFromQueueSnackBar();
@@ -279,7 +297,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show build isn't cancelled due an error snack bar
      */
     private void showBuildIsCancelledErrorSnackBar() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showBuildIsStoppedErrorSnackBar();
         } else {
             mView.showBuildIsRemovedFromQueueErrorSnackBar();
@@ -290,7 +308,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show you are about to cancel build dialog
      */
     private void showYouAreAboutToCancelBuildDialog() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showYouAreAboutToStopBuildDialog();
         } else {
             mView.showYouAreAboutToRemoveBuildFromQueueDialog();
@@ -301,7 +319,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show you are about to cancel build which wasn't triggered by you dialog
      */
     private void showYouAreAboutToCancelBuildDialogTriggeredNotByYou() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showYouAreAboutToStopNotYoursBuildDialog();
         } else {
             mView.showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog();
@@ -312,7 +330,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Show stop/removing from queue build progress
      */
     private void showProgress() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.showStoppingBuildProgressDialog();
         } else {
             mView.showRemovingBuildFromQueueProgressDialog();
@@ -323,7 +341,7 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * Hide stop/removing from queue build progress
      */
     private void hideProgress() {
-        if (mInteractor.isBuildRunning()) {
+        if (mInteractor.getBuildDetails().isRunning()) {
             mView.hideStoppingBuildProgressDialog();
         } else {
             mView.hideRemovingBuildFromQueueProgressDialog();

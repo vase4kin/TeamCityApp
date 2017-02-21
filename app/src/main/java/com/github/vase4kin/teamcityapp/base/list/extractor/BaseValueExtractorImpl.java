@@ -18,9 +18,13 @@ package com.github.vase4kin.teamcityapp.base.list.extractor;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 
 /**
  * Base impl of {@link BaseValueExtractor}
@@ -53,8 +57,18 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      * {@inheritDoc}
      */
     @Override
-    public Build getBuild() {
-        return (Build) mBundle.getSerializable(BundleExtractorValues.BUILD);
+    public BuildDetails getBuildDetails() {
+        Build build = (Build) mBundle.getSerializable(BundleExtractorValues.BUILD);
+        return new BuildDetailsImpl(build);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Nullable
+    public BuildListFilter getBuildListFilter() {
+        return (BuildListFilter) mBundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER);
     }
 
     /**

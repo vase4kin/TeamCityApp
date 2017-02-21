@@ -20,7 +20,6 @@ import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
@@ -56,8 +55,11 @@ public class OverviewModule {
     }
 
     @Provides
-    OverViewInteractor providesOverViewDataManager(TeamCityService teamCityService, Context context, EventBus eventBus) {
-        return new OverviewInteractorImpl(teamCityService, context, eventBus);
+    OverViewInteractor providesOverViewDataManager(TeamCityService teamCityService,
+                                                   EventBus eventBus,
+                                                   BaseValueExtractor valueExtractor,
+                                                   Context context) {
+        return new OverviewInteractorImpl(teamCityService, eventBus, valueExtractor, context);
     }
 
     @Provides
@@ -67,7 +69,7 @@ public class OverviewModule {
 
     @Provides
     OverviewView providesBaseListView(OverviewAdapter adapter) {
-        return new OverviewViewImpl(mView, mFragment.getActivity(), R.string.empty, adapter);
+        return new OverviewViewImpl(mView, mFragment.getActivity(), adapter);
     }
 
     @Provides

@@ -17,10 +17,16 @@
 package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.api.Agent;
+import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
+
+import java.util.List;
 
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observer;
@@ -57,10 +63,21 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      * {@inheritDoc}
      */
     @Override
-    public void queueBuild(String branchName, final LoadingListenerWithForbiddenSupport<String> loadingListener) {
+    public void queueBuild(String branchName,
+                           @Nullable Agent agent,
+                           boolean isPersonal,
+                           boolean queueToTheTop,
+                           boolean cleanAllFiles,
+                           final LoadingListenerWithForbiddenSupport<String> loadingListener) {
         Build build = new Build();
         build.setBranchName(branchName);
         build.setBuildTypeId(mBuildTypeId);
+        build.setPersonal(isPersonal);
+        build.setQueueAtTop(queueToTheTop);
+        build.setCleanSources(cleanAllFiles);
+        if (agent != null) {
+            build.setAgent(agent);
+        }
         queueBuild(build, loadingListener);
     }
 
@@ -119,5 +136,31 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
     @Override
     public void unsubscribe() {
         mSubscription.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void loadAgents(final OnLoadingListener<List<Agent>> loadingListener) {
+        Subscription queueBuildSubscription = mTeamCityService.listAgents(false, null)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Agents>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingListener.onFail(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(Agents agents) {
+                        loadingListener.onSuccess(agents.getObjects());
+                    }
+                });
+        mSubscription.add(queueBuildSubscription);
     }
 }

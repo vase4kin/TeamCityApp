@@ -66,6 +66,8 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class PropertiesFragmentTest {
 
+    private static final String NAME = "name";
+
     @Rule
     public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
@@ -108,6 +110,7 @@ public class PropertiesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -139,6 +142,7 @@ public class PropertiesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild(null));
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -166,6 +170,7 @@ public class PropertiesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild(new Properties(Collections.<Properties.Property>emptyList())));
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -193,6 +198,7 @@ public class PropertiesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, NAME);
         intent.putExtras(b);
 
         // Start activity

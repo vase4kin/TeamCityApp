@@ -16,7 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.interactor;
 
+import android.support.annotation.Nullable;
+
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
+
+import java.util.List;
 
 /**
  * Run build interactor
@@ -37,9 +43,18 @@ public interface RunBuildInteractor {
      * Queue new build
      *
      * @param branchName      - with branch name
+     * @param agent           - agent run with
+     * @param isPersonal      - personal build
+     * @param queueToTheTop   - queue build to the top
+     * @param cleanAllFiles   - clean all files in the checkout directory
      * @param loadingListener - listener to receive callbacks
      */
-    void queueBuild(String branchName, LoadingListenerWithForbiddenSupport<String> loadingListener);
+    void queueBuild(String branchName,
+                    @Nullable Agent agent,
+                    boolean isPersonal,
+                    boolean queueToTheTop,
+                    boolean cleanAllFiles,
+                    LoadingListenerWithForbiddenSupport<String> loadingListener);
 
     /**
      * Queue new build with parameters
@@ -54,4 +69,11 @@ public interface RunBuildInteractor {
      * Unsubscribe all rx subscriptions
      */
     void unsubscribe();
+
+    /**
+     * Load list of agents
+     *
+     * @param loadingListener - listener to receive load callbacks
+     */
+    void loadAgents(OnLoadingListener<List<Agent>> loadingListener);
 }

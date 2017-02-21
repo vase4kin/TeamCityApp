@@ -179,4 +179,13 @@
         <item name="android:maxLines">1</item>
     </style>
 
+    <style name="Switch">
+        <item name="android:paddingTop">@dimen/padding_switch</item>
+        <item name="android:paddingBottom">@dimen/padding_switch</item>
+        <item name="android:paddingLeft">@dimen/default_margin</item>
+        <item name="android:paddingRight">@dimen/default_margin</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
 </resources>

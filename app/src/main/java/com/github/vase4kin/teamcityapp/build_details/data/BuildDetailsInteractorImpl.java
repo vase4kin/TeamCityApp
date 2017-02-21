@@ -25,12 +25,12 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent;
-import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
@@ -95,36 +95,24 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      * {@inheritDoc}
      */
     @Override
-    public boolean isBuildRunning() {
-        return mValueExtractor.getBuild().isRunning();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public boolean isBuildTriggeredByMe() {
-        Triggered triggered = mValueExtractor.getBuild().getTriggered();
-        return triggered != null
-                && triggered.isUser()
-                && triggered.getUser() != null
-                && mSharedUserStorage.getActiveUser().getUserName().equals(mValueExtractor.getBuild().getTriggered().getUser().getUsername());
+        return mValueExtractor.getBuildDetails().isTriggeredByUser(mSharedUserStorage.getActiveUser().getUserName());
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String getBuildBranchName() {
-        return mValueExtractor.getBuild().getBranchName();
+    public BuildDetails getBuildDetails() {
+        return mValueExtractor.getBuildDetails();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Properties getBuildProperties() {
-        return mValueExtractor.getBuild().getProperties();
+    public String getBuildTypeName() {
+        return mValueExtractor.getName();
     }
 
     /**
@@ -133,7 +121,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     @Override
     public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener, boolean isReAddToTheQueue) {
         mSubscription.clear();
-        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuild().getHref(), new BuildCancelRequest(isReAddToTheQueue))
+        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuildDetails().getHref(), new BuildCancelRequest(isReAddToTheQueue))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {
@@ -168,7 +156,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public String getWebUrl() {
-        return mValueExtractor.getBuild().getWebUrl();
+        return mValueExtractor.getBuildDetails().getWebUrl();
     }
 
     /**
@@ -230,5 +218,16 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     public void onEvent(RestartBuildEvent event) {
         if (mListener == null) return;
         mListener.onRestartBuildActionTriggered();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link StartBuildsListActivityFilteredByBranchEvent}
+     */
+    @SuppressWarnings("unused")
+    public void onEvent(StartBuildsListActivityFilteredByBranchEvent event) {
+        if (mListener == null) return;
+        mListener.onStartBuildListActivityFilteredByBranchEventTriggered(event.getBranchName());
     }
 }

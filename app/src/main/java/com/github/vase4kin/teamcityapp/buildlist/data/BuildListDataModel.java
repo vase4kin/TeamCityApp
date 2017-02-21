@@ -19,11 +19,12 @@ package com.github.vase4kin.teamcityapp.buildlist.data;
 import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 /**
  * Model managing build list data
  */
-public interface BuildListDataModel extends BaseDataModel, Iterable<Build>, ModelLoadMore<BuildListDataModel> {
+public interface BuildListDataModel extends BaseDataModel, Iterable<BuildDetails>, ModelLoadMore<BuildListDataModel> {
 
     /**
      * Get branch name

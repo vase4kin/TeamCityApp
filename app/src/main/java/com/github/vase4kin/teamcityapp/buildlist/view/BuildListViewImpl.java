@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
-import com.github.vase4kin.teamcityapp.utils.DateUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.mugen.Mugen;
@@ -326,7 +325,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         if (dataModel.getItemCount() != 0) {
             for (int i = 0; i < dataModel.getItemCount(); i++) {
                 String sectionTitle = dataModel.isQueued(i) ? mQueuedHeaderText
-                        : DateUtils.initWithDate(dataModel.getStartDate(i)).formatStartDateToBuildListItemHeader();
+                        : dataModel.getStartDate(i);
                 if (sections.size() != 0) {
                     SimpleSectionedRecyclerViewAdapter.Section prevSection = sections.get(sections.size() - 1);
                     if (!prevSection.getTitle().equals(sectionTitle)) {

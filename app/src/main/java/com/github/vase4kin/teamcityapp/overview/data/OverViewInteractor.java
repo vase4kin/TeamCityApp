@@ -24,8 +24,6 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 
-import java.util.List;
-
 /**
  * Data manager for {@link OverviewFragment}
  */
@@ -44,7 +42,7 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
      * @param url             - Build ROOT_PROJECTS_URL
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull String url, @NonNull OnLoadingListener<List<BuildElement>> loadingListener);
+    void load(@NonNull String url, @NonNull OnLoadingListener<BuildDetails> loadingListener);
 
     /**
      * Post {@link StopBuildEvent}
@@ -72,6 +70,35 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void unsubsribeFromEventBusEvents();
 
     /**
+     * Copy text to the clipboard
+     *
+     * @param textToCopy - text to copy
+     */
+    void copyTextToClipBoard(String textToCopy);
+
+    /**
+     * Post {@link FloatButtonChangeVisibilityEvent} GONE event
+     */
+    void postFABGoneEvent();
+
+    /**
+     * Post {@link FloatButtonChangeVisibilityEvent} VISIBLE event
+     */
+    void postFABVisibleEvent();
+
+    /**
+     * Post {@link StartBuildsListActivityFilteredByBranchEvent}
+     *
+     * @param branchName - branch name
+     */
+    void postStartBuildListActivityFilteredByBranchEvent(String branchName);
+
+    /**
+     * @return {@link BuildDetails} passed through intent
+     */
+    BuildDetails getBuildDetails();
+
+    /**
      * Event listener
      */
     interface OnOverviewEventsListener {
@@ -80,4 +107,5 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
          */
         void onDataRefreshEvent();
     }
+
 }

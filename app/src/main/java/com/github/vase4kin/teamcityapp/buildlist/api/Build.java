@@ -36,9 +36,6 @@ import java.util.List;
  */
 public class Build extends BaseObject implements Collectible<BuildElement> {
 
-    private static final String SUCCESS = "SUCCESS";
-    private static final String FAILURE = "FAILURE";
-
     private String number;
     private String status;
     private String state;
@@ -61,6 +58,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     private String webUrl;
     private boolean pinned;
     private boolean personal;
+    private boolean cleanSources;
+    private boolean queueAtTop;
 
     public String getNumber() {
         return number;
@@ -110,30 +109,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return buildTypeId;
     }
 
-    public boolean isQueued() {
-        return state.equals("queued");
-    }
-
-    public boolean isRunning() {
-        return state.equals("running");
-    }
-
-    public boolean isFailed() {
-        return status.equals(FAILURE);
-    }
-
-    public boolean isSuccess() {
-        return status.equals(SUCCESS);
-    }
-
     public String getStatusText() {
-        if (isQueued()) {
-            return waitReason != null
-                    ? waitReason
-                    : "Queued build";
-        } else {
-            return statusText;
-        }
+        return statusText;
     }
 
     public String getFinishDate() {
@@ -254,5 +231,27 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     @VisibleForTesting
     public void setCanceledInfo(CanceledInfo canceledInfo) {
         this.canceledInfo = canceledInfo;
+    }
+
+    public void setPersonal(boolean personal) {
+        this.personal = personal;
+    }
+
+    public void setCleanSources(boolean cleanSources) {
+        this.cleanSources = cleanSources;
+    }
+
+    public void setQueueAtTop(boolean queueAtTop) {
+        this.queueAtTop = queueAtTop;
+    }
+
+    @VisibleForTesting
+    public boolean isCleanSources() {
+        return cleanSources;
+    }
+
+    @VisibleForTesting
+    public boolean isQueueAtTop() {
+        return queueAtTop;
     }
 }

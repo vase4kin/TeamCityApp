@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.build_details.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -114,14 +115,16 @@ public class BuildDetailsActivity extends AppCompatActivity {
     /**
      * Open {@link this} activity
      *
-     * @param activity - Activity
-     * @param build    - Build to be passed
+     * @param activity      - Activity
+     * @param build         - Build to be passed
+     * @param buildTypeName - Build type name
      */
-    public static void start(Activity activity, Build build) {
+    public static void start(Activity activity, Build build, @Nullable String buildTypeName) {
         Intent intent = new Intent(activity, BuildDetailsActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, build);
+        b.putString(BundleExtractorValues.NAME, buildTypeName);
         intent.putExtras(b);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);

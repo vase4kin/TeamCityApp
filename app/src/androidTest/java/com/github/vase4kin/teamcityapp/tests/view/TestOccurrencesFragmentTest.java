@@ -71,6 +71,8 @@ import static org.mockito.Mockito.when;
 @RunWith(AndroidJUnit4.class)
 public class TestOccurrencesFragmentTest {
 
+    private static final String BUILD_TYPE_NAME = "name";
+
     @Rule
     public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
@@ -113,6 +115,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -146,6 +149,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -182,6 +186,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -209,6 +214,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -248,6 +254,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -284,6 +291,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity
@@ -323,6 +331,7 @@ public class TestOccurrencesFragmentTest {
         Intent intent = new Intent();
         Bundle b = new Bundle();
         b.putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
         intent.putExtras(b);
 
         // Start activity

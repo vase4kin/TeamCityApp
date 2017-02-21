@@ -57,8 +57,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/default_margin">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -70,8 +69,10 @@
                     android:id="@+id/chooser_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
+                    android:paddingTop="@dimen/padding_switch"
+                    android:paddingBottom="@dimen/padding_switch"
+                    android:paddingLeft="@dimen/default_margin"
+                    android:paddingRight="@dimen/default_margin"
                     android:orientation="vertical"
                     android:clickable="true"
                     android:background="?attr/selectableItemBackground">
@@ -91,25 +92,25 @@
 
                 </LinearLayout>
 
+                <include layout="@layout/layout_divider" />
+
                 <Switch
                     android:id="@+id/switcher_is_personal"
+                    style="@style/Switch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="@string/text_switcher_for_personal"
-                    android:textSize="18sp"
-                    android:background="?attr/selectableItemBackground" />
+                    android:text="@string/text_switcher_for_personal" />
+
+                <include layout="@layout/layout_divider" />
 
                 <Switch
                     android:id="@+id/switcher_is_pinned"
+                    style="@style/Switch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="@string/text_switcher_for_pinned"
-                    android:textSize="18sp"
-                    android:background="?attr/selectableItemBackground" />
+                    android:text="@string/text_switcher_for_pinned" />
+
+                <include layout="@layout/layout_divider" />
 
             </LinearLayout>
 

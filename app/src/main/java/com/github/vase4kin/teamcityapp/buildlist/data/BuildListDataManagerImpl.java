@@ -24,6 +24,8 @@ import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,16 +60,16 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String id, @NonNull OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR), loadingListener);
+    public void load(@NonNull String id, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
+        loadBuilds(mTeamCityService.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR), loadingListener);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listBuilds(id, filter.toLocator()), loadingListener);
+    public void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
+        loadBuilds(mTeamCityService.listBuilds(id, filter.toLocator()), loadingListener);
     }
 
     /**
@@ -81,8 +83,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void load(@NonNull Observable<Builds> call, @NonNull final OnLoadingListener<List<Build>> loadingListener) {
+    public void loadBuilds(@NonNull Observable<Builds> call, @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
         mSubscriptions.clear();
         Subscription subscription = call
                 // converting all received builds to observables
@@ -104,11 +105,18 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                         return mTeamCityService.build(build.getHref());
                     }
                 })
+                // transform all builds to build details
+                .flatMap(new Func1<Build, Observable<BuildDetails>>() {
+                    @Override
+                    public Observable<BuildDetails> call(Build build) {
+                        return Observable.<BuildDetails>just(new BuildDetailsImpl(build));
+                    }
+                })
                 // putting them all to the sorted list
                 // where queued builds go first
-                .toSortedList(new Func2<Build, Build, Integer>() {
+                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
                     @Override
-                    public Integer call(Build build, Build build2) {
+                    public Integer call(BuildDetails build, BuildDetails build2) {
                         return (build.isQueued() == build2.isQueued())
                                 ? 0
                                 : (build.isQueued()
@@ -118,7 +126,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<Build>>() {
+                .subscribe(new Observer<List<BuildDetails>>() {
                     @Override
                     public void onCompleted() {
                     }
@@ -129,7 +137,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                     }
 
                     @Override
-                    public void onNext(List<Build> builds) {
+                    public void onNext(List<BuildDetails> builds) {
                         loadingListener.onSuccess(builds);
                     }
                 });
@@ -169,7 +177,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      * {@inheritDoc}
      */
     @Override
-    public void loadMore(@NonNull final OnLoadingListener<List<Build>> loadingListener) {
-        load(mTeamCityService.listMoreBuilds(mLoadMoreUrl), loadingListener);
+    public void loadMore(@NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+        loadBuilds(mTeamCityService.listMoreBuilds(mLoadMoreUrl), loadingListener);
     }
 }

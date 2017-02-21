@@ -22,6 +22,8 @@ import android.content.Intent;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 
 /**
  * Impl of {@link BuildDetailsRouter}
@@ -38,8 +40,8 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      * {@inheritDoc}
      */
     @Override
-    public void reopenBuildTabsActivity(Build build) {
-        BuildDetailsActivity.start(mActivity, build);
+    public void reopenBuildTabsActivity(Build build, String buildTypeName) {
+        BuildDetailsActivity.start(mActivity, build, buildTypeName);
     }
 
     /**
@@ -52,5 +54,13 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
         sendIntent.putExtra(Intent.EXTRA_TEXT, webUrl);
         sendIntent.setType("text/plain");
         mActivity.startActivity(Intent.createChooser(sendIntent, mActivity.getString(R.string.text_share_build)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startBuildListActivity(String name, String id, BuildListFilter filter) {
+        BuildListActivity.start(name, id, filter, mActivity);
     }
 }

@@ -14,16 +14,13 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <dimen name="default_margin">16dp</dimen>
-    <dimen name="small_margin">8dp</dimen>
-    <dimen name="recycler_view_horizontal_margin">0dp</dimen>
-    <dimen name="recycler_view_vertical_margin">0dp</dimen>
-    <dimen name="default_elevation">4dp</dimen>
-    <dimen name="default_item_margin_top">4dp</dimen>
-    <dimen name="other_dp">2dp</dimen>
-    <dimen name="login_screen_margin">24dp</dimen>
-    <integer name="logo_move">-400</integer>
-    <dimen name="toolbar_with_fab_height">170dp</dimen>
-    <dimen name="padding_switch">12dp</dimen>
-</resources>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/show_builds_built_branch"
+        android:icon="@mipmap/ic_launcher"
+        android:title="@string/build_element_show_all_builds_built_branch" />
+    <item
+        android:id="@+id/copy"
+        android:icon="@mipmap/ic_launcher"
+        android:title="@string/build_element_copy" />
+</menu>

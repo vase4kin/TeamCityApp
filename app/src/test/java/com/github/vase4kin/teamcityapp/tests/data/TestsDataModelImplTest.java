@@ -63,7 +63,7 @@ public class TestsDataModelImplTest {
     @Test
     public void testGetStatusIcon() throws Exception {
         when(mTest.getStatus()).thenReturn("FAILURE");
-        assertThat(mDataModel.getStatusIcon(0), is(equalTo(IconUtils.FAILURE)));
+        assertThat(mDataModel.getStatusIcon(0), is(equalTo(IconUtils.ICON_FAILURE)));
     }
 
     @Test

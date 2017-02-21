@@ -30,6 +30,7 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +78,9 @@ public class ArtifactPresenterImplTest {
 
     @Mock
     private Build mBuild;
+
+    @Mock
+    private BuildDetails mBuildDetails;
 
     @Mock
     private ArtifactView mView;
@@ -132,10 +136,10 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testOnClickIfHasChildren() throws Exception {
         when(mFile.hasChildren()).thenReturn(true);
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.onClick(mFile);
-        verify(mValueExtractor).getBuild();
-        verify(mRouter).openArtifactFile(eq(mBuild), eq(mFile));
+        verify(mValueExtractor).getBuildDetails();
+        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq(mFile));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
@@ -143,15 +147,15 @@ public class ArtifactPresenterImplTest {
     public void testOnClickIfBrowserUrl() throws Exception {
         when(mFile.hasChildren()).thenReturn(false);
         when(mFile.getHref()).thenReturn(".html");
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.onClick(mFile);
-        verify(mValueExtractor).getBuild();
-        verify(mRouter).startBrowser(eq(mBuild), eq(mFile));
+        verify(mValueExtractor).getBuildDetails();
+        verify(mRouter).startBrowser(eq(mBuildDetails), eq(mFile));
 
         when(mFile.getHref()).thenReturn(".htm");
         mPresenter.onClick(mFile);
-        verify(mValueExtractor, times(2)).getBuild();
-        verify(mRouter, times(2)).startBrowser(eq(mBuild), eq(mFile));
+        verify(mValueExtractor, times(2)).getBuildDetails();
+        verify(mRouter, times(2)).startBrowser(eq(mBuildDetails), eq(mFile));
 
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
@@ -164,7 +168,7 @@ public class ArtifactPresenterImplTest {
         when(mFile.hasChildren()).thenReturn(false);
         when(mFile.getContent()).thenReturn(mContent);
         when(mFile.getName()).thenReturn("name");
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
 
         mPresenter.onClick(mFile);
@@ -234,19 +238,19 @@ public class ArtifactPresenterImplTest {
 
     @Test
     public void testOpenArtifactFile() throws Exception {
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.openArtifactFile(mFile);
-        verify(mValueExtractor).getBuild();
-        verify(mRouter).openArtifactFile(eq(mBuild), eq(mFile));
+        verify(mValueExtractor).getBuildDetails();
+        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq(mFile));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
     @Test
     public void testStartBrowser() throws Exception {
-        when(mValueExtractor.getBuild()).thenReturn(mBuild);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.startBrowser(mFile);
-        verify(mValueExtractor).getBuild();
-        verify(mRouter).startBrowser(eq(mBuild), eq(mFile));
+        verify(mValueExtractor).getBuildDetails();
+        verify(mRouter).startBrowser(eq(mBuildDetails), eq(mFile));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
