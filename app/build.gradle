@@ -16,7 +16,6 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
-apply plugin: 'com.getkeepsafe.dexcount'
 apply plugin: 'com.neenbedankt.android-apt'
 apply from: 'jacoco.gradle'
 apply from: 'spoon.gradle'
