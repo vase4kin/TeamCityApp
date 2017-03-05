@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.base.tabs.view;
 
+import android.annotation.SuppressLint;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -79,6 +80,7 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
     /**
      * Remove all fragments from fragment manager
      */
+    @SuppressLint("RestrictedApi")
     private void removeAllFragmentsFromFragmentManager() {
         FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
