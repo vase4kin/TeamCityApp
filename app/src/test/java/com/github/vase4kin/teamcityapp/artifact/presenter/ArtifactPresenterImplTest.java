@@ -143,6 +143,17 @@ public class ArtifactPresenterImplTest {
     }
 
     @Test
+    public void testOnClickIfHasChildrenAndIsFolder() throws Exception {
+        when(mFile.hasChildren()).thenReturn(true);
+        when(mFile.isFolder()).thenReturn(true);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
+        mPresenter.onClick(mFile);
+        verify(mValueExtractor).getBuildDetails();
+        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq(mFile));
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
+    }
+
+    @Test
     public void testOnClickIfBrowserUrl() throws Exception {
         when(mFile.hasChildren()).thenReturn(false);
         when(mFile.getHref()).thenReturn(".html");
