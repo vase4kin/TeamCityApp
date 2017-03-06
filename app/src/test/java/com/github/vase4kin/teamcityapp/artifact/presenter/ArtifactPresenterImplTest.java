@@ -138,6 +138,16 @@ public class ArtifactPresenterImplTest {
         when(mFile.hasChildren()).thenReturn(true);
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.onClick(mFile);
+        verify(mView).showFullBottomSheet(eq(mFile));
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
+    }
+
+    @Test
+    public void testOnClickIfHasChildrenAndIsFolder() throws Exception {
+        when(mFile.hasChildren()).thenReturn(true);
+        when(mFile.isFolder()).thenReturn(true);
+        when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
+        mPresenter.onClick(mFile);
         verify(mValueExtractor).getBuildDetails();
         verify(mRouter).openArtifactFile(eq(mBuildDetails), eq(mFile));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
@@ -149,13 +159,11 @@ public class ArtifactPresenterImplTest {
         when(mFile.getHref()).thenReturn(".html");
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.onClick(mFile);
-        verify(mValueExtractor).getBuildDetails();
-        verify(mRouter).startBrowser(eq(mBuildDetails), eq(mFile));
+        verify(mView).showBrowserBottomSheet(eq(mFile));
 
         when(mFile.getHref()).thenReturn(".htm");
         mPresenter.onClick(mFile);
-        verify(mValueExtractor, times(2)).getBuildDetails();
-        verify(mRouter, times(2)).startBrowser(eq(mBuildDetails), eq(mFile));
+        verify(mView, times(2)).showBrowserBottomSheet(eq(mFile));
 
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
@@ -172,13 +180,13 @@ public class ArtifactPresenterImplTest {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
 
         mPresenter.onClick(mFile);
-        verify(mView).showProgressDialog();
-        verify(mDataManager).downloadArtifact(eq("url"), eq("name"), mArgumentCaptor.capture());
+        verify(mView).showDefaultBottomSheet(eq(mFile));
 
+        mPresenter.mArtifactFile = mFile;
         mPresenter.downloadArtifactFile();
-        verify(mView, times(2)).showProgressDialog();
-        verify(mPermissionManager, times(2)).isWriteStoragePermissionsGranted();
-        verify(mDataManager, times(2)).downloadArtifact(eq("url"), eq("name"), mArgumentCaptor.capture());
+        verify(mView).showProgressDialog();
+        verify(mPermissionManager).isWriteStoragePermissionsGranted();
+        verify(mDataManager).downloadArtifact(eq("url"), eq("name"), mArgumentCaptor.capture());
 
         OnLoadingListener<java.io.File> onLoadingListener = mArgumentCaptor.getValue();
         onLoadingListener.onSuccess(mIoFile);

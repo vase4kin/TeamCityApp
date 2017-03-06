@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.artifact.presenter;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
@@ -47,7 +48,8 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         ArtifactValueExtractor>
         implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactTabChangeEventListener {
 
-    private File mArtifactFile;
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    File mArtifactFile;
 
     private ArtifactRouter mRouter;
     private PermissionManager mPermissionManager;
@@ -94,12 +96,10 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onClick(File artifactFile) {
-        if (artifactFile.hasChildren()) {
+        if (artifactFile.hasChildren() && artifactFile.isFolder()) {
             mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
-        } else if (isBrowserUrl(artifactFile.getHref())) {
-            mRouter.startBrowser(mValueExtractor.getBuildDetails(), artifactFile);
-        } else if (!artifactFile.hasChildren()) {
-            downloadArtifactFile(artifactFile);
+        } else {
+            onLongClick(artifactFile);
         }
     }
 
