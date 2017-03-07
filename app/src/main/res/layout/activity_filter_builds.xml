@@ -110,7 +110,9 @@
                     android:layout_height="match_parent"
                     android:text="@string/text_switcher_for_pinned" />
 
-                <include layout="@layout/layout_divider" />
+                <include
+                    layout="@layout/layout_divider"
+                    android:id="@+id/divider_switcher_is_pinned" />
 
             </LinearLayout>
 
