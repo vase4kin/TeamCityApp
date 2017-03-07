@@ -52,6 +52,9 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
     @BindView(R.id.switcher_is_pinned)
     Switch mPinnedSwitch;
 
+    @BindView(R.id.divider_switcher_is_pinned)
+    View mPinnedSwitcherDivider;
+
     @OnClick(R.id.chooser_filter)
     public void onFilterChooserClick() {
         mFilterChooser.show();
@@ -127,6 +130,7 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
     @Override
     public void hideSwitchForPinnedFilter() {
         mPinnedSwitch.setVisibility(View.GONE);
+        mPinnedSwitcherDivider.setVisibility(View.GONE);
     }
 
     /**
@@ -135,5 +139,6 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
     @Override
     public void showSwitchForPinnedFilter() {
         mPinnedSwitch.setVisibility(View.VISIBLE);
+        mPinnedSwitcherDivider.setVisibility(View.VISIBLE);
     }
 }

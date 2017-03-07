@@ -43,6 +43,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Validation tests for {@link LoginActivity}
@@ -109,4 +110,19 @@ public class LoginActivityValidationTest {
         onView(withText(R.string.server_password_cannot_be_empty)).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void testUserWillNotSeeUserAndPasswordFieldsWhenGuestAccountIsOn() throws Exception {
+        onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton());
+        onView(withId(R.id.password)).perform(typeText("pass"), closeSoftKeyboard());
+        // Enabling guest mode
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        // Check input text layouts are not visible
+        onView(withId(R.id.user_field_wrapper)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.password_field_wrapper)).check(matches(not(isDisplayed())));
+        // Enabling user mode
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        // Check input text layouts are visible
+        onView(withId(R.id.user_field_wrapper)).check(matches(isDisplayed()));
+        onView(withId(R.id.password_field_wrapper)).check(matches(isDisplayed()));
+    }
 }

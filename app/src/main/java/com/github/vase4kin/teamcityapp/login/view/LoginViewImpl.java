@@ -81,8 +81,14 @@ public class LoginViewImpl implements LoginView {
     @BindView(R.id.teamcity_url_wrapper)
     TextInputLayout mServerUrlWrapperLayout;
 
+    @BindView(R.id.user_field_wrapper)
+    TextInputLayout mUserNameWrapperLayout;
+
     @BindView(R.id.user_name)
     EditText mUserName;
+
+    @BindView(R.id.password_field_wrapper)
+    TextInputLayout mPasswordWrapperLayout;
 
     @BindView(R.id.password)
     EditText mPassword;
@@ -138,7 +144,9 @@ public class LoginViewImpl implements LoginView {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
+                mUserNameWrapperLayout.setVisibility(b ? View.GONE : View.VISIBLE);
                 mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
+                mPasswordWrapperLayout.setVisibility(b ? View.GONE : View.VISIBLE);
                 setupViewsRegardingUserType(b, listener);
                 hideKeyboard();
             }

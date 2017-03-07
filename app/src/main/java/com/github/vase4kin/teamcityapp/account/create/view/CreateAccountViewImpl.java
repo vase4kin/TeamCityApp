@@ -114,7 +114,9 @@ public class CreateAccountViewImpl implements CreateAccountView {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
+                mUserNameInputLayout.setVisibility(b ? View.GONE : View.VISIBLE);
                 mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
+                mPasswordInputLayout.setVisibility(b ? View.GONE : View.VISIBLE);
                 setupViewsRegardingUserType(b, listener);
             }
         });

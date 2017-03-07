@@ -49,6 +49,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withContentDesc
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 
 /**
@@ -161,5 +162,21 @@ public class CreateAccountActivityValidationTest {
         onView(withId(R.id.user_name)).perform(typeText("user"), closeSoftKeyboard());
         onView(withId(R.id.action_create)).perform(click());
         onView(withText(R.string.server_password_cannot_be_empty)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserWillNotSeeUserAndPasswordFieldsWhenGuestAccountIsOn() throws Exception {
+        onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton());
+        onView(withId(R.id.password)).perform(typeText("pass"), closeSoftKeyboard());
+        // Enabling guest mode
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        // Check input text layouts are not visible
+        onView(withId(R.id.user_field_wrapper)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.password_field_wrapper)).check(matches(not(isDisplayed())));
+        // Enabling user mode
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        // Check input text layouts are visible
+        onView(withId(R.id.user_field_wrapper)).check(matches(isDisplayed()));
+        onView(withId(R.id.password_field_wrapper)).check(matches(isDisplayed()));
     }
 }
