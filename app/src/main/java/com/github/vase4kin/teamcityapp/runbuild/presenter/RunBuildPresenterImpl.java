@@ -53,15 +53,22 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     private BranchesComponentView mBranchesComponentView;
     private BranchesInteractor mBranchesInteractor;
 
-    @VisibleForTesting
+    /**
+     * Selected agent
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Nullable
     Agent mSelectedAgent;
-    @VisibleForTesting
+    /**
+     * List of available agents
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     List<Agent> mAgents;
     /**
      * Build custom parameters
      */
-    private List<Properties.Property> mProperties = new ArrayList<>();
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    List<Properties.Property> mProperties = new ArrayList<>();
 
     @Inject
     RunBuildPresenterImpl(RunBuildView view,
