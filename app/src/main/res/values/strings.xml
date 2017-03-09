@@ -225,7 +225,13 @@
     <string name="text_no_agents_available">No agents available</string>
     <string name="text_loading_agents">Loading agents</string>
     <string name="title_agent_chooser_dialog">Choose agent</string>
-
+    <string name="text_parameters">Parameters</string>
+    <string name="text_add_parameter">Add</string>
+    <string name="text_clear_parameters">Clear all</string>
+    <string name="text_add_parameter_button">@string/text_add_parameter</string>
+    <string name="title_add_parameter">New parameter</string>
+    <string name="hint_parameter_name">Name</string>
+    <string name="hint_parameter_value">Value</string>
 
     <!--Build details activity-->
     <string name="text_stopping_build">Stopping build..</string>

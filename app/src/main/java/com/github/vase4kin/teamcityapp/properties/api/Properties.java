@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.properties.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
@@ -53,7 +51,6 @@ public class Properties extends BaseObject implements Collectible<Properties.Pro
             return own;
         }
 
-        @VisibleForTesting
         public Property(String name, String value) {
             this.name = name;
             this.value = value;
@@ -63,7 +60,6 @@ public class Properties extends BaseObject implements Collectible<Properties.Pro
     public Properties() {
     }
 
-    @VisibleForTesting
     public Properties(List<Property> property) {
         this.property = property;
     }

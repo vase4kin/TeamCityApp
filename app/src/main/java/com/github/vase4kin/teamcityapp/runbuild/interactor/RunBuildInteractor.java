@@ -47,6 +47,7 @@ public interface RunBuildInteractor {
      * @param isPersonal      - personal build
      * @param queueToTheTop   - queue build to the top
      * @param cleanAllFiles   - clean all files in the checkout directory
+     * @param properties      - properties to use for new build
      * @param loadingListener - listener to receive callbacks
      */
     void queueBuild(String branchName,
@@ -54,6 +55,7 @@ public interface RunBuildInteractor {
                     boolean isPersonal,
                     boolean queueToTheTop,
                     boolean cleanAllFiles,
+                    Properties properties,
                     LoadingListenerWithForbiddenSupport<String> loadingListener);
 
     /**
