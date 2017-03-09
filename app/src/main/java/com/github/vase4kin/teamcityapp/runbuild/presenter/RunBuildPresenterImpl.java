@@ -181,7 +181,11 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
             @Override
             public void onSuccess(String data) {
                 mView.hideQueuingBuildProgress();
-                mTracker.trackUserRunBuildSuccess();
+                if (mProperties.isEmpty()) {
+                    mTracker.trackUserRunBuildSuccess();
+                } else {
+                    mTracker.trackUserRunBuildWithCustomParamsSuccess();
+                }
                 mRouter.closeOnSuccess(data);
             }
 
@@ -216,6 +220,7 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     @Override
     public void onAddParameterButtonClick() {
         mView.showAddParameterDialog();
+        mTracker.trackUserClicksOnAddNewBuildParamButton();
     }
 
     /**
@@ -227,6 +232,7 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
         mView.disableClearAllParametersButton();
         mView.showNoneParametersView();
         mView.removeAllParameterViews();
+        mTracker.trackUserClicksOnClearAllBuildParamsButton();
     }
 
     /**
@@ -239,6 +245,7 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
         mView.hideNoneParametersView();
         mView.enableClearAllParametersButton();
         mView.addParameterView(name, value);
+        mTracker.trackUserAddsBuildParam();
     }
 
     /**

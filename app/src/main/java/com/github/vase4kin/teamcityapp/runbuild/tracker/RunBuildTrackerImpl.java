@@ -40,6 +40,15 @@ public class RunBuildTrackerImpl implements RunBuildTracker {
      * {@inheritDoc}
      */
     @Override
+    public void trackUserRunBuildWithCustomParamsSuccess() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_SUCCESS_WITH_CUSTOM_PARAMETERS));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void trackUserRunBuildFailed() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_FAILED));
@@ -62,5 +71,32 @@ public class RunBuildTrackerImpl implements RunBuildTracker {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
                 .putContentName(CONTENT_NAME_RUN_BUILD));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClicksOnAddNewBuildParamButton() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_CLICKS_ADD_NEW_BUILD_PARAMETER_BUTTON));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClicksOnClearAllBuildParamsButton() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_CLICKS_CLEAR_ALL_BUILD_PARAMETERS_BUTTON));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserAddsBuildParam() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_ADDS_NEW_BUILD_PARAMETER));
     }
 }
