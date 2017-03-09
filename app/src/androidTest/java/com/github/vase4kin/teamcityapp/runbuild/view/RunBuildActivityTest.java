@@ -34,6 +34,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -59,6 +60,8 @@ import rx.Observable;
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
@@ -84,6 +87,9 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(AndroidJUnit4.class)
 public class RunBuildActivityTest {
+
+    private static final String PARAMETER_NAME = "version";
+    private static final String PARAMETER_VALUE = "1.3.2";
 
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
@@ -284,6 +290,73 @@ public class RunBuildActivityTest {
         assertThat(capturedBuild.isPersonal(), is(equalTo(true)));
         assertThat(capturedBuild.isQueueAtTop(), is(equalTo(true)));
         assertThat(capturedBuild.isCleanSources(), is(equalTo(false)));
+        // Checking activity is finishing
+        assertThat(mActivityRule.getActivity().isFinishing(), is(true));
+    }
+
+    @Test
+    public void testUserCanStartTheBuildWithCustomParams() throws Exception {
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Scroll to
+        onView(withId(android.R.id.content)).perform(swipeUp());
+        // Add new param
+        onView(withId(R.id.button_add_parameter)).perform(click());
+        // Fill params
+        onView(withId(R.id.parameter_name)).perform(typeText(PARAMETER_NAME));
+        onView(withId(R.id.parameter_value)).perform(typeText(PARAMETER_VALUE), closeSoftKeyboard());
+        // Add param
+        onView(withText(R.string.text_add_parameter_button)).perform(click());
+        // Scroll to
+        onView(withId(android.R.id.content)).perform(swipeUp());
+        // Check params on view
+        onView(allOf(withId(R.id.parameter_name), isDisplayed())).check(matches(withText(PARAMETER_NAME)));
+        onView(allOf(withId(R.id.parameter_value), isDisplayed())).check(matches(withText(PARAMETER_VALUE)));
+        // Starting the build
+        onView(withId(R.id.fab_queue_build)).perform(click());
+        // Checking triggered build
+        verify(mTeamCityService).queueBuild(mBuildCaptor.capture());
+        Build capturedBuild = mBuildCaptor.getValue();
+        assertThat(capturedBuild.getProperties().getObjects().size(), is(equalTo(1)));
+        Properties.Property capturedProperty = capturedBuild.getProperties().getObjects().get(0);
+        assertThat(capturedProperty.getName(), is(equalTo(PARAMETER_NAME)));
+        assertThat(capturedProperty.getValue(), is(equalTo(PARAMETER_VALUE)));
+        // Checking activity is finishing
+        assertThat(mActivityRule.getActivity().isFinishing(), is(true));
+    }
+
+    @Test
+    public void testUserCanStartTheBuildWithClearAllCustomParams() throws Exception {
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Scroll to
+        onView(withId(android.R.id.content)).perform(swipeUp());
+        // Add new param
+        onView(withId(R.id.button_add_parameter)).perform(click());
+        // Fill params
+        onView(withId(R.id.parameter_name)).perform(typeText(PARAMETER_NAME));
+        onView(withId(R.id.parameter_value)).perform(typeText(PARAMETER_VALUE), closeSoftKeyboard());
+        // Add param
+        onView(withText(R.string.text_add_parameter_button)).perform(click());
+        // Scroll to
+        onView(withId(android.R.id.content)).perform(swipeUp());
+        // Check params on view
+        onView(allOf(withId(R.id.parameter_name), isDisplayed())).check(matches(withText(PARAMETER_NAME)));
+        onView(allOf(withId(R.id.parameter_value), isDisplayed())).check(matches(withText(PARAMETER_VALUE)));
+        // Clear all params
+        onView(withId(R.id.button_clear_parameters)).perform(click());
+        // Starting the build
+        onView(withId(R.id.fab_queue_build)).perform(click());
+        // Checking triggered build
+        verify(mTeamCityService).queueBuild(mBuildCaptor.capture());
+        Build capturedBuild = mBuildCaptor.getValue();
+        assertThat(capturedBuild.getProperties(), is(nullValue()));
         // Checking activity is finishing
         assertThat(mActivityRule.getActivity().isFinishing(), is(true));
     }
