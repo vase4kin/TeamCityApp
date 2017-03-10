@@ -22,6 +22,7 @@
     android:layout_margin="@dimen/default_margin">
 
     <android.support.design.widget.TextInputLayout
+        android:id="@+id/parameter_name_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

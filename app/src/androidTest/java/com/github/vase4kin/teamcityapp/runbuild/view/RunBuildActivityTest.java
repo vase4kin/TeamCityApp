@@ -360,4 +360,24 @@ public class RunBuildActivityTest {
         // Checking activity is finishing
         assertThat(mActivityRule.getActivity().isFinishing(), is(true));
     }
+
+    @Test
+    public void testUserCanNotCreateEmptyBuildParamWithEmptyName() throws Exception {
+        // Prepare intent
+        Intent intent = new Intent();
+        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        // Starting the activity
+        mActivityRule.launchActivity(intent);
+        // Scroll to
+        onView(withId(android.R.id.content)).perform(swipeUp());
+        // Add new param
+        onView(withId(R.id.button_add_parameter)).perform(click());
+        // Fill params
+        onView(withId(R.id.parameter_name)).perform(typeText(""));
+        onView(withId(R.id.parameter_value)).perform(typeText(PARAMETER_VALUE), closeSoftKeyboard());
+        // Add param
+        onView(withText(R.string.text_add_parameter_button)).perform(click());
+        // Check error
+        onView(withText(R.string.text_error_parameter_name)).check(matches(isDisplayed()));
+    }
 }

@@ -20,8 +20,10 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -151,11 +153,20 @@ public class RunBuildViewImpl implements RunBuildView {
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         View view = dialog.getCustomView();
                         if (view != null) {
+                            // TODO: Move logic presenter
                             EditText parameterNameEditText = (EditText)view.findViewById(R.id.parameter_name);
                             EditText parameterValueEditText = (EditText)view.findViewById(R.id.parameter_value);
+                            TextInputLayout parameterNameWrapper = (TextInputLayout) view.findViewById(R.id.parameter_name_wrapper);
+                            String parameterName = parameterNameEditText.getText().toString();
+                            if (TextUtils.isEmpty(parameterName)) {
+                                String errorMessage = view.getResources().getString(R.string.text_error_parameter_name);
+                                parameterNameWrapper.setError(errorMessage);
+                                return;
+                            }
                             mListener.onParameterAdded(
                                     parameterNameEditText.getText().toString(),
                                     parameterValueEditText.getText().toString());
+                            parameterNameWrapper.setError(null);
                             parameterNameEditText.setText("");
                             parameterValueEditText.setText("");
                             parameterNameEditText.requestFocus();
