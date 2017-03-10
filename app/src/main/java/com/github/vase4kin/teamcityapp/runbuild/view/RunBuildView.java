@@ -90,6 +90,44 @@ public interface RunBuildView {
     void showNoAgentsAvailable();
 
     /**
+     * Show add new parameter dialog
+     */
+    void showAddParameterDialog();
+
+    /**
+     * Hide parameters none text view
+     */
+    void hideNoneParametersView();
+
+    /**
+     * Show parameters none text view
+     */
+    void showNoneParametersView();
+
+    /**
+     * Enable clear all parameters button
+     */
+    void enableClearAllParametersButton();
+
+    /**
+     * Disable clear all parameters button
+     */
+    void disableClearAllParametersButton();
+
+    /**
+     * Add parameter view
+     *
+     * @param name  - Parameter name
+     * @param value - Parameter value
+     */
+    void addParameterView(String name, String value);
+
+    /**
+     * Remove all parameter views
+     */
+    void removeAllParameterViews();
+
+    /**
      * Listener to receive callbacks to presenter
      */
     interface ViewListener extends OnToolBarNavigationListener {
@@ -111,5 +149,23 @@ public interface RunBuildView {
          * @param agentPosition - item position which was selected
          */
         void onAgentSelected(int agentPosition);
+
+        /**
+         * On add parameter button click
+         */
+        void onAddParameterButtonClick();
+
+        /**
+         * On clear all parameters button click
+         */
+        void onClearAllParametersButtonClick();
+
+        /**
+         * On parameter added
+         *
+         * @param name  - parameter name
+         * @param value - parameter value
+         */
+        void onParameterAdded(String name, String value);
     }
 }

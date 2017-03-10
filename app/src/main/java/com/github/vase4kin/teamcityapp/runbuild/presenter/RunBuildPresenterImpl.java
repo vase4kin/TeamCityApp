@@ -21,6 +21,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -29,6 +30,7 @@ import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,11 +53,22 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     private BranchesComponentView mBranchesComponentView;
     private BranchesInteractor mBranchesInteractor;
 
-    @VisibleForTesting
+    /**
+     * Selected agent
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @Nullable
     Agent mSelectedAgent;
-    @VisibleForTesting
+    /**
+     * List of available agents
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     List<Agent> mAgents;
+    /**
+     * Build custom parameters
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    List<Properties.Property> mProperties = new ArrayList<>();
 
     @Inject
     RunBuildPresenterImpl(RunBuildView view,
@@ -168,12 +181,18 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
                 mSelectedAgent,
                 isPersonal,
                 queueToTheTop,
-                cleanAllFiles, new LoadingListenerWithForbiddenSupport<String>() {
+                cleanAllFiles,
+                new Properties(mProperties),
+                new LoadingListenerWithForbiddenSupport<String>() {
 
             @Override
             public void onSuccess(String data) {
                 mView.hideQueuingBuildProgress();
-                mTracker.trackUserRunBuildSuccess();
+                if (mProperties.isEmpty()) {
+                    mTracker.trackUserRunBuildSuccess();
+                } else {
+                    mTracker.trackUserRunBuildWithCustomParamsSuccess();
+                }
                 mRouter.closeOnSuccess(data);
             }
 
@@ -200,6 +219,40 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
     public void onAgentSelected(int agentPosition) {
         if (mAgents.isEmpty()) return;
         mSelectedAgent = mAgents.get(agentPosition);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onAddParameterButtonClick() {
+        mView.showAddParameterDialog();
+        mTracker.trackUserClicksOnAddNewBuildParamButton();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onClearAllParametersButtonClick() {
+        mProperties.clear();
+        mView.disableClearAllParametersButton();
+        mView.showNoneParametersView();
+        mView.removeAllParameterViews();
+        mTracker.trackUserClicksOnClearAllBuildParamsButton();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onParameterAdded(String name, String value) {
+        Properties.Property property = new Properties.Property(name, value);
+        mProperties.add(property);
+        mView.hideNoneParametersView();
+        mView.enableClearAllParametersButton();
+        mView.addParameterView(name, value);
+        mTracker.trackUserAddsBuildParam();
     }
 
     /**
