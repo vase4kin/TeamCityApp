@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.runbuild.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
+import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -47,8 +48,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+/**
+ * Tests for {@link RunBuildPresenterImpl}
+ */
 public class RunBuildPresenterImplTest {
 
+    private static final String PROPERTY_NAME = "name";
+    private static final String PROPERTY_VALUE = "value";
+
+    @Captor
+    private ArgumentCaptor<Properties> mPropertiesArgumentCaptor;
     @Captor
     private ArgumentCaptor<LoadingListenerWithForbiddenSupport<String>> mQueueLoadingListenerCaptor;
     @Captor
@@ -132,22 +141,33 @@ public class RunBuildPresenterImplTest {
     @Test
     public void testOnBuildQueue() throws Exception {
         mPresenter.mSelectedAgent = mAgent;
+        mPresenter.mProperties.add(new Properties.Property(PROPERTY_NAME, PROPERTY_VALUE));
         when(mBranchesComponentView.getBranchName()).thenReturn("branch");
         mPresenter.onBuildQueue(true, true, true);
         verify(mBranchesComponentView).getBranchName();
         verify(mView).showQueuingBuildProgress();
-        verify(mInteractor).queueBuild(eq("branch"), eq(mAgent), eq(true), eq(true), eq(true), mQueueLoadingListenerCaptor.capture());
+        verify(mInteractor).queueBuild(eq("branch"), eq(mAgent), eq(true), eq(true), eq(true), mPropertiesArgumentCaptor.capture(), mQueueLoadingListenerCaptor.capture());
+        Properties capturedProperties = mPropertiesArgumentCaptor.getValue();
+        assertThat(capturedProperties.getObjects().size(), is(equalTo(1)));
+        Properties.Property capturedProperty = capturedProperties.getObjects().get(0);
+        assertThat(capturedProperty.getName(), is(equalTo(PROPERTY_NAME)));
+        assertThat(capturedProperty.getValue(), is(equalTo(PROPERTY_VALUE)));
         LoadingListenerWithForbiddenSupport<String> loadingListener = mQueueLoadingListenerCaptor.getValue();
         loadingListener.onSuccess("href");
         verify(mView).hideQueuingBuildProgress();
         verify(mRouter).closeOnSuccess(eq("href"));
+        verify(mTracker).trackUserRunBuildWithCustomParamsSuccess();
+        mPresenter.mProperties.clear();
+        loadingListener.onSuccess("href");
+        verify(mView, times(2)).hideQueuingBuildProgress();
+        verify(mRouter, times(2)).closeOnSuccess(eq("href"));
         verify(mTracker).trackUserRunBuildSuccess();
         loadingListener.onFail("");
-        verify(mView, times(2)).hideQueuingBuildProgress();
+        verify(mView, times(3)).hideQueuingBuildProgress();
         verify(mView).showErrorSnackbar();
         verify(mTracker).trackUserRunBuildFailed();
         loadingListener.onForbiddenError();
-        verify(mView, times(3)).hideQueuingBuildProgress();
+        verify(mView, times(4)).hideQueuingBuildProgress();
         verify(mView).showForbiddenErrorSnackbar();
         verify(mTracker).trackUserRunBuildFailedForbidden();
     }
@@ -181,6 +201,35 @@ public class RunBuildPresenterImplTest {
         mPresenter.mAgents = Collections.singletonList(mAgent);
         mPresenter.onAgentSelected(0);
         assertThat(mPresenter.mSelectedAgent, is(equalTo(mAgent)));
+    }
+
+    @Test
+    public void testOnAddParameterButtonClick() throws Exception {
+        mPresenter.onAddParameterButtonClick();
+        verify(mView).showAddParameterDialog();
+        verify(mTracker).trackUserClicksOnAddNewBuildParamButton();
+    }
+
+    @Test
+    public void testOnClearAllParametersButtonClick() throws Exception {
+        mPresenter.onClearAllParametersButtonClick();
+        assertThat(mPresenter.mProperties.size(), is(equalTo(0)));
+        verify(mView).disableClearAllParametersButton();
+        verify(mView).showNoneParametersView();
+        verify(mView).removeAllParameterViews();
+        verify(mTracker).trackUserClicksOnClearAllBuildParamsButton();
+    }
+
+    @Test
+    public void testOnParameterAdded() throws Exception {
+        mPresenter.onParameterAdded(PROPERTY_NAME, PROPERTY_VALUE);
+        assertThat(mPresenter.mProperties.size(), is(equalTo(1)));
+        assertThat(mPresenter.mProperties.get(0).getName(), is(equalTo(PROPERTY_NAME)));
+        assertThat(mPresenter.mProperties.get(0).getValue(), is(equalTo(PROPERTY_VALUE)));
+        verify(mView).hideNoneParametersView();
+        verify(mView).enableClearAllParametersButton();
+        verify(mView).addParameterView(eq(PROPERTY_NAME), eq(PROPERTY_VALUE));
+        verify(mTracker).trackUserAddsBuildParam();
     }
 
 }

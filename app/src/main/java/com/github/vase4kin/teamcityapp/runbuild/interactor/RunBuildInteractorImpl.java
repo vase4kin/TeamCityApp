@@ -68,6 +68,7 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
                            boolean isPersonal,
                            boolean queueToTheTop,
                            boolean cleanAllFiles,
+                           Properties properties,
                            final LoadingListenerWithForbiddenSupport<String> loadingListener) {
         Build build = new Build();
         build.setBranchName(branchName);
@@ -77,6 +78,9 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
         build.setCleanSources(cleanAllFiles);
         if (agent != null) {
             build.setAgent(agent);
+        }
+        if (!properties.getObjects().isEmpty()) {
+            build.setProperties(properties);
         }
         queueBuild(build, loadingListener);
     }
