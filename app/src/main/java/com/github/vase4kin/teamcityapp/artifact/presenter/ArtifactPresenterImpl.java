@@ -78,7 +78,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<File>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<File>> loadingListener, boolean update) {
         mDataManager.load(mValueExtractor.getUrl(), loadingListener);
     }
 

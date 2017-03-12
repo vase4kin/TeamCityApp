@@ -59,7 +59,7 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<UserAccount>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<UserAccount>> loadingListener, boolean update) {
         mDataManager.load(Observable.empty(), loadingListener);
     }
 

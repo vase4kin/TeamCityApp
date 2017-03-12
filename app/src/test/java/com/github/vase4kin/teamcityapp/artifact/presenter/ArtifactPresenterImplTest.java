@@ -121,7 +121,7 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.getUrl()).thenReturn("url");
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
         verify(mDataManager).load(eq("url"), eq(mLoadingListener));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);

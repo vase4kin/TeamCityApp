@@ -113,7 +113,7 @@ public class ChangesPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.getUrl()).thenReturn("url");
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
         verify(mDataManager).loadLimited(eq("url"), eq(mLoadingListener));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor);

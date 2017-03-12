@@ -117,7 +117,7 @@ public class BuildListPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.getId()).thenReturn("id");
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), eq(mLoadingListener));
@@ -128,7 +128,7 @@ public class BuildListPresenterImplTest {
     public void testLoadDataIfBuildListFilterIsProvided() throws Exception {
         when(mValueExtractor.getId()).thenReturn("id");
         when(mValueExtractor.getBuildListFilter()).thenReturn(mFilter);
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), eq(mFilter), eq(mLoadingListener));

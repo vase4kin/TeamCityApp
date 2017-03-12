@@ -76,7 +76,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
         String buildTypeId = mValueExtractor.getId();
         BuildListFilter filter = mValueExtractor.getBuildListFilter();
         if (filter != null) {

@@ -75,7 +75,7 @@ public class RunningBuildsListPresenterImplTest {
 
     @Test
     public void testLoadData() throws Exception {
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mDataManager).load(mLoadingListener);
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
     }

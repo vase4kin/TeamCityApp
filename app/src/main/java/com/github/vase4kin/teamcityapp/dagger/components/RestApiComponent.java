@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.components;
 
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
@@ -31,6 +32,8 @@ import de.greenrobot.event.EventBus;
 public interface RestApiComponent {
 
     TeamCityService teamCityService();
+
+    Repository repository();
 
     SharedUserStorage sharedUserStorage();
 

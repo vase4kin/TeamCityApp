@@ -28,11 +28,13 @@ import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
+import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
@@ -41,6 +43,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import de.greenrobot.event.EventBus;
+import io.rx_cache.internal.RxCache;
+import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
@@ -123,5 +127,15 @@ public class AppModule {
         KeyChain keyChain = new SharedPrefsBackedKeyChain(mApplication.getApplicationContext(), CryptoConfig.KEY_256);
         Crypto crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
         return new CryptoManagerImpl(crypto);
+    }
+
+    @VisibleForTesting
+    @Provides
+    @Singleton
+    CacheProviders provideCacheProviders() {
+        File cacheDir = mApplication.getFilesDir();
+        return new RxCache.Builder()
+                .persistence(cacheDir, new GsonSpeaker())
+                .using(CacheProviders.class);
     }
 }

@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.components;
 
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
@@ -46,4 +47,6 @@ public interface AppComponent {
     OkHttpClient authOkHttpClient();
 
     EventBus eventBus();
+
+    CacheProviders providers();
 }

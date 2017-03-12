@@ -16,7 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules;
 
+import com.github.vase4kin.teamcityapp.api.Repository;
+import com.github.vase4kin.teamcityapp.api.RepositoryImpl;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
 
 import javax.inject.Named;
@@ -49,5 +52,11 @@ public class RestApiModule {
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build()
                 .create(TeamCityService.class);
+    }
+
+    @Provides
+    @UserScope
+    Repository provideRepository(TeamCityService teamCityService, CacheProviders cacheProviders) {
+        return new RepositoryImpl(teamCityService, cacheProviders);
     }
 }

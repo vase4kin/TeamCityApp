@@ -55,7 +55,7 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<Properties.Property>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<Properties.Property>> loadingListener, boolean update) {
         mDataManager.load(mValueExtractor.getBuildDetails(), loadingListener);
     }
 
