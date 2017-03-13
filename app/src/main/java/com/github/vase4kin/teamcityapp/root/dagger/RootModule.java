@@ -36,6 +36,7 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import dagger.Module;
 import dagger.Provides;
+import io.rx_cache.internal.RxCache;
 
 @Module
 public class RootModule {
@@ -52,8 +53,11 @@ public class RootModule {
     }
 
     @Provides
-    RootDataManager providesRootDataManager(Context context, TeamCityService teamCityService, SharedUserStorage sharedUserStorage) {
-        return new RootDataManagerImpl(context, teamCityService, sharedUserStorage);
+    RootDataManager providesRootDataManager(Context context,
+                                            TeamCityService teamCityService,
+                                            SharedUserStorage sharedUserStorage,
+                                            RxCache rxCache) {
+        return new RootDataManagerImpl(context, teamCityService, sharedUserStorage, rxCache);
     }
 
     @Provides

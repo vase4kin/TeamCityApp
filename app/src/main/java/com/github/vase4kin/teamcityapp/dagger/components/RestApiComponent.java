@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import dagger.Component;
 import de.greenrobot.event.EventBus;
+import io.rx_cache.internal.RxCache;
 
 @UserScope
 @Component(dependencies = AppComponent.class, modules = RestApiModule.class)
@@ -34,6 +35,8 @@ public interface RestApiComponent {
     TeamCityService teamCityService();
 
     Repository repository();
+
+    RxCache rxCache();
 
     SharedUserStorage sharedUserStorage();
 

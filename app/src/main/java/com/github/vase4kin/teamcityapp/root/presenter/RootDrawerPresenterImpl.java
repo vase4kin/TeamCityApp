@@ -84,8 +84,11 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
             mValueExtractor.removeIsRequiredToReload();
         }
 
+        // TODO: Simplify logic and cover it by unit tests
+
         // if new user was created
         if (isRequiredToReload) {
+            mDataManager.evictAllCache();
             start();
             update();
         }
@@ -97,6 +100,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         // If active user was deleted
         if (!mDataManager.getActiveUser().getTeamcityUrl().equals(mBaseUrl)) {
+            mDataManager.evictAllCache();
             start();
             update();
         }
@@ -106,6 +110,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
         }
 
         if (isNewAccountCreated) {
+            mDataManager.evictAllCache();
             mView.openDrawer();
             mDataManager.clearAllWebViewCookies();
             mInteractor.setAuthDialogStatus(false);

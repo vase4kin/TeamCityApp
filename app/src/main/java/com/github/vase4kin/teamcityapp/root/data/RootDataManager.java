@@ -38,4 +38,9 @@ public interface RootDataManager extends DrawerDataManager {
      * Clear all webview cookies
      */
     void clearAllWebViewCookies();
+
+    /**
+     * Evict all cache data
+     */
+    void evictAllCache();
 }

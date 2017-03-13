@@ -25,16 +25,23 @@ import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
+import io.rx_cache.internal.RxCache;
+
 /**
  * Impl of {@link RootDataManager}
  */
 public class RootDataManagerImpl extends DrawerDataManagerImpl implements RootDataManager {
 
-    private Context mContext;
+    private final Context mContext;
+    private final RxCache mRxCache;
 
-    public RootDataManagerImpl(Context context, TeamCityService teamCityService, SharedUserStorage sharedUserStorage) {
+    public RootDataManagerImpl(Context context,
+                               TeamCityService teamCityService,
+                               SharedUserStorage sharedUserStorage,
+                               RxCache rxCache) {
         super(teamCityService, sharedUserStorage);
         this.mContext = context;
+        this.mRxCache = rxCache;
     }
 
     /**
@@ -59,5 +66,13 @@ public class RootDataManagerImpl extends DrawerDataManagerImpl implements RootDa
     @Override
     public void clearAllWebViewCookies() {
         CookieManager.getInstance().removeAllCookie();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void evictAllCache() {
+        mRxCache.evictAll().subscribe();
     }
 }

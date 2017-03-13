@@ -132,10 +132,16 @@ public class AppModule {
     @VisibleForTesting
     @Provides
     @Singleton
-    CacheProviders provideCacheProviders() {
+    CacheProviders provideCacheProviders(RxCache rxCache) {
+        return rxCache.using(CacheProviders.class);
+    }
+
+    @VisibleForTesting
+    @Provides
+    @Singleton
+    RxCache providesRxCache() {
         File cacheDir = mApplication.getFilesDir();
         return new RxCache.Builder()
-                .persistence(cacheDir, new GsonSpeaker())
-                .using(CacheProviders.class);
+                .persistence(cacheDir, new GsonSpeaker());
     }
 }
