@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.runbuild.interactor;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 
@@ -39,9 +39,9 @@ import rx.subscriptions.CompositeSubscription;
 public class BranchesInteractorImpl implements BranchesInteractor {
 
     /**
-     * TeamCity Rest Api instance
+     * Repository Api instance
      */
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     /**
      * Build type id
      */
@@ -52,8 +52,8 @@ public class BranchesInteractorImpl implements BranchesInteractor {
      */
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
-    public BranchesInteractorImpl(TeamCityService mTeamCityService, @NonNull String mBuildTypeId) {
-        this.mTeamCityService = mTeamCityService;
+    public BranchesInteractorImpl(Repository mRepository, @NonNull String mBuildTypeId) {
+        this.mRepository = mRepository;
         this.mBuildTypeId = mBuildTypeId;
     }
 
@@ -62,7 +62,7 @@ public class BranchesInteractorImpl implements BranchesInteractor {
      */
     @Override
     public void loadBranches(final OnLoadingListener<List<String>> loadingListener) {
-        Subscription loadBranchesSubsription = mTeamCityService.listBranches(mBuildTypeId)
+        Subscription loadBranchesSubsription = mRepository.listBranches(mBuildTypeId)
                 .flatMap(new Func1<Branches, Observable<Branch>>() {
                     @Override
                     public Observable<Branch> call(Branches branches) {

@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.filter_builds.dagger;
 
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouterImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTracker;
@@ -53,8 +53,8 @@ public class FilterBuildsModule {
     }
 
     @Provides
-    BranchesInteractor providesBranchesInteractor(TeamCityService teamCityService) {
-        return new BranchesInteractorImpl(teamCityService, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
+    BranchesInteractor providesBranchesInteractor(Repository repository) {
+        return new BranchesInteractorImpl(repository, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides

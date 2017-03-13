@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.api.cache;
 
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
+import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +31,10 @@ import rx.Observable;
  */
 public interface CacheProviders {
 
+    // TODO: Increase cache to 24 hours? Good idea, huh?
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     Observable<NavigationNode> listBuildTypes(Observable<NavigationNode> navigationNodeObservable, DynamicKey dynamicKey, EvictDynamicKey evictDynamicKey);
+
+    @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
+    Observable<Branches> listBranches(Observable<Branches> branchesObservable, DynamicKey buildTypeId);
 }

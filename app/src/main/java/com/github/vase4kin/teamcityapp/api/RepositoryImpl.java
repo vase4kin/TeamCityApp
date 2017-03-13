@@ -151,9 +151,12 @@ public class RepositoryImpl implements Repository {
         return mTeamCityService.change(url);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Observable<Branches> listBranches(String buildTypeId) {
-        return mTeamCityService.listBranches(buildTypeId);
+        return mCacheCacheProviders.listBranches(mTeamCityService.listBranches(buildTypeId), new DynamicKey(buildTypeId));
     }
 
     /**

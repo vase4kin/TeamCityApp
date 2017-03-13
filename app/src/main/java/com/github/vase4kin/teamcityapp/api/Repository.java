@@ -49,7 +49,7 @@ public interface Repository {
                                   @Nullable String fields);
 
     /**
-     * List build types by url
+     * List build types by url (cache's supported)
      *
      * @param url    - Url of build type
      * @param update - Update cache
@@ -161,12 +161,10 @@ public interface Repository {
     Observable<Changes.Change> change(String url);
 
     /**
-     * List branches
-     * <p>
-     * TODO: Add cache? Like one minute as small as possible
+     * List branches (cache's supported)
      *
      * @param buildTypeId - Build type id
-     * @return {@link Observable} with {@link com.github.vase4kin.teamcityapp.changes.api.Changes.Change}
+     * @return {@link Observable} with {@link Branches}
      */
     Observable<Branches> listBranches(String buildTypeId);
 
