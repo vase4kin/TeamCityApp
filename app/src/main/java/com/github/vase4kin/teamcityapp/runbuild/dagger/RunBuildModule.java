@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.runbuild.dagger;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractorImpl;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
@@ -55,8 +54,8 @@ public class RunBuildModule {
     }
 
     @Provides
-    RunBuildInteractor providesRunBuildInteractor(TeamCityService teamCityService) {
-        return new RunBuildInteractorImpl(teamCityService, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
+    RunBuildInteractor providesRunBuildInteractor(Repository repository) {
+        return new RunBuildInteractorImpl(repository, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides

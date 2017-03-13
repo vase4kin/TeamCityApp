@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api.cache;
 
+import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 
@@ -31,9 +32,33 @@ import rx.Observable;
  */
 public interface CacheProviders {
 
+    /**
+     * Cache build types for one hour
+     */
     @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
-    Observable<NavigationNode> listBuildTypes(Observable<NavigationNode> navigationNodeObservable, DynamicKey dynamicKey, EvictDynamicKey evictDynamicKey);
+    Observable<NavigationNode> listBuildTypes(Observable<NavigationNode> navigationNodeObservable,
+                                              DynamicKey buildTypeUrl,
+                                              EvictDynamicKey evictDynamicKey);
 
+    /**
+     * Cache branches for one minute
+     */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
-    Observable<Branches> listBranches(Observable<Branches> branchesObservable, DynamicKey buildTypeId);
+    Observable<Branches> listBranches(Observable<Branches> branchesObservable,
+                                      DynamicKey buildTypeId);
+
+    /**
+     * Cache changes list for three minute
+     */
+    @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
+    Observable<Changes> listChanges(Observable<Changes> changesObservable,
+                                    DynamicKey changesUrl,
+                                    EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache single change for one hour
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
+    Observable<Changes.Change> change(Observable<Changes.Change> changeObservable,
+                                      DynamicKey changeUrl);
 }

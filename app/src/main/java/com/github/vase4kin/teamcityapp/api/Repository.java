@@ -81,6 +81,8 @@ public interface Repository {
     /**
      * List running builds
      *
+     * TODO: Add Cache
+     *
      * @param locator - TC build locator
      * @param fields  - Additional TC fields
      * @return {@link Observable} with {@link Builds}
@@ -90,6 +92,8 @@ public interface Repository {
     /**
      * List queued builds
      *
+     * TODO: Add Cache
+     *
      * @param fields - Additional TC fields
      * @return {@link Observable} with {@link Builds}
      */
@@ -97,6 +101,8 @@ public interface Repository {
 
     /**
      * List more builds
+     *
+     * TODO: Add Cache
      *
      * @param url - More builds url
      * @return {@link Observable} with {@link Builds}
@@ -125,6 +131,8 @@ public interface Repository {
     /**
      * List tests
      *
+     * TODO: Add Cache
+     *
      * @param url - Build tests url
      * @return {@link Observable} with {@link TestOccurrences}
      */
@@ -141,19 +149,16 @@ public interface Repository {
     Observable<TestOccurrences.TestOccurrence> testOccurrence(String url);
 
     /**
-     * List changes
-     * <p>
-     * TODO: Add Cache (Changes are loaded once when build's started or queued)
+     * List changes (cache's supported)
      *
      * @param url - Build changes url
+     * @param update - Update cache
      * @return {@link Observable} with {@link Changes}
      */
-    Observable<Changes> listChanges(String url);
+    Observable<Changes> listChanges(String url, boolean update);
 
     /**
-     * Get single change
-     * <p>
-     * TODO: Add Cache (Changes are loaded once when build's started or queued)
+     * Get single change (cache's supported)
      *
      * @param url - Change url
      * @return {@link Observable} with {@link com.github.vase4kin.teamcityapp.changes.api.Changes.Change}

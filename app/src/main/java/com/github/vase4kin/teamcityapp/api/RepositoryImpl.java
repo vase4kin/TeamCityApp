@@ -139,8 +139,8 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<Changes> listChanges(String url) {
-        return mTeamCityService.listChanges(url);
+    public Observable<Changes> listChanges(String url, boolean update) {
+        return mCacheCacheProviders.listChanges(mTeamCityService.listChanges(url), new DynamicKey(url), new EvictDynamicKey(update));
     }
 
     /**
@@ -148,7 +148,7 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<Changes.Change> change(String url) {
-        return mTeamCityService.change(url);
+        return mCacheCacheProviders.change(mTeamCityService.change(url), new DynamicKey(url));
     }
 
     /**
