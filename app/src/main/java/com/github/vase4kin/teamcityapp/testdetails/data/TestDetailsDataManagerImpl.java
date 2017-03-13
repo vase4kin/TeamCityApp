@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.testdetails.data;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import rx.Observer;
@@ -31,13 +31,13 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TestDetailsDataManagerImpl implements TestDetailsDataManager {
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
 
     private CompositeSubscription mSubscriptions;
 
-    public TestDetailsDataManagerImpl(TeamCityService teamCityService) {
-        this.mTeamCityService = teamCityService;
-        mSubscriptions = new CompositeSubscription();
+    public TestDetailsDataManagerImpl(Repository repository) {
+        this.mRepository = repository;
+        this.mSubscriptions = new CompositeSubscription();
     }
 
     /**
@@ -46,7 +46,7 @@ public class TestDetailsDataManagerImpl implements TestDetailsDataManager {
     @Override
     public void loadData(final OnLoadingListener<TestOccurrences.TestOccurrence> loadingListener, final String url) {
         mSubscriptions.clear();
-        Subscription subscription = mTeamCityService.testOccurrence(url)
+        Subscription subscription = mRepository.testOccurrence(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<TestOccurrences.TestOccurrence>() {

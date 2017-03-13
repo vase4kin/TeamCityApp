@@ -123,8 +123,8 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<TestOccurrences> listTestOccurrences(String url) {
-        return mTeamCityService.listTestOccurrences(url);
+    public Observable<TestOccurrences> listTestOccurrences(String url, boolean update) {
+        return mCacheCacheProviders.listTestOccurrences(mTeamCityService.listTestOccurrences(url), new DynamicKey(url), new EvictDynamicKey(update));
     }
 
     /**
@@ -132,7 +132,7 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<TestOccurrences.TestOccurrence> testOccurrence(String url) {
-        return mTeamCityService.testOccurrence(url);
+        return mCacheCacheProviders.testOccurrence(mTeamCityService.testOccurrence(url), new DynamicKey(url));
     }
 
     /**

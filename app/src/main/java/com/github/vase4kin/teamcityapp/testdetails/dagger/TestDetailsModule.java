@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.testdetails.dagger;
 
 import android.app.Activity;
 
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManagerImpl;
@@ -47,8 +47,8 @@ public class TestDetailsModule {
     }
 
     @Provides
-    TestDetailsDataManager providesTestDetailsDataManager(TeamCityService teamCityService) {
-        return new TestDetailsDataManagerImpl(teamCityService);
+    TestDetailsDataManager providesTestDetailsDataManager(Repository repository) {
+        return new TestDetailsDataManagerImpl(repository);
     }
 
     @Provides

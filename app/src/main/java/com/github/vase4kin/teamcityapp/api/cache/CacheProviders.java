@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.api.cache;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
+import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import java.util.concurrent.TimeUnit;
 
@@ -61,4 +62,19 @@ public interface CacheProviders {
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     Observable<Changes.Change> change(Observable<Changes.Change> changeObservable,
                                       DynamicKey changeUrl);
+
+    /**
+     * Cache test list for three minute
+     */
+    @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
+    Observable<TestOccurrences> listTestOccurrences(Observable<TestOccurrences> occurrencesObservable,
+                                                    DynamicKey testsUrl,
+                                                    EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache single test for one hour
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
+    Observable<TestOccurrences.TestOccurrence> testOccurrence(Observable<TestOccurrences.TestOccurrence> testOccurrenceObservable,
+                                                              DynamicKey testUrl);
 }

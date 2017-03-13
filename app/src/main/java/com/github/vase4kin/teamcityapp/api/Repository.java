@@ -129,19 +129,16 @@ public interface Repository {
     Observable<ResponseBody> downloadFile(String url);
 
     /**
-     * List tests
-     *
-     * TODO: Add Cache
+     * List tests (cache's supported)
      *
      * @param url - Build tests url
+     * @param update - Update cache
      * @return {@link Observable} with {@link TestOccurrences}
      */
-    Observable<TestOccurrences> listTestOccurrences(String url);
+    Observable<TestOccurrences> listTestOccurrences(String url, boolean update);
 
     /**
-     * Get single test info by url
-     * <p>
-     * TODO: Add Cache
+     * Get single test info by url (cache's supported)
      *
      * @param url - Test url
      * @return {@link Observable} with {@link TestOccurrences.TestOccurrence}

@@ -70,7 +70,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener, boolean update) {
-        mDataManager.loadFailedTests(mValueExtractor.getUrl(), loadingListener);
+        mDataManager.loadFailedTests(mValueExtractor.getUrl(), loadingListener, update);
     }
 
     /**

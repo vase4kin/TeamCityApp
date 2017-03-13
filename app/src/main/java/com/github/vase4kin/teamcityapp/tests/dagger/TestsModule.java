@@ -21,7 +21,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
@@ -59,8 +59,8 @@ public class TestsModule {
     }
 
     @Provides
-    TestsDataManager providesTestsDataManager(TeamCityService teamCityService, EventBus eventBus) {
-        return new TestsDataManagerImpl(teamCityService, eventBus);
+    TestsDataManager providesTestsDataManager(Repository repository, EventBus eventBus) {
+        return new TestsDataManagerImpl(repository, eventBus);
     }
 
     @Provides
