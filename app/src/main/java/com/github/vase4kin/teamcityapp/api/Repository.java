@@ -169,7 +169,7 @@ public interface Repository {
     Observable<Branches> listBranches(String buildTypeId);
 
     /**
-     * Queue build
+     * Queue build (no cache's supported)
      *
      * @param build - Build to post
      * @return {@link Observable} with {@link Build}
@@ -177,7 +177,7 @@ public interface Repository {
     Observable<Build> queueBuild(Build build);
 
     /**
-     * Cancel/Removing build
+     * Cancel/Removing build (no cache's supported)
      *
      * @param buildCancelRequest - request to stop a build
      * @return {@link Observable} with {@link Build}

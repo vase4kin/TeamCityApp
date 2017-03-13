@@ -20,7 +20,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
@@ -53,18 +53,18 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     private OnBuildDetailsEventsListener mListener;
     private BaseValueExtractor mValueExtractor;
     private SharedUserStorage mSharedUserStorage;
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
 
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
     public BuildDetailsInteractorImpl(@NonNull EventBus mEventBus,
                                       BaseValueExtractor valueExtractor,
                                       SharedUserStorage sharedUserStorage,
-                                      TeamCityService teamCityService) {
+                                      Repository repository) {
         super(mEventBus);
         this.mValueExtractor = valueExtractor;
         this.mSharedUserStorage = sharedUserStorage;
-        this.mTeamCityService = teamCityService;
+        this.mRepository = repository;
     }
 
     /**
@@ -121,7 +121,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     @Override
     public void cancelBuild(final LoadingListenerWithForbiddenSupport<Build> loadingListener, boolean isReAddToTheQueue) {
         mSubscription.clear();
-        Subscription queueBuildSubscription = mTeamCityService.cancelBuild(mValueExtractor.getBuildDetails().getHref(), new BuildCancelRequest(isReAddToTheQueue))
+        Subscription queueBuildSubscription = mRepository.cancelBuild(mValueExtractor.getBuildDetails().getHref(), new BuildCancelRequest(isReAddToTheQueue))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {
