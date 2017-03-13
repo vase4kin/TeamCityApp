@@ -33,7 +33,9 @@ public interface ArtifactDataManager extends BaseListRxDataManager<Files, File> 
     /**
      * {@inheritDoc}
      */
-    void load(@NonNull String url, @NonNull OnLoadingListener<List<File>> loadingListener);
+    void load(@NonNull String url,
+              @NonNull OnLoadingListener<List<File>> loadingListener,
+              boolean update);
 
     /**
      * Download artifact

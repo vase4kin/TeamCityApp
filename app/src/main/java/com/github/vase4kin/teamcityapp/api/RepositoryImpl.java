@@ -107,8 +107,11 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<Files> listArtifacts(String url, String locator) {
-        return mTeamCityService.listArtifacts(url, locator);
+    public Observable<Files> listArtifacts(String url, String locator, boolean update) {
+        return mCacheCacheProviders.listArtifacts(
+                mTeamCityService.listArtifacts(url, locator),
+                new DynamicKey(url),
+                new EvictDynamicKey(update));
     }
 
     /**

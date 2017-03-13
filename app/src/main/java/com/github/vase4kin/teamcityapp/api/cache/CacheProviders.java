@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api.cache;
 
+import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
@@ -77,4 +78,12 @@ public interface CacheProviders {
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     Observable<TestOccurrences.TestOccurrence> testOccurrence(Observable<TestOccurrences.TestOccurrence> testOccurrenceObservable,
                                                               DynamicKey testUrl);
+
+    /**
+     * Cache artifacts for one hour
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
+    Observable<Files> listArtifacts(Observable<Files> filesObservable,
+                                    DynamicKey artifactsUrl,
+                                    EvictDynamicKey evictDynamicKey);
 }

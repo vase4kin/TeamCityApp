@@ -79,7 +79,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<File>> loadingListener, boolean update) {
-        mDataManager.load(mValueExtractor.getUrl(), loadingListener);
+        mDataManager.load(mValueExtractor.getUrl(), loadingListener, update);
     }
 
     /**

@@ -110,18 +110,17 @@ public interface Repository {
     Observable<Builds> listMoreBuilds(String url);
 
     /**
-     * List build artifacts
-     * <p>
-     * TODO: Add Cache (Artifacts are loaded after build's finished)
+     * List build artifacts (cache's supported)
      *
      * @param url     - Artifacts url
      * @param locator - TC locator
+     * @param update  - Update cache
      * @return {@link Observable} with {@link Files}
      */
-    Observable<Files> listArtifacts(String url, String locator);
+    Observable<Files> listArtifacts(String url, String locator, boolean update);
 
     /**
-     * Download artifact file by url
+     * Download artifact file by url (no cache's supported)
      *
      * @param url - Artifact file url
      * @return {@link Observable} with {@link ResponseBody}
