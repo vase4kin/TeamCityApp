@@ -31,8 +31,7 @@ import rx.Observable;
  */
 public interface CacheProviders {
 
-    // TODO: Increase cache to 24 hours? Good idea, huh?
-    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
+    @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
     Observable<NavigationNode> listBuildTypes(Observable<NavigationNode> navigationNodeObservable, DynamicKey dynamicKey, EvictDynamicKey evictDynamicKey);
 
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
