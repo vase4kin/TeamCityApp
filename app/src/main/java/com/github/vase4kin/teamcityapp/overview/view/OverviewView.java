@@ -54,10 +54,8 @@ public interface OverviewView {
 
     /**
      * Show error view with error message
-     *
-     * @param error - Error message
      */
-    void showErrorView(String error);
+    void showErrorView();
 
     /**
      * Hide error view

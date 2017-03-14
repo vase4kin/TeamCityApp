@@ -239,7 +239,7 @@ public class OverviewPresenterImplTest {
         verify(mView).hideCards();
         verify(mView).hideProgressWheel();
         verify(mView).hideRefreshingProgress();
-        verify(mView).showErrorView(eq("error"));
+        verify(mView).showErrorView();
     }
 
     @Test

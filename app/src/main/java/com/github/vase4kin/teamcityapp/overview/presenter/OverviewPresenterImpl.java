@@ -320,6 +320,6 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         mView.hideCards();
         mView.hideProgressWheel();
         mView.hideRefreshingProgress();
-        mView.showErrorView(errorMessage);
+        mView.showErrorView();
     }
 }
