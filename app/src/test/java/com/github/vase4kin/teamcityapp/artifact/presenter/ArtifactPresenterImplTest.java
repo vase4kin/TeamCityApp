@@ -123,7 +123,7 @@ public class ArtifactPresenterImplTest {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
-        verify(mDataManager).load(eq("url"), eq(mLoadingListener));
+        verify(mDataManager).load(eq("url"), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 

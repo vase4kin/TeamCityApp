@@ -45,7 +45,7 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected, @Nullable String fields) {
+    public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected, @Nullable String fields, boolean update) {
         return mTeamCityService.listAgents(includeDisconnected, fields);
     }
 
@@ -55,22 +55,22 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Observable<Build> build(String url) {
+    public Observable<Build> build(String url, boolean update) {
         return mTeamCityService.build(url);
     }
 
     @Override
-    public Observable<Builds> listBuilds(String id, String locator) {
+    public Observable<Builds> listBuilds(String id, String locator, boolean update) {
         return mTeamCityService.listBuilds(id, locator);
     }
 
     @Override
-    public Observable<Builds> listRunningBuilds(String locator, String fields) {
+    public Observable<Builds> listRunningBuilds(String locator, String fields, boolean update) {
         return mTeamCityService.listRunningBuilds(locator, fields);
     }
 
     @Override
-    public Observable<Builds> listQueueBuilds(String fields) {
+    public Observable<Builds> listQueueBuilds(String fields, boolean update) {
         return mTeamCityService.listQueueBuilds(fields);
     }
 
@@ -80,7 +80,7 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Observable<Files> listArtifacts(String url, String locator) {
+    public Observable<Files> listArtifacts(String url, String locator, boolean update) {
         return mTeamCityService.listArtifacts(url, locator);
     }
 
@@ -90,7 +90,7 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Observable<TestOccurrences> listTestOccurrences(String url) {
+    public Observable<TestOccurrences> listTestOccurrences(String url, boolean update) {
         return mTeamCityService.listTestOccurrences(url);
     }
 
@@ -100,7 +100,7 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Observable<Changes> listChanges(String url) {
+    public Observable<Changes> listChanges(String url, boolean update) {
         return mTeamCityService.listChanges(url);
     }
 

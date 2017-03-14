@@ -108,7 +108,7 @@ public class TestsPresenterImplTest {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
-        verify(mDataManager).loadFailedTests(eq("url"), eq(mLoadingListener));
+        verify(mDataManager).loadFailedTests(eq("url"), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
 

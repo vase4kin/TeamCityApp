@@ -115,7 +115,7 @@ public class ChangesPresenterImplTest {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
-        verify(mDataManager).loadLimited(eq("url"), eq(mLoadingListener));
+        verify(mDataManager).loadLimited(eq("url"), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor);
     }
 

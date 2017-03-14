@@ -120,7 +120,7 @@ public class BuildListPresenterImplTest {
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
-        verify(mDataManager).load(eq("id"), eq(mLoadingListener));
+        verify(mDataManager).load(eq("id"), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
     }
 
@@ -131,7 +131,7 @@ public class BuildListPresenterImplTest {
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
-        verify(mDataManager).load(eq("id"), eq(mFilter), eq(mLoadingListener));
+        verify(mDataManager).load(eq("id"), eq(mFilter), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
     }
 
@@ -220,7 +220,7 @@ public class BuildListPresenterImplTest {
         verify(mView).hideEmpty();
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
-        verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class));
+        verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class), eq(true));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
@@ -235,7 +235,7 @@ public class BuildListPresenterImplTest {
         verify(mView).hideEmpty();
         verify(mView).showData(any(BuildListDataModel.class));
         verify(mValueExtractor).getId();
-        verify(mDataManager).load(eq("id"), eq(mFilter), Mockito.any(OnLoadingListener.class));
+        verify(mDataManager).load(eq("id"), eq(mFilter), Mockito.any(OnLoadingListener.class), eq(true));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
