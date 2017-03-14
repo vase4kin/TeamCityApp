@@ -110,23 +110,25 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                     public Observable<Build> call(Build build) {
                         // Make sure cache is updated
                         final BuildDetails serverBuildDetails = new BuildDetailsImpl(build);
-                        // Call cache
-                        return mRepository.build(build.getHref(), false)
-                                .flatMap(new Func1<Build, Observable<Build>>() {
-                                    @Override
-                                    public Observable<Build> call(Build build) {
-                                        BuildDetails cacheBuildDetails = new BuildDetailsImpl(build);
-                                        // Compare if server side and cache are updated
-                                        // If cache's not updated -> update it
-                                        return mRepository.build(
-                                                build.getHref(),
-                                                // Don't update cache if server and cache builds are finished
-                                                // If server build's running update cache immediately
-                                                // Looks like good
-                                                serverBuildDetails.isRunning()
-                                                        || !(serverBuildDetails.isFinished() == cacheBuildDetails.isFinished()));
-                                    }
-                                });
+                        // If server build's running update cache immediately
+                        if (serverBuildDetails.isRunning()) {
+                            return mRepository.build(build.getHref(), true);
+                        } else {
+                            // Call cache
+                            return mRepository.build(build.getHref(), false)
+                                    .flatMap(new Func1<Build, Observable<Build>>() {
+                                        @Override
+                                        public Observable<Build> call(Build build) {
+                                            BuildDetails cacheBuildDetails = new BuildDetailsImpl(build);
+                                            // Compare if server side and cache are updated
+                                            // If cache's not updated -> update it
+                                            return mRepository.build(
+                                                    build.getHref(),
+                                                    // Don't update cache if server and cache builds are finished
+                                                    !(serverBuildDetails.isFinished() == cacheBuildDetails.isFinished()));
+                                        }
+                                    });
+                        }
                     }
                 })
                 // transform all builds to build details
