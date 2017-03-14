@@ -46,16 +46,17 @@ public class RestApiModule {
     /**
      * @return {@link FakeTeamCityServiceImpl}
      */
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @UserScope
     public TeamCityService provideTeamCityService(@Named(CLIENT_AUTH) OkHttpClient okHttpClient) {
         return new FakeTeamCityServiceImpl();
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @UserScope
-    Repository provideRepository(TeamCityService teamCityService, CacheProviders cacheProviders) {
+    public Repository provideRepository(TeamCityService teamCityService, CacheProviders cacheProviders) {
         return new FakeRepositoryImpl(teamCityService);
     }
 }

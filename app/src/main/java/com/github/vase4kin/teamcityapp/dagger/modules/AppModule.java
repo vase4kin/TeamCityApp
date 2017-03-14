@@ -64,25 +64,25 @@ public class AppModule {
         mApplication = application;
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
     protected Context provideContext() {
         return mApplication.getApplicationContext();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    public SharedUserStorage provideSharedUserStorage(CryptoManager cryptoManager) {
+    protected SharedUserStorage provideSharedUserStorage(CryptoManager cryptoManager) {
         return SharedUserStorage.init(mApplication.getApplicationContext(), cryptoManager);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Named(CLIENT_AUTH)
     @Provides
-    public OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
-                                               @Named(CLIENT_BASE) OkHttpClient okHttpClient) {
+    protected OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
+                                                  @Named(CLIENT_BASE) OkHttpClient okHttpClient) {
         UserAccount userAccount = sharedUserStorage.getActiveUser();
         if (userAccount.isGuestUser()) {
             return okHttpClient.newBuilder()
@@ -95,11 +95,11 @@ public class AppModule {
         }
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Named(CLIENT_BASE)
     @Singleton
     @Provides
-    public OkHttpClient providesBaseHttpClient() {
+    protected OkHttpClient providesBaseHttpClient() {
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
                 .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
@@ -113,14 +113,14 @@ public class AppModule {
         return clientBuilder.build();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
     protected EventBus providesEventBus() {
         return EventBus.getDefault();
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
     protected CryptoManager providesCryptoManager() {
@@ -129,17 +129,17 @@ public class AppModule {
         return new CryptoManagerImpl(crypto);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    CacheProviders provideCacheProviders(RxCache rxCache) {
+    protected CacheProviders provideCacheProviders(RxCache rxCache) {
         return rxCache.using(CacheProviders.class);
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    RxCache providesRxCache() {
+    protected RxCache providesRxCache() {
         File cacheDir = mApplication.getFilesDir();
         return new RxCache.Builder()
                 .persistence(cacheDir, new GsonSpeaker());

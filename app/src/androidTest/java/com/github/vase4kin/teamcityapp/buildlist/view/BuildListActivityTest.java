@@ -168,7 +168,7 @@ public class BuildListActivityTest {
                 .perform(click());
 
         // Check error message
-        onView(withText("smth bad happend!")).check(matches(isDisplayed()));
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()));
     }
 
     @Test
