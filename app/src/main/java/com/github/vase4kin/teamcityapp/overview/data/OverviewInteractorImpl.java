@@ -78,9 +78,11 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull final OnLoadingListener<BuildDetails> loadingListener) {
+    public void load(@NonNull String url,
+                     @NonNull final OnLoadingListener<BuildDetails> loadingListener,
+                     boolean update) {
         mSubscriptions.clear();
-        Subscription subscription = mRepository.build(url, true)
+        Subscription subscription = mRepository.build(url, update)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {

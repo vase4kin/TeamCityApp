@@ -38,6 +38,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -163,14 +164,31 @@ public class OverviewPresenterImplTest {
     @Test
     public void testOnCreate() throws Exception {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isRunning()).thenReturn(false);
         when(mBuildDetails.getHref()).thenReturn(HREF);
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mInteractor).setListener(eq(mPresenter));
         verify(mView).showProgressWheel();
-        verify(mInteractor).getBuildDetails();
+        verify(mInteractor, times(2)).getBuildDetails();
         verify(mBuildDetails).getHref();
-        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+        verify(mBuildDetails).isRunning();
+        verify(mInteractor).load(eq(HREF), eq(mPresenter), eq(false));
+    }
+
+    @Test
+    public void testOnCreateIfBuildIsRunning() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isRunning()).thenReturn(true);
+        when(mBuildDetails.getHref()).thenReturn(HREF);
+        mPresenter.onCreate();
+        verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).setListener(eq(mPresenter));
+        verify(mView).showProgressWheel();
+        verify(mInteractor, times(2)).getBuildDetails();
+        verify(mBuildDetails).getHref();
+        verify(mBuildDetails).isRunning();
+        verify(mInteractor).load(eq(HREF), eq(mPresenter), eq(true));
     }
 
     @Test
@@ -189,7 +207,7 @@ public class OverviewPresenterImplTest {
         verify(mView).hideErrorView();
         verify(mInteractor).getBuildDetails();
         verify(mBuildDetails).getHref();
-        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+        verify(mInteractor).load(eq(HREF), eq(mPresenter), eq(true));
     }
 
     @Test
@@ -200,7 +218,7 @@ public class OverviewPresenterImplTest {
         verify(mView).hideErrorView();
         verify(mInteractor).getBuildDetails();
         verify(mBuildDetails).getHref();
-        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+        verify(mInteractor).load(eq(HREF), eq(mPresenter), eq(true));
     }
 
     @Test
@@ -212,7 +230,7 @@ public class OverviewPresenterImplTest {
         verify(mView).showRefreshingProgress();
         verify(mInteractor).getBuildDetails();
         verify(mBuildDetails).getHref();
-        verify(mInteractor).load(eq(HREF), eq(mPresenter));
+        verify(mInteractor).load(eq(HREF), eq(mPresenter), eq(true));
     }
 
     @Test

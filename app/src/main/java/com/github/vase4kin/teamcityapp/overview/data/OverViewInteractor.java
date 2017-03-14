@@ -40,9 +40,12 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
      * Load build details
      *
      * @param url             - Build ROOT_PROJECTS_URL
+     * @param update          - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull String url, @NonNull OnLoadingListener<BuildDetails> loadingListener);
+    void load(@NonNull String url,
+              @NonNull OnLoadingListener<BuildDetails> loadingListener,
+              boolean update);
 
     /**
      * Post {@link StopBuildEvent}
