@@ -51,8 +51,8 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      * TODO: WTF RUNNING BUILDS?
      */
     @Override
-    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mRepository.listRunningBuilds(mFilter.toLocator(), null), loadingListener);
+    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
+        loadBuilds(mRepository.listRunningBuilds(mFilter.toLocator(), null, update), loadingListener);
     }
 
     /**
@@ -60,6 +60,6 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     @Override
     public void loadCount(@NonNull OnLoadingListener<Integer> loadingListener) {
-        loadCount(mRepository.listRunningBuilds(mFilter.toLocator(), "count"), loadingListener);
+        loadCount(mRepository.listRunningBuilds(mFilter.toLocator(), "count", false), loadingListener);
     }
 }

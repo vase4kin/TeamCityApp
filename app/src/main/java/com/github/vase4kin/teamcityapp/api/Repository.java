@@ -77,25 +77,23 @@ public interface Repository {
     Observable<Builds> listBuilds(String id, String locator, boolean update);
 
     /**
-     * List running builds
-     *
-     * TODO: Add Cache 1 minutes, for count instantly
+     * List running builds (cache's supported)
      *
      * @param locator - TC build locator
      * @param fields  - Additional TC fields
+     * @param update  - Update cache
      * @return {@link Observable} with {@link Builds}
      */
-    Observable<Builds> listRunningBuilds(String locator, String fields);
+    Observable<Builds> listRunningBuilds(String locator, String fields, boolean update);
 
     /**
-     * List queued builds
-     *
-     * TODO: Add Cache 1 minutes, for count instantly
+     * List queued builds (cache's supported)
      *
      * @param fields - Additional TC fields
+     * @param update  - Update cache
      * @return {@link Observable} with {@link Builds}
      */
-    Observable<Builds> listQueueBuilds(String fields);
+    Observable<Builds> listQueueBuilds(String fields, boolean update);
 
     /**
      * List more builds (no cache's supported)

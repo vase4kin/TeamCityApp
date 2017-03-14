@@ -106,4 +106,20 @@ public interface CacheProviders {
     Observable<Build> build(Observable<Build> buildObservable,
                             DynamicKey buildUrl,
                             EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache running build list for 1 minutes
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
+    Observable<Builds> listRunningBuilds(Observable<Builds> buildObservable,
+                                         DynamicKey buildsUrl,
+                                         EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache queued build list for 1 minutes
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
+    Observable<Builds> listQueuedBuilds(Observable<Builds> buildObservable,
+                                        DynamicKey buildsUrl,
+                                        EvictDynamicKey evictDynamicKey);
 }

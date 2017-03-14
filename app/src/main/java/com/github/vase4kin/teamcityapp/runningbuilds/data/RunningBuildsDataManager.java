@@ -32,9 +32,10 @@ public interface RunningBuildsDataManager extends BuildListDataManager {
     /**
      * Load running builds
      *
+     * @param update          - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
+    void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update);
 
     /**
      * Load running builds count

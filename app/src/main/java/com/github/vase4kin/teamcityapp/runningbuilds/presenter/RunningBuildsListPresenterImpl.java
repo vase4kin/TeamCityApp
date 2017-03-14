@@ -52,7 +52,7 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        mDataManager.load(loadingListener);
+        mDataManager.load(loadingListener, update);
     }
 
     /**

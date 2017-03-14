@@ -91,16 +91,22 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<Builds> listRunningBuilds(String locator, String fields) {
-        return mTeamCityService.listRunningBuilds(locator, fields);
+    public Observable<Builds> listRunningBuilds(String locator, String fields, boolean update) {
+        return mCacheCacheProviders.listRunningBuilds(
+                mTeamCityService.listRunningBuilds(locator, fields),
+                new DynamicKey(locator + fields),
+                new EvictDynamicKey(update));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Observable<Builds> listQueueBuilds(String fields) {
-        return mTeamCityService.listQueueBuilds(fields);
+    public Observable<Builds> listQueueBuilds(String fields, boolean update) {
+        return mCacheCacheProviders.listQueuedBuilds(
+                mTeamCityService.listQueueBuilds(fields),
+                new DynamicKey(fields != null ? fields : "empty"),
+                new EvictDynamicKey(update));
     }
 
     /**

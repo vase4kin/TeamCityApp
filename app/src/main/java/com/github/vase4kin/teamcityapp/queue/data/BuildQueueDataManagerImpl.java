@@ -39,8 +39,8 @@ public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implemen
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mRepository.listQueueBuilds(null), loadingListener);
+    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
+        loadBuilds(mRepository.listQueueBuilds(null, update), loadingListener);
     }
 
     /**
@@ -48,6 +48,6 @@ public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implemen
      */
     @Override
     public void loadCount(@NonNull OnLoadingListener<Integer> loadingListener) {
-        loadCount(mRepository.listQueueBuilds("count"), loadingListener);
+        loadCount(mRepository.listQueueBuilds("count", false), loadingListener);
     }
 }
