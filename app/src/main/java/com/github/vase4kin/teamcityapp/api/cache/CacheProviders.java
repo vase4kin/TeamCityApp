@@ -17,6 +17,8 @@
 package com.github.vase4kin.teamcityapp.api.cache;
 
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
@@ -25,7 +27,9 @@ import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import java.util.concurrent.TimeUnit;
 
 import io.rx_cache.DynamicKey;
+import io.rx_cache.DynamicKeyGroup;
 import io.rx_cache.EvictDynamicKey;
+import io.rx_cache.EvictDynamicKeyGroup;
 import io.rx_cache.LifeCache;
 import rx.Observable;
 
@@ -86,4 +90,20 @@ public interface CacheProviders {
     Observable<Files> listArtifacts(Observable<Files> filesObservable,
                                     DynamicKey artifactsUrl,
                                     EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache build list for 1 minutes
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
+    Observable<Builds> listBuilds(Observable<Builds> buildsObservable,
+                                  DynamicKeyGroup buildsInfo,
+                                  EvictDynamicKeyGroup evictDynamicKeyGroup);
+
+    /**
+     * Cache build list for 10 minutes (we cache only builds which have finished state)
+     */
+    @LifeCache(duration = 10, timeUnit = TimeUnit.MINUTES)
+    Observable<Build> build(Observable<Build> buildObservable,
+                            DynamicKey buildUrl,
+                            EvictDynamicKey evictDynamicKey);
 }

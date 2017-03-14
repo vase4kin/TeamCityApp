@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.root.dagger;
 
 import android.content.Context;
 
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManager;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManagerImpl;
@@ -54,10 +54,10 @@ public class RootModule {
 
     @Provides
     RootDataManager providesRootDataManager(Context context,
-                                            TeamCityService teamCityService,
+                                            Repository repository,
                                             SharedUserStorage sharedUserStorage,
                                             RxCache rxCache) {
-        return new RootDataManagerImpl(context, teamCityService, sharedUserStorage, rxCache);
+        return new RootDataManagerImpl(context, repository, sharedUserStorage, rxCache);
     }
 
     @Provides

@@ -30,7 +30,9 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import io.rx_cache.DynamicKey;
+import io.rx_cache.DynamicKeyGroup;
 import io.rx_cache.EvictDynamicKey;
+import io.rx_cache.EvictDynamicKeyGroup;
 import okhttp3.ResponseBody;
 import rx.Observable;
 
@@ -67,16 +69,22 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<Build> build(String url) {
-        return mTeamCityService.build(url);
+    public Observable<Build> build(String url, boolean update) {
+        return mCacheCacheProviders.build(
+                mTeamCityService.build(url),
+                new DynamicKey(url),
+                new EvictDynamicKey(update));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Observable<Builds> listBuilds(String id, String locator) {
-        return mTeamCityService.listBuilds(id, locator);
+    public Observable<Builds> listBuilds(String id, String locator, boolean update) {
+        return mCacheCacheProviders.listBuilds(
+                mTeamCityService.listBuilds(id, locator),
+                new DynamicKeyGroup(locator, id),
+                new EvictDynamicKeyGroup(update));
     }
 
     /**

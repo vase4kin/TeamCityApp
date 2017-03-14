@@ -58,30 +58,28 @@ public interface Repository {
     Observable<NavigationNode> listBuildTypes(String url, boolean update);
 
     /**
-     * Get single build details
-     * <p>
-     * TODO: Add Cache
+     * Get single build details (cache's supported)
      *
      * @param url - Build url
+     * @param update  - Update cache
      * @return {@link Observable} with {@link Build}
      */
-    Observable<Build> build(String url);
+    Observable<Build> build(String url, boolean update);
 
     /**
-     * List builds
-     * <p>
-     * TODO: Add Cache
+     * List builds (cache's supported)
      *
      * @param id      - BuildType id
      * @param locator - TC locator
+     * @param update  - Update cache
      * @return {@link Observable} with {@link Builds}
      */
-    Observable<Builds> listBuilds(String id, String locator);
+    Observable<Builds> listBuilds(String id, String locator, boolean update);
 
     /**
      * List running builds
      *
-     * TODO: Add Cache
+     * TODO: Add Cache 1 minutes, for count instantly
      *
      * @param locator - TC build locator
      * @param fields  - Additional TC fields
@@ -92,7 +90,7 @@ public interface Repository {
     /**
      * List queued builds
      *
-     * TODO: Add Cache
+     * TODO: Add Cache 1 minutes, for count instantly
      *
      * @param fields - Additional TC fields
      * @return {@link Observable} with {@link Builds}
@@ -100,9 +98,7 @@ public interface Repository {
     Observable<Builds> listQueueBuilds(String fields);
 
     /**
-     * List more builds
-     *
-     * TODO: Add Cache
+     * List more builds (no cache's supported)
      *
      * @param url - More builds url
      * @return {@link Observable} with {@link Builds}

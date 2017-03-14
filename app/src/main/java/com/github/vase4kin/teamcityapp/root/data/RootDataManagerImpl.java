@@ -20,7 +20,7 @@ import android.content.Context;
 import android.webkit.CookieManager;
 
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
@@ -36,10 +36,10 @@ public class RootDataManagerImpl extends DrawerDataManagerImpl implements RootDa
     private final RxCache mRxCache;
 
     public RootDataManagerImpl(Context context,
-                               TeamCityService teamCityService,
+                               Repository repository,
                                SharedUserStorage sharedUserStorage,
                                RxCache rxCache) {
-        super(teamCityService, sharedUserStorage);
+        super(repository, sharedUserStorage);
         this.mContext = context;
         this.mRxCache = rxCache;
     }
