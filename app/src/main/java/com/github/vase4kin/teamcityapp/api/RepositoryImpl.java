@@ -53,8 +53,15 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected, @Nullable String fields) {
-        return mTeamCityService.listAgents(includeDisconnected, fields);
+    public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected,
+                                         @Nullable String fields,
+                                         boolean update) {
+        String dynamicKey = (includeDisconnected != null ? includeDisconnected : "empty")
+                + (fields != null ? fields : "empty");
+        return mCacheCacheProviders.listAgents(
+                mTeamCityService.listAgents(includeDisconnected, fields),
+                new DynamicKey(dynamicKey),
+                new EvictDynamicKey(update));
     }
 
     /**

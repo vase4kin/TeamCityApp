@@ -37,16 +37,16 @@ import rx.Observable;
 public interface Repository {
 
     /**
-     * List agents
-     * <p>
-     * TODO: Add Cache
+     * List agents (cache's supported)
      *
      * @param includeDisconnected - determine what agents to return
      * @param fields              - additional TC fields
+     * @param update - Update cache
      * @return {@link Observable} with {@link Agents}
      */
     Observable<Agents> listAgents(@Nullable Boolean includeDisconnected,
-                                  @Nullable String fields);
+                                  @Nullable String fields,
+                                  boolean update);
 
     /**
      * List build types by url (cache's supported)

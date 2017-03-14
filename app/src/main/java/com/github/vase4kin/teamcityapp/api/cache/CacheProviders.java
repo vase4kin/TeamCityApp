@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api.cache;
 
+import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
@@ -112,7 +113,7 @@ public interface CacheProviders {
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     Observable<Builds> listRunningBuilds(Observable<Builds> buildObservable,
-                                         DynamicKey buildsUrl,
+                                         DynamicKey locatorPlusFields,
                                          EvictDynamicKey evictDynamicKey);
 
     /**
@@ -120,6 +121,14 @@ public interface CacheProviders {
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     Observable<Builds> listQueuedBuilds(Observable<Builds> buildObservable,
-                                        DynamicKey buildsUrl,
+                                        DynamicKey fields,
                                         EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache agent list for 3 minutes
+     */
+    @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
+    Observable<Agents> listAgents(Observable<Agents> agentsObservable,
+                                  DynamicKey includeDisconnectedPlusFields,
+                                  EvictDynamicKey evictDynamicKey);
 }

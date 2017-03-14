@@ -147,7 +147,7 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      */
     @Override
     public void loadAgents(final OnLoadingListener<List<Agent>> loadingListener) {
-        Subscription queueBuildSubscription = mRepository.listAgents(false, null)
+        Subscription queueBuildSubscription = mRepository.listAgents(false, null, false)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Agents>() {

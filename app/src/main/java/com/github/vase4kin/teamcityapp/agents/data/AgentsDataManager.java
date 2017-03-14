@@ -34,7 +34,9 @@ public interface AgentsDataManager extends BaseListRxDataManager<Agents, Agent> 
     /**
      * {@inheritDoc}
      */
-    void load(@Nullable Boolean includeDisconnected, @NonNull OnLoadingListener<List<Agent>> loadingListener);
+    void load(@Nullable Boolean includeDisconnected,
+              @NonNull OnLoadingListener<List<Agent>> loadingListener,
+              boolean update);
 
     /**
      * Load count of agents
