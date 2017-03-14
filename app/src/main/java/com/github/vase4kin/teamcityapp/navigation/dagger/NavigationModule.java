@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManager;
@@ -74,8 +74,8 @@ public class NavigationModule {
     }
 
     @Provides
-    NavigationDataManager providesNavigationDataManager(TeamCityService teamCityService) {
-        return new NavigationDataManagerImpl(teamCityService);
+    NavigationDataManager providesNavigationDataManager(Repository repository) {
+        return new NavigationDataManagerImpl(repository);
     }
 
     @Provides

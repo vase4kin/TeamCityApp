@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.changes.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter;
@@ -41,7 +41,7 @@ import rx.schedulers.Schedulers;
  */
 public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, Changes.Change> implements ChangesDataManager {
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     private EventBus mEventBus;
 
     private String mLoadMoreUrl;
@@ -49,8 +49,8 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
     private Subscription mLoadTabSubscription;
     private Subscription mLoadSubscription;
 
-    public ChangesDataManagerImpl(TeamCityService teamCityService, EventBus eventBus) {
-        this.mTeamCityService = teamCityService;
+    public ChangesDataManagerImpl(Repository repository, EventBus eventBus) {
+        this.mRepository = repository;
         this.mEventBus = eventBus;
     }
 
@@ -58,11 +58,12 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
      * {@inheritDoc}
      */
     @Override
-    public void loadTabTitle(@NonNull final String url, @NonNull final OnLoadingListener<Integer> loadingListener) {
+    public void loadTabTitle(@NonNull final String url,
+                             @NonNull final OnLoadingListener<Integer> loadingListener) {
         if (mLoadTabSubscription != null) {
             mSubscriptions.remove(mLoadTabSubscription);
         }
-        mLoadTabSubscription = mTeamCityService.listChanges(url + ",count:" + Integer.MAX_VALUE + "&fields=count")
+        mLoadTabSubscription = mRepository.listChanges(url + ",count:" + Integer.MAX_VALUE + "&fields=count", true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Changes>() {
@@ -87,19 +88,23 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
      * {@inheritDoc}
      */
     @Override
-    public void loadLimited(@NonNull String url, @NonNull OnLoadingListener<List<Changes.Change>> loadingListener) {
-        load(url + ",count:10", loadingListener);
+    public void loadLimited(@NonNull String url,
+                            @NonNull OnLoadingListener<List<Changes.Change>> loadingListener,
+                            boolean update) {
+        load(url + ",count:10", loadingListener, update);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull final OnLoadingListener<List<Changes.Change>> loadingListener) {
+    public void load(@NonNull String url,
+                     @NonNull final OnLoadingListener<List<Changes.Change>> loadingListener,
+                     boolean update) {
         if (mLoadSubscription != null) {
             mSubscriptions.remove(mLoadSubscription);
         }
-        mLoadSubscription = mTeamCityService.listChanges(url)
+        mLoadSubscription = mRepository.listChanges(url, update)
                 .flatMap(new Func1<Changes, Observable<Changes.Change>>() {
                     @Override
                     public Observable<Changes.Change> call(Changes changes) {
@@ -114,7 +119,7 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
                 .flatMap(new Func1<Changes.Change, Observable<Changes.Change>>() {
                     @Override
                     public Observable<Changes.Change> call(Changes.Change change) {
-                        return mTeamCityService.change(change.getHref());
+                        return mRepository.change(change.getHref());
                     }
                 })
                 .toList()
@@ -143,7 +148,7 @@ public class ChangesDataManagerImpl extends BaseListRxDataManagerImpl<Changes, C
      */
     @Override
     public void loadMore(@NonNull final OnLoadingListener<List<Changes.Change>> loadingListener) {
-        load(mLoadMoreUrl, loadingListener);
+        load(mLoadMoreUrl, loadingListener, false);
     }
 
     /**

@@ -20,7 +20,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager;
@@ -55,8 +55,8 @@ public class ChangesModule {
     }
 
     @Provides
-    ChangesDataManager providesChangesDataManager(TeamCityService teamCityService, EventBus eventBus) {
-        return new ChangesDataManagerImpl(teamCityService, eventBus);
+    ChangesDataManager providesChangesDataManager(Repository repository, EventBus eventBus) {
+        return new ChangesDataManagerImpl(repository, eventBus);
     }
 
     @Provides

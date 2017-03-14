@@ -56,8 +56,8 @@ public class AgentPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<Agent>> loadingListener) {
-        mDataManager.load(mValueExtractor.includeDisconnected(), loadingListener);
+    protected void loadData(@NonNull OnLoadingListener<List<Agent>> loadingListener, boolean update) {
+        mDataManager.load(mValueExtractor.includeDisconnected(), loadingListener, update);
     }
 
     /**

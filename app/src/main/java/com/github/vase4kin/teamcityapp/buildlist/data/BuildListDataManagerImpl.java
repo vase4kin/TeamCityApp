@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.buildlist.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
@@ -48,28 +48,33 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     private String mLoadMoreUrl;
     /**
-     * TeamCity Rest Api instance
+     * repository Api instance
      */
-    protected TeamCityService mTeamCityService;
+    protected Repository mRepository;
 
-    public BuildListDataManagerImpl(TeamCityService teamCityService) {
-        this.mTeamCityService = teamCityService;
+    public BuildListDataManagerImpl(Repository repository) {
+        this.mRepository = repository;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String id, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mTeamCityService.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR), loadingListener);
+    public void load(@NonNull String id,
+                     @NonNull OnLoadingListener<List<BuildDetails>> loadingListener,
+                     boolean update) {
+        loadBuilds(mRepository.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR, update), loadingListener);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mTeamCityService.listBuilds(id, filter.toLocator()), loadingListener);
+    public void load(@NonNull String id,
+                     BuildListFilter filter,
+                     @NonNull OnLoadingListener<List<BuildDetails>> loadingListener,
+                     boolean update) {
+        loadBuilds(mRepository.listBuilds(id, filter.toLocator(), update), loadingListener);
     }
 
     /**
@@ -83,7 +88,8 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * {@inheritDoc}
      */
-    public void loadBuilds(@NonNull Observable<Builds> call, @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+    public void loadBuilds(@NonNull Observable<Builds> call,
+                           @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
         mSubscriptions.clear();
         Subscription subscription = call
                 // converting all received builds to observables
@@ -102,7 +108,27 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                 .flatMap(new Func1<Build, Observable<Build>>() {
                     @Override
                     public Observable<Build> call(Build build) {
-                        return mTeamCityService.build(build.getHref());
+                        // Make sure cache is updated
+                        final BuildDetails serverBuildDetails = new BuildDetailsImpl(build);
+                        // If server build's running update cache immediately
+                        if (serverBuildDetails.isRunning()) {
+                            return mRepository.build(build.getHref(), true);
+                        } else {
+                            // Call cache
+                            return mRepository.build(build.getHref(), false)
+                                    .flatMap(new Func1<Build, Observable<Build>>() {
+                                        @Override
+                                        public Observable<Build> call(Build build) {
+                                            BuildDetails cacheBuildDetails = new BuildDetailsImpl(build);
+                                            // Compare if server side and cache are updated
+                                            // If cache's not updated -> update it
+                                            return mRepository.build(
+                                                    build.getHref(),
+                                                    // Don't update cache if server and cache builds are finished
+                                                    !(serverBuildDetails.isFinished() == cacheBuildDetails.isFinished()));
+                                        }
+                                    });
+                        }
                     }
                 })
                 // transform all builds to build details
@@ -178,6 +204,6 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     @Override
     public void loadMore(@NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mTeamCityService.listMoreBuilds(mLoadMoreUrl), loadingListener);
+        loadBuilds(mRepository.listMoreBuilds(mLoadMoreUrl), loadingListener);
     }
 }

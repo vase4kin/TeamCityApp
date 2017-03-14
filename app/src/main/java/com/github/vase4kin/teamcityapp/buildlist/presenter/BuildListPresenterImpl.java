@@ -76,13 +76,13 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
+    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
         String buildTypeId = mValueExtractor.getId();
         BuildListFilter filter = mValueExtractor.getBuildListFilter();
         if (filter != null) {
-            mDataManager.load(buildTypeId, filter, loadingListener);
+            mDataManager.load(buildTypeId, filter, loadingListener, update);
         } else {
-            mDataManager.load(buildTypeId, loadingListener);
+            mDataManager.load(buildTypeId, loadingListener, update);
         }
     }
 
@@ -239,7 +239,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
         mView.hideErrorView();
         mView.hideEmpty();
         mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
-        mDataManager.load(mValueExtractor.getId(), filter, loadingListener);
+        mDataManager.load(mValueExtractor.getId(), filter, loadingListener, true);
     }
 
     /**

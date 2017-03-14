@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.queue.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
@@ -31,16 +31,16 @@ import java.util.List;
  */
 public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implements RunningBuildsDataManager {
 
-    public BuildQueueDataManagerImpl(TeamCityService teamCityService) {
-        super(teamCityService);
+    public BuildQueueDataManagerImpl(Repository repository) {
+        super(repository);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mTeamCityService.listQueueBuilds(null), loadingListener);
+    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
+        loadBuilds(mRepository.listQueueBuilds(null, update), loadingListener);
     }
 
     /**
@@ -48,6 +48,6 @@ public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implemen
      */
     @Override
     public void loadCount(@NonNull OnLoadingListener<Integer> loadingListener) {
-        loadCount(mTeamCityService.listQueueBuilds("count"), loadingListener);
+        loadCount(mRepository.listQueueBuilds("count", false), loadingListener);
     }
 }

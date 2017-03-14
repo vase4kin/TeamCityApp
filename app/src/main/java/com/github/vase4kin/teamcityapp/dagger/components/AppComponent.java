@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.components;
 
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
@@ -26,6 +27,7 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import de.greenrobot.event.EventBus;
+import io.rx_cache.internal.RxCache;
 import okhttp3.OkHttpClient;
 
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
@@ -46,4 +48,8 @@ public interface AppComponent {
     OkHttpClient authOkHttpClient();
 
     EventBus eventBus();
+
+    RxCache rxCache();
+
+    CacheProviders providers();
 }

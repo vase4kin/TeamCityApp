@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.runningbuilds.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
@@ -38,8 +38,8 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     private BuildListFilter mFilter;
 
-    public RunningBuildsDataManagerImpl(TeamCityService teamCityService) {
-        super(teamCityService);
+    public RunningBuildsDataManagerImpl(Repository repository) {
+        super(repository);
         // Creating running filter
         mFilter = new BuildListFilterImpl();
         mFilter.setFilter(FilterBuildsView.FILTER_RUNNING);
@@ -51,8 +51,8 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      * TODO: WTF RUNNING BUILDS?
      */
     @Override
-    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        loadBuilds(mTeamCityService.listRunningBuilds(mFilter.toLocator(), null), loadingListener);
+    public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
+        loadBuilds(mRepository.listRunningBuilds(mFilter.toLocator(), null, update), loadingListener);
     }
 
     /**
@@ -60,6 +60,6 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     @Override
     public void loadCount(@NonNull OnLoadingListener<Integer> loadingListener) {
-        loadCount(mTeamCityService.listRunningBuilds(mFilter.toLocator(), "count"), loadingListener);
+        loadCount(mRepository.listRunningBuilds(mFilter.toLocator(), "count", false), loadingListener);
     }
 }

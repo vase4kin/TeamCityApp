@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 
@@ -41,9 +41,9 @@ import rx.subscriptions.CompositeSubscription;
 public class RunBuildInteractorImpl implements RunBuildInteractor {
 
     /**
-     * TeamCity Rest Api instance
+     * Repository instance
      */
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     /**
      * Build type id
      */
@@ -54,8 +54,8 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      */
     private CompositeSubscription mSubscription = new CompositeSubscription();
 
-    public RunBuildInteractorImpl(TeamCityService teamCityService, @NonNull String buildTypeId) {
-        this.mTeamCityService = teamCityService;
+    public RunBuildInteractorImpl(Repository repository, @NonNull String buildTypeId) {
+        this.mRepository = repository;
         this.mBuildTypeId = buildTypeId;
     }
 
@@ -104,7 +104,7 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      * @param loadingListener - listener to receive callbacks on UI
      */
     private void queueBuild(Build build, final LoadingListenerWithForbiddenSupport<String> loadingListener) {
-        Subscription queueBuildSubscription = mTeamCityService.queueBuild(build)
+        Subscription queueBuildSubscription = mRepository.queueBuild(build)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {
@@ -147,7 +147,7 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      */
     @Override
     public void loadAgents(final OnLoadingListener<List<Agent>> loadingListener) {
-        Subscription queueBuildSubscription = mTeamCityService.listAgents(false, null)
+        Subscription queueBuildSubscription = mRepository.listAgents(false, null, false)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Agents>() {

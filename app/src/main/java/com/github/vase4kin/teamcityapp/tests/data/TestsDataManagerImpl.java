@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.tests.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter;
@@ -46,11 +46,11 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
     private Subscription mLoadTestsDetailsSubscription;
     private Subscription mLoadTestsSubscription;
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     private EventBus mEventBus;
 
-    public TestsDataManagerImpl(TeamCityService teamCityService, EventBus eventBus) {
-        this.mTeamCityService = teamCityService;
+    public TestsDataManagerImpl(Repository repository, EventBus eventBus) {
+        this.mRepository = repository;
         this.mEventBus = eventBus;
     }
 
@@ -58,22 +58,27 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener) {
+    public void load(@NonNull String url,
+                     @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener,
+                     boolean update) {
         mLoadingListener = loadingListener;
-        loadTests(url, loadingListener);
+        loadTests(url, loadingListener, update);
     }
 
     /**
      * Load test
      *
      * @param url             - Tests url
+     * @param update          - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    private void loadTests(@NonNull String url, @NonNull final OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener) {
+    private void loadTests(@NonNull String url,
+                           @NonNull final OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener,
+                           boolean update) {
         if (mLoadTestsSubscription != null) {
             mSubscriptions.remove(mLoadTestsSubscription);
         }
-        mLoadTestsSubscription = mTeamCityService.listTestOccurrences(url)
+        mLoadTestsSubscription = mRepository.listTestOccurrences(url, update)
                 .flatMap(new Func1<TestOccurrences, Observable<TestOccurrences.TestOccurrence>>() {
                     @Override
                     public Observable<TestOccurrences.TestOccurrence> call(TestOccurrences testOccurrences) {
@@ -106,8 +111,10 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      * {@inheritDoc}
      */
     @Override
-    public void loadFailedTests(@NonNull String url, @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener) {
-        load(url + ",status:FAILURE,count:10", loadingListener);
+    public void loadFailedTests(@NonNull String url,
+                                @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener,
+                                boolean update) {
+        load(url + ",status:FAILURE,count:10", loadingListener, update);
     }
 
     /**
@@ -115,7 +122,7 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      */
     @Override
     public void loadFailedTests(@NonNull String url) {
-        loadFailedTests(url, mLoadingListener);
+        loadFailedTests(url, mLoadingListener, false);
     }
 
     /**
@@ -123,7 +130,7 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      */
     @Override
     public void loadIgnoredTests(@NonNull String url) {
-        load(url + ",status:UNKNOWN,count:10", mLoadingListener);
+        load(url + ",status:UNKNOWN,count:10", mLoadingListener, false);
     }
 
     /**
@@ -131,7 +138,7 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      */
     @Override
     public void loadPassedTests(@NonNull String url) {
-        load(url + ",status:SUCCESS,count:10", mLoadingListener);
+        load(url + ",status:SUCCESS,count:10", mLoadingListener, false);
     }
 
     /**
@@ -142,7 +149,7 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
         if (mLoadTestsDetailsSubscription != null) {
             mSubscriptions.remove(mLoadTestsDetailsSubscription);
         }
-        mLoadTestsDetailsSubscription = mTeamCityService.listTestOccurrences(url + ",count:" + Integer.MAX_VALUE + "&fields=count")
+        mLoadTestsDetailsSubscription = mRepository.listTestOccurrences(url + ",count:" + Integer.MAX_VALUE + "&fields=count", true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<TestOccurrences>() {
@@ -168,7 +175,7 @@ public class TestsDataManagerImpl extends BaseListRxDataManagerImpl<TestOccurren
      */
     @Override
     public void loadMore(@NonNull final OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener) {
-        loadTests(mLoadMoreUrl, loadingListener);
+        loadTests(mLoadMoreUrl, loadingListener, true);
     }
 
     /**

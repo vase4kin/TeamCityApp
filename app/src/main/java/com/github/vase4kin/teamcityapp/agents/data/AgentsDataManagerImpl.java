@@ -22,7 +22,7 @@ import android.support.annotation.Nullable;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
 
@@ -40,16 +40,16 @@ import rx.schedulers.Schedulers;
 public class AgentsDataManagerImpl extends BaseListRxDataManagerImpl<Agents, Agent> implements AgentsDataManager {
 
     @NonNull
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     @Nullable
     private EventBus mEventBus;
 
     /**
-     * @param teamCityService - TeamCity api service
-     * @param eventBus        - Event bus
+     * @param repository - Repository api service
+     * @param eventBus   - Event bus
      */
-    public AgentsDataManagerImpl(@NonNull TeamCityService teamCityService, @Nullable EventBus eventBus) {
-        this.mTeamCityService = teamCityService;
+    public AgentsDataManagerImpl(@NonNull Repository repository, @Nullable EventBus eventBus) {
+        this.mRepository = repository;
         this.mEventBus = eventBus;
     }
 
@@ -57,8 +57,10 @@ public class AgentsDataManagerImpl extends BaseListRxDataManagerImpl<Agents, Age
      * {@inheritDoc}
      */
     @Override
-    public void load(Boolean includeDisconnected, @NonNull OnLoadingListener<List<Agent>> loadingListener) {
-        load(mTeamCityService.listAgents(includeDisconnected, null), loadingListener);
+    public void load(Boolean includeDisconnected,
+                     @NonNull OnLoadingListener<List<Agent>> loadingListener,
+                     boolean update) {
+        load(mRepository.listAgents(includeDisconnected, null, update), loadingListener);
     }
 
     /**
@@ -67,7 +69,7 @@ public class AgentsDataManagerImpl extends BaseListRxDataManagerImpl<Agents, Age
     @Override
     public void loadCount(@NonNull final OnLoadingListener<Integer> loadingListener) {
         mSubscriptions.clear();
-        Subscription subscription = mTeamCityService.listAgents(null, "count")
+        Subscription subscription = mRepository.listAgents(null, "count", false)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Agents>() {
