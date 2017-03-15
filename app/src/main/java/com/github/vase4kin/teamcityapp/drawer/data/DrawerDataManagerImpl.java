@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.drawer.data;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
@@ -31,11 +31,11 @@ import java.util.List;
  */
 public class DrawerDataManagerImpl implements DrawerDataManager {
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     protected SharedUserStorage mSharedUserStorage;
 
-    public DrawerDataManagerImpl(TeamCityService teamCityService, SharedUserStorage sharedUserStorage) {
-        this.mTeamCityService = teamCityService;
+    public DrawerDataManagerImpl(Repository repository, SharedUserStorage sharedUserStorage) {
+        this.mRepository = repository;
         this.mSharedUserStorage = sharedUserStorage;
     }
 
@@ -70,7 +70,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadRunningBuildsCount(final OnLoadingListener<Integer> loadingListener) {
-        new RunningBuildsDataManagerImpl(mTeamCityService).loadCount(loadingListener);
+        new RunningBuildsDataManagerImpl(mRepository).loadCount(loadingListener);
     }
 
     /**
@@ -78,7 +78,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadConnectedAgentsCount(final OnLoadingListener<Integer> loadingListener) {
-        new AgentsDataManagerImpl(mTeamCityService, null).loadCount(loadingListener);
+        new AgentsDataManagerImpl(mRepository, null).loadCount(loadingListener);
     }
 
     /**
@@ -86,6 +86,6 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadBuildQueueCount(final OnLoadingListener<Integer> loadingListener) {
-        new BuildQueueDataManagerImpl(mTeamCityService).loadCount(loadingListener);
+        new BuildQueueDataManagerImpl(mRepository).loadCount(loadingListener);
     }
 }

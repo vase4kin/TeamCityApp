@@ -154,9 +154,9 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showErrorView(String errorMessage) {
+    public void showErrorView() {
         mErrorView.setVisibility(View.VISIBLE);
-        mErrorView.setSubtitle(errorMessage);
+        mErrorView.setSubtitle(R.string.error_view_error_text);
     }
 
     /**

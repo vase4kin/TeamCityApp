@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.drawer.dagger;
 
 import android.support.v7.app.AppCompatActivity;
 
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
@@ -49,8 +49,8 @@ public class CustomDrawerModule {
     }
 
     @Provides
-    DrawerDataManager providesDrawerDataManager(TeamCityService teamCityService, SharedUserStorage sharedUserStorage) {
-        return new DrawerDataManagerImpl(teamCityService, sharedUserStorage);
+    DrawerDataManager providesDrawerDataManager(Repository repository, SharedUserStorage sharedUserStorage) {
+        return new DrawerDataManagerImpl(repository, sharedUserStorage);
     }
 
     @Provides

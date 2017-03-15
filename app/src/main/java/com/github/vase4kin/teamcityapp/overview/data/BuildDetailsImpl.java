@@ -105,6 +105,16 @@ public class BuildDetailsImpl implements BuildDetails {
 
     /**
      * {@inheritDoc}
+     *
+     * TODO: ADD TEST
+     */
+    @Override
+    public boolean isFinished() {
+        return mBuild.getState().equals(STATE_FINISHED);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public boolean isQueued() {

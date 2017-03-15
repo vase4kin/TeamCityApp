@@ -69,8 +69,8 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener) {
-        mDataManager.loadFailedTests(mValueExtractor.getUrl(), loadingListener);
+    protected void loadData(@NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener, boolean update) {
+        mDataManager.loadFailedTests(mValueExtractor.getUrl(), loadingListener, update);
     }
 
     /**

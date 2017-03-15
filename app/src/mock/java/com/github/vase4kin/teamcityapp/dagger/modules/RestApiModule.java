@@ -18,7 +18,9 @@ package com.github.vase4kin.teamcityapp.dagger.modules;
 
 import android.support.annotation.VisibleForTesting;
 
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
 
 import javax.inject.Named;
@@ -44,10 +46,17 @@ public class RestApiModule {
     /**
      * @return {@link FakeTeamCityServiceImpl}
      */
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @UserScope
     public TeamCityService provideTeamCityService(@Named(CLIENT_AUTH) OkHttpClient okHttpClient) {
         return new FakeTeamCityServiceImpl();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @UserScope
+    public Repository provideRepository(TeamCityService teamCityService, CacheProviders cacheProviders) {
+        return new FakeRepositoryImpl(teamCityService);
     }
 }

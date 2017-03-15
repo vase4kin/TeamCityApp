@@ -77,9 +77,9 @@ public class NavigationPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.getUrl()).thenReturn("url");
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
-        verify(mDataManager).load(eq("url"), eq(mLoadingListener));
+        verify(mDataManager).load(eq("url"), eq(false), eq(mLoadingListener));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
 

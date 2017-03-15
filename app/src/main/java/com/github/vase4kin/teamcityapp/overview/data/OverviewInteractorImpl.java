@@ -27,7 +27,7 @@ import android.widget.Toast;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataEvent;
@@ -50,17 +50,17 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      */
     private static final int DELAY = 500;
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     private EventBus mEventBus;
     private BaseValueExtractor mValueExtractor;
     private Context mContext;
     private OnOverviewEventsListener mListener;
 
-    public OverviewInteractorImpl(TeamCityService teamCityService,
+    public OverviewInteractorImpl(Repository teamCityService,
                                   EventBus eventBus,
                                   BaseValueExtractor valueExtractor,
                                   Context context) {
-        this.mTeamCityService = teamCityService;
+        this.mRepository = teamCityService;
         this.mEventBus = eventBus;
         this.mValueExtractor = valueExtractor;
         this.mContext = context;
@@ -78,9 +78,11 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull final OnLoadingListener<BuildDetails> loadingListener) {
+    public void load(@NonNull String url,
+                     @NonNull final OnLoadingListener<BuildDetails> loadingListener,
+                     boolean update) {
         mSubscriptions.clear();
-        Subscription subscription = mTeamCityService.build(url)
+        Subscription subscription = mRepository.build(url, update)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Build>() {

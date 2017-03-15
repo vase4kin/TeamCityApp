@@ -188,7 +188,7 @@ public class ArtifactListFragmentTest {
                 .perform(click());
 
         //Checking error
-        onView(withText("Fake error happened!")).check(matches(isDisplayed()));
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()));
     }
 
     @Ignore

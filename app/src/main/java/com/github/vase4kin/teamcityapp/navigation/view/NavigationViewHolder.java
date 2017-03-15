@@ -64,6 +64,7 @@ public class NavigationViewHolder extends BaseViewHolder<NavigationDataModel> {
         mTextView.setText(dataModel.getName(position));
         if (dataModel.hasDescription(position)) {
             mDescription.setText(dataModel.getDescription(position));
+            mDescription.setVisibility(View.VISIBLE);
         } else {
             mDescription.setVisibility(View.GONE);
         }

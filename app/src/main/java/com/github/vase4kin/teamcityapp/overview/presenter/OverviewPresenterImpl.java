@@ -57,15 +57,18 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         mView.initViews(this);
         mInteractor.setListener(this);
         mView.showProgressWheel();
-        loadBuildDetails();
+        BuildDetails buildDetails = mInteractor.getBuildDetails();
+        loadBuildDetails(buildDetails.isRunning());
     }
 
     /**
      * Load build details
+     *
+     * @param update - Force cache update
      */
-    private void loadBuildDetails() {
+    private void loadBuildDetails(boolean update) {
         String buildHref = mInteractor.getBuildDetails().getHref();
-        mInteractor.load(buildHref, this);
+        mInteractor.load(buildHref, this, update);
     }
 
     @Override
@@ -127,7 +130,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     public void onDataRefreshEvent() {
         mView.showRefreshingProgress();
         mView.hideErrorView();
-        loadBuildDetails();
+        loadBuildDetails(true);
         // TODO: Disable cancel build menu when data is updated and build has finished status
     }
 
@@ -213,7 +216,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onRefresh() {
         mView.hideErrorView();
-        loadBuildDetails();
+        loadBuildDetails(true);
     }
 
     /**
@@ -223,7 +226,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     public void onRetry() {
         mView.hideErrorView();
         mView.showRefreshingProgress();
-        loadBuildDetails();
+        loadBuildDetails(true);
     }
 
     /**
@@ -317,6 +320,6 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         mView.hideCards();
         mView.hideProgressWheel();
         mView.hideRefreshingProgress();
-        mView.showErrorView(errorMessage);
+        mView.showErrorView();
     }
 }

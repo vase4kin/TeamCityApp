@@ -74,7 +74,7 @@ public class PropertiesPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getBuildDetails();
         verify(mDataManager).load(eq(mBuildDetails), eq(mLoadingListener));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor);

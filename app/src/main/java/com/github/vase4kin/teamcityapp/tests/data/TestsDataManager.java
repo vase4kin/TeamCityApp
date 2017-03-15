@@ -33,17 +33,23 @@ public interface TestsDataManager extends BaseListRxDataManager<TestOccurrences,
      * Load tests
      *
      * @param url             - Tests url
+     * @param update          - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull String url, @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener);
+    void load(@NonNull String url,
+              @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener,
+              boolean update);
 
     /**
      * Load failed tests url
      *
-     * @param url - Failed tests url
+     * @param url             - Failed tests url
+     * @param update          - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    void loadFailedTests(@NonNull String url, @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener);
+    void loadFailedTests(@NonNull String url,
+                         @NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener,
+                         boolean update);
 
     /**
      * Load failed tests
