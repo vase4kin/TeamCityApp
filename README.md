@@ -17,9 +17,11 @@
 TeamCityApp
 =======
 This GitHub repository hosts the code for the Android application [TeamCityApp](https://play.google.com/store/apps/details?id=com.github.vase4kin.teamcityapp).
+
 Contribution
 =======
 See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 License
 =======
 
