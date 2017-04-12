@@ -43,6 +43,11 @@ public interface RootDrawerView extends DrawerView {
     void showAppRateDialog(OnAppRateListener listener);
 
     /**
+     * Show navigation drawer onboarding prompt
+     */
+    void showNavigationDrawerPrompt();
+
+    /**
      * On app rate dialog listener
      */
     interface OnAppRateListener {

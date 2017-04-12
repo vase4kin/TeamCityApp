@@ -121,6 +121,9 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         // Show rate app dialog
         mView.showAppRateDialog(this);
+
+        // Show navigation drawer prompt
+        mView.showNavigationDrawerPrompt();
     }
 
     /**

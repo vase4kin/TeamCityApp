@@ -276,4 +276,8 @@
     <string name="text_filters_none">None</string>
     <string name="hint_default_filter_branch">Any</string>
 
+    <!--Onboarding-->
+    <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
+    <string name="text_onboarding_navigation_drawer">Manage accounts, view running/queued builds and agents</string>
+
 </resources>
