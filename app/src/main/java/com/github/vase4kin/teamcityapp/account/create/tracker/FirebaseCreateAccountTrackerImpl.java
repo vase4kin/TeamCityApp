@@ -38,10 +38,6 @@ public class FirebaseCreateAccountTrackerImpl implements CreateAccountTracker {
      * Login user failed event
      */
     private static final String EVENT_LOGIN_USER_FAILED = "login_user_failed";
-    /**
-     * Screen name
-     */
-    private static final String SCREEN_NAME = "screen_create_account";
 
     private final FirebaseAnalytics mFirebaseAnalytics;
 

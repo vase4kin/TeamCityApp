@@ -35,10 +35,6 @@ public class FabricCreateAccountTrackerImpl implements CreateAccountTracker {
      * Guest user login method
      */
     private static final String METHOD_GUEST_USER_LOGIN = "GuestUser";
-    /**
-     * Create account content name
-     */
-    private static final String CONTENT_NAME = "Create account";
 
     /**
      * {@inheritDoc}
@@ -92,6 +88,6 @@ public class FabricCreateAccountTrackerImpl implements CreateAccountTracker {
     public void trackView() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName(CONTENT_NAME));
+                .putContentName(SCREEN_NAME));
     }
 }

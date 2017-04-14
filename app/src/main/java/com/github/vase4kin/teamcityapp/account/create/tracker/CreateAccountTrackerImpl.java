@@ -18,6 +18,9 @@ package com.github.vase4kin.teamcityapp.account.create.tracker;
 
 import java.util.Set;
 
+/**
+ * Create account tracker
+ */
 public class CreateAccountTrackerImpl implements CreateAccountTracker {
 
     private Set<CreateAccountTracker> mTrackers;
