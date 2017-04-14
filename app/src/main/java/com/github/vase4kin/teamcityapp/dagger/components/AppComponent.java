@@ -21,6 +21,7 @@ import android.content.Context;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -52,4 +53,6 @@ public interface AppComponent {
     RxCache rxCache();
 
     CacheProviders providers();
+
+    FirebaseAnalytics firebaseAnalytics();
 }

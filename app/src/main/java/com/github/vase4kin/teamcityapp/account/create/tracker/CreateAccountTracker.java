@@ -24,6 +24,16 @@ import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 public interface CreateAccountTracker extends ViewTracker {
 
     /**
+     * Error login attribute
+     */
+    String ATTRIBUTE_NAME_ERROR = "errorMessage";
+
+    /**
+     * Error message if data is failed to save
+     */
+    String MESSAGE_ERROR_SAVE_DATE = "Failed to save user data!";
+
+    /**
      * Track user is logged in
      */
     void trackUserLoginSuccess();

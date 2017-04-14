@@ -18,14 +18,14 @@ package com.github.vase4kin.teamcityapp.login.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTrackerImpl;
+import com.github.vase4kin.teamcityapp.account.create.tracker.FabricCreateAccountTrackerImpl;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
  * Impl of {@link LoginTracker}
  */
-public class LoginTrackerImpl extends CreateAccountTrackerImpl implements LoginTracker {
+public class LoginTrackerImpl extends FabricCreateAccountTrackerImpl implements LoginTracker {
 
     /**
      * {@inheritDoc}
