@@ -21,7 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManagerImpl;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
@@ -60,8 +60,8 @@ public class ArtifactsModule {
     }
 
     @Provides
-    ArtifactDataManager providesArtifactDataManager(TeamCityService teamCityService, EventBus eventBus) {
-        return new ArtifactDataManagerImpl(teamCityService, eventBus);
+    ArtifactDataManager providesArtifactDataManager(Repository repository, EventBus eventBus) {
+        return new ArtifactDataManagerImpl(repository, eventBus);
     }
 
     @Provides

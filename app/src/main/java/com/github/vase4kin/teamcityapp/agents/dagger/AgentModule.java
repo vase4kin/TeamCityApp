@@ -28,7 +28,7 @@ import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractorImpl
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewHolderFactory;
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewImpl;
 import com.github.vase4kin.teamcityapp.agents.view.AgentsAdapter;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
@@ -53,8 +53,8 @@ public class AgentModule {
     }
 
     @Provides
-    AgentsDataManager providesAgentsDataManager(TeamCityService teamCityService, EventBus eventBus) {
-        return new AgentsDataManagerImpl(teamCityService, eventBus);
+    AgentsDataManager providesAgentsDataManager(Repository repository, EventBus eventBus) {
+        return new AgentsDataManagerImpl(repository, eventBus);
     }
 
     @Provides

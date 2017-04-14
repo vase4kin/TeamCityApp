@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.build_details.dagger;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
@@ -75,8 +76,9 @@ public class BuildDetailsModule {
     @Provides
     BuildDetailsInteractor providesBaseTabsDataManager(EventBus eventBus,
                                                        BaseValueExtractor valueExtractor,
-                                                       SharedUserStorage sharedUserStorage, TeamCityService teamCityService) {
-        return new BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, teamCityService);
+                                                       SharedUserStorage sharedUserStorage,
+                                                       Repository repository) {
+        return new BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository);
     }
 
     @Provides
@@ -85,8 +87,8 @@ public class BuildDetailsModule {
     }
 
     @Provides
-    RunBuildInteractor providesRunBuildInteractor(TeamCityService teamCityService, BaseValueExtractor valueExtractor) {
-        return new RunBuildInteractorImpl(teamCityService, valueExtractor.getBuildDetails().getBuildTypeId());
+    RunBuildInteractor providesRunBuildInteractor(Repository repository, BaseValueExtractor valueExtractor) {
+        return new RunBuildInteractorImpl(repository, valueExtractor.getBuildDetails().getBuildTypeId());
     }
 
     @Provides

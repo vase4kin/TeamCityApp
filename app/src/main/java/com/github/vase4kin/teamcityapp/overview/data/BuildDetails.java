@@ -37,6 +37,10 @@ public interface BuildDetails extends Jsonable {
      */
     String STATE_RUNNING = "running";
     /**
+     * Build finished state
+     */
+    String STATE_FINISHED = "finished";
+    /**
      * Build success status
      */
     String STATUS_SUCCESS = "SUCCESS";
@@ -82,6 +86,11 @@ public interface BuildDetails extends Jsonable {
      * @return {true} if build is running
      */
     boolean isRunning();
+
+    /**
+     * @return {true} if build is finished
+     */
+    boolean isFinished();
 
     /**
      * @return {true} if build is queued
@@ -299,6 +308,11 @@ public interface BuildDetails extends Jsonable {
 
         @Override
         public boolean isRunning() {
+            return false;
+        }
+
+        @Override
+        public boolean isFinished() {
             return false;
         }
 

@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.navigation.data;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
@@ -31,17 +31,17 @@ import java.util.List;
  */
 public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<NavigationNode, NavigationItem> implements NavigationDataManager {
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
 
-    public NavigationDataManagerImpl(TeamCityService teamCityService) {
-        this.mTeamCityService = teamCityService;
+    public NavigationDataManagerImpl(Repository repository) {
+        this.mRepository = repository;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
-        load(mTeamCityService.listBuildTypes(url), loadingListener);
+    public void load(@NonNull String url, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
+        load(mRepository.listBuildTypes(url, update), loadingListener);
     }
 }

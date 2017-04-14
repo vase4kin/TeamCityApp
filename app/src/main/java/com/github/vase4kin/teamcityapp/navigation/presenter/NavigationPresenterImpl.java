@@ -62,8 +62,8 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
-        mDataManager.load(mValueExtractor.getUrl(), loadingListener);
+    protected void loadData(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, boolean update) {
+        mDataManager.load(mValueExtractor.getUrl(), update, loadingListener);
     }
 
     /**

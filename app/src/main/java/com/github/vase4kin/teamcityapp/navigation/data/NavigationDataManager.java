@@ -34,7 +34,8 @@ public interface NavigationDataManager extends BaseListRxDataManager<NavigationN
      * Load navigation items
      *
      * @param url             - Navigation node ROOT_PROJECTS_URL
+     * @param update          - Force data update
      * @param loadingListener - Listener to receive server callbacks
      */
-    void load(@NonNull String url, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener);
+    void load(@NonNull String url, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener);
 }

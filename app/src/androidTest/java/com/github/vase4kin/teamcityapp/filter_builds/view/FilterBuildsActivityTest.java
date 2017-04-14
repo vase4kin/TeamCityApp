@@ -218,6 +218,7 @@ public class FilterBuildsActivityTest {
 
         // Check switchers
         onView(withId(R.id.switcher_is_pinned)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.divider_switcher_is_pinned)).check(matches(not(isDisplayed())));
         onView(withId(R.id.switcher_is_personal)).check(matches(isDisplayed()));
     }
 

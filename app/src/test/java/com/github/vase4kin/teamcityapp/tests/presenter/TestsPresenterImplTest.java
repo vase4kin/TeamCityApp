@@ -106,9 +106,9 @@ public class TestsPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.getUrl()).thenReturn("url");
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
-        verify(mDataManager).loadFailedTests(eq("url"), eq(mLoadingListener));
+        verify(mDataManager).loadFailedTests(eq("url"), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
 

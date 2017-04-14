@@ -87,9 +87,9 @@ public class AgentPresenterImplTest {
     @Test
     public void testLoadData() throws Exception {
         when(mValueExtractor.includeDisconnected()).thenReturn(true);
-        mPresenter.loadData(mLoadingListener);
+        mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).includeDisconnected();
-        verify(mDataManager).load(eq(true), eq(mLoadingListener));
+        verify(mDataManager).load(eq(true), eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mBundle, mTracker, mValueExtractor);
     }
 

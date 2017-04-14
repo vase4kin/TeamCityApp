@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
@@ -43,13 +43,13 @@ import rx.schedulers.Schedulers;
  */
 public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, File> implements ArtifactDataManager {
 
-    private TeamCityService mTeamCityService;
+    private Repository mRepository;
     private EventBus mEventBus;
     @Nullable
     private OnArtifactTabChangeEventListener mListener;
 
-    public ArtifactDataManagerImpl(TeamCityService teamCityService, EventBus eventBus) {
-        this.mTeamCityService = teamCityService;
+    public ArtifactDataManagerImpl(Repository repository, EventBus eventBus) {
+        this.mRepository = repository;
         this.mEventBus = eventBus;
     }
 
@@ -57,8 +57,10 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, @NonNull OnLoadingListener<List<File>> loadingListener) {
-        load(mTeamCityService.listArtifacts(url, "browseArchives:true"), loadingListener);
+    public void load(@NonNull String url,
+                     @NonNull OnLoadingListener<List<File>> loadingListener,
+                     boolean update) {
+        load(mRepository.listArtifacts(url, "browseArchives:true", update), loadingListener);
     }
 
     /**
@@ -67,7 +69,7 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
     @Override
     public void downloadArtifact(@NonNull final String url, @NonNull final String name, @NonNull final OnLoadingListener<java.io.File> loadingListener) {
         mSubscriptions.clear();
-        Subscription subscription = mTeamCityService.downloadFile(url)
+        Subscription subscription = mRepository.downloadFile(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<ResponseBody>() {

@@ -51,8 +51,8 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mDataManager.load(loadingListener);
+    protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
+        mDataManager.load(loadingListener, update);
     }
 
     /**

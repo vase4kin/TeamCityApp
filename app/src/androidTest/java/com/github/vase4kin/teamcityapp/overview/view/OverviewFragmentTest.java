@@ -162,7 +162,7 @@ public class OverviewFragmentTest {
         mActivityRule.launchActivity(intent);
 
         //Checking error
-        onView(withText("Fake error happened!")).check(matches(isDisplayed()));
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()));
     }
 
     @Test

@@ -86,15 +86,16 @@ public abstract class BaseListPresenterImpl<
         initViews();
         mView.showProgressWheel();
         mView.disableSwipeToRefresh();
-        loadData(loadingListener);
+        loadData(loadingListener, false);
     }
 
     /**
      * Use this one to load data with DataManager
      *
      * @param loadingListener - Receive server callbacks
+     * @param update          - Force cache update (if it's supported)
      */
-    protected abstract void loadData(@NonNull OnLoadingListener<List<S>> loadingListener);
+    protected abstract void loadData(@NonNull OnLoadingListener<List<S>> loadingListener, boolean update);
 
     /**
      * Init views, register listeners
@@ -106,7 +107,7 @@ public abstract class BaseListPresenterImpl<
                 mView.showProgressWheel();
                 mView.hideErrorView();
                 mView.hideEmpty();
-                loadData(loadingListener);
+                loadData(loadingListener, true);
             }
         };
         SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
@@ -124,7 +125,7 @@ public abstract class BaseListPresenterImpl<
     protected void onSwipeToRefresh() {
         mView.hideErrorView();
         mView.hideEmpty();
-        loadData(loadingListener);
+        loadData(loadingListener, true);
     }
 
     /**
@@ -171,7 +172,7 @@ public abstract class BaseListPresenterImpl<
     protected void onFailCallBack(String errorMessage) {
         mView.showData(createModel(Collections.<S>emptyList()));
         mView.hideEmpty();
-        mView.showErrorView(errorMessage);
+        mView.showErrorView();
 
         onCompleteLoading();
     }

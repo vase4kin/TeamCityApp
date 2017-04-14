@@ -42,12 +42,17 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
     /**
      * {@inheritDoc}
      */
-    void load(@NonNull String id, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
+    void load(@NonNull String id,
+              @NonNull OnLoadingListener<List<BuildDetails>> loadingListener,
+              boolean update);
 
     /**
      * {@inheritDoc}
      */
-    void load(@NonNull String id, BuildListFilter filter, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener);
+    void load(@NonNull String id,
+              BuildListFilter filter,
+              @NonNull OnLoadingListener<List<BuildDetails>> loadingListener,
+              boolean update);
 
     /**
      * Is there any more builds to load

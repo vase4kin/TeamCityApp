@@ -208,7 +208,6 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.artifacts = artifacts;
     }
 
-    @VisibleForTesting
     public void setAgent(Agent agent) {
         this.agent = agent;
     }
@@ -218,7 +217,6 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.triggered = triggered;
     }
 
-    @VisibleForTesting
     public void setProperties(Properties properties) {
         this.properties = properties;
     }

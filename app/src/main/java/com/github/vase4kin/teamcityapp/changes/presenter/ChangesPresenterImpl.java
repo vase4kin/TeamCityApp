@@ -100,8 +100,8 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    protected void loadData(@NonNull OnLoadingListener<List<Changes.Change>> loadingListener) {
-        mDataManager.loadLimited(mValueExtractor.getUrl(), loadingListener);
+    protected void loadData(@NonNull OnLoadingListener<List<Changes.Change>> loadingListener, boolean update) {
+        mDataManager.loadLimited(mValueExtractor.getUrl(), loadingListener, update);
     }
 
     /**

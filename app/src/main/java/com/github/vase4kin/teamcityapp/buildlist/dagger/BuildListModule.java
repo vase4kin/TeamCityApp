@@ -20,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
@@ -51,8 +52,8 @@ public class BuildListModule {
     }
 
     @Provides
-    BuildListDataManager providesBuildListDataManager(TeamCityService teamCityService) {
-        return new BuildListDataManagerImpl(teamCityService);
+    BuildListDataManager providesBuildListDataManager(Repository repository) {
+        return new BuildListDataManagerImpl(repository);
     }
 
     @Provides

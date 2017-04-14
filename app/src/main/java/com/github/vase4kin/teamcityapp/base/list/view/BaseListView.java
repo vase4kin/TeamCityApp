@@ -76,10 +76,8 @@ public interface BaseListView<T extends BaseDataModel> {
 
     /**
      * Show error view with error message
-     *
-     * @param error - Error message
      */
-    void showErrorView(String error);
+    void showErrorView();
 
     /**
      * Hide error view
