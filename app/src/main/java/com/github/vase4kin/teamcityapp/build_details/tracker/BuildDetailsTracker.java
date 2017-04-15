@@ -25,59 +25,59 @@ import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 public interface BuildDetailsTracker extends ViewTracker {
 
     /**
-     * Event content name
+     * Screen name
      */
-    String EVENT_CONTENT_NAME = "Build details";
+    String SCREEN_NAME = "screen_build_details";
 
     /**
      * User confirmed build cancellation
      */
-    String EVENT_USER_CONFIRMED_BUILD_CANCELLATION = "Confirmed build cancellation";
+    String EVENT_USER_CONFIRMED_BUILD_CANCELLATION = "build_cancellation_confirm";
 
     /**
      * Event param isReAddToTheQueue
      */
-    String PARAM_IS_RE_ADD_TO_QUEUE = "Re-add to the queue";
+    String PARAM_IS_RE_ADD_TO_QUEUE = "param_re_add_to_the_queue";
 
     /**
      * User gets forbidden error on build cancellation
      */
-    String EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_CANCELLATION = "Forbidden error on build cancellation";
+    String EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_CANCELLATION = "build_cancel_forbidden_error";
 
     /**
      * User gets server error on build cancellation
      */
-    String EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_CANCELLATION = "Server error on build cancellation";
+    String EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_CANCELLATION = "build_cancel_server_error";
 
     /**
      * User cancelled build successfully
      */
-    String EVENT_USER_CANCELLED_BUILD_SUCCESSFULLY = "Build cancelled successfully";
+    String EVENT_USER_CANCELLED_BUILD_SUCCESSFULLY = "build_cancel_success";
 
     /**
      * User gets forbidden error on build restarting
      */
-    String EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_RESTARTING = "Forbidden error on build restarting";
+    String EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_RESTARTING = "build_restart_forbidden_error";
 
     /**
      * User gets server error on build restarting
      */
-    String EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_RESTARTING = "Server error on build restarting";
+    String EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_RESTARTING = "build_restart_server_error";
 
     /**
      * User restarted build successfully
      */
-    String EVENT_USER_RESTARTED_BUILD_SUCCESSFULLY = "Build restarted successfully";
+    String EVENT_USER_RESTARTED_BUILD_SUCCESSFULLY = "build_restart_success";
 
     /**
      * Event for show queued build details
      */
-    String EVENT_SHOW_QUEUED_BUILD_DETAILS_AFTER_RESTARTING = "Show queued build details succeed after restarting";
+    String EVENT_SHOW_QUEUED_BUILD_DETAILS_AFTER_RESTARTING = "build_restart_show_success";
 
     /**
      * Event for show queued build details
      */
-    String EVENT_SHOW_QUEUED_BUILD_DETAILS_FAILED_AFTER_RESTARTING = "Show queued build details failed after restarting";
+    String EVENT_SHOW_QUEUED_BUILD_DETAILS_FAILED_AFTER_RESTARTING = "build_restart_show_failure";
 
     /**
      * Track user confirmed build cancellation

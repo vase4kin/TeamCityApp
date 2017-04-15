@@ -28,7 +28,9 @@ import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsInteractor
 import com.github.vase4kin.teamcityapp.build_details.router.BuildDetailsRouter;
 import com.github.vase4kin.teamcityapp.build_details.router.BuildDetailsRouterImpl;
 import com.github.vase4kin.teamcityapp.build_details.tracker.BuildDetailsTracker;
-import com.github.vase4kin.teamcityapp.build_details.tracker.BuildDetailsViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.build_details.tracker.BuildDetailsTrackerImpl;
+import com.github.vase4kin.teamcityapp.build_details.tracker.FabricBuildDetailsViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.build_details.tracker.FirebaseBuildDetailsTrackerImpl;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsView;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
@@ -37,9 +39,13 @@ import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 import de.greenrobot.event.EventBus;
 
 @Module
@@ -56,11 +62,6 @@ public class BuildDetailsModule {
     @Provides
     BuildDetailsView providesBuildTabsView(StatusBarUtils statusBarUtils, BaseValueExtractor valueExtractor) {
         return new BuildDetailsViewImpl(mView, mActivity, statusBarUtils, valueExtractor);
-    }
-
-    @Provides
-    BuildDetailsTracker providesViewTracker() {
-        return new BuildDetailsViewTrackerImpl();
     }
 
     @Provides
@@ -94,5 +95,22 @@ public class BuildDetailsModule {
     @Provides
     BuildInteractor providesBuildInteractor(TeamCityService teamCityService) {
         return new BuildInteractorImpl(teamCityService);
+    }
+
+    @IntoSet
+    @Provides
+    BuildDetailsTracker providesFabricViewTracker() {
+        return new FabricBuildDetailsViewTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    BuildDetailsTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseBuildDetailsTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    BuildDetailsTracker providesViewTracker(Set<BuildDetailsTracker> trackers) {
+        return new BuildDetailsTrackerImpl(trackers);
     }
 }
