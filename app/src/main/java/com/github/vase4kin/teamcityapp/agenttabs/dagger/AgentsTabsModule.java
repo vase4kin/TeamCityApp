@@ -19,15 +19,21 @@ package com.github.vase4kin.teamcityapp.agenttabs.dagger;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.github.vase4kin.teamcityapp.agenttabs.tracker.AgentsTabViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.agenttabs.tracker.AgentTabsViewTracker;
+import com.github.vase4kin.teamcityapp.agenttabs.tracker.AgentTabsViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.agenttabs.tracker.FabricAgentsTabViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.agenttabs.tracker.FirebaseAgentTabsViewTrackerImpl;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsViewModelImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 import de.greenrobot.event.EventBus;
 
 @Module
@@ -47,12 +53,24 @@ public class AgentsTabsModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new AgentsTabViewTrackerImpl();
+    BaseTabsDataManager providesBaseTabsDataManager(EventBus eventBus) {
+        return new BaseTabsDataManagerImpl(eventBus);
+    }
+
+    @IntoSet
+    @Provides
+    AgentTabsViewTracker providesFabricViewTracker() {
+        return new FabricAgentsTabViewTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    AgentTabsViewTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseAgentTabsViewTrackerImpl(firebaseAnalytics);
     }
 
     @Provides
-    BaseTabsDataManager providesBaseTabsDataManager(EventBus eventBus) {
-        return new BaseTabsDataManagerImpl(eventBus);
+    AgentTabsViewTracker provideViewTracker(Set<AgentTabsViewTracker> trackers) {
+        return new AgentTabsViewTrackerImpl(trackers);
     }
 }

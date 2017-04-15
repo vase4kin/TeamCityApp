@@ -16,24 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.agenttabs.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
 import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
-import io.fabric.sdk.android.Fabric;
-
 /**
- * Tracker actions for {@link com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity}
+ * Tracker interface for {@link com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity}
  */
-public class AgentsTabViewTrackerImpl implements ViewTracker {
+public interface AgentTabsViewTracker extends ViewTracker {
 
     /**
-     * {@inheritDoc}
+     * Screen name
      */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Agents"));
-    }
+    String SCREEN_NAME = "screen_agents";
 }
