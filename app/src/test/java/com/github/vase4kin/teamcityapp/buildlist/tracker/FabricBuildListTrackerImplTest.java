@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class BuildListTrackerImplTest {
+public class FabricBuildListTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
@@ -52,7 +52,7 @@ public class BuildListTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new BuildListTrackerImpl(BuildListTracker.CONTENT_NAME_RUNNING_BUILD_LIST);
+        mTracker = new FabricBuildListTrackerImpl(BuildListTracker.SCREEN_NAME_RUNNING_BUILD_LIST);
     }
 
     @After
