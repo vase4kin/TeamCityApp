@@ -26,6 +26,9 @@ public abstract class BaseFirebaseTracker implements ViewTracker {
 
     protected final FirebaseAnalytics mFirebaseAnalytics;
 
+    /**
+     * {@inheritDoc}
+     */
     public BaseFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
         this.mFirebaseAnalytics = firebaseAnalytics;
     }

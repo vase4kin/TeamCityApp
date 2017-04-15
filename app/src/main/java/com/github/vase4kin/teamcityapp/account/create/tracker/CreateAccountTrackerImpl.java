@@ -16,27 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.account.create.tracker;
 
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
+
 import java.util.Set;
 
 /**
  * Create account tracker
  */
-public class CreateAccountTrackerImpl implements CreateAccountTracker {
-
-    private Set<CreateAccountTracker> mTrackers;
+public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTracker> implements CreateAccountTracker {
 
     public CreateAccountTrackerImpl(Set<CreateAccountTracker> trackers) {
-        this.mTrackers = trackers;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        for (CreateAccountTracker tracker : mTrackers) {
-            tracker.trackView();
-        }
+        super(trackers);
     }
 
     /**

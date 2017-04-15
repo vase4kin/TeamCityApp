@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agenttabs.tracker;
+package com.github.vase4kin.teamcityapp.base.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import java.util.Set;
 
 /**
- * Tracker impl
+ * Base view tracker class
+ *
+ * @param <T> - tracker type
  */
-public class AgentTabsViewTrackerImpl extends BaseViewTracker<AgentTabsViewTracker> implements AgentTabsViewTracker {
+public class BaseViewTracker<T extends ViewTracker> implements ViewTracker {
 
-    public AgentTabsViewTrackerImpl(Set<AgentTabsViewTracker> trackers) {
-        super(trackers);
+    protected final Set<T> mTrackers;
+
+    public BaseViewTracker(Set<T> trackers) {
+        this.mTrackers = trackers;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackView() {
+        for (ViewTracker tracker : mTrackers) {
+            tracker.trackView();
+        }
     }
 }
