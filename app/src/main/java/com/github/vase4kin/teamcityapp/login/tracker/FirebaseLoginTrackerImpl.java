@@ -16,15 +16,24 @@
 
 package com.github.vase4kin.teamcityapp.login.tracker;
 
-import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
+import com.github.vase4kin.teamcityapp.account.create.tracker.FirebaseCreateAccountTrackerImpl;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Login tracking class
+ * Tracker fabric impl of {@link LoginTracker}
  */
-public interface LoginTracker extends CreateAccountTracker {
+public class FirebaseLoginTrackerImpl extends FirebaseCreateAccountTrackerImpl implements LoginTracker {
+
+    public FirebaseLoginTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
+        super(firebaseAnalytics);
+    }
 
     /**
-     * First login screen name
+     * {@inheritDoc}
      */
-    String SCREEN_NAME = "screen_first_login";
+    @Override
+    public void trackView() {
+        mFirebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null);
+    }
+
 }

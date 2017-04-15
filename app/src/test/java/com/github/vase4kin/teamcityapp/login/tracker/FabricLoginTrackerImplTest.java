@@ -37,12 +37,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class LoginTrackerImplTest {
+public class FabricLoginTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private LoginTrackerImpl mTracker;
+    private FabricLoginTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -50,7 +50,7 @@ public class LoginTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new LoginTrackerImpl();
+        mTracker = new FabricLoginTrackerImpl();
     }
 
     @Test

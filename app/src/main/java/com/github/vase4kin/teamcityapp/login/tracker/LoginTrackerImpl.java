@@ -16,24 +16,94 @@
 
 package com.github.vase4kin.teamcityapp.login.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.account.create.tracker.FabricCreateAccountTrackerImpl;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
- * Impl of {@link LoginTracker}
+ * Tracker impl
  */
-public class LoginTrackerImpl extends FabricCreateAccountTrackerImpl implements LoginTracker {
+public class LoginTrackerImpl extends BaseViewTracker<LoginTracker> implements LoginTracker {
+
+    public LoginTrackerImpl(Set<LoginTracker> trackers) {
+        super(trackers);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Create account for the first time"));
+        logEvent(new TrackerMethod<LoginTracker>() {
+            @Override
+            public void execute(LoginTracker tracker) {
+                tracker.trackView();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserLoginSuccess() {
+        logEvent(new TrackerMethod<LoginTracker>() {
+            @Override
+            public void execute(LoginTracker tracker) {
+                tracker.trackUserLoginSuccess();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackGuestUserLoginSuccess() {
+        logEvent(new TrackerMethod<LoginTracker>() {
+            @Override
+            public void execute(LoginTracker tracker) {
+                tracker.trackGuestUserLoginSuccess();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserLoginFailed(final String errorMessage) {
+        logEvent(new TrackerMethod<LoginTracker>() {
+            @Override
+            public void execute(LoginTracker tracker) {
+                tracker.trackUserLoginFailed(errorMessage);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackGuestUserLoginFailed(final String errorMessage) {
+        logEvent(new TrackerMethod<LoginTracker>() {
+            @Override
+            public void execute(LoginTracker tracker) {
+                tracker.trackGuestUserLoginFailed(errorMessage);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserDataSaveFailed() {
+        logEvent(new TrackerMethod<LoginTracker>() {
+            @Override
+            public void execute(LoginTracker tracker) {
+                tracker.trackUserDataSaveFailed();
+            }
+        });
     }
 }
