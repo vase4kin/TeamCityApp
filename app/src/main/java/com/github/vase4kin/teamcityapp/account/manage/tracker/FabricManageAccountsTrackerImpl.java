@@ -23,9 +23,9 @@ import com.crashlytics.android.answers.CustomEvent;
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Tracker class
+ * Fabric tracker class
  */
-public class AccountsTrackerImpl implements ManageAccountsTracker {
+public class FabricManageAccountsTrackerImpl implements ManageAccountsTracker {
 
     /**
      * {@inheritDoc}
@@ -34,7 +34,7 @@ public class AccountsTrackerImpl implements ManageAccountsTracker {
     public void trackView() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Account list"));
+                .putContentName(SCREEN_NAME));
     }
 
     /**
@@ -43,6 +43,6 @@ public class AccountsTrackerImpl implements ManageAccountsTracker {
     @Override
     public void trackAccountRemove() {
         if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent("Remove account"));
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_REMOVE_ACCOUNT));
     }
 }

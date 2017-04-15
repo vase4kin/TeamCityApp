@@ -16,25 +16,32 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Tracker interface
+ * Firebase tracker
  */
-public interface ManageAccountsTracker extends ViewTracker {
+public class FirebaseManageAccountsTrackerImpl implements ManageAccountsTracker {
+
+    private FirebaseAnalytics mFirebaseAnalytics;
+
+    public FirebaseManageAccountsTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
+        this.mFirebaseAnalytics = firebaseAnalytics;
+    }
 
     /**
-     * Account list screen name
+     * {@inheritDoc}
      */
-    String SCREEN_NAME = "screen_account_list";
+    @Override
+    public void trackView() {
+        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+    }
 
     /**
-     * Remove account event
+     * {@inheritDoc}
      */
-    String EVENT_REMOVE_ACCOUNT = "remove_account";
-
-    /**
-     * Track account is removed
-     */
-    void trackAccountRemove();
+    @Override
+    public void trackAccountRemove() {
+        mFirebaseAnalytics.logEvent(EVENT_REMOVE_ACCOUNT, null);
+    }
 }
