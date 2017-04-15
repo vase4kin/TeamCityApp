@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agenttabs.tracker;
+package com.github.vase4kin.teamcityapp.base.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Tracker firebase impl
+ * Base firebase tracker class
  */
-public class FirebaseAgentTabsViewTrackerImpl extends BaseFirebaseTracker implements AgentTabsViewTracker {
+public abstract class BaseFirebaseTracker implements ViewTracker {
 
-    public FirebaseAgentTabsViewTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        super(firebaseAnalytics);
-    }
+    protected final FirebaseAnalytics mFirebaseAnalytics;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+    public BaseFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
+        this.mFirebaseAnalytics = firebaseAnalytics;
     }
 }

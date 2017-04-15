@@ -18,9 +18,10 @@ package com.github.vase4kin.teamcityapp.account.create.tracker;
 
 import android.os.Bundle;
 
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-public class FirebaseCreateAccountTrackerImpl implements CreateAccountTracker {
+public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implements CreateAccountTracker {
 
     /**
      * Login guest user success event
@@ -39,10 +40,8 @@ public class FirebaseCreateAccountTrackerImpl implements CreateAccountTracker {
      */
     private static final String EVENT_LOGIN_USER_FAILED = "login_user_failed";
 
-    private final FirebaseAnalytics mFirebaseAnalytics;
-
     public FirebaseCreateAccountTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        this.mFirebaseAnalytics = firebaseAnalytics;
+        super(firebaseAnalytics);
     }
 
     /**

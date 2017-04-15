@@ -16,17 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.tracker;
 
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
  * Firebase tracker
  */
-public class FirebaseManageAccountsTrackerImpl implements ManageAccountsTracker {
-
-    private FirebaseAnalytics mFirebaseAnalytics;
+public class FirebaseManageAccountsTrackerImpl extends BaseFirebaseTracker implements ManageAccountsTracker {
 
     public FirebaseManageAccountsTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        this.mFirebaseAnalytics = firebaseAnalytics;
+        super(firebaseAnalytics);
     }
 
     /**
