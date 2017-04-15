@@ -16,27 +16,31 @@
 
 package com.github.vase4kin.teamcityapp.filter_builds.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
-
-import java.util.Set;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Tracker impl
+ * Tracker firebase impl of {@link FilterBuildsTracker}
  */
-public class FilterBuildsTrackerImpl extends BaseViewTracker<FilterBuildsTracker> implements FilterBuildsTracker {
+public class FirebaseFilterBuildsTrackerImpl extends BaseFirebaseTracker implements FilterBuildsTracker {
 
-    public FilterBuildsTrackerImpl(Set<FilterBuildsTracker> trackers) {
-        super(trackers);
+    public FirebaseFilterBuildsTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
+        super(firebaseAnalytics);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackUserFilteredBuilds() {
-        logEvent(new TrackerMethod<FilterBuildsTracker>() {
-            @Override
-            public void execute(FilterBuildsTracker tracker) {
-                tracker.trackUserFilteredBuilds();
-            }
-        });
+        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_BUTTON_PRESSED, null);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackView() {
+        mFirebaseAnalytics.logEvent(SCREEN_NAME_FILTER_BUILDS, null);
+    }
 }

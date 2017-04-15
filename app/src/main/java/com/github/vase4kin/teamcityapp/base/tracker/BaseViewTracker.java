@@ -38,8 +38,36 @@ public class BaseViewTracker<T extends ViewTracker> implements ViewTracker {
      */
     @Override
     public void trackView() {
-        for (ViewTracker tracker : mTrackers) {
-            tracker.trackView();
+        logEvent(new TrackerMethod<T>() {
+            @Override
+            public void execute(T tracker) {
+                tracker.trackView();
+            }
+        });
+    }
+
+    /**
+     * Log event for all trackers
+     *
+     * @param trackerMethod - tracker method to execute for each tracker
+     */
+    protected void logEvent(TrackerMethod<T> trackerMethod) {
+        for (T tracker : mTrackers) {
+            trackerMethod.execute(tracker);
         }
+    }
+
+    /**
+     * Tracker method
+     *
+     * @param <T> - Tracker type
+     */
+    protected interface TrackerMethod<T extends ViewTracker> {
+        /**
+         * Execute tracker method
+         *
+         * @param tracker - tracker to execute on
+         */
+        void execute(T tracker);
     }
 }
