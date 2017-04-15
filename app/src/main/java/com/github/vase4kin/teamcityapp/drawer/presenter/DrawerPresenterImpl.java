@@ -23,7 +23,6 @@ import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModelImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTrackerImpl;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
@@ -35,20 +34,25 @@ import javax.inject.Inject;
 /**
  * Impl of {@link DrawerPresenter}
  */
-public class DrawerPresenterImpl<V extends DrawerView, DM extends DrawerDataManager, DR extends DrawerRouter> implements DrawerPresenter, OnDrawerPresenterListener {
+public class DrawerPresenterImpl<
+        V extends DrawerView,
+        DM extends DrawerDataManager,
+        DR extends DrawerRouter,
+        DT extends DrawerTracker> implements DrawerPresenter, OnDrawerPresenterListener {
 
     protected V mView;
     protected DM mDataManager;
-    private DrawerTracker mTracker;
+    protected DT mTracker;
     private DR mRouter;
 
     @Inject
     public DrawerPresenterImpl(@NonNull V mView,
                                @NonNull DM dataManager,
-                               @NonNull DR router) {
+                               @NonNull DR router,
+                               @NonNull DT tracker) {
         this.mView = mView;
         this.mDataManager = dataManager;
-        this.mTracker = new DrawerTrackerImpl();
+        this.mTracker = tracker;
         this.mRouter = router;
     }
 

@@ -16,10 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.drawer.tracker;
 
+import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+
 /**
  * Custom tracker class
  */
-public interface DrawerTracker {
+public interface DrawerTracker extends ViewTracker {
+
+    /**
+     * Event change name
+     */
+    String EVENT_CHANGE_ACCOUNT = "change_account";
 
     /**
      * Track account was changed

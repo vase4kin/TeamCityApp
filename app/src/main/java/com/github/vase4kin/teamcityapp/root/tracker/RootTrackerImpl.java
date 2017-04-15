@@ -19,13 +19,14 @@ package com.github.vase4kin.teamcityapp.root.tracker;
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.drawer.tracker.FabricDrawerTrackerImpl;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
  * Root projects tracking class
  */
-public class RootTrackerImpl implements RootTracker {
+public class RootTrackerImpl extends FabricDrawerTrackerImpl implements RootTracker {
 
     /**
      * {@inheritDoc}

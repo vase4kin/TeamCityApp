@@ -16,17 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.drawer.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
-
-import java.util.Set;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Tracker impl
+ * Tracker firebase impl of {@link DrawerTracker}
  */
-public class DrawerTrackerImpl extends BaseViewTracker<DrawerTracker> implements DrawerTracker {
+public class FirebaseDrawerTrackerImpl extends BaseFirebaseTracker implements DrawerTracker {
 
-    public DrawerTrackerImpl(Set<DrawerTracker> trackers) {
-        super(trackers);
+    public FirebaseDrawerTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
+        super(firebaseAnalytics);
     }
 
     /**
@@ -41,8 +40,6 @@ public class DrawerTrackerImpl extends BaseViewTracker<DrawerTracker> implements
      */
     @Override
     public void trackChangeAccount() {
-        for (DrawerTracker tracker : mTrackers) {
-            tracker.trackChangeAccount();
-        }
+        mFirebaseAnalytics.logEvent(EVENT_CHANGE_ACCOUNT, null);
     }
 }

@@ -34,6 +34,7 @@ import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 
@@ -45,7 +46,7 @@ import javax.inject.Inject;
 public class AgentTabsActivity extends AppCompatActivity {
 
     @Inject
-    DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter> mDrawerPresenter;
+    DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker> mDrawerPresenter;
     @Inject
     BaseTabsPresenterImpl<BaseTabsViewModel, BaseTabsDataManager, AgentTabsViewTracker> mBaseTabsPresenter;
 

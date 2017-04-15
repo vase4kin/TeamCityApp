@@ -28,6 +28,7 @@ import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.queue.dagger.DaggerQueuedListComponent;
@@ -42,7 +43,7 @@ import javax.inject.Inject;
 public class BuildQueueActivity extends AppCompatActivity {
 
     @Inject
-    DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter> mDrawerPresenter;
+    DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker> mDrawerPresenter;
     @Inject
     RunningBuildsListPresenterImpl mBuildListPresenter;
 
@@ -52,7 +53,7 @@ public class BuildQueueActivity extends AppCompatActivity {
         setContentView(R.layout.activity_build_list);
         View view = findViewById(android.R.id.content);
 
-        // Inhecting presenter
+        // Injecting presenter
         DaggerQueuedListComponent.builder()
                 .drawerModule(new DrawerModule(this, false, DrawerView.BUILD_QUEUE))
                 .queuedListModule(new QueuedListModule(view, this))

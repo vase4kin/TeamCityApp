@@ -16,12 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.root.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 
 /**
  * Root tracker
  */
-public interface RootTracker extends ViewTracker {
+public interface RootTracker extends DrawerTracker {
 
     /**
      * Content name to track
