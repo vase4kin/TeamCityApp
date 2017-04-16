@@ -16,17 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.navigation.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
-
-import java.util.Set;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Tracker impl
+ * Navigation tracking class firebase impl
  */
-public class NavigationTrackerImpl extends BaseViewTracker<NavigationTracker> implements NavigationTracker {
+public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implements NavigationTracker {
 
-    public NavigationTrackerImpl(Set<NavigationTracker> trackers) {
-        super(trackers);
+    public FirebaseNavigationTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
+        super(firebaseAnalytics);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackView() {
+        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+    }
 }

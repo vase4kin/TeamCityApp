@@ -16,17 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.navigation.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
-
-import java.util.Set;
-
 /**
- * Tracker impl
+ * Navigation tracker
  */
-public class NavigationTrackerImpl extends BaseViewTracker<NavigationTracker> implements NavigationTracker {
+public interface NavigationTracker extends ViewTracker {
 
-    public NavigationTrackerImpl(Set<NavigationTracker> trackers) {
-        super(trackers);
-    }
-
+    /**
+     * Screen name
+     */
+    String SCREEN_NAME = "screen_project";
 }

@@ -37,12 +37,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class NavigationTrackerImplTest {
+public class FabricNavigationTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private NavigationTrackerImpl mTracker;
+    private FabricNavigationTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -50,7 +50,7 @@ public class NavigationTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new NavigationTrackerImpl();
+        mTracker = new FabricNavigationTrackerImpl();
     }
 
     @Test
