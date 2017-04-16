@@ -19,18 +19,24 @@ package com.github.vase4kin.teamcityapp.testdetails.dagger;
 import android.app.Activity;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor;
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractorImpl;
-import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.testdetails.tracker.FabricTestDetailsViewTrackerImpl;
+import com.github.vase4kin.teamcityapp.testdetails.tracker.FirebaseTestDetailsTrackerImpl;
+import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker;
+import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTrackerImpl;
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView;
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsViewImpl;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class TestDetailsModule {
@@ -52,11 +58,6 @@ public class TestDetailsModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new TestDetailsViewTrackerImpl();
-    }
-
-    @Provides
     TestDetailsValueExtractor providesTestDetailsValueExtractor() {
         return new TestDetailsValueExtractorImpl(mActivity.getIntent().getExtras());
     }
@@ -64,5 +65,22 @@ public class TestDetailsModule {
     @Provides
     StatusBarUtils providesStatusBarUtils() {
         return new StatusBarUtils();
+    }
+
+    @IntoSet
+    @Provides
+    TestDetailsTracker providesFabricViewTracker() {
+        return new FabricTestDetailsViewTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    TestDetailsTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseTestDetailsTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    TestDetailsTracker providesViewTracker(Set<TestDetailsTracker> trackers) {
+        return new TestDetailsTrackerImpl(trackers);
     }
 }
