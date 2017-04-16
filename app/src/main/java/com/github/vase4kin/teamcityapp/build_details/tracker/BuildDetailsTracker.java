@@ -32,7 +32,7 @@ public interface BuildDetailsTracker extends ViewTracker {
     /**
      * User confirmed build cancellation
      */
-    String EVENT_USER_CONFIRMED_BUILD_CANCELLATION = "build_cancellation_confirm";
+    String EVENT_USER_CONFIRMED_BUILD_CANCELLATION = "build_cancel_confirm";
 
     /**
      * Event param isReAddToTheQueue
