@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManagerImpl;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
@@ -33,7 +34,6 @@ import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewImpl;
 import com.github.vase4kin.teamcityapp.changes.view.LoadMoreViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 import java.util.Map;
 

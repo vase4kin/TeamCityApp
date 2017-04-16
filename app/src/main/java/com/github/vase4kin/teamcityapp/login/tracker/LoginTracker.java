@@ -22,4 +22,9 @@ import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTrack
  * Login tracking class
  */
 public interface LoginTracker extends CreateAccountTracker {
+
+    /**
+     * First login screen name
+     */
+    String SCREEN_NAME = "screen_first_login";
 }

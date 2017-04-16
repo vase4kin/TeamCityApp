@@ -20,9 +20,9 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor;
+import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker;
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
@@ -37,13 +37,13 @@ public class TestDetailsPresenterImpl implements TestDetailsPresenter, ErrorView
 
     private TestDetailsView mView;
     private TestDetailsDataManager mDataManager;
-    private ViewTracker mTracker;
+    private TestDetailsTracker mTracker;
     private TestDetailsValueExtractor mValueExtractor;
 
     @Inject
     TestDetailsPresenterImpl(@NonNull TestDetailsView view,
                              @NonNull TestDetailsDataManager mDataManager,
-                             @NonNull ViewTracker tracker,
+                             @NonNull TestDetailsTracker tracker,
                              @NonNull TestDetailsValueExtractor valueExtractor) {
         this.mView = view;
         this.mDataManager = mDataManager;

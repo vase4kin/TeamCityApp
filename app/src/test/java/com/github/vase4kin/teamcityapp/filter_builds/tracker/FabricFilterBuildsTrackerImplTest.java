@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.tracker;
+package com.github.vase4kin.teamcityapp.filter_builds.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,12 +39,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class LoginTrackerImplTest {
+public class FabricFilterBuildsTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private LoginTrackerImpl mTracker;
+    private FabricFilterBuildsTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -50,14 +52,18 @@ public class LoginTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new LoginTrackerImpl();
+        mTracker = new FabricFilterBuildsTrackerImpl();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        verifyNoMoreInteractions(mAnswers);
     }
 
     @Test
     public void testTrackViewIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
         mTracker.trackView();
-        verifyNoMoreInteractions(mAnswers);
     }
 
     @Test
@@ -65,6 +71,19 @@ public class LoginTrackerImplTest {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackView();
         verify(mAnswers).logContentView(any(ContentViewEvent.class));
-        verifyNoMoreInteractions(mAnswers);
     }
+
+    @Test
+    public void trackUserFilteredBuildsIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserFilteredBuilds();
+    }
+
+    @Test
+    public void trackUserFilteredBuildsIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserFilteredBuilds();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
 }

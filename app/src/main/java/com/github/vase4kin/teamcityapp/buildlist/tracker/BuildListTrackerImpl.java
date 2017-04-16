@@ -16,56 +16,36 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
- * Impl of {@link BuildListTracker}
+ * Tracker impl
  */
-public class BuildListTrackerImpl implements BuildListTracker {
+public class BuildListTrackerImpl extends BaseViewTracker<BuildListTracker> implements BuildListTracker {
 
-    /**
-     * Content name
-     */
-    private String mContentName;
-
-    /**
-     * Constructor
-     *
-     * @param contentName - Content name
-     */
-    public BuildListTrackerImpl(String contentName) {
-        this.mContentName = contentName;
+    public BuildListTrackerImpl(Set<BuildListTracker> trackers) {
+        super(trackers);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName(mContentName));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void trackRunBuildButtonPressed() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_BUTTON_PRESSED));
+        logEvent(new TrackerMethod<BuildListTracker>() {
+            @Override
+            public void execute(BuildListTracker tracker) {
+                tracker.trackRunBuildButtonPressed();
+            }
+        });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void trackUserWantsToSeeQueuedBuildDetails() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS));
+        logEvent(new TrackerMethod<BuildListTracker>() {
+            @Override
+            public void execute(BuildListTracker tracker) {
+                tracker.trackUserWantsToSeeQueuedBuildDetails();
+            }
+        });
     }
 }

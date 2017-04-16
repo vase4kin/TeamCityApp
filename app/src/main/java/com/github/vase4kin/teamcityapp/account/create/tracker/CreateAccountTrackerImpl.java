@@ -16,72 +16,81 @@
 
 package com.github.vase4kin.teamcityapp.account.create.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.LoginEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
- * Impl of {@link CreateAccountTracker}
+ * Create account tracker
  */
-public class CreateAccountTrackerImpl implements CreateAccountTracker {
+public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTracker> implements CreateAccountTracker {
 
-    private static final String USER_LOGIN_METHOD = "User";
-    private static final String GUEST_USER_LOGIN_METHOD = "GuestUser";
+    public CreateAccountTrackerImpl(Set<CreateAccountTracker> trackers) {
+        super(trackers);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void trackUserLoginSuccess() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logLogin(new LoginEvent()
-                .putMethod(USER_LOGIN_METHOD)
-                .putSuccess(true));
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackUserLoginSuccess();
+            }
+        });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackGuestUserLoginSuccess() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logLogin(new LoginEvent()
-                .putMethod(GUEST_USER_LOGIN_METHOD)
-                .putSuccess(true));
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackGuestUserLoginSuccess();
+            }
+        });
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void trackUserLoginFailed(String errorMessage) {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logLogin(new LoginEvent()
-                .putMethod(USER_LOGIN_METHOD)
-                .putSuccess(false)
-                .putCustomAttribute("errorMessage", errorMessage));
+    public void trackUserLoginFailed(final String errorMessage) {
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackUserLoginFailed(errorMessage);
+            }
+        });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void trackGuestUserLoginFailed(String errorMessage) {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logLogin(new LoginEvent()
-                .putMethod(GUEST_USER_LOGIN_METHOD)
-                .putSuccess(false)
-                .putCustomAttribute("errorMessage", errorMessage));
+    public void trackGuestUserLoginFailed(final String errorMessage) {
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackGuestUserLoginFailed(errorMessage);
+            }
+        });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackUserDataSaveFailed() {
-        trackUserLoginFailed("Failed to save user data!");
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Create account"));
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackUserDataSaveFailed();
+            }
+        });
     }
 }

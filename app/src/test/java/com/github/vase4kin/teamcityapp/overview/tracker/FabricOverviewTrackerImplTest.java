@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class OverviewTrackerImplTest {
+public class FabricOverviewTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
@@ -51,7 +51,7 @@ public class OverviewTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new OverviewTrackerImpl();
+        mTracker = new FabricOverviewTrackerImpl();
     }
 
     @After

@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -143,5 +144,12 @@ public class AppModule {
         File cacheDir = mApplication.getFilesDir();
         return new RxCache.Builder()
                 .persistence(cacheDir, new GsonSpeaker());
+    }
+
+    @VisibleForTesting
+    @Provides
+    @Singleton
+    protected FirebaseAnalytics providesFirebaseAnalytics() {
+        return FirebaseAnalytics.getInstance(mApplication.getApplicationContext());
     }
 }

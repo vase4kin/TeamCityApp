@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.tracker;
+package com.github.vase4kin.teamcityapp.root.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.drawer.tracker.FabricDrawerTrackerImpl;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Tracker class
+ * Root projects tracking class
  */
-public class AccountsTrackerImpl implements ManageAccountsTracker {
+public class FabricRootTrackerImpl extends FabricDrawerTrackerImpl implements RootTracker {
 
     /**
      * {@inheritDoc}
@@ -34,15 +35,41 @@ public class AccountsTrackerImpl implements ManageAccountsTracker {
     public void trackView() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Account list"));
+                .putContentName(SCREEN_NAME_ROOT));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void trackAccountRemove() {
+    public void trackUserRatedTheApp() {
+        logRateEvent(STATUS_RATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserDidNotRateTheApp() {
+        logRateEvent(STATUS_NOT_RATED);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserDecidedToRateTheAppLater() {
+        logRateEvent(STATUS_LATER);
+    }
+
+    /**
+     * Log rate event
+     *
+     * @param status - Rate status
+     */
+    private void logRateEvent(String status) {
         if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent("Remove account"));
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_RATE_APP)
+                .putCustomAttribute(KEY_EVENT_STATUS, status));
     }
 }

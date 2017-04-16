@@ -23,12 +23,20 @@ import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouterImpl;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTrackerImpl;
+import com.github.vase4kin.teamcityapp.drawer.tracker.FabricDrawerTrackerImpl;
+import com.github.vase4kin.teamcityapp.drawer.tracker.FirebaseDrawerTrackerImpl;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class DrawerModule {
@@ -57,4 +65,22 @@ public class DrawerModule {
     DrawerRouter providesDrawerRouter() {
         return new DrawerRouterImpl(mActivity);
     }
+
+    @IntoSet
+    @Provides
+    DrawerTracker providesFabricViewTracker() {
+        return new FabricDrawerTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    DrawerTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseDrawerTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    DrawerTracker providesViewTracker(Set<DrawerTracker> trackers) {
+        return new DrawerTrackerImpl(trackers);
+    }
+
 }

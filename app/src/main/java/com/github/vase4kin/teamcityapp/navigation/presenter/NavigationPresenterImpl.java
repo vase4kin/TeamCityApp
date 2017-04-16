@@ -27,7 +27,7 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
 
@@ -43,7 +43,7 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
         NavigationItem,
         NavigationView,
         NavigationDataManager,
-        ViewTracker,
+        NavigationTracker,
         NavigationValueExtractor> implements OnNavigationItemClickListener {
 
     private NavigationRouter mRouter;
@@ -51,7 +51,7 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
     @Inject
     NavigationPresenterImpl(@NonNull NavigationView view,
                             @NonNull NavigationDataManager dataManager,
-                            @NonNull ViewTracker tracker,
+                            @NonNull NavigationTracker tracker,
                             @NonNull NavigationValueExtractor valueExtractor,
                             NavigationRouter router) {
         super(view, dataManager, tracker, valueExtractor);

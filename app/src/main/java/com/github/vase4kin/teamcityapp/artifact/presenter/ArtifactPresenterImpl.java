@@ -33,7 +33,7 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.OnArtifactPresenterListener;
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import java.util.List;
 

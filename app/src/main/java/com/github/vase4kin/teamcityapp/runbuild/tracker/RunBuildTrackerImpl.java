@@ -16,51 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
  * Impl of {@link RunBuildTracker}
  */
-public class RunBuildTrackerImpl implements RunBuildTracker {
+public class RunBuildTrackerImpl extends BaseViewTracker<RunBuildTracker> implements RunBuildTracker {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserRunBuildSuccess() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_SUCCESS));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserRunBuildWithCustomParamsSuccess() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_SUCCESS_WITH_CUSTOM_PARAMETERS));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserRunBuildFailed() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_FAILED));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserRunBuildFailedForbidden() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RUN_BUILD_FAILED_FORBIDDEN));
+    public RunBuildTrackerImpl(Set<RunBuildTracker> trackers) {
+        super(trackers);
     }
 
     /**
@@ -68,9 +34,64 @@ public class RunBuildTrackerImpl implements RunBuildTracker {
      */
     @Override
     public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName(CONTENT_NAME_RUN_BUILD));
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackView();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRunBuildSuccess() {
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserRunBuildSuccess();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRunBuildWithCustomParamsSuccess() {
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserRunBuildWithCustomParamsSuccess();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRunBuildFailed() {
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserRunBuildFailed();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserRunBuildFailedForbidden() {
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserRunBuildFailedForbidden();
+            }
+        });
     }
 
     /**
@@ -78,8 +99,12 @@ public class RunBuildTrackerImpl implements RunBuildTracker {
      */
     @Override
     public void trackUserClicksOnAddNewBuildParamButton() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_CLICKS_ADD_NEW_BUILD_PARAMETER_BUTTON));
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserClicksOnAddNewBuildParamButton();
+            }
+        });
     }
 
     /**
@@ -87,8 +112,12 @@ public class RunBuildTrackerImpl implements RunBuildTracker {
      */
     @Override
     public void trackUserClicksOnClearAllBuildParamsButton() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_CLICKS_CLEAR_ALL_BUILD_PARAMETERS_BUTTON));
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserClicksOnClearAllBuildParamsButton();
+            }
+        });
     }
 
     /**
@@ -96,7 +125,11 @@ public class RunBuildTrackerImpl implements RunBuildTracker {
      */
     @Override
     public void trackUserAddsBuildParam() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_USER_ADDS_NEW_BUILD_PARAMETER));
+        logEvent(new TrackerMethod<RunBuildTracker>() {
+            @Override
+            public void execute(RunBuildTracker tracker) {
+                tracker.trackUserAddsBuildParam();
+            }
+        });
     }
 }
