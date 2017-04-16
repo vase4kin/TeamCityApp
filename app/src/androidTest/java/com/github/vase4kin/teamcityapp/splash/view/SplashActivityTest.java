@@ -87,7 +87,7 @@ public class SplashActivityTest {
         // Check launched intent
         intended(allOf(
                 hasComponent(RootProjectsActivity.class.getName()),
-                toPackage("com.github.vase4kin.teamcityapp.mock")));
+                toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
     }
 
     /**
@@ -102,7 +102,7 @@ public class SplashActivityTest {
         // Check launched intent
         intended(allOf(
                 hasComponent(LoginActivity.class.getName()),
-                toPackage("com.github.vase4kin.teamcityapp.mock")));
+                toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
     }
 
     /**

@@ -16,59 +16,56 @@
 
 package com.github.vase4kin.teamcityapp.root.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
- * Root projects tracking class
+ * Tracker impl
  */
-public class RootTrackerImpl implements RootTracker {
+public class RootTrackerImpl extends BaseViewTracker<RootTracker> implements RootTracker {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName(CONTENT_NAME_ROOT));
+    public RootTrackerImpl(Set<RootTracker> trackers) {
+        super(trackers);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    @Override
+    public void trackChangeAccount() {
+        logEvent(new TrackerMethod<RootTracker>() {
+            @Override
+            public void execute(RootTracker tracker) {
+                tracker.trackChangeAccount();
+            }
+        });
+    }
+
     @Override
     public void trackUserRatedTheApp() {
-        logRateEvent(STATUS_RATED);
+        logEvent(new TrackerMethod<RootTracker>() {
+            @Override
+            public void execute(RootTracker tracker) {
+                tracker.trackUserRatedTheApp();
+            }
+        });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void trackUserDidNotRateTheApp() {
-        logRateEvent(STATUS_NOT_RATED);
+        logEvent(new TrackerMethod<RootTracker>() {
+            @Override
+            public void execute(RootTracker tracker) {
+                tracker.trackUserDidNotRateTheApp();
+            }
+        });
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void trackUserDecidedToRateTheAppLater() {
-        logRateEvent(STATUS_LATER);
-    }
-
-    /**
-     * Log rate event
-     *
-     * @param status - Rate status
-     */
-    private void logRateEvent(String status) {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RATE_APP)
-                .putCustomAttribute(KEY_EVENT_STATUS, status));
+        logEvent(new TrackerMethod<RootTracker>() {
+            @Override
+            public void execute(RootTracker tracker) {
+                tracker.trackUserDecidedToRateTheAppLater();
+            }
+        });
     }
 }

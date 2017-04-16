@@ -31,14 +31,20 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTrackerImpl;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.FabricBuildListTrackerImpl;
+import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueViewImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class QueuedListModule {
@@ -62,11 +68,6 @@ public class QueuedListModule {
     }
 
     @Provides
-    BuildListTracker providesViewTracker() {
-        return new BuildListTrackerImpl(BuildListTracker.CONTENT_NAME_QUEUED_BUILD_LIST);
-    }
-
-    @Provides
     BuildListRouter providesBuildListRouter() {
         return new BuildListRouterImpl(mActivity);
     }
@@ -79,6 +80,23 @@ public class QueuedListModule {
     @Provides
     BuildInteractor providesBuildInteractor(TeamCityService teamCityService) {
         return new BuildInteractorImpl(teamCityService);
+    }
+
+    @IntoSet
+    @Provides
+    BuildListTracker providesFabricBuildListTracker() {
+        return new FabricBuildListTrackerImpl(BuildListTracker.SCREEN_NAME_QUEUED_BUILD_LIST);
+    }
+
+    @IntoSet
+    @Provides
+    BuildListTracker providesFirebaseBuildListTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_QUEUED_BUILD_LIST);
+    }
+
+    @Provides
+    BuildListTracker providesBuildListTracker(Set<BuildListTracker> trackers) {
+        return new BuildListTrackerImpl(trackers);
     }
 
 }

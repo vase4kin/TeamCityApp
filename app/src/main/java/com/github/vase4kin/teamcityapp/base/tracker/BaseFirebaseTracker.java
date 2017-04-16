@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.tracker;
+package com.github.vase4kin.teamcityapp.base.tracker;
+
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Track base view
+ * Base firebase tracker class
  */
-public interface ViewTracker {
+public abstract class BaseFirebaseTracker implements ViewTracker {
 
-    /**
-     * Track view
-     */
-    void trackView();
+    protected final FirebaseAnalytics mFirebaseAnalytics;
 
-    /**
-     * View tracker stub
-     */
-    ViewTracker STUB = new ViewTracker() {
-        @Override
-        public void trackView() {
-            // Do nothing
-        }
-    };
+    public BaseFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
+        this.mFirebaseAnalytics = firebaseAnalytics;
+    }
 }

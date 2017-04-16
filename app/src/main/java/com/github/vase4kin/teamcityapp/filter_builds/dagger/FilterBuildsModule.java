@@ -19,8 +19,10 @@ package com.github.vase4kin.teamcityapp.filter_builds.dagger;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouterImpl;
+import com.github.vase4kin.teamcityapp.filter_builds.tracker.FabricFilterBuildsTrackerImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTracker;
 import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTrackerImpl;
+import com.github.vase4kin.teamcityapp.filter_builds.tracker.FirebaseFilterBuildsTrackerImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsViewImpl;
@@ -29,9 +31,13 @@ import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractorImp
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentViewImpl;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class FilterBuildsModule {
@@ -62,9 +68,21 @@ public class FilterBuildsModule {
         return new FilterBuildsRouterImpl(mActivity);
     }
 
+    @IntoSet
     @Provides
-    FilterBuildsTracker providesFilterBuildsTracker() {
-        return new FilterBuildsTrackerImpl();
+    FilterBuildsTracker providesFabricFilterBuildsTracker() {
+        return new FabricFilterBuildsTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    FilterBuildsTracker providesFirebaseFilterBuildsTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseFilterBuildsTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    FilterBuildsTracker providesFilterBuildsTracker(Set<FilterBuildsTracker> trackers) {
+        return new FilterBuildsTrackerImpl(trackers);
     }
 
 }

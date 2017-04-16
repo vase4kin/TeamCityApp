@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
@@ -30,7 +31,7 @@ import javax.inject.Inject;
 /**
  * Drawer presenter impl special for {@link BuildDetailsActivity}
  */
-public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter> {
+public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker> {
 
     private BaseValueExtractor mValueExtractor;
 
@@ -38,8 +39,9 @@ public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerV
     BuildDetailsDrawerPresenterImpl(DrawerView mViewModel,
                                     DrawerDataManager dataManager,
                                     BaseValueExtractor valueExtractor,
-                                    DrawerRouter router) {
-        super(mViewModel, dataManager, router);
+                                    DrawerRouter router,
+                                    DrawerTracker tracker) {
+        super(mViewModel, dataManager, router, tracker);
         this.mValueExtractor = valueExtractor;
     }
 

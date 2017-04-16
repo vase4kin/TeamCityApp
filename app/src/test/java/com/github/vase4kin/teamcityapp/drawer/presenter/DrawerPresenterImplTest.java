@@ -20,6 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModelImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
@@ -60,12 +61,15 @@ public class DrawerPresenterImplTest {
     @Mock
     private DrawerRouter mRouter;
 
+    @Mock
+    private DrawerTracker mTracker;
+
     private DrawerPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new DrawerPresenterImpl<>(mView, mDataManager, mRouter);
+        mPresenter = new DrawerPresenterImpl<>(mView, mDataManager, mRouter, mTracker);
     }
 
     @Test

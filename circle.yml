@@ -22,6 +22,11 @@ test:
     - adb shell settings put global animator_duration_scale 0
     # unlocking the screen
     - adb shell input keyevent 82
+    # copy google-services.json mocks
+    - mkdir -p app/src/mock/debug/
+    - cp mock-mockDebug-google-services.json ./app/src/mock/debug/google-services.json
+    - mkdir -p app/src/prod/debug/
+    - cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
     # running tests
     - ./gradlew clean lintMockDebug pmd findbugs generateCodeCoverageReport
     post:

@@ -16,12 +16,27 @@
 
 package com.github.vase4kin.teamcityapp.account.create.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 /**
  * Tracking
  */
 public interface CreateAccountTracker extends ViewTracker {
+
+    /**
+     * Error login attribute
+     */
+    String ATTRIBUTE_NAME_ERROR = "errorMessage";
+
+    /**
+     * Error message if data is failed to save
+     */
+    String MESSAGE_ERROR_SAVE_DATE = "Failed to save user data!";
+
+    /**
+     * Create account screen name
+     */
+    String SCREEN_NAME = "screen_create_account";
 
     /**
      * Track user is logged in

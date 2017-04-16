@@ -16,9 +16,22 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
+/**
+ * Tracker interface
+ */
 public interface ManageAccountsTracker extends ViewTracker {
+
+    /**
+     * Account list screen name
+     */
+    String SCREEN_NAME = "screen_account_list";
+
+    /**
+     * Remove account event
+     */
+    String EVENT_REMOVE_ACCOUNT = "remove_account";
 
     /**
      * Track account is removed

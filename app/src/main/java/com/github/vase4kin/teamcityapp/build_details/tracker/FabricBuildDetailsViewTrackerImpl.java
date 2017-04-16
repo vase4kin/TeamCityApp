@@ -23,9 +23,9 @@ import com.crashlytics.android.answers.CustomEvent;
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Tracker class
+ * Tracker fabric impl
  */
-public class BuildDetailsViewTrackerImpl implements BuildDetailsTracker {
+public class FabricBuildDetailsViewTrackerImpl implements BuildDetailsTracker {
 
     /**
      * {@inheritDoc}
@@ -34,7 +34,7 @@ public class BuildDetailsViewTrackerImpl implements BuildDetailsTracker {
     public void trackView() {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName(EVENT_CONTENT_NAME));
+                .putContentName(SCREEN_NAME));
     }
 
     /**

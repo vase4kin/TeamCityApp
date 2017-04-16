@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import java.util.Collections;
 import java.util.List;

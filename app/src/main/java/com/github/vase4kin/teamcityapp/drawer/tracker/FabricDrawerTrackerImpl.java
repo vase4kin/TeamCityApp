@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agenttabs.tracker;
+package com.github.vase4kin.teamcityapp.drawer.tracker;
 
 import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.crashlytics.android.answers.CustomEvent;
 
 import io.fabric.sdk.android.Fabric;
 
 /**
- * Tracker actions for {@link com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity}
+ * Tracker fabric impl of {@link DrawerTracker}
  */
-public class AgentsTabViewTrackerImpl implements ViewTracker {
+public class FabricDrawerTrackerImpl implements DrawerTracker {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackChangeAccount() {
+        if (!Fabric.isInitialized()) return;
+        Answers.getInstance().logCustom(new CustomEvent(EVENT_CHANGE_ACCOUNT));
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Agents"));
     }
 }

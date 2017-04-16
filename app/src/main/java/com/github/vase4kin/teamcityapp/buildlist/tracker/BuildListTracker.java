@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildlist.tracker;
 
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 /**
  * Tracking for build list
@@ -25,29 +25,29 @@ import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 public interface BuildListTracker extends ViewTracker {
 
     /**
-     * Build list content name
+     * Build list screen name
      */
-    String CONTENT_NAME_BUILD_LIST = "Build list";
+    String SCREEN_NAME_BUILD_LIST = "screen_build_list";
 
     /**
-     * Running build list content name
+     * Running build list screen name
      */
-    String CONTENT_NAME_RUNNING_BUILD_LIST = "Running build list";
+    String SCREEN_NAME_RUNNING_BUILD_LIST = "screen_running_build_list";
 
     /**
-     * Queued build list content name
+     * Queued build list screen name
      */
-    String CONTENT_NAME_QUEUED_BUILD_LIST = "Build queue list";
+    String SCREEN_NAME_QUEUED_BUILD_LIST = "screen_build_queue_list";
 
     /**
      * Event for run build button pressed
      */
-    String EVENT_RUN_BUILD_BUTTON_PRESSED = "Run build button is pressed";
+    String EVENT_RUN_BUILD_BUTTON_PRESSED = "run_build_fab_click";
 
     /**
      * Event for show queued build details
      */
-    String EVENT_SHOW_QUEUED_BUILD_DETAILS = "Show queued build details";
+    String EVENT_SHOW_QUEUED_BUILD_DETAILS = "build_list_show_queued_details";
 
     /**
      * Track run build button is pressed
