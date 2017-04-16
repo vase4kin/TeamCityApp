@@ -31,15 +31,21 @@ public class BuildListTrackerImpl extends BaseViewTracker<BuildListTracker> impl
 
     @Override
     public void trackRunBuildButtonPressed() {
-        for (BuildListTracker tracker : mTrackers) {
-            tracker.trackRunBuildButtonPressed();
-        }
+        logEvent(new TrackerMethod<BuildListTracker>() {
+            @Override
+            public void execute(BuildListTracker tracker) {
+                tracker.trackRunBuildButtonPressed();
+            }
+        });
     }
 
     @Override
     public void trackUserWantsToSeeQueuedBuildDetails() {
-        for (BuildListTracker tracker : mTrackers) {
-            tracker.trackUserWantsToSeeQueuedBuildDetails();
-        }
+        logEvent(new TrackerMethod<BuildListTracker>() {
+            @Override
+            public void execute(BuildListTracker tracker) {
+                tracker.trackUserWantsToSeeQueuedBuildDetails();
+            }
+        });
     }
 }

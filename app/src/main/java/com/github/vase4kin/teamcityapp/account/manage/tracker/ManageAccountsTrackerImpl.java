@@ -34,8 +34,11 @@ public class ManageAccountsTrackerImpl extends BaseViewTracker<ManageAccountsTra
      */
     @Override
     public void trackAccountRemove() {
-        for (ManageAccountsTracker tracker : mTrackers) {
-            tracker.trackAccountRemove();
-        }
+        logEvent(new TrackerMethod<ManageAccountsTracker>() {
+            @Override
+            public void execute(ManageAccountsTracker tracker) {
+                tracker.trackAccountRemove();
+            }
+        });
     }
 }

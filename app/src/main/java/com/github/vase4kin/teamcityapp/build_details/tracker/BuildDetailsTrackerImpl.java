@@ -33,10 +33,13 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      * {@inheritDoc}
      */
     @Override
-    public void trackUserConfirmedCancel(boolean isReAddToTheQueue) {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserConfirmedCancel(isReAddToTheQueue);
-        }
+    public void trackUserConfirmedCancel(final boolean isReAddToTheQueue) {
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserConfirmedCancel(isReAddToTheQueue);
+            }
+        });
     }
 
     /**
@@ -44,9 +47,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserGetsForbiddenErrorOnBuildCancel() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserGetsForbiddenErrorOnBuildCancel();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserGetsForbiddenErrorOnBuildCancel();
+            }
+        });
     }
 
     /**
@@ -54,9 +60,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserGetsServerErrorOnBuildCancel() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserGetsServerErrorOnBuildCancel();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserGetsServerErrorOnBuildCancel();
+            }
+        });
     }
 
     /**
@@ -64,9 +73,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserCanceledBuildSuccessfully() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserCanceledBuildSuccessfully();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserCanceledBuildSuccessfully();
+            }
+        });
     }
 
     /**
@@ -74,9 +86,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserGetsForbiddenErrorOnBuildRestart() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserGetsForbiddenErrorOnBuildRestart();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserGetsForbiddenErrorOnBuildRestart();
+            }
+        });
     }
 
     /**
@@ -84,9 +99,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserGetsServerErrorOnBuildRestart() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserGetsServerErrorOnBuildRestart();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserGetsServerErrorOnBuildRestart();
+            }
+        });
     }
 
     /**
@@ -94,9 +112,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserRestartedBuildSuccessfully() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserRestartedBuildSuccessfully();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserRestartedBuildSuccessfully();
+            }
+        });
     }
 
     /**
@@ -104,9 +125,12 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserWantsToSeeQueuedBuildDetails() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserWantsToSeeQueuedBuildDetails();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserWantsToSeeQueuedBuildDetails();
+            }
+        });
     }
 
     /**
@@ -114,8 +138,11 @@ public class BuildDetailsTrackerImpl extends BaseViewTracker<BuildDetailsTracker
      */
     @Override
     public void trackUserFailedToSeeQueuedBuildDetails() {
-        for (BuildDetailsTracker tracker : mTrackers) {
-            tracker.trackUserFailedToSeeQueuedBuildDetails();
-        }
+        logEvent(new TrackerMethod<BuildDetailsTracker>() {
+            @Override
+            public void execute(BuildDetailsTracker tracker) {
+                tracker.trackUserFailedToSeeQueuedBuildDetails();
+            }
+        });
     }
 }

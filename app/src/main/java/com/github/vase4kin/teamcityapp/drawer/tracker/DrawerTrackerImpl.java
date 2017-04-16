@@ -41,8 +41,11 @@ public class DrawerTrackerImpl extends BaseViewTracker<DrawerTracker> implements
      */
     @Override
     public void trackChangeAccount() {
-        for (DrawerTracker tracker : mTrackers) {
-            tracker.trackChangeAccount();
-        }
+        logEvent(new TrackerMethod<DrawerTracker>() {
+            @Override
+            public void execute(DrawerTracker tracker) {
+                tracker.trackChangeAccount();
+            }
+        });
     }
 }

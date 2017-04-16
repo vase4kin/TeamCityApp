@@ -34,9 +34,12 @@ public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTrack
      */
     @Override
     public void trackUserLoginSuccess() {
-        for (CreateAccountTracker tracker : mTrackers) {
-            tracker.trackUserLoginSuccess();
-        }
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackUserLoginSuccess();
+            }
+        });
     }
 
     /**
@@ -44,29 +47,38 @@ public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTrack
      */
     @Override
     public void trackGuestUserLoginSuccess() {
-        for (CreateAccountTracker tracker : mTrackers) {
-            tracker.trackGuestUserLoginSuccess();
-        }
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackGuestUserLoginSuccess();
+            }
+        });
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void trackUserLoginFailed(String errorMessage) {
-        for (CreateAccountTracker tracker : mTrackers) {
-            tracker.trackUserLoginFailed(errorMessage);
-        }
+    public void trackUserLoginFailed(final String errorMessage) {
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackUserLoginFailed(errorMessage);
+            }
+        });
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void trackGuestUserLoginFailed(String errorMessage) {
-        for (CreateAccountTracker tracker : mTrackers) {
-            tracker.trackGuestUserLoginFailed(errorMessage);
-        }
+    public void trackGuestUserLoginFailed(final String errorMessage) {
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackGuestUserLoginFailed(errorMessage);
+            }
+        });
     }
 
     /**
@@ -74,8 +86,11 @@ public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTrack
      */
     @Override
     public void trackUserDataSaveFailed() {
-        for (CreateAccountTracker tracker : mTrackers) {
-            tracker.trackUserDataSaveFailed();
-        }
+        logEvent(new TrackerMethod<CreateAccountTracker>() {
+            @Override
+            public void execute(CreateAccountTracker tracker) {
+                tracker.trackUserDataSaveFailed();
+            }
+        });
     }
 }
