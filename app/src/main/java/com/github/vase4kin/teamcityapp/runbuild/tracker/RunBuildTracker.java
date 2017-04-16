@@ -26,42 +26,42 @@ public interface RunBuildTracker extends ViewTracker {
     /**
      * Run build content name
      */
-    String CONTENT_NAME_RUN_BUILD = "Run build";
+    String SCREEN_NAME_RUN_BUILD = "screen_run_build";
 
     /**
      * Title for run build success event
      */
-    String EVENT_RUN_BUILD_SUCCESS = "Run build success";
+    String EVENT_RUN_BUILD_SUCCESS = "run_build_success";
 
     /**
      * Title for run build success with custom parameters event
      */
-    String EVENT_RUN_BUILD_SUCCESS_WITH_CUSTOM_PARAMETERS = "Run build success with custom parameters";
+    String EVENT_RUN_BUILD_SUCCESS_WITH_CUSTOM_PARAMETERS = "run_build_custom_params_success";
 
     /**
      * Title for run build failed event
      */
-    String EVENT_RUN_BUILD_FAILED = "Run build failed";
+    String EVENT_RUN_BUILD_FAILED = "run_build_failed";
 
     /**
      * Title for run build failed forbidden event
      */
-    String EVENT_RUN_BUILD_FAILED_FORBIDDEN = "Run build failed forbidden";
+    String EVENT_RUN_BUILD_FAILED_FORBIDDEN = "run_build_forbidden_error";
 
     /**
      * Title for user clicks on add new build param button event
      */
-    String EVENT_USER_CLICKS_ADD_NEW_BUILD_PARAMETER_BUTTON = "User clicks on add new build param button";
+    String EVENT_USER_CLICKS_ADD_NEW_BUILD_PARAMETER_BUTTON = "run_build_add_custom_param_click";
 
     /**
      * Title for user clicks on clear all build params button event
      */
-    String EVENT_USER_CLICKS_CLEAR_ALL_BUILD_PARAMETERS_BUTTON = "User clicks on clear all build params button";
+    String EVENT_USER_CLICKS_CLEAR_ALL_BUILD_PARAMETERS_BUTTON = "run_build_clear_all_params";
 
     /**
      * Title for user adds new build param event
      */
-    String EVENT_USER_ADDS_NEW_BUILD_PARAMETER = "User adds new build param";
+    String EVENT_USER_ADDS_NEW_BUILD_PARAMETER = "run_build_add_custom_param";
 
     /**
      * Track user ran build success

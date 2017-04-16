@@ -23,6 +23,8 @@ import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouterImpl;
+import com.github.vase4kin.teamcityapp.runbuild.tracker.FabricRunBuildTrackerImpl;
+import com.github.vase4kin.teamcityapp.runbuild.tracker.FirebaseRunBuildTrackerImpl;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTrackerImpl;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
@@ -30,9 +32,13 @@ import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentViewImpl;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildViewImpl;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class RunBuildModule {
@@ -68,9 +74,21 @@ public class RunBuildModule {
         return new RunBuildRouterImpl(mActivity);
     }
 
+    @IntoSet
     @Provides
-    RunBuildTracker providesRunBuildTracker() {
-        return new RunBuildTrackerImpl();
+    RunBuildTracker providesFabricRunBuildTracker() {
+        return new FabricRunBuildTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    RunBuildTracker providesFirebaseRunBuildTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseRunBuildTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    RunBuildTracker providesRunBuildTracker(Set<RunBuildTracker> trackers) {
+        return new RunBuildTrackerImpl(trackers);
     }
 
 }
