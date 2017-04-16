@@ -20,9 +20,9 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor;
+import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker;
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
@@ -56,7 +56,7 @@ public class TestOccurrencePresenterImplTest {
     private TestOccurrences.TestOccurrence mTestOccurrence;
 
     @Mock
-    private ViewTracker mTracker;
+    private TestDetailsTracker mTracker;
 
     @Mock
     private Bundle mBundle;
