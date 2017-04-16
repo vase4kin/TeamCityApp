@@ -39,12 +39,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class RootTrackerImplTest {
+public class FabricRootTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private RootTrackerImpl mTracker;
+    private FabricRootTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class RootTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new RootTrackerImpl();
+        mTracker = new FabricRootTrackerImpl();
     }
 
     @After

@@ -24,34 +24,34 @@ import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 public interface RootTracker extends DrawerTracker {
 
     /**
-     * Content name to track
+     * Screen name to track
      */
-    String CONTENT_NAME_ROOT = "Projects root";
+    String SCREEN_NAME_ROOT = "screen_projects_root";
 
     /**
      * Custom rate app event
      */
-    String EVENT_RATE_APP = "Rate app";
+    String EVENT_RATE_APP = "rate_app";
 
     /**
      * Custom status key for rate app event
      */
-    String KEY_EVENT_STATUS = "Status";
+    String KEY_EVENT_STATUS = "param_rate_status";
 
     /**
      * Custom rated value
      */
-    String STATUS_RATED = "Rated";
+    String STATUS_RATED = "status_rated";
 
     /**
      * Custom not rated value
      */
-    String STATUS_NOT_RATED = "Not rated";
+    String STATUS_NOT_RATED = "status_not_rated";
 
     /**
      * Custom rate later value
      */
-    String STATUS_LATER = "Rated later";
+    String STATUS_LATER = "status_rated_later";
 
     /**
      * Track user rated the app

@@ -26,6 +26,8 @@ import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
 import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManagerImpl;
 import com.github.vase4kin.teamcityapp.root.router.RootRouter;
 import com.github.vase4kin.teamcityapp.root.router.RootRouterImpl;
+import com.github.vase4kin.teamcityapp.root.tracker.FabricRootTrackerImpl;
+import com.github.vase4kin.teamcityapp.root.tracker.FirebaseRootTrackerImpl;
 import com.github.vase4kin.teamcityapp.root.tracker.RootTracker;
 import com.github.vase4kin.teamcityapp.root.tracker.RootTrackerImpl;
 import com.github.vase4kin.teamcityapp.root.view.OnAccountSwitchListener;
@@ -33,9 +35,13 @@ import com.github.vase4kin.teamcityapp.root.view.RootDrawerView;
 import com.github.vase4kin.teamcityapp.root.view.RootDrawerViewImpl;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 import io.rx_cache.internal.RxCache;
 
 @Module
@@ -75,8 +81,21 @@ public class RootModule {
         return mActivity;
     }
 
+    @IntoSet
     @Provides
-    RootTracker providesRootTracker() {
-        return new RootTrackerImpl();
+    RootTracker providesFabricRootTracker() {
+        return new FabricRootTrackerImpl();
     }
+
+    @IntoSet
+    @Provides
+    RootTracker providesFirebaseRootTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseRootTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    RootTracker providesRootTracker(Set<RootTracker> trackers) {
+        return new RootTrackerImpl(trackers);
+    }
+
 }
