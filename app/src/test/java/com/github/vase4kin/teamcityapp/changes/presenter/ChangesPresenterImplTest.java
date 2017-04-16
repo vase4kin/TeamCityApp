@@ -18,12 +18,12 @@ package com.github.vase4kin.teamcityapp.changes.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModelImpl;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.mugen.MugenCallbacks;
 
 import org.junit.Before;

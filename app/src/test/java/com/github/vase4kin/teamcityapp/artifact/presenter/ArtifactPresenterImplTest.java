@@ -28,8 +28,8 @@ import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManager;
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouter;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import org.junit.Before;

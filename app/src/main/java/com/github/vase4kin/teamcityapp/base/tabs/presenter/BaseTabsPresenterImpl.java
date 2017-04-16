@@ -21,7 +21,7 @@ import android.support.annotation.NonNull;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEventListener;
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import javax.inject.Inject;
 

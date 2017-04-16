@@ -23,8 +23,10 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManagerImpl;
-import com.github.vase4kin.teamcityapp.account.manage.tracker.AccountsTrackerImpl;
+import com.github.vase4kin.teamcityapp.account.manage.tracker.FabricManageAccountsTrackerImpl;
+import com.github.vase4kin.teamcityapp.account.manage.tracker.FirebaseManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker;
+import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountViewHolderFactory;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView;
@@ -35,13 +37,16 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class AccountsModule {
@@ -65,11 +70,6 @@ public class AccountsModule {
     }
 
     @Provides
-    ManageAccountsTracker providesViewTracker() {
-        return new AccountsTrackerImpl();
-    }
-
-    @Provides
     BaseValueExtractor providesBaseValueExtractor() {
         return BaseValueExtractor.STUB;
     }
@@ -89,5 +89,22 @@ public class AccountsModule {
     @Provides
     ViewHolderFactory<AccountDataModel> providesAccountViewHolderFactory() {
         return new AccountViewHolderFactory();
+    }
+
+    @IntoSet
+    @Provides
+    ManageAccountsTracker providesViewFabricTracker() {
+        return new FabricManageAccountsTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    ManageAccountsTracker providesViewFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseManageAccountsTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    ManageAccountsTracker providesViewTracker(Set<ManageAccountsTracker> trackers) {
+        return new ManageAccountsTrackerImpl(trackers);
     }
 }

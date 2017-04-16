@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.tracker;
+package com.github.vase4kin.teamcityapp.root.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.LoginEvent;
+import com.crashlytics.android.answers.CustomEvent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -39,12 +39,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class CreateAccountTrackerImplTest {
+public class FabricRootTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private CreateAccountTrackerImpl mTracker;
+    private FabricRootTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -52,36 +52,12 @@ public class CreateAccountTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new CreateAccountTrackerImpl();
+        mTracker = new FabricRootTrackerImpl();
     }
 
     @After
     public void tearDown() throws Exception {
         verifyNoMoreInteractions(mAnswers);
-    }
-
-    @Test
-    public void testTrackUserLoginSuccessIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserLoginSuccess();
-    }
-
-    @Test
-    public void testTrackGuestUserLoginSuccessIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackGuestUserLoginSuccess();
-    }
-
-    @Test
-    public void testTrackUserLoginFailedIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserLoginFailed("error");
-    }
-
-    @Test
-    public void testTrackGuestUserLoginFailedIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackGuestUserLoginFailed("error");
     }
 
     @Test
@@ -91,37 +67,48 @@ public class CreateAccountTrackerImplTest {
     }
 
     @Test
-    public void testTrackUserLoginSuccess() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserLoginSuccess();
-        verify(mAnswers).logLogin(any(LoginEvent.class));
-    }
-
-    @Test
-    public void testTrackGuestUserLoginSuccess() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackGuestUserLoginSuccess();
-        verify(mAnswers).logLogin(any(LoginEvent.class));
-    }
-
-    @Test
-    public void testTrackUserLoginFailed() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserLoginFailed("error");
-        verify(mAnswers).logLogin(any(LoginEvent.class));
-    }
-
-    @Test
-    public void testTrackGuestUserLoginFailed() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackGuestUserLoginFailed("error");
-        verify(mAnswers).logLogin(any(LoginEvent.class));
-    }
-
-    @Test
-    public void testTrackView() throws Exception {
+    public void testTrackViewIfFabricIsInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackView();
         verify(mAnswers).logContentView(any(ContentViewEvent.class));
+    }
+
+    @Test
+    public void testTrackUserRatedTheAppIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserRatedTheApp();
+    }
+
+    @Test
+    public void testTrackTrackUserRatedIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserRatedTheApp();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void testTrackUserDidNotRateTheAppIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserDidNotRateTheApp();
+    }
+
+    @Test
+    public void testTrackUserDidNotRateTheAppIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserDidNotRateTheApp();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
+    }
+
+    @Test
+    public void testTrackUserDecidedToRateTheAppLaterIfFabricIsNotInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(false);
+        mTracker.trackUserDecidedToRateTheAppLater();
+    }
+
+    @Test
+    public void testTrackUserDecidedToRateTheAppLaterIfFabricIsInitialized() throws Exception {
+        when(Fabric.isInitialized()).thenReturn(true);
+        mTracker.trackUserDecidedToRateTheAppLater();
+        verify(mAnswers).logCustom(any(CustomEvent.class));
     }
 }

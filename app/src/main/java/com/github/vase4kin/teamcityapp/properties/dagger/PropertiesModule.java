@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManagerImpl;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;

@@ -16,23 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.navigation.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
- * Navigation tracking class
+ * Tracker impl
  */
-public class NavigationTrackerImpl implements ViewTracker {
+public class NavigationTrackerImpl extends BaseViewTracker<NavigationTracker> implements NavigationTracker {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Project"));
+    public NavigationTrackerImpl(Set<NavigationTracker> trackers) {
+        super(trackers);
     }
+
 }

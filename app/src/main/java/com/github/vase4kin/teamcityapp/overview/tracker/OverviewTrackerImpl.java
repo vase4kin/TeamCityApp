@@ -16,32 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.overview.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
  * Impl of {@link OverviewTracker}
  */
-public class OverviewTrackerImpl implements OverviewTracker {
+public class OverviewTrackerImpl extends BaseViewTracker<OverviewTracker> implements OverviewTracker {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserClickedCancelBuildOption() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_CANCEL_BUILD));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserSharedBuild() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHARE_BUILD));
+    public OverviewTrackerImpl(Set<OverviewTracker> trackers) {
+        super(trackers);
     }
 
     /**
@@ -49,7 +34,32 @@ public class OverviewTrackerImpl implements OverviewTracker {
      */
     @Override
     public void trackView() {
-        // Do nothing
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedCancelBuildOption() {
+        logEvent(new TrackerMethod<OverviewTracker>() {
+            @Override
+            public void execute(OverviewTracker tracker) {
+                tracker.trackUserClickedCancelBuildOption();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserSharedBuild() {
+        logEvent(new TrackerMethod<OverviewTracker>() {
+            @Override
+            public void execute(OverviewTracker tracker) {
+                tracker.trackUserSharedBuild();
+            }
+        });
     }
 
     /**
@@ -57,8 +67,12 @@ public class OverviewTrackerImpl implements OverviewTracker {
      */
     @Override
     public void trackUserRestartedBuild() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_RESTART_BUILD));
+        logEvent(new TrackerMethod<OverviewTracker>() {
+            @Override
+            public void execute(OverviewTracker tracker) {
+                tracker.trackUserRestartedBuild();
+            }
+        });
     }
 
     /**
@@ -66,7 +80,11 @@ public class OverviewTrackerImpl implements OverviewTracker {
      */
     @Override
     public void trackUserWantsToSeeBuildListFilteredByBranch() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH));
+        logEvent(new TrackerMethod<OverviewTracker>() {
+            @Override
+            public void execute(OverviewTracker tracker) {
+                tracker.trackUserWantsToSeeBuildListFilteredByBranch();
+            }
+        });
     }
 }

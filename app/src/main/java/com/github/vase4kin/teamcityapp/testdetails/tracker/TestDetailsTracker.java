@@ -16,24 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
-import io.fabric.sdk.android.Fabric;
 
-/**
- * Test details tracking class
- */
-public class TestDetailsViewTrackerImpl implements ViewTracker {
+public interface TestDetailsTracker extends ViewTracker {
 
     /**
-     * {@inheritDoc}
+     * Screen name
      */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName("Test details"));
-    }
+    String SCREEN_NAME = "screen_test_details";
 }

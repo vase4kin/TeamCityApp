@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.overview.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 /**
  * Tracker for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}
@@ -26,22 +26,22 @@ public interface OverviewTracker extends ViewTracker {
     /**
      * Cancel build option menu is clicked event
      */
-    String EVENT_CANCEL_BUILD = "Cancel build option menu is clicked";
+    String EVENT_CANCEL_BUILD = "cancel_build";
 
     /**
      * Share build option menu is clicked event
      */
-    String EVENT_SHARE_BUILD = "Share build option menu is clicked";
+    String EVENT_SHARE_BUILD = "share_build";
 
     /**
      * Restart build option menu is clicked event
      */
-    String EVENT_RESTART_BUILD = "Restart build option menu is clicked";
+    String EVENT_RESTART_BUILD = "restart_build";
 
     /**
      * Show builds filtered by branch action is clicked
      */
-    String EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH = "Show builds filtered by branch action is clicked";
+    String EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH = "show_builds_filtered_by_branch";
 
     /**
      * Track that Cancel build option menu is clicked

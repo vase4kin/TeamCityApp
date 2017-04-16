@@ -27,7 +27,7 @@ import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsViewModelImpl;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import java.util.List;
 

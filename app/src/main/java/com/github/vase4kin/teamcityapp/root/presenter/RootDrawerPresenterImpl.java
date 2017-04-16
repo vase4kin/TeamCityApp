@@ -35,14 +35,12 @@ import javax.inject.Inject;
 /**
  * Impl of {@link RootDrawerPresenter}
  */
-public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter> implements RootDrawerPresenter, OnDrawerUpdateListener, RootDrawerView.OnAppRateListener {
+public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter, RootTracker> implements RootDrawerPresenter, OnDrawerUpdateListener, RootDrawerView.OnAppRateListener {
 
     private OnAccountSwitchListener mListener;
     private RootBundleValueManager mValueExtractor;
     private RootRouter mRouter;
     private BuildLogInteractor mInteractor;
-    private RootTracker mTracker;
-
     private String mBaseUrl;
 
     @Inject
@@ -53,12 +51,11 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
                             RootRouter router,
                             BuildLogInteractor interactor,
                             RootTracker tracker) {
-        super(view, dataManager, router);
+        super(view, dataManager, router, tracker);
         this.mListener = listener;
         this.mValueExtractor = valueExtractor;
         this.mRouter = router;
         this.mInteractor = interactor;
-        this.mTracker = tracker;
     }
 
     /**

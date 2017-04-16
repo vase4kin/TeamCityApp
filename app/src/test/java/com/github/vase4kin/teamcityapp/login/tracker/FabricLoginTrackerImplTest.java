@@ -1,10 +1,24 @@
-package com.github.vase4kin.teamcityapp.filter_builds.tracker;
+/*
+ * Copyright 2016 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.login.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.CustomEvent;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,12 +37,12 @@ import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Fabric.class, Answers.class})
-public class FilterBuildsTrackerImplTest {
+public class FabricLoginTrackerImplTest {
 
     @Mock
     private Answers mAnswers;
 
-    private FilterBuildsTrackerImpl mTracker;
+    private FabricLoginTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -36,18 +50,14 @@ public class FilterBuildsTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new FilterBuildsTrackerImpl();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        verifyNoMoreInteractions(mAnswers);
+        mTracker = new FabricLoginTrackerImpl();
     }
 
     @Test
     public void testTrackViewIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
         mTracker.trackView();
+        verifyNoMoreInteractions(mAnswers);
     }
 
     @Test
@@ -55,19 +65,6 @@ public class FilterBuildsTrackerImplTest {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackView();
         verify(mAnswers).logContentView(any(ContentViewEvent.class));
+        verifyNoMoreInteractions(mAnswers);
     }
-
-    @Test
-    public void trackUserFilteredBuildsIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserFilteredBuilds();
-    }
-
-    @Test
-    public void trackUserFilteredBuildsIfFabricIsInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserFilteredBuilds();
-        verify(mAnswers).logCustom(any(CustomEvent.class));
-    }
-
 }

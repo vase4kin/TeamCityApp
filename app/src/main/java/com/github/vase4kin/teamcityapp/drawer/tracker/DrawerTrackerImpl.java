@@ -16,22 +16,36 @@
 
 package com.github.vase4kin.teamcityapp.drawer.tracker;
 
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.CustomEvent;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
 
-import io.fabric.sdk.android.Fabric;
+import java.util.Set;
 
 /**
- * Impl of {@link DrawerTracker}
+ * Tracker impl
  */
-public class DrawerTrackerImpl implements DrawerTracker {
+public class DrawerTrackerImpl extends BaseViewTracker<DrawerTracker> implements DrawerTracker {
+
+    public DrawerTrackerImpl(Set<DrawerTracker> trackers) {
+        super(trackers);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackView() {
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void trackChangeAccount() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logCustom(new CustomEvent("Change account"));
+        logEvent(new TrackerMethod<DrawerTracker>() {
+            @Override
+            public void execute(DrawerTracker tracker) {
+                tracker.trackChangeAccount();
+            }
+        });
     }
 }

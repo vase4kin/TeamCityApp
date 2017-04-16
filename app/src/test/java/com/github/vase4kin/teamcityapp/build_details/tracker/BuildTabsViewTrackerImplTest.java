@@ -44,7 +44,7 @@ public class BuildTabsViewTrackerImplTest {
     @Mock
     private Answers mAnswers;
 
-    private BuildDetailsViewTrackerImpl mTracker;
+    private FabricBuildDetailsViewTrackerImpl mTracker;
 
     @Before
     public void setUp() throws Exception {
@@ -52,7 +52,7 @@ public class BuildTabsViewTrackerImplTest {
         PowerMockito.mockStatic(Fabric.class);
         PowerMockito.mockStatic(Answers.class);
         when(Answers.getInstance()).thenReturn(mAnswers);
-        mTracker = new BuildDetailsViewTrackerImpl();
+        mTracker = new FabricBuildDetailsViewTrackerImpl();
     }
 
     @After

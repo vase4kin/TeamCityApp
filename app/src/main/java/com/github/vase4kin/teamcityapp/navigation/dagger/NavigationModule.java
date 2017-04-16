@@ -31,19 +31,24 @@ import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtra
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouterImpl;
+import com.github.vase4kin.teamcityapp.navigation.tracker.FabricNavigationTrackerImpl;
+import com.github.vase4kin.teamcityapp.navigation.tracker.FirebaseNavigationTrackerImpl;
+import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
+import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
+import dagger.multibindings.IntoSet;
 
 @Module
 public class NavigationModule {
@@ -79,11 +84,6 @@ public class NavigationModule {
     }
 
     @Provides
-    ViewTracker providesViewTracker() {
-        return new NavigationTrackerImpl();
-    }
-
-    @Provides
     NavigationAdapter providesNavigationAdapter(Map<Integer, ViewHolderFactory<NavigationDataModel>> viewHolderFactories) {
         return new NavigationAdapter(viewHolderFactories);
     }
@@ -94,4 +94,22 @@ public class NavigationModule {
     ViewHolderFactory<NavigationDataModel> providesNavigationViewHolderFactory() {
         return new NavigationViewHolderFactory();
     }
+
+    @IntoSet
+    @Provides
+    NavigationTracker providesFabricViewTracker() {
+        return new FabricNavigationTrackerImpl();
+    }
+
+    @IntoSet
+    @Provides
+    NavigationTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseNavigationTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    NavigationTracker providesViewTracker(Set<NavigationTracker> trackers) {
+        return new NavigationTrackerImpl(trackers);
+    }
+
 }

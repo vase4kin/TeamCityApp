@@ -28,14 +28,20 @@ import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouterImpl;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTrackerImpl;
+import com.github.vase4kin.teamcityapp.account.create.tracker.FabricCreateAccountTrackerImpl;
+import com.github.vase4kin.teamcityapp.account.create.tracker.FirebaseCreateAccountTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 import okhttp3.OkHttpClient;
 
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
@@ -72,8 +78,21 @@ public class CreateAccountModule {
         return new CreateAccountRouterImpl(mActivity);
     }
 
+    @IntoSet
     @Provides
-    CreateAccountTracker providesCreateAccountTracker() {
-        return new CreateAccountTrackerImpl();
+    CreateAccountTracker providesFabricCreateAccountTracker() {
+        return new FabricCreateAccountTrackerImpl();
     }
+
+    @IntoSet
+    @Provides
+    CreateAccountTracker providesFirebaseCreateAccountTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseCreateAccountTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    CreateAccountTracker providesCreateAccountTracker(Set<CreateAccountTracker> trackers) {
+        return new CreateAccountTrackerImpl(trackers);
+    }
+
 }

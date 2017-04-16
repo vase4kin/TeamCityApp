@@ -24,16 +24,22 @@ import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataMana
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouterImpl;
+import com.github.vase4kin.teamcityapp.login.tracker.FabricLoginTrackerImpl;
+import com.github.vase4kin.teamcityapp.login.tracker.FirebaseLoginTrackerImpl;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTrackerImpl;
 import com.github.vase4kin.teamcityapp.login.view.LoginView;
 import com.github.vase4kin.teamcityapp.login.view.LoginViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
+
+import java.util.Set;
 
 import javax.inject.Named;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntoSet;
 import okhttp3.OkHttpClient;
 
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
@@ -65,8 +71,21 @@ public class LoginModule {
         return new LoginRouterImpl(mActivity);
     }
 
+    @IntoSet
     @Provides
-    LoginTracker providesLoginTracker() {
-        return new LoginTrackerImpl();
+    LoginTracker providesFabricLoginTracker() {
+        return new FabricLoginTrackerImpl();
     }
+
+    @IntoSet
+    @Provides
+    LoginTracker providesFirebaseLoginTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FirebaseLoginTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    LoginTracker providesLoginTracker(Set<LoginTracker> trackers) {
+        return new LoginTrackerImpl(trackers);
+    }
+
 }

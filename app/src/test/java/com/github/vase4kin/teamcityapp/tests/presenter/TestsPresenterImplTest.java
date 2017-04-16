@@ -22,7 +22,7 @@ import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataManager;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModelImpl;
