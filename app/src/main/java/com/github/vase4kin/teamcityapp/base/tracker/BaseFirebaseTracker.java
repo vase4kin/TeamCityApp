@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.base.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**

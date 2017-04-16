@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.tracker;
+package com.github.vase4kin.teamcityapp.base.tracker;
 
 /**
  * Track base view

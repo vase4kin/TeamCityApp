@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.navigation.tracker;
 
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
+
 /**
  * Navigation tracker
  */

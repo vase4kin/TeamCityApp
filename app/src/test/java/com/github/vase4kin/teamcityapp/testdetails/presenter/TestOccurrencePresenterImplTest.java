@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor;
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView;

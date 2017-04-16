@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.testdetails.dagger;
 import android.app.Activity;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor;

@@ -37,7 +37,7 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewHolderFactory;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.Map;

@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.overview.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 /**
  * Tracker for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}

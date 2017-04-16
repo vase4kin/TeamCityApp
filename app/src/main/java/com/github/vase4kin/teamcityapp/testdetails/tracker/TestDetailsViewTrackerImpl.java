@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.testdetails.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import io.fabric.sdk.android.Fabric;
 

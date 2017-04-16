@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.build_details.tracker;
 
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
 
 /**
  * Tracker for {@link BuildDetailsActivity}

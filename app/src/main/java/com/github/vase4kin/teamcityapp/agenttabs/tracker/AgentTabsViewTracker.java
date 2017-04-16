@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.agenttabs.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 /**
  * Tracker interface for {@link com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity}

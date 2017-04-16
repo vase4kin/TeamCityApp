@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.drawer.tracker;
 
-import com.github.vase4kin.teamcityapp.navigation.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 /**
  * Custom tracker class
