@@ -83,6 +83,16 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void hideBuildLoadingProgress();
 
     /**
+     * Show filter builds onboarding prompt
+     */
+    void showFilterBuildsPrompt();
+
+    /**
+     * Show run build onboarding prompt
+     */
+    void showRunBuildPrompt();
+
+    /**
      * {@inheritDoc}
      * <p>
      * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}

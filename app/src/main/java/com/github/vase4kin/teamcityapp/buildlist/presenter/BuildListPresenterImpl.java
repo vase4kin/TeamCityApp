@@ -96,6 +96,20 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             mView.setTitle(mValueExtractor.getName());
         }
         mView.setOnBuildListPresenterListener(this);
+        mView.showRunBuildFloatActionButton();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // if prompt is not shown {
+        mView.showRunBuildPrompt();
+        // return
+        // }
+        // if prompt is not shown {
+        // May be show after run build or after resume
+        mView.showFilterBuildsPrompt();
+        // }
     }
 
     /**

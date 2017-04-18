@@ -106,6 +106,7 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
                 .setIcon(R.drawable.ic_menu_black_24dp)
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
                 .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
                     @Override
                     public void onHidePrompt(MotionEvent event, boolean tappedTarget) {

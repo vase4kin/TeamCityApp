@@ -279,5 +279,9 @@
     <!--Onboarding-->
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
     <string name="text_onboarding_navigation_drawer">Manage accounts, view running/queued builds and agents</string>
+    <string name="title_onboarding_run_build">Run builds</string>
+    <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
+    <string name="title_onboarding_filter_builds">Filter builds</string>
+    <string name="text_onboarding_filter_builds">Filter by branch, build status or show only personal or pinned ones</string>
 
 </resources>

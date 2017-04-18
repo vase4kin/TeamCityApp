@@ -17,17 +17,22 @@
 package com.github.vase4kin.teamcityapp.buildlist.view;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -47,6 +52,7 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import tr.xip.errorview.ErrorView;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 /**
  * Impl of {@link BuildListView}
@@ -267,6 +273,68 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void hideBuildLoadingProgress() {
         mProgressDialog.dismiss();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showFilterBuildsPrompt() {
+        int color = getToolbarColor();
+        new MaterialTapTargetPrompt.Builder(mActivity)
+                .setTarget(R.id.filter_builds)
+                .setPrimaryText(R.string.title_onboarding_filter_builds)
+                .setSecondaryText(R.string.text_onboarding_filter_builds)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_filter_list_white_24px)
+                .setIconDrawableTintList(ColorStateList.valueOf(color))
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                    @Override
+                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                        // save prompt is shown
+                    }
+
+                    @Override
+                    public void onHidePromptComplete() {
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showRunBuildPrompt() {
+        int color = getToolbarColor();
+        new MaterialTapTargetPrompt.Builder(mActivity)
+                .setTarget(mFloatingActionButton)
+                .setPrimaryText(R.string.title_onboarding_run_build)
+                .setSecondaryText(R.string.text_onboarding_run_build)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                    @Override
+                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                        // save prompt is shown
+                    }
+
+                    @Override
+                    public void onHidePromptComplete() {
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * @return color of toolbar
+     */
+    @ColorInt
+    private int getToolbarColor() {
+        return ((ColorDrawable) mActivity.findViewById(R.id.toolbar).getBackground()).getColor();
     }
 
     /**
