@@ -27,6 +27,7 @@ import android.view.MotionEvent;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 import hotchemi.android.rate.AppRate;
 import hotchemi.android.rate.OnClickButtonListener;
@@ -96,7 +97,7 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
      * {@inheritDoc}
      */
     @Override
-    public void showNavigationDrawerPrompt() {
+    public void showNavigationDrawerPrompt(final OnboardingManager.OnPromptShownListener listener) {
         // Creating prompt
         int color = ContextCompat.getColor(mActivity, mDefaultColor);
         final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(mActivity)
@@ -110,7 +111,7 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
                 .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
                     @Override
                     public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
-                        // Save that prompt is shown
+                        listener.onPromptShown();
                     }
 
                     @Override

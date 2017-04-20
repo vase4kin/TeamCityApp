@@ -42,6 +42,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.mugen.Mugen;
@@ -279,7 +280,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void showFilterBuildsPrompt() {
+    public void showFilterBuildsPrompt(final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
         new MaterialTapTargetPrompt.Builder(mActivity)
                 .setTarget(R.id.filter_builds)
@@ -293,7 +294,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
                     @Override
                     public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
-                        // save prompt is shown
+                        listener.onPromptShown();
                     }
 
                     @Override
@@ -307,7 +308,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void showRunBuildPrompt() {
+    public void showRunBuildPrompt(final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
         new MaterialTapTargetPrompt.Builder(mActivity)
                 .setTarget(mFloatingActionButton)
@@ -319,7 +320,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
                     @Override
                     public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
-                        // save prompt is shown
+                        listener.onPromptShown();
                     }
 
                     @Override

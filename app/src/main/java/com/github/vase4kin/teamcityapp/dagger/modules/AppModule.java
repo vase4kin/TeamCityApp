@@ -31,6 +31,8 @@ import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -151,5 +153,12 @@ public class AppModule {
     @Singleton
     protected FirebaseAnalytics providesFirebaseAnalytics() {
         return FirebaseAnalytics.getInstance(mApplication.getApplicationContext());
+    }
+
+    @VisibleForTesting
+    @Provides
+    @Singleton
+    protected OnboardingManager providesOnboardingManager() {
+        return new OnboardingManagerImpl(mApplication.getApplicationContext());
     }
 }

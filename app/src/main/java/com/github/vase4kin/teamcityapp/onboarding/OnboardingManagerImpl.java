@@ -1,0 +1,85 @@
+/*
+ * Copyright 2016 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.onboarding;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+/**
+ * Impl of {@link OnboardingManager}
+ */
+public class OnboardingManagerImpl implements OnboardingManager {
+
+    private final static String PREF_NAME = "OnboardingPref";
+    private final static String KEY_NAV_DRAWER = "NavDrawer";
+    private final static String KEY_RUN_BUILD = "RunBuild";
+    private final static String KEY_FILTER_BUILDS = "FilterBuilds";
+
+    private final SharedPreferences mSharedPreferences;
+
+    public OnboardingManagerImpl(Context context) {
+        this.mSharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isNavigationDrawerPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_NAV_DRAWER, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveNavigationDrawerPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_NAV_DRAWER, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRunBuildPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_RUN_BUILD, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRunBuildPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_RUN_BUILD, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isFilterBuildsPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_FILTER_BUILDS, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveFilterBuildsPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_FILTER_BUILDS, true).apply();
+    }
+}
