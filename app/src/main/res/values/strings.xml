@@ -283,5 +283,9 @@
     <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
     <string name="title_onboarding_filter_builds">Filter builds</string>
     <string name="text_onboarding_filter_builds">Filter by branch, build status or show only personal or pinned ones</string>
+    <string name="title_onboarding_build_menu">Explore menu</string>
+    <string name="text_onboarding_stop_build">Stop running builds</string>
+    <string name="text_onboarding_restart_build">Restart finished builds</string>
+    <string name="text_onboarding_remove_build_from_queue">Remove builds from queue</string>
 
 </resources>

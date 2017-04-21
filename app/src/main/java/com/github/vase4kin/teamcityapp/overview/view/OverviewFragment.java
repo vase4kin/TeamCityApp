@@ -76,6 +76,12 @@ public class OverviewFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.onResume();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         mPresenter.onStart();

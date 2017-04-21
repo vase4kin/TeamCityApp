@@ -21,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+
 import tr.xip.errorview.ErrorView;
 
 public interface OverviewView {
@@ -211,6 +213,27 @@ public interface OverviewView {
      * @param description - description of the card
      */
     void showBranchCardBottomSheetDialog(String description);
+
+    /**
+     * Show stop build onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showStopBuildPrompt(OnboardingManager.OnPromptShownListener listener);
+
+    /**
+     * Show restart build onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showRestartBuildPrompt(OnboardingManager.OnPromptShownListener listener);
+
+    /**
+     * Show remove build from queue onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showRemoveBuildFromQueuePrompt(OnboardingManager.OnPromptShownListener listener);
 
     /**
      * Listener to handle interactions between view and presenter

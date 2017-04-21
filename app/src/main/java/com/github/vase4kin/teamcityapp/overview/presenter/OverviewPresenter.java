@@ -33,4 +33,9 @@ public interface OverviewPresenter extends BaseMenuPresenter, BasePresenter {
      * Handle on stop behavior
      */
     void onStop();
+
+    /**
+     * Handle on resume behavior
+     */
+    void onResume();
 }

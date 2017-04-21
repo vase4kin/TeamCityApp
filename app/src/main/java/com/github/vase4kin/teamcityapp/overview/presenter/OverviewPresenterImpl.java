@@ -22,6 +22,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
@@ -39,14 +40,17 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     private OverviewView mView;
     private OverViewInteractor mInteractor;
     private OverviewTracker mTracker;
+    private OnboardingManager onboardingManager;
 
     @Inject
     OverviewPresenterImpl(OverviewView view,
                           OverViewInteractor interactor,
-                          OverviewTracker tracker) {
+                          OverviewTracker tracker,
+                          OnboardingManager onboardingManager) {
         this.mView = view;
         this.mInteractor = interactor;
         this.mTracker = tracker;
+        this.onboardingManager = onboardingManager;
     }
 
     /**
@@ -91,6 +95,36 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onStop() {
         mInteractor.unsubsribeFromEventBusEvents();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onResume() {
+        BuildDetails buildDetails = mInteractor.getBuildDetails();
+        if (buildDetails.isFinished() && !onboardingManager.isRestartBuildPromptShown()) {
+            mView.showRestartBuildPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveRestartBuildPromptShown();
+                }
+            });
+        } else if (buildDetails.isRunning() && !onboardingManager.isStopBuildPromptShown()) {
+            mView.showStopBuildPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveStopBuildPromptShown();
+                }
+            });
+        } else if (buildDetails.isQueued() && !onboardingManager.isRemoveBuildFromQueuePromptShown()) {
+            mView.showRemoveBuildFromQueuePrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveRemoveBuildFromQueuePromptShown();
+                }
+            });
+        }
     }
 
     /**

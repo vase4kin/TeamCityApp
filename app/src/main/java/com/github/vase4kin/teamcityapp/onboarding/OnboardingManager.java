@@ -51,6 +51,36 @@ public interface OnboardingManager {
      */
     void saveFilterBuildsPromptShown();
 
+    /**
+     * @return {true} if stop build onboarding prompt is shwon
+     */
+    boolean isStopBuildPromptShown();
+
+    /**
+     * Save that stop build prompt is shown
+     */
+    void saveStopBuildPromptShown();
+
+    /**
+     * @return {true} if restart build onboarding prompt is shwon
+     */
+    boolean isRestartBuildPromptShown();
+
+    /**
+     * Save that restart build prompt is shown
+     */
+    void saveRestartBuildPromptShown();
+
+    /**
+     * @return {true} if remove build from queue onboarding prompt is shwon
+     */
+    boolean isRemoveBuildFromQueuePromptShown();
+
+    /**
+     * Save that remove build from queue prompt is shown
+     */
+    void saveRemoveBuildFromQueuePromptShown();
+
     interface OnPromptShownListener {
         /**
          * when prompt is shown

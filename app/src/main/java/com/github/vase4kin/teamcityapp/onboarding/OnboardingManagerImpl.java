@@ -28,6 +28,9 @@ public class OnboardingManagerImpl implements OnboardingManager {
     private final static String KEY_NAV_DRAWER = "NavDrawer";
     private final static String KEY_RUN_BUILD = "RunBuild";
     private final static String KEY_FILTER_BUILDS = "FilterBuilds";
+    private final static String KEY_STOP_BUILDS = "StopBuilds";
+    private final static String KEY_RESTART_BUILDS = "RestartBuilds";
+    private final static String KEY_REMOVE_BUILDS_FROM_QUEUE = "RemoveBuildsFromQueue";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -81,5 +84,53 @@ public class OnboardingManagerImpl implements OnboardingManager {
     @Override
     public void saveFilterBuildsPromptShown() {
         mSharedPreferences.edit().putBoolean(KEY_FILTER_BUILDS, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isStopBuildPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_STOP_BUILDS, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveStopBuildPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_STOP_BUILDS, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRestartBuildPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_RESTART_BUILDS, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRestartBuildPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_RESTART_BUILDS, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRemoveBuildFromQueuePromptShown() {
+        return mSharedPreferences.getBoolean(KEY_REMOVE_BUILDS_FROM_QUEUE, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRemoveBuildFromQueuePromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_REMOVE_BUILDS_FROM_QUEUE, true).apply();
     }
 }
