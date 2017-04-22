@@ -41,12 +41,14 @@ import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -100,6 +102,11 @@ public class BuildListActivityTest {
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
+
+    @BeforeClass
+    public static void disableOnboarding() {
+        TestUtils.disableOnboarding();
+    }
 
     @Before
     public void setUp() {

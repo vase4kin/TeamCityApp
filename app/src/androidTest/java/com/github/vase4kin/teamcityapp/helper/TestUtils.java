@@ -16,12 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.helper;
 
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.espresso.NoMatchingViewException;
 import android.support.test.espresso.ViewAssertion;
 import android.support.test.espresso.matcher.BoundedMatcher;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl;
 
 import org.hamcrest.Matcher;
 
@@ -87,5 +92,19 @@ public class TestUtils {
                 assertThat(rv.getAdapter().getItemCount(), is(count));
             }
         };
+    }
+
+    /**
+     * Helper method to disable all onboarding
+     */
+    public static void disableOnboarding() {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        OnboardingManager onboardingManager = new OnboardingManagerImpl(context);
+        onboardingManager.saveNavigationDrawerPromptShown();
+        onboardingManager.saveFilterBuildsPromptShown();
+        onboardingManager.saveRunBuildPromptShown();
+        onboardingManager.saveRemoveBuildFromQueuePromptShown();
+        onboardingManager.saveStopBuildPromptShown();
+        onboardingManager.saveRestartBuildPromptShown();
     }
 }

@@ -148,14 +148,14 @@ public class AppModule {
                 .persistence(cacheDir, new GsonSpeaker());
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
     protected FirebaseAnalytics providesFirebaseAnalytics() {
         return FirebaseAnalytics.getInstance(mApplication.getApplicationContext());
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
     protected OnboardingManager providesOnboardingManager() {
