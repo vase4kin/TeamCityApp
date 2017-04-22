@@ -111,6 +111,21 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
                 @Override
                 public void onPromptShown() {
                     onboardingManager.saveRunBuildPromptShown();
+                    showFilterBuildsPrompt();
+                }
+            });
+        }
+    }
+
+    /**
+     * Show filter builds prompt
+     */
+    private void showFilterBuildsPrompt() {
+        if (!onboardingManager.isFilterBuildsPromptShown()) {
+            mView.showFilterBuildsPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveFilterBuildsPromptShown();
                 }
             });
         }
