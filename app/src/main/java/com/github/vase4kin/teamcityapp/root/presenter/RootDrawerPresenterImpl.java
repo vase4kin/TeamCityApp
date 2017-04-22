@@ -112,7 +112,6 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         if (isNewAccountCreated) {
             mDataManager.evictAllCache();
-            mView.openDrawer();
             mDataManager.clearAllWebViewCookies();
             mInteractor.setAuthDialogStatus(false);
         }

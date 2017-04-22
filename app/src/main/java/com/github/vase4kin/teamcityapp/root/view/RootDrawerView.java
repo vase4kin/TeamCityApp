@@ -32,11 +32,6 @@ public interface RootDrawerView extends DrawerView {
     void setDrawerSelection(int selection);
 
     /**
-     * Open drawer
-     */
-    void openDrawer();
-
-    /**
      * Show app rate dialog
      *
      * @param listener - Listener to receive dialog button callbacks

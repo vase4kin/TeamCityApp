@@ -56,14 +56,6 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
      * {@inheritDoc}
      */
     @Override
-    public void openDrawer() {
-        mDrawerResult.openDrawer();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void showAppRateDialog(final OnAppRateListener listener) {
         AppRate.with(mActivity)
                 .setInstallDays(R.integer.install_days)
