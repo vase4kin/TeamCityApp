@@ -31,6 +31,8 @@ import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -47,6 +49,9 @@ import static org.mockito.Mockito.when;
 public class OverviewPresenterImplTest {
 
     private static final String HREF = "href";
+
+    @Captor
+    private ArgumentCaptor<OnboardingManager.OnPromptShownListener> mOnPromptShownListenerArgumentCaptor;
 
     @Mock
     private MenuItem mMenuItem;
@@ -283,4 +288,114 @@ public class OverviewPresenterImplTest {
         verify(mInteractor).postFABGoneEvent();
     }
 
+    @Test
+    public void testRestartBuildPromptIsShownIfItIsShown() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isFinished()).thenReturn(true);
+        when(mBuildDetails.isRunning()).thenReturn(false);
+        when(mBuildDetails.isQueued()).thenReturn(false);
+        when(mOnboardingManager.isRestartBuildPromptShown()).thenReturn(true);
+        when(mOnboardingManager.isStopBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isRemoveBuildFromQueuePromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isFinished();
+        verify(mOnboardingManager).isRestartBuildPromptShown();
+        verify(mBuildDetails).isRunning();
+        verify(mBuildDetails).isQueued();
+    }
+
+    @Test
+    public void testRestartBuildPromptIsShownIfItIsNotShown() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isFinished()).thenReturn(true);
+        when(mBuildDetails.isRunning()).thenReturn(false);
+        when(mBuildDetails.isQueued()).thenReturn(false);
+        when(mOnboardingManager.isRestartBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isStopBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isRemoveBuildFromQueuePromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isFinished();
+        verify(mOnboardingManager).isRestartBuildPromptShown();
+        verify(mView).showRestartBuildPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener listener = mOnPromptShownListenerArgumentCaptor.getValue();
+        listener.onPromptShown();
+        verify(mOnboardingManager).saveRestartBuildPromptShown();
+    }
+
+    @Test
+    public void testStopBuildPromptIsShownIfItIsShown() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isFinished()).thenReturn(false);
+        when(mBuildDetails.isRunning()).thenReturn(true);
+        when(mBuildDetails.isQueued()).thenReturn(false);
+        when(mOnboardingManager.isRestartBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isStopBuildPromptShown()).thenReturn(true);
+        when(mOnboardingManager.isRemoveBuildFromQueuePromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isFinished();
+        verify(mBuildDetails).isRunning();
+        verify(mOnboardingManager).isStopBuildPromptShown();
+        verify(mBuildDetails).isQueued();
+    }
+
+    @Test
+    public void testStopBuildPromptIsShownIfItIsNotShown() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isFinished()).thenReturn(false);
+        when(mBuildDetails.isRunning()).thenReturn(true);
+        when(mBuildDetails.isQueued()).thenReturn(false);
+        when(mOnboardingManager.isRestartBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isStopBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isRemoveBuildFromQueuePromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isFinished();
+        verify(mBuildDetails).isRunning();
+        verify(mOnboardingManager).isStopBuildPromptShown();
+        verify(mView).showStopBuildPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener listener = mOnPromptShownListenerArgumentCaptor.getValue();
+        listener.onPromptShown();
+        verify(mOnboardingManager).saveStopBuildPromptShown();
+    }
+
+    @Test
+    public void testRemoveBuildPromptIsShownIfItIsShown() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isFinished()).thenReturn(false);
+        when(mBuildDetails.isRunning()).thenReturn(false);
+        when(mBuildDetails.isQueued()).thenReturn(true);
+        when(mOnboardingManager.isRestartBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isStopBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isRemoveBuildFromQueuePromptShown()).thenReturn(true);
+        mPresenter.onResume();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isFinished();
+        verify(mBuildDetails).isRunning();
+        verify(mBuildDetails).isQueued();
+        verify(mOnboardingManager).isRemoveBuildFromQueuePromptShown();
+    }
+
+    @Test
+    public void testRemoveBuildPromptIsShownIfItIsNotShown() throws Exception {
+        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        when(mBuildDetails.isFinished()).thenReturn(false);
+        when(mBuildDetails.isRunning()).thenReturn(false);
+        when(mBuildDetails.isQueued()).thenReturn(true);
+        when(mOnboardingManager.isRestartBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isStopBuildPromptShown()).thenReturn(false);
+        when(mOnboardingManager.isRemoveBuildFromQueuePromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mInteractor).getBuildDetails();
+        verify(mBuildDetails).isFinished();
+        verify(mBuildDetails).isRunning();
+        verify(mBuildDetails).isQueued();
+        verify(mOnboardingManager).isRemoveBuildFromQueuePromptShown();
+        verify(mView).showRemoveBuildFromQueuePrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener listener = mOnPromptShownListenerArgumentCaptor.getValue();
+        listener.onPromptShown();
+        verify(mOnboardingManager).saveRemoveBuildFromQueuePromptShown();
+    }
 }

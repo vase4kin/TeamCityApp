@@ -68,6 +68,9 @@ public class BuildListPresenterImplTest {
     @Captor
     private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
 
+    @Captor
+    private ArgumentCaptor<OnboardingManager.OnPromptShownListener> mOnPromptShownListenerArgumentCaptor;
+
     @Mock
     private BuildListFilter mFilter;
 
@@ -295,5 +298,33 @@ public class BuildListPresenterImplTest {
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
         verify(mView).onOptionsItemSelected(eq(mMenuItem));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
+    }
+
+    @Test
+    public void testRunBuildPromptIfItIsShownAlready() throws Exception {
+        when(mOnboardingManager.isRunBuildPromptShown()).thenReturn(true);
+        mPresenter.onResume();
+        verify(mOnboardingManager).isRunBuildPromptShown();
+    }
+
+    @Test
+    public void testRunBuildPromptIfItIsNotShownAlready() throws Exception {
+        when(mOnboardingManager.isRunBuildPromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mOnboardingManager).isRunBuildPromptShown();
+        verify(mView).showRunBuildPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener runBuildPromptListener = mOnPromptShownListenerArgumentCaptor.getValue();
+        when(mOnboardingManager.isFilterBuildsPromptShown()).thenReturn(true);
+        runBuildPromptListener.onPromptShown();
+        verify(mOnboardingManager).saveRunBuildPromptShown();
+        verify(mOnboardingManager).isFilterBuildsPromptShown();
+        when(mOnboardingManager.isFilterBuildsPromptShown()).thenReturn(false);
+        runBuildPromptListener.onPromptShown();
+        verify(mOnboardingManager, times(2)).saveRunBuildPromptShown();
+        verify(mOnboardingManager, times(2)).isFilterBuildsPromptShown();
+        verify(mView).showFilterBuildsPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener filterBuildsPromptListener = mOnPromptShownListenerArgumentCaptor.getValue();
+        filterBuildsPromptListener.onPromptShown();
+        verify(mOnboardingManager).saveFilterBuildsPromptShown();
     }
 }

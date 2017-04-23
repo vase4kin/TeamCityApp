@@ -31,6 +31,8 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
@@ -46,6 +48,8 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(TextUtils.class)
 public class RootDrawerPresenterImplTest {
 
+    @Captor
+    private ArgumentCaptor<OnboardingManager.OnPromptShownListener> mOnPromptShownListenerArgumentCaptor;
     @Mock
     RootDrawerView mView;
     @Mock
@@ -102,4 +106,27 @@ public class RootDrawerPresenterImplTest {
         verify(mTracker).trackUserRatedTheApp();
     }
 
+    @Test
+    public void testPromptIfItIsShown() throws Exception {
+        when(TextUtils.isEmpty(anyString())).thenReturn(false);
+        when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
+        when(mUserAccount.getTeamcityUrl()).thenReturn("");
+        when(mOnboardingManager.isNavigationDrawerPromptShown()).thenReturn(true);
+        mPresenter.onResume();
+        verify(mOnboardingManager).isNavigationDrawerPromptShown();
+    }
+
+    @Test
+    public void testPromptIfItIsNotShown() throws Exception {
+        when(TextUtils.isEmpty(anyString())).thenReturn(false);
+        when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
+        when(mUserAccount.getTeamcityUrl()).thenReturn("");
+        when(mOnboardingManager.isNavigationDrawerPromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mOnboardingManager).isNavigationDrawerPromptShown();
+        verify(mView).showNavigationDrawerPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener listener = mOnPromptShownListenerArgumentCaptor.getValue();
+        listener.onPromptShown();
+        verify(mOnboardingManager).saveNavigationDrawerPromptShown();
+    }
 }
