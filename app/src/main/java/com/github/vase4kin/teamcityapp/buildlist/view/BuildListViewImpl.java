@@ -362,6 +362,14 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isBuildListOpen() {
+        return mActivity instanceof BuildListActivity;
+    }
+
+    /**
      * Init sectionAdapter
      *
      * @param

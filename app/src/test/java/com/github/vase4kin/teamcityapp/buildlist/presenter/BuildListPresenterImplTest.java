@@ -301,16 +301,27 @@ public class BuildListPresenterImplTest {
     }
 
     @Test
+    public void testRunBuildPromptIfItIsNotBuildListActivity() throws Exception {
+        when(mView.isBuildListOpen()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mView).isBuildListOpen();
+    }
+
+    @Test
     public void testRunBuildPromptIfItIsShownAlready() throws Exception {
+        when(mView.isBuildListOpen()).thenReturn(true);
         when(mOnboardingManager.isRunBuildPromptShown()).thenReturn(true);
         mPresenter.onResume();
+        verify(mView).isBuildListOpen();
         verify(mOnboardingManager).isRunBuildPromptShown();
     }
 
     @Test
     public void testRunBuildPromptIfItIsNotShownAlready() throws Exception {
+        when(mView.isBuildListOpen()).thenReturn(true);
         when(mOnboardingManager.isRunBuildPromptShown()).thenReturn(false);
         mPresenter.onResume();
+        verify(mView).isBuildListOpen();
         verify(mOnboardingManager).isRunBuildPromptShown();
         verify(mView).showRunBuildPrompt(mOnPromptShownListenerArgumentCaptor.capture());
         OnboardingManager.OnPromptShownListener runBuildPromptListener = mOnPromptShownListenerArgumentCaptor.getValue();
