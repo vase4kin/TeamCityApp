@@ -40,7 +40,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     private OverviewView mView;
     private OverViewInteractor mInteractor;
     private OverviewTracker mTracker;
-    private OnboardingManager onboardingManager;
+    private OnboardingManager mOnboardingManager;
 
     @Inject
     OverviewPresenterImpl(OverviewView view,
@@ -50,7 +50,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         this.mView = view;
         this.mInteractor = interactor;
         this.mTracker = tracker;
-        this.onboardingManager = onboardingManager;
+        this.mOnboardingManager = onboardingManager;
     }
 
     /**
@@ -103,25 +103,25 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onResume() {
         BuildDetails buildDetails = mInteractor.getBuildDetails();
-        if (buildDetails.isFinished() && !onboardingManager.isRestartBuildPromptShown()) {
+        if (buildDetails.isFinished() && !mOnboardingManager.isRestartBuildPromptShown()) {
             mView.showRestartBuildPrompt(new OnboardingManager.OnPromptShownListener() {
                 @Override
                 public void onPromptShown() {
-                    onboardingManager.saveRestartBuildPromptShown();
+                    mOnboardingManager.saveRestartBuildPromptShown();
                 }
             });
-        } else if (buildDetails.isRunning() && !onboardingManager.isStopBuildPromptShown()) {
+        } else if (buildDetails.isRunning() && !mOnboardingManager.isStopBuildPromptShown()) {
             mView.showStopBuildPrompt(new OnboardingManager.OnPromptShownListener() {
                 @Override
                 public void onPromptShown() {
-                    onboardingManager.saveStopBuildPromptShown();
+                    mOnboardingManager.saveStopBuildPromptShown();
                 }
             });
-        } else if (buildDetails.isQueued() && !onboardingManager.isRemoveBuildFromQueuePromptShown()) {
+        } else if (buildDetails.isQueued() && !mOnboardingManager.isRemoveBuildFromQueuePromptShown()) {
             mView.showRemoveBuildFromQueuePrompt(new OnboardingManager.OnPromptShownListener() {
                 @Override
                 public void onPromptShown() {
-                    onboardingManager.saveRemoveBuildFromQueuePromptShown();
+                    mOnboardingManager.saveRemoveBuildFromQueuePromptShown();
                 }
             });
         }

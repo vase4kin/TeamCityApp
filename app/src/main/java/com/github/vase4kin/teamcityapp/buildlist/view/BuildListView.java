@@ -110,4 +110,9 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
      * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
      */
     boolean onOptionsItemSelected(MenuItem item);
+
+    /**
+     * @return {true} if build list is opened, not running list or queue list
+     */
+    boolean isBuildListOpen();
 }

@@ -106,7 +106,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public void onResume() {
         super.onResume();
-        if (!onboardingManager.isRunBuildPromptShown()) {
+        if (mView.isBuildListOpen() && !onboardingManager.isRunBuildPromptShown()) {
             mView.showRunBuildPrompt(new OnboardingManager.OnPromptShownListener() {
                 @Override
                 public void onPromptShown() {
