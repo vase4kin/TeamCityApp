@@ -18,20 +18,29 @@ package com.github.vase4kin.teamcityapp.overview.view;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.StringRes;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -44,11 +53,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import tr.xip.errorview.ErrorView;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 /**
  * View to manage {@link OverviewFragment}
  */
 public class OverviewViewImpl implements OverviewView {
+
+    private static final int TIMEOUT_PROMPT = 500;
 
     private static final String ICON_TIME = "{mdi-clock}";
     private static final String ICON_BRANCH = "{mdi-git}";
@@ -353,6 +365,73 @@ public class OverviewViewImpl implements OverviewView {
     public void showBranchCardBottomSheetDialog(String description) {
         BottomSheet bottomSheet = createBottomSheet(mActivity.getString(R.string.build_branch_section_text), description);
         bottomSheet.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showStopBuildPrompt(OnboardingManager.OnPromptShownListener listener) {
+        showPrompt(R.string.text_onboarding_stop_build, listener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showRestartBuildPrompt(OnboardingManager.OnPromptShownListener listener) {
+        showPrompt(R.string.text_onboarding_restart_build, listener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showRemoveBuildFromQueuePrompt(OnboardingManager.OnPromptShownListener listener) {
+        showPrompt(R.string.text_onboarding_remove_build_from_queue, listener);
+    }
+
+    /**
+     * Show prompt
+     *
+     * @param secondaryText - secondary text
+     * @param listener      - listener to receive callback when prompt is shown
+     */
+    private void showPrompt(@StringRes int secondaryText,
+                            final OnboardingManager.OnPromptShownListener listener) {
+        // Creating prompt
+        final Toolbar toolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
+        int color = ((ColorDrawable) toolbar.getBackground()).getColor();
+        final MaterialTapTargetPrompt.Builder promptBuilder = new MaterialTapTargetPrompt.Builder(mActivity)
+                .setPrimaryText(R.string.title_onboarding_build_menu)
+                .setSecondaryText(secondaryText)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_more_vert_black_24dp)
+                .setIconDrawableTintList(ColorStateList.valueOf(color))
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                    @Override
+                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                        listener.onPromptShown();
+                    }
+
+                    @Override
+                    public void onHidePromptComplete() {
+                    }
+                });
+        // Show prompt
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                final View child = toolbar.getChildAt(2);
+                if (child instanceof ActionMenuView) {
+                    final ActionMenuView actionMenuView = ((ActionMenuView) child);
+                    promptBuilder.setTarget(actionMenuView.getChildAt(actionMenuView.getChildCount() - 1));
+                }
+                promptBuilder.show();
+            }
+        }, TIMEOUT_PROMPT);
     }
 
     /**

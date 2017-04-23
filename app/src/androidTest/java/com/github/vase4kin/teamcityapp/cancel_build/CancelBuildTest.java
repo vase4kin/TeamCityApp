@@ -35,10 +35,12 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -109,6 +111,11 @@ public class CancelBuildTest {
 
     @Mock
     private UserAccount mUserAccount;
+
+    @BeforeClass
+    public static void disableOnboarding() {
+        TestUtils.disableOnboarding();
+    }
 
     @Before
     public void setUp() throws Exception {

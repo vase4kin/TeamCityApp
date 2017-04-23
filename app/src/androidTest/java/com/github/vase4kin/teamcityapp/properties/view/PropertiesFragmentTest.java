@@ -34,8 +34,10 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,6 +99,11 @@ public class PropertiesFragmentTest {
 
     @Spy
     private Build mBuild = Mocks.successBuild();
+
+    @BeforeClass
+    public static void disableOnboarding() {
+        TestUtils.disableOnboarding();
+    }
 
     @Test
     public void testUserCanSeeBuildProperties() {

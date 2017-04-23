@@ -17,18 +17,28 @@
 package com.github.vase4kin.teamcityapp.root.view;
 
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 import hotchemi.android.rate.AppRate;
 import hotchemi.android.rate.OnClickButtonListener;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 /**
  * impl of {@link RootDrawerView}
  */
 public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView {
+
+    private static final int TIME_NAVIGATION_DRAWER_PROMPT = 500;
 
     public RootDrawerViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
         super(activity, drawerSelection, isBackArrowEnabled);
@@ -40,14 +50,6 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
     @Override
     public void setDrawerSelection(int selection) {
         mDrawerResult.setSelection(selection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openDrawer() {
-        mDrawerResult.openDrawer();
     }
 
     /**
@@ -81,5 +83,40 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
                 })
                 .monitor();
         AppRate.showRateDialogIfMeetsConditions(mActivity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showNavigationDrawerPrompt(final OnboardingManager.OnPromptShownListener listener) {
+        // Creating prompt
+        int color = ContextCompat.getColor(mActivity, mDefaultColor);
+        final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(mActivity)
+                .setPrimaryText(R.string.title_onboarding_navigation_drawer)
+                .setSecondaryText(R.string.text_onboarding_navigation_drawer)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_menu_black_24dp)
+                .setIconDrawableTintList(ColorStateList.valueOf(color))
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                    @Override
+                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                        listener.onPromptShown();
+                    }
+
+                    @Override
+                    public void onHidePromptComplete() {
+                    }
+                });
+        // Show prompt
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                navigationDrawerPrompt.setTarget(mToolbar.getChildAt(1));
+                navigationDrawerPrompt.show();
+            }
+        }, TIME_NAVIGATION_DRAWER_PROMPT);
     }
 }
