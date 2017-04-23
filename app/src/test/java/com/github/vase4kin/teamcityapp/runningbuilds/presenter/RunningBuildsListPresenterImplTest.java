@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
@@ -65,12 +66,15 @@ public class RunningBuildsListPresenterImplTest {
     @Mock
     private BuildInteractor mInteractor;
 
+    @Mock
+    private OnboardingManager mOnboardingManager;
+
     private RunningBuildsListPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new RunningBuildsListPresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
+        mPresenter = new RunningBuildsListPresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager);
     }
 
     @Test

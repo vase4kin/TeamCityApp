@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.root.presenter;
 import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManager;
 import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
 import com.github.vase4kin.teamcityapp.root.router.RootRouter;
@@ -61,6 +62,8 @@ public class RootDrawerPresenterImplTest {
     RootTracker mTracker;
     @Mock
     private UserAccount mUserAccount;
+    @Mock
+    private OnboardingManager mOnboardingManager;
 
     private RootDrawerPresenterImpl mPresenter;
 
@@ -68,7 +71,7 @@ public class RootDrawerPresenterImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
-        mPresenter = new RootDrawerPresenterImpl(mView, mDataManager, mListener, mValueExtractor, mRouter, mInteractor, mTracker);
+        mPresenter = new RootDrawerPresenterImpl(mView, mDataManager, mListener, mValueExtractor, mRouter, mInteractor, mTracker, mOnboardingManager);
     }
 
     @Test

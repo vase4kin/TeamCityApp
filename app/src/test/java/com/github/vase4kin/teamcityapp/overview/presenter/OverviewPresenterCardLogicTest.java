@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.overview.presenter;
 
 import android.text.TextUtils;
 
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
@@ -63,6 +64,9 @@ public class OverviewPresenterCardLogicTest {
     @Mock
     private BuildDetails mBuildDetails;
 
+    @Mock
+    private OnboardingManager mOnboardingManager;
+
     private OverviewPresenterImpl mPresenter;
 
     @Before
@@ -76,7 +80,7 @@ public class OverviewPresenterCardLogicTest {
                 return charSequence == null || charSequence.length() == 0;
             }
         });
-        mPresenter = new OverviewPresenterImpl(mView, mInteractor, mTracker);
+        mPresenter = new OverviewPresenterImpl(mView, mInteractor, mTracker, mOnboardingManager);
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
     }
 

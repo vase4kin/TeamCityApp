@@ -22,6 +22,7 @@ import android.view.MenuItem;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
@@ -71,18 +72,21 @@ public class OverviewPresenterImplTest {
     @Mock
     private BuildDetails mBuildDetails;
 
+    @Mock
+    private OnboardingManager mOnboardingManager;
+
     private OverviewPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new OverviewPresenterImpl(mView, mInteractor, mTracker);
+        mPresenter = new OverviewPresenterImpl(mView, mInteractor, mTracker, mOnboardingManager);
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
     }
 
     @After
     public void tearDown() throws Exception {
-        verifyNoMoreInteractions(mView, mInteractor, mTracker, mBuildDetails);
+        verifyNoMoreInteractions(mView, mInteractor, mTracker, mBuildDetails, mOnboardingManager);
     }
 
     @Test

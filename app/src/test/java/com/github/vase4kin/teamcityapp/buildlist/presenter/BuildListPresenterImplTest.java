@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import org.junit.Before;
@@ -106,12 +107,15 @@ public class BuildListPresenterImplTest {
     @Mock
     private BuildInteractor mInteractor;
 
+    @Mock
+    private OnboardingManager mOnboardingManager;
+
     private BuildListPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -121,7 +125,7 @@ public class BuildListPresenterImplTest {
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), eq(mLoadingListener), eq(false));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -132,7 +136,7 @@ public class BuildListPresenterImplTest {
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), eq(mFilter), eq(mLoadingListener), eq(false));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -269,20 +273,20 @@ public class BuildListPresenterImplTest {
         mPresenter.onFilterBuildsOptionMenuClick();
         verify(mValueExtractor).getId();
         verify(mRouter).openFilterBuildsPage(eq("id"));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
     public void testOnCreateOptions() throws Exception {
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
         verify(mView).createOptionsMenu(eq(mMenu), eq(mMenuInflater));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
     public void testOnPrepareOptionsMenu() throws Exception {
         mPresenter.onPrepareOptionsMenu(mMenu);
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -290,6 +294,6 @@ public class BuildListPresenterImplTest {
         when(mView.onOptionsItemSelected(mMenuItem)).thenReturn(true);
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
         verify(mView).onOptionsItemSelected(eq(mMenuItem));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 }
