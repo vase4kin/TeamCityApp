@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import org.junit.Before;
@@ -66,6 +67,9 @@ public class BuildListPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnLoadingListener<Build>> mBuildArgumentCaptor;
+
+    @Captor
+    private ArgumentCaptor<OnboardingManager.OnPromptShownListener> mOnPromptShownListenerArgumentCaptor;
 
     @Mock
     private BuildListFilter mFilter;
@@ -106,12 +110,15 @@ public class BuildListPresenterImplTest {
     @Mock
     private BuildInteractor mInteractor;
 
+    @Mock
+    private OnboardingManager mOnboardingManager;
+
     private BuildListPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        mPresenter = new BuildListPresenterImpl<>(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -121,7 +128,7 @@ public class BuildListPresenterImplTest {
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), eq(mLoadingListener), eq(false));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -132,7 +139,7 @@ public class BuildListPresenterImplTest {
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), eq(mFilter), eq(mLoadingListener), eq(false));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -269,20 +276,20 @@ public class BuildListPresenterImplTest {
         mPresenter.onFilterBuildsOptionMenuClick();
         verify(mValueExtractor).getId();
         verify(mRouter).openFilterBuildsPage(eq("id"));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
     public void testOnCreateOptions() throws Exception {
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
         verify(mView).createOptionsMenu(eq(mMenu), eq(mMenuInflater));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
     public void testOnPrepareOptionsMenu() throws Exception {
         mPresenter.onPrepareOptionsMenu(mMenu);
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 
     @Test
@@ -290,6 +297,45 @@ public class BuildListPresenterImplTest {
         when(mView.onOptionsItemSelected(mMenuItem)).thenReturn(true);
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
         verify(mView).onOptionsItemSelected(eq(mMenuItem));
-        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
+    }
+
+    @Test
+    public void testRunBuildPromptIfItIsNotBuildListActivity() throws Exception {
+        when(mView.isBuildListOpen()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mView).isBuildListOpen();
+    }
+
+    @Test
+    public void testRunBuildPromptIfItIsShownAlready() throws Exception {
+        when(mView.isBuildListOpen()).thenReturn(true);
+        when(mOnboardingManager.isRunBuildPromptShown()).thenReturn(true);
+        mPresenter.onResume();
+        verify(mView).isBuildListOpen();
+        verify(mOnboardingManager).isRunBuildPromptShown();
+    }
+
+    @Test
+    public void testRunBuildPromptIfItIsNotShownAlready() throws Exception {
+        when(mView.isBuildListOpen()).thenReturn(true);
+        when(mOnboardingManager.isRunBuildPromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mView).isBuildListOpen();
+        verify(mOnboardingManager).isRunBuildPromptShown();
+        verify(mView).showRunBuildPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener runBuildPromptListener = mOnPromptShownListenerArgumentCaptor.getValue();
+        when(mOnboardingManager.isFilterBuildsPromptShown()).thenReturn(true);
+        runBuildPromptListener.onPromptShown();
+        verify(mOnboardingManager).saveRunBuildPromptShown();
+        verify(mOnboardingManager).isFilterBuildsPromptShown();
+        when(mOnboardingManager.isFilterBuildsPromptShown()).thenReturn(false);
+        runBuildPromptListener.onPromptShown();
+        verify(mOnboardingManager, times(2)).saveRunBuildPromptShown();
+        verify(mOnboardingManager, times(2)).isFilterBuildsPromptShown();
+        verify(mView).showFilterBuildsPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener filterBuildsPromptListener = mOnPromptShownListenerArgumentCaptor.getValue();
+        filterBuildsPromptListener.onPromptShown();
+        verify(mOnboardingManager).saveFilterBuildsPromptShown();
     }
 }

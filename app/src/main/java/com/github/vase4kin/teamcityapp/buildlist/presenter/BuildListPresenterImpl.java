@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import java.util.Collections;
@@ -52,6 +53,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
 
     private BuildListRouter mRouter;
     private BuildInteractor mBuildInteractor;
+    private OnboardingManager onboardingManager;
     @VisibleForTesting
     boolean mIsLoadMoreLoading = false;
     /**
@@ -66,10 +68,12 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
                                   @NonNull BuildListTracker tracker,
                                   @NonNull BaseValueExtractor valueExtractor,
                                   @NonNull BuildListRouter router,
-                                  @NonNull BuildInteractor interactor) {
+                                  @NonNull BuildInteractor interactor,
+                                  @NonNull OnboardingManager onboardingManager) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = router;
         this.mBuildInteractor = interactor;
+        this.onboardingManager = onboardingManager;
     }
 
     /**
@@ -96,6 +100,35 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             mView.setTitle(mValueExtractor.getName());
         }
         mView.setOnBuildListPresenterListener(this);
+        mView.showRunBuildFloatActionButton();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mView.isBuildListOpen() && !onboardingManager.isRunBuildPromptShown()) {
+            mView.showRunBuildPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveRunBuildPromptShown();
+                    showFilterBuildsPrompt();
+                }
+            });
+        }
+    }
+
+    /**
+     * Show filter builds prompt
+     */
+    private void showFilterBuildsPrompt() {
+        if (!onboardingManager.isFilterBuildsPromptShown()) {
+            mView.showFilterBuildsPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveFilterBuildsPromptShown();
+                }
+            });
+        }
     }
 
     /**

@@ -34,9 +34,11 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -102,6 +104,11 @@ public class TestOccurrencesFragmentTest {
 
     @Spy
     private Build mBuild = Mocks.failedBuild();
+
+    @BeforeClass
+    public static void disableOnboarding() {
+        TestUtils.disableOnboarding();
+    }
 
     @Test
     public void testUserCanSeeBuildFailedTests() {

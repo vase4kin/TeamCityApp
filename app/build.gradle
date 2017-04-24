@@ -30,8 +30,8 @@ android {
         applicationId "com.github.vase4kin.teamcityapp"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 28
-        versionName "1.1.8"
+        versionCode 29
+        versionName "1.1.9"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
@@ -175,6 +175,8 @@ dependencies {
     compile('com.mikepenz:aboutlibraries:5.7.3@aar') {
         transitive = true
     }
+    // Onboarding
+    compile 'uk.co.samuelwall:material-tap-target-prompt:1.9.5'
     // Dagger
     apt 'com.google.dagger:dagger-compiler:2.6'
     compile 'com.google.dagger:dagger:2.6'

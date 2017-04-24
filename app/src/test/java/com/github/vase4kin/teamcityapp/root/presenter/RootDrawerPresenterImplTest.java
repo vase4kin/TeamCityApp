@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.root.presenter;
 import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManager;
 import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
 import com.github.vase4kin.teamcityapp.root.router.RootRouter;
@@ -30,6 +31,8 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.powermock.api.mockito.PowerMockito;
@@ -45,6 +48,8 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(TextUtils.class)
 public class RootDrawerPresenterImplTest {
 
+    @Captor
+    private ArgumentCaptor<OnboardingManager.OnPromptShownListener> mOnPromptShownListenerArgumentCaptor;
     @Mock
     RootDrawerView mView;
     @Mock
@@ -61,6 +66,8 @@ public class RootDrawerPresenterImplTest {
     RootTracker mTracker;
     @Mock
     private UserAccount mUserAccount;
+    @Mock
+    private OnboardingManager mOnboardingManager;
 
     private RootDrawerPresenterImpl mPresenter;
 
@@ -68,7 +75,7 @@ public class RootDrawerPresenterImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
-        mPresenter = new RootDrawerPresenterImpl(mView, mDataManager, mListener, mValueExtractor, mRouter, mInteractor, mTracker);
+        mPresenter = new RootDrawerPresenterImpl(mView, mDataManager, mListener, mValueExtractor, mRouter, mInteractor, mTracker, mOnboardingManager);
     }
 
     @Test
@@ -99,4 +106,27 @@ public class RootDrawerPresenterImplTest {
         verify(mTracker).trackUserRatedTheApp();
     }
 
+    @Test
+    public void testPromptIfItIsShown() throws Exception {
+        when(TextUtils.isEmpty(anyString())).thenReturn(false);
+        when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
+        when(mUserAccount.getTeamcityUrl()).thenReturn("");
+        when(mOnboardingManager.isNavigationDrawerPromptShown()).thenReturn(true);
+        mPresenter.onResume();
+        verify(mOnboardingManager).isNavigationDrawerPromptShown();
+    }
+
+    @Test
+    public void testPromptIfItIsNotShown() throws Exception {
+        when(TextUtils.isEmpty(anyString())).thenReturn(false);
+        when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
+        when(mUserAccount.getTeamcityUrl()).thenReturn("");
+        when(mOnboardingManager.isNavigationDrawerPromptShown()).thenReturn(false);
+        mPresenter.onResume();
+        verify(mOnboardingManager).isNavigationDrawerPromptShown();
+        verify(mView).showNavigationDrawerPrompt(mOnPromptShownListenerArgumentCaptor.capture());
+        OnboardingManager.OnPromptShownListener listener = mOnPromptShownListenerArgumentCaptor.getValue();
+        listener.onPromptShown();
+        verify(mOnboardingManager).saveNavigationDrawerPromptShown();
+    }
 }

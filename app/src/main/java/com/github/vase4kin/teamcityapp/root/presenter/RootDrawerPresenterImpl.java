@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManager;
 import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
 import com.github.vase4kin.teamcityapp.root.router.RootRouter;
@@ -41,6 +42,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
     private RootBundleValueManager mValueExtractor;
     private RootRouter mRouter;
     private BuildLogInteractor mInteractor;
+    private OnboardingManager mOnboardingManager;
     private String mBaseUrl;
 
     @Inject
@@ -50,12 +52,14 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
                             RootBundleValueManager valueExtractor,
                             RootRouter router,
                             BuildLogInteractor interactor,
-                            RootTracker tracker) {
+                            RootTracker tracker,
+                            OnboardingManager onboardingManager) {
         super(view, dataManager, router, tracker);
         this.mListener = listener;
         this.mValueExtractor = valueExtractor;
         this.mRouter = router;
         this.mInteractor = interactor;
+        this.mOnboardingManager = onboardingManager;
     }
 
     /**
@@ -108,7 +112,6 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         if (isNewAccountCreated) {
             mDataManager.evictAllCache();
-            mView.openDrawer();
             mDataManager.clearAllWebViewCookies();
             mInteractor.setAuthDialogStatus(false);
         }
@@ -118,6 +121,16 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         // Show rate app dialog
         mView.showAppRateDialog(this);
+
+        // Show navigation drawer prompt
+        if (!mOnboardingManager.isNavigationDrawerPromptShown()) {
+            mView.showNavigationDrawerPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    mOnboardingManager.saveNavigationDrawerPromptShown();
+                }
+            });
+        }
     }
 
     /**

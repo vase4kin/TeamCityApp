@@ -276,4 +276,16 @@
     <string name="text_filters_none">None</string>
     <string name="hint_default_filter_branch">Any</string>
 
+    <!--Onboarding-->
+    <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
+    <string name="text_onboarding_navigation_drawer">Manage accounts, view running/queued builds and agents</string>
+    <string name="title_onboarding_run_build">Run builds</string>
+    <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
+    <string name="title_onboarding_filter_builds">Filter builds</string>
+    <string name="text_onboarding_filter_builds">Filter by branch, build status or show only personal or pinned ones</string>
+    <string name="title_onboarding_build_menu">Explore menu</string>
+    <string name="text_onboarding_stop_build">Stop running builds</string>
+    <string name="text_onboarding_restart_build">Restart finished builds</string>
+    <string name="text_onboarding_remove_build_from_queue">Remove builds from queue</string>
+
 </resources>

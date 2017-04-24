@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.root.view;
 
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 /**
  * Root drawer view interactions
@@ -31,16 +32,18 @@ public interface RootDrawerView extends DrawerView {
     void setDrawerSelection(int selection);
 
     /**
-     * Open drawer
-     */
-    void openDrawer();
-
-    /**
      * Show app rate dialog
      *
      * @param listener - Listener to receive dialog button callbacks
      */
     void showAppRateDialog(OnAppRateListener listener);
+
+    /**
+     * Show navigation drawer onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showNavigationDrawerPrompt(OnboardingManager.OnPromptShownListener listener);
 
     /**
      * On app rate dialog listener

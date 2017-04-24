@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 /**
  * View for handling {@link BuildListActivity}
@@ -83,6 +84,20 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void hideBuildLoadingProgress();
 
     /**
+     * Show filter builds onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showFilterBuildsPrompt(OnboardingManager.OnPromptShownListener listener);
+
+    /**
+     * Show run build onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showRunBuildPrompt(OnboardingManager.OnPromptShownListener listener);
+
+    /**
      * {@inheritDoc}
      * <p>
      * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
@@ -95,4 +110,9 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
      * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
      */
     boolean onOptionsItemSelected(MenuItem item);
+
+    /**
+     * @return {true} if build list is opened, not running list or queue list
+     */
+    boolean isBuildListOpen();
 }

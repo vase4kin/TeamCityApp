@@ -60,7 +60,7 @@ public class DrawerViewImpl implements DrawerView {
     protected AppCompatActivity mActivity;
     protected Drawer mDrawerResult;
     ArrayList<IProfile> mProfileList = new ArrayList<>();
-    private Toolbar mToolbar;
+    protected Toolbar mToolbar;
     private AccountHeader mHeaderResult;
     protected DrawerDataModel mDrawerDataModel;
 
@@ -70,7 +70,7 @@ public class DrawerViewImpl implements DrawerView {
     private final boolean mIsBackArrowEnabled;
 
     @ColorRes
-    private int mDefaultColor = R.color.default_color;
+    protected int mDefaultColor = R.color.default_color;
 
     public DrawerViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
         this.mActivity = activity;
