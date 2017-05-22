@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+[![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Circle CI](https://circleci.com/gh/vase4kin/TeamCityApp/tree/master.svg?style=shield)](https://circleci.com/gh/vase4kin/TeamCityApp/tree/master)
 [![codecov](https://codecov.io/gh/vase4kin/TeamCityApp/branch/master/graph/badge.svg)](https://codecov.io/gh/vase4kin/TeamCityApp)
 
