@@ -22,7 +22,6 @@ import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
 import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.ndk.CrashlyticsNdk;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.DaggerAppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.DaggerRestApiComponent;
@@ -50,7 +49,7 @@ public class TeamCityApplication extends Application {
 
         //#=============== Fabric ================#//
         if (!BuildConfig.DEBUG) {
-            Fabric.with(this, new Crashlytics(), new CrashlyticsNdk());
+            Fabric.with(this, new Crashlytics());
         }
 
         //#=============== Iconify ================#//

@@ -223,15 +223,6 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }
-    compile('com.crashlytics.sdk.android:crashlytics-ndk:1.1.2@aar') {
-        transitive = true;
-    }
-}
-
-crashlytics {
-    enableNdk true
-    androidNdkOut 'src/main/obj'
-    androidNdkLibsOut 'src/main/libs'
 }
 
 apply plugin: 'com.google.gms.google-services'
