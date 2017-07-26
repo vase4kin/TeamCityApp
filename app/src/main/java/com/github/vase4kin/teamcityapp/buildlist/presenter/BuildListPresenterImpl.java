@@ -186,6 +186,21 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
 
     /**
      * {@inheritDoc}
+     * <p>
+     * TODO: TEST
+     */
+    @Override
+    public void onResetFiltersSnackBarActionClick() {
+        mView.disableSwipeToRefresh();
+        mView.showProgressWheel();
+        mView.hideErrorView();
+        mView.hideEmpty();
+        mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
+        mDataManager.load(mValueExtractor.getId(), loadingListener, true);
+    }
+
+    /**
+     * {@inheritDoc}
      */
     @Override
     public void onLoadMore() {
@@ -305,5 +320,16 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mView.onOptionsItemSelected(item);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * TODO: ADD TEST
+     */
+    @Override
+    protected void onSwipeToRefresh() {
+        super.onSwipeToRefresh();
+        mView.hideFiltersAppliedSnackBar();
     }
 }

@@ -115,4 +115,9 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
      * @return {true} if build list is opened, not running list or queue list
      */
     boolean isBuildListOpen();
+
+    /**
+     * Hide build filters have been applied snack bar
+     */
+    void hideFiltersAppliedSnackBar();
 }
