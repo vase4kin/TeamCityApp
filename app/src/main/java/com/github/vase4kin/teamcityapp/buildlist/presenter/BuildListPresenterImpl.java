@@ -186,8 +186,6 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
 
     /**
      * {@inheritDoc}
-     * <p>
-     * TODO: TEST
      */
     @Override
     public void onResetFiltersSnackBarActionClick() {
@@ -324,8 +322,6 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
 
     /**
      * {@inheritDoc}
-     * <p>
-     * TODO: ADD TEST
      */
     @Override
     protected void onSwipeToRefresh() {

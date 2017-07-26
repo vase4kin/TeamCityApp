@@ -228,6 +228,7 @@ public class BuildListPresenterImplTest {
         verify(mValueExtractor).getId();
         verify(mValueExtractor).getBuildListFilter();
         verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class), eq(true));
+        verify(mView).hideFiltersAppliedSnackBar();
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
@@ -243,6 +244,20 @@ public class BuildListPresenterImplTest {
         verify(mView).showData(any(BuildListDataModel.class));
         verify(mValueExtractor).getId();
         verify(mDataManager).load(eq("id"), eq(mFilter), Mockito.any(OnLoadingListener.class), eq(true));
+        verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
+    }
+
+    @Test
+    public void testOnResetFiltersSnackBarActionClick() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        mPresenter.onResetFiltersSnackBarActionClick();
+        verify(mView).disableSwipeToRefresh();
+        verify(mView).showProgressWheel();
+        verify(mView).hideErrorView();
+        verify(mView).hideEmpty();
+        verify(mView).showData(any(BuildListDataModel.class));
+        verify(mValueExtractor).getId();
+        verify(mDataManager).load(eq("id"), Mockito.any(OnLoadingListener.class), eq(true));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor);
     }
 
@@ -337,5 +352,11 @@ public class BuildListPresenterImplTest {
         OnboardingManager.OnPromptShownListener filterBuildsPromptListener = mOnPromptShownListenerArgumentCaptor.getValue();
         filterBuildsPromptListener.onPromptShown();
         verify(mOnboardingManager).saveFilterBuildsPromptShown();
+    }
+
+    @Test
+    public void testOnSwipeToRefresh() throws Exception {
+        mPresenter.onSwipeToRefresh();
+        verify(mView).hideFiltersAppliedSnackBar();
     }
 }
