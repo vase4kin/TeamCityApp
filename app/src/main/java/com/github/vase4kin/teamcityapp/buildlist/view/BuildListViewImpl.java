@@ -67,6 +67,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     private MaterialDialog mProgressDialog;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections;
     private BuildListDataModel mDataModel;
+    private Snackbar mFiltersAppliedSnackBar;
 
     protected OnBuildListPresenterListener mOnBuildListPresenterListener;
 
@@ -229,15 +230,24 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         snackBar.show();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void showBuildFilterAppliedSnackBar() {
-        Snackbar snackBar = Snackbar.make(
+        mFiltersAppliedSnackBar = Snackbar.make(
                 mRecyclerView,
                 R.string.text_filters_applied,
-                Snackbar.LENGTH_LONG);
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+                Snackbar.LENGTH_INDEFINITE)
+                .setAction(R.string.text_snackbar_button_reset_filters, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnBuildListPresenterListener.onResetFiltersSnackBarActionClick();
+                    }
+                });
+        TextView textView = (TextView) mFiltersAppliedSnackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
-        snackBar.show();
+        mFiltersAppliedSnackBar.show();
     }
 
     /**
@@ -367,6 +377,16 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public boolean isBuildListOpen() {
         return mActivity instanceof BuildListActivity;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideFiltersAppliedSnackBar() {
+        if (mFiltersAppliedSnackBar != null && mFiltersAppliedSnackBar.isShown()) {
+            mFiltersAppliedSnackBar.dismiss();
+        }
     }
 
     /**

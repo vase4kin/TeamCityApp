@@ -45,4 +45,9 @@ public interface OnBuildListPresenterListener extends MugenCallbacks {
      * On filter builds option menu click
      */
     void onFilterBuildsOptionMenuClick();
+
+    /**
+     * On reset filters action click
+     */
+    void onResetFiltersSnackBarActionClick();
 }
