@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
@@ -41,11 +42,13 @@ public interface Repository {
      *
      * @param includeDisconnected - determine what agents to return
      * @param fields              - additional TC fields
-     * @param update - Update cache
+     * @param locator             - TC locator
+     * @param update              - update cache
      * @return {@link Observable} with {@link Agents}
      */
     Observable<Agents> listAgents(@Nullable Boolean includeDisconnected,
                                   @Nullable String fields,
+                                  @Nullable String locator,
                                   boolean update);
 
     /**
@@ -56,6 +59,15 @@ public interface Repository {
      * @return @return {@link Observable} with {@link NavigationNode}
      */
     Observable<NavigationNode> listBuildTypes(String url, boolean update);
+
+    /**
+     * Get build type (cache's supported)
+     *
+     * @param id     - BuildType id
+     * @param update - Update cache
+     * @return {@link Observable} with {@link Builds}
+     */
+    Observable<BuildType> buildType(String id, boolean update);
 
     /**
      * Get single build details (cache's supported)

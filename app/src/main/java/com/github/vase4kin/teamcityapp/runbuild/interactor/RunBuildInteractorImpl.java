@@ -24,14 +24,17 @@ import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 
 import java.util.List;
 
 import retrofit2.adapter.rxjava.HttpException;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 
@@ -147,7 +150,20 @@ public class RunBuildInteractorImpl implements RunBuildInteractor {
      */
     @Override
     public void loadAgents(final OnLoadingListener<List<Agent>> loadingListener) {
-        Subscription queueBuildSubscription = mRepository.listAgents(false, null, false)
+        Subscription queueBuildSubscription = mRepository.buildType(mBuildTypeId, false)
+                .flatMap(new Func1<BuildType, Observable<Agents>>() {
+                    @Override
+                    public Observable<Agents> call(BuildType buildType) {
+                        boolean isCompatibleAgentsSupported = buildType.getCompatibleAgents() != null;
+                        if (isCompatibleAgentsSupported) {
+                            // TODO: No hardcode
+                            String locator = String.format("compatible:(buildType:(id:%s))", mBuildTypeId);
+                            return mRepository.listAgents(null, null, locator, false);
+                        } else {
+                            return mRepository.listAgents(false, null, null, false);
+                        }
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Agents>() {

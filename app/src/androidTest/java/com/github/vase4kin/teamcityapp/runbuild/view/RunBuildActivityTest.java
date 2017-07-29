@@ -213,7 +213,7 @@ public class RunBuildActivityTest {
         List<Agent> agents = new ArrayList<>();
         Agent agent = new Agent("agent 1");
         agents.add(agent);
-        when(mTeamCityService.listAgents(false, null)).thenReturn(Observable.just(new Agents(1, agents)));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Observable.just(new Agents(1, agents)));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
@@ -246,7 +246,7 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeNoAgentsAvailableTextIfNoAgentsAvailable() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.listAgents(false, null)).thenReturn(Observable.<Agents>error(new RuntimeException()));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Observable.<Agents>error(new RuntimeException()));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");

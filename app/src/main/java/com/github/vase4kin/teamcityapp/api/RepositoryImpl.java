@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
@@ -55,11 +56,14 @@ public class RepositoryImpl implements Repository {
     @Override
     public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected,
                                          @Nullable String fields,
+                                         @Nullable String locator,
                                          boolean update) {
-        String dynamicKey = (includeDisconnected != null ? includeDisconnected : "empty")
-                + (fields != null ? fields : "empty");
+        String dynamicKey = String.format("includeDisconnected:%s,fields:%s,locator:%s",
+                includeDisconnected != null ? includeDisconnected : "empty",
+                fields != null ? fields : "empty",
+                locator != null ? locator : "empty");
         return mCacheCacheProviders.listAgents(
-                mTeamCityService.listAgents(includeDisconnected, fields),
+                mTeamCityService.listAgents(includeDisconnected, fields, locator),
                 new DynamicKey(dynamicKey),
                 new EvictDynamicKey(update));
     }
@@ -70,6 +74,17 @@ public class RepositoryImpl implements Repository {
     @Override
     public Observable<NavigationNode> listBuildTypes(String url, boolean update) {
         return mCacheCacheProviders.listBuildTypes(mTeamCityService.listBuildTypes(url), new DynamicKey(url), new EvictDynamicKey(update));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Observable<BuildType> buildType(String id, boolean update) {
+        return mCacheCacheProviders.buildType(
+                mTeamCityService.buildType(id),
+                new DynamicKey(id),
+                new EvictDynamicKey(update));
     }
 
     /**
