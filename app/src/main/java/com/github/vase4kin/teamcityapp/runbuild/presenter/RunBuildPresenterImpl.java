@@ -117,6 +117,12 @@ public class RunBuildPresenterImpl implements RunBuildPresenter, RunBuildView.Vi
         mInteractor.loadAgents(new OnLoadingListener<List<Agent>>() {
             @Override
             public void onSuccess(List<Agent> agents) {
+                if (agents.isEmpty()) {
+                    mAgents = Collections.emptyList();
+                    mView.hideLoadingAgentsProgress();
+                    mView.showNoAgentsAvailable();
+                    return;
+                }
                 // Setting dialog list
                 Observable.from(agents)
                         .flatMap(new Func1<Agent, Observable<String>>() {

@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
@@ -58,12 +59,14 @@ public interface TeamCityService {
      *
      * @param includeDisconnected - determine what agents to return
      * @param fields              - additional TC fields
+     * @param locator             - TC locator
      * @return {@link Observable} with {@link Agents}
      */
     @Headers(APPLICATION_JSON)
     @GET("app/rest/agents")
     Observable<Agents> listAgents(@Nullable @Query("includeDisconnected") Boolean includeDisconnected,
-                                  @Nullable @Query("fields") String fields);
+                                  @Nullable @Query("fields") String fields,
+                                  @Nullable @Query("locator") String locator);
 
     /**
      * List build types by url
@@ -74,6 +77,16 @@ public interface TeamCityService {
     @Headers(APPLICATION_JSON)
     @GET
     Observable<NavigationNode> listBuildTypes(@Url String url);
+
+    /**
+     * Get single build type details
+     *
+     * @param url - Build type url
+     * @return {@link Observable} with {@link BuildType}
+     */
+    @Headers(APPLICATION_JSON)
+    @GET("app/rest/buildTypes/id:{id}")
+    Observable<BuildType> buildType(@Path("id") String id);
 
     /**
      * Get single build details

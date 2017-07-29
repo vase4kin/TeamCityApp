@@ -60,7 +60,7 @@ public class AgentsDataManagerImpl extends BaseListRxDataManagerImpl<Agents, Age
     public void load(Boolean includeDisconnected,
                      @NonNull OnLoadingListener<List<Agent>> loadingListener,
                      boolean update) {
-        load(mRepository.listAgents(includeDisconnected, null, update), loadingListener);
+        load(mRepository.listAgents(includeDisconnected, null, null, update), loadingListener);
     }
 
     /**
@@ -69,7 +69,7 @@ public class AgentsDataManagerImpl extends BaseListRxDataManagerImpl<Agents, Age
     @Override
     public void loadCount(@NonNull final OnLoadingListener<Integer> loadingListener) {
         mSubscriptions.clear();
-        Subscription subscription = mRepository.listAgents(null, "count", false)
+        Subscription subscription = mRepository.listAgents(null, "count", null, false)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<Agents>() {

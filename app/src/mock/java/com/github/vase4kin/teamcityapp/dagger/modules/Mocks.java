@@ -370,4 +370,8 @@ public class Mocks {
         files.add(new File("index.html", 697840, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/index.html"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/index.html"));
         return new Files(files);
     }
+
+    public static BuildType buildType() {
+        return new BuildType();
+    }
 }

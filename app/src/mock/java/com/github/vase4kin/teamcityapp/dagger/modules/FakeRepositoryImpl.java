@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
@@ -45,13 +46,18 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected, @Nullable String fields, boolean update) {
-        return mTeamCityService.listAgents(includeDisconnected, fields);
+    public Observable<Agents> listAgents(@Nullable Boolean includeDisconnected, @Nullable String fields, @Nullable String locator, boolean update) {
+        return mTeamCityService.listAgents(includeDisconnected, fields, locator);
     }
 
     @Override
     public Observable<NavigationNode> listBuildTypes(String url, boolean update) {
         return mTeamCityService.listBuildTypes(url);
+    }
+
+    @Override
+    public Observable<BuildType> buildType(String id, boolean update) {
+        return mTeamCityService.buildType(id);
     }
 
     @Override

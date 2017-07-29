@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.navigation.api;
 
+import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 
 import java.io.Serializable;
@@ -29,6 +30,8 @@ public class BuildType extends NavigationItem implements Serializable {
 
     private Builds builds;
 
+    private BaseObject compatibleAgents;
+
     public Builds getBuilds() {
         return builds;
     }
@@ -39,5 +42,9 @@ public class BuildType extends NavigationItem implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public BaseObject getCompatibleAgents() {
+        return compatibleAgents;
     }
 }
