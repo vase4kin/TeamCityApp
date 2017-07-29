@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
@@ -50,7 +51,8 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     @Override
     public Observable<Agents> listAgents(
             @Nullable @Query("includeDisconnected") Boolean includeDisconnected,
-            @Nullable @Query("fields") String fields) {
+            @Nullable @Query("fields") String fields,
+            @Nullable @Query("locator") String locator) {
         if (includeDisconnected != null && includeDisconnected) {
             return Observable
                     .just(Mocks.disconnectedAgents());
@@ -69,6 +71,11 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     @Override
     public Observable<NavigationNode> listBuildTypes(@Url String url) {
         return Observable.just(Mocks.navigationNode());
+    }
+
+    @Override
+    public Observable<BuildType> buildType(@Path("id") String id) {
+        return Observable.just(Mocks.buildType());
     }
 
     @Override
