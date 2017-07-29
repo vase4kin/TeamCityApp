@@ -128,6 +128,10 @@ public class RunBuildPresenterImplTest {
         verify(mView).showSelectedAgentView();
         verify(mView).enableAgentSelectionControl();
         verify(mView).setAgentListDialogWithAgentsList(Collections.singletonList("agentName"));
+        agentListOnLoadingListener.onSuccess(Collections.<Agent>emptyList());
+        assertThat(mPresenter.mAgents.isEmpty(), is(equalTo(true)));
+        verify(mView, times(3)).hideLoadingAgentsProgress();
+        verify(mView, times(2)).showNoAgentsAvailable();
     }
 
     @Test

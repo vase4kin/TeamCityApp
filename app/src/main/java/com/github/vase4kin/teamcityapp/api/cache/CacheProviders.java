@@ -21,6 +21,7 @@ import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
@@ -40,12 +41,20 @@ import rx.Observable;
 public interface CacheProviders {
 
     /**
-     * Cache build types for one hour
+     * Cache build types for one day
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
     Observable<NavigationNode> listBuildTypes(Observable<NavigationNode> navigationNodeObservable,
                                               DynamicKey buildTypeUrl,
                                               EvictDynamicKey evictDynamicKey);
+
+    /**
+     * Cache build type for 1 day
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
+    Observable<BuildType> buildType(Observable<BuildType> buildTypeObservable,
+                                    DynamicKey buildTypeId,
+                                    EvictDynamicKey evictDynamicKey);
 
     /**
      * Cache branches for one minute
