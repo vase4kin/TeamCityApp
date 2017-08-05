@@ -35,13 +35,14 @@ import com.github.vase4kin.teamcityapp.changes.view.ChangesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewImpl;
 import com.github.vase4kin.teamcityapp.changes.view.LoadMoreViewHolderFactory;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import de.greenrobot.event.EventBus;
 
 @Module
 public class ChangesModule {

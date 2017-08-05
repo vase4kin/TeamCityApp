@@ -34,7 +34,9 @@ import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataE
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -196,7 +198,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      *
      * @param event {@link OnOverviewRefreshDataEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(OnOverviewRefreshDataEvent event) {
         if (mListener == null) return;
         mListener.onDataRefreshEvent();

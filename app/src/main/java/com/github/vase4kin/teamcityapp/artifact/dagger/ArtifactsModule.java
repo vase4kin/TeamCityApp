@@ -40,13 +40,14 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import de.greenrobot.event.EventBus;
 
 @Module
 public class ArtifactsModule {
