@@ -81,6 +81,7 @@ import static org.mockito.Mockito.when;
 public class LoginActivityTest {
 
     private static final String INPUT_URL = URL.replace("https://", "");
+    private static final String MESSAGE_EMPTY = "";
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
@@ -136,6 +137,7 @@ public class LoginActivityTest {
                         new Response.Builder()
                                 .request(new Request.Builder().url(urlWithPath).build())
                                 .protocol(Protocol.HTTP_1_0)
+                                .message(MESSAGE_EMPTY)
                                 .code(200)
                                 .build());
                 return null;
@@ -169,6 +171,7 @@ public class LoginActivityTest {
                         new Response.Builder()
                                 .request(new Request.Builder().url(URL).build())
                                 .protocol(Protocol.HTTP_1_0)
+                                .message(MESSAGE_EMPTY)
                                 .code(200)
                                 .build());
                 return null;
@@ -202,6 +205,7 @@ public class LoginActivityTest {
                         new Response.Builder()
                                 .request(new Request.Builder().url(URL).build())
                                 .protocol(Protocol.HTTP_1_0)
+                                .message(MESSAGE_EMPTY)
                                 .code(200)
                                 .build());
                 return null;

@@ -134,6 +134,7 @@ public class CreateAccountActivityTest {
                                 .request(new Request.Builder().url(URL).build())
                                 .protocol(Protocol.HTTP_1_0)
                                 .code(200)
+                                .message("")
                                 .build());
                 return null;
             }
