@@ -3,7 +3,7 @@ machine:
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter android-25,tools,platform-tools,build-tools-25.0.3,extra
+    - echo y | android update sdk --no-ui --all --filter android-26,tools,platform-tools,build-tools-26.0.1,extra
 test:
     override:
     # create sd card for spoon screenshots support
