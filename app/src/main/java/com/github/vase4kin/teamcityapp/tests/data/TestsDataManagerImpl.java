@@ -25,9 +25,10 @@ import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;

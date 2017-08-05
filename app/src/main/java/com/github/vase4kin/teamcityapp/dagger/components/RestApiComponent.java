@@ -26,8 +26,9 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.greenrobot.eventbus.EventBus;
+
 import dagger.Component;
-import de.greenrobot.event.EventBus;
 import io.rx_cache.internal.RxCache;
 
 @UserScope

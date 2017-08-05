@@ -39,13 +39,14 @@ import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesAdapter;
 import com.github.vase4kin.teamcityapp.tests.view.TestsView;
 import com.github.vase4kin.teamcityapp.tests.view.TestsViewImpl;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import de.greenrobot.event.EventBus;
 
 @Module
 public class TestsModule {

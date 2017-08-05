@@ -29,12 +29,13 @@ import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
-import de.greenrobot.event.EventBus;
 
 @Module
 public class AgentsTabsModule {

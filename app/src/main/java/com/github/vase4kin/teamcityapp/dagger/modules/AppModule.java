@@ -37,6 +37,8 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
@@ -45,7 +47,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import de.greenrobot.event.EventBus;
 import io.rx_cache.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
