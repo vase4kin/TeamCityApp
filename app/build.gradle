@@ -106,6 +106,10 @@ android {
         abortOnError true
         htmlOutput file("build/reports/lint-report/lint-report.html")
     }
+
+    dexOptions {
+        jumboMode true
+    }
 }
 
 buildscript {
