@@ -13,7 +13,7 @@ test:
     # create sd card for spoon screenshots support
     - mksdcard -l e 512M mysdcard.img
     # list avds
-    - android list avd
+    - $ANDROID_HOME/tools/bin/avdmanager list avd
     # set adb
     - adb logcat:
         background: true
