@@ -5,9 +5,9 @@ dependencies:
   pre:
     - mkdir -p $HOME/.android/ && touch $HOME/.android/repositories.cfg
     - echo y | android update sdk --no-ui --all --filter tools
-    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" "system-images;android-24;google_apis;armeabi-v7a" --verbose
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" "system-images;android-25;google_apis;armeabi-v7a" --verbose
     - echo y | $ANDROID_HOME/tools/bin/sdkmanager --update --verbose
-    - echo no | $ANDROID_HOME/tools/bin/avdmanager create avd -n circleci-android24-googleapis -k "system-images;android-24;google_apis;armeabi-v7a" -f
+    - echo no | $ANDROID_HOME/tools/bin/avdmanager create avd -n circleci-android25-googleapis -k "system-images;android-25;google_apis;armeabi-v7a" -f
 test:
     override:
     # create sd card for spoon screenshots support
@@ -19,7 +19,7 @@ test:
         background: true
         parallel: true
     # start the emulator
-    - $ANDROID_HOME/tools/emulator -avd circleci-android24-googleapis -no-audio -no-window -sdcard $HOME/mysdcard.img:
+    - $ANDROID_HOME/tools/emulator -avd circleci-android25-googleapis -no-audio -no-window -sdcard $HOME/mysdcard.img:
         background: true
         parallel: true
     # wait for it to have booted
