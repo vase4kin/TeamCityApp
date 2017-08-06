@@ -19,7 +19,7 @@ test:
         background: true
         parallel: true
     # start the emulator
-    - emulator -avd circleci-android24-googleapis -no-audio -no-window -gpu swiftshader -sdcard mysdcard.img:
+    - $ANDROID_HOME/tools/emulator -avd circleci-android24-googleapis -no-audio -no-window -sdcard $HOME/mysdcard.img:
         background: true
         parallel: true
     # wait for it to have booted
