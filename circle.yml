@@ -19,7 +19,7 @@ test:
         background: true
         parallel: true
     # start the emulator
-    - emulator -avd circleci-android22-default -no-audio -no-window -sdcard mysdcard.img:
+    - $ANDROID_HOME/tools/emulator -avd circleci-android22-default -no-audio -no-window -sdcard mysdcard.img:
         background: true
         parallel: true
     # wait for it to have booted
