@@ -5,8 +5,9 @@ dependencies:
   pre:
     - mkdir -p $HOME/.android/ && touch $HOME/.android/repositories.cfg
     - echo y | android update sdk --no-ui --all --filter tools
-    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" --verbose
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" "system-images;android-22;default;armeabi-v7a" --verbose
     - echo y | $ANDROID_HOME/tools/bin/sdkmanager --update --verbose
+    - echo no | $ANDROID_HOME/tools/bin/avdmanager create avd -n circleci-android22-default -k "system-images;android-22;default;armeabi-v7a" -f
 test:
     override:
     # create sd card for spoon screenshots support
@@ -18,7 +19,7 @@ test:
         background: true
         parallel: true
     # start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window -sdcard mysdcard.img:
+    - emulator -avd circleci-android22-default -no-audio -no-window -sdcard mysdcard.img:
         background: true
         parallel: true
     # wait for it to have booted
