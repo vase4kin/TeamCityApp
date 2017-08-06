@@ -5,16 +5,9 @@ dependencies:
   pre:
     - mkdir -p $HOME/.android/ && touch $HOME/.android/repositories.cfg
     - echo y | android update sdk --no-ui --all --filter tools
-    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" "system-images;android-24;google_apis;armeabi-v7a" --verbose
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" "system-images;android-24;default;armeabi-v7a" --verbose
     - echo y | $ANDROID_HOME/tools/bin/sdkmanager --update --verbose
-    - echo no | $ANDROID_HOME/tools/bin/avdmanager create avd -n circleci-android24-googleapis -k "system-images;android-24;google_apis;armeabi-v7a" -f
-    - |
-        # software rendering is broken in revision 10, we'll use revision 08
-        wget "https://dl-ssl.google.com/android/repository/sys-img/google_apis/armeabi-v7a-24_r08.zip"
-        unzip armeabi-v7a-24_r08.zip
-        # overwrite some of the new files with older files
-        mv armeabi-v7a/* /usr/local/android-sdk-linux/system-images/android-24/google_apis/armeabi-v7a
-        rm armeabi-v7a-24_r08.zip
+    - echo no | $ANDROID_HOME/tools/bin/avdmanager create avd -n circleci-android24-googleapis -k "system-images;android-24;default;armeabi-v7a" -f
 test:
     override:
     # create sd card for spoon screenshots support
