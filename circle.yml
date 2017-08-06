@@ -3,13 +3,23 @@ machine:
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
 dependencies:
   pre:
-    - echo y | android update sdk --no-ui --all --filter android-26,tools,platform-tools,build-tools-26.0.1,extra
+    - mkdir -p $HOME/.android/ && touch $HOME/.android/repositories.cfg
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" --verbose
+    - echo y | android update sdk --no-ui --all --filter "sys-img-armeabi-v7a-google_apis-24"
+    - echo y | $ANDROID_HOME/tools/bin/sdkmanager --update --verbose
+    - echo no | android create avd -n circleci-android24-googleapis -t 'android-24' --abi google_apis/armeabi-v7a
 test:
     override:
     # create sd card for spoon screenshots support
     - mksdcard -l e 512M mysdcard.img
+    # list avds
+    - android list avd
+    # set adb
+    - adb logcat:
+        background: true
+        parallel: true
     # start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window -sdcard mysdcard.img:
+    - emulator -avd circleci-android24-googleapis -no-audio -no-window -gpu swiftshader -sdcard mysdcard.img:
         background: true
         parallel: true
     # wait for it to have booted
