@@ -22,7 +22,8 @@ test:
         background: true
         parallel: true
     # wait for it to have booted
-    - circle-android wait-for-boot
+    - circle-android wait-for-boot:
+        timeout: 600
     # waiting for miracle
     - sleep 60
     # disable all animation
