@@ -122,7 +122,7 @@ public class DrawerTest {
         matchToolbarTitle("build type");
 
         // Opening drawer
-        onView(withId(R.id.materialize_root))
+        onView(withId(R.id.material_drawer_layout))
                 .perform(open());
 
         // Check projects is opened
