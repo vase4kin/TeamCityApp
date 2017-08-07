@@ -32,7 +32,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -301,14 +300,10 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
                         listener.onPromptShown();
-                    }
-
-                    @Override
-                    public void onHidePromptComplete() {
                     }
                 })
                 .show();
@@ -327,14 +322,10 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
                         listener.onPromptShown();
-                    }
-
-                    @Override
-                    public void onHidePromptComplete() {
                     }
                 })
                 .show();

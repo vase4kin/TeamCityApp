@@ -34,7 +34,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 
 import com.cocosw.bottomsheet.BottomSheet;
@@ -410,14 +409,10 @@ public class OverviewViewImpl implements OverviewView {
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
                         listener.onPromptShown();
-                    }
-
-                    @Override
-                    public void onHidePromptComplete() {
                     }
                 });
         // Show prompt
