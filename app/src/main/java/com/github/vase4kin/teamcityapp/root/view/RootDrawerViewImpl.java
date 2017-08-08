@@ -23,7 +23,6 @@ import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
@@ -100,14 +99,10 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setOnHidePromptListener(new MaterialTapTargetPrompt.OnHidePromptListener() {
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onHidePrompt(MotionEvent event, boolean tappedTarget) {
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
                         listener.onPromptShown();
-                    }
-
-                    @Override
-                    public void onHidePromptComplete() {
                     }
                 });
         // Show prompt
