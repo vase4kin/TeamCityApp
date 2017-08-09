@@ -27,7 +27,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.0'
+        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.1'
         classpath 'com.google.gms:google-services:3.0.0'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -53,8 +53,8 @@ ext {
 
     // dependencies versions
     supportLibraryVersion = '26.0.0'
-    espressoRunnerVersion = '0.5'
-    espressoVersion = '2.2.2'
+    espressoRunnerVersion = '1.0'
+    espressoVersion = '3.0.0'
     dexMakerVersion = '1.4'
     mockitoCoreVersion = '1.10.19'
     powerMockVersion = '1.6.4'
