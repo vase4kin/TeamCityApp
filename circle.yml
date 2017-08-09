@@ -2,44 +2,62 @@ machine:
   environment:
     GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
 dependencies:
-  pre:
-    - echo y | android update sdk --no-ui --all --filter android-26,tools,platform-tools,build-tools-26.0.1,extra
+    pre:
+      - echo y | android update sdk --no-ui --all --filter android-26,tools,platform-tools,build-tools-26.0.1,extra
+      - sudo pip install -U crcmod
+    override:
+      - ./gradlew dependencies
+    post:
+      - echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/client-secret.json
+      - sudo /opt/google-cloud-sdk/bin/gcloud config set project $PROJECT_ID
+      - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components update
+      - sudo /opt/google-cloud-sdk/bin/gcloud --quiet components install beta
+      - sudo /opt/google-cloud-sdk/bin/gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
 test:
     override:
-    # create sd card for spoon screenshots support
-    - mksdcard -l e 512M mysdcard.img
-    # start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window -sdcard mysdcard.img:
-        background: true
-        parallel: true
-    # wait for it to have booted
-    - circle-android wait-for-boot
-    # waiting for miracle
-    - sleep 60
-    # disable all animation
-    - adb shell settings put global window_animation_scale 0
-    - adb shell settings put global transition_animation_scale 0
-    - adb shell settings put global animator_duration_scale 0
-    # unlocking the screen
-    - adb shell input keyevent 82
-    # copy google-services.json mocks
-    - mkdir -p app/src/mock/debug/
-    - cp mock-mockDebug-google-services.json ./app/src/mock/debug/google-services.json
-    - mkdir -p app/src/prod/debug/
-    - cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
-    # running tests
-    - ./gradlew clean lintMockDebug pmd findbugs generateCodeCoverageReport
+      # copy google-services.json mocks
+      - mkdir -p app/src/mock/debug/
+      - cp mock-mockDebug-google-services.json ./app/src/mock/debug/google-services.json
+      - mkdir -p app/src/prod/debug/
+      - cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
+      # prepare
+      - ./gradlew assembleMockDebug
+      - ./gradlew assembleMockDebugUnitTest
+      - ./gradlew assembleMockDebugAndroidTest
+      # running code checks
+      - ./gradlew lintMockDebug pmd findbugs
+      # running unit tests
+      - ./gradlew testMockDebugUnitTest
+      # running ui tests with firebase test lab
+      - >
+        sudo /opt/google-cloud-sdk/bin/gcloud firebase test android models list
+          (sudo /opt/google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation \
+          --app app/build/outputs/apk/app-mock-debug.apk \
+          --test app/build/outputs/apk/app-mock-debug-androidTest.apk \
+          --device model=Nexus5X,version=23,locale=en,orientation=portrait \
+          --results-bucket $PROJECT_ID \
+          --timeout 15m \
+          --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
+          --directories-to-pull /sdcard 2>&1 | tee firebase.log) || EXIT_CODE=$?
+
+        RESULTS_BUCKET=$(sed -n 's|^.*\[https://console.developers.google.com/storage/browser/\([^]]*\).*|gs://\1|p' firebase.log)
+            echo "Downloading from: ${RESULTS_BUCKET}"
+            sudo /opt/google-cloud-sdk/bin/gsutil -m cp -n -R -Z "$RESULTS_BUCKET*" $CIRCLE_ARTIFACTS
+
+        exit ${EXIT_CODE:-0}
     post:
         # obtain test results artifacts
         - mkdir -p $CIRCLE_TEST_REPORTS/junit/
         - find . -type f -regex ".*/build/test-results/testMockDebugUnitTest/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        - find . -type f -regex ".*/build/outputs/androidTest-results/connected/flavors/MOCK/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        - mkdir -p $CIRCLE_TEST_REPORTS/reports/
-        - mv app/build/spoon/ $CIRCLE_TEST_REPORTS/reports/
-        - find . -type f -regex ".*/build/outputs/androidTest-results/connected/flavors/MOCK/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+        - find $CIRCLE_ARTIFACTS -name "*.xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+        # copy ui tests coverage
+        - find $CIRCLE_ARTIFACTS -name "*.ec" -exec cp {} app/build/ \;
+        # generate coverage
+        - ./gradlew generateCodeCoverageReport
         # obtain coverage artifacts
         - mkdir -p $CIRCLE_TEST_REPORTS/coverage/
         - find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} $CIRCLE_TEST_REPORTS/coverage/ \;
+        # send coverage to codecov
         - bash <(curl -s https://codecov.io/bash) -f './app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml'
         # obtain lint report
         - mkdir -p $CIRCLE_TEST_REPORTS/lint/
