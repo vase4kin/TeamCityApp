@@ -21,7 +21,7 @@ jacoco {
     reportsDir = file("$buildDir/coverage")
 }
 
-task generateCodeCoverageReport(type: JacocoReport, dependsOn: ["spoonMockDebugAndroidTest", "testMockDebugUnitTest"]) {
+task generateCodeCoverageReport(type: JacocoReport) {
     group = "code quality"
 
     description = "Generate Jacoco coverage reports"
@@ -41,7 +41,7 @@ task generateCodeCoverageReport(type: JacocoReport, dependsOn: ["spoonMockDebugA
     additionalSourceDirs = files('src/main/java/')
     sourceDirectories = files('src/main/java/')
     executionData = files(["$buildDir/jacoco/testMockDebugUnitTest.exec",
-                           "${buildDir}/spoon/mock/debug/coverage/merged-coverage.ec"])
+                           "${buildDir}/coverage.ec"])
 
     reports {
         xml.enabled = true
