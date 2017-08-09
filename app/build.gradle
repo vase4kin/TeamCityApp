@@ -196,7 +196,7 @@ dependencies {
     // Rate app library
     compile 'com.github.hotchemi:android-rate:1.0.1'
     // Firebase
-    compile 'com.google.firebase:firebase-core:10.2.0'
+    compile 'com.google.firebase:firebase-core:11.0.4'
     // Unit tests
     testCompile "org.mockito:mockito-core:$rootProject.mockitoCoreVersion"
     testCompile 'junit:junit:4.12'
@@ -224,7 +224,7 @@ dependencies {
     androidTestCompile "com.android.support:design:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     // Crashlytics
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true;
     }
 }
