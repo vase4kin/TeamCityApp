@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.build_details.view;
 interface BuildDetailsViewTimeout {
 
     /**
-     * Copied text snack bar show timeout
+     * Text copied snack bar show timeout
      */
-    int TIMEOUT_COPIED_TEXT_SNACKBAR = 0;
+    int TIMEOUT_TEXT_COPIED_SNACKBAR = 0;
 }

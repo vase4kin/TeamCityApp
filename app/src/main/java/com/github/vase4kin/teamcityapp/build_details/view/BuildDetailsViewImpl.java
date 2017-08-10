@@ -50,7 +50,7 @@ import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import butterknife.BindView;
 
-import static com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.TIMEOUT_COPIED_TEXT_SNACKBAR;
+import static com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.TIMEOUT_TEXT_COPIED_SNACKBAR;
 
 /**
  * Impl of {@link BuildDetailsView}
@@ -382,7 +382,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
             public void run() {
                 showSnackBarWithText(R.string.build_element_copy_text);
             }
-        }, TIMEOUT_COPIED_TEXT_SNACKBAR);
+        }, TIMEOUT_TEXT_COPIED_SNACKBAR);
     }
 
     /**
