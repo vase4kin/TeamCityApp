@@ -163,6 +163,14 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * {@inheritDoc}
      */
     @Override
+    public void onTextCopiedActionTriggered() {
+        mView.showTextCopiedSnackBar();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onArtifactTabUnSelect() {
         mInteractor.postOnArtifactTabChangeEvent();
     }

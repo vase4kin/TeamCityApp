@@ -172,4 +172,9 @@ public interface BuildDetailsView extends BaseTabsViewModel {
      * Show error opening build snack bar
      */
     void showOpeningBuildErrorSnackBar();
+
+    /**
+     * Show text copied snack bar
+     */
+    void showTextCopiedSnackBar();
 }

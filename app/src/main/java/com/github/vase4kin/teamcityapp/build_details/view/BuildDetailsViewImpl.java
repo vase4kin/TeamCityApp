@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.build_details.view;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -48,6 +49,8 @@ import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import butterknife.BindView;
+
+import static com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.TIMEOUT_COPIED_TEXT_SNACKBAR;
 
 /**
  * Impl of {@link BuildDetailsView}
@@ -366,6 +369,20 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
                         mOnBuildDetailsViewListener.onShowQueuedBuild();
                     }
                 }).show();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showTextCopiedSnackBar() {
+        new Handler(mActivity.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                showSnackBarWithText(R.string.build_element_copy_text);
+            }
+        }, TIMEOUT_COPIED_TEXT_SNACKBAR);
     }
 
     /**
