@@ -31,11 +31,6 @@ import android.webkit.WebViewClient;
 class BuildLogWebViewClient extends WebViewClient {
 
     /**
-     * Magic js loading to be completed
-     */
-    private static final int JS_COMPLETE_TIMEOUT = 2000;
-
-    /**
      * Magic awesome js script to hide things user doesn't need to see
      */
     private static final String SCRIPT = "$('topWrapper').style.display='none';\n" +
@@ -80,7 +75,7 @@ class BuildLogWebViewClient extends WebViewClient {
                 mListener.hideProgressWheel();
                 mListener.showWebView();
             }
-        }, JS_COMPLETE_TIMEOUT);
+        }, BuildLogTimeouts.TIMEOUT_PAGE_LOADING);
     }
 
     /**
