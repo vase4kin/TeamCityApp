@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,7 +100,6 @@ public class BuildLogFragmentTest {
         TestUtils.disableOnboarding();
     }
 
-    @Ignore("Fix it")
     @Test
     public void testUserCanSeeBuildLog() {
         // Prepare mocks
