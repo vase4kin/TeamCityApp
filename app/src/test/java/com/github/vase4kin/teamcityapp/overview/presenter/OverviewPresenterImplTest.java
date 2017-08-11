@@ -268,6 +268,7 @@ public class OverviewPresenterImplTest {
     public void testOnCopyActionClick() throws Exception {
         mPresenter.onCopyActionClick("br");
         verify(mInteractor).copyTextToClipBoard(eq("br"));
+        verify(mInteractor).postTextCopiedEvent();
     }
 
     @Test

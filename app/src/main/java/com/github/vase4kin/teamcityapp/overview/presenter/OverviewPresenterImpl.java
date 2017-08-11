@@ -218,6 +218,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onCopyActionClick(String textToCopy) {
         mInteractor.copyTextToClipBoard(textToCopy);
+        mInteractor.postTextCopiedEvent();
     }
 
     /**

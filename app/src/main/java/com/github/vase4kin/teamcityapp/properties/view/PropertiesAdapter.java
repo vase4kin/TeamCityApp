@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.properties.view;
 
+import android.view.View;
+
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
@@ -28,26 +30,34 @@ import java.util.Map;
  */
 public class PropertiesAdapter extends BaseAdapter<PropertiesDataModel> {
 
-    private OnCopyActionClickListener mOnCopyActionClickListener;
+    private PropertiesView.Listener listener;
 
     public PropertiesAdapter(Map<Integer, ViewHolderFactory<PropertiesDataModel>> viewHolderFactories) {
         super(viewHolderFactories);
     }
 
-    public void setOnCopyActionClickListener(OnCopyActionClickListener onCopyActionClickListener) {
-        this.mOnCopyActionClickListener = onCopyActionClickListener;
+    void setOnCopyActionClickListener(PropertiesView.Listener listener) {
+        this.listener = listener;
     }
 
     @Override
     public void onBindViewHolder(BaseViewHolder<PropertiesDataModel> holder, int position) {
         super.onBindViewHolder(holder, position);
-        final OnCopyActionAdapterListenerImpl listener =
-                new OnCopyActionAdapterListenerImpl(
-                        mDataModel.getName(position),
-                        mDataModel.getValue(position),
-                        mOnCopyActionClickListener);
-        ((PropertyViewHolder) holder).mContainer.setOnClickListener(listener);
-        ((PropertyViewHolder) holder).mContainer.setOnLongClickListener(listener);
+        final String title = mDataModel.getName(position);
+        final String value = mDataModel.getValue(position);
+        ((PropertyViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onCardClick(title, value);
+            }
+        });
+        ((PropertyViewHolder) holder).mContainer.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                listener.onCardClick(title, value);
+                return true;
+            }
+        });
     }
 
 }

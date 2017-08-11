@@ -18,16 +18,22 @@ package com.github.vase4kin.teamcityapp.properties.view;
 
 import android.app.Activity;
 import android.support.annotation.StringRes;
+import android.view.MenuItem;
 import android.view.View;
 
+import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 
 /**
  * View to manage properties interactions
  */
-public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, PropertiesAdapter> {
+public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, PropertiesAdapter> implements PropertiesView {
+
+    private Listener mListener;
 
     public PropertiesViewImpl(View view,
                               Activity activity,
@@ -42,7 +48,7 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, Pr
     @Override
     public void showData(PropertiesDataModel dataModel) {
         mAdapter.setDataModel(dataModel);
-        mAdapter.setOnCopyActionClickListener(new OnCopyActionClickListenerImpl(mActivity));
+        mAdapter.setOnCopyActionClickListener(mListener);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -53,5 +59,35 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, Pr
     @Override
     protected int recyclerViewId() {
         return R.id.properties_recycler_view;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setListener(Listener listener) {
+        this.mListener = listener;
+    }
+
+    @Override
+    public void showCopyValueBottomSheet(String title, final String value) {
+        BottomSheet bottomSheet = new BottomSheet.Builder(mActivity)
+                .title(title)
+                .sheet(R.menu.menu_build_element)
+                .listener(new MenuItem.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.copy:
+                                mListener.onCopyActionClick(value);
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+                }).build();
+        bottomSheet.getMenu().findItem(R.id.copy)
+                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_content_copy));
+        bottomSheet.show();
     }
 }
