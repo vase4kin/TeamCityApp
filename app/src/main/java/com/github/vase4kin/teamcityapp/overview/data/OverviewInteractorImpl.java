@@ -127,6 +127,9 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
         mEventBus.post(new RestartBuildEvent());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void postTextCopiedEvent() {
         mEventBus.post(new TextCopiedEvent());

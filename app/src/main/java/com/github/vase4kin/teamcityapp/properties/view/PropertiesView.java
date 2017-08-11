@@ -16,26 +16,28 @@
 
 package com.github.vase4kin.teamcityapp.properties.view;
 
-/**
- * Listener to handle on copy clicks
- *
- * TODO: Move logic to presenter
- */
-@Deprecated
-public interface OnCopyActionClickListener {
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 
-    /**
-     * On average click
-     *
-     * @param value - Element value
-     */
-    void onClick(String value);
 
-    /**
-     * On long click
-     *
-     * @param title - Element title
-     * @param value - Element value
-     */
-    void onLongClick(String title, String value);
+public interface PropertiesView extends BaseListView<PropertiesDataModel> {
+
+    void setListener(Listener listener);
+
+    void showCopyValueBottomSheet(String title, String value);
+
+    interface Listener {
+
+        /**
+         * On card click
+         */
+        void onCardClick(String header, String value);
+
+        /**
+         * On copy action click
+         *
+         * @param valueToCopy - text to copy
+         */
+        void onCopyActionClick(String valueToCopy);
+    }
 }
