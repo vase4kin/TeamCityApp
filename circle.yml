@@ -92,7 +92,8 @@ jobs:
           name: Generate code coverage
           command: |
             ./gradlew generateCodeCoverageReport
-            find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} app/build/circleci/coverage/ \;
+            mkdir -p app/build/circleci/artifacts/coverage/
+            find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} app/build/circleci/artifacts/coverage/ \;
       - run:
           name: Send coverage to CodeCov
           command: bash <(curl -s https://codecov.io/bash) -f './app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml'
