@@ -58,6 +58,7 @@ jobs:
             ./google-cloud-sdk/bin/gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
       - run:
           name: Run UI tests
+          no_output_timeout: 15m
           shell: /bin/bash -euo pipefail
           command: |
             ./google-cloud-sdk/bin/gcloud firebase test android models list
