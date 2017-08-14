@@ -1,13 +1,23 @@
 version: 2
-jobs:
-  build:
-    working_directory: ~/TeamCityApp
+references:
+  workspace_root: &workspace_root
+      ~/TeamCityApp
+  container_config: &container_config
     docker:
       - image: circleci/android:api-26-alpha
+    working_directory: *workspace_root
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+  general_cache_key: &general_cache_key
+      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+jobs:
+  build:
+    <<: *container_config
     steps:
       - checkout
       - restore_cache:
-                key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+          <<: *general_cache_key
       - run:
           name: Download sdk
           command: |
@@ -17,9 +27,9 @@ jobs:
           name: Download dependencies
           command: ./gradlew dependencies
       - save_cache:
+          <<: *general_cache_key
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
       - run:
           name: Copy google-serivices json mocks
           command: |
@@ -30,12 +40,52 @@ jobs:
       - run:
           name: Prepare apks
           command: ./gradlew assembleMockDebug assembleMockDebugUnitTest assembleMockDebugAndroidTest
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .
+  checks:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
       - run:
           name: Run checks
           command: ./gradlew lintMockDebug pmd findbugs
       - run:
+          name: Copy checks reports
+          command: |
+            mkdir -p app/build/circleci/artifacts/reports/lint/
+            mv app/build/reports/lint-report/ app/build/circleci/artifacts/reports/lint/
+            mkdir -p app/build/circleci/artifacts/reports/pmd/
+            mv app/build/reports/pmd/ app/build/circleci/artifacts/reports/pmd/
+            mkdir -p app/build/circleci/artifacts/reports/findbugs/
+            mv app/build/reports/findbugs/ app/build/circleci/artifacts/reports/findbugs/
+      - store_artifacts:
+          path: app/build/circleci/artifacts/reports
+          destination: reports
+  unit-tests:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
           name: Run unit tests
           command: ./gradlew testMockDebugUnitTest
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - app/build/jacoco
+      - store_test_results:
+          path: app/build/test-results/testMockDebugUnitTest
+  ui-tests:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
       - run:
           name: Install Crcmod
           command: |
@@ -80,14 +130,28 @@ jobs:
             
             exit ${EXIT_CODE:-0}
       - run:
-          name: Copy Junit artifacts
-          command: |
-            mkdir -p app/build/circleci/test-results/
-            find . -type f -regex ".*/build/test-results/testMockDebugUnitTest/.*xml" -exec cp {} app/build/circleci/test-results/ \;
-            find app/build/circleci/artifacts/testlab -name "*.xml" -exec cp {} app/build/circleci/test-results/ \;
-      - run:
           name: Copy UI tests coverage artifact
           command: find app/build/circleci/artifacts/testlab -name "*.ec" -exec cp {} app/build/ \;
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - app/build/coverage.ec
+      - run:
+          name: Copy UI Junit artifacts
+          command: |
+            mkdir -p app/build/circleci/test-results/
+            find app/build/circleci/artifacts/testlab -name "*.xml" -exec cp {} app/build/circleci/test-results/ \;
+      - store_artifacts:
+          path: app/build/circleci/artifacts
+          destination: artifacts
+      - store_test_results:
+          path: app/build/circleci/test-results
+  coverage:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
       - run:
           name: Generate code coverage
           command: |
@@ -97,17 +161,23 @@ jobs:
       - run:
           name: Send coverage to CodeCov
           command: bash <(curl -s https://codecov.io/bash) -f './app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml'
-      - run:
-          name: Copy reports
-          command: |
-            mkdir -p app/build/circleci/artifacts/reports/lint/
-            mv app/build/reports/lint-report/ app/build/circleci/artifacts/reports/lint/
-            mkdir -p app/build/circleci/artifacts/reports/pmd/
-            mv app/build/reports/pmd/ app/build/circleci/artifacts/reports/pmd/
-            mkdir -p app/build/circleci/artifacts/reports/findbugs/
-            mv app/build/reports/findbugs/ app/build/circleci/artifacts/reports/findbugs/
       - store_artifacts:
           path: app/build/circleci/artifacts
           destination: artifacts
-      - store_test_results:
-          path: app/build/circleci/test-results
+workflows:
+  version: 2
+  build_checks_unit_and_ui_tests_coverage:
+    jobs:
+      - build
+      - checks:
+          requires:
+            - build
+      - unit-tests:
+          requires:
+            - checks
+      - ui-tests:
+          requires:
+            - unit-tests
+      - coverage:
+          requires:
+            - ui-tests
