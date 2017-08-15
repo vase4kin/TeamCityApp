@@ -47,6 +47,11 @@ public interface OnBuildDetailsEventsListener {
     void onRestartBuildActionTriggered();
 
     /**
+     * When text copied action is triggered
+     */
+    void onTextCopiedActionTriggered();
+
+    /**
      * When start build list activity filtered by branch event is triggered
      */
     void onStartBuildListActivityFilteredByBranchEventTriggered(String branchName);

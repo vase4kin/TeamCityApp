@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.testdetails.view;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.support.v7.widget.Toolbar;
@@ -70,8 +69,8 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
     @Override
     public void initViews(ErrorView.RetryListener retryListener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
-        mErrorView.setOnRetryListener(retryListener);
-        mErrorView.getImage().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+        mErrorView.setRetryListener(retryListener);
+        mErrorView.setImageTint(Color.LTGRAY);
         initToolBar();
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             mTestDetailsTextView.setCustomSelectionActionModeCallback(new CustomSelectionActionModeCallBackImpl(this));

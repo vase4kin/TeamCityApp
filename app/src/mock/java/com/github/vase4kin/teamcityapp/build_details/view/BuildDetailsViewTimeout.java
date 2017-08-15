@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.properties.view;
+package com.github.vase4kin.teamcityapp.build_details.view;
 
-/**
- * Listener to handle on copy clicks
- *
- * TODO: Move logic to presenter
- */
-@Deprecated
-public interface OnCopyActionClickListener {
+interface BuildDetailsViewTimeout {
 
     /**
-     * On average click
-     *
-     * @param value - Element value
+     * Text copied snack bar show timeout
      */
-    void onClick(String value);
-
-    /**
-     * On long click
-     *
-     * @param title - Element title
-     * @param value - Element value
-     */
-    void onLongClick(String title, String value);
+    int TIMEOUT_TEXT_COPIED_SNACKBAR = 0;
 }

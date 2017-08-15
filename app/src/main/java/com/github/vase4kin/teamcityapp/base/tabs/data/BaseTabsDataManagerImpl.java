@@ -19,7 +19,8 @@ package com.github.vase4kin.teamcityapp.base.tabs.data;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 public class BaseTabsDataManagerImpl implements BaseTabsDataManager {
 
@@ -59,7 +60,7 @@ public class BaseTabsDataManagerImpl implements BaseTabsDataManager {
     /**
      * Handle {@link OnTextTabChangeEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(OnTextTabChangeEvent event) {
         if (mListener != null) {
             mListener.onUpdateTabTitle(event.getTabPosition(), String.valueOf(event.getCount()));

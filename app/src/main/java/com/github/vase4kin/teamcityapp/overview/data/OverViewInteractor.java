@@ -63,6 +63,11 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void postRestartBuildEvent();
 
     /**
+     * Post {@link TextCopiedEvent}
+     */
+    void postTextCopiedEvent();
+
+    /**
      * Subscribe to event bus events
      */
     void subscribeToEventBusEvents();

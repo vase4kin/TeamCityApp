@@ -1,52 +1,183 @@
-machine:
-  environment:
-    GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError"'
-dependencies:
-  pre:
-    - echo y | android update sdk --no-ui --all --filter android-25,tools,platform-tools,build-tools-25.0.3,extra
-test:
-    override:
-    # create sd card for spoon screenshots support
-    - mksdcard -l e 512M mysdcard.img
-    # start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window -sdcard mysdcard.img:
-        background: true
-        parallel: true
-    # wait for it to have booted
-    - circle-android wait-for-boot
-    # waiting for miracle
-    - sleep 60
-    # disable all animation
-    - adb shell settings put global window_animation_scale 0
-    - adb shell settings put global transition_animation_scale 0
-    - adb shell settings put global animator_duration_scale 0
-    # unlocking the screen
-    - adb shell input keyevent 82
-    # copy google-services.json mocks
-    - mkdir -p app/src/mock/debug/
-    - cp mock-mockDebug-google-services.json ./app/src/mock/debug/google-services.json
-    - mkdir -p app/src/prod/debug/
-    - cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
-    # running tests
-    - ./gradlew clean lintMockDebug pmd findbugs generateCodeCoverageReport
-    post:
-        # obtain test results artifacts
-        - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-        - find . -type f -regex ".*/build/test-results/testMockDebugUnitTest/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        - find . -type f -regex ".*/build/outputs/androidTest-results/connected/flavors/MOCK/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        - mkdir -p $CIRCLE_TEST_REPORTS/reports/
-        - mv app/build/spoon/ $CIRCLE_TEST_REPORTS/reports/
-        - find . -type f -regex ".*/build/outputs/androidTest-results/connected/flavors/MOCK/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-        # obtain coverage artifacts
-        - mkdir -p $CIRCLE_TEST_REPORTS/coverage/
-        - find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} $CIRCLE_TEST_REPORTS/coverage/ \;
-        - bash <(curl -s https://codecov.io/bash) -f './app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml'
-        # obtain lint report
-        - mkdir -p $CIRCLE_TEST_REPORTS/lint/
-        - mv app/build/reports/lint-report/ $CIRCLE_TEST_REPORTS/lint/
-        # obtain pmd report
-        - mkdir -p $CIRCLE_TEST_REPORTS/pmd/
-        - mv app/build/reports/pmd/ $CIRCLE_TEST_REPORTS/pmd/
-        # obtain findbugs report
-        - mkdir -p $CIRCLE_TEST_REPORTS/findbugs/
-        - mv app/build/reports/findbugs/ $CIRCLE_TEST_REPORTS/findbugs/
+version: 2
+references:
+  workspace_root: &workspace_root
+      ~/TeamCityApp
+  container_config: &container_config
+    docker:
+      - image: circleci/android:api-26-alpha
+    working_directory: *workspace_root
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+  general_cache_key: &general_cache_key
+      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+jobs:
+  build:
+    <<: *container_config
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
+          name: Download sdk
+          command: |
+           echo y | sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" --verbose
+           sdkmanager --update --verbose
+      - run:
+          name: Download dependencies
+          command: ./gradlew dependencies
+      - save_cache:
+          <<: *general_cache_key
+          paths:
+            - ~/.gradle
+      - run:
+          name: Copy google-serivices json mocks
+          command: |
+            mkdir -p app/src/mock/debug/
+            cp mock-mockDebug-google-services.json ./app/src/mock/debug/google-services.json
+            mkdir -p app/src/prod/debug/
+            cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
+      - run:
+          name: Prepare apks
+          command: ./gradlew assembleMockDebug assembleMockDebugUnitTest assembleMockDebugAndroidTest
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .
+  checks:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
+          name: Run checks
+          command: ./gradlew lintMockDebug pmd findbugs
+      - run:
+          name: Copy checks reports
+          command: |
+            mkdir -p app/build/circleci/artifacts/reports/lint/
+            mv app/build/reports/lint-report/ app/build/circleci/artifacts/reports/lint/
+            mkdir -p app/build/circleci/artifacts/reports/pmd/
+            mv app/build/reports/pmd/ app/build/circleci/artifacts/reports/pmd/
+            mkdir -p app/build/circleci/artifacts/reports/findbugs/
+            mv app/build/reports/findbugs/ app/build/circleci/artifacts/reports/findbugs/
+      - store_artifacts:
+          path: app/build/circleci/artifacts/reports
+          destination: reports
+  unit-tests:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
+          name: Run unit tests
+          command: ./gradlew testMockDebugUnitTest
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - app/build/jacoco
+      - store_test_results:
+          path: app/build/test-results/testMockDebugUnitTest
+  ui-tests:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
+          name: Install Crcmod
+          command: |
+            sudo apt-get install gcc python-dev python-setuptools
+            sudo easy_install -U pip
+            sudo pip install -U crcmod
+      - run:
+          name: Install Gcloud
+          command: |
+            curl -L "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-166.0.0-linux-x86_64.tar.gz" | tar xz
+            CLOUDSDK_CORE_DISABLE_PROMPTS=1 ./google-cloud-sdk/install.sh
+      - run:
+          name: Log in to Google Cloud Platform
+          shell: /bin/bash -euo pipefail
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/client-secret.json
+            ./google-cloud-sdk/bin/gcloud config set project $PROJECT_ID
+            ./google-cloud-sdk/bin/gcloud --quiet components update
+            ./google-cloud-sdk/bin/gcloud --quiet components install beta
+            ./google-cloud-sdk/bin/gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
+      - run:
+          name: Run UI tests
+          no_output_timeout: 15m
+          shell: /bin/bash -euo pipefail
+          command: |
+            ./google-cloud-sdk/bin/gcloud firebase test android models list
+            (./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation \
+              --app app/build/outputs/apk/app-mock-debug.apk \
+              --test app/build/outputs/apk/app-mock-debug-androidTest.apk \
+              --device model=Nexus5X,version=23,locale=en,orientation=portrait \
+              --timeout 15m \
+              --results-bucket $PROJECT_ID \
+              --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
+              --directories-to-pull /sdcard 2>&1 | tee firebase.log) || EXIT_CODE=$?
+
+            RESULTS_BUCKET=$(sed -n 's|^.*\[https://console.developers.google.com/storage/browser/\([^]]*\).*|gs://\1|p' firebase.log)
+            TEST_LAB_ARTIFACTS_DIRECTORY="app/build/circleci/artifacts/testlab"
+            echo "Downloading from: ${RESULTS_BUCKET}"
+            mkdir -p $TEST_LAB_ARTIFACTS_DIRECTORY
+            chmod +x $TEST_LAB_ARTIFACTS_DIRECTORY
+            ./google-cloud-sdk/bin/gsutil -m cp -n -R -Z "$RESULTS_BUCKET*" $TEST_LAB_ARTIFACTS_DIRECTORY
+            
+            exit ${EXIT_CODE:-0}
+      - run:
+          name: Copy UI tests coverage artifact
+          command: find app/build/circleci/artifacts/testlab -name "*.ec" -exec cp {} app/build/ \;
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - app/build/coverage.ec
+      - run:
+          name: Copy UI Junit artifacts
+          command: |
+            mkdir -p app/build/circleci/test-results/
+            find app/build/circleci/artifacts/testlab -name "*.xml" -exec cp {} app/build/circleci/test-results/ \;
+      - store_artifacts:
+          path: app/build/circleci/artifacts
+          destination: artifacts
+      - store_test_results:
+          path: app/build/circleci/test-results
+  coverage:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
+          name: Generate code coverage
+          command: |
+            ./gradlew generateCodeCoverageReport
+            mkdir -p app/build/circleci/artifacts/coverage/
+            find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} app/build/circleci/artifacts/coverage/ \;
+      - run:
+          name: Send coverage to CodeCov
+          command: bash <(curl -s https://codecov.io/bash) -f './app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml'
+      - store_artifacts:
+          path: app/build/circleci/artifacts
+          destination: artifacts
+workflows:
+  version: 2
+  build_checks_unit_and_ui_tests_coverage:
+    jobs:
+      - build
+      - checks:
+          requires:
+            - build
+      - unit-tests:
+          requires:
+            - checks
+      - ui-tests:
+          requires:
+            - unit-tests
+      - coverage:
+          requires:
+            - ui-tests

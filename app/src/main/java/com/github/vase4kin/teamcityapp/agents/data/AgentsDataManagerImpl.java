@@ -26,9 +26,10 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;

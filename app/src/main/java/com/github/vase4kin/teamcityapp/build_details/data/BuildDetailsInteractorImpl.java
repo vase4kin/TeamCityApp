@@ -31,10 +31,13 @@ import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent;
+import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import retrofit2.adapter.rxjava.HttpException;
 import rx.Observer;
 import rx.Subscription;
@@ -172,7 +175,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      *
      * @param event FloatButtonChangeVisibilityEvent
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(FloatButtonChangeVisibilityEvent event) {
         if (mListener == null) return;
         switch (event.getVisibility()) {
@@ -192,7 +195,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      *
      * @param event {@link StopBuildEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(StopBuildEvent event) {
         if (mListener == null) return;
         mListener.onCancelBuildActionTriggered();
@@ -203,7 +206,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      *
      * @param event {@link ShareBuildEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(ShareBuildEvent event) {
         if (mListener == null) return;
         mListener.onShareBuildActionTriggered();
@@ -214,7 +217,7 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      *
      * @param event {@link com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(RestartBuildEvent event) {
         if (mListener == null) return;
         mListener.onRestartBuildActionTriggered();
@@ -223,9 +226,20 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     /***
      * Handle receiving post events from {@link EventBus}
      *
+     * @param event {@link com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent}
+     */
+    @Subscribe
+    public void onEvent(TextCopiedEvent event) {
+        if (mListener == null) return;
+        mListener.onTextCopiedActionTriggered();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
      * @param event {@link StartBuildsListActivityFilteredByBranchEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(StartBuildsListActivityFilteredByBranchEvent event) {
         if (mListener == null) return;
         mListener.onStartBuildListActivityFilteredByBranchEventTriggered(event.getBranchName());

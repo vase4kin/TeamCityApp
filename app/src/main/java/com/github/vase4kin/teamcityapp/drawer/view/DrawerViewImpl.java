@@ -185,7 +185,7 @@ public class DrawerViewImpl implements DrawerView {
                     @Override
                     public boolean onProfileChanged(View view, IProfile iProfile, boolean b) {
                         if (iProfile != null) {
-                            switch (iProfile.getIdentifier()) {
+                            switch ((int) iProfile.getIdentifier()) {
                                 case PROFILES_MANAGING:
                                     mOnDrawerPresenterListener.startAccountListActivity();
                                     break;
@@ -254,7 +254,7 @@ public class DrawerViewImpl implements DrawerView {
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         if (drawerItem != null) {
 
-                            switch (drawerItem.getIdentifier()) {
+                            switch ((int) drawerItem.getIdentifier()) {
                                 case PROJECTS:
                                     if (mActivity instanceof RootProjectsActivity) {
                                         break;

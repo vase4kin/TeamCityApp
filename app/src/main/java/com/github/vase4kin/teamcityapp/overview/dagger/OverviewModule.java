@@ -38,6 +38,8 @@ import com.github.vase4kin.teamcityapp.overview.view.OverviewViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -46,7 +48,6 @@ import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
 import dagger.multibindings.IntoSet;
-import de.greenrobot.event.EventBus;
 
 @Module
 public class OverviewModule {

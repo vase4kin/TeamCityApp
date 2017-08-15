@@ -21,12 +21,13 @@ import android.support.annotation.NonNull;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModelImpl;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesInteractor;
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 
 import java.util.List;
 
@@ -38,17 +39,27 @@ import javax.inject.Inject;
 public class PropertiesPresenterImpl extends BaseListPresenterImpl<
         PropertiesDataModel,
         Properties.Property,
-        BaseListView,
+        PropertiesView,
         PropertiesDataManager,
         ViewTracker,
-        BaseValueExtractor> {
+        BaseValueExtractor> implements PropertiesView.Listener {
+
+    private final PropertiesInteractor mInteractor;
 
     @Inject
-    PropertiesPresenterImpl(@NonNull BaseListView view,
+    PropertiesPresenterImpl(@NonNull PropertiesView view,
                             @NonNull PropertiesDataManager dataManager,
                             @NonNull ViewTracker tracker,
-                            @NonNull BaseValueExtractor valueExtractor) {
+                            @NonNull BaseValueExtractor valueExtractor,
+                            @NonNull PropertiesInteractor interactor) {
         super(view, dataManager, tracker, valueExtractor);
+        this.mInteractor = interactor;
+    }
+
+    @Override
+    protected void initViews() {
+        mView.setListener(this);
+        super.initViews();
     }
 
     /**
@@ -65,5 +76,19 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected PropertiesDataModel createModel(List<Properties.Property> data) {
         return new PropertiesDataModelImpl(data);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCardClick(String header, String value) {
+        mView.showCopyValueBottomSheet(header, value);
+    }
+
+    @Override
+    public void onCopyActionClick(String valueToCopy) {
+        mInteractor.copyTextToClipBoard(valueToCopy);
+        mInteractor.postTextCopiedEvent();
     }
 }

@@ -26,11 +26,12 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,6 +44,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
+
+import javax.inject.Named;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.Call;
@@ -68,6 +71,8 @@ import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
 import static com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -100,23 +105,27 @@ public class CreateAccountActivityTest {
     @Captor
     private ArgumentCaptor<Callback> mCallbackArgumentCaptor;
 
+    @Named(CLIENT_BASE)
     @Mock
-    private AppModule mAppModule;
+    private OkHttpClient mClientBase;
 
+    @Named(CLIENT_AUTH)
     @Mock
-    private OkHttpClient mClient;
-
-    @Mock
-    private UserAccount mUserAccount;
+    private OkHttpClient mClientAuth;
 
     @Mock
     private Call mCall;
+
+    @BeforeClass
+    public static void disableOnboarding() {
+        TestUtils.disableOnboarding();
+    }
 
     @Before
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getAppInjector().sharedUserStorage().clearAll();
-        when(mClient.newCall(Matchers.any(Request.class))).thenReturn(mCall);
+        when(mClientBase.newCall(Matchers.any(Request.class))).thenReturn(mCall);
         mActivityRule.launchActivity(null);
     }
 
@@ -134,6 +143,7 @@ public class CreateAccountActivityTest {
                                 .request(new Request.Builder().url(URL).build())
                                 .protocol(Protocol.HTTP_1_0)
                                 .code(200)
+                                .message("")
                                 .build());
                 return null;
             }

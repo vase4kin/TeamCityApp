@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -80,8 +79,8 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         // <!----Setting id for testing purpose----->!
         mRecyclerView.setId(recyclerViewId());
         // <!--------------------------------------->!
-        mErrorView.getImage().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
-        mErrorView.setOnRetryListener(retryListener);
+        mErrorView.setImageTint(Color.LTGRAY);
+        mErrorView.setRetryListener(retryListener);
         mEmpty.setText(mEmptyMessage);
         mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));

@@ -23,9 +23,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.Toast;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
@@ -34,7 +32,9 @@ import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataE
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 
-import de.greenrobot.event.EventBus;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -131,6 +131,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
+    public void postTextCopiedEvent() {
+        mEventBus.post(new TextCopiedEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void subscribeToEventBusEvents() {
         mEventBus.register(this);
     }
@@ -151,7 +159,6 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
         ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clip = ClipData.newPlainText("", textToCopy);
         clipboard.setPrimaryClip(clip);
-        Toast.makeText(mContext, R.string.build_element_copy_text, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -196,7 +203,7 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      *
      * @param event {@link OnOverviewRefreshDataEvent}
      */
-    @SuppressWarnings("unused")
+    @Subscribe
     public void onEvent(OnOverviewRefreshDataEvent event) {
         if (mListener == null) return;
         mListener.onDataRefreshEvent();
