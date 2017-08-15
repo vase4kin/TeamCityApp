@@ -164,7 +164,7 @@ dependencies {
     // Dialogs
     compile 'com.afollestad.material-dialogs:core:0.9.4.5'
     // Views
-    compile 'com.github.xiprox.errorview:library:2.2.0'
+    compile 'tr.xip.errorview:library:3.0.0'
     compile 'com.pnikosis:materialish-progress:1.7'
     compile 'com.cocosw:bottomsheet:1.3.0@aar'
     // View injection

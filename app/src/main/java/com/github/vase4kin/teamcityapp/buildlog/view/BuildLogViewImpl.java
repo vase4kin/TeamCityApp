@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.buildlog.view;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -66,8 +65,8 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
     public void initViews(final OnBuildLogLoadListener listener) {
         mUnbinder = ButterKnife.bind(this, mView);
 
-        mErrorView.getImage().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
-        mErrorView.setOnRetryListener(new ErrorView.RetryListener() {
+        mErrorView.setImageTint(Color.LTGRAY);
+        mErrorView.setRetryListener(new ErrorView.RetryListener() {
             @Override
             public void onRetry() {
                 listener.loadBuildLog();

@@ -15,12 +15,13 @@
   -->
 
 <tr.xip.errorview.ErrorView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:errorview="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/error_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:layout_margin="@dimen/default_margin"
     android:visibility="gone"
-    errorview:ev_title="@string/error_view_oops_message"
-    errorview:ev_retryButtonText="@string/error_view_retry_button_text" />
+    app:ev_title="@string/error_view_oops_message"
+    app:ev_retryText="@string/error_view_retry_button_text"
+    app:ev_retryColor="@color/main_text_color" />
