@@ -218,7 +218,7 @@ dependencies {
     androidTestCompile "com.crittercism.dexmaker:dexmaker-mockito:$rootProject.dexMakerVersion"
     androidTestCompile 'com.squareup.spoon:spoon-client:1.7.1'
     androidTestCompile 'com.jraska:falcon-spoon-compat:1.0.4'
-    androidTestCompile 'com.github.fabioCollini:DaggerMock:0.6.1'
+    androidTestCompile 'com.github.fabioCollini:DaggerMock:0.7.0'
     // Resolve conflits between apks
     androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibraryVersion"
     androidTestCompile "com.android.support:design:$rootProject.supportLibraryVersion"
