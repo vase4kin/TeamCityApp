@@ -30,8 +30,8 @@ android {
         applicationId "com.github.vase4kin.teamcityapp"
         minSdkVersion rootProject.minSdkVersion
         targetSdkVersion rootProject.targetSdkVersion
-        versionCode 31
-        versionName "1.2.1"
+        versionCode 32
+        versionName "1.2.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
