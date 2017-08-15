@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
 import android.os.Looper;
@@ -100,8 +99,8 @@ public class OverviewViewImpl implements OverviewView {
     public void initViews(ViewListener listener) {
         this.mListener = listener;
         mUnbinder = ButterKnife.bind(this, mView);
-        mErrorView.getImage().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
-        mErrorView.setOnRetryListener(listener);
+        mErrorView.setImageTint(Color.LTGRAY);
+        mErrorView.setRetryListener(listener);
         mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
         // For testing purposes
