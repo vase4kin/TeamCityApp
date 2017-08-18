@@ -42,10 +42,12 @@ public class BottomSheetViewImpl implements BottomSheetView {
     private Unbinder mUnbinder;
     private final View view;
     private final BottomSheetDialogFragment fragment;
+    private final BottomSheetAdapter adapter;
 
-    public BottomSheetViewImpl(View view, BottomSheetDialogFragment fragment) {
+    public BottomSheetViewImpl(View view, BottomSheetDialogFragment fragment, BottomSheetAdapter adapter) {
         this.view = view;
         this.fragment = fragment;
+        this.adapter = adapter;
     }
 
     /**
@@ -55,7 +57,8 @@ public class BottomSheetViewImpl implements BottomSheetView {
     public void initViews(OnBottomSheetClickListener listener, BottomSheetDataModel dataModel, String title) {
         mUnbinder = ButterKnife.bind(this, view);
         mainTitle.setText(title);
-        BottomSheetAdapter adapter = new BottomSheetAdapter(dataModel, listener);
+        adapter.setDataModel(dataModel);
+        adapter.setListener(listener);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         recyclerView.setAdapter(adapter);
     }

@@ -76,6 +76,9 @@ public abstract class BaseAdapter<DM extends BaseDataModel> extends RecyclerView
         return mViewHolderFactories.get(viewType).createViewHolder(parent);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onBindViewHolder(BaseViewHolder<DM> holder, int position) {
         holder.bind(mDataModel, position);

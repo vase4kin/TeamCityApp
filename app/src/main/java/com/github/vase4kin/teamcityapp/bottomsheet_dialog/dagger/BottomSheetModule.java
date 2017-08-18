@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.BranchMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.DefaultMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
@@ -26,6 +28,8 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataM
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModelImpl;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractor;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractorImpl;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetAdapter;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetItemViewHolderFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetViewImpl;
 
@@ -73,8 +77,8 @@ public class BottomSheetModule {
     }
 
     @Provides
-    BottomSheetView providesBottomSheetView() {
-        return new BottomSheetViewImpl(view, fragment);
+    BottomSheetView providesBottomSheetView(BottomSheetAdapter adapter) {
+        return new BottomSheetViewImpl(view, fragment, adapter);
     }
 
     @IntoMap
@@ -89,5 +93,17 @@ public class BottomSheetModule {
     @Provides
     MenuItemsFactory providesBranchMenu() {
         return new BranchMenuItemsFactory(view.getContext(), description);
+    }
+
+    @Provides
+    BottomSheetAdapter providesAdapter(Map<Integer, ViewHolderFactory<BottomSheetDataModel>> viewHolderFactories) {
+        return new BottomSheetAdapter(viewHolderFactories);
+    }
+
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    @Provides
+    ViewHolderFactory<BottomSheetDataModel> providesViewHolderFactory() {
+        return new BottomSheetItemViewHolderFactory();
     }
 }

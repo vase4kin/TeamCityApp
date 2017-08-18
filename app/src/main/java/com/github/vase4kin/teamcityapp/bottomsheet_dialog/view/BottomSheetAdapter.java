@@ -16,32 +16,27 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
 
-import android.graphics.drawable.Drawable;
-import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+import java.util.Map;
 
 /**
  * Adapter to manage bottom sheet items
- *
- * TODO: Inject with dagger
  */
-public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.BottomSheetItemViewHolder> {
+public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
 
-    private final BottomSheetDataModel model;
-    private final BottomSheetView.OnBottomSheetClickListener listener;
+    private BottomSheetView.OnBottomSheetClickListener listener;
 
-    public BottomSheetAdapter(BottomSheetDataModel model, BottomSheetView.OnBottomSheetClickListener listener) {
-        this.model = model;
+    public BottomSheetAdapter(Map<Integer, ViewHolderFactory<BottomSheetDataModel>> viewHolderFactories) {
+        super(viewHolderFactories);
+    }
+
+    public void setListener(BottomSheetView.OnBottomSheetClickListener listener) {
         this.listener = listener;
     }
 
@@ -49,22 +44,10 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
      * {@inheritDoc}
      */
     @Override
-    public BottomSheetItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_bottom_sheet, parent, false);
-        return new BottomSheetItemViewHolder(view);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
-        final String title = model.getTitle(position);
-        final String description = model.getDescription(position);
-        holder.title.setText(title);
-        Drawable icon = model.getIcon(position);
-        holder.icon.setImageDrawable(icon);
-        if (model.hasCopyAction(position)) {
+    public void onBindViewHolder(BaseViewHolder<BottomSheetDataModel> holder, int position) {
+        super.onBindViewHolder(holder, position);
+        final String description = mDataModel.getDescription(position);
+        if (mDataModel.hasCopyAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -72,7 +55,7 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
                 }
             });
         }
-        if (model.hasBranchAction(position)) {
+        if (mDataModel.hasBranchAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -80,31 +63,7 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
                 }
             });
         }
+
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemCount() {
-        return model.getItemCount();
-    }
-
-    /**
-     * Bottom sheet menu item view holder
-     *
-     * TODO: inject with dagger
-     */
-    static class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {
-
-        @BindView(R.id.bs_title)
-        TextView title;
-        @BindView(R.id.bs_image)
-        ImageView icon;
-
-        BottomSheetItemViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-    }
 }
