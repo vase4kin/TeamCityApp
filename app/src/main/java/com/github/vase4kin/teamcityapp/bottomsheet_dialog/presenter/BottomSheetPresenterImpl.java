@@ -63,4 +63,12 @@ public class BottomSheetPresenterImpl implements BottomSheetPresenter, BottomShe
         interactor.postTextCopiedEvent();
         view.close();
     }
+
+    @Override
+    public void onShowBuildsActionClick(String branchName) {
+        interactor.postStartBuildListActivityFilteredByBranchEvent(branchName);
+        // TODO:
+        //        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+        view.close();
+    }
 }

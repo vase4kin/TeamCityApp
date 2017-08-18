@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.view;
 
-import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -35,15 +34,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
@@ -66,6 +62,8 @@ public class OverviewViewImpl implements OverviewView {
     private static final String ICON_BRANCH = "{mdi-git}";
     private static final String ICON_AGENT = "{md-directions-railway}";
     private static final String ICON_TRIGGER_BY = "{md-account-circle}";
+
+    private static final String TAG_BOTTOM_SHEET = "BottomSheet Dialog";
 
     @BindView(R.id.swiperefresh)
     SwipeRefreshLayout mSwipeRefreshLayout;
@@ -354,7 +352,7 @@ public class OverviewViewImpl implements OverviewView {
     @Override
     public void showDefaultCardBottomSheetDialog(String header, final String description) {
         BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(header, description, MenuItemsFactory.TYPE_DEFAULT);
-        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), "BottomSheet Dialog");
+        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -362,8 +360,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showBranchCardBottomSheetDialog(String description) {
-        BottomSheet bottomSheet = createBottomSheet(mActivity.getString(R.string.build_branch_section_text), description);
-        bottomSheet.show();
+        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_branch_section_text), description, MenuItemsFactory.TYPE_BRANCH);
+        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -428,50 +426,4 @@ public class OverviewViewImpl implements OverviewView {
             }
         }, TIMEOUT_PROMPT);
     }
-
-    /**
-     * Create bottom sheet
-     *
-     * @param header      - bottom sheet header
-     * @param description - description to use
-     * @return
-     */
-    private BottomSheet createBottomSheet(String header, final String description) {
-        BottomSheet bottomSheet = new BottomSheet.Builder(mActivity)
-                .title(header)
-                .sheet(R.menu.menu_item_overview)
-                .listener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.copy:
-                                mListener.onCopyActionClick(description);
-                                return true;
-                            case R.id.show_builds_built_branch:
-                                mListener.onShowBuildsActionClick(description);
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                }).build();
-        bottomSheet.getMenu().findItem(R.id.copy)
-                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_content_copy));
-        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch)
-                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_list));
-        bottomSheet.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-                mListener.onBottomSheetShow();
-            }
-        });
-        bottomSheet.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                mListener.onBottomSheetDismiss();
-            }
-        });
-        return bottomSheet;
-    }
-
 }

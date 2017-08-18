@@ -43,5 +43,7 @@ public interface BottomSheetView {
      */
     interface OnBottomSheetClickListener {
         void onCopyItemClick(String text);
+
+        void onShowBuildsActionClick(String branch);
     }
 }

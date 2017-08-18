@@ -70,6 +70,14 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
                 }
             });
         }
+        if (model.hasBranchAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onShowBuildsActionClick(description);
+                }
+            });
+        }
     }
 
     /**

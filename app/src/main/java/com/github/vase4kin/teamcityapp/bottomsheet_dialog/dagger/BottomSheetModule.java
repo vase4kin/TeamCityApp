@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.BranchMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.DefaultMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
@@ -81,5 +82,13 @@ public class BottomSheetModule {
     MenuItemsFactory providesDefaultMenu() {
         String description = bundle.getString(ARG_DESCRIPTION);
         return new DefaultMenuItemsFactory(view.getContext(), description);
+    }
+
+    @IntoMap
+    @IntKey(DefaultMenuItemsFactory.TYPE_BRANCH)
+    @Provides
+    MenuItemsFactory providesBranchMenu() {
+        String description = bundle.getString(ARG_DESCRIPTION);
+        return new BranchMenuItemsFactory(view.getContext(), description);
     }
 }

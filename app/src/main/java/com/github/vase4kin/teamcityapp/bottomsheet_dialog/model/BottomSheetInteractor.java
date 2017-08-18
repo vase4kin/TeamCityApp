@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
 
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 
 /**
@@ -44,4 +45,11 @@ public interface BottomSheetInteractor {
      * Post {@link TextCopiedEvent}
      */
     void postTextCopiedEvent();
+
+    /**
+     * Post {@link StartBuildsListActivityFilteredByBranchEvent}
+     *
+     * @param branchName - branch name
+     */
+    void postStartBuildListActivityFilteredByBranchEvent(String branchName);
 }

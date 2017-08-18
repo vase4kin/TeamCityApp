@@ -20,6 +20,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -63,6 +64,14 @@ public class BottomSheetInteractorImpl implements BottomSheetInteractor {
     @Override
     public void postTextCopiedEvent() {
         eventBus.post(new TextCopiedEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postStartBuildListActivityFilteredByBranchEvent(String branchName) {
+        eventBus.post(new StartBuildsListActivityFilteredByBranchEvent(branchName));
     }
 
     /**

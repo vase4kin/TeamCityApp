@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 public class BottomSheetItem {
 
     public static final int TYPE_COPY = 0;
+    public static final int TYPE_BRANCH = 1;
 
     private final int type;
     private final String title;

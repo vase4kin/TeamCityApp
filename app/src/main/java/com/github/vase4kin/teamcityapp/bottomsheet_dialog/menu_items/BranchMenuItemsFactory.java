@@ -16,27 +16,31 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items;
 
+import android.content.Context;
+
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import java.util.List;
 
 /**
- * Menu items factory
+ * Impl of {@link MenuItemsFactory} for branch menu
  */
-public interface MenuItemsFactory {
+public class BranchMenuItemsFactory extends DefaultMenuItemsFactory {
+
+    public BranchMenuItemsFactory(Context context, String description) {
+        super(context, description);
+    }
 
     /**
-     * Default menu type
+     * {@inheritDoc}
      */
-    int TYPE_DEFAULT = 0;
-
-    /**
-     * Branch menu type
-     */
-    int TYPE_BRANCH = 1;
-
-    /**
-     * @return list of menu items
-     */
-    List<BottomSheetItem> createMenuItems();
+    @Override
+    public List<BottomSheetItem> createMenuItems() {
+        List<BottomSheetItem> list = super.createMenuItems();
+        list.add(new BottomSheetItem(BottomSheetItem.TYPE_BRANCH, getString(R.string.build_element_show_all_builds_built_branch), getDescription(), new IconDrawable(getContext(), MaterialIcons.md_list)));
+        return list;
+    }
 }

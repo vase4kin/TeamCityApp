@@ -56,4 +56,12 @@ public interface BottomSheetDataModel extends BaseDataModel {
      * @return action of menu item
      */
     boolean hasCopyAction(int position);
+
+    /**
+     * Has branch action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasBranchAction(int position);
 }

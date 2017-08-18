@@ -70,4 +70,12 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
     public boolean hasCopyAction(int position) {
         return items.get(position).getType() == BottomSheetItem.TYPE_COPY;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasBranchAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_BRANCH;
+    }
 }
