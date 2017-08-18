@@ -32,6 +32,8 @@ import butterknife.ButterKnife;
 
 /**
  * Adapter to manage bottom sheet items
+ *
+ * TODO: Inject with dagger
  */
 public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.BottomSheetItemViewHolder> {
 
@@ -90,6 +92,8 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
 
     /**
      * Bottom sheet menu item view holder
+     *
+     * TODO: inject with dagger
      */
     static class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {
 
