@@ -27,6 +27,9 @@ import android.widget.TextView;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Adapter to manage bottom sheet items
  */
@@ -79,18 +82,17 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
 
     /**
      * Bottom sheet menu item view holder
-     *
-     * TODO: ButterKnife
      */
     static class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView title;
-        private final ImageView icon;
+        @BindView(R.id.bs_title)
+        TextView title;
+        @BindView(R.id.bs_image)
+        ImageView icon;
 
         BottomSheetItemViewHolder(View itemView) {
             super(itemView);
-            title = itemView.findViewById(R.id.bs_title);
-            icon = itemView.findViewById(R.id.bs_image);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
