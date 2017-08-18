@@ -34,10 +34,26 @@ public interface BottomSheetDataModel extends BaseDataModel {
     String getTitle(int position);
 
     /**
+     * Get description
+     *
+     * @param position - adapter position
+     * @return description
+     */
+    String getDescription(int position);
+
+    /**
      * Get icon for menu item
      *
      * @param position - adapter position
      * @return menu item icon
      */
     Drawable getIcon(int position);
+
+    /**
+     * Has copy action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasCopyAction(int position);
 }

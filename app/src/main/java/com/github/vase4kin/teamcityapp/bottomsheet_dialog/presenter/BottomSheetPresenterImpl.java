@@ -58,7 +58,9 @@ public class BottomSheetPresenterImpl implements BottomSheetPresenter, BottomShe
      * {@inheritDoc}
      */
     @Override
-    public void onItemClick() {
-
+    public void onCopyItemClick(String text) {
+        interactor.copyTextToClipBoard(text);
+        interactor.postTextCopiedEvent();
+        view.close();
     }
 }

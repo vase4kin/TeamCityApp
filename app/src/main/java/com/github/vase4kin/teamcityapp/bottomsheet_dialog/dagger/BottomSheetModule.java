@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.DefaultMenuItemsFactory;
@@ -27,6 +28,8 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInter
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractorImpl;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetViewImpl;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
@@ -42,14 +45,17 @@ import dagger.multibindings.IntoMap;
 public class BottomSheetModule {
 
     public static final String ARG_TITLE = "arg_title";
+    public static final String ARG_DESCRIPTION = "arg_description";
     public static final String ARG_BOTTOM_SHEET_TYPE = "arg_bottom_sheet_type";
 
     private final View view;
+    private final BottomSheetDialogFragment fragment;
     private final Bundle bundle;
 
-    public BottomSheetModule(View view, Bundle bundle) {
+    public BottomSheetModule(View view, BottomSheetDialogFragment fragment) {
         this.view = view;
-        this.bundle = bundle;
+        this.fragment = fragment;
+        this.bundle = fragment.getArguments();
     }
 
     @Provides
@@ -59,20 +65,21 @@ public class BottomSheetModule {
     }
 
     @Provides
-    BottomSheetInteractor providesInteractor(BottomSheetDataModel model) {
+    BottomSheetInteractor providesInteractor(BottomSheetDataModel model, EventBus eventBus) {
         String title = bundle.getString(ARG_TITLE);
-        return new BottomSheetInteractorImpl(title, model);
+        return new BottomSheetInteractorImpl(title, model, view.getContext(), eventBus);
     }
 
     @Provides
     BottomSheetView providesBottomSheetView() {
-        return new BottomSheetViewImpl(view);
+        return new BottomSheetViewImpl(view, fragment);
     }
 
     @IntoMap
     @IntKey(DefaultMenuItemsFactory.TYPE_DEFAULT)
     @Provides
     MenuItemsFactory providesDefaultMenu() {
-        return new DefaultMenuItemsFactory(view.getContext());
+        String description = bundle.getString(ARG_DESCRIPTION);
+        return new DefaultMenuItemsFactory(view.getContext(), description);
     }
 }

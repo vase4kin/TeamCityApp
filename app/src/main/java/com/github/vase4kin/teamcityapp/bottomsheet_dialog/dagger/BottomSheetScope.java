@@ -16,17 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
+import javax.inject.Scope;
 
-import dagger.Component;
-
-/**
- * Dagger component for bottom sheet dialog
- */
-@BottomSheetScope
-@Component(modules = BottomSheetModule.class, dependencies = AppComponent.class)
-public interface BottomSheetComponent {
-
-    void inject(BottomSheetDialog bottomSheetDialog);
+@Scope
+public @interface BottomSheetScope {
 }

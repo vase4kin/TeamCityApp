@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
 
+import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
+
 /**
  * Interactor for bottom sheet
  */
@@ -30,4 +32,16 @@ public interface BottomSheetInteractor {
      * @return title of bottom sheet
      */
     String getTitle();
+
+    /**
+     * Copy text to the clipboard
+     *
+     * @param textToCopy - text to copy
+     */
+    void copyTextToClipBoard(String textToCopy);
+
+    /**
+     * Post {@link TextCopiedEvent}
+     */
+    void postTextCopiedEvent();
 }

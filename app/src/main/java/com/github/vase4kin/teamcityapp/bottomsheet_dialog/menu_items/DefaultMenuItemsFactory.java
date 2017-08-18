@@ -31,14 +31,17 @@ import java.util.List;
  */
 public class DefaultMenuItemsFactory extends BaseMenuItemsFactory {
 
-    public DefaultMenuItemsFactory(Context context) {
-        super(context);
+    public DefaultMenuItemsFactory(Context context, String description) {
+        super(context, description);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<BottomSheetItem> createMenuItems() {
         List<BottomSheetItem> list = new ArrayList<>();
-        list.add(new BottomSheetItem(getString(R.string.build_element_copy), new IconDrawable(getContext(), MaterialIcons.md_content_copy)));
+        list.add(new BottomSheetItem(BottomSheetItem.TYPE_COPY, getString(R.string.build_element_copy), getDescription(), new IconDrawable(getContext(), MaterialIcons.md_content_copy)));
         return list;
     }
 }

@@ -43,6 +43,14 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
      * {@inheritDoc}
      */
     @Override
+    public String getDescription(int position) {
+        return items.get(position).getDescription();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Drawable getIcon(int position) {
         return items.get(position).getIcon();
     }
@@ -53,5 +61,13 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasCopyAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_COPY;
     }
 }

@@ -23,11 +23,17 @@ import android.graphics.drawable.Drawable;
  */
 public class BottomSheetItem {
 
+    public static final int TYPE_COPY = 0;
+
+    private final int type;
     private final String title;
+    private final String description;
     private final Drawable icon;
 
-    public BottomSheetItem(String title, Drawable icon) {
+    public BottomSheetItem(int type, String title, String description, Drawable icon) {
+        this.type = type;
         this.title = title;
+        this.description = description;
         this.icon = icon;
     }
 
@@ -43,5 +49,19 @@ public class BottomSheetItem {
      */
     public Drawable getIcon() {
         return icon;
+    }
+
+    /**
+     * @return menu item type
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * @return menu item description
+     */
+    public String getDescription() {
+        return description;
     }
 }

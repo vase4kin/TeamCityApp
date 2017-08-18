@@ -29,9 +29,11 @@ import java.util.List;
 public abstract class BaseMenuItemsFactory implements MenuItemsFactory {
 
     private final Context context;
+    private final String description;
 
-    BaseMenuItemsFactory(Context context) {
+    BaseMenuItemsFactory(Context context, String description) {
         this.context = context;
+        this.description = description;
     }
 
     @Override
@@ -43,5 +45,9 @@ public abstract class BaseMenuItemsFactory implements MenuItemsFactory {
 
     public Context getContext() {
         return context;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

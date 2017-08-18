@@ -16,6 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+
+import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
+
+import org.greenrobot.eventbus.EventBus;
+
 /**
  * Impl of {@link BottomSheetInteractor}
  */
@@ -23,10 +31,14 @@ public class BottomSheetInteractorImpl implements BottomSheetInteractor {
 
     private final String title;
     private final BottomSheetDataModel model;
+    private final Context context;
+    private final EventBus eventBus;
 
-    public BottomSheetInteractorImpl(String title, BottomSheetDataModel model) {
+    public BottomSheetInteractorImpl(String title, BottomSheetDataModel model, Context context, EventBus eventBus) {
         this.title = title;
         this.model = model;
+        this.context = context;
+        this.eventBus = eventBus;
     }
 
     /**
@@ -43,5 +55,23 @@ public class BottomSheetInteractorImpl implements BottomSheetInteractor {
     @Override
     public String getTitle() {
         return title;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postTextCopiedEvent() {
+        eventBus.post(new TextCopiedEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void copyTextToClipBoard(String textToCopy) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("", textToCopy);
+        clipboard.setPrimaryClip(clip);
     }
 }

@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger.BottomSheetModule;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger.DaggerBottomSheetComponent;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.presenter.BottomSheetPresenterImpl;
@@ -41,10 +42,11 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
     public BottomSheetDialog() {
     }
 
-    public static BottomSheetDialog createBottomSheetDialog(String title, int menuType) {
+    public static BottomSheetDialog createBottomSheetDialog(String title, String description, int menuType) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
         Bundle bundle = new Bundle();
         bundle.putString(BottomSheetModule.ARG_TITLE, title);
+        bundle.putString(BottomSheetModule.ARG_DESCRIPTION, description);
         bundle.putInt(BottomSheetModule.ARG_BOTTOM_SHEET_TYPE, menuType);
         bottomSheetDialog.setArguments(bundle);
         return bottomSheetDialog;
@@ -57,7 +59,8 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
 
         // Injecting presenter
         DaggerBottomSheetComponent.builder()
-                .bottomSheetModule(new BottomSheetModule(view, getArguments()))
+                .bottomSheetModule(new BottomSheetModule(view, this))
+                .appComponent(((TeamCityApplication) getActivity().getApplication()).getAppInjector())
                 .build()
                 .inject(this);
 

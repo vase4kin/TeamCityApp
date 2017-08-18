@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
 
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -40,9 +41,11 @@ public class BottomSheetViewImpl implements BottomSheetView {
 
     private Unbinder mUnbinder;
     private final View view;
+    private final BottomSheetDialogFragment fragment;
 
-    public BottomSheetViewImpl(View view) {
+    public BottomSheetViewImpl(View view, BottomSheetDialogFragment fragment) {
         this.view = view;
+        this.fragment = fragment;
     }
 
     /**
@@ -63,5 +66,13 @@ public class BottomSheetViewImpl implements BottomSheetView {
     @Override
     public void unbindViews() {
         mUnbinder.unbind();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() {
+        fragment.dismiss();
     }
 }

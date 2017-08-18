@@ -54,10 +54,19 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
      */
     @Override
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
-        String title = model.getTitle(position);
-        holder.description.setText(title);
+        final String title = model.getTitle(position);
+        final String description = model.getDescription(position);
+        holder.title.setText(title);
         Drawable icon = model.getIcon(position);
         holder.icon.setImageDrawable(icon);
+        if (model.hasCopyAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onCopyItemClick(description);
+                }
+            });
+        }
     }
 
     /**
@@ -70,15 +79,17 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
 
     /**
      * Bottom sheet menu item view holder
+     *
+     * TODO: ButterKnife
      */
     static class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView description;
+        private final TextView title;
         private final ImageView icon;
 
         BottomSheetItemViewHolder(View itemView) {
             super(itemView);
-            description = itemView.findViewById(R.id.bs_title);
+            title = itemView.findViewById(R.id.bs_title);
             icon = itemView.findViewById(R.id.bs_image);
         }
     }

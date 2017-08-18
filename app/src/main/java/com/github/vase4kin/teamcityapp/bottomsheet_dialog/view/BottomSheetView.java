@@ -34,9 +34,14 @@ public interface BottomSheetView {
     void unbindViews();
 
     /**
+     * Close bottom sheet
+     */
+    void close();
+
+    /**
      * Click listener
      */
     interface OnBottomSheetClickListener {
-        void onItemClick();
+        void onCopyItemClick(String text);
     }
 }

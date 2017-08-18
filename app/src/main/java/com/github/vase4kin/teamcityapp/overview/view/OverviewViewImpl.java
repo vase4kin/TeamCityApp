@@ -353,7 +353,7 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showDefaultCardBottomSheetDialog(String header, final String description) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(header, MenuItemsFactory.TYPE_DEFAULT);
+        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(header, description, MenuItemsFactory.TYPE_DEFAULT);
         bottomSheetDialog.show(mActivity.getSupportFragmentManager(), "BottomSheet Dialog");
     }
 
