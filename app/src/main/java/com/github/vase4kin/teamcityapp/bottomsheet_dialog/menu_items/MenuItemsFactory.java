@@ -14,34 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
+package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items;
 
-import android.graphics.drawable.Drawable;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem;
+
+import java.util.List;
 
 /**
- * Menu item of bottom sheet
+ * Menu items factory
  */
-public class BottomSheetItem {
-
-    private final String title;
-    private final Drawable icon;
-
-    public BottomSheetItem(String title, Drawable icon) {
-        this.title = title;
-        this.icon = icon;
-    }
+public interface MenuItemsFactory {
 
     /**
-     * @return title
+     * Default menu type
      */
-    public String getTitle() {
-        return title;
-    }
+    int TYPE_DEFAULT = 0;
 
     /**
-     * @return icon
+     * @return list of menu items
      */
-    public Drawable getIcon() {
-        return icon;
-    }
+    List<BottomSheetItem> createMenuItems();
 }

@@ -38,6 +38,18 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
     @Inject
     BottomSheetPresenterImpl presenter;
 
+    public BottomSheetDialog() {
+    }
+
+    public static BottomSheetDialog createBottomSheetDialog(String title, int menuType) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
+        Bundle bundle = new Bundle();
+        bundle.putString(BottomSheetModule.ARG_TITLE, title);
+        bundle.putInt(BottomSheetModule.ARG_BOTTOM_SHEET_TYPE, menuType);
+        bottomSheetDialog.setArguments(bundle);
+        return bottomSheetDialog;
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,7 +57,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
 
         // Injecting presenter
         DaggerBottomSheetComponent.builder()
-                .bottomSheetModule(new BottomSheetModule(view))
+                .bottomSheetModule(new BottomSheetModule(view, getArguments()))
                 .build()
                 .inject(this);
 

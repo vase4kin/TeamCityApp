@@ -16,21 +16,24 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 
+import android.os.Bundle;
 import android.view.View;
 
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.DefaultMenuItemsFactory;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModelImpl;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractor;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractorImpl;
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetViewImpl;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 import dagger.Module;
 import dagger.Provides;
+import dagger.multibindings.IntKey;
+import dagger.multibindings.IntoMap;
 
 /**
  * Bottom sheet dialog dependencies
@@ -38,27 +41,38 @@ import dagger.Provides;
 @Module
 public class BottomSheetModule {
 
-    private final View view;
+    public static final String ARG_TITLE = "arg_title";
+    public static final String ARG_BOTTOM_SHEET_TYPE = "arg_bottom_sheet_type";
 
-    public BottomSheetModule(View view) {
+    private final View view;
+    private final Bundle bundle;
+
+    public BottomSheetModule(View view, Bundle bundle) {
         this.view = view;
+        this.bundle = bundle;
     }
 
     @Provides
-    BottomSheetDataModel providesBottomSheetDataModel() {
-        List<BottomSheetItem> list = new ArrayList<>();
-        list.add(new BottomSheetItem("Copy"));
-        list.add(new BottomSheetItem("Check"));
-        return new BottomSheetDataModelImpl(list);
+    BottomSheetDataModel providesBottomSheetDataModel(Map<Integer, MenuItemsFactory> menuItemsFactories) {
+        int type = bundle.getInt(ARG_BOTTOM_SHEET_TYPE);
+        return new BottomSheetDataModelImpl(menuItemsFactories.get(type).createMenuItems());
     }
 
     @Provides
     BottomSheetInteractor providesInteractor(BottomSheetDataModel model) {
-        return new BottomSheetInteractorImpl("Title", model);
+        String title = bundle.getString(ARG_TITLE);
+        return new BottomSheetInteractorImpl(title, model);
     }
 
     @Provides
     BottomSheetView providesBottomSheetView() {
         return new BottomSheetViewImpl(view);
+    }
+
+    @IntoMap
+    @IntKey(DefaultMenuItemsFactory.TYPE_DEFAULT)
+    @Provides
+    MenuItemsFactory providesDefaultMenu() {
+        return new DefaultMenuItemsFactory(view.getContext());
     }
 }

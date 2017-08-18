@@ -16,10 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -54,6 +56,8 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
     public void onBindViewHolder(BottomSheetItemViewHolder holder, int position) {
         String title = model.getTitle(position);
         holder.description.setText(title);
+        Drawable icon = model.getIcon(position);
+        holder.icon.setImageDrawable(icon);
     }
 
     /**
@@ -70,10 +74,12 @@ public class BottomSheetAdapter extends RecyclerView.Adapter<BottomSheetAdapter.
     static class BottomSheetItemViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView description;
+        private final ImageView icon;
 
         BottomSheetItemViewHolder(View itemView) {
             super(itemView);
             description = itemView.findViewById(R.id.bs_title);
+            icon = itemView.findViewById(R.id.bs_image);
         }
     }
 }

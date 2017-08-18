@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
 
+import android.graphics.drawable.Drawable;
+
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 
 /**
@@ -30,4 +32,12 @@ public interface BottomSheetDataModel extends BaseDataModel {
      * @return title
      */
     String getTitle(int position);
+
+    /**
+     * Get icon for menu item
+     *
+     * @param position - adapter position
+     * @return menu item icon
+     */
+    Drawable getIcon(int position);
 }

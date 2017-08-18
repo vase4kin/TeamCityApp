@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
 
+import android.graphics.drawable.Drawable;
+
 import java.util.List;
 
 /**
@@ -35,6 +37,14 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
     @Override
     public String getTitle(int position) {
         return items.get(position).getTitle();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Drawable getIcon(int position) {
+        return items.get(position).getIcon();
     }
 
     /**

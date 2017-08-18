@@ -38,6 +38,7 @@ import android.view.View;
 import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
@@ -352,11 +353,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showDefaultCardBottomSheetDialog(String header, final String description) {
-        BottomSheetDialog fragmentModalBottomSheet = new BottomSheetDialog();
-        fragmentModalBottomSheet.show(mActivity.getSupportFragmentManager(), "BottomSheet Fragment");
-//        BottomSheet bottomSheet = createBottomSheet(header, description);
-//        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch).setVisible(false);
-//        bottomSheet.show();
+        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(header, MenuItemsFactory.TYPE_DEFAULT);
+        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), "BottomSheet Dialog");
     }
 
     /**
