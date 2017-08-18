@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.view;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -26,6 +25,7 @@ import android.os.Looper;
 import android.support.annotation.StringRes;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +37,7 @@ import android.view.View;
 
 import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
@@ -78,14 +79,14 @@ public class OverviewViewImpl implements OverviewView {
 
     private ViewListener mListener;
 
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
     private View mView;
     private OverviewAdapter mAdapter;
 
     private final List<BuildElement> mElements = new ArrayList<>();
 
     public OverviewViewImpl(View view,
-                            Activity activity,
+                            AppCompatActivity activity,
                             OverviewAdapter overviewAdapter) {
         this.mActivity = activity;
         this.mView = view;
@@ -351,9 +352,11 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showDefaultCardBottomSheetDialog(String header, final String description) {
-        BottomSheet bottomSheet = createBottomSheet(header, description);
-        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch).setVisible(false);
-        bottomSheet.show();
+        BottomSheetDialog fragmentModalBottomSheet = new BottomSheetDialog();
+        fragmentModalBottomSheet.show(mActivity.getSupportFragmentManager(), "BottomSheet Fragment");
+//        BottomSheet bottomSheet = createBottomSheet(header, description);
+//        bottomSheet.getMenu().findItem(R.id.show_builds_built_branch).setVisible(false);
+//        bottomSheet.show();
     }
 
     /**
