@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 
-import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 
@@ -51,23 +50,25 @@ public class BottomSheetModule {
 
     private final View view;
     private final BottomSheetDialogFragment fragment;
-    private final Bundle bundle;
+    private final int menuType;
+    private final String title;
+    private final String description;
 
     public BottomSheetModule(View view, BottomSheetDialogFragment fragment) {
         this.view = view;
         this.fragment = fragment;
-        this.bundle = fragment.getArguments();
+        this.menuType = fragment.getArguments().getInt(ARG_BOTTOM_SHEET_TYPE);
+        this.title = fragment.getArguments().getString(ARG_TITLE);
+        this.description = fragment.getArguments().getString(ARG_DESCRIPTION);
     }
 
     @Provides
     BottomSheetDataModel providesBottomSheetDataModel(Map<Integer, MenuItemsFactory> menuItemsFactories) {
-        int type = bundle.getInt(ARG_BOTTOM_SHEET_TYPE);
-        return new BottomSheetDataModelImpl(menuItemsFactories.get(type).createMenuItems());
+        return new BottomSheetDataModelImpl(menuItemsFactories.get(menuType).createMenuItems());
     }
 
     @Provides
     BottomSheetInteractor providesInteractor(BottomSheetDataModel model, EventBus eventBus) {
-        String title = bundle.getString(ARG_TITLE);
         return new BottomSheetInteractorImpl(title, model, view.getContext(), eventBus);
     }
 
@@ -80,7 +81,6 @@ public class BottomSheetModule {
     @IntKey(DefaultMenuItemsFactory.TYPE_DEFAULT)
     @Provides
     MenuItemsFactory providesDefaultMenu() {
-        String description = bundle.getString(ARG_DESCRIPTION);
         return new DefaultMenuItemsFactory(view.getContext(), description);
     }
 
@@ -88,7 +88,6 @@ public class BottomSheetModule {
     @IntKey(DefaultMenuItemsFactory.TYPE_BRANCH)
     @Provides
     MenuItemsFactory providesBranchMenu() {
-        String description = bundle.getString(ARG_DESCRIPTION);
         return new BranchMenuItemsFactory(view.getContext(), description);
     }
 }
