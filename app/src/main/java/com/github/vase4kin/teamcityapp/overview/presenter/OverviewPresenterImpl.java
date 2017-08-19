@@ -207,24 +207,6 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      * {@inheritDoc}
      */
     @Override
-    public void onShowBuildsActionClick(String branchName) {
-        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
-        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCopyActionClick(String textToCopy) {
-        mInteractor.copyTextToClipBoard(textToCopy);
-        mInteractor.postTextCopiedEvent();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void onCardClick(String header, String value) {
         mView.showDefaultCardBottomSheetDialog(header, value);
     }

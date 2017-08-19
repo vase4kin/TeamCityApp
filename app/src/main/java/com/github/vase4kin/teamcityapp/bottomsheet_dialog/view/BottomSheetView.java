@@ -42,8 +42,18 @@ public interface BottomSheetView {
      * Click listener
      */
     interface OnBottomSheetClickListener {
-        void onCopyItemClick(String text);
+        /**
+         * On copy action click
+         *
+         * @param text - text to copy
+         */
+        void onCopyActionClick(String text);
 
+        /**
+         * On show builds built on this branch click
+         *
+         * @param branch - branch name
+         */
         void onShowBuildsActionClick(String branch);
     }
 }

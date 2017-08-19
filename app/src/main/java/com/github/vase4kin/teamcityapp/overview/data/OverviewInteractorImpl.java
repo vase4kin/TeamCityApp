@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -131,14 +129,6 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
-    public void postTextCopiedEvent() {
-        mEventBus.post(new TextCopiedEvent());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void subscribeToEventBusEvents() {
         mEventBus.register(this);
     }
@@ -149,16 +139,6 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     @Override
     public void unsubsribeFromEventBusEvents() {
         mEventBus.unregister(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void copyTextToClipBoard(String textToCopy) {
-        ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText("", textToCopy);
-        clipboard.setPrimaryClip(clip);
     }
 
     /**
@@ -180,14 +160,6 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
                 mEventBus.post(new FloatButtonChangeVisibilityEvent(View.VISIBLE));
             }
         }, DELAY);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void postStartBuildListActivityFilteredByBranchEvent(String branchName) {
-        mEventBus.post(new StartBuildsListActivityFilteredByBranchEvent(branchName));
     }
 
     /**

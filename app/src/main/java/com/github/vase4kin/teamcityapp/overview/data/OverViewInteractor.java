@@ -63,11 +63,6 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void postRestartBuildEvent();
 
     /**
-     * Post {@link TextCopiedEvent}
-     */
-    void postTextCopiedEvent();
-
-    /**
      * Subscribe to event bus events
      */
     void subscribeToEventBusEvents();
@@ -78,13 +73,6 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void unsubsribeFromEventBusEvents();
 
     /**
-     * Copy text to the clipboard
-     *
-     * @param textToCopy - text to copy
-     */
-    void copyTextToClipBoard(String textToCopy);
-
-    /**
      * Post {@link FloatButtonChangeVisibilityEvent} GONE event
      */
     void postFABGoneEvent();
@@ -93,13 +81,6 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
      * Post {@link FloatButtonChangeVisibilityEvent} VISIBLE event
      */
     void postFABVisibleEvent();
-
-    /**
-     * Post {@link StartBuildsListActivityFilteredByBranchEvent}
-     *
-     * @param branchName - branch name
-     */
-    void postStartBuildListActivityFilteredByBranchEvent(String branchName);
 
     /**
      * @return {@link BuildDetails} passed through intent

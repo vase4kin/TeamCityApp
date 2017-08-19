@@ -258,20 +258,6 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnShowBuildsActionClick() throws Exception {
-        mPresenter.onShowBuildsActionClick("branch");
-        verify(mInteractor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
-        verify(mTracker).trackUserWantsToSeeBuildListFilteredByBranch();
-    }
-
-    @Test
-    public void testOnCopyActionClick() throws Exception {
-        mPresenter.onCopyActionClick("br");
-        verify(mInteractor).copyTextToClipBoard(eq("br"));
-        verify(mInteractor).postTextCopiedEvent();
-    }
-
-    @Test
     public void testOnCardClick() throws Exception {
         mPresenter.onCardClick("head", "descr");
         verify(mView).showDefaultCardBottomSheetDialog(eq("head"), eq("descr"));

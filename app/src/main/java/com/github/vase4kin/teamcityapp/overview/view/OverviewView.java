@@ -265,20 +265,6 @@ public interface OverviewView {
         void onBranchCardClick(String value);
 
         /**
-         * On show builds built on this branch click
-         *
-         * @param branchName - branch name
-         */
-        void onShowBuildsActionClick(String branchName);
-
-        /**
-         * On copy action click
-         *
-         * @param valueToCopy - text to copy
-         */
-        void onCopyActionClick(String valueToCopy);
-
-        /**
          * On bottom sheet show
          */
         void onBottomSheetShow();

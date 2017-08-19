@@ -51,7 +51,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    listener.onCopyItemClick(description);
+                    listener.onCopyActionClick(description);
                 }
             });
         }
