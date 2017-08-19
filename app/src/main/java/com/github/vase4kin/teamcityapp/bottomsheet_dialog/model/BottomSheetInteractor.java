@@ -51,4 +51,19 @@ public interface BottomSheetInteractor {
      * @param branchName - branch name
      */
     void postNavigateToBuildListEvent(String branchName);
+
+    /**
+     * Post {@link com.github.vase4kin.teamcityapp.artifact.data.ArtifactDownloadEvent}
+     */
+    void postArtifactDownloadEvent(String fileName, String href);
+
+    /**
+     * Post {@link com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenEvent}
+     */
+    void postArtifactOpenEvent(String href);
+
+    /**
+     * Post {@link com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenInBrowserEvent}
+     */
+    void postArtifactOpenInBrowserEvent(String href);
 }

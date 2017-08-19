@@ -64,4 +64,28 @@ public interface BottomSheetDataModel extends BaseDataModel {
      * @return action of menu item
      */
     boolean hasBranchAction(int position);
+
+    /**
+     * Has artifact open action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasArtifactOpenAction(int position);
+
+    /**
+     * Has artifact download action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasArtifactDownloadAction(int position);
+
+    /**
+     * Has artifact open in browser action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasArtifactOpenInBrowserAction(int position);
 }

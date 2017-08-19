@@ -48,7 +48,7 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
     private Repository mRepository;
     private EventBus mEventBus;
     @Nullable
-    private OnArtifactTabChangeEventListener mListener;
+    private OnArtifactEventListener mListener;
 
     public ArtifactDataManagerImpl(Repository repository, EventBus eventBus) {
         this.mRepository = repository;
@@ -123,7 +123,7 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
      * {@inheritDoc}
      */
     @Override
-    public void setListener(OnArtifactTabChangeEventListener listener) {
+    public void setListener(OnArtifactEventListener listener) {
         this.mListener = listener;
     }
 
@@ -134,6 +134,36 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
     public void onEvent(OnArtifactTabChangeEvent onArtifactTabChangeEvent) {
         if (mListener != null) {
             mListener.onEventHappen();
+        }
+    }
+
+    /**
+     * On {@link ArtifactDownloadEvent}
+     */
+    @Subscribe
+    public void onEvent(ArtifactDownloadEvent event) {
+        if (mListener != null) {
+            mListener.onDownloadArtifactEvent(event.getName(), event.getValue());
+        }
+    }
+
+    /**
+     * On {@link ArtifactOpenEvent}
+     */
+    @Subscribe
+    public void onEvent(ArtifactOpenEvent event) {
+        if (mListener != null) {
+            mListener.onOpenArtifactEvent(event.getHref());
+        }
+    }
+
+    /**
+     * On {@link ArtifactOpenInBrowserEvent}
+     */
+    @Subscribe
+    public void onEvent(ArtifactOpenInBrowserEvent event) {
+        if (mListener != null) {
+            mListener.onStartBrowserEvent(event.getHref());
         }
     }
 }

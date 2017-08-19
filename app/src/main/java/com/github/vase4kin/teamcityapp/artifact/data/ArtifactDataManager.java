@@ -59,5 +59,5 @@ public interface ArtifactDataManager extends BaseListRxDataManager<Files, File> 
     /**
      * @param listener - Listen to {@link com.github.vase4kin.teamcityapp.build_details.data.OnArtifactTabChangeEvent}
      */
-    void setListener(OnArtifactTabChangeEventListener listener);
+    void setListener(OnArtifactEventListener listener);
 }

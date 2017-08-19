@@ -245,7 +245,7 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testOpenArtifactFile() throws Exception {
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
-        mPresenter.openArtifactFile("href");
+        mPresenter.onOpenArtifactEvent("href");
         verify(mValueExtractor).getBuildDetails();
         verify(mRouter).openArtifactFile(eq(mBuildDetails), eq("href"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
@@ -254,7 +254,7 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testStartBrowser() throws Exception {
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
-        mPresenter.startBrowser("url");
+        mPresenter.onStartBrowserEvent("url");
         verify(mValueExtractor).getBuildDetails();
         verify(mRouter).startBrowser(eq(mBuildDetails), eq("url"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
@@ -313,7 +313,7 @@ public class ArtifactPresenterImplTest {
     public void testDownloadArtifactFileIfUserDoesNotHaveRequiredPermissionsAndNeedToShowTheDialogInfo() {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
         when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(true);
-        mPresenter.downloadArtifactFile("", "");
+        mPresenter.onDownloadArtifactEvent("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
         verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
@@ -327,7 +327,7 @@ public class ArtifactPresenterImplTest {
     public void testDownloadArtifactFileIfUserDoesNotHaveRequiredPermissionsAndNoNeedToShowTheDialogInfo() {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
         when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(false);
-        mPresenter.downloadArtifactFile("", "");
+        mPresenter.onDownloadArtifactEvent("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
         verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mPermissionManager).requestWriteStoragePermissions();

@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModelImpl;
-import com.github.vase4kin.teamcityapp.artifact.data.OnArtifactTabChangeEventListener;
+import com.github.vase4kin.teamcityapp.artifact.data.OnArtifactEventListener;
 import com.github.vase4kin.teamcityapp.artifact.extractor.ArtifactValueExtractor;
 import com.github.vase4kin.teamcityapp.artifact.permissions.OnPermissionsResultListener;
 import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManager;
@@ -46,7 +46,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         ArtifactDataManager,
         ViewTracker,
         ArtifactValueExtractor>
-        implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactTabChangeEventListener {
+        implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactEventListener {
 
     @VisibleForTesting
     String fileName;
@@ -146,59 +146,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void downloadArtifactFile() {
-        downloadArtifactFile(fileName, fileHref);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void downloadArtifactFile(String name, String href) {
-        this.fileName = name;
-        this.fileHref = href;
-        if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
-            if (mPermissionManager.isNeedToShowInfoPermissionsDialog()) {
-                mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
-                    @Override
-                    public void onAllow() {
-                        mPermissionManager.requestWriteStoragePermissions();
-                    }
-                });
-            } else {
-                mPermissionManager.requestWriteStoragePermissions();
-            }
-        } else {
-            mView.showProgressDialog();
-            mDataManager.downloadArtifact(
-                    href,
-                    name,
-                    new OnLoadingListener<java.io.File>() {
-                        @Override
-                        public void onSuccess(java.io.File data) {
-                            mView.dismissProgressDialog();
-                            mRouter.startFileActivity(data);
-                        }
-
-                        @Override
-                        public void onFail(String errorMessage) {
-                            mView.dismissProgressDialog();
-                            showRetryDownloadArtifactSnackBar();
-                        }
-                    });
-        }
-    }
-
-    @Override
-    public void openArtifactFile(String href) {
-        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startBrowser(String href) {
-        mRouter.startBrowser(mValueExtractor.getBuildDetails(), href);
+        onDownloadArtifactEvent(fileName, fileHref);
     }
 
     /**
@@ -240,6 +188,61 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onEventHappen() {
         mView.onArtifactTabChangeEvent();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDownloadArtifactEvent(String fileName, String href) {
+        this.fileName = fileName;
+        this.fileHref = href;
+        if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
+            if (mPermissionManager.isNeedToShowInfoPermissionsDialog()) {
+                mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
+                    @Override
+                    public void onAllow() {
+                        mPermissionManager.requestWriteStoragePermissions();
+                    }
+                });
+            } else {
+                mPermissionManager.requestWriteStoragePermissions();
+            }
+        } else {
+            mView.showProgressDialog();
+            mDataManager.downloadArtifact(
+                    href,
+                    fileName,
+                    new OnLoadingListener<java.io.File>() {
+                        @Override
+                        public void onSuccess(java.io.File data) {
+                            mView.dismissProgressDialog();
+                            mRouter.startFileActivity(data);
+                        }
+
+                        @Override
+                        public void onFail(String errorMessage) {
+                            mView.dismissProgressDialog();
+                            showRetryDownloadArtifactSnackBar();
+                        }
+                    });
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onOpenArtifactEvent(String href) {
+        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStartBrowserEvent(String href) {
+        mRouter.startBrowser(mValueExtractor.getBuildDetails(), href);
     }
 
     /**

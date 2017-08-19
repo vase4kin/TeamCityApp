@@ -78,4 +78,28 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
     public boolean hasBranchAction(int position) {
         return items.get(position).getType() == BottomSheetItem.TYPE_BRANCH;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasArtifactOpenAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_ARTIFACT_OPEN;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasArtifactDownloadAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_ARTIFACT_DOWNLOAD;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasArtifactOpenInBrowserAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_ARTIFACT_OPEN_IN_BROWSER;
+    }
 }

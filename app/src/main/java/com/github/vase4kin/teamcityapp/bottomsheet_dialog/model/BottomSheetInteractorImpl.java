@@ -20,6 +20,9 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDownloadEvent;
+import com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenEvent;
+import com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenInBrowserEvent;
 import com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListEvent;
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 
@@ -72,6 +75,30 @@ public class BottomSheetInteractorImpl implements BottomSheetInteractor {
     @Override
     public void postNavigateToBuildListEvent(String branchName) {
         eventBus.post(new NavigateToBuildListEvent(branchName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postArtifactDownloadEvent(String fileName, String href) {
+        eventBus.post(new ArtifactDownloadEvent(fileName, href));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postArtifactOpenEvent(String href) {
+        eventBus.post(new ArtifactOpenEvent(href));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postArtifactOpenInBrowserEvent(String href) {
+        eventBus.post(new ArtifactOpenInBrowserEvent(href));
     }
 
     /**

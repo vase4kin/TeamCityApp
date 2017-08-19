@@ -14,36 +14,31 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.view;
+package com.github.vase4kin.teamcityapp.artifact.data;
 
-import com.github.vase4kin.teamcityapp.artifact.api.File;
+public interface OnArtifactEventListener {
 
-/**
- * Listener to handle view interactions on {@link com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl}
- */
-public interface OnArtifactPresenterListener {
+    void onEventHappen();
 
     /**
-     * On artifact click
+     * Download artifact file
      *
-     * @param artifactFile - Artifact file
+     * @param fileName - File name
+     * @param href     - File href
      */
-    void onClick(File artifactFile);
+    void onDownloadArtifactEvent(String fileName, String href);
 
     /**
-     * On long artifact click
+     * Open artifact file
      *
-     * @param artifactFile - Artifact file
+     * @param href - File href
      */
-    void onLongClick(File artifactFile);
+    void onOpenArtifactEvent(String href);
 
     /**
-     * Unsubscribe data manager stuff
+     * Open artifact with browser
+     *
+     * @param href - File href
      */
-    void unSubscribe();
-
-    /**
-     * Download artifact
-     */
-    void downloadArtifactFile();
+    void onStartBrowserEvent(String href);
 }

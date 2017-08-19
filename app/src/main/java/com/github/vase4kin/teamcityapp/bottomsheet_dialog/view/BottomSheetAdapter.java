@@ -46,6 +46,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
     @Override
     public void onBindViewHolder(BaseViewHolder<BottomSheetDataModel> holder, int position) {
         super.onBindViewHolder(holder, position);
+        final String title = mDataModel.getTitle(position);
         final String description = mDataModel.getDescription(position);
         if (mDataModel.hasCopyAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -63,7 +64,30 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-
+        if (mDataModel.hasArtifactDownloadAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onArtifactDownloadActionClick(title, description);
+                }
+            });
+        }
+        if (mDataModel.hasArtifactOpenAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onArtifactOpenActionClick(description);
+                }
+            });
+        }
+        if (mDataModel.hasArtifactOpenInBrowserAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onArtifactBrowserOpenActionClick(description);
+                }
+            });
+        }
     }
 
 }

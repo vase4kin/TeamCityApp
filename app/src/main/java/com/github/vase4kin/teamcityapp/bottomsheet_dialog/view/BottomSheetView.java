@@ -55,5 +55,27 @@ public interface BottomSheetView {
          * @param branch - branch name
          */
         void onShowBuildsActionClick(String branch);
+
+        /**
+         * On artifact download click
+         *
+         * @param fileName - file name
+         * @param href     - href
+         */
+        void onArtifactDownloadActionClick(String fileName, String href);
+
+        /**
+         * On artifact open click
+         *
+         * @param href - file href
+         */
+        void onArtifactOpenActionClick(String href);
+
+        /**
+         * On artifact open in browser click
+         *
+         * @param href - file href
+         */
+        void onArtifactBrowserOpenActionClick(String href);
     }
 }
