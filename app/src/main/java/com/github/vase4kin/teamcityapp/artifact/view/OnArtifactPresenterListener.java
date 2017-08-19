@@ -58,9 +58,9 @@ public interface OnArtifactPresenterListener {
     /**
      * Open artifact file
      *
-     * @param artifactFile - Artifact file
+     * @param href     - File href
      */
-    void openArtifactFile(File artifactFile);
+    void openArtifactFile(String href);
 
     /**
      * Open artifact with browser

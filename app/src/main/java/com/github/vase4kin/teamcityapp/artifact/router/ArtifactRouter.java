@@ -36,9 +36,9 @@ public interface ArtifactRouter {
      * Open artifact file (navigate deeper)
      *
      * @param buildDetails - Build details
-     * @param artifactFile - Artifact file
+     * @param href - Artifact file href
      */
-    void openArtifactFile(BuildDetails buildDetails, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile);
+    void openArtifactFile(BuildDetails buildDetails, String href);
 
     /**
      * Unbind customs chrome tabs

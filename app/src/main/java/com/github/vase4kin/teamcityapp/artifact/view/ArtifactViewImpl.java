@@ -187,20 +187,21 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * @return Bottom sheet
      */
     private BottomSheet buildBottomSheetDialog(final File artifactFile) {
+        final String name = artifactFile.getName();
         BottomSheet bottomSheet = new BottomSheet.Builder(mActivity)
-                .title(artifactFile.getName())
+                .title(name)
                 .sheet(R.menu.menu_artifact)
                 .listener(new MenuItem.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.download:
-                                String name = artifactFile.getName();
                                 String href = artifactFile.getContent().getHref();
                                 mListener.downloadArtifactFile(name, href);
                                 break;
                             case R.id.open:
-                                mListener.openArtifactFile(artifactFile);
+                                String openHref = artifactFile.getChildren().getHref();
+                                mListener.openArtifactFile(openHref);
                                 break;
                             case R.id.open_in_browser:
                                 mListener.startBrowser(artifactFile);

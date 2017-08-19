@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.presenter;
 
-import android.os.Bundle;
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager;
@@ -29,7 +27,6 @@ import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouter;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener;
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
 import org.junit.Before;
@@ -61,6 +58,10 @@ public class ArtifactPresenterImplTest {
     @Captor
     private ArgumentCaptor<OnPermissionsResultListener> mOnPermissionsResultListenerArgumentCaptor;
 
+
+    @Mock
+    private File.Children children;
+
     @Mock
     private File.Content mContent;
 
@@ -72,12 +73,6 @@ public class ArtifactPresenterImplTest {
 
     @Mock
     private OnLoadingListener<List<File>> mLoadingListener;
-
-    @Mock
-    private Bundle mBundle;
-
-    @Mock
-    private Build mBuild;
 
     @Mock
     private BuildDetails mBuildDetails;
@@ -146,10 +141,12 @@ public class ArtifactPresenterImplTest {
     public void testOnClickIfHasChildrenAndIsFolder() throws Exception {
         when(mFile.hasChildren()).thenReturn(true);
         when(mFile.isFolder()).thenReturn(true);
+        when(mFile.getChildren()).thenReturn(children);
+        when(children.getHref()).thenReturn("url");
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.onClick(mFile);
         verify(mValueExtractor).getBuildDetails();
-        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq(mFile));
+        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq("url"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
@@ -248,9 +245,9 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testOpenArtifactFile() throws Exception {
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
-        mPresenter.openArtifactFile(mFile);
+        mPresenter.openArtifactFile("href");
         verify(mValueExtractor).getBuildDetails();
-        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq(mFile));
+        verify(mRouter).openArtifactFile(eq(mBuildDetails), eq("href"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 

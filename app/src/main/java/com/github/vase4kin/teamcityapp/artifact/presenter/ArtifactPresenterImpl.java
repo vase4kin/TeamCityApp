@@ -99,7 +99,8 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onClick(File artifactFile) {
         if (artifactFile.hasChildren() && artifactFile.isFolder()) {
-            mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
+            String href = artifactFile.getChildren().getHref();
+            mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
         } else {
             onLongClick(artifactFile);
         }
@@ -187,12 +188,9 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void openArtifactFile(File artifactFile) {
-        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
+    public void openArtifactFile(String href) {
+        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
     }
 
     /**
