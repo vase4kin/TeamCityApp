@@ -102,6 +102,7 @@ android {
 
     lintOptions {
         disable 'InvalidPackage'
+        disable 'IconLauncherFormat'
         xmlReport false
         abortOnError true
         htmlOutput file("build/reports/lint-report/lint-report.html")
