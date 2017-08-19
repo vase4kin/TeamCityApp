@@ -23,14 +23,15 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Impl of {@link MenuItemsFactory} for branch menu
  */
-public class BranchMenuItemsFactory extends DefaultMenuItemsFactory {
+public class ArtifactFullMenuItemsFactory extends BaseMenuItemsFactory {
 
-    public BranchMenuItemsFactory(Context context, List<String> descriptions) {
+    public ArtifactFullMenuItemsFactory(Context context, List<String> descriptions) {
         super(context, descriptions);
     }
 
@@ -39,8 +40,9 @@ public class BranchMenuItemsFactory extends DefaultMenuItemsFactory {
      */
     @Override
     public List<BottomSheetItem> createMenuItems() {
-        List<BottomSheetItem> list = super.createMenuItems();
-        list.add(new BottomSheetItem(BottomSheetItem.TYPE_BRANCH, getString(R.string.build_element_show_all_builds_built_branch), getDescription(), new IconDrawable(getContext(), MaterialIcons.md_list)));
+        List<BottomSheetItem> list = new ArrayList<>();
+        list.add(new BottomSheetItem(BottomSheetItem.TYPE_ARTIFACT_DOWNLOAD, getString(R.string.artifact_download), getDescription(0), new IconDrawable(getContext(), MaterialIcons.md_file_download)));
+        list.add(new BottomSheetItem(BottomSheetItem.TYPE_ARTIFACT_OPEN, getString(R.string.artifact_open), getDescription(1), new IconDrawable(getContext(), MaterialIcons.md_open_in_new)));
         return list;
     }
 }

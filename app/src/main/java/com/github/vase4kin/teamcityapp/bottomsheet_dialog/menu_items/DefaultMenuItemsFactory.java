@@ -31,8 +31,8 @@ import java.util.List;
  */
 public class DefaultMenuItemsFactory extends BaseMenuItemsFactory {
 
-    public DefaultMenuItemsFactory(Context context, String description) {
-        super(context, description);
+    public DefaultMenuItemsFactory(Context context, List<String> descriptions) {
+        super(context, descriptions);
     }
 
     /**

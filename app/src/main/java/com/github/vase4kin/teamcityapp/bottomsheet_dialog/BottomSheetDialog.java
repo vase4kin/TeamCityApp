@@ -43,10 +43,14 @@ public class BottomSheetDialog extends BottomSheetDialogFragment {
     }
 
     public static BottomSheetDialog createBottomSheetDialog(String title, String description, int menuType) {
+        return createBottomSheetDialog(title, new String[]{description}, menuType);
+    }
+
+    public static BottomSheetDialog createBottomSheetDialog(String title, String[] descriptions, int menuType) {
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
         Bundle bundle = new Bundle();
         bundle.putString(BottomSheetModule.ARG_TITLE, title);
-        bundle.putString(BottomSheetModule.ARG_DESCRIPTION, description);
+        bundle.putStringArray(BottomSheetModule.ARG_DESCRIPTION, descriptions);
         bundle.putInt(BottomSheetModule.ARG_BOTTOM_SHEET_TYPE, menuType);
         bottomSheetDialog.setArguments(bundle);
         return bottomSheetDialog;

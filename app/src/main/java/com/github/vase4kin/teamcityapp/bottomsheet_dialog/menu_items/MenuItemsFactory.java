@@ -36,6 +36,27 @@ public interface MenuItemsFactory {
     int TYPE_BRANCH = 1;
 
     /**
+     * Artifact default menu type
+     */
+    int TYPE_ARTIFACT_DEFAULT = 2;
+
+    /**
+     * Artifact browser menu type
+     */
+    int TYPE_ARTIFACT_BROWSER = 3;
+
+    /**
+     * Artifact folder menu type
+     */
+    int TYPE_ARTIFACT_FOLDER = 4;
+
+    /**
+     * Artifact full menu type
+     */
+    int TYPE_ARTIFACT_FULL = 5;
+
+
+    /**
      * @return list of menu items
      */
     List<BottomSheetItem> createMenuItems();

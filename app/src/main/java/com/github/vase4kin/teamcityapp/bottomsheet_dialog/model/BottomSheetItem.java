@@ -25,6 +25,9 @@ public class BottomSheetItem {
 
     public static final int TYPE_COPY = 0;
     public static final int TYPE_BRANCH = 1;
+    public static final int TYPE_ARTIFACT_OPEN = 2;
+    public static final int TYPE_ARTIFACT_DOWNLOAD = 3;
+    public static final int TYPE_ARTIFACT_OPEN_IN_BROWSER = 4;
 
     private final int type;
     private final String title;

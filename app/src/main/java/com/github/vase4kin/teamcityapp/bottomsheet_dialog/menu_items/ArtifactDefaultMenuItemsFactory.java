@@ -17,42 +17,31 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items;
 
 import android.content.Context;
-import android.support.annotation.StringRes;
 
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Impl of {@link MenuItemsFactory}
+ * Impl of {@link MenuItemsFactory} for branch menu
  */
-public abstract class BaseMenuItemsFactory implements MenuItemsFactory {
+public class ArtifactDefaultMenuItemsFactory extends BaseMenuItemsFactory {
 
-    private final Context context;
-    private final List<String> descriptions;
-
-    BaseMenuItemsFactory(Context context, List<String> descriptions) {
-        this.context = context;
-        this.descriptions = descriptions;
+    public ArtifactDefaultMenuItemsFactory(Context context, List<String> descriptions) {
+        super(context, descriptions);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public abstract List<BottomSheetItem> createMenuItems();
-
-    protected String getString(@StringRes int title) {
-        return context.getString(title);
+    public List<BottomSheetItem> createMenuItems() {
+        List<BottomSheetItem> list = new ArrayList<>();
+        list.add(new BottomSheetItem(BottomSheetItem.TYPE_ARTIFACT_DOWNLOAD, getString(R.string.artifact_download), getDescription(), new IconDrawable(getContext(), MaterialIcons.md_file_download)));
+        return list;
     }
-
-    public Context getContext() {
-        return context;
-    }
-
-    public String getDescription() {
-        return descriptions.get(0);
-    }
-
-    public String getDescription(int position) {
-        return descriptions.get(position);
-    }
-
 }
