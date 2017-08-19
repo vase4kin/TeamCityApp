@@ -204,7 +204,8 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
                                 mListener.openArtifactFile(openHref);
                                 break;
                             case R.id.open_in_browser:
-                                mListener.startBrowser(artifactFile);
+                                String browserHref = artifactFile.getHref();
+                                mListener.startBrowser(browserHref);
                                 break;
                             default:
                                 break;

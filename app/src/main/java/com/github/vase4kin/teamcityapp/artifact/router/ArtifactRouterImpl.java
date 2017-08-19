@@ -110,8 +110,8 @@ public class ArtifactRouterImpl implements ArtifactRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startBrowser(BuildDetails buildDetails, com.github.vase4kin.teamcityapp.artifact.api.File artifactFile) {
-        String pathToFile = artifactFile.getHref().split("/metadata/")[1];
+    public void startBrowser(BuildDetails buildDetails, String href) {
+        String pathToFile = href.split("/metadata/")[1];
         String url = String.format(FILE_URL_PATTERN,
                 mSharedUserStorage.getActiveUser().getTeamcityUrl(),
                 buildDetails.getBuildTypeId(),

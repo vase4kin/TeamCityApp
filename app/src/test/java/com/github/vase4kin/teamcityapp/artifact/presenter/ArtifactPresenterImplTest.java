@@ -254,9 +254,9 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testStartBrowser() throws Exception {
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
-        mPresenter.startBrowser(mFile);
+        mPresenter.startBrowser("url");
         verify(mValueExtractor).getBuildDetails();
-        verify(mRouter).startBrowser(eq(mBuildDetails), eq(mFile));
+        verify(mRouter).startBrowser(eq(mBuildDetails), eq("url"));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 

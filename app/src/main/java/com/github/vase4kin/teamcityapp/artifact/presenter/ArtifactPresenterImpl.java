@@ -197,8 +197,8 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    public void startBrowser(File artifactFile) {
-        mRouter.startBrowser(mValueExtractor.getBuildDetails(), artifactFile);
+    public void startBrowser(String href) {
+        mRouter.startBrowser(mValueExtractor.getBuildDetails(), href);
     }
 
     /**

@@ -58,14 +58,14 @@ public interface OnArtifactPresenterListener {
     /**
      * Open artifact file
      *
-     * @param href     - File href
+     * @param href - File href
      */
     void openArtifactFile(String href);
 
     /**
      * Open artifact with browser
      *
-     * @param artifactFile - Artifact file
+     * @param href - File href
      */
-    void startBrowser(File artifactFile);
+    void startBrowser(String href);
 }
