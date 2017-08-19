@@ -258,6 +258,13 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
+    public void testOnShowBuildsActionClick() throws Exception {
+        mPresenter.onNavigateToBuildListEvent("branch");
+        verify(mInteractor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
+        verify(mTracker).trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    @Test
     public void testOnCardClick() throws Exception {
         mPresenter.onCardClick("head", "descr");
         verify(mView).showDefaultCardBottomSheetDialog(eq("head"), eq("descr"));

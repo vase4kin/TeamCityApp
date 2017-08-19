@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.bottomsheet_dialog.presenter;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractor;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
-import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,20 +39,18 @@ public class BottomSheetPresenterImplTest {
     private BottomSheetView view;
     @Mock
     private BottomSheetInteractor interactor;
-    @Mock
-    private OverviewTracker tracker;
 
     private BottomSheetPresenterImpl presenter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        presenter = new BottomSheetPresenterImpl(view, interactor, tracker);
+        presenter = new BottomSheetPresenterImpl(view, interactor);
     }
 
     @After
     public void tearDown() throws Exception {
-        verifyNoMoreInteractions(view, interactor, tracker);
+        verifyNoMoreInteractions(view, interactor);
     }
 
     @Test
@@ -83,8 +80,7 @@ public class BottomSheetPresenterImplTest {
     @Test
     public void onShowBuildsActionClick() throws Exception {
         presenter.onShowBuildsActionClick("branch");
-        verify(interactor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
-        verify(tracker).trackUserWantsToSeeBuildListFilteredByBranch();
+        verify(interactor).postNavigateToBuildListEvent(eq("branch"));
         verify(view).close();
     }
 

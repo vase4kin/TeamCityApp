@@ -32,22 +32,15 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetAdapte
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetItemViewHolderFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetViewImpl;
-import com.github.vase4kin.teamcityapp.overview.tracker.FabricOverviewTrackerImpl;
-import com.github.vase4kin.teamcityapp.overview.tracker.FirebaseOverviewTrackerImpl;
-import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
-import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTrackerImpl;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
-import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import dagger.multibindings.IntoSet;
 
 /**
  * Bottom sheet dialog dependencies
@@ -114,20 +107,4 @@ public class BottomSheetModule {
         return new BottomSheetItemViewHolderFactory();
     }
 
-    @IntoSet
-    @Provides
-    OverviewTracker providesFabricViewTracker() {
-        return new FabricOverviewTrackerImpl();
-    }
-
-    @IntoSet
-    @Provides
-    OverviewTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
-        return new FirebaseOverviewTrackerImpl(firebaseAnalytics);
-    }
-
-    @Provides
-    OverviewTracker providesViewTracker(Set<OverviewTracker> trackers) {
-        return new OverviewTrackerImpl(trackers);
-    }
 }

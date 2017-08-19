@@ -172,6 +172,15 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      * {@inheritDoc}
      */
     @Override
+    public void onNavigateToBuildListEvent(String branchName) {
+        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
+        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onCancelBuildContextMenuClick() {
         mInteractor.postStopBuildEvent();
         mTracker.trackUserClickedCancelBuildOption();

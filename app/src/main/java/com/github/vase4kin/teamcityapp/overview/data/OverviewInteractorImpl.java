@@ -166,6 +166,14 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
+    public void postStartBuildListActivityFilteredByBranchEvent(String branchName) {
+        mEventBus.post(new StartBuildsListActivityFilteredByBranchEvent(branchName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public BuildDetails getBuildDetails() {
         return mValueExtractor.getBuildDetails();
     }
@@ -179,6 +187,17 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     public void onEvent(OnOverviewRefreshDataEvent event) {
         if (mListener == null) return;
         mListener.onDataRefreshEvent();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link NavigateToBuildListEvent}
+     */
+    @Subscribe
+    public void onEvent(NavigateToBuildListEvent event) {
+        if (mListener == null) return;
+        mListener.onNavigateToBuildListEvent(event.getBranchName());
     }
 
 }
