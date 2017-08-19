@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.bottomsheet_dialog.presenter;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractor;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
+import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 
 import javax.inject.Inject;
 
@@ -29,11 +30,15 @@ public class BottomSheetPresenterImpl implements BottomSheetPresenter, BottomShe
 
     private final BottomSheetView view;
     private final BottomSheetInteractor interactor;
+    private final OverviewTracker tracker;
 
     @Inject
-    BottomSheetPresenterImpl(BottomSheetView view, BottomSheetInteractor interactor) {
+    BottomSheetPresenterImpl(BottomSheetView view,
+                             BottomSheetInteractor interactor,
+                             OverviewTracker tracker) {
         this.view = view;
         this.interactor = interactor;
+        this.tracker = tracker;
     }
 
     /**
@@ -67,8 +72,7 @@ public class BottomSheetPresenterImpl implements BottomSheetPresenter, BottomShe
     @Override
     public void onShowBuildsActionClick(String branchName) {
         interactor.postStartBuildListActivityFilteredByBranchEvent(branchName);
-        // TODO:
-        //        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+        tracker.trackUserWantsToSeeBuildListFilteredByBranch();
         view.close();
     }
 }
