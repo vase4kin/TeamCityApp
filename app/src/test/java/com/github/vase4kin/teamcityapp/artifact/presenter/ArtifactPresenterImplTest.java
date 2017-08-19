@@ -182,7 +182,8 @@ public class ArtifactPresenterImplTest {
         mPresenter.onClick(mFile);
         verify(mView).showDefaultBottomSheet(eq(mFile));
 
-        mPresenter.mArtifactFile = mFile;
+        mPresenter.fileName = "name";
+        mPresenter.fileHref = "url";
         mPresenter.downloadArtifactFile();
         verify(mView).showProgressDialog();
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
@@ -315,7 +316,7 @@ public class ArtifactPresenterImplTest {
     public void testDownloadArtifactFileIfUserDoesNotHaveRequiredPermissionsAndNeedToShowTheDialogInfo() {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
         when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(true);
-        mPresenter.downloadArtifactFile(mFile);
+        mPresenter.downloadArtifactFile("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
         verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
@@ -329,7 +330,7 @@ public class ArtifactPresenterImplTest {
     public void testDownloadArtifactFileIfUserDoesNotHaveRequiredPermissionsAndNoNeedToShowTheDialogInfo() {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
         when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(false);
-        mPresenter.downloadArtifactFile(mFile);
+        mPresenter.downloadArtifactFile("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
         verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mPermissionManager).requestWriteStoragePermissions();

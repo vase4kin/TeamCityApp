@@ -50,9 +50,10 @@ public interface OnArtifactPresenterListener {
     /**
      * Download artifact file
      *
-     * @param artifactFile - Artifact file
+     * @param fileName - File name
+     * @param href     - File href
      */
-    void downloadArtifactFile(File artifactFile);
+    void downloadArtifactFile(String fileName, String href);
 
     /**
      * Open artifact file

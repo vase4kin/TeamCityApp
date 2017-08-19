@@ -48,8 +48,10 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         ArtifactValueExtractor>
         implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactTabChangeEventListener {
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    File mArtifactFile;
+    @VisibleForTesting
+    String fileName;
+    @VisibleForTesting
+    String fileHref;
 
     private ArtifactRouter mRouter;
     private PermissionManager mPermissionManager;
@@ -143,14 +145,16 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void downloadArtifactFile() {
-        downloadArtifactFile(mArtifactFile);
+        downloadArtifactFile(fileName, fileHref);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void downloadArtifactFile(File artifactFile) {
-        mArtifactFile = artifactFile;
+    @Override
+    public void downloadArtifactFile(String name, String href) {
+        this.fileName = name;
+        this.fileHref = href;
         if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
             if (mPermissionManager.isNeedToShowInfoPermissionsDialog()) {
                 mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
@@ -165,8 +169,8 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         } else {
             mView.showProgressDialog();
             mDataManager.downloadArtifact(
-                    artifactFile.getContent().getHref(),
-                    artifactFile.getName(),
+                    href,
+                    name,
                     new OnLoadingListener<java.io.File>() {
                         @Override
                         public void onSuccess(java.io.File data) {

@@ -195,7 +195,9 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
                     public boolean onMenuItemClick(MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.download:
-                                mListener.downloadArtifactFile(artifactFile);
+                                String name = artifactFile.getName();
+                                String href = artifactFile.getContent().getHref();
+                                mListener.downloadArtifactFile(name, href);
                                 break;
                             case R.id.open:
                                 mListener.openArtifactFile(artifactFile);
