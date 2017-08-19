@@ -198,7 +198,6 @@ public class ArtifactListFragmentTest {
         onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()));
     }
 
-    @Ignore
     @Test
     public void testUserCanOpenArtifactWithChildren() throws Exception {
         // Prepare mocks
