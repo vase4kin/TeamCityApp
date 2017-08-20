@@ -32,12 +32,5 @@ public interface PropertiesView extends BaseListView<PropertiesDataModel> {
          * On card click
          */
         void onCardClick(String header, String value);
-
-        /**
-         * On copy action click
-         *
-         * @param valueToCopy - text to copy
-         */
-        void onCopyActionClick(String valueToCopy);
     }
 }
