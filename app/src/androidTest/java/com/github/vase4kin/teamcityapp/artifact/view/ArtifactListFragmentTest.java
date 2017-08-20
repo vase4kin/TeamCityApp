@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.artifact.view;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -50,6 +51,7 @@ import java.util.Collections;
 import java.util.List;
 
 import it.cosenonjaviste.daggermock.DaggerMockRule;
+import okhttp3.ResponseBody;
 import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -95,6 +97,9 @@ public class ArtifactListFragmentTest {
 
     @Rule
     public CustomActivityTestRule<BuildDetailsActivity> mActivityRule = new CustomActivityTestRule<>(BuildDetailsActivity.class);
+
+    @Rule
+    public GrantPermissionRule grantPermissionRule = GrantPermissionRule.grant("android.permission.WRITE_EXTERNAL_STORAGE");
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
@@ -252,5 +257,60 @@ public class ArtifactListFragmentTest {
     @Ignore
     @Test
     public void testUserCanDownloadArtifact() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+    }
+
+    @Test
+    public void testUserSeeSnackBarWithErrorMessageIfArtifactWasNotDownloaded() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.downloadFile(anyString())).thenReturn(Observable.<ResponseBody>error(new RuntimeException("ERROR!")));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking artifact tab title
+        onView(withText("Artifacts"))
+                .perform(scrollTo())
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Clicking on artifact to download
+        onView(withRecyclerView(R.id.artifact_recycler_view)
+                .atPositionOnView(1, R.id.itemTitle))
+                .check(matches(withText("AndroidManifest.xml")))
+                .perform(click());
+
+        // Click on download option
+        onView(withText(R.string.artifact_download))
+                .perform(click());
+
+        // Checking error snack bar message
+        onView(withText(R.string.download_artifact_retry_snack_bar_text))
+                .check(matches(isDisplayed()));
     }
 }
