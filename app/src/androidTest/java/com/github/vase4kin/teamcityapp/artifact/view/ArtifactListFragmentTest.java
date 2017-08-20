@@ -42,6 +42,7 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -301,6 +302,7 @@ public class ArtifactListFragmentTest {
                 hasType("*/*")));
     }
 
+    @Ignore("Test opens chrome and gets stuck")
     @Test
     public void testUserCanOpenHtmlFileInBrowser() throws Exception {
         // Prepare mocks
