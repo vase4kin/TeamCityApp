@@ -143,9 +143,6 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                if (tab.getText().toString().equals(artifactsTabTitle)) {
-                    mOnBuildDetailsViewListener.onArtifactTabUnSelect();
-                }
             }
 
             @Override
@@ -383,6 +380,14 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
                 showSnackBarWithText(R.string.build_element_copy_text);
             }
         }, TIMEOUT_TEXT_COPIED_SNACKBAR);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showErrorDownloadingArtifactSnackBar() {
+        showSnackBarWithText(R.string.download_artifact_retry_snack_bar_text);
     }
 
     /**

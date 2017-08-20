@@ -259,16 +259,9 @@ public class OverviewPresenterImplTest {
 
     @Test
     public void testOnShowBuildsActionClick() throws Exception {
-        mPresenter.onShowBuildsActionClick("branch");
+        mPresenter.onNavigateToBuildListEvent("branch");
         verify(mInteractor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
         verify(mTracker).trackUserWantsToSeeBuildListFilteredByBranch();
-    }
-
-    @Test
-    public void testOnCopyActionClick() throws Exception {
-        mPresenter.onCopyActionClick("br");
-        verify(mInteractor).copyTextToClipBoard(eq("br"));
-        verify(mInteractor).postTextCopiedEvent();
     }
 
     @Test

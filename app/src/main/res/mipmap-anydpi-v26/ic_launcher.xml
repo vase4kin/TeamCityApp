@@ -14,17 +14,7 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/download"
-        android:icon="@mipmap/ic_launcher"
-        android:title="@string/artifact_download" />
-    <item
-        android:id="@+id/open"
-        android:icon="@mipmap/ic_launcher"
-        android:title="@string/artifact_open" />
-    <item
-        android:id="@+id/open_in_browser"
-        android:icon="@mipmap/ic_launcher"
-        android:title="@string/artifact_open_in_browser" />
-</menu>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ic_launcher_background" />
+    <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+</adaptive-icon>

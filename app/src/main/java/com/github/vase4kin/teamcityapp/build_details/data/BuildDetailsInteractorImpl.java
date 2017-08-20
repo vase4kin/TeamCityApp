@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
+import com.github.vase4kin.teamcityapp.artifact.data.ArtifactErrorDownloadingEvent;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest;
@@ -76,14 +77,6 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     @Override
     public void setOnBuildTabsEventsListener(OnBuildDetailsEventsListener listener) {
         this.mListener = listener;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void postOnArtifactTabChangeEvent() {
-        mEventBus.post(new OnArtifactTabChangeEvent());
     }
 
     /**
@@ -232,6 +225,17 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     public void onEvent(TextCopiedEvent event) {
         if (mListener == null) return;
         mListener.onTextCopiedActionTriggered();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent}
+     */
+    @Subscribe
+    public void onEvent(ArtifactErrorDownloadingEvent event) {
+        if (mListener == null) return;
+        mListener.onErrorDownloadingArtifactActionTriggered();
     }
 
     /***

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright 2016 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +15,6 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/show_builds_built_branch"
-        android:icon="@mipmap/ic_launcher"
-        android:title="@string/build_element_show_all_builds_built_branch" />
-    <item
-        android:id="@+id/copy"
-        android:icon="@mipmap/ic_launcher"
-        android:title="@string/build_element_copy" />
-</menu>
+<resources>
+    <color name="ic_launcher_background">#4689FF</color>
+</resources>

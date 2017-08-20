@@ -18,15 +18,14 @@ package com.github.vase4kin.teamcityapp.properties.view;
 
 import android.app.Activity;
 import android.support.annotation.StringRes;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.cocosw.bottomsheet.BottomSheet;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialIcons;
 
 /**
  * View to manage properties interactions
@@ -71,23 +70,7 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, Pr
 
     @Override
     public void showCopyValueBottomSheet(String title, final String value) {
-        BottomSheet bottomSheet = new BottomSheet.Builder(mActivity)
-                .title(title)
-                .sheet(R.menu.menu_build_element)
-                .listener(new MenuItem.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.copy:
-                                mListener.onCopyActionClick(value);
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-                }).build();
-        bottomSheet.getMenu().findItem(R.id.copy)
-                .setIcon(new IconDrawable(mActivity, MaterialIcons.md_content_copy));
-        bottomSheet.show();
+        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(title, value, MenuItemsFactory.TYPE_DEFAULT);
+        bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), "Tag Bottom Sheet");
     }
 }

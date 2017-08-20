@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.properties.data;
+package com.github.vase4kin.teamcityapp.bottomsheet_dialog.presenter;
 
-import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
-
-public interface PropertiesInteractor {
-
-    /**
-     * Copy text to the clipboard
-     *
-     * @param textToCopy - text to copy
-     */
-    void copyTextToClipBoard(String textToCopy);
+/**
+ * Presenter to manage bottom sheet dialog
+ */
+public interface BottomSheetPresenter {
 
     /**
-     * Post {@link TextCopiedEvent}
+     * OnCreateView
      */
-    void postTextCopiedEvent();
+    void handleOnCreateView();
+
+    /**
+     * OnDestroyView
+     */
+    void handleOnDestroyView();
 }

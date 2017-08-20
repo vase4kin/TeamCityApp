@@ -46,25 +46,4 @@ public interface OnArtifactPresenterListener {
      * Download artifact
      */
     void downloadArtifactFile();
-
-    /**
-     * Download artifact file
-     *
-     * @param artifactFile - Artifact file
-     */
-    void downloadArtifactFile(File artifactFile);
-
-    /**
-     * Open artifact file
-     *
-     * @param artifactFile - Artifact file
-     */
-    void openArtifactFile(File artifactFile);
-
-    /**
-     * Open artifact with browser
-     *
-     * @param artifactFile - Artifact file
-     */
-    void startBrowser(File artifactFile);
 }

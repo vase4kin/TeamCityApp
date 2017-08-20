@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.build_details.data;
+package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
+
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
+import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
+
+import dagger.Component;
 
 /**
- * Artifact tab change bus event
+ * Dagger component for bottom sheet dialog
  */
-public class OnArtifactTabChangeEvent {
+@BottomSheetScope
+@Component(modules = BottomSheetModule.class, dependencies = AppComponent.class)
+public interface BottomSheetComponent {
+
+    void inject(BottomSheetDialog bottomSheetDialog);
 }

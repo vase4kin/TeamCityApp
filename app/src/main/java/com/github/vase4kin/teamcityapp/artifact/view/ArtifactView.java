@@ -69,18 +69,6 @@ public interface ArtifactView extends BaseListView<ArtifactDataModel> {
     void setOnArtifactPresenterListener(OnArtifactPresenterListener listener);
 
     /**
-     * Show retry download artifact snack bar
-     *
-     * @param listener - Listener to receive view callbacks on {@link com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl}
-     */
-    void showRetryDownloadArtifactSnackBar(OnArtifactPresenterListener listener);
-
-    /**
-     * Handle on artifact tab changed event
-     */
-    void onArtifactTabChangeEvent();
-
-    /**
      * Show denied permissions dialogue
      */
     void showPermissionsDeniedDialog();
