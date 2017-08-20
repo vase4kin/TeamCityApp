@@ -140,7 +140,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
     public void showBrowserBottomSheet(File artifactFile) {
         BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
                 artifactFile.getName(),
-                new String[]{artifactFile.getContent().getHref(), artifactFile.getChildren().getHref()},
+                new String[]{artifactFile.getContent().getHref(), artifactFile.getHref()},
                 MenuItemsFactory.TYPE_ARTIFACT_BROWSER);
         bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
