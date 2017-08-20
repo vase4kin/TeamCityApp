@@ -261,6 +261,7 @@ public class ArtifactListFragmentTest {
         onView(withText("res_level_deeper2")).check(matches(isDisplayed()));
     }
 
+    @Ignore
     @Test
     public void testUserCanDownloadArtifact() throws Exception {
         // Prepare mocks
