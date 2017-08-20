@@ -25,7 +25,6 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
-import com.github.vase4kin.teamcityapp.build_details.data.OnArtifactTabChangeEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,7 +47,7 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
     private Repository mRepository;
     private EventBus mEventBus;
     @Nullable
-    private OnArtifactTabChangeEventListener mListener;
+    private OnArtifactEventListener mListener;
 
     public ArtifactDataManagerImpl(Repository repository, EventBus eventBus) {
         this.mRepository = repository;
@@ -123,17 +122,45 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
      * {@inheritDoc}
      */
     @Override
-    public void setListener(OnArtifactTabChangeEventListener listener) {
+    public void setListener(OnArtifactEventListener listener) {
         this.mListener = listener;
     }
 
     /**
-     * On artifact tab change bus event
+     * {@inheritDoc}
+     */
+    @Override
+    public void postArtifactErrorDownloadingEvent() {
+        mEventBus.post(new ArtifactErrorDownloadingEvent());
+    }
+
+    /**
+     * On {@link ArtifactDownloadEvent}
      */
     @Subscribe
-    public void onEvent(OnArtifactTabChangeEvent onArtifactTabChangeEvent) {
+    public void onEvent(ArtifactDownloadEvent event) {
         if (mListener != null) {
-            mListener.onEventHappen();
+            mListener.onDownloadArtifactEvent(event.getName(), event.getValue());
+        }
+    }
+
+    /**
+     * On {@link ArtifactOpenEvent}
+     */
+    @Subscribe
+    public void onEvent(ArtifactOpenEvent event) {
+        if (mListener != null) {
+            mListener.onOpenArtifactEvent(event.getHref());
+        }
+    }
+
+    /**
+     * On {@link ArtifactOpenInBrowserEvent}
+     */
+    @Subscribe
+    public void onEvent(ArtifactOpenInBrowserEvent event) {
+        if (mListener != null) {
+            mListener.onStartBrowserEvent(event.getHref());
         }
     }
 }

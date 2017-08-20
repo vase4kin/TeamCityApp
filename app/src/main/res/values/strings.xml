@@ -93,7 +93,7 @@
     <string name="text_cancel_button">Cancel</string>
 
     <!--Download artifact retry snack-->
-    <string name="download_artifact_retry_snack_bar_text">We\'ve got problem with file</string>
+    <string name="download_artifact_retry_snack_bar_text">We\'ve got problem downloading an artifact</string>
     <string name="download_artifact_retry_snack_bar_retry_button">Retry</string>
 
     <!--Retry load more snack-->

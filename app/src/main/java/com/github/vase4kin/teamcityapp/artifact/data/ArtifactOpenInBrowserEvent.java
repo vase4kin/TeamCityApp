@@ -16,7 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.artifact.data;
 
-public interface OnArtifactTabChangeEventListener {
+public class ArtifactOpenInBrowserEvent {
 
-    void onEventHappen();
+    private final String href;
+
+    public ArtifactOpenInBrowserEvent(String href) {
+        this.href = href;
+    }
+
+    public String getHref() {
+        return href;
+    }
 }

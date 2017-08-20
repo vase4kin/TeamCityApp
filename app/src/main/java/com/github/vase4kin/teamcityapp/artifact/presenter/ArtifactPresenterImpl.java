@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModelImpl;
-import com.github.vase4kin.teamcityapp.artifact.data.OnArtifactTabChangeEventListener;
+import com.github.vase4kin.teamcityapp.artifact.data.OnArtifactEventListener;
 import com.github.vase4kin.teamcityapp.artifact.extractor.ArtifactValueExtractor;
 import com.github.vase4kin.teamcityapp.artifact.permissions.OnPermissionsResultListener;
 import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManager;
@@ -46,10 +46,12 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         ArtifactDataManager,
         ViewTracker,
         ArtifactValueExtractor>
-        implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactTabChangeEventListener {
+        implements ArtifactPresenter, OnArtifactPresenterListener, OnArtifactEventListener {
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    File mArtifactFile;
+    @VisibleForTesting
+    String fileName;
+    @VisibleForTesting
+    String fileHref;
 
     private ArtifactRouter mRouter;
     private PermissionManager mPermissionManager;
@@ -97,7 +99,8 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onClick(File artifactFile) {
         if (artifactFile.hasChildren() && artifactFile.isFolder()) {
-            mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
+            String href = artifactFile.getChildren().getHref();
+            mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
         } else {
             onLongClick(artifactFile);
         }
@@ -143,67 +146,14 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void downloadArtifactFile() {
-        downloadArtifactFile(mArtifactFile);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void downloadArtifactFile(File artifactFile) {
-        mArtifactFile = artifactFile;
-        if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
-            if (mPermissionManager.isNeedToShowInfoPermissionsDialog()) {
-                mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
-                    @Override
-                    public void onAllow() {
-                        mPermissionManager.requestWriteStoragePermissions();
-                    }
-                });
-            } else {
-                mPermissionManager.requestWriteStoragePermissions();
-            }
-        } else {
-            mView.showProgressDialog();
-            mDataManager.downloadArtifact(
-                    artifactFile.getContent().getHref(),
-                    artifactFile.getName(),
-                    new OnLoadingListener<java.io.File>() {
-                        @Override
-                        public void onSuccess(java.io.File data) {
-                            mView.dismissProgressDialog();
-                            mRouter.startFileActivity(data);
-                        }
-
-                        @Override
-                        public void onFail(String errorMessage) {
-                            mView.dismissProgressDialog();
-                            showRetryDownloadArtifactSnackBar();
-                        }
-                    });
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openArtifactFile(File artifactFile) {
-        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), artifactFile);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startBrowser(File artifactFile) {
-        mRouter.startBrowser(mValueExtractor.getBuildDetails(), artifactFile);
+        onDownloadArtifactEvent(fileName, fileHref);
     }
 
     /**
      * Show retry download artifact snack bar for load artifact error
      */
     private void showRetryDownloadArtifactSnackBar() {
-        mView.showRetryDownloadArtifactSnackBar(this);
+        mDataManager.postArtifactErrorDownloadingEvent();
     }
 
     /**
@@ -236,8 +186,55 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    public void onEventHappen() {
-        mView.onArtifactTabChangeEvent();
+    public void onDownloadArtifactEvent(String fileName, String href) {
+        this.fileName = fileName;
+        this.fileHref = href;
+        if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
+            if (mPermissionManager.isNeedToShowInfoPermissionsDialog()) {
+                mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
+                    @Override
+                    public void onAllow() {
+                        mPermissionManager.requestWriteStoragePermissions();
+                    }
+                });
+            } else {
+                mPermissionManager.requestWriteStoragePermissions();
+            }
+        } else {
+            mView.showProgressDialog();
+            mDataManager.downloadArtifact(
+                    href,
+                    fileName,
+                    new OnLoadingListener<java.io.File>() {
+                        @Override
+                        public void onSuccess(java.io.File data) {
+                            mView.dismissProgressDialog();
+                            mRouter.startFileActivity(data);
+                        }
+
+                        @Override
+                        public void onFail(String errorMessage) {
+                            mView.dismissProgressDialog();
+                            showRetryDownloadArtifactSnackBar();
+                        }
+                    });
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onOpenArtifactEvent(String href) {
+        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStartBrowserEvent(String href) {
+        mRouter.startBrowser(mValueExtractor.getBuildDetails(), href);
     }
 
     /**

@@ -26,7 +26,6 @@ import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModelImpl;
-import com.github.vase4kin.teamcityapp.properties.data.PropertiesInteractor;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 
 import java.util.List;
@@ -44,16 +43,12 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
         ViewTracker,
         BaseValueExtractor> implements PropertiesView.Listener {
 
-    private final PropertiesInteractor mInteractor;
-
     @Inject
     PropertiesPresenterImpl(@NonNull PropertiesView view,
                             @NonNull PropertiesDataManager dataManager,
                             @NonNull ViewTracker tracker,
-                            @NonNull BaseValueExtractor valueExtractor,
-                            @NonNull PropertiesInteractor interactor) {
+                            @NonNull BaseValueExtractor valueExtractor) {
         super(view, dataManager, tracker, valueExtractor);
-        this.mInteractor = interactor;
     }
 
     @Override
@@ -86,9 +81,4 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
         mView.showCopyValueBottomSheet(header, value);
     }
 
-    @Override
-    public void onCopyActionClick(String valueToCopy) {
-        mInteractor.copyTextToClipBoard(valueToCopy);
-        mInteractor.postTextCopiedEvent();
-    }
 }

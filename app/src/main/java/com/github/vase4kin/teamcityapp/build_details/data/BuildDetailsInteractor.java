@@ -35,11 +35,6 @@ public interface BuildDetailsInteractor extends BaseTabsDataManager {
     void setOnBuildTabsEventsListener(OnBuildDetailsEventsListener listener);
 
     /**
-     * Post on artifact tab change event to {@link de.greenrobot.event.EventBus}
-     */
-    void postOnArtifactTabChangeEvent();
-
-    /**
      * Post {@link OnOverviewRefreshDataEvent}
      */
     void postRefreshOverViewDataEvent();

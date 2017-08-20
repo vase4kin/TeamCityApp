@@ -177,4 +177,9 @@ public interface BuildDetailsView extends BaseTabsViewModel {
      * Show text copied snack bar
      */
     void showTextCopiedSnackBar();
+
+    /**
+     * Show error downloading artifact snack bar
+     */
+    void showErrorDownloadingArtifactSnackBar();
 }

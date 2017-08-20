@@ -22,11 +22,6 @@ package com.github.vase4kin.teamcityapp.build_details.view;
 public interface OnBuildDetailsViewListener {
 
     /**
-     * When artifacts tab is unselected
-     */
-    void onArtifactTabUnSelect();
-
-    /**
      * On confirming stop build click
      *
      * @param isReAddToTheQueue - Re-add build to the queue flag

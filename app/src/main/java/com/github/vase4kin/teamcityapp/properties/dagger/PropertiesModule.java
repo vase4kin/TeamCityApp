@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.properties.dagger;
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
@@ -29,14 +28,10 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManagerImpl;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
-import com.github.vase4kin.teamcityapp.properties.data.PropertiesInteractor;
-import com.github.vase4kin.teamcityapp.properties.data.PropertiesInteractorImpl;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesAdapter;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewImpl;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
 
@@ -79,11 +74,6 @@ public class PropertiesModule {
     @Provides
     PropertiesAdapter providesPropertiesAdapter(Map<Integer, ViewHolderFactory<PropertiesDataModel>> viewHolderFactories) {
         return new PropertiesAdapter(viewHolderFactories);
-    }
-
-    @Provides
-    PropertiesInteractor providesPropertiesInteractor(EventBus eventBus, Context context) {
-        return new PropertiesInteractorImpl(eventBus, context);
     }
 
     @IntoMap

@@ -22,7 +22,6 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
-import com.github.vase4kin.teamcityapp.properties.data.PropertiesInteractor;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 
 import org.junit.Before;
@@ -64,15 +63,12 @@ public class PropertiesPresenterImplTest {
     @Mock
     private BaseValueExtractor mValueExtractor;
 
-    @Mock
-    private PropertiesInteractor mInteractor;
-
     private PropertiesPresenterImpl mPresenter;
 
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new PropertiesPresenterImpl(mView, mDataManager, mTracker, mValueExtractor, mInteractor);
+        mPresenter = new PropertiesPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test

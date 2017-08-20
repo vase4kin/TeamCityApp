@@ -172,6 +172,15 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      * {@inheritDoc}
      */
     @Override
+    public void onNavigateToBuildListEvent(String branchName) {
+        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
+        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onCancelBuildContextMenuClick() {
         mInteractor.postStopBuildEvent();
         mTracker.trackUserClickedCancelBuildOption();
@@ -201,24 +210,6 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onBranchCardClick(String branch) {
         mView.showBranchCardBottomSheetDialog(branch);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onShowBuildsActionClick(String branchName) {
-        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
-        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onCopyActionClick(String textToCopy) {
-        mInteractor.copyTextToClipBoard(textToCopy);
-        mInteractor.postTextCopiedEvent();
     }
 
     /**

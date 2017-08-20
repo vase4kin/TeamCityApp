@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
@@ -142,7 +143,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
 
     @Override
     public Observable<ResponseBody> downloadFile(@Url String url) {
-        return Observable.empty();
+        return Observable.just(ResponseBody.create(MediaType.parse("text"), "text"));
     }
 
     @Override
