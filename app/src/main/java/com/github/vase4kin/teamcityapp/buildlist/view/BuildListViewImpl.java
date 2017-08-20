@@ -325,7 +325,9 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
                     public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        listener.onPromptShown();
+                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                            listener.onPromptShown();
+                        }
                     }
                 })
                 .show();
