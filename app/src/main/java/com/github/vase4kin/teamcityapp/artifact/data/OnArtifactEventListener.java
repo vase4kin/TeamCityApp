@@ -18,8 +18,6 @@ package com.github.vase4kin.teamcityapp.artifact.data;
 
 public interface OnArtifactEventListener {
 
-    void onEventHappen();
-
     /**
      * Download artifact file
      *

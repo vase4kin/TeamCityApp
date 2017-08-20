@@ -193,7 +193,7 @@ public class ArtifactPresenterImplTest {
 
         onLoadingListener.onFail("error");
         verify(mView, times(2)).dismissProgressDialog();
-        verify(mView).showRetryDownloadArtifactSnackBar(eq(mPresenter));
+        verify(mDataManager).postArtifactErrorDownloadingEvent();
 
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
@@ -280,13 +280,6 @@ public class ArtifactPresenterImplTest {
         mPresenter.OnStop();
         verify(mDataManager).unregisterEventBus();
         verify(mDataManager).setListener(null);
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
-    }
-
-    @Test
-    public void testOnEventHappen() {
-        mPresenter.onEventHappen();
-        verify(mView).onArtifactTabChangeEvent();
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 

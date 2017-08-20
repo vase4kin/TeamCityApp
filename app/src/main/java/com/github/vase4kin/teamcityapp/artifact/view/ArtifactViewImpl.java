@@ -20,11 +20,9 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -45,7 +43,6 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
     private static final String TAG_BOTTOM_SHEET = "Tag bottom sheet";
 
     private MaterialDialog mProgressDialog;
-    private Snackbar mSnackBar;
     private OnArtifactPresenterListener mListener;
 
     public ArtifactViewImpl(View mView,
@@ -118,26 +115,6 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * {@inheritDoc}
      */
     @Override
-    public void showRetryDownloadArtifactSnackBar(final OnArtifactPresenterListener listener) {
-        mSnackBar = Snackbar.make(
-                mView,
-                R.string.download_artifact_retry_snack_bar_text,
-                Snackbar.LENGTH_LONG)
-                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        listener.downloadArtifactFile();
-                    }
-                });
-        TextView textView = (TextView) mSnackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
-        mSnackBar.show();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void showFullBottomSheet(File artifactFile) {
         BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
                 artifactFile.getName(),
@@ -184,16 +161,6 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
     @Override
     protected int recyclerViewId() {
         return R.id.artifact_recycler_view;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onArtifactTabChangeEvent() {
-        if (mSnackBar != null && mSnackBar.isShown()) {
-            mSnackBar.dismiss();
-        }
     }
 
     /**

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.build_details.data;
+package com.github.vase4kin.teamcityapp.artifact.data;
 
 /**
- * Artifact tab change bus event
+ * Event bus event
  */
-public class OnArtifactTabChangeEvent {
+public class ArtifactErrorDownloadingEvent {
 }

@@ -171,8 +171,8 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
      * {@inheritDoc}
      */
     @Override
-    public void onArtifactTabUnSelect() {
-        mInteractor.postOnArtifactTabChangeEvent();
+    public void onErrorDownloadingArtifactActionTriggered() {
+        mView.showErrorDownloadingArtifactSnackBar();
     }
 
     /**

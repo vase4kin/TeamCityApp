@@ -25,7 +25,6 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
-import com.github.vase4kin.teamcityapp.build_details.data.OnArtifactTabChangeEvent;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -128,13 +127,11 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
     }
 
     /**
-     * On artifact tab change bus event
+     * {@inheritDoc}
      */
-    @Subscribe
-    public void onEvent(OnArtifactTabChangeEvent onArtifactTabChangeEvent) {
-        if (mListener != null) {
-            mListener.onEventHappen();
-        }
+    @Override
+    public void postArtifactErrorDownloadingEvent() {
+        mEventBus.post(new ArtifactErrorDownloadingEvent());
     }
 
     /**

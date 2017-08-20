@@ -52,6 +52,11 @@ public interface OnBuildDetailsEventsListener {
     void onTextCopiedActionTriggered();
 
     /**
+     * When error downloading artifact action is triggered
+     */
+    void onErrorDownloadingArtifactActionTriggered();
+
+    /**
      * When start build list activity filtered by branch event is triggered
      */
     void onStartBuildListActivityFilteredByBranchEventTriggered(String branchName);

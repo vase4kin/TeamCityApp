@@ -153,7 +153,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      * Show retry download artifact snack bar for load artifact error
      */
     private void showRetryDownloadArtifactSnackBar() {
-        mView.showRetryDownloadArtifactSnackBar(this);
+        mDataManager.postArtifactErrorDownloadingEvent();
     }
 
     /**
@@ -180,14 +180,6 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     public void OnStop() {
         mDataManager.unregisterEventBus();
         mDataManager.setListener(null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onEventHappen() {
-        mView.onArtifactTabChangeEvent();
     }
 
     /**
