@@ -73,16 +73,15 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull ErrorView.RetryListener retryListener,
-                          @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
+    public void initViews(@NonNull ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mView);
         // <!----Setting id for testing purpose----->!
         mRecyclerView.setId(recyclerViewId());
         // <!--------------------------------------->!
         mErrorView.setImageTint(Color.LTGRAY);
-        mErrorView.setRetryListener(retryListener);
+        mErrorView.setRetryListener(listener);
         mEmpty.setText(mEmptyMessage);
-        mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
+        mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
     }
 

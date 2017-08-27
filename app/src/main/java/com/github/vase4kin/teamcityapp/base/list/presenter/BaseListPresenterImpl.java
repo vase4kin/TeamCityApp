@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.base.list.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.api.Jsonable;
@@ -29,8 +28,6 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import java.util.Collections;
 import java.util.List;
-
-import tr.xip.errorview.ErrorView;
 
 /**
  * Base impl of {@link BaseListPresenter}
@@ -101,7 +98,12 @@ public abstract class BaseListPresenterImpl<
      * Init views, register listeners
      */
     protected void initViews() {
-        ErrorView.RetryListener retryListener = new ErrorView.RetryListener() {
+        BaseListView.ViewListener listener = new BaseListView.ViewListener() {
+            @Override
+            public void onRefresh() {
+                onSwipeToRefresh();
+            }
+
             @Override
             public void onRetry() {
                 mView.showProgressWheel();
@@ -110,13 +112,7 @@ public abstract class BaseListPresenterImpl<
                 loadData(loadingListener, true);
             }
         };
-        SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                onSwipeToRefresh();
-            }
-        };
-        mView.initViews(retryListener, refreshListener);
+        mView.initViews(listener);
     }
 
     /**

@@ -36,8 +36,7 @@ public interface BaseListView<T extends BaseDataModel> {
      */
     int TYPE_LOAD_MORE = 1;
 
-    void initViews(@NonNull ErrorView.RetryListener retryListener,
-                   @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener);
+    void initViews(@NonNull ViewListener listener);
 
     /**
      * Show progress loading wheel
@@ -115,4 +114,7 @@ public interface BaseListView<T extends BaseDataModel> {
      * @param dataModel - Model data
      */
     void showData(T dataModel);
+
+    interface ViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
+    }
 }
