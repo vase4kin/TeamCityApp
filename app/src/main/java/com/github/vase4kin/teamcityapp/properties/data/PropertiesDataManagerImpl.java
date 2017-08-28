@@ -44,12 +44,15 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
         // Getting properties from the build
         Properties properties = buildDetails.getProperties();
         Observable.just(properties)
-                .defaultIfEmpty(new Properties() {
+                .flatMap(new Func1<Properties, Observable<Properties>>() {
                     @Override
-                    public List<Property> getObjects() {
-                        return Collections.emptyList();
+                    public Observable<Properties> call(Properties properties) {
+                        return properties == null
+                                ? Observable.<Properties>empty()
+                                : Observable.just(properties);
                     }
                 })
+                .defaultIfEmpty(new Properties(Collections.<Properties.Property>emptyList()))
                 .flatMap(new Func1<Properties, Observable<List<Properties.Property>>>() {
                     @Override
                     public Observable<List<Properties.Property>> call(Properties properties) {
