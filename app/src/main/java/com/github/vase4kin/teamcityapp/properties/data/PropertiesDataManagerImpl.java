@@ -29,6 +29,7 @@ import java.util.List;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Impl of {@link PropertiesDataManager}
@@ -49,11 +50,17 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
                         return Collections.emptyList();
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<Properties>() {
+                .flatMap(new Func1<Properties, Observable<List<Properties.Property>>>() {
                     @Override
-                    public void call(Properties properties) {
-                        loadingListener.onSuccess(buildDetails.getProperties().getObjects());
+                    public Observable<List<Properties.Property>> call(Properties properties) {
+                        return Observable.from(properties.getObjects()).toList();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Properties.Property>>() {
+                    @Override
+                    public void call(List<Properties.Property> objects) {
+                        loadingListener.onSuccess(objects);
                     }
                 });
     }
