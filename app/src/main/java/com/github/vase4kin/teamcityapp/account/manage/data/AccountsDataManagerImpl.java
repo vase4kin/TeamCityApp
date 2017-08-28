@@ -26,6 +26,8 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import java.util.List;
 
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 
 /**
  * Impl of {@link BaseListRxDataManagerImpl} for {@link com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl}
@@ -42,7 +44,15 @@ public class AccountsDataManagerImpl extends BaseListRxDataManagerImpl<SharedUse
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull Observable<SharedUserStorage> call, @NonNull OnLoadingListener<List<UserAccount>> loadingListener) {
-        loadingListener.onSuccess(mSharedUserStorage.getObjects());
+    public void load(@NonNull Observable<SharedUserStorage> call, @NonNull final OnLoadingListener<List<UserAccount>> loadingListener) {
+        Observable.from(mSharedUserStorage.getObjects())
+                .toList()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<UserAccount>>() {
+                    @Override
+                    public void call(List<UserAccount> userAccounts) {
+                        loadingListener.onSuccess(userAccounts);
+                    }
+                });
     }
 }

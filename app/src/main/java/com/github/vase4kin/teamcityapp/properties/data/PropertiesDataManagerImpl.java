@@ -26,6 +26,10 @@ import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import java.util.Collections;
 import java.util.List;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+
 /**
  * Impl of {@link PropertiesDataManager}
  */
@@ -35,20 +39,22 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull BuildDetails buildDetails, OnLoadingListener<List<Properties.Property>> loadingListener) {
+    public void load(@NonNull final BuildDetails buildDetails, final OnLoadingListener<List<Properties.Property>> loadingListener) {
         // Getting properties from the build
         Properties properties = buildDetails.getProperties();
-        if (properties == null) {
-            // Return empty collections if properties are empty
-            Properties emptyProperties = new Properties() {
-                @Override
-                public List<Property> getObjects() {
-                    return Collections.emptyList();
-                }
-            };
-            loadingListener.onSuccess(emptyProperties.getObjects());
-        } else {
-            loadingListener.onSuccess(buildDetails.getProperties().getObjects());
-        }
+        Observable.just(properties)
+                .defaultIfEmpty(new Properties() {
+                    @Override
+                    public List<Property> getObjects() {
+                        return Collections.emptyList();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<Properties>() {
+                    @Override
+                    public void call(Properties properties) {
+                        loadingListener.onSuccess(buildDetails.getProperties().getObjects());
+                    }
+                });
     }
 }
