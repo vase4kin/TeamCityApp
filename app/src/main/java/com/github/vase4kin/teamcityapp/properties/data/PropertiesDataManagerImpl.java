@@ -26,6 +26,11 @@ import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import java.util.Collections;
 import java.util.List;
 
+import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.functions.Func1;
+
 /**
  * Impl of {@link PropertiesDataManager}
  */
@@ -35,20 +40,31 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull BuildDetails buildDetails, OnLoadingListener<List<Properties.Property>> loadingListener) {
+    public void load(@NonNull final BuildDetails buildDetails, final OnLoadingListener<List<Properties.Property>> loadingListener) {
         // Getting properties from the build
         Properties properties = buildDetails.getProperties();
-        if (properties == null) {
-            // Return empty collections if properties are empty
-            Properties emptyProperties = new Properties() {
-                @Override
-                public List<Property> getObjects() {
-                    return Collections.emptyList();
-                }
-            };
-            loadingListener.onSuccess(emptyProperties.getObjects());
-        } else {
-            loadingListener.onSuccess(buildDetails.getProperties().getObjects());
-        }
+        Observable.just(properties)
+                .flatMap(new Func1<Properties, Observable<Properties>>() {
+                    @Override
+                    public Observable<Properties> call(Properties properties) {
+                        return properties == null
+                                ? Observable.<Properties>empty()
+                                : Observable.just(properties);
+                    }
+                })
+                .defaultIfEmpty(new Properties(Collections.<Properties.Property>emptyList()))
+                .flatMap(new Func1<Properties, Observable<List<Properties.Property>>>() {
+                    @Override
+                    public Observable<List<Properties.Property>> call(Properties properties) {
+                        return Observable.from(properties.getObjects()).toList();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Properties.Property>>() {
+                    @Override
+                    public void call(List<Properties.Property> objects) {
+                        loadingListener.onSuccess(objects);
+                    }
+                });
     }
 }
