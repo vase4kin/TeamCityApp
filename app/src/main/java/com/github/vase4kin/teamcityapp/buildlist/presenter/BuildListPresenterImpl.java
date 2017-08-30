@@ -190,7 +190,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public void onResetFiltersSnackBarActionClick() {
         mView.disableSwipeToRefresh();
-        mView.showProgressWheel();
+        mView.showRefreshAnimation();
         mView.hideErrorView();
         mView.hideEmpty();
         mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
@@ -281,7 +281,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     public void onFilterBuildsActivityResult(BuildListFilter filter) {
         mView.showBuildFilterAppliedSnackBar();
         mView.disableSwipeToRefresh();
-        mView.showProgressWheel();
+        mView.showRefreshAnimation();
         mView.hideErrorView();
         mView.hideEmpty();
         mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));

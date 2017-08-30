@@ -18,16 +18,18 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,8 +49,8 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     ErrorView mErrorView;
     @BindView(android.R.id.empty)
     TextView mEmpty;
-    @BindView(R.id.progress_wheel)
-    ProgressWheel mProgressWheel;
+    @BindView(R.id.skeleton_view)
+    ViewGroup skeletonView;
 
     private Unbinder mUnbinder;
 
@@ -73,41 +75,16 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull ErrorView.RetryListener retryListener,
-                          @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
+    public void initViews(@NonNull ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mView);
         // <!----Setting id for testing purpose----->!
         mRecyclerView.setId(recyclerViewId());
         // <!--------------------------------------->!
         mErrorView.setImageTint(Color.LTGRAY);
-        mErrorView.setRetryListener(retryListener);
+        mErrorView.setRetryListener(listener);
         mEmpty.setText(mEmptyMessage);
-        mSwipeRefreshLayout.setOnRefreshListener(refreshListener);
+        mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showProgressWheel() {
-        mProgressWheel.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hideProgressWheel() {
-        mProgressWheel.setVisibility(View.GONE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isProgressWheelShown() {
-        return mProgressWheel.getVisibility() == View.VISIBLE;
     }
 
     /**
@@ -194,6 +171,46 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @Override
     public void disableRecyclerView() {
         mRecyclerView.setEnabled(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showSkeletonView() {
+        skeletonView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideSkeletonView() {
+        skeletonView.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSkeletonViewVisible() {
+        return skeletonView.getVisibility() == View.VISIBLE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void replaceSkeletonViewContent() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void replaceSkeletonViewContent(@LayoutRes int layout) {
+        skeletonView.removeAllViewsInLayout();
+        LayoutInflater.from(mActivity).inflate(layout, skeletonView);
     }
 
     /**

@@ -88,7 +88,7 @@ public class OverviewPresenterCardLogicTest {
     public void testOnSuccessViewInteractions() throws Exception {
         mPresenter.onSuccess(mBuildDetails);
         verify(mView).hideCards();
-        verify(mView).hideProgressWheel();
+        verify(mView).hideSkeletonView();
         verify(mView).hideRefreshingProgress();
         verify(mView).showCards();
     }

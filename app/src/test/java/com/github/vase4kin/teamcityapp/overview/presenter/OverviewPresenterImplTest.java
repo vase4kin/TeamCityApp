@@ -178,7 +178,7 @@ public class OverviewPresenterImplTest {
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mInteractor).setListener(eq(mPresenter));
-        verify(mView).showProgressWheel();
+        verify(mView).showSkeletonView();
         verify(mInteractor, times(2)).getBuildDetails();
         verify(mBuildDetails).getHref();
         verify(mBuildDetails).isRunning();
@@ -193,7 +193,7 @@ public class OverviewPresenterImplTest {
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mInteractor).setListener(eq(mPresenter));
-        verify(mView).showProgressWheel();
+        verify(mView).showSkeletonView();
         verify(mInteractor, times(2)).getBuildDetails();
         verify(mBuildDetails).getHref();
         verify(mBuildDetails).isRunning();
@@ -246,7 +246,7 @@ public class OverviewPresenterImplTest {
     public void testOnFail() throws Exception {
         mPresenter.onFail("error");
         verify(mView).hideCards();
-        verify(mView).hideProgressWheel();
+        verify(mView).hideSkeletonView();
         verify(mView).hideRefreshingProgress();
         verify(mView).showErrorView();
     }

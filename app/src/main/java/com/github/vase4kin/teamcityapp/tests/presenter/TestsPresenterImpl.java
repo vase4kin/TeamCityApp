@@ -120,6 +120,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
                 return !mDataManager.canLoadMore();
             }
         });
+        mView.replaceSkeletonViewContent();
     }
 
     /**
@@ -162,7 +163,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mView.showProgressWheel();
+        mView.showRefreshAnimation();
         mView.hideErrorView();
         mView.hideEmpty();
         mView.showData(new TestsDataModelImpl(Collections.<TestOccurrences.TestOccurrence>emptyList()));

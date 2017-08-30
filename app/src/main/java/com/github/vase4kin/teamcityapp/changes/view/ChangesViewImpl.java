@@ -139,6 +139,14 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      * {@inheritDoc}
      */
     @Override
+    public void replaceSkeletonViewContent() {
+        replaceSkeletonViewContent(R.layout.layout_skeleton_changes_list);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected int recyclerViewId() {
         return R.id.changes_recycler_view;
     }

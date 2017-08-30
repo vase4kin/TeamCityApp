@@ -35,14 +35,14 @@ public interface OverviewView {
     void initViews(ViewListener listener);
 
     /**
-     * Show progress loading wheel
+     * Show skeleton view
      */
-    void showProgressWheel();
+    void showSkeletonView();
 
     /**
-     * Hide progress loading wheel
+     * Hide skeleton view
      */
-    void hideProgressWheel();
+    void hideSkeletonView();
 
     /**
      * Show refreshing progress

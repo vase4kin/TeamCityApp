@@ -52,6 +52,12 @@ public class AgentPresenterImpl extends BaseListPresenterImpl<
         super(view, dataManager, tracker, valueExtractor);
     }
 
+    @Override
+    protected void initViews() {
+        super.initViews();
+        mView.replaceSkeletonViewContent();
+    }
+
     /**
      * {@inheritDoc}
      */

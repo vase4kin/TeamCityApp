@@ -26,7 +26,6 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -51,7 +50,6 @@ import java.util.List;
 
 import butterknife.BindString;
 import butterknife.BindView;
-import tr.xip.errorview.ErrorView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 /**
@@ -88,9 +86,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull ErrorView.RetryListener retryListener,
-                          @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
-        super.initViews(retryListener, refreshListener);
+    public void initViews(@NonNull ViewListener listener) {
+        super.initViews(listener);
         mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_directions_run).color(Color.WHITE));
         mFloatingActionButton.hide();
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
