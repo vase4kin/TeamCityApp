@@ -48,6 +48,17 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/skeleton_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <include layout="@layout/layout_skeleton_navigation_list" />
+
+    </android.support.v4.widget.NestedScrollView>
+
     <include layout="@layout/layout_empty" />
 
     <include layout="@layout/layout_progress_wheel" />

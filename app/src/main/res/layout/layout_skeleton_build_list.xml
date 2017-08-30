@@ -19,20 +19,20 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
-    <include layout="@layout/layout_skeleton_project_item" />
+    <include layout="@layout/layout_skeleton_build_list_item" />
 
 </LinearLayout>

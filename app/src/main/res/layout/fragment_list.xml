@@ -43,6 +43,7 @@
     <include layout="@layout/layout_error_view" />
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/skeleton_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone">

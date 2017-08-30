@@ -81,7 +81,7 @@ public abstract class BaseListPresenterImpl<
     @Override
     public void onViewsCreated() {
         initViews();
-        mView.showProgressWheel();
+        mView.showSkeletonView();
         mView.disableSwipeToRefresh();
         loadData(loadingListener, false);
     }
@@ -106,10 +106,7 @@ public abstract class BaseListPresenterImpl<
 
             @Override
             public void onRetry() {
-                mView.showProgressWheel();
-                mView.hideErrorView();
-                mView.hideEmpty();
-                loadData(loadingListener, true);
+                onSwipeToRefresh();
             }
         };
         mView.initViews(listener);
@@ -177,8 +174,8 @@ public abstract class BaseListPresenterImpl<
      * Base views interaction on server request completion
      */
     private void onCompleteLoading() {
-        if (mView.isProgressWheelShown()) {
-            mView.hideProgressWheel();
+        if (mView.isSkeletonViewVisible()) {
+            mView.hideSkeletonView();
         }
 
         mView.enableSwipeToRefresh();

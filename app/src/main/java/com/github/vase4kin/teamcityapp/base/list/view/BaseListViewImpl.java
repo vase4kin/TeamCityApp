@@ -49,6 +49,8 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     TextView mEmpty;
     @BindView(R.id.progress_wheel)
     ProgressWheel mProgressWheel;
+    @BindView(R.id.skeleton_view)
+    View skeletonView;
 
     private Unbinder mUnbinder;
 
@@ -193,6 +195,27 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @Override
     public void disableRecyclerView() {
         mRecyclerView.setEnabled(false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showSkeletonView() {
+        skeletonView.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideSkeletonView() {
+        skeletonView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean isSkeletonViewVisible() {
+        return skeletonView.getVisibility() == View.VISIBLE;
     }
 
     /**

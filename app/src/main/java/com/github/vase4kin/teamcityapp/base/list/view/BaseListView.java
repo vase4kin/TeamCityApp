@@ -115,6 +115,12 @@ public interface BaseListView<T extends BaseDataModel> {
      */
     void showData(T dataModel);
 
+    void showSkeletonView();
+
+    void hideSkeletonView();
+
+    boolean isSkeletonViewVisible();
+
     interface ViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
     }
 }
