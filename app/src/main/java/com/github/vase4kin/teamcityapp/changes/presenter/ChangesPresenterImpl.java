@@ -94,6 +94,7 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl<
                 return !mDataManager.canLoadMore();
             }
         });
+        mView.replaceSkeletonViewContent();
     }
 
     /**
