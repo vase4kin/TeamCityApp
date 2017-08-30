@@ -59,8 +59,6 @@
 
     </android.support.v4.widget.NestedScrollView>
 
-    <include layout="@layout/layout_skeleton_navigation_list" />
-
     <include layout="@layout/layout_empty" />
 
     <include layout="@layout/layout_progress_wheel" />
