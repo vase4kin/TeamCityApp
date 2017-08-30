@@ -48,7 +48,9 @@
         android:layout_height="wrap_content"
         android:visibility="gone">
 
-        <include layout="@layout/layout_skeleton_navigation_list" />
+        <include
+            layout="@layout/layout_skeleton_navigation_list"
+            android:id="@+id/skeleton_view_items" />
 
     </android.support.v4.widget.NestedScrollView>
 

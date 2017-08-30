@@ -18,12 +18,15 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -47,7 +50,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @BindView(android.R.id.empty)
     TextView mEmpty;
     @BindView(R.id.skeleton_view)
-    View skeletonView;
+    ViewGroup skeletonView;
 
     private Unbinder mUnbinder;
 
@@ -186,9 +189,28 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         skeletonView.setVisibility(View.GONE);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isSkeletonViewVisible() {
         return skeletonView.getVisibility() == View.VISIBLE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void replaceSkeletonViewContent() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void replaceSkeletonViewContent(@LayoutRes int layout) {
+        skeletonView.removeAllViewsInLayout();
+        LayoutInflater.from(mActivity).inflate(layout, skeletonView);
     }
 
     /**

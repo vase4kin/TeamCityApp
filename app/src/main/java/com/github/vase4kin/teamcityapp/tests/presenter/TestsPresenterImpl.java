@@ -120,6 +120,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
                 return !mDataManager.canLoadMore();
             }
         });
+        mView.replaceSkeletonViewContent();
     }
 
     /**
