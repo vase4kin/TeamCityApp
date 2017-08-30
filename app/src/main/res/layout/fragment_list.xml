@@ -36,16 +36,19 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <TextView
-        android:id="@android:id/empty"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="gone"
-        android:textColor="@color/main_text_color" />
+    <include layout="@layout/layout_empty" />
 
     <include layout="@layout/layout_progress_wheel" />
 
     <include layout="@layout/layout_error_view" />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <include layout="@layout/layout_skeleton_navigation_list" />
+
+    </android.support.v4.widget.NestedScrollView>
 
 </FrameLayout>
