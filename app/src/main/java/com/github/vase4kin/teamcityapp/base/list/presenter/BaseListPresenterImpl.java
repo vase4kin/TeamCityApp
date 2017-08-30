@@ -106,6 +106,7 @@ public abstract class BaseListPresenterImpl<
 
             @Override
             public void onRetry() {
+                mView.showRefreshAnimation();
                 onSwipeToRefresh();
             }
         };

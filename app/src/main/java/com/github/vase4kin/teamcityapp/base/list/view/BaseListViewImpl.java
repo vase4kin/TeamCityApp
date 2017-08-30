@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,8 +46,6 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     ErrorView mErrorView;
     @BindView(android.R.id.empty)
     TextView mEmpty;
-    @BindView(R.id.progress_wheel)
-    ProgressWheel mProgressWheel;
     @BindView(R.id.skeleton_view)
     View skeletonView;
 
@@ -85,30 +82,6 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         mEmpty.setText(mEmptyMessage);
         mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showProgressWheel() {
-        mProgressWheel.setVisibility(View.VISIBLE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void hideProgressWheel() {
-        mProgressWheel.setVisibility(View.GONE);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isProgressWheelShown() {
-        return mProgressWheel.getVisibility() == View.VISIBLE;
     }
 
     /**

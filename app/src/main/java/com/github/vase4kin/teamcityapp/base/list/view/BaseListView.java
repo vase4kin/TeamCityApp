@@ -39,21 +39,6 @@ public interface BaseListView<T extends BaseDataModel> {
     void initViews(@NonNull ViewListener listener);
 
     /**
-     * Show progress loading wheel
-     */
-    void showProgressWheel();
-
-    /**
-     * Hide progress loading wheel
-     */
-    void hideProgressWheel();
-
-    /**
-     * @return Is progress loading or not
-     */
-    boolean isProgressWheelShown();
-
-    /**
      * Enable swipe to refresh layout
      */
     void enableSwipeToRefresh();
@@ -115,10 +100,19 @@ public interface BaseListView<T extends BaseDataModel> {
      */
     void showData(T dataModel);
 
+    /**
+     * Show skeleton view
+     */
     void showSkeletonView();
 
+    /**
+     * Hide skeleton view
+     */
     void hideSkeletonView();
 
+    /**
+     * @return the visibility flag of skeleton view
+     */
     boolean isSkeletonViewVisible();
 
     interface ViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
