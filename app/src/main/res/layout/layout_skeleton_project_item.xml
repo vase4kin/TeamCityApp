@@ -31,12 +31,12 @@
             android:orientation="vertical">
 
             <FrameLayout
-                android:layout_width="64dp"
+                android:layout_width="96dp"
                 android:layout_height="22dp"
                 android:background="@color/divider_color" />
 
             <FrameLayout
-                android:layout_width="164dp"
+                android:layout_width="match_parent"
                 android:layout_height="18dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/divider_color" />
