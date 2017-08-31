@@ -23,7 +23,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,7 +50,6 @@ import java.util.Map;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.OnClick;
-import tr.xip.errorview.ErrorView;
 
 /**
  * View impl for account
@@ -227,9 +225,8 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull ErrorView.RetryListener retryListener,
-                          @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
-        super.initViews(retryListener, refreshListener);
+    public void initViews(@NonNull ViewListener listener) {
+        super.initViews(listener);
 
         //Setting float button icon
         mButtonFloat.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_add).color(Color.WHITE));

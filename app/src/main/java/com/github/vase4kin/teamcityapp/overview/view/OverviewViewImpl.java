@@ -29,10 +29,12 @@ import android.support.v7.widget.ActionMenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
@@ -40,7 +42,6 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFa
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +72,8 @@ public class OverviewViewImpl implements OverviewView {
     RecyclerView mRecyclerView;
     @BindView(R.id.error_view)
     ErrorView mErrorView;
-    @BindView(R.id.progress_wheel)
-    ProgressWheel mProgressWheel;
+    @BindView(R.id.skeleton_view)
+    ViewGroup skeletonView;
 
     private Unbinder mUnbinder;
 
@@ -105,6 +106,8 @@ public class OverviewViewImpl implements OverviewView {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
         // For testing purposes
         mRecyclerView.setId(R.id.overview_recycler_view);
+        skeletonView.removeAllViewsInLayout();
+        LayoutInflater.from(mActivity).inflate(R.layout.layout_skeleton_overview_list, skeletonView);
     }
 
     /**
@@ -132,16 +135,16 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showProgressWheel() {
-        mProgressWheel.setVisibility(View.VISIBLE);
+    public void showSkeletonView() {
+        skeletonView.setVisibility(View.VISIBLE);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void hideProgressWheel() {
-        mProgressWheel.setVisibility(View.GONE);
+    public void hideSkeletonView() {
+        skeletonView.setVisibility(View.GONE);
     }
 
     /**

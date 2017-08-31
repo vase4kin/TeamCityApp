@@ -283,6 +283,14 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      * {@inheritDoc}
      */
     @Override
+    public void replaceSkeletonViewContent() {
+        replaceSkeletonViewContent(R.layout.layout_skeleton_agent_list);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     protected int recyclerViewId() {
         return R.id.tests_recycler_view;
     }

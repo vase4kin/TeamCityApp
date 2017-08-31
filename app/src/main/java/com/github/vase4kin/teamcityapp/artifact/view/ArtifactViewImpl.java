@@ -20,7 +20,6 @@ import android.app.Activity;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -32,8 +31,6 @@ import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
-
-import tr.xip.errorview.ErrorView;
 
 /**
  * Impl of {@link ArtifactView}
@@ -64,8 +61,8 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull ErrorView.RetryListener retryListener, @NonNull SwipeRefreshLayout.OnRefreshListener refreshListener) {
-        super.initViews(retryListener, refreshListener);
+    public void initViews(@NonNull ViewListener listener) {
+        super.initViews(listener);
         mProgressDialog = new MaterialDialog.Builder(mActivity)
                 .title(R.string.download_artifact_dialog_title)
                 .content(R.string.progress_dialog_content)

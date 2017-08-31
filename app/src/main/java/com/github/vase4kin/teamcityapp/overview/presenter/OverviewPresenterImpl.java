@@ -60,7 +60,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     public void onCreate() {
         mView.initViews(this);
         mInteractor.setListener(this);
-        mView.showProgressWheel();
+        mView.showSkeletonView();
         BuildDetails buildDetails = mInteractor.getBuildDetails();
         loadBuildDetails(buildDetails.isRunning());
     }
@@ -261,7 +261,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onSuccess(BuildDetails buildDetails) {
         mView.hideCards();
-        mView.hideProgressWheel();
+        mView.hideSkeletonView();
         mView.hideRefreshingProgress();
         // Status
         String statusIcon = buildDetails.getStatusIcon();
@@ -344,7 +344,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onFail(String errorMessage) {
         mView.hideCards();
-        mView.hideProgressWheel();
+        mView.hideSkeletonView();
         mView.hideRefreshingProgress();
         mView.showErrorView();
     }

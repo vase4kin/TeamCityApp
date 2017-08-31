@@ -43,6 +43,7 @@
     <string name="title_activity_running_builds">@string/running_builds_drawer_item</string>
     <string name="title_activity_queued_builds">@string/build_queue_drawer_item</string>
     <string name="title_activity_about">@string/about_drawer_item</string>
+    <string name="title_activity_about_libraries">Libraries</string>
 
     <!--Build tabs-->
     <string name="tab_overview">Overview</string>
@@ -178,15 +179,21 @@
     <string name="navigate_up">Navigate up</string>
 
     <!--About-->
-    <string name="about_app_description">
-        <![CDATA[
-        <b>TeamCity in your pocket</b><br />
-        <a href="https://github.com/vase4kin/TeamCityApp">Source Code</a><br />
-        <i>Contacts:</i><br />
-        <a href="mailto:andrey.tolpeev@gmail.com">Email</a><br />
-        <a href="https://telegram.me/vase4kin">Telegram</a><br />
-        ]]>
-    </string>
+    <string name="about_app_text_rate_app">Rate the app</string>
+    <string name="about_app_text_found_issue">Found an issue?</string>
+    <string name="about_app_subtext_found_issue">Or want to suggest an improvement?</string>
+    <string name="about_app_url_found_issue">https://github.com/vase4kin/TeamCityApp/issues</string>
+    <string name="about_app_text_source_code">Source code</string>
+    <string name="about_app_url_source_code">https://github.com/vase4kin/TeamCityApp</string>
+    <string name="about_app_text_libraries">Libraries</string>
+    <string name="about_app_text_contacts">Contacts</string>
+    <string name="about_app_text_github">Github</string>
+    <string name="about_app_url_github">https://github.com/vase4kin</string>
+    <string name="about_app_text_telegram">Telegram</string>
+    <string name="about_app_url_telegram">https://telegram.me/vase4kin</string>
+    <string name="about_app_text_email">Email</string>
+    <string name="about_app_email">andrey.tolpeev@gmail.com</string>
+    <string name="about_app_email_title">Questions about TeamCityApp</string>
 
     <!--Build log-->
     <string name="text_login_again">In order to view build log please login</string>

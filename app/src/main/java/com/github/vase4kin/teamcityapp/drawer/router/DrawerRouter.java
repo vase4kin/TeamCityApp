@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.drawer.router;
 
+import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
+
 /**
  * Drawer router
  */
@@ -52,7 +54,7 @@ public interface DrawerRouter {
     void startQueuedBuildsActivity();
 
     /**
-     * Start {@link com.github.vase4kin.teamcityapp.about.AboutActivity}
+     * Start {@link AboutLibrariesActivity}
      */
     void startAboutActivity();
 }

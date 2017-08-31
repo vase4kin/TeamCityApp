@@ -238,7 +238,7 @@ public class BuildListPresenterImplTest {
         mPresenter.onFilterBuildsActivityResult(mFilter);
         verify(mView).showBuildFilterAppliedSnackBar();
         verify(mView).disableSwipeToRefresh();
-        verify(mView).showProgressWheel();
+        verify(mView).showRefreshAnimation();
         verify(mView).hideErrorView();
         verify(mView).hideEmpty();
         verify(mView).showData(any(BuildListDataModel.class));
@@ -252,7 +252,7 @@ public class BuildListPresenterImplTest {
         when(mValueExtractor.getId()).thenReturn("id");
         mPresenter.onResetFiltersSnackBarActionClick();
         verify(mView).disableSwipeToRefresh();
-        verify(mView).showProgressWheel();
+        verify(mView).showRefreshAnimation();
         verify(mView).hideErrorView();
         verify(mView).hideEmpty();
         verify(mView).showData(any(BuildListDataModel.class));

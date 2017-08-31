@@ -179,7 +179,7 @@ public class TestsPresenterImplTest {
     public void testOnOptionsItemSelected() throws Exception {
         when(mView.onOptionsItemSelected(eq(mMenuItem))).thenReturn(true);
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(equalTo(true)));
-        verify(mView).showProgressWheel();
+        verify(mView).showRefreshAnimation();
         verify(mView).hideErrorView();
         verify(mView).hideEmpty();
         verify(mView).onOptionsItemSelected(eq(mMenuItem));

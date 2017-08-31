@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.base.list.presenter;
 
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.api.Jsonable;
@@ -29,8 +28,6 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 
 import java.util.Collections;
 import java.util.List;
-
-import tr.xip.errorview.ErrorView;
 
 /**
  * Base impl of {@link BaseListPresenter}
@@ -84,7 +81,7 @@ public abstract class BaseListPresenterImpl<
     @Override
     public void onViewsCreated() {
         initViews();
-        mView.showProgressWheel();
+        mView.showSkeletonView();
         mView.disableSwipeToRefresh();
         loadData(loadingListener, false);
     }
@@ -101,22 +98,19 @@ public abstract class BaseListPresenterImpl<
      * Init views, register listeners
      */
     protected void initViews() {
-        ErrorView.RetryListener retryListener = new ErrorView.RetryListener() {
-            @Override
-            public void onRetry() {
-                mView.showProgressWheel();
-                mView.hideErrorView();
-                mView.hideEmpty();
-                loadData(loadingListener, true);
-            }
-        };
-        SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        BaseListView.ViewListener listener = new BaseListView.ViewListener() {
             @Override
             public void onRefresh() {
                 onSwipeToRefresh();
             }
+
+            @Override
+            public void onRetry() {
+                mView.showRefreshAnimation();
+                onSwipeToRefresh();
+            }
         };
-        mView.initViews(retryListener, refreshListener);
+        mView.initViews(listener);
     }
 
     /**
@@ -181,8 +175,8 @@ public abstract class BaseListPresenterImpl<
      * Base views interaction on server request completion
      */
     private void onCompleteLoading() {
-        if (mView.isProgressWheelShown()) {
-            mView.hideProgressWheel();
+        if (mView.isSkeletonViewVisible()) {
+            mView.hideSkeletonView();
         }
 
         mView.enableSwipeToRefresh();
