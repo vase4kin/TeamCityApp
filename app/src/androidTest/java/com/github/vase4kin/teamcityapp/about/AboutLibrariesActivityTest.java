@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.about;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
@@ -59,6 +60,7 @@ public class AboutLibrariesActivityTest {
     @Test
     public void testAboutActivity() throws Exception {
         mActivityTestRule.launchActivity(null);
-        matchToolbarTitle("About");
+        String toolbarTitle = mActivityTestRule.getActivity().getString(R.string.about_app_text_libraries);
+        matchToolbarTitle(toolbarTitle);
     }
 }
