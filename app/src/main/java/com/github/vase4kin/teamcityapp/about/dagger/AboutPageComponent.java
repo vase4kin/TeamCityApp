@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.about.dagger;
 
 import com.github.vase4kin.teamcityapp.about.AboutActivity;
+import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
@@ -26,6 +27,8 @@ import dagger.Component;
 @PresenterScope
 @Component(dependencies = RestApiComponent.class, modules = DrawerModule.class)
 public interface AboutPageComponent {
+
+    void inject(AboutLibrariesActivity aboutLibrariesActivity);
 
     void inject(AboutActivity aboutActivity);
 }

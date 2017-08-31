@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.about;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -31,13 +32,14 @@ import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.mikepenz.aboutlibraries.LibsBuilder;
 
 import javax.inject.Inject;
 
 /**
- * About activity
+ * About libraries screen activity
  */
-public class AboutActivity extends AppCompatActivity {
+public class AboutLibrariesActivity extends AppCompatActivity {
 
     @Inject
     DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker> mDrawerPresenter;
@@ -49,17 +51,21 @@ public class AboutActivity extends AppCompatActivity {
 
         // Injecting DrawerPresenterImpl to activity
         DaggerAboutPageComponent.builder()
-                .drawerModule(new DrawerModule(this, false, DrawerView.ABOUT))
+                .drawerModule(new DrawerModule(this, true, DrawerView.ABOUT))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
                 .inject(this);
 
         mDrawerPresenter.onCreate();
 
+        // About library fragment
+        Fragment aboutLibrary = new LibsBuilder()
+                .supportFragment();
+
         // Commit fragment to container
         getSupportFragmentManager()
                 .beginTransaction()
-                .add(R.id.about_library_container, new AboutFragment())
+                .add(R.id.about_library_container, aboutLibrary)
                 .addToBackStack(null)
                 .commit();
     }
@@ -73,9 +79,8 @@ public class AboutActivity extends AppCompatActivity {
      * Start About activity with Flag {@link Intent#FLAG_ACTIVITY_SINGLE_TOP}
      */
     public static void start(Activity activity) {
-        Intent launchIntent = new Intent(activity, AboutActivity.class)
+        Intent launchIntent = new Intent(activity, AboutLibrariesActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         DrawerActivityStartUtils.startActivity(launchIntent, activity);
     }
-
 }

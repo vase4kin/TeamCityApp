@@ -13,7 +13,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.github.vase4kin.teamcityapp">
 
@@ -26,8 +25,8 @@
         android:allowBackup="true"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme">
         <activity
             android:name=".splash.view.SplashActivity"
@@ -76,8 +75,8 @@
             android:label="@string/title_activity_create_account" />
         <activity android:name=".testdetails.view.TestDetailsActivity" />
         <activity
-            android:name=".about.AboutActivity"
-            android:label="@string/about_drawer_item"
+            android:name=".about.AboutLibrariesActivity"
+            android:label="@string/title_activity_about_libraries"
             android:launchMode="singleTop" />
         <activity
             android:name=".runbuild.view.RunBuildActivity"
@@ -85,6 +84,9 @@
         <activity
             android:name=".filter_builds.view.FilterBuildsActivity"
             android:label="@string/title_filter_builds" />
+        <activity
+            android:name=".about.AboutActivity"
+            android:label="@string/about_drawer_item" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.about;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
@@ -35,10 +36,10 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 
 /**
- * Tests for {@link AboutActivity}
+ * Tests for {@link AboutLibrariesActivity}
  */
 @RunWith(AndroidJUnit4.class)
-public class AboutActivityTest {
+public class AboutLibrariesActivityTest {
 
     private static final String URL = "http://teamcity.server.com";
 
@@ -54,11 +55,12 @@ public class AboutActivityTest {
             });
 
     @Rule
-    public CustomActivityTestRule<AboutActivity> mActivityTestRule = new CustomActivityTestRule<>(AboutActivity.class);
+    public CustomActivityTestRule<AboutLibrariesActivity> mActivityTestRule = new CustomActivityTestRule<>(AboutLibrariesActivity.class);
 
     @Test
     public void testAboutActivity() throws Exception {
         mActivityTestRule.launchActivity(null);
-        matchToolbarTitle("About");
+        String toolbarTitle = mActivityTestRule.getActivity().getString(R.string.about_app_text_libraries);
+        matchToolbarTitle(toolbarTitle);
     }
 }
