@@ -42,7 +42,7 @@
                 android:background="@color/divider_color" />
 
             <FrameLayout
-                android:layout_width="194dp"
+                android:layout_width="match_parent"
                 android:layout_height="16dp"
                 android:layout_marginTop="8dp"
                 android:background="@color/divider_color" />

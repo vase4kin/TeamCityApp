@@ -25,17 +25,11 @@
             android:layout_marginRight="@dimen/default_margin"
             android:background="@color/divider_color" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <FrameLayout
-                android:layout_width="124dp"
-                android:layout_height="22dp"
-                android:background="@color/divider_color" />
-
-        </LinearLayout>
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="22dp"
+            android:layout_weight="100"
+            android:background="@color/divider_color" />
 
     </LinearLayout>
 
