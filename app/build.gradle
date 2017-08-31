@@ -179,6 +179,7 @@ dependencies {
     compile('com.mikepenz:aboutlibraries:5.9.7@aar') {
         transitive = true
     }
+    compile 'com.github.daniel-stoneuk:material-about-library:2.2.1'
     // Onboarding
     compile 'uk.co.samuelwall:material-tap-target-prompt:2.0.0'
     // Dagger

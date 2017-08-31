@@ -26,7 +26,7 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.about.AboutActivity;
+import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
@@ -280,7 +280,7 @@ public class DrawerViewImpl implements DrawerView {
                                     mOnDrawerPresenterListener.startQueuedBuildsActivity();
                                     break;
                                 case ABOUT:
-                                    if (mActivity instanceof AboutActivity) {
+                                    if (mActivity instanceof AboutLibrariesActivity) {
                                         break;
                                     }
                                     mOnDrawerPresenterListener.startAboutActivity();

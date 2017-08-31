@@ -35,10 +35,10 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 
 /**
- * Tests for {@link AboutActivity}
+ * Tests for {@link AboutLibrariesActivity}
  */
 @RunWith(AndroidJUnit4.class)
-public class AboutActivityTest {
+public class AboutLibrariesActivityTest {
 
     private static final String URL = "http://teamcity.server.com";
 
@@ -54,7 +54,7 @@ public class AboutActivityTest {
             });
 
     @Rule
-    public CustomActivityTestRule<AboutActivity> mActivityTestRule = new CustomActivityTestRule<>(AboutActivity.class);
+    public CustomActivityTestRule<AboutLibrariesActivity> mActivityTestRule = new CustomActivityTestRule<>(AboutLibrariesActivity.class);
 
     @Test
     public void testAboutActivity() throws Exception {

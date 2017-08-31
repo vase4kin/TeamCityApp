@@ -23,6 +23,12 @@
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
+    <style name="AppTheme.MaterialAboutActivity.Fragment" parent="Theme.Mal.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
     <style name="RecyclerView">
         <item name="android:paddingBottom">@dimen/recycler_view_vertical_margin</item>
         <item name="android:paddingLeft">@dimen/recycler_view_horizontal_margin</item>
