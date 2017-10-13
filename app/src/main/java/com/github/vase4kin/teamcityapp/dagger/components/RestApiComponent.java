@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.components;
 
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.account.create.dagger.UrlFormatterModule;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
@@ -32,7 +33,7 @@ import dagger.Component;
 import io.rx_cache.internal.RxCache;
 
 @UserScope
-@Component(dependencies = AppComponent.class, modules = RestApiModule.class)
+@Component(dependencies = AppComponent.class, modules = {RestApiModule.class, UrlFormatterModule.class})
 public interface RestApiComponent {
 
     TeamCityService teamCityService();

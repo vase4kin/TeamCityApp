@@ -149,7 +149,7 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                                 @Override
                                 public void run() {
                                     if (response.isSuccessful()) {
-                                        String formattedServerUrl = mUrlFormatter.formatUrl(serverUrl);
+                                        String formattedServerUrl = mUrlFormatter.formatServerUrl(serverUrl);
                                         listener.onSuccess(formattedServerUrl);
                                     } else {
                                         listener.onFail(response.code(), response.message());

@@ -33,17 +33,23 @@ public class UrlFormatterImplTest {
     }
 
     @Test
-    public void formatUrl() throws Exception {
-        assertThat(mUrlFormatter.formatUrl("https://teamcity.com"), is(equalTo("https://teamcity.com")));
-        assertThat(mUrlFormatter.formatUrl("https://teamcity.com/"), is(equalTo("https://teamcity.com/")));
+    public void testFormatServerUrl() throws Exception {
+        assertThat(mUrlFormatter.formatServerUrl("https://teamcity.com"), is(equalTo("https://teamcity.com")));
+        assertThat(mUrlFormatter.formatServerUrl("https://teamcity.com/"), is(equalTo("https://teamcity.com/")));
     }
 
     @Test
-    public void formatUrlWithPath() throws Exception {
-        assertThat(mUrlFormatter.formatUrl("https://teamcity.com/server"), is(equalTo("https://teamcity.com/server/")));
-        assertThat(mUrlFormatter.formatUrl("https://teamcity.com/server/"), is(equalTo("https://teamcity.com/server/")));
-        assertThat(mUrlFormatter.formatUrl("https://teamcity.com/server/v2"), is(equalTo("https://teamcity.com/server/v2/")));
-        assertThat(mUrlFormatter.formatUrl("https://teamcity.com/server/v2/"), is(equalTo("https://teamcity.com/server/v2/")));
+    public void testFormatServerUrlWithPath() throws Exception {
+        assertThat(mUrlFormatter.formatServerUrl("https://teamcity.com/server"), is(equalTo("https://teamcity.com/server/")));
+        assertThat(mUrlFormatter.formatServerUrl("https://teamcity.com/server/"), is(equalTo("https://teamcity.com/server/")));
+        assertThat(mUrlFormatter.formatServerUrl("https://teamcity.com/server/v2"), is(equalTo("https://teamcity.com/server/v2/")));
+        assertThat(mUrlFormatter.formatServerUrl("https://teamcity.com/server/v2/"), is(equalTo("https://teamcity.com/server/v2/")));
+    }
+
+    @Test
+    public void testFormatUrl() throws Exception {
+        assertThat(mUrlFormatter.formatBasicUrl("/app/rest/buildTypes/id:buildType/builds?locator=locator:any"), is(equalTo("app/rest/buildTypes/id:buildType/builds?locator=locator:any")));
+        assertThat(mUrlFormatter.formatBasicUrl("app/rest/buildTypes/id:buildType/builds?locator=locator:any"), is(equalTo("app/rest/buildTypes/id:buildType/builds?locator=locator:any")));
     }
 
 }
