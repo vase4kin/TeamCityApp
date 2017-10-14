@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules;
 
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.RepositoryImpl;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -56,7 +57,7 @@ public class RestApiModule {
 
     @Provides
     @UserScope
-    Repository provideRepository(TeamCityService teamCityService, CacheProviders cacheProviders) {
-        return new RepositoryImpl(teamCityService, cacheProviders);
+    Repository provideRepository(TeamCityService teamCityService, CacheProviders cacheProviders, UrlFormatter urlFormatter) {
+        return new RepositoryImpl(teamCityService, cacheProviders, urlFormatter);
     }
 }

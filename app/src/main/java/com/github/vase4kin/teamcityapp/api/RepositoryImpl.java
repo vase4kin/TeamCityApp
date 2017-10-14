@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.api;
 
 import android.support.annotation.Nullable;
 
+import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
@@ -44,10 +45,14 @@ public class RepositoryImpl implements Repository {
 
     private final TeamCityService mTeamCityService;
     private final CacheProviders mCacheCacheProviders;
+    private final UrlFormatter urlFormatter;
 
-    public RepositoryImpl(TeamCityService teamCityService, CacheProviders cacheProviders) {
+    public RepositoryImpl(TeamCityService teamCityService,
+                          CacheProviders cacheProviders,
+                          UrlFormatter urlFormatter) {
         this.mTeamCityService = teamCityService;
         this.mCacheCacheProviders = cacheProviders;
+        this.urlFormatter = urlFormatter;
     }
 
     /**
@@ -73,7 +78,10 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<NavigationNode> listBuildTypes(String url, boolean update) {
-        return mCacheCacheProviders.listBuildTypes(mTeamCityService.listBuildTypes(url), new DynamicKey(url), new EvictDynamicKey(update));
+        return mCacheCacheProviders.listBuildTypes(
+                mTeamCityService.listBuildTypes(urlFormatter.formatBasicUrl(url)),
+                new DynamicKey(url),
+                new EvictDynamicKey(update));
     }
 
     /**
@@ -93,7 +101,7 @@ public class RepositoryImpl implements Repository {
     @Override
     public Observable<Build> build(String url, boolean update) {
         return mCacheCacheProviders.build(
-                mTeamCityService.build(url),
+                mTeamCityService.build(urlFormatter.formatBasicUrl(url)),
                 new DynamicKey(url),
                 new EvictDynamicKey(update));
     }
@@ -136,7 +144,7 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<Builds> listMoreBuilds(String url) {
-        return mTeamCityService.listMoreBuilds(url);
+        return mTeamCityService.listMoreBuilds(urlFormatter.formatBasicUrl(url));
     }
 
     /**
@@ -145,7 +153,7 @@ public class RepositoryImpl implements Repository {
     @Override
     public Observable<Files> listArtifacts(String url, String locator, boolean update) {
         return mCacheCacheProviders.listArtifacts(
-                mTeamCityService.listArtifacts(url, locator),
+                mTeamCityService.listArtifacts(urlFormatter.formatBasicUrl(url), locator),
                 new DynamicKey(url),
                 new EvictDynamicKey(update));
     }
@@ -155,7 +163,7 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<ResponseBody> downloadFile(String url) {
-        return mTeamCityService.downloadFile(url);
+        return mTeamCityService.downloadFile(urlFormatter.formatBasicUrl(url));
     }
 
     /**
@@ -163,7 +171,10 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<TestOccurrences> listTestOccurrences(String url, boolean update) {
-        return mCacheCacheProviders.listTestOccurrences(mTeamCityService.listTestOccurrences(url), new DynamicKey(url), new EvictDynamicKey(update));
+        return mCacheCacheProviders.listTestOccurrences(
+                mTeamCityService.listTestOccurrences(urlFormatter.formatBasicUrl(url)),
+                new DynamicKey(url),
+                new EvictDynamicKey(update));
     }
 
     /**
@@ -171,7 +182,9 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<TestOccurrences.TestOccurrence> testOccurrence(String url) {
-        return mCacheCacheProviders.testOccurrence(mTeamCityService.testOccurrence(url), new DynamicKey(url));
+        return mCacheCacheProviders.testOccurrence(
+                mTeamCityService.testOccurrence(urlFormatter.formatBasicUrl(url)),
+                new DynamicKey(url));
     }
 
     /**
@@ -179,7 +192,10 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<Changes> listChanges(String url, boolean update) {
-        return mCacheCacheProviders.listChanges(mTeamCityService.listChanges(url), new DynamicKey(url), new EvictDynamicKey(update));
+        return mCacheCacheProviders.listChanges(
+                mTeamCityService.listChanges(urlFormatter.formatBasicUrl(url)),
+                new DynamicKey(url),
+                new EvictDynamicKey(update));
     }
 
     /**
@@ -187,7 +203,7 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<Changes.Change> change(String url) {
-        return mCacheCacheProviders.change(mTeamCityService.change(url), new DynamicKey(url));
+        return mCacheCacheProviders.change(mTeamCityService.change(urlFormatter.formatBasicUrl(url)), new DynamicKey(url));
     }
 
     /**
@@ -211,6 +227,6 @@ public class RepositoryImpl implements Repository {
      */
     @Override
     public Observable<Build> cancelBuild(String url, BuildCancelRequest buildCancelRequest) {
-        return mTeamCityService.cancelBuild(url, buildCancelRequest);
+        return mTeamCityService.cancelBuild(urlFormatter.formatBasicUrl(url), buildCancelRequest);
     }
 }

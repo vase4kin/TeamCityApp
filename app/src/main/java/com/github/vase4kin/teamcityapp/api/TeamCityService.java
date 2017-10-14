@@ -211,7 +211,7 @@ public interface TeamCityService {
      * @return {@link Observable} with {@link com.github.vase4kin.teamcityapp.changes.api.Changes.Change}
      */
     @Headers(APPLICATION_JSON)
-    @GET("/app/rest/buildTypes/id:{id}/branches?locator=policy:ALL_BRANCHES")
+    @GET("app/rest/buildTypes/id:{id}/branches?locator=policy:ALL_BRANCHES")
     Observable<Branches> listBranches(@Path("id") String id);
 
     /**
