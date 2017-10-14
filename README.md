@@ -2,6 +2,7 @@
 [![Circle CI](https://circleci.com/gh/vase4kin/TeamCityApp/tree/master.svg?style=shield)](https://circleci.com/gh/vase4kin/TeamCityApp/tree/master)
 [![codecov](https://codecov.io/gh/vase4kin/TeamCityApp/branch/master/graph/badge.svg)](https://codecov.io/gh/vase4kin/TeamCityApp)
 [![Release](https://img.shields.io/badge/release-1.2.5-blue.svg)](https://github.com/vase4kin/TeamCityApp/releases/latest)
+=======
 ```
                                                                      
   *   )                     (          )        (                    
