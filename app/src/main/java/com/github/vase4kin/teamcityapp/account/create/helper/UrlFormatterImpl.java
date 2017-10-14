@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.account.create.helper;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 /**
@@ -27,7 +28,7 @@ public class UrlFormatterImpl implements UrlFormatter {
     /**
      * {@inheritDoc}
      */
-    public String formatUrl(String serverUrl) {
+    public String formatServerUrl(String serverUrl) {
         Uri serverUri = Uri.parse(serverUrl);
         boolean hasNoPathSegment = TextUtils.isEmpty(serverUri.getLastPathSegment());
         if (hasNoPathSegment) {
@@ -37,6 +38,19 @@ public class UrlFormatterImpl implements UrlFormatter {
             // Url with path - https://teamcity.com/server
             // To build such url with retrofit we need to add / at the end
             return serverUri.buildUpon().appendPath("").toString();
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String formatBasicUrl(@NonNull String url) {
+        // Check that url has leading slash
+        if (url.startsWith("/")) {
+            return url.replaceFirst("/", "");
+        } else {
+            return url;
         }
     }
 }

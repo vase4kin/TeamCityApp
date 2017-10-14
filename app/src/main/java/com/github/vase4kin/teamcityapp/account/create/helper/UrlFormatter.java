@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.account.create.helper;
 
+import android.support.annotation.NonNull;
+
 /**
  * Url formatter
  */
@@ -27,5 +29,17 @@ public interface UrlFormatter {
      * @param serverUrl - Server url to format
      * @return formatted server url
      */
-    String formatUrl(String serverUrl);
+    String formatServerUrl(String serverUrl);
+
+    /**
+     * Remove leading slash from url to able load data if server url contains trailing path, teamcity.com/server
+     * <p>
+     * https://github.com/square/retrofit/issues/907
+     * <p>
+     * ¯\_(ツ)_/¯
+     * <p>
+     * /app/rest/buildTypes/id:buildType/builds?locator=locator:any - > app/rest/buildTypes/id:buildType/builds?locator=locator:any
+     */
+    String formatBasicUrl(@NonNull String url);
 }
+
