@@ -70,7 +70,7 @@
                 app:errorTextAppearance="@style/LoginTextErrorAppearance"
                 tools:alpha="1">
 
-                <EditText
+                <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/teamcity_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
                 app:errorTextAppearance="@style/LoginTextErrorAppearance"
                 tools:alpha="1">
 
-                <EditText
+                <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/user_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -128,7 +128,7 @@
                 app:errorTextAppearance="@style/LoginTextErrorAppearance"
                 tools:alpha="1">
 
-                <EditText
+                <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
