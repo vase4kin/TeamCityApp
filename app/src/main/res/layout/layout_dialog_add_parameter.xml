@@ -26,8 +26,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
             android:id="@+id/parameter_name"
+            style="@style/BaseEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"
@@ -40,8 +41,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <EditText
+        <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
             android:id="@+id/parameter_value"
+            style="@style/BaseEditTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLines="1"

@@ -158,12 +158,14 @@
 
     <style name="LoginEditTextLayout" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
 
-    <style name="LoginEditTextTheme">
+    <style name="LoginEditTextTheme" parent="BaseEditTextStyle">
         <item name="android:singleLine">true</item>
         <item name="colorControlNormal">@color/md_white_1000</item>
         <item name="colorControlActivated">?android:attr/textColorSecondaryInverse</item>
         <item name="android:textColorPrimary">@color/md_white_1000</item>
     </style>
+
+    <style name="BaseEditTextStyle" />
 
     <style name="LoginEditText">
         <item name="android:theme">@style/LoginEditTextTheme</item>
