@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.login.view;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
 
@@ -35,6 +37,7 @@ public class EditTextNoAutofillTest {
         editTextNoAutofill = new EditTextNoAutofill(InstrumentationRegistry.getInstrumentation().getTargetContext());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Test
     public void testGetAutofillType() throws Exception {
         assertThat(editTextNoAutofill.getAutofillType(), is(equalTo(View.AUTOFILL_TYPE_NONE)));
