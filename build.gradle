@@ -27,8 +27,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.1'
-        classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
+        classpath 'com.google.gms:google-services:3.1.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
