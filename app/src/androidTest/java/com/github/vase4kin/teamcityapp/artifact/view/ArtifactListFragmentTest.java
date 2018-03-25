@@ -158,9 +158,9 @@ public class ArtifactListFragmentTest {
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(3));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle)).check(matches(withText("res")));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("AndroidManifest.xml")));
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("7.77 kB")));
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("7.59 KB")));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(2, R.id.itemTitle)).check(matches(withText("index.html")));
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(2, R.id.itemSubTitle)).check(matches(withText("698 kB")));
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(2, R.id.itemSubTitle)).check(matches(withText("681 KB")));
     }
 
     @Test
