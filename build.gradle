@@ -25,7 +25,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.1'
         classpath 'com.google.gms:google-services:3.0.0'
@@ -51,12 +51,12 @@ ext {
 
     // sdk and tools
     minSdkVersion = 15
-    targetSdkVersion = 26
-    compileSdkVersion = 26
-    buildToolsVersion = '26.0.1'
+    targetSdkVersion = 27
+    compileSdkVersion = 27
+    buildToolsVersion = '27.0.3'
 
     // dependencies versions
-    supportLibraryVersion = '26.0.0'
+    supportLibraryVersion = '27.1.0'
     espressoRunnerVersion = '1.0'
     espressoVersion = '3.0.0'
     dexMakerVersion = '1.4'
