@@ -23,6 +23,8 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.GrantPermissionRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.azimolabs.conditionwatcher.ConditionWatcher;
+import com.azimolabs.conditionwatcher.Instruction;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -80,6 +82,7 @@ import static org.mockito.Mockito.when;
 public class ArtifactListFragmentTest {
 
     private static final String BUILD_TYPE_NAME = "name";
+    private static final int TIMEOUT = 5000;
 
     @Rule
     public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
@@ -124,6 +127,7 @@ public class ArtifactListFragmentTest {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getRestApiInjector().sharedUserStorage().clearAll();
         app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
+        ConditionWatcher.setTimeoutLimit(TIMEOUT);
     }
 
     @Test
@@ -253,8 +257,31 @@ public class ArtifactListFragmentTest {
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1));
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
-                .check(matches(withText("res")))
+                .check(matches(withText("res")));
+
+        // Clicking first level artifacts
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .perform(click());
+
+        ConditionWatcher.waitForCondition(new Instruction() {
+            @Override
+            public String getDescription() {
+                return "The artifact page is not loaded";
+            }
+
+            @Override
+            public boolean checkCondition() {
+                boolean isResFolderClicked = false;
+                try {
+                    onView(withText("res_level_deeper1")).check(matches(isDisplayed()));
+                    isResFolderClicked = true;
+                } catch (Exception ignored) {
+                    onView(withRecyclerView(R.id.artifact_recycler_view).atPosition(0))
+                            .perform(click());
+                }
+                return isResFolderClicked;
+            }
+        });
 
         // In case of the same recycler view ids
         onView(withText("res_level_deeper1")).check(matches(isDisplayed()));
@@ -369,11 +396,38 @@ public class ArtifactListFragmentTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        // Clicking on artifact to download
+        // Checking artifact title
         onView(withRecyclerView(R.id.artifact_recycler_view)
                 .atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("AndroidManifest.xml")))
                 .perform(click());
+
+        // Clicking on artifact to download
+        onView(withRecyclerView(R.id.artifact_recycler_view)
+                .atPositionOnView(1, R.id.itemTitle))
+                .perform(click());
+
+        ConditionWatcher.waitForCondition(new Instruction() {
+            @Override
+            public String getDescription() {
+                return "The artifact menu is not opened";
+            }
+
+            @Override
+            public boolean checkCondition() {
+                boolean isMenuOpened = false;
+                try {
+                    onView(withText(R.string.artifact_download))
+                            .check(matches(isDisplayed()));
+                    isMenuOpened = true;
+                } catch (Exception ignored) {
+                    onView(withRecyclerView(R.id.artifact_recycler_view)
+                            .atPositionOnView(1, R.id.itemTitle))
+                            .perform(click());
+                }
+                return isMenuOpened;
+            }
+        });
 
         // Click on download option
         onView(withText(R.string.artifact_download))
