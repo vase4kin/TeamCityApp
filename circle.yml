@@ -114,8 +114,8 @@ jobs:
           command: |
             ./google-cloud-sdk/bin/gcloud firebase test android models list
             (./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation \
-              --app app/build/outputs/apk/app-mock-debug.apk \
-              --test app/build/outputs/apk/app-mock-debug-androidTest.apk \
+              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
+              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
               --device model=Nexus5X,version=23,locale=en,orientation=portrait \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
