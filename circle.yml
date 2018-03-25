@@ -116,7 +116,7 @@ jobs:
             (./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation \
               --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=hammerhead,version=23,locale=en,orientation=portrait \
+              --device model=sailfish,version=25,locale=en,orientation=portrait \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
@@ -156,7 +156,7 @@ jobs:
       - run:
           name: Generate code coverage
           command: |
-            ./gradlew generateCodeCoverageReport
+            ./gradlew generateCodeCoverageReport --stacktrace
             mkdir -p app/build/circleci/artifacts/coverage/
             find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} app/build/circleci/artifacts/coverage/ \;
       - run:
