@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.azimolabs.conditionwatcher.ConditionWatcher;
+import com.azimolabs.conditionwatcher.Instruction;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -67,6 +69,7 @@ import static org.mockito.Mockito.when;
 public class PropertiesFragmentTest {
 
     private static final String NAME = "name";
+    private static final int TIMEOUT = 5000;
 
     @Rule
     public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
@@ -193,6 +196,7 @@ public class PropertiesFragmentTest {
 
     @Test
     public void testUserCanCopyPropertyValueFromTheList() throws Exception {
+        ConditionWatcher.setTimeoutLimit(TIMEOUT);
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
 
@@ -216,7 +220,28 @@ public class PropertiesFragmentTest {
                 .perform(click());
 
         // Click on parameter
-        onView(withRecyclerView(R.id.properties_recycler_view).atPosition(0)).perform(click());
+        onView(withRecyclerView(R.id.properties_recycler_view).atPosition(0))
+                .perform(click());
+
+        ConditionWatcher.waitForCondition(new Instruction() {
+            @Override
+            public String getDescription() {
+                return "The parameters menu is not opened";
+            }
+
+            @Override
+            public boolean checkCondition() {
+                boolean isParameterClicked = false;
+                try {
+                    onView(withText(R.string.build_element_copy)).check(matches(isDisplayed()));
+                    isParameterClicked = true;
+                } catch (Exception ignored) {
+                    onView(withRecyclerView(R.id.properties_recycler_view).atPosition(0))
+                            .perform(click());
+                }
+                return isParameterClicked;
+            }
+        });
 
         // Clicking on copy
         onView(withText(R.string.build_element_copy)).perform(click());

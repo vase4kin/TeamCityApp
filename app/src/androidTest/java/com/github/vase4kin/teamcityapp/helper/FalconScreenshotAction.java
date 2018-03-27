@@ -28,9 +28,6 @@ import com.jraska.falcon.FalconSpoon;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-
 /**
  * Source: https://github.com/square/spoon/issues/214#issuecomment-81979248
  */
@@ -75,6 +72,6 @@ public final class FalconScreenshotAction implements ViewAction {
     }
 
     public static void perform(String tag, String className, String methodName) {
-        onView(isRoot()).perform(new FalconScreenshotAction(tag, className, methodName));
+//        onView(isRoot()).perform(new FalconScreenshotAction(tag, className, methodName));
     }
 }

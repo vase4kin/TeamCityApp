@@ -4,7 +4,7 @@ references:
       ~/TeamCityApp
   container_config: &container_config
     docker:
-      - image: circleci/android:api-26-alpha
+      - image: circleci/android:api-27-alpha
     working_directory: *workspace_root
   attach_workspace: &attach_workspace
     attach_workspace:
@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Download sdk
           command: |
-           echo y | sdkmanager "tools" "platform-tools" "build-tools;26.0.1" "extras;android;m2repository" "platforms;android-26" "emulator" --verbose
+           echo y | sdkmanager "tools" "platform-tools" "build-tools;27.0.3" "extras;android;m2repository" "platforms;android-27" "emulator" --verbose
            sdkmanager --update --verbose
       - run:
           name: Download dependencies
@@ -114,9 +114,9 @@ jobs:
           command: |
             ./google-cloud-sdk/bin/gcloud firebase test android models list
             (./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation \
-              --app app/build/outputs/apk/app-mock-debug.apk \
-              --test app/build/outputs/apk/app-mock-debug-androidTest.apk \
-              --device model=Nexus5X,version=23,locale=en,orientation=portrait \
+              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
+              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
+              --device model=sailfish,version=25,locale=en,orientation=portrait \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
@@ -156,7 +156,7 @@ jobs:
       - run:
           name: Generate code coverage
           command: |
-            ./gradlew generateCodeCoverageReport
+            ./gradlew generateCodeCoverageReport --stacktrace
             mkdir -p app/build/circleci/artifacts/coverage/
             find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} app/build/circleci/artifacts/coverage/ \;
       - run:

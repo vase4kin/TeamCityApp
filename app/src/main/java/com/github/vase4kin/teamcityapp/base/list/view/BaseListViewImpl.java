@@ -34,6 +34,7 @@ import com.github.vase4kin.teamcityapp.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.supercharge.shimmerlayout.ShimmerLayout;
 import tr.xip.errorview.ErrorView;
 
 /**
@@ -179,6 +180,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @Override
     public void showSkeletonView() {
         skeletonView.setVisibility(View.VISIBLE);
+        ((ShimmerLayout) skeletonView.getChildAt(0)).startShimmerAnimation();
     }
 
     /**
@@ -187,6 +189,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @Override
     public void hideSkeletonView() {
         skeletonView.setVisibility(View.GONE);
+        ((ShimmerLayout) skeletonView.getChildAt(0)).stopShimmerAnimation();
     }
 
     /**
