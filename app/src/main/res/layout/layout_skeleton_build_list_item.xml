@@ -23,7 +23,7 @@
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:layout_marginRight="@dimen/default_margin"
-            android:background="@color/divider_color" />
+            android:background="@drawable/skeleton_image_background" />
 
         <LinearLayout
             android:layout_width="match_parent"

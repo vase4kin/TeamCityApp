@@ -49,6 +49,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import io.supercharge.shimmerlayout.ShimmerLayout;
 import tr.xip.errorview.ErrorView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
@@ -137,6 +138,7 @@ public class OverviewViewImpl implements OverviewView {
     @Override
     public void showSkeletonView() {
         skeletonView.setVisibility(View.VISIBLE);
+        ((ShimmerLayout) skeletonView.getChildAt(0)).startShimmerAnimation();
     }
 
     /**
@@ -145,6 +147,7 @@ public class OverviewViewImpl implements OverviewView {
     @Override
     public void hideSkeletonView() {
         skeletonView.setVisibility(View.GONE);
+        ((ShimmerLayout) skeletonView.getChildAt(0)).startShimmerAnimation();
     }
 
     /**

@@ -14,17 +14,9 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <dimen name="default_margin">16dp</dimen>
-    <dimen name="small_margin">8dp</dimen>
-    <dimen name="recycler_view_horizontal_margin">0dp</dimen>
-    <dimen name="recycler_view_vertical_margin">0dp</dimen>
-    <dimen name="default_elevation">4dp</dimen>
-    <dimen name="default_item_margin_top">4dp</dimen>
-    <dimen name="other_dp">2dp</dimen>
-    <dimen name="login_screen_margin">24dp</dimen>
-    <integer name="logo_move">-400</integer>
-    <dimen name="toolbar_with_fab_height">170dp</dimen>
-    <dimen name="padding_switch">12dp</dimen>
-    <integer name="shimmer_length">1000</integer>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <solid android:color="@color/divider_color" />
+
+</shape>
