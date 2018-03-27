@@ -19,7 +19,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:shimmer_animation_duration="@integer/shimmer_length"
-    app:shimmer_color="@color/base_item_color">
+    app:shimmer_color="@color/divider_color">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
