@@ -14,25 +14,34 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<io.supercharge.shimmerlayout.ShimmerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    app:shimmer_animation_duration="@integer/shimmer_length"
+    app:shimmer_color="@color/md_white_1000">
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-    <include layout="@layout/layout_skeleton_overview_item" />
+        <include layout="@layout/layout_skeleton_overview_item" />
 
-</LinearLayout>
+        <include layout="@layout/layout_skeleton_overview_item" />
+
+    </LinearLayout>
+
+</io.supercharge.shimmerlayout.ShimmerLayout>

@@ -26,4 +26,5 @@
     <integer name="logo_move">-400</integer>
     <dimen name="toolbar_with_fab_height">170dp</dimen>
     <dimen name="padding_switch">12dp</dimen>
+    <integer name="shimmer_length">1000</integer>
 </resources>
