@@ -38,34 +38,4 @@ public class RootTrackerImpl extends BaseViewTracker<RootTracker> implements Roo
             }
         });
     }
-
-    @Override
-    public void trackUserRatedTheApp() {
-        logEvent(new TrackerMethod<RootTracker>() {
-            @Override
-            public void execute(RootTracker tracker) {
-                tracker.trackUserRatedTheApp();
-            }
-        });
-    }
-
-    @Override
-    public void trackUserDidNotRateTheApp() {
-        logEvent(new TrackerMethod<RootTracker>() {
-            @Override
-            public void execute(RootTracker tracker) {
-                tracker.trackUserDidNotRateTheApp();
-            }
-        });
-    }
-
-    @Override
-    public void trackUserDecidedToRateTheAppLater() {
-        logEvent(new TrackerMethod<RootTracker>() {
-            @Override
-            public void execute(RootTracker tracker) {
-                tracker.trackUserDecidedToRateTheAppLater();
-            }
-        });
-    }
 }

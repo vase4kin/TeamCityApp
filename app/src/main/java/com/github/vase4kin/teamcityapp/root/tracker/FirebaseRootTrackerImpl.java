@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.root.tracker;
 
-import android.os.Bundle;
-
 import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
 import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -37,41 +35,6 @@ public class FirebaseRootTrackerImpl extends BaseFirebaseTracker implements Root
     @Override
     public void trackView() {
         mFirebaseAnalytics.logEvent(SCREEN_NAME_ROOT, null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserRatedTheApp() {
-        logRateEvent(STATUS_RATED);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserDidNotRateTheApp() {
-        logRateEvent(STATUS_NOT_RATED);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackUserDecidedToRateTheAppLater() {
-        logRateEvent(STATUS_LATER);
-    }
-
-    /**
-     * Log rate event
-     *
-     * @param status - Rate status
-     */
-    private void logRateEvent(String status) {
-        Bundle bundle = new Bundle();
-        bundle.putString(KEY_EVENT_STATUS, status);
-        mFirebaseAnalytics.logEvent(EVENT_RATE_APP, bundle);
     }
 
     @Override
