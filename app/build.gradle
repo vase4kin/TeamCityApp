@@ -162,7 +162,7 @@ dependencies {
     implementation 'com.joanzapata.iconify:android-iconify-fontawesome:2.2.2'
     implementation 'com.joanzapata.iconify:android-iconify-material-community:2.2.2'
     // Dialogs
-    implementation 'com.afollestad.material-dialogs:core:0.9.4.5'
+    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     // Views
     implementation 'tr.xip.errorview:library:3.0.0'
     implementation 'com.pnikosis:materialish-progress:1.7'
@@ -179,9 +179,9 @@ dependencies {
         transitive = true
     }
     implementation 'io.supercharge:shimmerlayout:2.1.0'
-    implementation 'com.github.daniel-stoneuk:material-about-library:2.2.1'
+    implementation 'com.github.daniel-stoneuk:material-about-library:2.2.5'
     // Onboarding
-    implementation 'uk.co.samuelwall:material-tap-target-prompt:2.0.0'
+    implementation 'uk.co.samuelwall:material-tap-target-prompt:2.7.0'
     // Dagger
     annotationProcessor 'com.google.dagger:dagger-compiler:2.14.1'
     implementation 'com.google.dagger:dagger:2.14.1'
