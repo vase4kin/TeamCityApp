@@ -26,7 +26,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
         classpath 'com.google.gms:google-services:3.1.0'
@@ -64,4 +64,7 @@ ext {
     dexMakerVersion = '1.4'
     mockitoCoreVersion = '1.10.19'
     powerMockVersion = '1.6.4'
+    okhttpVersion = '3.9.0'
+    gsonVersion = '2.8.2'
+    retrofitVersion = '2.4.0'
 }
