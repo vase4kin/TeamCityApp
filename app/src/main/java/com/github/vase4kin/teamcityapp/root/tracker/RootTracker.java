@@ -27,44 +27,4 @@ public interface RootTracker extends DrawerTracker {
      * Screen name to track
      */
     String SCREEN_NAME_ROOT = "screen_projects_root";
-
-    /**
-     * Custom rate app event
-     */
-    String EVENT_RATE_APP = "rate_app";
-
-    /**
-     * Custom status key for rate app event
-     */
-    String KEY_EVENT_STATUS = "param_rate_status";
-
-    /**
-     * Custom rated value
-     */
-    String STATUS_RATED = "status_rated";
-
-    /**
-     * Custom not rated value
-     */
-    String STATUS_NOT_RATED = "status_not_rated";
-
-    /**
-     * Custom rate later value
-     */
-    String STATUS_LATER = "status_rated_later";
-
-    /**
-     * Track user rated the app
-     */
-    void trackUserRatedTheApp();
-
-    /**
-     * Track user didn't rate the app
-     */
-    void trackUserDidNotRateTheApp();
-
-    /**
-     * Track user decided to rate the app later
-     */
-    void trackUserDecidedToRateTheAppLater();
 }

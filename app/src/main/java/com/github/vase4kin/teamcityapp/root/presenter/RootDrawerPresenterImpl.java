@@ -36,7 +36,7 @@ import javax.inject.Inject;
 /**
  * Impl of {@link RootDrawerPresenter}
  */
-public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter, RootTracker> implements RootDrawerPresenter, OnDrawerUpdateListener, RootDrawerView.OnAppRateListener {
+public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter, RootTracker> implements RootDrawerPresenter, OnDrawerUpdateListener {
 
     private OnAccountSwitchListener mListener;
     private RootBundleValueManager mValueExtractor;
@@ -119,9 +119,6 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
         // track view
         mTracker.trackView();
 
-        // Show rate app dialog
-        mView.showAppRateDialog(this);
-
         // Show navigation drawer prompt
         if (!mOnboardingManager.isNavigationDrawerPromptShown()) {
             mView.showNavigationDrawerPrompt(new OnboardingManager.OnPromptShownListener() {
@@ -182,29 +179,5 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
         if (!TextUtils.isEmpty(mBaseUrl)) {
             mRouter.openRootProjects(mBaseUrl);
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onNeutralButtonClick() {
-        mTracker.trackUserDecidedToRateTheAppLater();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onNegativeButtonClick() {
-        mTracker.trackUserDidNotRateTheApp();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onPositiveButtonClick() {
-        mTracker.trackUserRatedTheApp();
     }
 }

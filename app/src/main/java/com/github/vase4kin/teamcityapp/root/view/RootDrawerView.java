@@ -32,36 +32,9 @@ public interface RootDrawerView extends DrawerView {
     void setDrawerSelection(int selection);
 
     /**
-     * Show app rate dialog
-     *
-     * @param listener - Listener to receive dialog button callbacks
-     */
-    void showAppRateDialog(OnAppRateListener listener);
-
-    /**
      * Show navigation drawer onboarding prompt
      *
      * @param listener - Listener to know when prompt is shown
      */
     void showNavigationDrawerPrompt(OnboardingManager.OnPromptShownListener listener);
-
-    /**
-     * On app rate dialog listener
-     */
-    interface OnAppRateListener {
-        /**
-         * On remind later button click
-         */
-        void onNeutralButtonClick();
-
-        /**
-         * On negative button click
-         */
-        void onNegativeButtonClick();
-
-        /**
-         * On rate app button click();
-         */
-        void onPositiveButtonClick();
-    }
 }
