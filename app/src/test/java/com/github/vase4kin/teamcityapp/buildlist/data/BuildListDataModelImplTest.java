@@ -114,6 +114,18 @@ public class BuildListDataModelImplTest {
     }
 
     @Test
+    public void testHasBuildTypeInfo() throws Exception {
+        when(mBuildDetails.hasBuildTypeInfo()).thenReturn(false);
+        assertThat(mDataModel.hasBuildTypeInfo(0), is(false));
+    }
+
+    @Test
+    public void testGetBuildTypeName() throws Exception {
+        when(mBuildDetails.getBuildTypeName()).thenReturn("name");
+        assertThat(mDataModel.getBuildTypeName(0), is("name"));
+    }
+
+    @Test
     public void testHasBranch() {
         when(mBuildDetails.getBranchName()).thenReturn("");
         assertThat(mDataModel.hasBranch(0), is(true));

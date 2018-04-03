@@ -56,7 +56,9 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
 
         if (dataModel.getItemCount() != 0) {
             for (int i = 0; i < dataModel.getItemCount(); i++) {
-                String buildTypeId = dataModel.getBuildTypeId(i);
+                String buildTypeId = dataModel.hasBuildTypeInfo(i)
+                        ? dataModel.getBuildTypeName(i)
+                        : dataModel.getBuildTypeId(i);
                 if (sections.size() != 0) {
                     SimpleSectionedRecyclerViewAdapter.Section prevSection = sections.get(sections.size() - 1);
                     if (!prevSection.getTitle().equals(buildTypeId)) {
