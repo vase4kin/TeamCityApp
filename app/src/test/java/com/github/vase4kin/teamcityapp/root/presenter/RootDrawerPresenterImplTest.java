@@ -40,7 +40,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -85,25 +84,6 @@ public class RootDrawerPresenterImplTest {
         when(mUserAccount.getTeamcityUrl()).thenReturn("");
         mPresenter.onResume();
         verify(mTracker).trackView();
-        verify(mView).showAppRateDialog(eq(mPresenter));
-    }
-
-    @Test
-    public void testOnNeutralButtonClick() throws Exception {
-        mPresenter.onNeutralButtonClick();
-        verify(mTracker).trackUserDecidedToRateTheAppLater();
-    }
-
-    @Test
-    public void testOnNegativeButtonClick() throws Exception {
-        mPresenter.onNegativeButtonClick();
-        verify(mTracker).trackUserDidNotRateTheApp();
-    }
-
-    @Test
-    public void testOnPositiveButtonClick() throws Exception {
-        mPresenter.onPositiveButtonClick();
-        verify(mTracker).trackUserRatedTheApp();
     }
 
     @Test

@@ -62,8 +62,6 @@
 
     <include layout="@layout/layout_empty" />
 
-    <include layout="@layout/layout_progress_wheel" />
-
     <include layout="@layout/layout_error_view" />
 
 

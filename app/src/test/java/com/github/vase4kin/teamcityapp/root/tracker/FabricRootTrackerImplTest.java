@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.root.tracker;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
-import com.crashlytics.android.answers.CustomEvent;
 
 import org.junit.After;
 import org.junit.Before;
@@ -56,59 +55,20 @@ public class FabricRootTrackerImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(mAnswers);
     }
 
     @Test
-    public void testTrackViewIfFabricIsNotInitialized() throws Exception {
+    public void testTrackViewIfFabricIsNotInitialized() {
         when(Fabric.isInitialized()).thenReturn(false);
         mTracker.trackView();
     }
 
     @Test
-    public void testTrackViewIfFabricIsInitialized() throws Exception {
+    public void testTrackViewIfFabricIsInitialized() {
         when(Fabric.isInitialized()).thenReturn(true);
         mTracker.trackView();
         verify(mAnswers).logContentView(any(ContentViewEvent.class));
-    }
-
-    @Test
-    public void testTrackUserRatedTheAppIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserRatedTheApp();
-    }
-
-    @Test
-    public void testTrackTrackUserRatedIfFabricIsInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserRatedTheApp();
-        verify(mAnswers).logCustom(any(CustomEvent.class));
-    }
-
-    @Test
-    public void testTrackUserDidNotRateTheAppIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserDidNotRateTheApp();
-    }
-
-    @Test
-    public void testTrackUserDidNotRateTheAppIfFabricIsInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserDidNotRateTheApp();
-        verify(mAnswers).logCustom(any(CustomEvent.class));
-    }
-
-    @Test
-    public void testTrackUserDecidedToRateTheAppLaterIfFabricIsNotInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserDecidedToRateTheAppLater();
-    }
-
-    @Test
-    public void testTrackUserDecidedToRateTheAppLaterIfFabricIsInitialized() throws Exception {
-        when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserDecidedToRateTheAppLater();
-        verify(mAnswers).logCustom(any(CustomEvent.class));
     }
 }
