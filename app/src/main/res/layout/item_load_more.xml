@@ -15,16 +15,16 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:wheel="http://schemas.android.com/apk/res-auto"
     style="@style/BaseItem"
     android:padding="@dimen/default_margin"
     android:background="@color/recycler_view_background">
 
-    <com.pnikosis.materialishprogress.ProgressWheel
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
         android:id="@+id/progress_wheel"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_gravity="center"
-        wheel:matProg_progressIndeterminate="true" />
+        style="@style/Widget.MaterialProgressBar.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_gravity="center" />
 
 </FrameLayout>
