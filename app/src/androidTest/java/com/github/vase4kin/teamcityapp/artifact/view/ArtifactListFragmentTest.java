@@ -328,7 +328,7 @@ public class ArtifactListFragmentTest {
                 .check(matches(withText("res")));
 
         // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPosition(0))
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .perform(longClick());
 
         ConditionWatcher.waitForCondition(new Instruction() {
@@ -346,7 +346,7 @@ public class ArtifactListFragmentTest {
                     isMenuOpened = true;
                 } catch (Exception ignored) {
                     // Clicking first level artifacts
-                    onView(withRecyclerView(R.id.artifact_recycler_view).atPosition(0))
+                    onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
                             .perform(longClick());
                 }
                 return isMenuOpened;
