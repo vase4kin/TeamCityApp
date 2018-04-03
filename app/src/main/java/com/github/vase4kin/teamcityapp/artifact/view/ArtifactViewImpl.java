@@ -126,7 +126,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
     @Override
     public void showFolderBottomSheet(File artifactFile) {
         BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
-                artifactFile.getName(), artifactFile.getContent().getHref(), MenuItemsFactory.TYPE_ARTIFACT_FOLDER);
+                artifactFile.getName(), artifactFile.getChildren().getHref(), MenuItemsFactory.TYPE_ARTIFACT_FOLDER);
         bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
