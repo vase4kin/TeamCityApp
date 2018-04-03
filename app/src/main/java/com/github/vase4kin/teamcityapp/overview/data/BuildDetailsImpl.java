@@ -321,6 +321,22 @@ public class BuildDetailsImpl implements BuildDetails {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasBuildTypeInfo() {
+        return mBuild.getBuildType() != null && mBuild.getBuildType().getProjectName() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getBuildTypeName() {
+        return mBuild.getBuildType().getProjectName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getId() {
         return mBuild.getId();
     }

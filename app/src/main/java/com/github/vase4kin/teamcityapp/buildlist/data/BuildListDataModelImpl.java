@@ -150,6 +150,22 @@ public class BuildListDataModelImpl implements BuildListDataModel {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasBuildTypeInfo(int position) {
+        return mBuildDetailsList.get(position).hasBuildTypeInfo();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getBuildTypeName(int position) {
+        return mBuildDetailsList.get(position).getBuildTypeName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean isPersonal(int position) {
         return mBuildDetailsList.get(position).isPersonal();
     }
