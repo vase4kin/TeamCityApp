@@ -60,6 +60,7 @@ import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
@@ -282,6 +283,79 @@ public class ArtifactListFragmentTest {
                 return isResFolderClicked;
             }
         });
+
+        // In case of the same recycler view ids
+        onView(withText("res_level_deeper1")).check(matches(isDisplayed()));
+        onView(withText("res_level_deeper2")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testUserCanOpenArtifactWithChildrenByLongTap() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        File folderOne = new File("res", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
+        File folderTwo = new File("res_level_deeper1", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
+        File folderThree = new File("res_level_deeper2", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
+        List<File> deeperArtifacts = new ArrayList<>();
+        deeperArtifacts.add(folderTwo);
+        deeperArtifacts.add(folderThree);
+        when(mTeamCityService.listArtifacts(anyString(), anyString()))
+                .thenReturn(Observable.just(new Files(Collections.singletonList(folderOne))))
+                .thenReturn(Observable.just(new Files(deeperArtifacts)));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking artifact tab title
+        onView(withText("Artifacts"))
+                .perform(scrollTo())
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Checking first level artifacts
+        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1));
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("res")));
+
+        // Clicking first level artifacts
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+                .perform(longClick());
+
+        ConditionWatcher.waitForCondition(new Instruction() {
+            @Override
+            public String getDescription() {
+                return "The artifact menu is not opened";
+            }
+
+            @Override
+            public boolean checkCondition() {
+                boolean isMenuOpened = false;
+                try {
+                    onView(withText(R.string.artifact_open))
+                            .check(matches(isDisplayed()));
+                    isMenuOpened = true;
+                } catch (Exception ignored) {
+                    // Clicking first level artifacts
+                    onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+                            .perform(longClick());
+                }
+                return isMenuOpened;
+            }
+        });
+
+        // Click on open option
+        onView(withText(R.string.artifact_open))
+                .perform(click());
 
         // In case of the same recycler view ids
         onView(withText("res_level_deeper1")).check(matches(isDisplayed()));
