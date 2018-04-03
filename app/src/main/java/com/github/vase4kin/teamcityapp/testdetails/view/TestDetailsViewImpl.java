@@ -30,11 +30,11 @@ import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationLi
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
-import com.pnikosis.materialishprogress.ProgressWheel;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import me.zhanghai.android.materialprogressbar.MaterialProgressBar;
 import tr.xip.errorview.ErrorView;
 
 /**
@@ -47,7 +47,7 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
     @BindView(R.id.error_view)
     ErrorView mErrorView;
     @BindView(R.id.progress_wheel)
-    ProgressWheel mProgressWheel;
+    MaterialProgressBar mProgressWheel;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.empty)
