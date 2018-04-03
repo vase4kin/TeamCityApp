@@ -214,7 +214,6 @@ public interface BuildDetails extends Jsonable {
      */
     String getBuildTypeId();
 
-
     /**
      * @return {true} if build has build type info
      */

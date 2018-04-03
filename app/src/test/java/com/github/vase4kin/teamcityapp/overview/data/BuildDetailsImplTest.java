@@ -311,6 +311,20 @@ public class BuildDetailsImplTest {
     }
 
     @Test
+    public void testHasBuildTypeInfo() throws Exception {
+        when(mBuild.getBuildType()).thenReturn(null);
+        assertThat(mBuildDetails.hasBuildTypeInfo(), is(equalTo(false)));
+    }
+
+    @Test
+    public void testGetBuildTypeName() throws Exception {
+        when(mBuild.getBuildType()).thenReturn(mBuildType);
+        when(mBuildType.getProjectName()).thenReturn("project");
+        when(mBuildType.getName()).thenReturn("name");
+        assertThat(mBuildDetails.getBuildTypeName(), is(equalTo("project - name")));
+    }
+
+    @Test
     public void testGetBuildId() throws Exception {
         when(mBuild.getId()).thenReturn("id");
         assertThat(mBuildDetails.getId(), is(equalTo("id")));
