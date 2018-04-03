@@ -330,7 +330,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public String getBuildTypeName() {
-        return mBuild.getBuildType().getProjectName();
+        return mBuild.getBuildType().getProjectName() + " - " + mBuild.getBuildType().getName();
     }
 
     /**
