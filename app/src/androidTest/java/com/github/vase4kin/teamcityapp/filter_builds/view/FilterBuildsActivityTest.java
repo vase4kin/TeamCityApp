@@ -100,7 +100,7 @@ public class FilterBuildsActivityTest {
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getRestApiInjector().sharedUserStorage().clearAll();
-        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
+        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
         when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
     }
 

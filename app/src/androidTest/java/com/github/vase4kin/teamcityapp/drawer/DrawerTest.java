@@ -85,7 +85,7 @@ public class DrawerTest {
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getRestApiInjector().sharedUserStorage().clearAll();
-        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
+        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
         mActivityRule.launchActivity(null);
     }
 

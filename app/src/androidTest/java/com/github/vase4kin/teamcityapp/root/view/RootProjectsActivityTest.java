@@ -91,7 +91,7 @@ public class RootProjectsActivityTest {
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getAppInjector().sharedUserStorage().clearAll();
-        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL);
+        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
     }
 
     @Test
