@@ -98,4 +98,9 @@ public interface LoginView {
      * Show permissions unauthorized dialog
      */
     void showUnauthorizedInfoDialog();
+
+    /**
+     * Show warning dialog about disabling ssl
+     */
+    void showDisableSslWarningDialog();
 }

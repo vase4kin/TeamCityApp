@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.view.ViewCompat;
@@ -35,6 +36,7 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 
@@ -96,6 +98,9 @@ public class LoginViewImpl implements LoginView {
     @BindView(R.id.guest_user_switch)
     Switch mGuestUserSwitch;
 
+    @BindView(R.id.disable_ssl_switch)
+    Switch disableSslSwitch;
+
     @BindView(R.id.btn_login)
     Button mLoginButton;
 
@@ -133,7 +138,8 @@ public class LoginViewImpl implements LoginView {
                     listener.onUserLoginButtonClick(
                             mServerUrl.getText().toString().trim(),
                             mUserName.getText().toString().trim(),
-                            mPassword.getText().toString().trim());
+                            mPassword.getText().toString().trim(),
+                            disableSslSwitch.isChecked());
                     return true;
                 }
                 return false;
@@ -156,6 +162,15 @@ public class LoginViewImpl implements LoginView {
 
         //Set text selection to the end
         mServerUrl.setSelection(mServerUrl.getText().length());
+
+        disableSslSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    listener.onDisableSslSwitchClick();
+                }
+            }
+        });
     }
 
     /**
@@ -164,7 +179,8 @@ public class LoginViewImpl implements LoginView {
      * @param isGuestUser - Is guest user enabled
      * @param listener    - listener
      */
-    private void setupViewsRegardingUserType(boolean isGuestUser, final OnLoginButtonClickListener listener) {
+    private void setupViewsRegardingUserType(boolean isGuestUser,
+                                             final OnLoginButtonClickListener listener) {
         if (isGuestUser) {
             // guest user
             mServerUrl.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -172,7 +188,8 @@ public class LoginViewImpl implements LoginView {
                 @Override
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        listener.onGuestUserLoginButtonClick(v.getText().toString().trim());
+                        listener.onGuestUserLoginButtonClick(
+                                v.getText().toString().trim(), disableSslSwitch.isChecked());
                         return true;
                     }
                     return false;
@@ -182,7 +199,8 @@ public class LoginViewImpl implements LoginView {
                 @Override
                 public void onClick(View v) {
                     listener.onGuestUserLoginButtonClick(
-                            mServerUrl.getText().toString().trim());
+                            mServerUrl.getText().toString().trim(),
+                            disableSslSwitch.isChecked());
                 }
             });
         } else {
@@ -195,7 +213,8 @@ public class LoginViewImpl implements LoginView {
                     listener.onUserLoginButtonClick(
                             mServerUrl.getText().toString().trim(),
                             mUserName.getText().toString().trim(),
-                            mPassword.getText().toString().trim());
+                            mPassword.getText().toString().trim(),
+                            disableSslSwitch.isChecked());
                 }
             });
         }
@@ -339,6 +358,43 @@ public class LoginViewImpl implements LoginView {
                 .positiveColor(mOrangeColor)
                 .positiveText(R.string.dialog_ok_title)
                 .linkColor(mOrangeColor)
+                .show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showDisableSslWarningDialog() {
+        new MaterialDialog.Builder(mActivity)
+                .titleColor(mWhiteColor)
+                .title(R.string.warning_ssl_dialog_title)
+                .content(R.string.warning_ssl_dialog_content)
+                .widgetColor(mWhiteColor)
+                .contentColor(mWhiteColor)
+                .backgroundColor(mPrimaryColor)
+                .positiveColor(mOrangeColor)
+                .positiveText(R.string.dialog_ok_title)
+                .negativeColor(mOrangeColor)
+                .negativeText(R.string.warning_ssl_dialog_negative)
+                .linkColor(mOrangeColor)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        disableSslSwitch.setChecked(true);
+                        dialog.dismiss();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        disableSslSwitch.setChecked(false);
+                        dialog.dismiss();
+                    }
+                })
+                .canceledOnTouchOutside(false)
+                .autoDismiss(false)
+                .cancelable(false)
                 .show();
     }
 

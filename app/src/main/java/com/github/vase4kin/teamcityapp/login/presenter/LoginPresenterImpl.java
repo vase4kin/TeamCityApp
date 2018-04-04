@@ -88,7 +88,10 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      * {@inheritDoc}
      */
     @Override
-    public void onUserLoginButtonClick(String serverUrl, final String userName, final String password) {
+    public void onUserLoginButtonClick(String serverUrl,
+                                       final String userName,
+                                       final String password,
+                                       final boolean isSslDisabled) {
         mView.hideError();
         if (TextUtils.isEmpty(serverUrl)) {
             mView.showServerUrlCanNotBeEmptyError();
@@ -107,7 +110,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
             @Override
             public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
-                mDataManager.saveNewUserAccount(serverUrl, userName, password, LoginPresenterImpl.this);
+                mDataManager.saveNewUserAccount(serverUrl, userName, password, isSslDisabled, LoginPresenterImpl.this);
             }
 
             @Override
@@ -117,7 +120,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
                 mTracker.trackUserLoginFailed(errorMessage);
                 mView.hideKeyboard();
             }
-        }, serverUrl, userName, password);
+        }, serverUrl, userName, password, isSslDisabled);
     }
 
     /**
@@ -150,7 +153,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      * {@inheritDoc}
      */
     @Override
-    public void onGuestUserLoginButtonClick(String serverUrl) {
+    public void onGuestUserLoginButtonClick(String serverUrl, final boolean isSslDisabled) {
         mView.hideError();
         if (TextUtils.isEmpty(serverUrl)) {
             mView.showServerUrlCanNotBeEmptyError();
@@ -161,7 +164,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
             @Override
             public void onSuccess(String serverUrl) {
                 mView.dismissProgressDialog();
-                mDataManager.saveGuestUserAccount(serverUrl);
+                mDataManager.saveGuestUserAccount(serverUrl, isSslDisabled);
                 mDataManager.initTeamCityService(serverUrl);
                 mRouter.openProjectsRootPageForFirstStart();
                 mTracker.trackGuestUserLoginSuccess();
@@ -178,6 +181,14 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
                     mView.showUnauthorizedInfoDialog();
                 }
             }
-        }, serverUrl);
+        }, serverUrl, isSslDisabled);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDisableSslSwitchClick() {
+        mView.showDisableSslWarningDialog();
     }
 }

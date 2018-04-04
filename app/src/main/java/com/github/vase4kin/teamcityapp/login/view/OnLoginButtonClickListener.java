@@ -28,13 +28,17 @@ public interface OnLoginButtonClickListener {
      * @param userName - User name
      * @param password - User password
      */
-    void onUserLoginButtonClick(String serverUrl, String userName, String password);
+    void onUserLoginButtonClick(String serverUrl, String userName, String password, boolean isSslDisabled);
 
     /**
      * Handle on login button click for guest user creation
      *
      * @param serverUrl - TeamCity server url
      */
-    void onGuestUserLoginButtonClick(String serverUrl);
+    void onGuestUserLoginButtonClick(String serverUrl, boolean isSslDisabled);
 
+    /**
+     * On ignore ssl switch click
+     */
+    void onDisableSslSwitchClick();
 }

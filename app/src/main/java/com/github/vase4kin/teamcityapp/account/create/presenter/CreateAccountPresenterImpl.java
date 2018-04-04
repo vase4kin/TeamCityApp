@@ -103,7 +103,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
             mDataManager.authUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    mDataManager.saveNewUserAccount(url, userName, password, CreateAccountPresenterImpl.this);
+                    mDataManager.saveNewUserAccount(url, userName, password, false, CreateAccountPresenterImpl.this);
                 }
 
                 @Override
@@ -112,7 +112,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
                     mView.dismissProgressDialog();
                     mTracker.trackUserLoginFailed(errorMessage);
                 }
-            }, url, userName, password);
+            }, url, userName, password, false);
         }
     }
 
@@ -160,7 +160,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
             mDataManager.authGuestUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    mDataManager.saveGuestUserAccount(url);
+                    mDataManager.saveGuestUserAccount(url, false);
                     mDataManager.initTeamCityService(url);
                     mTracker.trackGuestUserLoginSuccess();
                     mView.dismissProgressDialog();
@@ -174,7 +174,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
                     mView.dismissProgressDialog();
                     mTracker.trackGuestUserLoginFailed(errorMessage);
                 }
-            }, url);
+            }, url, false);
         }
     }
 

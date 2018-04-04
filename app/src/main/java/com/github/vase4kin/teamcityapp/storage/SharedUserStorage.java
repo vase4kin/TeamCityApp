@@ -107,8 +107,9 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         return !getUserAccounts().isEmpty();
     }
 
-    public void saveGuestUserAccountAndSetItAsActive(String baseUrl) {
+    public void saveGuestUserAccountAndSetItAsActive(String baseUrl, boolean disableSsl) {
         UserAccount userAccount = UsersFactory.guestUser(baseUrl);
+        userAccount.setSslDisabled(disableSsl);
         setActiveUserNotActive();
         usersContainer.getUsersAccounts().add(userAccount);
         commitUserChanges();
@@ -117,10 +118,12 @@ public class SharedUserStorage implements Collectible<UserAccount> {
     public void saveUserAccountAndSetItAsActive(final String baseUrl,
                                                 final String userName,
                                                 final String password,
+                                                boolean disableSsl,
                                                 OnStorageListener listener) {
         byte[] encryptedPassword = mCryptoManager.encrypt(password);
         if (!mCryptoManager.isFailed(encryptedPassword)) {
             UserAccount userAccount = UsersFactory.user(baseUrl, userName, encryptedPassword);
+            userAccount.setSslDisabled(disableSsl);
             setActiveUserNotActive();
             usersContainer.getUsersAccounts().add(userAccount);
             commitUserChanges();
@@ -142,7 +145,9 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                 // backward compatibility for old user accounts
                 // Who's gonna set 'Guest user' as real user name for TC user, right?
                 if (userAccount.getUserName().equals(UsersFactory.GUEST_USER_USER_NAME)) {
-                    return UsersFactory.guestUser(userAccount.getTeamcityUrl());
+                    UserAccount guestUser = UsersFactory.guestUser(userAccount.getTeamcityUrl());
+                    guestUser.setSslDisabled(userAccount.isSslDisabled());
+                    return guestUser;
                 }
                 // Don't need to decrypt password of guest user
                 if (userAccount.isGuestUser()) {
@@ -151,7 +156,9 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                 // Decrypting password for user
                 byte[] decryptedPassword = mCryptoManager.decrypt(userAccount.getPasswordAsBytes());
                 if (!mCryptoManager.isFailed(decryptedPassword)) {
-                    return UsersFactory.user(userAccount, decryptedPassword);
+                    UserAccount user = UsersFactory.user(userAccount, decryptedPassword);
+                    user.setSslDisabled(userAccount.isSslDisabled());
+                    return user;
                 } else {
                     return UsersFactory.EMPTY_USER;
                 }

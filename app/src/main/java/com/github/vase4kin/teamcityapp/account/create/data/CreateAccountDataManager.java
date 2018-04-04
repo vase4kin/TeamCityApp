@@ -30,16 +30,24 @@ public interface CreateAccountDataManager {
      * @param url      - TeamCity server url
      * @param userName - Username
      * @param password - Password
+     * @param isSslDisabled - ssl state
      */
-    void authUser(@NonNull CustomOnLoadingListener<String> listener, String url, String userName, String password);
+    void authUser(@NonNull CustomOnLoadingListener<String> listener,
+                  String url,
+                  String userName,
+                  String password,
+                  boolean isSslDisabled);
 
     /**
      * Server guest auth
      *
      * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
      * @param url      - TeamCity server url
+     * @param isSslDisabled - ssl state
      */
-    void authGuestUser(@NonNull CustomOnLoadingListener<String> listener, String url);
+    void authGuestUser(@NonNull CustomOnLoadingListener<String> listener,
+                       String url,
+                       boolean isSslDisabled);
 
     /**
      * Save user account in the local storage
@@ -47,16 +55,22 @@ public interface CreateAccountDataManager {
      * @param url - TeamCity server url
      * @param userName - User name
      * @param password - Password
+     * @param isSslDisabled - ssl state
      * @param listener to receive data save callbacks§
      */
-    void saveNewUserAccount(String serverUrl, String userName, String password, OnLoadingListener<String> listener);
+    void saveNewUserAccount(String serverUrl,
+                            String userName,
+                            String password,
+                            boolean isSslDisabled,
+                            OnLoadingListener<String> listener);
 
     /**
      * Save guest user account in the local storage
      *
      * @param url - TeamCity server url
+     * @param isSslDisabled - ssl state
      */
-    void saveGuestUserAccount(String url);
+    void saveGuestUserAccount(String url, boolean isSslDisabled);
 
     /**
      * Init {@link com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent}

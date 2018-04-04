@@ -44,6 +44,12 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 import dagger.Module;
 import dagger.Provides;
@@ -60,6 +66,7 @@ public class AppModule {
     private static final int WRITE_TIMEOUT = 10;
 
     public static final String CLIENT_BASE = "base";
+    public static final String CLIENT_BASE_UNSAFE = "base_unsafe";
     public static final String CLIENT_AUTH = "auth";
 
     private TeamCityApplication mApplication;
@@ -86,16 +93,60 @@ public class AppModule {
     @Named(CLIENT_AUTH)
     @Provides
     protected OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
-                                                  @Named(CLIENT_BASE) OkHttpClient okHttpClient) {
+                                                  @Named(CLIENT_BASE) OkHttpClient baseOkHttpClient,
+                                                  @Named(CLIENT_BASE_UNSAFE) OkHttpClient unsafeBaseOkHttpClient) {
         UserAccount userAccount = sharedUserStorage.getActiveUser();
+        OkHttpClient client = userAccount.isSslDisabled() ? unsafeBaseOkHttpClient : baseOkHttpClient;
         if (userAccount.isGuestUser()) {
-            return okHttpClient.newBuilder()
+            return client.newBuilder()
                     .addInterceptor(new GuestUserAuthInterceptor())
                     .build();
         } else {
-            return okHttpClient.newBuilder()
+            return client.newBuilder()
                     .authenticator(new TeamCityAuthenticator(userAccount))
                     .build();
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Named(CLIENT_BASE_UNSAFE)
+    @Singleton
+    @Provides
+    protected OkHttpClient providesUnsafeBaseHttpClient(@Named(CLIENT_BASE) OkHttpClient baseOkHttpClient) {
+        final TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
+        };
+
+        // Install the all-trusting trust manager
+        try {
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            return baseOkHttpClient.newBuilder()
+                    .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            return true;
+                        }
+                    })
+                    .build();
+        } catch (Exception e) {
+            return baseOkHttpClient;
         }
     }
 
