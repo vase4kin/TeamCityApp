@@ -120,7 +120,7 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(final OnLoginButtonClickListener listener) {
+    public void initViews(final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
 
         mProgressDialog = new MaterialDialog.Builder(mActivity)
@@ -183,7 +183,7 @@ public class LoginViewImpl implements LoginView {
      * @param listener    - listener
      */
     private void setupViewsRegardingUserType(boolean isGuestUser,
-                                             final OnLoginButtonClickListener listener) {
+                                             final ViewListener listener) {
         if (isGuestUser) {
             // guest user
             mServerUrl.setImeOptions(EditorInfo.IME_ACTION_DONE);

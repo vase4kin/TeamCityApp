@@ -25,7 +25,7 @@ public interface LoginView {
      * Init views
      * @param listener
      */
-    void initViews(OnLoginButtonClickListener listener);
+    void initViews(ViewListener listener);
 
     /**
      * Close activity
@@ -103,4 +103,31 @@ public interface LoginView {
      * Show warning dialog about disabling ssl
      */
     void showDisableSslWarningDialog();
+
+    /**
+     * Receiving callback from {@link LoginViewImpl} to {@link com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl}
+     */
+    interface ViewListener {
+
+        /**
+         * Handle on login button click for user creation
+         *
+         * @param serverUrl - TeamCity server url
+         * @param userName  - User name
+         * @param password  - User password
+         */
+        void onUserLoginButtonClick(String serverUrl, String userName, String password, boolean isSslDisabled);
+
+        /**
+         * Handle on login button click for guest user creation
+         *
+         * @param serverUrl - TeamCity server url
+         */
+        void onGuestUserLoginButtonClick(String serverUrl, boolean isSslDisabled);
+
+        /**
+         * On ignore ssl switch click
+         */
+        void onDisableSslSwitchClick();
+    }
 }
