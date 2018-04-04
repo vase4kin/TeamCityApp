@@ -73,6 +73,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE;
 import static com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -109,6 +110,10 @@ public class CreateAccountActivityTest {
     @Mock
     private OkHttpClient mClientBase;
 
+    @Named(CLIENT_BASE_UNSAFE)
+    @Mock
+    private OkHttpClient unsafeOkHttpClient;
+
     @Named(CLIENT_AUTH)
     @Mock
     private OkHttpClient mClientAuth;
@@ -126,6 +131,7 @@ public class CreateAccountActivityTest {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getAppInjector().sharedUserStorage().clearAll();
         when(mClientBase.newCall(Matchers.any(Request.class))).thenReturn(mCall);
+        when(unsafeOkHttpClient.newCall(Matchers.any(Request.class))).thenReturn(mCall);
         mActivityRule.launchActivity(null);
     }
 
@@ -165,6 +171,49 @@ public class CreateAccountActivityTest {
         SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity(), null);
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
+        assertThat(storageUtils.getActiveUser().isSslDisabled(), is(false));
+    }
+
+    /**
+     * Verifies that user can be logged in as guest user with correct account url ignoring ssl
+     */
+    @Test
+    public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() throws Throwable {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                mCallbackArgumentCaptor.getValue().onResponse(
+                        mCall,
+                        new Response.Builder()
+                                .request(new Request.Builder().url(URL).build())
+                                .protocol(Protocol.HTTP_1_0)
+                                .code(200)
+                                .message("")
+                                .build());
+                return null;
+            }
+        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        onView(withId(R.id.disable_ssl_switch)).perform(click());
+        onView(withText(R.string.warning_ssl_dialog_content)).check(matches(isDisplayed()));
+        onView(withText(R.string.dialog_ok_title)).perform(click());
+        onView(withId(R.id.action_create)).perform(click());
+
+        intended(allOf(
+                hasComponent(RootProjectsActivity.class.getName()),
+                hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_SINGLE_TOP),
+                hasExtras(allOf(
+                        hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)),
+                        hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
+                toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
+
+        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity(), null);
+        assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
+        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
+        assertThat(storageUtils.getActiveUser().isSslDisabled(), is(true));
     }
 
     /**
