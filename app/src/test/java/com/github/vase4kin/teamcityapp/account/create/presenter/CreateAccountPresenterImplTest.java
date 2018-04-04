@@ -248,4 +248,10 @@ public class CreateAccountPresenterImplTest {
         mPresenter.handleOnResume();
         verify(mTracker).trackView();
     }
+
+    @Test
+    public void testOnDisableSslSwitchClick() throws Exception {
+        mPresenter.onDisableSslSwitchClick();
+        verify(mView).showDisableSslWarningDialog();
+    }
 }

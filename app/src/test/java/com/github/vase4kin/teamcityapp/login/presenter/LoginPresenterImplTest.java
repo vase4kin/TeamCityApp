@@ -206,4 +206,10 @@ public class LoginPresenterImplTest {
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
     }
+
+    @Test
+    public void testOnDisableSslSwitchClick() throws Exception {
+        mPresenter.onDisableSslSwitchClick();
+        verify(mView).showDisableSslWarningDialog();
+    }
 }
