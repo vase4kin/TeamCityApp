@@ -17,13 +17,11 @@
 package com.github.vase4kin.teamcityapp.buildlog.dagger;
 
 import android.content.Context;
-import android.net.http.SslError;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient;
+import com.github.vase4kin.teamcityapp.buildlog.view.UnsafeBuildLogWebViewClient;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import dagger.Module;
@@ -41,11 +39,6 @@ public class BuildLogInteractorModule {
     BuildLogWebViewClient providesBuildLogWebViewClient(SharedUserStorage sharedUserStorage) {
         return !sharedUserStorage.getActiveUser().isSslDisabled()
                 ? new BuildLogWebViewClient()
-                : new BuildLogWebViewClient() {
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-        };
+                : new UnsafeBuildLogWebViewClient();
     }
 }
