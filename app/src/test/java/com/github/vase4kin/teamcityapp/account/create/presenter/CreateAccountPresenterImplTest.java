@@ -170,11 +170,11 @@ public class CreateAccountPresenterImplTest {
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasGuestAccountWithUrl(eq("url"));
-        verify(mDataManager).authGuestUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"));
+        verify(mDataManager).authGuestUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq(false));
 
         CustomOnLoadingListener<String> listener = mCustomOnLoadingListenerArgumentCaptor.getValue();
         listener.onSuccess("url");
-        verify(mDataManager).saveGuestUserAccount(eq("url"));
+        verify(mDataManager).saveGuestUserAccount(eq("url"), eq(false));
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
@@ -195,11 +195,11 @@ public class CreateAccountPresenterImplTest {
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
-        verify(mDataManager).authUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"));
+        verify(mDataManager).authUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false));
 
         CustomOnLoadingListener<String> customOnLoadingListener = mCustomOnLoadingListenerArgumentCaptor.getValue();
         customOnLoadingListener.onSuccess("url");
-        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), mOnLoadingListenerArgumentCaptor.capture());
+        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), eq(false), mOnLoadingListenerArgumentCaptor.capture());
 
         OnLoadingListener<String> loadingListener = mOnLoadingListenerArgumentCaptor.getValue();
         loadingListener.onSuccess("url");
