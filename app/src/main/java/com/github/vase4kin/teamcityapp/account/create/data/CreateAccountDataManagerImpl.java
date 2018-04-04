@@ -165,7 +165,17 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                                         String formattedServerUrl = mUrlFormatter.formatServerUrl(serverUrl);
                                         listener.onSuccess(formattedServerUrl);
                                     } else {
-                                        listener.onFail(response.code(), response.message());
+                                        String message;
+                                        if (response.body() != null && response.body().source() != null) {
+                                            try {
+                                                message = response.body().source().readUtf8();
+                                            } catch (IOException e) {
+                                                message = response.message();
+                                            }
+                                        } else {
+                                            message = response.message();
+                                        }
+                                        listener.onFail(response.code(), message);
                                     }
                                 }
                             });
