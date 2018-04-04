@@ -211,7 +211,7 @@
     <string name="info_unauthorized_dialog_title">Oh Snap!</string>
     <string name="warning_ssl_dialog_title">Warning</string>
     <string name="info_unauthorized_dialog_content">It seems that your TC server doesn\'t have Guest User enabled. In order to use the app make sure it is enabled. For more details see <a href="https://confluence.jetbrains.com/display/TCD10/Enabling+Guest+Login">TC help</a>.</string>
-    <string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making your app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
+    <string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making the app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
     <string name="warning_ssl_dialog_negative">Cancel</string>
 
     <!--Run build activity-->
