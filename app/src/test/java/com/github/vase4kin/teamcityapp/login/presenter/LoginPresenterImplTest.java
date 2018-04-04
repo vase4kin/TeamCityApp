@@ -131,7 +131,7 @@ public class LoginPresenterImplTest {
 
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mRouter).openProjectsRootPageForFirstStart();
-        verify(mTracker).trackUserLoginSuccess();
+        verify(mTracker).trackUserLoginSuccess(eq(true));
         verify(mView).close();
 
         onLoadingListener.onFail("error");
@@ -182,7 +182,7 @@ public class LoginPresenterImplTest {
         verify(mDataManager).saveGuestUserAccount(eq("url"), eq(false));
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mRouter).openProjectsRootPageForFirstStart();
-        verify(mTracker).trackGuestUserLoginSuccess();
+        verify(mTracker).trackGuestUserLoginSuccess(eq(true));
         verify(mView).close();
 
         listener.onFail(0, "error");

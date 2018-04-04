@@ -31,7 +31,7 @@ import javax.inject.Inject;
 /**
  * Impl for {@link LoginPresenter}
  */
-public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListener, OnLoadingListener<String> {
+public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListener {
 
     private static final int UNAUTHORIZED_STATUS_CODE = 401;
 
@@ -109,7 +109,23 @@ public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListene
             @Override
             public void onSuccess(String serverUrl) {
                 view.dismissProgressDialog();
-                dataManager.saveNewUserAccount(serverUrl, userName, password, isSslDisabled, LoginPresenterImpl.this);
+                dataManager.saveNewUserAccount(serverUrl, userName, password, isSslDisabled, new OnLoadingListener<String>() {
+                    @Override
+                    public void onSuccess(String serverUrl) {
+                        dataManager.initTeamCityService(serverUrl);
+                        router.openProjectsRootPageForFirstStart();
+                        tracker.trackUserLoginSuccess(!isSslDisabled);
+                        view.close();
+                    }
+
+                    @Override
+                    public void onFail(String errorMessage) {
+                        view.dismissProgressDialog();
+                        view.showCouldNotSaveUserError();
+                        tracker.trackUserDataSaveFailed();
+                        view.hideKeyboard();
+                    }
+                });
             }
 
             @Override
@@ -120,32 +136,6 @@ public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListene
                 view.hideKeyboard();
             }
         }, serverUrl, userName, password, isSslDisabled);
-    }
-
-    /**
-     * On data save success callback
-     *
-     * @param serverUrl - Server url
-     */
-    @Override
-    public void onSuccess(String serverUrl) {
-        dataManager.initTeamCityService(serverUrl);
-        router.openProjectsRootPageForFirstStart();
-        tracker.trackUserLoginSuccess();
-        view.close();
-    }
-
-    /**
-     * On data save fail callback
-     *
-     * @param errorMessage - Error message
-     */
-    @Override
-    public void onFail(String errorMessage) {
-        view.dismissProgressDialog();
-        view.showCouldNotSaveUserError();
-        tracker.trackUserDataSaveFailed();
-        view.hideKeyboard();
     }
 
     /**
@@ -166,7 +156,7 @@ public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListene
                 dataManager.saveGuestUserAccount(serverUrl, isSslDisabled);
                 dataManager.initTeamCityService(serverUrl);
                 router.openProjectsRootPageForFirstStart();
-                tracker.trackGuestUserLoginSuccess();
+                tracker.trackGuestUserLoginSuccess(!isSslDisabled);
                 view.close();
             }
 

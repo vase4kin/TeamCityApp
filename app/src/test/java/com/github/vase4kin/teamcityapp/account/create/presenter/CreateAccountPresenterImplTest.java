@@ -179,7 +179,7 @@ public class CreateAccountPresenterImplTest {
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
         verify(mRouter).startRootProjectActivityWhenNewAccountIsCreated();
-        verify(mTracker).trackGuestUserLoginSuccess();
+        verify(mTracker).trackGuestUserLoginSuccess(eq(true));
 
         listener.onFail(0, "error");
         verify(mView).showError(eq("error"));
@@ -207,7 +207,7 @@ public class CreateAccountPresenterImplTest {
         verify(mView).dismissProgressDialog();
         verify(mView).finish();
         verify(mRouter).startRootProjectActivityWhenNewAccountIsCreated();
-        verify(mTracker).trackUserLoginSuccess();
+        verify(mTracker).trackUserLoginSuccess(eq(true));
 
         loadingListener.onFail("");
         verify(mView).showCouldNotSaveUserError();

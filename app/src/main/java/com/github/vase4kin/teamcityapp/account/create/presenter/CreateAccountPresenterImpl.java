@@ -31,7 +31,7 @@ import javax.inject.Inject;
 /**
  * Impl of {@link CreateAccountPresenter}
  */
-public class CreateAccountPresenterImpl implements CreateAccountPresenter, CreateAccountView.ViewListener, OnLoadingListener<String> {
+public class CreateAccountPresenterImpl implements CreateAccountPresenter, CreateAccountView.ViewListener {
 
     private final CreateAccountView view;
     private final CreateAccountDataManager dataManager;
@@ -80,7 +80,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, Creat
      * {@inheritDoc}
      */
     @Override
-    public void validateUserData(String url, final String userName, final String password, boolean isSslDisabled) {
+    public void validateUserData(String url, final String userName, final String password, final boolean isSslDisabled) {
         view.hideError();
         if (TextUtils.isEmpty(url)) {
             view.showServerUrlCanNotBeEmptyError();
@@ -102,7 +102,23 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, Creat
             dataManager.authUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    dataManager.saveNewUserAccount(url, userName, password, false, CreateAccountPresenterImpl.this);
+                    dataManager.saveNewUserAccount(url, userName, password, false, new OnLoadingListener<String>() {
+                        @Override
+                        public void onSuccess(String serverUrl) {
+                            dataManager.initTeamCityService(serverUrl);
+                            tracker.trackUserLoginSuccess(!isSslDisabled);
+                            view.dismissProgressDialog();
+                            view.finish();
+                            router.startRootProjectActivityWhenNewAccountIsCreated();
+                        }
+
+                        @Override
+                        public void onFail(String errorMessage) {
+                            view.showCouldNotSaveUserError();
+                            view.dismissProgressDialog();
+                            tracker.trackUserDataSaveFailed();
+                        }
+                    });
                 }
 
                 @Override
@@ -113,32 +129,6 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, Creat
                 }
             }, url, userName, password, isSslDisabled);
         }
-    }
-
-    /**
-     * On data save success callback
-     *
-     * @param serverUrl - Server url
-     */
-    @Override
-    public void onSuccess(String serverUrl) {
-        dataManager.initTeamCityService(serverUrl);
-        tracker.trackUserLoginSuccess();
-        view.dismissProgressDialog();
-        view.finish();
-        router.startRootProjectActivityWhenNewAccountIsCreated();
-    }
-
-    /**
-     * On data save fail callback
-     *
-     * @param errorMessage - Error message
-     */
-    @Override
-    public void onFail(String errorMessage) {
-        view.showCouldNotSaveUserError();
-        view.dismissProgressDialog();
-        tracker.trackUserDataSaveFailed();
     }
 
     /**
@@ -161,7 +151,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, Creat
                 public void onSuccess(String url) {
                     dataManager.saveGuestUserAccount(url, isSslDisabled);
                     dataManager.initTeamCityService(url);
-                    tracker.trackGuestUserLoginSuccess();
+                    tracker.trackGuestUserLoginSuccess(!isSslDisabled);
                     view.dismissProgressDialog();
                     view.finish();
                     router.startRootProjectActivityWhenNewAccountIsCreated();
