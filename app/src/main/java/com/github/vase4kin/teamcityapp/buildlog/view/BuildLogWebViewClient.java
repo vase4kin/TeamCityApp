@@ -28,7 +28,7 @@ import android.webkit.WebViewClient;
 /**
  * Build log web client with listener to receive client callbacks
  */
-class BuildLogWebViewClient extends WebViewClient {
+public class BuildLogWebViewClient extends WebViewClient {
 
     /**
      * Magic awesome js script to hide things user doesn't need to see
