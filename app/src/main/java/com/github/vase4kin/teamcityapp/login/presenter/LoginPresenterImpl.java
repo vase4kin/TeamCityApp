@@ -35,10 +35,10 @@ public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListene
 
     private static final int UNAUTHORIZED_STATUS_CODE = 401;
 
-    private LoginView view;
-    private CreateAccountDataManager dataManager;
-    private LoginRouter router;
-    private LoginTracker tracker;
+    private final LoginView view;
+    private final CreateAccountDataManager dataManager;
+    private final LoginRouter router;
+    private final LoginTracker tracker;
 
     @Inject
     LoginPresenterImpl(@NonNull LoginView view,
