@@ -121,21 +121,21 @@ public class CreateAccountPresenterImplTest {
 
     @Test
     public void testOnUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
-        mPresenter.validateUserData("", "userName", "password");
+        mPresenter.validateUserData("", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
     }
 
     @Test
     public void testOnUserLoginButtonClickIfUserNameIsNotProvided() throws Exception {
-        mPresenter.validateUserData("url", "", "password");
+        mPresenter.validateUserData("url", "", "password", false);
         verify(mView).hideError();
         verify(mView).showUserNameCanNotBeEmptyError();
     }
 
     @Test
     public void testOnUserLoginButtonClickIfPasswordIsNotProvided() throws Exception {
-        mPresenter.validateUserData("url", "userName", "");
+        mPresenter.validateUserData("url", "userName", "", false);
         verify(mView).hideError();
         verify(mView).showPasswordCanNotBeEmptyError();
     }
@@ -143,7 +143,7 @@ public class CreateAccountPresenterImplTest {
     @Test
     public void testValidateUserUrlIfAccountExist() throws Exception {
         when(mDataModel.hasAccountWithUrl("url", "userName")).thenReturn(true);
-        mPresenter.validateUserData("url", "userName", "password");
+        mPresenter.validateUserData("url", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
@@ -154,7 +154,7 @@ public class CreateAccountPresenterImplTest {
     @Test
     public void testValidateGuestUserUrlIfAccountExist() throws Exception {
         when(mDataModel.hasGuestAccountWithUrl("url")).thenReturn(true);
-        mPresenter.validateGuestUserData("url");
+        mPresenter.validateGuestUserData("url", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasGuestAccountWithUrl(eq("url"));
@@ -165,7 +165,7 @@ public class CreateAccountPresenterImplTest {
     @Test
     public void testValidateGuestUserUrlIfAccountIsNotExist() throws Exception {
         when(mDataModel.hasGuestAccountWithUrl("url")).thenReturn(false);
-        mPresenter.validateGuestUserData("url");
+        mPresenter.validateGuestUserData("url", false);
 
         verify(mView).hideError();
         verify(mView).showProgressDialog();
@@ -190,7 +190,7 @@ public class CreateAccountPresenterImplTest {
     @Test
     public void testValidateUserUrlIfAccountIsNotExist() throws Exception {
         when(mDataModel.hasAccountWithUrl("url", "userName")).thenReturn(false);
-        mPresenter.validateUserData("url", "userName", "password");
+        mPresenter.validateUserData("url", "userName", "password", false);
 
         verify(mView).hideError();
         verify(mView).showProgressDialog();
@@ -222,7 +222,7 @@ public class CreateAccountPresenterImplTest {
 
     @Test
     public void testOnGuestUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
-        mPresenter.validateGuestUserData("");
+        mPresenter.validateGuestUserData("", false);
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
     }
