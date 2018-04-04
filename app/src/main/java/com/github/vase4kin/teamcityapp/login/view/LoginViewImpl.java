@@ -74,6 +74,9 @@ public class LoginViewImpl implements LoginView {
     @BindView(R.id.img_logo)
     ImageView mLogoImageView;
 
+    @BindView(R.id.img_real_logo)
+    ImageView mRealLogoImageView;
+
     @BindView(R.id.container)
     ViewGroup mContainer;
 
@@ -253,7 +256,14 @@ public class LoginViewImpl implements LoginView {
                 .translationY(mActivity.getResources().getInteger(R.integer.logo_move))
                 .setStartDelay(STARTUP_DELAY)
                 .setDuration(ANIM_ITEM_DURATION).setInterpolator(
-                new DecelerateInterpolator(1.2f)).start();
+                new DecelerateInterpolator(1.2f))
+                .withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mLogoImageView.setVisibility(View.GONE);
+                        mRealLogoImageView.setVisibility(View.VISIBLE);
+                    }
+                }).start();
 
         for (int i = 0; i < mContainer.getChildCount(); i++) {
             View v = mContainer.getChildAt(i);
