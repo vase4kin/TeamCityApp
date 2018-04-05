@@ -21,6 +21,8 @@ import android.view.View;
 
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl;
+import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter;
+import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl;
@@ -66,5 +68,10 @@ public class BuildLogModule {
                 return "file:///android_asset/fake_build_log.html";
             }
         };
+    }
+
+    @Provides
+    BuildLogRouter providesBuildLogRouter() {
+        return new BuildLogRouterImpl(mFragment.getActivity());
     }
 }

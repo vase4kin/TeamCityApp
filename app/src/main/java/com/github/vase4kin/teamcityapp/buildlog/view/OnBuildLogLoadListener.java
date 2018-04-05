@@ -30,4 +30,9 @@ public interface OnBuildLogLoadListener {
      * On auth button click
      */
     void onAuthButtonClick();
+
+    /**
+     * Open build log in the browser
+     */
+    void onOpenBuildLogInBrowser();
 }

@@ -49,4 +49,9 @@ public interface BuildLogView {
      * Hide need authDialog
      */
     void hideAuthView();
+
+    /**
+     * Show ssl warning view
+     */
+    void showSslWarningView();
 }

@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view;
-
-import android.net.http.SslError;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebView;
+package com.github.vase4kin.teamcityapp.buildlog.router;
 
 /**
- * Unsafe build log web view client
+ * Router for build log
  */
-public class UnsafeBuildLogWebViewClient extends BuildLogWebViewClient {
+public interface BuildLogRouter {
 
-    @Override
-    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-        handler.proceed();
-    }
+    /**
+     * Open url in the web browser
+     *
+     * @param url - url to open
+     */
+    void openUrl(String url);
+
+    /**
+     * Unbind customs tabs
+     */
+    void unbindCustomsTabs();
 }
