@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.view;
+package com.github.vase4kin.teamcityapp.buildlog.view;
+
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+import android.webkit.WebView;
 
 /**
- * On create account listener
+ * Unsafe build log web view client
  */
-public interface OnCreateAccountPresenterListener extends OnValidateListener, OnToolBarNavigationListener {
+public class UnsafeBuildLogWebViewClient extends BuildLogWebViewClient {
+
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        handler.proceed();
+    }
 }

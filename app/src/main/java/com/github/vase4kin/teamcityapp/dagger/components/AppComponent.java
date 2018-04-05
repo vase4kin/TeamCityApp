@@ -35,6 +35,7 @@ import okhttp3.OkHttpClient;
 
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE;
 
 @Singleton
 @Component(modules = AppModule.class)
@@ -46,6 +47,9 @@ public interface AppComponent {
 
     @Named(CLIENT_BASE)
     OkHttpClient baseOkHttpClient();
+
+    @Named(CLIENT_BASE_UNSAFE)
+    OkHttpClient unsafeBaseOkHttpClient();
 
     @Named(CLIENT_AUTH)
     OkHttpClient authOkHttpClient();

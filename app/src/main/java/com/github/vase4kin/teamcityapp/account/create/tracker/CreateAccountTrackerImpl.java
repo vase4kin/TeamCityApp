@@ -33,11 +33,11 @@ public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTrack
      * {@inheritDoc}
      */
     @Override
-    public void trackUserLoginSuccess() {
+    public void trackUserLoginSuccess(final boolean isSslEnabled) {
         logEvent(new TrackerMethod<CreateAccountTracker>() {
             @Override
             public void execute(CreateAccountTracker tracker) {
-                tracker.trackUserLoginSuccess();
+                tracker.trackUserLoginSuccess(isSslEnabled);
             }
         });
     }
@@ -46,11 +46,11 @@ public class CreateAccountTrackerImpl extends BaseViewTracker<CreateAccountTrack
      * {@inheritDoc}
      */
     @Override
-    public void trackGuestUserLoginSuccess() {
+    public void trackGuestUserLoginSuccess(final boolean isSslEnabled) {
         logEvent(new TrackerMethod<CreateAccountTracker>() {
             @Override
             public void execute(CreateAccountTracker tracker) {
-                tracker.trackGuestUserLoginSuccess();
+                tracker.trackGuestUserLoginSuccess(isSslEnabled);
             }
         });
     }

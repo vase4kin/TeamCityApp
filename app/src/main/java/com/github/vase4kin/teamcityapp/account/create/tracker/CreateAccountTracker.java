@@ -29,6 +29,11 @@ public interface CreateAccountTracker extends ViewTracker {
     String ATTRIBUTE_NAME_ERROR = "errorMessage";
 
     /**
+     * Ssl enabled attribute
+     */
+    String ATTRIBUTE_NAME_SSL_ENABLED = "sslEnabled";
+
+    /**
      * Error message if data is failed to save
      */
     String MESSAGE_ERROR_SAVE_DATE = "Failed to save user data!";
@@ -40,13 +45,15 @@ public interface CreateAccountTracker extends ViewTracker {
 
     /**
      * Track user is logged in
+     * @param isSslEnabled
      */
-    void trackUserLoginSuccess();
+    void trackUserLoginSuccess(boolean isSslEnabled);
 
     /**
      * Track guest user is logged in
+     * @param isSslEnabled
      */
-    void trackGuestUserLoginSuccess();
+    void trackGuestUserLoginSuccess(boolean isSslEnabled);
 
     /**
      * Track user is failed to login

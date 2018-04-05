@@ -26,7 +26,7 @@ public interface CreateAccountView {
      *
      * @param listener - Listener to receive callback on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
      */
-    void initViews(OnCreateAccountPresenterListener listener);
+    void initViews(ViewListener listener);
 
     /**
      * Set error text for text field
@@ -96,4 +96,20 @@ public interface CreateAccountView {
      * Show error message that account exists
      */
     void showNewAccountExistErrorMessage();
+
+    /**
+     * Show warning dialog about disabling ssl
+     */
+    void showDisableSslWarningDialog();
+
+    /**
+     * On create account listener
+     */
+    interface ViewListener extends OnValidateListener, OnToolBarNavigationListener {
+
+        /**
+         * On ignore ssl switch click
+         */
+        void onDisableSslSwitchClick();
+    }
 }

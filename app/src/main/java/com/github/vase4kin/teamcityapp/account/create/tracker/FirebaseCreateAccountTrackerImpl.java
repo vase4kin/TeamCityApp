@@ -48,13 +48,20 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
      * {@inheritDoc}
      */
     @Override
-    public void trackUserLoginSuccess() {
-        mFirebaseAnalytics.logEvent(EVENT_LOGIN_USER_SUCCESS, null);
+    public void trackUserLoginSuccess(boolean isSslEnabled) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ATTRIBUTE_NAME_SSL_ENABLED, isSslEnabled);
+        mFirebaseAnalytics.logEvent(EVENT_LOGIN_USER_SUCCESS, bundle);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void trackGuestUserLoginSuccess() {
-        mFirebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_SUCCESS, null);
+    public void trackGuestUserLoginSuccess(boolean isSslEnabled) {
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ATTRIBUTE_NAME_SSL_ENABLED, isSslEnabled);
+        mFirebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_SUCCESS, bundle);
     }
 
     /**
@@ -67,6 +74,9 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
         mFirebaseAnalytics.logEvent(EVENT_LOGIN_USER_FAILED, bundle);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackGuestUserLoginFailed(String errorMessage) {
         Bundle bundle = new Bundle();
@@ -74,6 +84,9 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
         mFirebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_FAILED, bundle);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackUserDataSaveFailed() {
         trackUserLoginFailed(MESSAGE_ERROR_SAVE_DATE);

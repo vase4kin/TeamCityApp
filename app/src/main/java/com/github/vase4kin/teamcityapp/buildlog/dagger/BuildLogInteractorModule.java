@@ -20,6 +20,8 @@ import android.content.Context;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl;
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient;
+import com.github.vase4kin.teamcityapp.buildlog.view.UnsafeBuildLogWebViewClient;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import dagger.Module;
@@ -31,5 +33,12 @@ public class BuildLogInteractorModule {
     @Provides
     BuildLogInteractor providesBuildLogInteractor(Context context, SharedUserStorage sharedUserStorage) {
         return new BuildLogInteractorImpl(context, sharedUserStorage.getActiveUser());
+    }
+
+    @Provides
+    BuildLogWebViewClient providesBuildLogWebViewClient(SharedUserStorage sharedUserStorage) {
+        return !sharedUserStorage.getActiveUser().isSslDisabled()
+                ? new BuildLogWebViewClient()
+                : new UnsafeBuildLogWebViewClient();
     }
 }

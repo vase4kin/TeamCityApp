@@ -28,6 +28,7 @@ public class UserAccount implements Jsonable {
     private byte[] password;
     private boolean isGuestUser;
     private boolean isActive;
+    private boolean isSslDisabled;
 
     public UserAccount(String teamcityUrl,
                        String userName,
@@ -39,6 +40,7 @@ public class UserAccount implements Jsonable {
         this.password = password;
         this.isGuestUser = isGuestUser;
         this.isActive = isActive;
+        this.isSslDisabled = false;
     }
 
     public String getTeamcityUrl() {
@@ -67,6 +69,14 @@ public class UserAccount implements Jsonable {
 
     public void setIsActive(boolean isActive) {
         this.isActive = isActive;
+    }
+
+    public void setSslDisabled(boolean sslDisabled) {
+        isSslDisabled = sslDisabled;
+    }
+
+    public boolean isSslDisabled() {
+        return isSslDisabled;
     }
 
     @Override

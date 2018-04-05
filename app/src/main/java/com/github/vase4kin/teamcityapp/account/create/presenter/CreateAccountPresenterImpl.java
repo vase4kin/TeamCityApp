@@ -25,20 +25,19 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter;
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView;
-import com.github.vase4kin.teamcityapp.account.create.view.OnCreateAccountPresenterListener;
 
 import javax.inject.Inject;
 
 /**
  * Impl of {@link CreateAccountPresenter}
  */
-public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCreateAccountPresenterListener, OnLoadingListener<String> {
+public class CreateAccountPresenterImpl implements CreateAccountPresenter, CreateAccountView.ViewListener {
 
-    private CreateAccountView mView;
-    private CreateAccountDataManager mDataManager;
-    private CreateAccountDataModel mDataModel;
-    private CreateAccountRouter mRouter;
-    private CreateAccountTracker mTracker;
+    private final CreateAccountView view;
+    private final CreateAccountDataManager dataManager;
+    private final CreateAccountDataModel dataModel;
+    private final CreateAccountRouter router;
+    private final CreateAccountTracker tracker;
 
     @Inject
     CreateAccountPresenterImpl(CreateAccountView view,
@@ -46,11 +45,11 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
                                CreateAccountDataModel dataModel,
                                CreateAccountRouter router,
                                CreateAccountTracker tracker) {
-        this.mView = view;
-        this.mDataManager = dataManager;
-        this.mDataModel = dataModel;
-        this.mRouter = router;
-        this.mTracker = tracker;
+        this.view = view;
+        this.dataManager = dataManager;
+        this.dataModel = dataModel;
+        this.router = router;
+        this.tracker = tracker;
     }
 
     /**
@@ -58,7 +57,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
      */
     @Override
     public void handleOnCreateView() {
-        mView.initViews(this);
+        view.initViews(this);
     }
 
     /**
@@ -66,7 +65,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
      */
     @Override
     public void handleOnResume() {
-        mTracker.trackView();
+        tracker.trackView();
     }
 
     /**
@@ -74,107 +73,97 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
      */
     @Override
     public void handleOnDestroy() {
-        mView.onDestroyView();
+        view.onDestroyView();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void validateUserData(String url, final String userName, final String password) {
-        mView.hideError();
+    public void validateUserData(String url, final String userName, final String password, final boolean isSslDisabled) {
+        view.hideError();
         if (TextUtils.isEmpty(url)) {
-            mView.showServerUrlCanNotBeEmptyError();
+            view.showServerUrlCanNotBeEmptyError();
             return;
         }
         if (TextUtils.isEmpty(userName)) {
-            mView.showUserNameCanNotBeEmptyError();
+            view.showUserNameCanNotBeEmptyError();
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            mView.showPasswordCanNotBeEmptyError();
+            view.showPasswordCanNotBeEmptyError();
             return;
         }
-        mView.showProgressDialog();
-        if (mDataModel.hasAccountWithUrl(url, userName)) {
-            mView.showNewAccountExistErrorMessage();
-            mView.dismissProgressDialog();
+        view.showProgressDialog();
+        if (dataModel.hasAccountWithUrl(url, userName)) {
+            view.showNewAccountExistErrorMessage();
+            view.dismissProgressDialog();
         } else {
-            mDataManager.authUser(new CustomOnLoadingListener<String>() {
+            dataManager.authUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    mDataManager.saveNewUserAccount(url, userName, password, CreateAccountPresenterImpl.this);
+                    dataManager.saveNewUserAccount(url, userName, password, false, new OnLoadingListener<String>() {
+                        @Override
+                        public void onSuccess(String serverUrl) {
+                            dataManager.initTeamCityService(serverUrl);
+                            tracker.trackUserLoginSuccess(!isSslDisabled);
+                            view.dismissProgressDialog();
+                            view.finish();
+                            router.startRootProjectActivityWhenNewAccountIsCreated();
+                        }
+
+                        @Override
+                        public void onFail(String errorMessage) {
+                            view.showCouldNotSaveUserError();
+                            view.dismissProgressDialog();
+                            tracker.trackUserDataSaveFailed();
+                        }
+                    });
                 }
 
                 @Override
                 public void onFail(int code, String errorMessage) {
-                    mView.showError(errorMessage);
-                    mView.dismissProgressDialog();
-                    mTracker.trackUserLoginFailed(errorMessage);
+                    view.showError(errorMessage);
+                    view.dismissProgressDialog();
+                    tracker.trackUserLoginFailed(errorMessage);
                 }
-            }, url, userName, password);
+            }, url, userName, password, isSslDisabled);
         }
-    }
-
-    /**
-     * On data save success callback
-     *
-     * @param serverUrl - Server url
-     */
-    @Override
-    public void onSuccess(String serverUrl) {
-        mDataManager.initTeamCityService(serverUrl);
-        mTracker.trackUserLoginSuccess();
-        mView.dismissProgressDialog();
-        mView.finish();
-        mRouter.startRootProjectActivityWhenNewAccountIsCreated();
-    }
-
-    /**
-     * On data save fail callback
-     *
-     * @param errorMessage - Error message
-     */
-    @Override
-    public void onFail(String errorMessage) {
-        mView.showCouldNotSaveUserError();
-        mView.dismissProgressDialog();
-        mTracker.trackUserDataSaveFailed();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void validateGuestUserData(String url) {
-        mView.hideError();
+    public void validateGuestUserData(String url, final boolean isSslDisabled) {
+        view.hideError();
         if (TextUtils.isEmpty(url)) {
-            mView.showServerUrlCanNotBeEmptyError();
+            view.showServerUrlCanNotBeEmptyError();
             return;
         }
-        mView.showProgressDialog();
-        if (mDataModel.hasGuestAccountWithUrl(url)) {
-            mView.showNewAccountExistErrorMessage();
-            mView.dismissProgressDialog();
+        view.showProgressDialog();
+        if (dataModel.hasGuestAccountWithUrl(url)) {
+            view.showNewAccountExistErrorMessage();
+            view.dismissProgressDialog();
         } else {
-            mDataManager.authGuestUser(new CustomOnLoadingListener<String>() {
+            dataManager.authGuestUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    mDataManager.saveGuestUserAccount(url);
-                    mDataManager.initTeamCityService(url);
-                    mTracker.trackGuestUserLoginSuccess();
-                    mView.dismissProgressDialog();
-                    mView.finish();
-                    mRouter.startRootProjectActivityWhenNewAccountIsCreated();
+                    dataManager.saveGuestUserAccount(url, isSslDisabled);
+                    dataManager.initTeamCityService(url);
+                    tracker.trackGuestUserLoginSuccess(!isSslDisabled);
+                    view.dismissProgressDialog();
+                    view.finish();
+                    router.startRootProjectActivityWhenNewAccountIsCreated();
                 }
 
                 @Override
                 public void onFail(int code, String errorMessage) {
-                    mView.showError(errorMessage);
-                    mView.dismissProgressDialog();
-                    mTracker.trackGuestUserLoginFailed(errorMessage);
+                    view.showError(errorMessage);
+                    view.dismissProgressDialog();
+                    tracker.trackGuestUserLoginFailed(errorMessage);
                 }
-            }, url);
+            }, url, isSslDisabled);
         }
     }
 
@@ -184,10 +173,10 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
     @Override
     public void finish() {
         // If guest user account enabled or not
-        if (!mView.isEmailEmpty()) {
-            mView.showDiscardDialog();
+        if (!view.isEmailEmpty()) {
+            view.showDiscardDialog();
         } else {
-            mView.finish();
+            view.finish();
         }
     }
 
@@ -197,5 +186,13 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, OnCre
     @Override
     public void onClick() {
         finish();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDisableSslSwitchClick() {
+        view.showDisableSslWarningDialog();
     }
 }

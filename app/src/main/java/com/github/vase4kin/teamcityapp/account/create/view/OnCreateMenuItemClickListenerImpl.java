@@ -25,35 +25,40 @@ import com.github.vase4kin.teamcityapp.R;
 
 public class OnCreateMenuItemClickListenerImpl implements Toolbar.OnMenuItemClickListener {
 
-    private OnValidateListener mOnValidateListener;
-    private TextView mServerUrl;
-    private TextView mUserName;
-    private TextView mPassword;
-    private Switch mGuestUserSwitch;
+    private final OnValidateListener onValidateListener;
+    private final TextView serverUrl;
+    private final TextView userName;
+    private final TextView password;
+    private final Switch guestUserSwitch;
+    private final Switch disableSslSwitch;
 
-    public OnCreateMenuItemClickListenerImpl(OnValidateListener mOnValidateListener,
-                                             TextView serverUrl,
-                                             TextView userName,
-                                             TextView password,
-                                             Switch guestUserSwitch) {
-        this.mOnValidateListener = mOnValidateListener;
-        this.mServerUrl = serverUrl;
-        this.mUserName = userName;
-        this.mPassword = password;
-        this.mGuestUserSwitch = guestUserSwitch;
+    OnCreateMenuItemClickListenerImpl(OnValidateListener onValidateListener,
+                                      TextView serverUrl,
+                                      TextView userName,
+                                      TextView password,
+                                      Switch guestUserSwitch,
+                                      Switch disableSslSwitch) {
+        this.onValidateListener = onValidateListener;
+        this.serverUrl = serverUrl;
+        this.userName = userName;
+        this.password = password;
+        this.guestUserSwitch = guestUserSwitch;
+        this.disableSslSwitch = disableSslSwitch;
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         if (item.getItemId() == R.id.action_create) {
-            if (mGuestUserSwitch.isChecked()) {
-                mOnValidateListener.validateGuestUserData(
-                        mServerUrl.getText().toString().trim());
+            if (guestUserSwitch.isChecked()) {
+                onValidateListener.validateGuestUserData(
+                        serverUrl.getText().toString().trim(),
+                        disableSslSwitch.isChecked());
             } else {
-                mOnValidateListener.validateUserData(
-                        mServerUrl.getText().toString().trim(),
-                        mUserName.getText().toString().trim(),
-                        mPassword.getText().toString().trim());
+                onValidateListener.validateUserData(
+                        serverUrl.getText().toString().trim(),
+                        userName.getText().toString().trim(),
+                        password.getText().toString().trim(),
+                        disableSslSwitch.isChecked());
             }
             return true;
         }

@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.account.create.view;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -29,6 +30,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.joanzapata.iconify.IconDrawable;
@@ -77,6 +79,9 @@ public class CreateAccountViewImpl implements CreateAccountView {
     @BindView(R.id.guest_user_switch)
     Switch mGuestUserSwitch;
 
+    @BindView(R.id.disable_ssl_switch)
+    Switch disableSslSwitch;
+
     private Unbinder mUnbinder;
 
     private Activity mActivity;
@@ -91,7 +96,7 @@ public class CreateAccountViewImpl implements CreateAccountView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(final OnCreateAccountPresenterListener listener) {
+    public void initViews(final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
         initDialogs();
         initToolbar(listener);
@@ -103,7 +108,8 @@ public class CreateAccountViewImpl implements CreateAccountView {
                     listener.validateUserData(
                             mServerUrl.getText().toString().trim(),
                             mUserName.getText().toString().trim(),
-                            mPassword.getText().toString().trim());
+                            mPassword.getText().toString().trim(),
+                            disableSslSwitch.isChecked());
                     return true;
                 }
                 return false;
@@ -125,6 +131,15 @@ public class CreateAccountViewImpl implements CreateAccountView {
 
         //Set text selection to the end
         mServerUrl.setSelection(mServerUrl.getText().length());
+
+        disableSslSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    listener.onDisableSslSwitchClick();
+                }
+            }
+        });
     }
 
     /**
@@ -143,12 +158,13 @@ public class CreateAccountViewImpl implements CreateAccountView {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         if (mGuestUserSwitch.isChecked()) {
                             listener.validateGuestUserData(
-                                    mServerUrl.getText().toString().trim());
+                                    mServerUrl.getText().toString().trim(), disableSslSwitch.isChecked());
                         } else {
                             listener.validateUserData(
                                     mServerUrl.getText().toString().trim(),
                                     mUserName.getText().toString().trim(),
-                                    mPassword.getText().toString().trim());
+                                    mPassword.getText().toString().trim(),
+                                    disableSslSwitch.isChecked());
                         }
                     }
                     return false;
@@ -271,14 +287,14 @@ public class CreateAccountViewImpl implements CreateAccountView {
      *
      * @param listener - Listener to receive callbacks
      */
-    private void initToolbar(final OnCreateAccountPresenterListener listener) {
+    private void initToolbar(final ViewListener listener) {
         mToolbar.setTitle(R.string.add_new_account_dialog_title);
         // For ui testing purpose
         mToolbar.setNavigationContentDescription(R.string.navigate_up);
         mToolbar.setNavigationIcon(new IconDrawable(mActivity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize());
         mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(listener));
         mToolbar.inflateMenu(R.menu.menu_create_account_dialog);
-        mToolbar.setOnMenuItemClickListener(new OnCreateMenuItemClickListenerImpl(listener, mServerUrl, mUserName, mPassword, mGuestUserSwitch));
+        mToolbar.setOnMenuItemClickListener(new OnCreateMenuItemClickListenerImpl(listener, mServerUrl, mUserName, mPassword, mGuestUserSwitch, disableSslSwitch));
     }
 
     /**
@@ -316,5 +332,42 @@ public class CreateAccountViewImpl implements CreateAccountView {
                 .negativeText(R.string.discard_dialog_negative_button_text)
                 .negativeColor(mOrangeColor)
                 .build();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showDisableSslWarningDialog() {
+        new MaterialDialog.Builder(mActivity)
+                .titleColor(mWhiteColor)
+                .title(R.string.warning_ssl_dialog_title)
+                .content(R.string.warning_ssl_dialog_content)
+                .widgetColor(mWhiteColor)
+                .contentColor(mWhiteColor)
+                .backgroundColor(mPrimaryColor)
+                .positiveColor(mOrangeColor)
+                .positiveText(R.string.dialog_ok_title)
+                .negativeColor(mOrangeColor)
+                .negativeText(R.string.warning_ssl_dialog_negative)
+                .linkColor(mOrangeColor)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        disableSslSwitch.setChecked(true);
+                        dialog.dismiss();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        disableSslSwitch.setChecked(false);
+                        dialog.dismiss();
+                    }
+                })
+                .canceledOnTouchOutside(false)
+                .autoDismiss(false)
+                .cancelable(false)
+                .show();
     }
 }
