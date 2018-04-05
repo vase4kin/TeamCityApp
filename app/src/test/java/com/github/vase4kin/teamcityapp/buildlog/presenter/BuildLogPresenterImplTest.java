@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildlog.presenter;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
+import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
 
@@ -42,36 +43,52 @@ public class BuildLogPresenterImplTest {
     @Mock
     private BuildLogInteractor mInteractor;
 
+    @Mock
+    private BuildLogRouter router;
+
     private BuildLogPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mBuildLogUrlProvider.provideUrl()).thenReturn("http://fake-teamcity-url");
-        mPresenter = new BuildLogPresenterImpl(mView, mBuildLogUrlProvider, mInteractor);
+        mPresenter = new BuildLogPresenterImpl(mView, mBuildLogUrlProvider, mInteractor, router);
     }
 
     @After
     public void tearDown() throws Exception {
-        verifyNoMoreInteractions(mView, mBuildLogUrlProvider, mInteractor);
+        verifyNoMoreInteractions(mView, mBuildLogUrlProvider, mInteractor, router);
     }
 
     @Test
     public void testHandleOnCreateViewIfDialogIsNotShown() throws Exception {
+        when(mInteractor.isSslDisabled()).thenReturn(false);
         when(mInteractor.isAuthDialogShown()).thenReturn(true);
         mPresenter.onCreateViews();
         verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isSslDisabled();
         verify(mInteractor).isAuthDialogShown();
         verify(mBuildLogUrlProvider).provideUrl();
         verify(mView).loadBuildLog(eq("http://fake-teamcity-url"));
     }
 
     @Test
+    public void testHandleOnCreateViewIfSslIsDisabled() throws Exception {
+        when(mInteractor.isSslDisabled()).thenReturn(true);
+        mPresenter.onCreateViews();
+        verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isSslDisabled();
+        verify(mView).showSslWarningView();
+    }
+
+    @Test
     public void testHandleOnCreateViewIfGuestUser() throws Exception {
         when(mInteractor.isAuthDialogShown()).thenReturn(false);
+        when(mInteractor.isSslDisabled()).thenReturn(false);
         when(mInteractor.isGuestUser()).thenReturn(true);
         mPresenter.onCreateViews();
         verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isSslDisabled();
         verify(mInteractor).isAuthDialogShown();
         verify(mInteractor).isGuestUser();
         verify(mBuildLogUrlProvider).provideUrl();
@@ -81,9 +98,11 @@ public class BuildLogPresenterImplTest {
     @Test
     public void testHandleOnCreateViewIfNotGuest() throws Exception {
         when(mInteractor.isGuestUser()).thenReturn(false);
+        when(mInteractor.isSslDisabled()).thenReturn(false);
         when(mInteractor.isAuthDialogShown()).thenReturn(false);
         mPresenter.onCreateViews();
         verify(mView).initViews(eq(mPresenter));
+        verify(mInteractor).isSslDisabled();
         verify(mInteractor).isGuestUser();
         verify(mInteractor).isAuthDialogShown();
         verify(mView).showAuthView();
@@ -93,6 +112,7 @@ public class BuildLogPresenterImplTest {
     public void testHandleOnDestroyView() throws Exception {
         mPresenter.onDestroyViews();
         verify(mView).unBindViews();
+        verify(router).unbindCustomsTabs();
     }
 
     @Test
@@ -100,6 +120,13 @@ public class BuildLogPresenterImplTest {
         mPresenter.loadBuildLog();
         verify(mBuildLogUrlProvider).provideUrl();
         verify(mView).loadBuildLog(eq("http://fake-teamcity-url"));
+    }
+
+    @Test
+    public void testOpenBuildLog() throws Exception {
+        mPresenter.onOpenBuildLogInBrowser();
+        verify(mBuildLogUrlProvider).provideUrl();
+        verify(router).openUrl(eq("http://fake-teamcity-url"));
     }
 
     @Test
