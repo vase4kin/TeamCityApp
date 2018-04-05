@@ -19,8 +19,10 @@ package com.github.vase4kin.teamcityapp.account.create.data;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.NetworkOnMainThreadException;
 import android.support.annotation.NonNull;
 
+import com.crashlytics.android.Crashlytics;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
@@ -82,7 +84,7 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
         // Creating okHttpClient with authenticator
         OkHttpClient okHttpClient = getClient(isSslDisabled).newBuilder().authenticator(new Authenticator() {
             @Override
-            public Request authenticate(Route route, Response response) throws IOException {
+            public Request authenticate(@NonNull Route route, @NonNull Response response) {
                 String credential = Credentials.basic(userName, password);
 
                 if (credential.equals(response.request().header(TeamCityService.AUTHORIZATION))) {
@@ -143,7 +145,7 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                     .newCall(request)
                     .enqueue(new Callback() {
                         @Override
-                        public void onFailure(final Call call, final IOException e) {
+                        public void onFailure(@NonNull final Call call, @NonNull final IOException e) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -157,7 +159,7 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                         }
 
                         @Override
-                        public void onResponse(Call call, final Response response) throws IOException {
+                        public void onResponse(@NonNull Call call, @NonNull final Response response) {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
@@ -169,7 +171,8 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                                         if (response.body() != null && response.body().source() != null) {
                                             try {
                                                 message = response.body().source().readUtf8();
-                                            } catch (IOException e) {
+                                            } catch (IOException | NetworkOnMainThreadException exception) {
+                                                Crashlytics.logException(exception);
                                                 message = response.message();
                                             }
                                         } else {
