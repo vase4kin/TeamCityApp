@@ -260,8 +260,12 @@ public class LoginViewImpl implements LoginView {
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {
-                        mLogoImageView.setVisibility(View.GONE);
-                        mRealLogoImageView.setVisibility(View.VISIBLE);
+                        if (mLogoImageView != null) {
+                            mLogoImageView.setVisibility(View.GONE);
+                        }
+                        if (mRealLogoImageView != null) {
+                            mRealLogoImageView.setVisibility(View.VISIBLE);
+                        }
                     }
                 }).start();
 
