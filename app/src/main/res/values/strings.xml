@@ -197,7 +197,9 @@
 
     <!--Build log-->
     <string name="text_login_again">In order to view build log please login</string>
+    <string name="text_browse_build_log">Viewing build log feature is disabled due security reasons.\nIn order to view build log please open it in the web browser.</string>
     <string name="text_button_login">Login</string>
+    <string name="text_browse_build_log_button">Open in the web browser</string>
 
     <!--Login activity-->
     <string name="text_progress_bar_loading">Authenticating…</string>

@@ -59,4 +59,12 @@ public class BuildLogInteractorImpl implements BuildLogInteractor {
     public void setAuthDialogStatus(boolean isShown) {
         mSharedPreferences.edit().putBoolean(KEY, isShown).apply();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSslDisabled() {
+        return mUserAccount.isSslDisabled();
+    }
 }

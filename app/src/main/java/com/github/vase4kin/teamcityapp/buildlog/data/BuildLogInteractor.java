@@ -38,4 +38,9 @@ public interface BuildLogInteractor {
      */
     void setAuthDialogStatus(boolean isShown);
 
+    /**
+     * @return {true} if ssl is enabled for user
+     */
+    boolean isSslDisabled();
+
 }

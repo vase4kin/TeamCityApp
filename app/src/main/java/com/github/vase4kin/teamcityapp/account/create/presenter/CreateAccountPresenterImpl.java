@@ -102,7 +102,7 @@ public class CreateAccountPresenterImpl implements CreateAccountPresenter, Creat
             dataManager.authUser(new CustomOnLoadingListener<String>() {
                 @Override
                 public void onSuccess(String url) {
-                    dataManager.saveNewUserAccount(url, userName, password, false, new OnLoadingListener<String>() {
+                    dataManager.saveNewUserAccount(url, userName, password, isSslDisabled, new OnLoadingListener<String>() {
                         @Override
                         public void onSuccess(String serverUrl) {
                             dataManager.initTeamCityService(serverUrl);

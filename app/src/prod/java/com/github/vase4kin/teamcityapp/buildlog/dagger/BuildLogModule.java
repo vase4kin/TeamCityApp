@@ -21,6 +21,8 @@ import android.view.View;
 
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor;
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl;
+import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter;
+import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProviderImpl;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
@@ -56,5 +58,10 @@ public class BuildLogModule {
     BuildLogUrlProvider providesUrlProvider(BuildLogValueExtractor buildLogValueExtractor,
                                             SharedUserStorage sharedUserStorage) {
         return new BuildLogUrlProviderImpl(buildLogValueExtractor, sharedUserStorage.getActiveUser());
+    }
+
+    @Provides
+    BuildLogRouter providesBuildLogRouter() {
+        return new BuildLogRouterImpl(mFragment.getActivity());
     }
 }
