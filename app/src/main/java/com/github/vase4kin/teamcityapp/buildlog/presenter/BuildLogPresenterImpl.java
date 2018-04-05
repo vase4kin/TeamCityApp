@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.buildlog.presenter;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
+import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
 import com.github.vase4kin.teamcityapp.buildlog.view.OnBuildLogLoadListener;
@@ -30,17 +31,20 @@ import javax.inject.Inject;
  */
 public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadListener {
 
-    private BuildLogView mView;
-    private BuildLogUrlProvider mBuildLogUrlProvider;
-    private BuildLogInteractor mInteractor;
+    private final BuildLogView view;
+    private final BuildLogUrlProvider buildLogUrlProvider;
+    private final BuildLogInteractor interactor;
+    private final BuildLogRouter router;
 
     @Inject
     BuildLogPresenterImpl(@NonNull BuildLogView view,
                           BuildLogUrlProvider buildLogUrlProvider,
-                          BuildLogInteractor interactor) {
-        this.mView = view;
-        this.mBuildLogUrlProvider = buildLogUrlProvider;
-        this.mInteractor = interactor;
+                          BuildLogInteractor interactor,
+                          BuildLogRouter router) {
+        this.view = view;
+        this.buildLogUrlProvider = buildLogUrlProvider;
+        this.interactor = interactor;
+        this.router = router;
     }
 
     /**
@@ -48,9 +52,13 @@ public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadL
      */
     @Override
     public void onCreateViews() {
-        mView.initViews(this);
-        if (!mInteractor.isAuthDialogShown() && !mInteractor.isGuestUser()) {
-            mView.showAuthView();
+        view.initViews(this);
+        if (interactor.isSslDisabled()) {
+            view.showSslWarningView();
+            return;
+        }
+        if (!interactor.isAuthDialogShown() && !interactor.isGuestUser()) {
+            view.showAuthView();
         } else {
             loadBuildLog();
         }
@@ -61,7 +69,8 @@ public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadL
      */
     @Override
     public void onDestroyViews() {
-        mView.unBindViews();
+        view.unBindViews();
+        router.unbindCustomsTabs();
     }
 
     /**
@@ -69,13 +78,19 @@ public class BuildLogPresenterImpl implements BuildLogPresenter, OnBuildLogLoadL
      */
     @Override
     public void loadBuildLog() {
-        mView.loadBuildLog(mBuildLogUrlProvider.provideUrl());
+        view.loadBuildLog(buildLogUrlProvider.provideUrl());
     }
 
     @Override
     public void onAuthButtonClick() {
-        mView.hideAuthView();
-        mInteractor.setAuthDialogStatus(true);
+        view.hideAuthView();
+        interactor.setAuthDialogStatus(true);
         loadBuildLog();
+    }
+
+    @Override
+    public void onOpenBuildLogInBrowser() {
+        String url = buildLogUrlProvider.provideUrl();
+        router.openUrl(url);
     }
 }

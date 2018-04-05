@@ -43,7 +43,6 @@ import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 import com.joanzapata.iconify.IconDrawable;
@@ -66,7 +65,6 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     View mContainer;
 
     private BuildDetails mBuildDetails;
-    private final UserAccount userAccount;
 
     private String overviewTabTitle;
     private String artifactsTabTitle;
@@ -87,12 +85,10 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     public BuildDetailsViewImpl(View mView,
                                 AppCompatActivity mActivity,
                                 StatusBarUtils statusBarUtils,
-                                BaseValueExtractor valueExtractor,
-                                UserAccount userAccount) {
+                                BaseValueExtractor valueExtractor) {
         super(mView, mActivity);
         this.mStatusBarUtils = statusBarUtils;
         this.mBuildDetails = valueExtractor.getBuildDetails();
-        this.userAccount = userAccount;
     }
 
     /**
@@ -111,7 +107,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
                     mBuildDetails.getFailedTestCount(),
                     mBuildDetails.getIgnoredTestCount()));
         }
-        if (!mBuildDetails.isQueued() && !userAccount.isSslDisabled()) {
+        if (!mBuildDetails.isQueued()) {
             fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.newInstance(mBuildDetails.getId()));
         }
         fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.newInstance(mBuildDetails.toBuild()));

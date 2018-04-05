@@ -61,8 +61,8 @@ public class BuildDetailsModule {
     }
 
     @Provides
-    BuildDetailsView providesBuildTabsView(StatusBarUtils statusBarUtils, BaseValueExtractor valueExtractor, SharedUserStorage storage) {
-        return new BuildDetailsViewImpl(mView, mActivity, statusBarUtils, valueExtractor, storage.getActiveUser());
+    BuildDetailsView providesBuildTabsView(StatusBarUtils statusBarUtils, BaseValueExtractor valueExtractor) {
+        return new BuildDetailsViewImpl(mView, mActivity, statusBarUtils, valueExtractor);
     }
 
     @Provides

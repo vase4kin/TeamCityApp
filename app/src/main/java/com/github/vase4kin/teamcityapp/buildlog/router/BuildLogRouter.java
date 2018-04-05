@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view;
+package com.github.vase4kin.teamcityapp.buildlog.router;
 
 /**
- * View build log listener
+ * Router for build log
  */
-public interface OnBuildLogLoadListener {
+public interface BuildLogRouter {
 
     /**
-     * Load build log
+     * Open url in the web browser
+     *
+     * @param url - url to open
      */
-    void loadBuildLog();
+    void openUrl(String url);
 
     /**
-     * On auth button click
+     * Unbind customs tabs
      */
-    void onAuthButtonClick();
-
-    /**
-     * Open build log in the browser
-     */
-    void onOpenBuildLogInBrowser();
+    void unbindCustomsTabs();
 }

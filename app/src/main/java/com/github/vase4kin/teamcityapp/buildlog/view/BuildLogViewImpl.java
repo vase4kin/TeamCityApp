@@ -44,8 +44,12 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
     WebView mWebView;
     @BindView(R.id.auth_view)
     View mAuthView;
+    @BindView(R.id.warning_build_log_view)
+    View mWarningView;
     @BindView(R.id.auth_button)
     Button mAuthButton;
+    @BindView(R.id.view_build_log_button)
+    Button mOpenBuildLogInBrowserButton;
 
     private Unbinder mUnbinder;
 
@@ -76,6 +80,12 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
             @Override
             public void onClick(View v) {
                 listener.onAuthButtonClick();
+            }
+        });
+        mOpenBuildLogInBrowserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onOpenBuildLogInBrowser();
             }
         });
 
@@ -109,6 +119,14 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
     @Override
     public void hideAuthView() {
         mAuthView.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showSslWarningView() {
+        mWarningView.setVisibility(View.VISIBLE);
     }
 
     /**
