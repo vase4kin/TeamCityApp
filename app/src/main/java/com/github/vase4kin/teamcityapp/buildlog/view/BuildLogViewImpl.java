@@ -49,12 +49,12 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
 
     private Unbinder mUnbinder;
 
-    private View mView;
+    private final View mView;
+    private final BuildLogWebViewClient client;
 
-    private BuildLogWebViewClient mClient;
-
-    public BuildLogViewImpl(View mView) {
+    public BuildLogViewImpl(View mView, BuildLogWebViewClient client) {
         this.mView = mView;
+        this.client = client;
     }
 
     /**
@@ -81,10 +81,9 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
 
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
-        mClient = new BuildLogWebViewClient();
-        mClient.setListener(this);
+        client.setListener(this);
 
-        mWebView.setWebViewClient(mClient);
+        mWebView.setWebViewClient(client);
     }
 
     /**
@@ -118,7 +117,7 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
     @Override
     public void unBindViews() {
         mUnbinder.unbind();
-        mClient.setListener(null);
+        client.setListener(null);
     }
 
     /**

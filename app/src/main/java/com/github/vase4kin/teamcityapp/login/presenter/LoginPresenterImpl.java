@@ -25,31 +25,30 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter;
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker;
 import com.github.vase4kin.teamcityapp.login.view.LoginView;
-import com.github.vase4kin.teamcityapp.login.view.OnLoginButtonClickListener;
 
 import javax.inject.Inject;
 
 /**
  * Impl for {@link LoginPresenter}
  */
-public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickListener, OnLoadingListener<String> {
+public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListener {
 
     private static final int UNAUTHORIZED_STATUS_CODE = 401;
 
-    private LoginView mView;
-    private CreateAccountDataManager mDataManager;
-    private LoginRouter mRouter;
-    private LoginTracker mTracker;
+    private final LoginView view;
+    private final CreateAccountDataManager dataManager;
+    private final LoginRouter router;
+    private final LoginTracker tracker;
 
     @Inject
-    LoginPresenterImpl(@NonNull LoginView mView,
-                       @NonNull CreateAccountDataManager mDataManager,
-                       @NonNull LoginRouter mRouter,
+    LoginPresenterImpl(@NonNull LoginView view,
+                       @NonNull CreateAccountDataManager dataManager,
+                       @NonNull LoginRouter router,
                        @NonNull LoginTracker tracker) {
-        this.mView = mView;
-        this.mDataManager = mDataManager;
-        this.mRouter = mRouter;
-        this.mTracker = tracker;
+        this.view = view;
+        this.dataManager = dataManager;
+        this.router = router;
+        this.tracker = tracker;
     }
 
     /**
@@ -57,7 +56,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      */
     @Override
     public void onCreate() {
-        mView.initViews(this);
+        view.initViews(this);
     }
 
     /**
@@ -65,7 +64,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      */
     @Override
     public void onDestroy() {
-        mView.unbindViews();
+        view.unbindViews();
     }
 
     /**
@@ -73,7 +72,7 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      */
     @Override
     public void onResume() {
-        mTracker.trackView();
+        tracker.trackView();
     }
 
     /**
@@ -81,103 +80,104 @@ public class LoginPresenterImpl implements LoginPresenter, OnLoginButtonClickLis
      */
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        mView.onWindowFocusChanged(hasFocus);
+        view.onWindowFocusChanged(hasFocus);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onUserLoginButtonClick(String serverUrl, final String userName, final String password) {
-        mView.hideError();
+    public void onUserLoginButtonClick(String serverUrl,
+                                       final String userName,
+                                       final String password,
+                                       final boolean isSslDisabled) {
+        view.hideError();
         if (TextUtils.isEmpty(serverUrl)) {
-            mView.showServerUrlCanNotBeEmptyError();
+            view.showServerUrlCanNotBeEmptyError();
             return;
         }
         if (TextUtils.isEmpty(userName)) {
-            mView.showUserNameCanNotBeEmptyError();
+            view.showUserNameCanNotBeEmptyError();
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            mView.showPasswordCanNotBeEmptyError();
+            view.showPasswordCanNotBeEmptyError();
             return;
         }
-        mView.showProgressDialog();
-        mDataManager.authUser(new CustomOnLoadingListener<String>() {
+        view.showProgressDialog();
+        dataManager.authUser(new CustomOnLoadingListener<String>() {
             @Override
             public void onSuccess(String serverUrl) {
-                mView.dismissProgressDialog();
-                mDataManager.saveNewUserAccount(serverUrl, userName, password, LoginPresenterImpl.this);
+                view.dismissProgressDialog();
+                dataManager.saveNewUserAccount(serverUrl, userName, password, isSslDisabled, new OnLoadingListener<String>() {
+                    @Override
+                    public void onSuccess(String serverUrl) {
+                        dataManager.initTeamCityService(serverUrl);
+                        router.openProjectsRootPageForFirstStart();
+                        tracker.trackUserLoginSuccess(!isSslDisabled);
+                        view.close();
+                    }
+
+                    @Override
+                    public void onFail(String errorMessage) {
+                        view.dismissProgressDialog();
+                        view.showCouldNotSaveUserError();
+                        tracker.trackUserDataSaveFailed();
+                        view.hideKeyboard();
+                    }
+                });
             }
 
             @Override
             public void onFail(int statusCode, String errorMessage) {
-                mView.dismissProgressDialog();
-                mView.showError(errorMessage);
-                mTracker.trackUserLoginFailed(errorMessage);
-                mView.hideKeyboard();
+                view.dismissProgressDialog();
+                view.showError(errorMessage);
+                tracker.trackUserLoginFailed(errorMessage);
+                view.hideKeyboard();
             }
-        }, serverUrl, userName, password);
-    }
-
-    /**
-     * On data save success callback
-     *
-     * @param serverUrl - Server url
-     */
-    @Override
-    public void onSuccess(String serverUrl) {
-        mDataManager.initTeamCityService(serverUrl);
-        mRouter.openProjectsRootPageForFirstStart();
-        mTracker.trackUserLoginSuccess();
-        mView.close();
-    }
-
-    /**
-     * On data save fail callback
-     *
-     * @param errorMessage - Error message
-     */
-    @Override
-    public void onFail(String errorMessage) {
-        mView.dismissProgressDialog();
-        mView.showCouldNotSaveUserError();
-        mTracker.trackUserDataSaveFailed();
-        mView.hideKeyboard();
+        }, serverUrl, userName, password, isSslDisabled);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onGuestUserLoginButtonClick(String serverUrl) {
-        mView.hideError();
+    public void onGuestUserLoginButtonClick(String serverUrl, final boolean isSslDisabled) {
+        view.hideError();
         if (TextUtils.isEmpty(serverUrl)) {
-            mView.showServerUrlCanNotBeEmptyError();
+            view.showServerUrlCanNotBeEmptyError();
             return;
         }
-        mView.showProgressDialog();
-        mDataManager.authGuestUser(new CustomOnLoadingListener<String>() {
+        view.showProgressDialog();
+        dataManager.authGuestUser(new CustomOnLoadingListener<String>() {
             @Override
             public void onSuccess(String serverUrl) {
-                mView.dismissProgressDialog();
-                mDataManager.saveGuestUserAccount(serverUrl);
-                mDataManager.initTeamCityService(serverUrl);
-                mRouter.openProjectsRootPageForFirstStart();
-                mTracker.trackGuestUserLoginSuccess();
-                mView.close();
+                view.dismissProgressDialog();
+                dataManager.saveGuestUserAccount(serverUrl, isSslDisabled);
+                dataManager.initTeamCityService(serverUrl);
+                router.openProjectsRootPageForFirstStart();
+                tracker.trackGuestUserLoginSuccess(!isSslDisabled);
+                view.close();
             }
 
             @Override
             public void onFail(int statusCode, String errorMessage) {
-                mView.dismissProgressDialog();
-                mView.showError(errorMessage);
-                mTracker.trackGuestUserLoginFailed(errorMessage);
-                mView.hideKeyboard();
+                view.dismissProgressDialog();
+                view.showError(errorMessage);
+                tracker.trackGuestUserLoginFailed(errorMessage);
+                view.hideKeyboard();
                 if (statusCode == UNAUTHORIZED_STATUS_CODE) {
-                    mView.showUnauthorizedInfoDialog();
+                    view.showUnauthorizedInfoDialog();
                 }
             }
-        }, serverUrl);
+        }, serverUrl, isSslDisabled);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDisableSslSwitchClick() {
+        view.showDisableSslWarningDialog();
     }
 }

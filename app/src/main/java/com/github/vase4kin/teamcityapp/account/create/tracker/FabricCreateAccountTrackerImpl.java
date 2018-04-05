@@ -40,15 +40,18 @@ public class FabricCreateAccountTrackerImpl implements CreateAccountTracker {
      * {@inheritDoc}
      */
     @Override
-    public void trackUserLoginSuccess() {
+    public void trackUserLoginSuccess(boolean isSslEnabled) {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logLogin(new LoginEvent()
                 .putMethod(METHOD_USER_LOGIN)
                 .putSuccess(true));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void trackGuestUserLoginSuccess() {
+    public void trackGuestUserLoginSuccess(boolean isSslEnabled) {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logLogin(new LoginEvent()
                 .putMethod(METHOD_GUEST_USER_LOGIN)
@@ -76,6 +79,9 @@ public class FabricCreateAccountTrackerImpl implements CreateAccountTracker {
                 .putCustomAttribute(ATTRIBUTE_NAME_ERROR, errorMessage));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void trackUserDataSaveFailed() {
         trackUserLoginFailed(MESSAGE_ERROR_SAVE_DATE);

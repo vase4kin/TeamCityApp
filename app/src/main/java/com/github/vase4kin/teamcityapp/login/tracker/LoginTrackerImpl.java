@@ -46,11 +46,11 @@ public class LoginTrackerImpl extends BaseViewTracker<LoginTracker> implements L
      * {@inheritDoc}
      */
     @Override
-    public void trackUserLoginSuccess() {
+    public void trackUserLoginSuccess(final boolean isSslEnabled) {
         logEvent(new TrackerMethod<LoginTracker>() {
             @Override
             public void execute(LoginTracker tracker) {
-                tracker.trackUserLoginSuccess();
+                tracker.trackUserLoginSuccess(isSslEnabled);
             }
         });
     }
@@ -59,11 +59,11 @@ public class LoginTrackerImpl extends BaseViewTracker<LoginTracker> implements L
      * {@inheritDoc}
      */
     @Override
-    public void trackGuestUserLoginSuccess() {
+    public void trackGuestUserLoginSuccess(final boolean isSslEnabled) {
         logEvent(new TrackerMethod<LoginTracker>() {
             @Override
             public void execute(LoginTracker tracker) {
-                tracker.trackGuestUserLoginSuccess();
+                tracker.trackGuestUserLoginSuccess(isSslEnabled);
             }
         });
     }

@@ -25,8 +25,9 @@ public interface OnValidateListener {
      * Validate guest user data
      *
      * @param url - TeamCity server url
+     * @param isSslDisabled - ssl state
      */
-    void validateGuestUserData(String url);
+    void validateGuestUserData(String url, boolean isSslDisabled);
 
     /**
      * Validate user data
@@ -34,6 +35,7 @@ public interface OnValidateListener {
      * @param url      - TeamCity server url
      * @param userName - User name
      * @param password - User password
+     * @param isSslDisabled - ssl state
      */
-    void validateUserData(String url, String userName, String password);
+    void validateUserData(String url, String userName, String password, boolean isSslDisabled);
 }

@@ -115,23 +115,23 @@ public class LoginPresenterImplTest {
 
     @Test
     public void testOnUserLoginButtonClick() throws Exception {
-        mPresenter.onUserLoginButtonClick("url", "userName", "password");
+        mPresenter.onUserLoginButtonClick("url", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataManager).authUser(mArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"));
+        verify(mDataManager).authUser(mArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false));
 
         CustomOnLoadingListener<String> customOnLoadingListener = mArgumentCaptor.getValue();
         customOnLoadingListener.onSuccess("url");
 
         verify(mView).dismissProgressDialog();
-        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), mOnLoadingListenerArgumentCaptor.capture());
+        verify(mDataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), eq(false), mOnLoadingListenerArgumentCaptor.capture());
 
         OnLoadingListener<String> onLoadingListener = mOnLoadingListenerArgumentCaptor.getValue();
         onLoadingListener.onSuccess("url");
 
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mRouter).openProjectsRootPageForFirstStart();
-        verify(mTracker).trackUserLoginSuccess();
+        verify(mTracker).trackUserLoginSuccess(eq(true));
         verify(mView).close();
 
         onLoadingListener.onFail("error");
@@ -149,40 +149,40 @@ public class LoginPresenterImplTest {
 
     @Test
     public void testOnUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
-        mPresenter.onUserLoginButtonClick("", "userName", "password");
+        mPresenter.onUserLoginButtonClick("", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
     }
 
     @Test
     public void testOnUserLoginButtonClickIfUserNameIsNotProvided() throws Exception {
-        mPresenter.onUserLoginButtonClick("url", "", "password");
+        mPresenter.onUserLoginButtonClick("url", "", "password", false);
         verify(mView).hideError();
         verify(mView).showUserNameCanNotBeEmptyError();
     }
 
     @Test
     public void testOnUserLoginButtonClickIfPasswordIsNotProvided() throws Exception {
-        mPresenter.onUserLoginButtonClick("url", "userName", "");
+        mPresenter.onUserLoginButtonClick("url", "userName", "", false);
         verify(mView).hideError();
         verify(mView).showPasswordCanNotBeEmptyError();
     }
 
     @Test
     public void testOnGuestUserLoginButtonClick() throws Exception {
-        mPresenter.onGuestUserLoginButtonClick("url");
+        mPresenter.onGuestUserLoginButtonClick("url", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataManager).authGuestUser(mArgumentCaptor.capture(), eq("url"));
+        verify(mDataManager).authGuestUser(mArgumentCaptor.capture(), eq("url"), eq(false));
 
         CustomOnLoadingListener<String> listener = mArgumentCaptor.getValue();
         listener.onSuccess("url");
 
         verify(mView).dismissProgressDialog();
-        verify(mDataManager).saveGuestUserAccount(eq("url"));
+        verify(mDataManager).saveGuestUserAccount(eq("url"), eq(false));
         verify(mDataManager).initTeamCityService(eq("url"));
         verify(mRouter).openProjectsRootPageForFirstStart();
-        verify(mTracker).trackGuestUserLoginSuccess();
+        verify(mTracker).trackGuestUserLoginSuccess(eq(true));
         verify(mView).close();
 
         listener.onFail(0, "error");
@@ -202,8 +202,14 @@ public class LoginPresenterImplTest {
 
     @Test
     public void testOnGuestUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
-        mPresenter.onGuestUserLoginButtonClick("");
+        mPresenter.onGuestUserLoginButtonClick("", false);
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
+    }
+
+    @Test
+    public void testOnDisableSslSwitchClick() throws Exception {
+        mPresenter.onDisableSslSwitchClick();
+        verify(mView).showDisableSslWarningDialog();
     }
 }

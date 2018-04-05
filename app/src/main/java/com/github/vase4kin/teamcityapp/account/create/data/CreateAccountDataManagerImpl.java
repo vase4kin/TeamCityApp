@@ -52,17 +52,20 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      */
     private static final int DEFAULT_ERROR_CODE = 0;
 
-    private Context mContext;
-    private OkHttpClient mOkHttpClient;
-    private SharedUserStorage mSharedUserStorage;
-    private UrlFormatter mUrlFormatter;
+    private final Context mContext;
+    private final OkHttpClient baseOkHttpClient;
+    private final OkHttpClient unsafeBaseOkHttpClient;
+    private final SharedUserStorage mSharedUserStorage;
+    private final UrlFormatter mUrlFormatter;
 
     public CreateAccountDataManagerImpl(Context context,
-                                        OkHttpClient okHttpClient,
+                                        OkHttpClient baseOkHttpClient,
+                                        OkHttpClient unsafeBaseOkHttpClient,
                                         SharedUserStorage sharedUserStorage,
                                         UrlFormatter urlFormatter) {
         this.mContext = context;
-        this.mOkHttpClient = okHttpClient;
+        this.baseOkHttpClient = baseOkHttpClient;
+        this.unsafeBaseOkHttpClient = unsafeBaseOkHttpClient;
         this.mSharedUserStorage = sharedUserStorage;
         this.mUrlFormatter = urlFormatter;
     }
@@ -74,9 +77,10 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
     public void authUser(@NonNull final CustomOnLoadingListener<String> listener,
                          final String url,
                          final String userName,
-                         final String password) {
+                         final String password,
+                         boolean isSslDisabled) {
         // Creating okHttpClient with authenticator
-        OkHttpClient okHttpClient = mOkHttpClient.newBuilder().authenticator(new Authenticator() {
+        OkHttpClient okHttpClient = getClient(isSslDisabled).newBuilder().authenticator(new Authenticator() {
             @Override
             public Request authenticate(Route route, Response response) throws IOException {
                 String credential = Credentials.basic(userName, password);
@@ -98,8 +102,17 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void authGuestUser(@NonNull final CustomOnLoadingListener<String> listener, final String url) {
-        handleAuthRequest(url, AUTH_GUEST_URL, mOkHttpClient, listener);
+    public void authGuestUser(@NonNull final CustomOnLoadingListener<String> listener,
+                              final String url,
+                              boolean isSslDisabled) {
+        handleAuthRequest(url, AUTH_GUEST_URL, getClient(isSslDisabled), listener);
+    }
+
+    /**
+     * @return {@link OkHttpClient} depending on ssl enabled state
+     */
+    private OkHttpClient getClient(boolean isSslEnabled) {
+        return isSslEnabled ? unsafeBaseOkHttpClient : baseOkHttpClient;
     }
 
     /**
@@ -152,7 +165,17 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                                         String formattedServerUrl = mUrlFormatter.formatServerUrl(serverUrl);
                                         listener.onSuccess(formattedServerUrl);
                                     } else {
-                                        listener.onFail(response.code(), response.message());
+                                        String message;
+                                        if (response.body() != null && response.body().source() != null) {
+                                            try {
+                                                message = response.body().source().readUtf8();
+                                            } catch (IOException e) {
+                                                message = response.message();
+                                            }
+                                        } else {
+                                            message = response.message();
+                                        }
+                                        listener.onFail(response.code(), message);
                                     }
                                 }
                             });
@@ -169,8 +192,12 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void saveNewUserAccount(final String serverUrl, String userName, String password, final OnLoadingListener<String> listener) {
-        mSharedUserStorage.saveUserAccountAndSetItAsActive(serverUrl, userName, password, new SharedUserStorage.OnStorageListener() {
+    public void saveNewUserAccount(final String serverUrl,
+                                   String userName,
+                                   String password,
+                                   boolean isSslDisabled,
+                                   final OnLoadingListener<String> listener) {
+        mSharedUserStorage.saveUserAccountAndSetItAsActive(serverUrl, userName, password, isSslDisabled, new SharedUserStorage.OnStorageListener() {
             @Override
             public void onSuccess() {
                 // On data save success
@@ -189,8 +216,8 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void saveGuestUserAccount(String url) {
-        mSharedUserStorage.saveGuestUserAccountAndSetItAsActive(url);
+    public void saveGuestUserAccount(String url, boolean isSslDisabled) {
+        mSharedUserStorage.saveGuestUserAccountAndSetItAsActive(url, isSslDisabled);
     }
 
     /**

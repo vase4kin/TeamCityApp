@@ -63,13 +63,13 @@ public class FabricCreateAccountTrackerImplTest {
     @Test
     public void testTrackUserLoginSuccessIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackUserLoginSuccess();
+        mTracker.trackUserLoginSuccess(false);
     }
 
     @Test
     public void testTrackGuestUserLoginSuccessIfFabricIsNotInitialized() throws Exception {
         when(Fabric.isInitialized()).thenReturn(false);
-        mTracker.trackGuestUserLoginSuccess();
+        mTracker.trackGuestUserLoginSuccess(false);
     }
 
     @Test
@@ -93,14 +93,14 @@ public class FabricCreateAccountTrackerImplTest {
     @Test
     public void testTrackUserLoginSuccess() throws Exception {
         when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackUserLoginSuccess();
+        mTracker.trackUserLoginSuccess(false);
         verify(mAnswers).logLogin(any(LoginEvent.class));
     }
 
     @Test
     public void testTrackGuestUserLoginSuccess() throws Exception {
         when(Fabric.isInitialized()).thenReturn(true);
-        mTracker.trackGuestUserLoginSuccess();
+        mTracker.trackGuestUserLoginSuccess(false);
         verify(mAnswers).logLogin(any(LoginEvent.class));
     }
 

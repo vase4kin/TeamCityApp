@@ -45,6 +45,7 @@ import dagger.multibindings.IntoSet;
 import okhttp3.OkHttpClient;
 
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE;
 
 @Module
 public class CreateAccountModule {
@@ -63,9 +64,10 @@ public class CreateAccountModule {
     @Provides
     CreateAccountDataManager providesCreateAccountDataManager(Context context,
                                                               @Named(CLIENT_BASE) OkHttpClient okHttpClient,
+                                                              @Named(CLIENT_BASE_UNSAFE) OkHttpClient unsafeOkHttpClient,
                                                               SharedUserStorage sharedUserStorage,
                                                               UrlFormatter urlFormatter) {
-        return new CreateAccountDataManagerImpl(context, okHttpClient, sharedUserStorage, urlFormatter);
+        return new CreateAccountDataManagerImpl(context, okHttpClient, unsafeOkHttpClient, sharedUserStorage, urlFormatter);
     }
 
     @Provides
