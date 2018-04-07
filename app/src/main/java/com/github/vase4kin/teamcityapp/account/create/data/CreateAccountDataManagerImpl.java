@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.account.create.data;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.NetworkOnMainThreadException;
 import android.support.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
@@ -129,7 +128,7 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                                    final String authUrl,
                                    final OkHttpClient okHttpClient,
                                    final CustomOnLoadingListener<String> listener) {
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(mContext.getMainLooper());
 
         try {
 
@@ -160,28 +159,34 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
 
                         @Override
                         public void onResponse(@NonNull Call call, @NonNull final Response response) {
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (response.isSuccessful()) {
-                                        String formattedServerUrl = mUrlFormatter.formatServerUrl(serverUrl);
+                            if (response.isSuccessful()) {
+                                final String formattedServerUrl = mUrlFormatter.formatServerUrl(serverUrl);
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
                                         listener.onSuccess(formattedServerUrl);
-                                    } else {
-                                        String message;
-                                        if (response.body() != null && response.body().source() != null) {
-                                            try {
-                                                message = response.body().source().readUtf8();
-                                            } catch (IOException | NetworkOnMainThreadException exception) {
-                                                Crashlytics.logException(exception);
-                                                message = response.message();
-                                            }
-                                        } else {
-                                            message = response.message();
-                                        }
-                                        listener.onFail(response.code(), message);
                                     }
+                                });
+                            } else {
+                                String message;
+                                if (response.body() != null && response.body().source() != null) {
+                                    try {
+                                        message = response.body().source().readUtf8();
+                                    } catch (IOException exception) {
+                                        Crashlytics.logException(exception);
+                                        message = response.message();
+                                    }
+                                } else {
+                                    message = response.message();
                                 }
-                            });
+                                final String errorMessage = message;
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        listener.onFail(response.code(), errorMessage);
+                                    }
+                                });
+                            }
                         }
                     });
         } catch (IllegalArgumentException e) {
