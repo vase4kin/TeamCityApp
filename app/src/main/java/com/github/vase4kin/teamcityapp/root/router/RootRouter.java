@@ -24,9 +24,9 @@ import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 public interface RootRouter extends DrawerRouter {
 
     /**
-     * TC root projects url
+     * TC root projects id
      */
-    String ROOT_PROJECTS_URL = "app/rest/projects/id:_Root";
+    String ROOT_PROJECTS_ID = "_Root";
 
     /**
      * Open root projects

@@ -54,11 +54,11 @@ public interface Repository {
     /**
      * List build types by url (cache's supported)
      *
-     * @param url    - Url of build type
+     * @param id    - Id of build type
      * @param update - Update cache
      * @return @return {@link Observable} with {@link NavigationNode}
      */
-    Observable<NavigationNode> listBuildTypes(String url, boolean update);
+    Observable<NavigationNode> listBuildTypes(String id, boolean update);
 
     /**
      * Get build type (cache's supported)

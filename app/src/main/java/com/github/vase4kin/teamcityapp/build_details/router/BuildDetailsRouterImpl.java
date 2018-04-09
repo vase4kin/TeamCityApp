@@ -70,7 +70,7 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startProjectActivity(String name, String url) {
-        NavigationActivity.start(name, url, mActivity);
+    public void startProjectActivity(String name, String id) {
+        NavigationActivity.start(name, id, mActivity);
     }
 }

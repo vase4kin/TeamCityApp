@@ -77,10 +77,10 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<NavigationNode> listBuildTypes(String url, boolean update) {
+    public Observable<NavigationNode> listBuildTypes(String id, boolean update) {
         return mCacheCacheProviders.listBuildTypes(
-                mTeamCityService.listBuildTypes(urlFormatter.formatBasicUrl(url)),
-                new DynamicKey(url),
+                mTeamCityService.listBuildTypes(id),
+                new DynamicKey(id),
                 new EvictDynamicKey(update));
     }
 

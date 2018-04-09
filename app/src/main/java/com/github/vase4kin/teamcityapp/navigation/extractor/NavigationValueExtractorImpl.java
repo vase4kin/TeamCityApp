@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.navigation.extractor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 
 /**
@@ -29,13 +28,5 @@ public class NavigationValueExtractorImpl extends BaseValueExtractorImpl impleme
 
     public NavigationValueExtractorImpl(@NonNull Bundle mBundle) {
         super(mBundle);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String getUrl() {
-        return mBundle.getString(BundleExtractorValues.URL);
     }
 }

@@ -43,7 +43,7 @@ public class NavigationListFragment extends Fragment {
     public static NavigationListFragment newInstance(String title, String url) {
         NavigationListFragment fragment = new NavigationListFragment();
         Bundle args = new Bundle();
-        args.putString(BundleExtractorValues.URL, url);
+        args.putString(BundleExtractorValues.ID, url);
         args.putString(BundleExtractorValues.NAME, title);
         fragment.setArguments(args);
         return fragment;

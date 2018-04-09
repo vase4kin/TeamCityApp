@@ -45,7 +45,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startNavigationActivity(@NonNull String name, @NonNull String url) {
-        NavigationActivity.start(name, url, mActivity);
+    public void startNavigationActivity(@NonNull String name, @NonNull String id) {
+        NavigationActivity.start(name, id, mActivity);
     }
 }

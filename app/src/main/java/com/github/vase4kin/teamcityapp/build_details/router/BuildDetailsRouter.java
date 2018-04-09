@@ -53,9 +53,6 @@ public interface BuildDetailsRouter {
 
     /**
      * Start project activity
-     *
-     * @param name
-     * @param url
      */
-    void startProjectActivity(String name, String url);
+    void startProjectActivity(String name, String id);
 }
