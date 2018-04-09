@@ -477,9 +477,7 @@ public class ArtifactListFragmentTest {
                 .perform(click());
 
         // Clicking on artifact to download
-        onView(withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(1, R.id.itemTitle))
-                .perform(click());
+        onView(withText("AndroidManifest.xml")).perform(click());
 
         ConditionWatcher.waitForCondition(new Instruction() {
             @Override
