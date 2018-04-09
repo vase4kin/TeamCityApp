@@ -28,6 +28,8 @@ public class BottomSheetItem {
     public static final int TYPE_ARTIFACT_OPEN = 2;
     public static final int TYPE_ARTIFACT_DOWNLOAD = 3;
     public static final int TYPE_ARTIFACT_OPEN_IN_BROWSER = 4;
+    public static final int TYPE_BUILD_TYPE = 5;
+    public static final int TYPE_PROJECT = 6;
 
     private final int type;
     private final String title;

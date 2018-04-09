@@ -280,6 +280,26 @@ public class BuildDetailsPresenterImpl extends BaseTabsPresenterImpl<BuildDetail
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStartBuildListActivityEventTriggered() {
+        String name = mInteractor.getBuildTypeName();
+        String id = mInteractor.getBuildDetails().getBuildTypeId();
+        mRouter.startBuildListActivity(name, id, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onStartProjectActivityEventTriggered() {
+        String projectId = mInteractor.getProjectId();
+        String projectName = mInteractor.getProjectName();
+        mRouter.startProjectActivity(projectName, projectId);
+    }
+
+    /**
      * Show forbidden to cancel build snack bar
      */
     private void showForbiddenToCancelBuildSnackBar() {

@@ -66,6 +66,22 @@ public interface BottomSheetDataModel extends BaseDataModel {
     boolean hasBranchAction(int position);
 
     /**
+     * Has build type action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasBuildTypeAction(int position);
+
+    /**
+     * Has project action
+     *
+     * @param position - adapter position
+     * @return action of menu item
+     */
+    boolean hasProjectAction(int position);
+
+    /**
      * Has artifact open action
      *
      * @param position - adapter position

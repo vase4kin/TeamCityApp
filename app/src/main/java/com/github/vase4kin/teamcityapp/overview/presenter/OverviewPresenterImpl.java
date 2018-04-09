@@ -181,6 +181,24 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      * {@inheritDoc}
      */
     @Override
+    public void onNavigateToBuildListEvent() {
+        mInteractor.postStartBuildListActivityEvent();
+//        TODO: mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onNavigateToProjectEvent() {
+        mInteractor.postStartProjectActivityEvent();
+//        TODO: mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onCancelBuildContextMenuClick() {
         mInteractor.postStopBuildEvent();
         mTracker.trackUserClickedCancelBuildOption();
@@ -210,6 +228,22 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onBranchCardClick(String branch) {
         mView.showBranchCardBottomSheetDialog(branch);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onBuildTypeCardClick(String value) {
+        mView.showBuildTypeCardBottomSheetDialog(value);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onProjectCardClick(String value) {
+        mView.showProjectCardBottomSheetDialog(value);
     }
 
     /**
@@ -332,6 +366,14 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         if (buildDetails.isPersonal()) {
             String userWhoTriggeredBuild = buildDetails.getUserNameOfUserWhoTriggeredBuild();
             mView.addPersonalCard(userWhoTriggeredBuild);
+        }
+
+        // has build type info
+        if (buildDetails.hasBuildTypeInfo()) {
+            String buildTypeName = buildDetails.getBuildTypeName();
+            mView.addBuildTypeNameCard(buildTypeName);
+            String projectName = buildDetails.getProjectName();
+            mView.addBuildTypeProjectNameCard(projectName);
         }
 
         // Show all added cards

@@ -18,12 +18,14 @@ package com.github.vase4kin.teamcityapp.build_details.router;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 
 /**
  * Impl of {@link BuildDetailsRouter}
@@ -60,7 +62,15 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startBuildListActivity(String name, String id, BuildListFilter filter) {
+    public void startBuildListActivity(String name, String id, @Nullable BuildListFilter filter) {
         BuildListActivity.start(name, id, filter, mActivity);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startProjectActivity(String name, String url) {
+        NavigationActivity.start(name, url, mActivity);
     }
 }

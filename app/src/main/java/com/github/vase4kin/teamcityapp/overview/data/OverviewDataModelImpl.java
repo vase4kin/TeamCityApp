@@ -72,6 +72,22 @@ public class OverviewDataModelImpl implements OverviewDataModel {
      * {@inheritDoc}
      */
     @Override
+    public boolean isBuildTypeCard(int position) {
+        return mContext.getString(R.string.build_type_by_section_text).equals(getHeaderName(position));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isProjectCard(int position) {
+        return mContext.getString(R.string.build_project_by_section_text).equals(getHeaderName(position));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public int getItemCount() {
         return elements.size();
     }

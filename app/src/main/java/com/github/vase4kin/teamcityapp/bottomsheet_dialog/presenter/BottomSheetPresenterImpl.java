@@ -78,6 +78,24 @@ public class BottomSheetPresenterImpl implements BottomSheetPresenter, BottomShe
      * {@inheritDoc}
      */
     @Override
+    public void onShowBuildTypeActionClick() {
+        interactor.postNavigateToBuildTypeEvent();
+        view.close();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onShowProjectActionClick() {
+        interactor.postNavigateToProjectEvent();
+        view.close();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onArtifactDownloadActionClick(String fileName, String href) {
         interactor.postArtifactDownloadEvent(fileName, href);
         view.close();

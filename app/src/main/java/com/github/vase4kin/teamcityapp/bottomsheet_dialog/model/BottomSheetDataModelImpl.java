@@ -83,6 +83,22 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasBuildTypeAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_BUILD_TYPE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasProjectAction(int position) {
+        return items.get(position).getType() == BottomSheetItem.TYPE_PROJECT;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean hasArtifactOpenAction(int position) {
         return items.get(position).getType() == BottomSheetItem.TYPE_ARTIFACT_OPEN;
     }

@@ -60,4 +60,14 @@ public interface OnBuildDetailsEventsListener {
      * When start build list activity filtered by branch event is triggered
      */
     void onStartBuildListActivityFilteredByBranchEventTriggered(String branchName);
+
+    /**
+     * When start build list activity event is triggered
+     */
+    void onStartBuildListActivityEventTriggered();
+
+    /**
+     * When start project activity event is triggered
+     */
+    void onStartProjectActivityEventTriggered();
 }

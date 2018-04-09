@@ -28,6 +28,8 @@ public class BuildType extends NavigationItem implements Serializable {
 
     private String projectName;
 
+    private String projectId;
+
     private Builds builds;
 
     private BaseObject compatibleAgents;
@@ -38,6 +40,10 @@ public class BuildType extends NavigationItem implements Serializable {
 
     public String getProjectName() {
         return projectName;
+    }
+
+    public String getProjectId() {
+        return projectId;
     }
 
     public void setId(String id) {

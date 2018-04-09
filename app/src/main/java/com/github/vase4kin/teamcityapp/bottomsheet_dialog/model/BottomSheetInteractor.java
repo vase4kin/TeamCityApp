@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model;
 
+import com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListFilteredByBranchEvent;
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 
 /**
@@ -46,11 +47,21 @@ public interface BottomSheetInteractor {
     void postTextCopiedEvent();
 
     /**
-     * Post {@link com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListEvent}
+     * Post {@link NavigateToBuildListFilteredByBranchEvent}
      *
      * @param branchName - branch name
      */
     void postNavigateToBuildListEvent(String branchName);
+
+    /**
+     * Post {@link com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListEvent}
+     */
+    void postNavigateToBuildTypeEvent();
+
+    /**
+     * Post {@link com.github.vase4kin.teamcityapp.overview.data.NavigateToProjectEvent}
+     */
+    void postNavigateToProjectEvent();
 
     /**
      * Post {@link com.github.vase4kin.teamcityapp.artifact.data.ArtifactDownloadEvent}

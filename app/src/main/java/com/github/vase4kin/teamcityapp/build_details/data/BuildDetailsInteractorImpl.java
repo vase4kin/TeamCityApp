@@ -30,7 +30,9 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent;
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent;
+import com.github.vase4kin.teamcityapp.overview.data.StartProjectActivityEvent;
 import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent;
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport;
@@ -108,7 +110,23 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public String getBuildTypeName() {
-        return mValueExtractor.getName();
+        return mValueExtractor.getBuildDetails().getBuildTypeName();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProjectId() {
+        return mValueExtractor.getBuildDetails().getProjectId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProjectName() {
+        return mValueExtractor.getBuildDetails().getProjectName();
     }
 
     /**
@@ -247,5 +265,27 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
     public void onEvent(StartBuildsListActivityFilteredByBranchEvent event) {
         if (mListener == null) return;
         mListener.onStartBuildListActivityFilteredByBranchEventTriggered(event.getBranchName());
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link StartBuildsListActivityEvent}
+     */
+    @Subscribe
+    public void onEvent(StartBuildsListActivityEvent event) {
+        if (mListener == null) return;
+        mListener.onStartBuildListActivityEventTriggered();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link StartProjectActivityEvent}
+     */
+    @Subscribe
+    public void onEvent(StartProjectActivityEvent event) {
+        if (mListener == null) return;
+        mListener.onStartProjectActivityEventTriggered();
     }
 }

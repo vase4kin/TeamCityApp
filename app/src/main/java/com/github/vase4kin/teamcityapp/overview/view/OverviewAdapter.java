@@ -62,6 +62,34 @@ public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
                     return true;
                 }
             });
+        } else if (mDataModel.isBuildTypeCard(position)) {
+            ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mViewListener.onBuildTypeCardClick(description);
+                }
+            });
+            ((OverviewViewHolder) holder).mFrameLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mViewListener.onBuildTypeCardClick(description);
+                    return true;
+                }
+            });
+        } else if (mDataModel.isProjectCard(position)) {
+            ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mViewListener.onProjectCardClick(description);
+                }
+            });
+            ((OverviewViewHolder) holder).mFrameLayout.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    mViewListener.onProjectCardClick(description);
+                    return true;
+                }
+            });
         } else {
             ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
                 @Override

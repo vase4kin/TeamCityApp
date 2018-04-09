@@ -131,6 +131,8 @@
     <string name="build_canceled_by_text">Canceled by</string>
     <string name="build_cancellation_time_text">Cancellation time</string>
     <string name="build_personal_text">Personal of</string>
+    <string name="build_type_by_section_text">Configuration</string>
+    <string name="build_project_by_section_text">Project</string>
 
     <!--Test occurrence-->
     <string name="test_details_title">Details</string>
@@ -148,6 +150,8 @@
     <!--Build element-->
     <string name="build_element_copy">Copy</string>
     <string name="build_element_show_all_builds_built_branch">Show builds built on this branch</string>
+    <string name="build_element_open_build_type">Open configuration</string>
+    <string name="build_element_open_project">Open project</string>
     <string name="build_element_copy_text">Text copied!</string>
 
     <!--Default dialogs button titles-->

@@ -16,5 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
-public class NavigateToBuildListEvent {
+public class StartBuildsListActivityEvent {
+
 }
