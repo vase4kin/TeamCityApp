@@ -321,7 +321,7 @@ public class BuildDetailsImplTest {
         when(mBuild.getBuildType()).thenReturn(mBuildType);
         when(mBuildType.getProjectName()).thenReturn("project");
         when(mBuildType.getName()).thenReturn("name");
-        assertThat(mBuildDetails.getBuildTypeName(), is(equalTo("project - name")));
+        assertThat(mBuildDetails.getBuildTypeFullName(), is(equalTo("project - name")));
     }
 
     @Test

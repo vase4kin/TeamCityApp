@@ -23,6 +23,7 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl;
 
@@ -45,7 +46,7 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
      * {@inheritDoc}
      */
     @Override
-    public void showData(BuildListDataModel dataModel) {
+    public void showData(final BuildListDataModel dataModel) {
 
         BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
         baseAdapter.setDataModel(dataModel);
@@ -56,18 +57,26 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
 
         if (dataModel.getItemCount() != 0) {
             for (int i = 0; i < dataModel.getItemCount(); i++) {
-                String buildTypeId = dataModel.hasBuildTypeInfo(i)
-                        ? dataModel.getBuildTypeName(i)
+                final String buildTypeTitle = dataModel.hasBuildTypeInfo(i)
+                        ? dataModel.getBuildTypeFullName(i)
                         : dataModel.getBuildTypeId(i);
                 if (sections.size() != 0) {
                     SimpleSectionedRecyclerViewAdapter.Section prevSection = sections.get(sections.size() - 1);
-                    if (!prevSection.getTitle().equals(buildTypeId)) {
-                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeId));
+                    if (!prevSection.getTitle().equals(buildTypeTitle)) {
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeTitle));
                     }
                 } else {
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeId));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeTitle));
                 }
             }
+            mAdapter.setListener(new SimpleSectionedRecyclerViewAdapter.OnSectionClickListener() {
+                @Override
+                public void onSectionClick(int position) {
+                    final String buildTypeName = dataModel.getBuildTypeName(position);
+                    final String buildTypeId = dataModel.getBuildTypeId(position);
+                    BuildListActivity.start(buildTypeName, buildTypeId, null, mActivity);
+                }
+            });
         }
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
         mAdapter.setSections(sections.toArray(userStates));

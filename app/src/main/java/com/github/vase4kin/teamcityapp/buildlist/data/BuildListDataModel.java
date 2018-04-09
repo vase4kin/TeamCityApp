@@ -82,16 +82,22 @@ public interface BuildListDataModel extends BaseDataModel, Iterable<BuildDetails
     String getBuildTypeId(int position);
 
     /**
-     * * @param position - Adapter position
+     * @param position - Adapter position
      *
      * @return {true} if build has build type info
      */
     boolean hasBuildTypeInfo(int position);
 
     /**
-     * * @param position - Adapter position
+     * @param position - Adapter position
      *
-     * @return Build type name
+     * @return return full name of configuration
+     */
+    String getBuildTypeFullName(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return return name of configuration
      */
     String getBuildTypeName(int position);
 
