@@ -110,7 +110,12 @@ public class BuildDetailsInteractorImpl extends BaseTabsDataManagerImpl implemen
      */
     @Override
     public String getBuildTypeName() {
-        return mValueExtractor.getBuildDetails().getBuildTypeName();
+        BuildDetails buildDetails = mValueExtractor.getBuildDetails();
+        if (buildDetails.hasBuildTypeInfo() && buildDetails.getBuildTypeName() != null) {
+            return buildDetails.getBuildTypeName();
+        } else {
+            return mValueExtractor.getName();
+        }
     }
 
     /**
