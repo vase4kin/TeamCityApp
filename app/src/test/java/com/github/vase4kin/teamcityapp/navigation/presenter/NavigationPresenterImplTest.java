@@ -109,9 +109,9 @@ public class NavigationPresenterImplTest {
     @Test
     public void testOnClickIfNotBuildType() throws Exception {
         when(mNavigationItem.getName()).thenReturn("name");
-        when(mNavigationItem.getHref()).thenReturn("url");
+        when(mNavigationItem.getId()).thenReturn("id");
         mPresenter.onClick(mNavigationItem);
-        verify(mRouter).startNavigationActivity(eq("name"), eq("url"));
+        verify(mRouter).startNavigationActivity(eq("name"), eq("id"));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
 }

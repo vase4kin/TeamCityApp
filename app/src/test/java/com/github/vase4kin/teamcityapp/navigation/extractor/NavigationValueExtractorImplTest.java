@@ -44,7 +44,7 @@ public class NavigationValueExtractorImplTest {
 
     @Test
     public void testGetUrl() throws Exception {
-        when(mBundle.getString(BundleExtractorValues.URL)).thenReturn("url");
-        assertThat(mValueExtractor.getId(), is("url"));
+        when(mBundle.getString(BundleExtractorValues.ID)).thenReturn("id");
+        assertThat(mValueExtractor.getId(), is("id"));
     }
 }
