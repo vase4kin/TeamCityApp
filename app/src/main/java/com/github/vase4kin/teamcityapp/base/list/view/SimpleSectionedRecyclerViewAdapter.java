@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 import android.content.Context;
 import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -51,9 +52,10 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     private T mBaseAdapter;
     private SparseArray<Section> mSections = new SparseArray<>();
 
+    @Nullable
     private OnSectionClickListener listener;
 
-    public void setListener(OnSectionClickListener listener) {
+    public void setListener(@Nullable OnSectionClickListener listener) {
         this.listener = listener;
     }
 
@@ -113,7 +115,9 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
             ((SectionViewHolder) sectionViewHolder).title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listener.onSectionClick(buildTypeUnderSectionPosition);
+                    if (listener != null) {
+                        listener.onSectionClick(buildTypeUnderSectionPosition);
+                    }
                 }
             });
         } else {
