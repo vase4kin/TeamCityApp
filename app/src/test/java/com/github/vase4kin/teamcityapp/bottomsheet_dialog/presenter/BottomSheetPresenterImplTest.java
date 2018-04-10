@@ -84,4 +84,18 @@ public class BottomSheetPresenterImplTest {
         verify(view).close();
     }
 
+    @Test
+    public void onShowBuildTypeActionClick() throws Exception {
+        presenter.onShowBuildTypeActionClick();
+        verify(interactor).postNavigateToBuildTypeEvent();
+        verify(view).close();
+    }
+
+    @Test
+    public void onShowProjectActionClick() throws Exception {
+        presenter.onShowProjectActionClick();
+        verify(interactor).postNavigateToProjectEvent();
+        verify(view).close();
+    }
+
 }
