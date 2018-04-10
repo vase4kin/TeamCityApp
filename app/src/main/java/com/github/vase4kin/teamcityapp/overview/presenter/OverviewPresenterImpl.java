@@ -183,7 +183,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onNavigateToBuildListEvent() {
         mInteractor.postStartBuildListActivityEvent();
-//        TODO: mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+        mTracker.trackUserOpensBuildType();
     }
 
     /**
@@ -192,7 +192,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
     @Override
     public void onNavigateToProjectEvent() {
         mInteractor.postStartProjectActivityEvent();
-//        TODO: mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+        mTracker.trackUserOpensProject();
     }
 
     /**

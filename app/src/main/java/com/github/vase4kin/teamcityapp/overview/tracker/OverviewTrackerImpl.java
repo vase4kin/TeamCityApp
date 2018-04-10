@@ -87,4 +87,30 @@ public class OverviewTrackerImpl extends BaseViewTracker<OverviewTracker> implem
             }
         });
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserOpensBuildType() {
+        logEvent(new TrackerMethod<OverviewTracker>() {
+            @Override
+            public void execute(OverviewTracker tracker) {
+                tracker.trackUserOpensBuildType();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserOpensProject() {
+        logEvent(new TrackerMethod<OverviewTracker>() {
+            @Override
+            public void execute(OverviewTracker tracker) {
+                tracker.trackUserOpensProject();
+            }
+        });
+    }
 }

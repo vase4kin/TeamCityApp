@@ -69,4 +69,20 @@ public class FabricOverviewTrackerImpl implements OverviewTracker {
         if (!Fabric.isInitialized()) return;
         Answers.getInstance().logCustom(new CustomEvent(EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserOpensBuildType() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserOpensProject() {
+
+    }
 }

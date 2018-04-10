@@ -67,4 +67,20 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
     public void trackUserWantsToSeeBuildListFilteredByBranch() {
         mFirebaseAnalytics.logEvent(EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH, null);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserOpensBuildType() {
+        mFirebaseAnalytics.logEvent(EVENT_OPEN_BUILD_TYPE, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserOpensProject() {
+        mFirebaseAnalytics.logEvent(EVENT_OPEN_PROJECT, null);
+    }
 }
