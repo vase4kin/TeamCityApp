@@ -127,7 +127,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     }
 
     @Override
-    public Observable<Builds> listSnapshotBuilds(String id) {
+    public Observable<Builds> listBuilds(String locator) {
         return listQueueBuilds(null);
     }
 
