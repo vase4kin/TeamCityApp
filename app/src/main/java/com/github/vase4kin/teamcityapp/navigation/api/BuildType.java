@@ -50,6 +50,14 @@ public class BuildType extends NavigationItem implements Serializable {
         this.id = id;
     }
 
+    public void setProjectName(String projectName) {
+        this.projectName = projectName;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
     public BaseObject getCompatibleAgents() {
         return compatibleAgents;
     }

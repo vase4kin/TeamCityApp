@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.changes.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
@@ -85,12 +83,10 @@ public class Changes extends BaseObject implements Collectible<Changes.Change> {
         public Change() {
         }
 
-        @VisibleForTesting
         public Change(String href) {
             this.href = href;
         }
 
-        @VisibleForTesting
         public Change(String version, String username, String date, String comment, ChangeFiles files) {
             this.version = version;
             this.username = username;
@@ -100,12 +96,10 @@ public class Changes extends BaseObject implements Collectible<Changes.Change> {
         }
     }
 
-    @VisibleForTesting
     public Changes(String href) {
         this.href = href;
     }
 
-    @VisibleForTesting
     public Changes(List<Change> change, int count) {
         this.change = change;
         this.count = count;

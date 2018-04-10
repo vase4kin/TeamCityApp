@@ -298,6 +298,12 @@ public class Mocks {
         propertyList.add(new Properties.Property("userName", "Murdock"));
         build.setProperties(new Properties(propertyList));
         build.setTestOccurrences(new TestOccurrences(10, 2, 4, "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695)"));
+        BuildType buildType = new BuildType();
+        buildType.setId("Checkstyle_IdeaInspectionsPullRequest");
+        buildType.setProjectId("projectId");
+        buildType.setProjectName("project name");
+        buildType.setName("build type name");
+        build.setBuildType(buildType);
         return build;
     }
 

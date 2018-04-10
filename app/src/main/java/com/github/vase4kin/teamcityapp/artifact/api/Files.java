@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 
 import java.util.List;
@@ -34,7 +32,6 @@ public class Files implements Collectible<File> {
         return file;
     }
 
-    @VisibleForTesting
     public Files(List<File> file) {
         this.file = file;
     }

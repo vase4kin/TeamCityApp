@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.agents.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 /**
@@ -27,7 +25,6 @@ public class Agent extends BaseObject {
 
     private String name;
 
-    @VisibleForTesting
     public Agent(String name) {
         super();
         this.name = name;

@@ -39,6 +39,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -54,7 +55,9 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -64,6 +67,8 @@ import static com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TY
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -499,7 +504,7 @@ public class OverviewFragmentTest {
     }
 
     @Test
-    public void testUserCanViewBuildListFilteredByBranch() throws Exception {
+    public void testUserCanViewBuildListFilteredByBranch() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
 
@@ -527,6 +532,89 @@ public class OverviewFragmentTest {
 
         // Check buid list filter is applied
         verify(mTeamCityService).listBuilds(eq("Checkstyle_IdeaInspectionsPullRequest"), eq("state:any,canceled:any,failedToStart:any,branch:name:refs/heads/master,personal:false,pinned:false,count:10"));
+    }
+
+    @Test
+    public void testUserCanViewBuildTypeFromCard() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(6));
+
+        // Checking configuration  details
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(matches(withText(R.string.build_type_by_section_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemTitle)).check(matches(withText("build type name")));
+
+        // Click on that card
+        onView(withRecyclerView(R.id.overview_recycler_view).atPosition(5)).perform(click());
+
+        // Clicking on show build type
+        onView(withText(R.string.build_element_open_build_type)).perform(click());
+
+        intended(allOf(
+                hasComponent(BuildListActivity.class.getName()),
+                hasExtras(allOf(
+                        hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo(null)),
+                        hasEntry(equalTo(BundleExtractorValues.ID), equalTo("Checkstyle_IdeaInspectionsPullRequest")),
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))))));
+
+        // Check buid list filter is applied
+        verify(mTeamCityService).listBuilds(eq("Checkstyle_IdeaInspectionsPullRequest"), eq("state:any,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10"));
+    }
+
+    @Test
+    public void testUserCanViewProjectFromCard() {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        //Scrolling to last item to make it visible
+        onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(6));
+
+        // Checking configuration  details
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).check(matches(withText(R.string.build_project_by_section_text)));
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemTitle)).check(matches(withText("project name")));
+
+        // Click on that card
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).perform(click());
+
+        // Clicking on show project
+        onView(withText(R.string.build_element_open_project)).perform(click());
+
+        intended(allOf(
+                hasComponent(NavigationActivity.class.getName()),
+                hasExtras(allOf(
+                        hasEntry(equalTo(BundleExtractorValues.ID), equalTo("projectId")),
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("project name"))))));
+
+        // Check buid list filter is applied
+        verify(mTeamCityService).listBuildTypes(eq("projectId"));
     }
 
 }
