@@ -131,7 +131,7 @@ public class OverviewFragmentTest {
         // Checking toolbar title
         matchToolbarTitle("#2459 (21 Jun 16 23:00)");
         // List has item with header
-        onView(withId(R.id.overview_recycler_view)).check(hasItemsCount(5));
+        onView(withId(R.id.overview_recycler_view)).check(hasItemsCount(7));
         // Checking Result
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.itemHeader)).check(matches(withText("Result")));
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.itemTitle)).check(matches(withText("Success")));

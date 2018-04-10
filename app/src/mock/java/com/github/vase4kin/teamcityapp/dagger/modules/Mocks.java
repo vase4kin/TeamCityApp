@@ -221,7 +221,7 @@ public class Mocks {
      * @return queued build 3
      */
     public static Build queuedBuild3() {
-        return createNotFailedBuildMock(
+        Build build = createNotFailedBuildMock(
                 "/guestAuth/app/rest/buildQueue/id:823052",
                 null,
                 "Checkstyle_My_Pants_Solution",
@@ -234,6 +234,12 @@ public class Mocks {
                 null,
                 "20160621T233008+0700",
                 null);
+        BuildType buildType = new BuildType();
+        buildType.setName("Another configuration");
+        buildType.setProjectName("Project name one two");
+        buildType.setProjectId("id");
+        build.setBuildType(buildType);
+        return build;
     }
 
     /**

@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -45,7 +43,6 @@ public class Branch {
         this.isDefault = isDefault;
     }
 
-    @VisibleForTesting
     public Branch(String name) {
         this.name = name;
     }
