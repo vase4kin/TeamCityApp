@@ -44,6 +44,15 @@ public interface OverviewTracker extends ViewTracker {
     String EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH = "show_builds_filtered_by_branch";
 
     /**
+     * Open build_type is clicked
+     */
+    String EVENT_OPEN_BUILD_TYPE = "open_build_type";
+    /**
+     * Open project is clicked
+     */
+    String EVENT_OPEN_PROJECT = "open_project";
+
+    /**
      * Track that Cancel build option menu is clicked
      */
     void trackUserClickedCancelBuildOption();
@@ -62,4 +71,14 @@ public interface OverviewTracker extends ViewTracker {
      * Track that user wants to see build list filtered by specific branch name
      */
     void trackUserWantsToSeeBuildListFilteredByBranch();
+
+    /**
+     * Track that open build type event is clicked
+     */
+    void trackUserOpensBuildType();
+
+    /**
+     * Track that open project type event is clicked
+     */
+    void trackUserOpensProject();
 }

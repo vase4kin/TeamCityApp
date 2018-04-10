@@ -41,7 +41,7 @@ public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<Navigat
      * {@inheritDoc}
      */
     @Override
-    public void load(@NonNull String url, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
-        load(mRepository.listBuildTypes(url, update), loadingListener);
+    public void load(@NonNull String id, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
+        load(mRepository.listBuildTypes(id, update), loadingListener);
     }
 }

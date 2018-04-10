@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.navigation.view;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,14 +43,14 @@ public class NavigationListFragment extends Fragment {
     public static NavigationListFragment newInstance(String title, String url) {
         NavigationListFragment fragment = new NavigationListFragment();
         Bundle args = new Bundle();
-        args.putString(BundleExtractorValues.URL, url);
+        args.putString(BundleExtractorValues.ID, url);
         args.putString(BundleExtractorValues.NAME, title);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_list, container, false);
 
         // Injecting presenter

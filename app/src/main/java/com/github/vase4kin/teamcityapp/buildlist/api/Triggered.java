@@ -63,7 +63,6 @@ public class Triggered implements Serializable {
         return details;
     }
 
-    @VisibleForTesting
     public Triggered(String type, String details, User user) {
         this.type = type;
         this.details = details;

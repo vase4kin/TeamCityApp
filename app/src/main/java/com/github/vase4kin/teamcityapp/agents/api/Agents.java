@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.agents.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 
 import java.util.List;
@@ -40,7 +38,6 @@ public class Agents implements Collectible<Agent> {
         return count;
     }
 
-    @VisibleForTesting
     public Agents(int count, List<Agent> agent) {
         this.count = count;
         this.agent = agent;

@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.navigation.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.base.api.CommonJsonObject;
 
@@ -45,7 +43,6 @@ public class NavigationNode extends CommonJsonObject implements Collectible<Navi
         return allObjects;
     }
 
-    @VisibleForTesting
     public NavigationNode(Projects projects, BuildTypes buildTypes) {
         this.projects = projects;
         this.buildTypes = buildTypes;

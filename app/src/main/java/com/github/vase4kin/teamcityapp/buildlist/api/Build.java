@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.artifact.api.Artifacts;
@@ -169,7 +167,6 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     public Build() {
     }
 
-    @VisibleForTesting
     public Build(String href,
                  String number,
                  String buildTypeId,
@@ -198,12 +195,10 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.webUrl = webUrl;
     }
 
-    @VisibleForTesting
     public void setChanges(Changes changes) {
         this.changes = changes;
     }
 
-    @VisibleForTesting
     public void setArtifacts(Artifacts artifacts) {
         this.artifacts = artifacts;
     }
@@ -212,7 +207,6 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.agent = agent;
     }
 
-    @VisibleForTesting
     public void setTriggered(Triggered triggered) {
         this.triggered = triggered;
     }
@@ -221,12 +215,10 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.properties = properties;
     }
 
-    @VisibleForTesting
     public void setTestOccurrences(TestOccurrences testOccurrences) {
         this.testOccurrences = testOccurrences;
     }
 
-    @VisibleForTesting
     public void setCanceledInfo(CanceledInfo canceledInfo) {
         this.canceledInfo = canceledInfo;
     }
@@ -243,13 +235,15 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.queueAtTop = queueAtTop;
     }
 
-    @VisibleForTesting
     public boolean isCleanSources() {
         return cleanSources;
     }
 
-    @VisibleForTesting
     public boolean isQueueAtTop() {
         return queueAtTop;
+    }
+
+    public void setBuildType(BuildType buildType) {
+        this.buildType = buildType;
     }
 }

@@ -55,6 +55,16 @@ public interface MenuItemsFactory {
      */
     int TYPE_ARTIFACT_FULL = 5;
 
+    /**
+     * Build type menu type
+     */
+    int TYPE_BUILD_TYPE = 6;
+
+    /**
+     * Project menu type
+     */
+    int TYPE_PROJECT = 7;
+
 
     /**
      * @return list of menu items

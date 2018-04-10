@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.extractor;
+package com.github.vase4kin.teamcityapp.overview.data;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
+public class NavigateToBuildListFilteredByBranchEvent {
 
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
+    /**
+     * Branch name
+     */
+    private final String branchName;
 
-/**
- * Impl of {@link NavigationValueExtractor}
- */
-public class NavigationValueExtractorImpl extends BaseValueExtractorImpl implements NavigationValueExtractor {
+    /**
+     * Constructor
+     *
+     * @param branchName - Branch name
+     */
+    public NavigateToBuildListFilteredByBranchEvent(String branchName) {
+        this.branchName = branchName;
+    }
 
-    public NavigationValueExtractorImpl(@NonNull Bundle mBundle) {
-        super(mBundle);
+    /**
+     * @return branch name
+     */
+    public String getBranchName() {
+        return branchName;
     }
 }

@@ -271,6 +271,20 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
+    public void testOnNavigateToBuildListEvent() throws Exception {
+        mPresenter.onNavigateToBuildListEvent();
+        verify(mInteractor).postStartBuildListActivityEvent();
+        verify(mTracker).trackUserOpensBuildType();
+    }
+
+    @Test
+    public void testOnNavigateToProjectEvent() throws Exception {
+        mPresenter.onNavigateToProjectEvent();
+        verify(mInteractor).postStartProjectActivityEvent();
+        verify(mTracker).trackUserOpensProject();
+    }
+
+    @Test
     public void testOnBottomSheetDismiss() throws Exception {
         mPresenter.onBottomSheetDismiss();
         verify(mInteractor).postFABVisibleEvent();

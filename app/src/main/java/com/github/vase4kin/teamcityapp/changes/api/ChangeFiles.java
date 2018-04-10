@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.changes.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 import java.util.ArrayList;
@@ -46,13 +44,11 @@ public class ChangeFiles extends BaseObject {
             return file;
         }
 
-        @VisibleForTesting
         public ChangeFile(String file) {
             this.file = file;
         }
     }
 
-    @VisibleForTesting
     public ChangeFiles(List<ChangeFile> file) {
         this.file = file;
     }

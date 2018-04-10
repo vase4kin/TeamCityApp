@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.build_details.router;
 
+import android.support.annotation.Nullable;
+
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
@@ -47,5 +49,10 @@ public interface BuildDetailsRouter {
      * @param id     - build type id
      * @param filter - build list filter
      */
-    void startBuildListActivity(String name, String id, BuildListFilter filter);
+    void startBuildListActivity(String name, String id, @Nullable BuildListFilter filter);
+
+    /**
+     * Start project activity
+     */
+    void startProjectActivity(String name, String id);
 }

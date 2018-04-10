@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.extractor;
+package com.github.vase4kin.teamcityapp.overview.data;
 
-import android.os.Bundle;
-import android.support.annotation.NonNull;
+public class StartProjectActivityEvent {
 
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
-
-/**
- * Impl of {@link NavigationValueExtractor}
- */
-public class NavigationValueExtractorImpl extends BaseValueExtractorImpl implements NavigationValueExtractor {
-
-    public NavigationValueExtractorImpl(@NonNull Bundle mBundle) {
-        super(mBundle);
-    }
 }

@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 /**
@@ -25,7 +23,6 @@ import com.github.vase4kin.teamcityapp.base.api.BaseObject;
  */
 public class Artifacts extends BaseObject {
 
-    @VisibleForTesting
     public Artifacts(String href) {
         this.href = href;
     }

@@ -220,9 +220,24 @@ public interface BuildDetails extends Jsonable {
     boolean hasBuildTypeInfo();
 
     /**
-     * @return name of configuration
+     * @return full name of configuration
+     */
+    String getBuildTypeFullName();
+
+    /**
+     * @return return name of configuration
      */
     String getBuildTypeName();
+
+    /**
+     * @return return project of build
+     */
+    String getProjectName();
+
+    /**
+     * @return project id of build type
+     */
+    String getProjectId();
 
     /**
      * @return id of the build
@@ -454,7 +469,22 @@ public interface BuildDetails extends Jsonable {
         }
 
         @Override
+        public String getBuildTypeFullName() {
+            return null;
+        }
+
+        @Override
         public String getBuildTypeName() {
+            return null;
+        }
+
+        @Override
+        public String getProjectName() {
+            return null;
+        }
+
+        @Override
+        public String getProjectId() {
             return null;
         }
 

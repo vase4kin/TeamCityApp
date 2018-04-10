@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.base.api;
 
-import android.support.annotation.VisibleForTesting;
-
 /**
  * Common object
  */
@@ -34,12 +32,10 @@ public class CommonJsonObject extends BaseObject implements Jsonable {
         return description;
     }
 
-    @VisibleForTesting
     public void setName(String name) {
         this.name = name;
     }
 
-    @VisibleForTesting
     public void setDescription(String description) {
         this.description = description;
     }

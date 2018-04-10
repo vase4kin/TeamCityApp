@@ -64,6 +64,22 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
+        if (mDataModel.hasBuildTypeAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onShowBuildTypeActionClick();
+                }
+            });
+        }
+        if (mDataModel.hasProjectAction(position)) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    listener.onShowProjectActionClick();
+                }
+            });
+        }
         if (mDataModel.hasArtifactDownloadAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

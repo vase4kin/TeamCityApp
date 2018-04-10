@@ -17,25 +17,4 @@
 package com.github.vase4kin.teamcityapp.overview.data;
 
 public class NavigateToBuildListEvent {
-
-    /**
-     * Branch name
-     */
-    private final String branchName;
-
-    /**
-     * Constructor
-     *
-     * @param branchName - Branch name
-     */
-    public NavigateToBuildListEvent(String branchName) {
-        this.branchName = branchName;
-    }
-
-    /**
-     * @return branch name
-     */
-    public String getBranchName() {
-        return branchName;
-    }
 }

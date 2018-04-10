@@ -18,6 +18,8 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -35,6 +37,13 @@ import java.util.Comparator;
  */
 public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    /**
+     * able to click on a section
+     */
+    public interface OnSectionClickListener {
+        void onSectionClick(int position);
+    }
+
     private static final int SECTION_TYPE = 0;
     private final Context mContext;
     private boolean mValid = true;
@@ -42,6 +51,13 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     private int mTextResourceId;
     private T mBaseAdapter;
     private SparseArray<Section> mSections = new SparseArray<>();
+
+    @Nullable
+    private OnSectionClickListener listener;
+
+    public void setListener(@Nullable OnSectionClickListener listener) {
+        this.listener = listener;
+    }
 
     public SimpleSectionedRecyclerViewAdapter(Context context, T baseAdapter) {
         mSectionResourceId = R.layout.header_default;
@@ -82,7 +98,7 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int typeView) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int typeView) {
         if (typeView == SECTION_TYPE) {
             final View view = LayoutInflater.from(mContext).inflate(mSectionResourceId, parent, false);
             return new SectionViewHolder(view, mTextResourceId);
@@ -92,9 +108,18 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder sectionViewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder sectionViewHolder, int position) {
         if (isSectionHeaderPosition(position)) {
             ((SectionViewHolder) sectionViewHolder).title.setText(mSections.get(position).title);
+            final int buildTypeUnderSectionPosition = sectionedPositionToPosition(position + 1);
+            ((SectionViewHolder) sectionViewHolder).title.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listener != null) {
+                        listener.onSectionClick(buildTypeUnderSectionPosition);
+                    }
+                }
+            });
         } else {
             //noinspection unchecked
             mBaseAdapter.onBindViewHolder(sectionViewHolder, sectionedPositionToPosition(position));
@@ -142,7 +167,7 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
         return position + offset;
     }
 
-    public int sectionedPositionToPosition(int sectionedPosition) {
+    private int sectionedPositionToPosition(int sectionedPosition) {
         if (isSectionHeaderPosition(sectionedPosition)) {
             return RecyclerView.NO_POSITION;
         }
@@ -157,7 +182,7 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
         return sectionedPosition + offset;
     }
 
-    public boolean isSectionHeaderPosition(int position) {
+    private boolean isSectionHeaderPosition(int position) {
         return mSections.get(position) != null;
     }
 
@@ -175,11 +200,11 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
 
     public static class SectionViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView title;
+        TextView title;
 
-        public SectionViewHolder(View view, int mTextResourceid) {
+        SectionViewHolder(View view, int mTextResourceid) {
             super(view);
-            title = (TextView) view.findViewById(mTextResourceid);
+            title = view.findViewById(mTextResourceid);
         }
     }
 

@@ -63,7 +63,7 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, boolean update) {
-        mDataManager.load(mValueExtractor.getUrl(), update, loadingListener);
+        mDataManager.load(mValueExtractor.getId(), update, loadingListener);
     }
 
     /**
@@ -92,7 +92,7 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
         if (navigationItem instanceof BuildType) {
             mRouter.startBuildListActivity(navigationItem.getName(), navigationItem.getId());
         } else {
-            mRouter.startNavigationActivity(navigationItem.getName(), navigationItem.getHref());
+            mRouter.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
     }
 

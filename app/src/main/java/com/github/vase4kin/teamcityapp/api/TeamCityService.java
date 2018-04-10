@@ -69,14 +69,14 @@ public interface TeamCityService {
                                   @Nullable @Query("locator") String locator);
 
     /**
-     * List build types by url
+     * List build types by Id
      *
-     * @param url - Url of build type
+     * @param id - Id of build type
      * @return @return {@link Observable} with {@link NavigationNode}
      */
     @Headers(APPLICATION_JSON)
-    @GET
-    Observable<NavigationNode> listBuildTypes(@Url String url);
+    @GET("app/rest/projects/id:{id}")
+    Observable<NavigationNode> listBuildTypes(@Path("id") String id);
 
     /**
      * Get single build type details

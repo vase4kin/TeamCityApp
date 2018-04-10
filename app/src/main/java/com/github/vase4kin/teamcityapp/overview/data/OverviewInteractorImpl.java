@@ -174,6 +174,22 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
      * {@inheritDoc}
      */
     @Override
+    public void postStartBuildListActivityEvent() {
+        mEventBus.post(new StartBuildsListActivityEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postStartProjectActivityEvent() {
+        mEventBus.post(new StartProjectActivityEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public BuildDetails getBuildDetails() {
         return mValueExtractor.getBuildDetails();
     }
@@ -192,12 +208,34 @@ public class OverviewInteractorImpl extends BaseListRxDataManagerImpl<Build, Bui
     /***
      * Handle receiving post events from {@link EventBus}
      *
+     * @param event {@link NavigateToBuildListFilteredByBranchEvent}
+     */
+    @Subscribe
+    public void onEvent(NavigateToBuildListFilteredByBranchEvent event) {
+        if (mListener == null) return;
+        mListener.onNavigateToBuildListEvent(event.getBranchName());
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
      * @param event {@link NavigateToBuildListEvent}
      */
     @Subscribe
-    public void onEvent(NavigateToBuildListEvent event) {
+    public void onEvent(NavigateToBuildListEvent ignored) {
         if (mListener == null) return;
-        mListener.onNavigateToBuildListEvent(event.getBranchName());
+        mListener.onNavigateToBuildListEvent();
+    }
+
+    /***
+     * Handle receiving post events from {@link EventBus}
+     *
+     * @param event {@link NavigateToProjectEvent}
+     */
+    @Subscribe
+    public void onEvent(NavigateToProjectEvent ignored) {
+        if (mListener == null) return;
+        mListener.onNavigateToProjectEvent();
     }
 
 }
