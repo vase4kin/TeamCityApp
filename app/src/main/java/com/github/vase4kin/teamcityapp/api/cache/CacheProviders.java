@@ -134,6 +134,14 @@ public interface CacheProviders {
                                         EvictDynamicKey evictDynamicKey);
 
     /**
+     * Cache snapshot dependencies build list for 1 minutes
+     */
+    @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
+    Observable<Builds> listSnapshotBuilds(Observable<Builds> buildObservable,
+                                          DynamicKey fields,
+                                          EvictDynamicKey evictDynamicKey);
+
+    /**
      * Cache agent list for 3 minutes
      */
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)

@@ -108,6 +108,15 @@ public interface Repository {
     Observable<Builds> listQueueBuilds(String fields, boolean update);
 
     /**
+     * List snapshot dependencies builds (cache's supported)
+     *
+     * @param id     - Build id
+     * @param update - Update cache
+     * @return {@link Observable} with {@link Builds}
+     */
+    Observable<Builds> listSnapshotBuilds(String id, boolean update);
+
+    /**
      * List more builds (no cache's supported)
      *
      * @param url - More builds url

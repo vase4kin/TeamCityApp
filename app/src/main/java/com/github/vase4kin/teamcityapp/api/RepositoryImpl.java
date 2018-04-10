@@ -143,6 +143,18 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
+    public Observable<Builds> listSnapshotBuilds(String id, boolean update) {
+        String locator = String.format("snapshotDependency:(to:(id:%s),includeInitial:true),defaultFilter:false", id);
+        return mCacheCacheProviders.listSnapshotBuilds(
+                mTeamCityService.listBuilds(locator),
+                new DynamicKey(id),
+                new EvictDynamicKey(update));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Observable<Builds> listMoreBuilds(String url) {
         return mTeamCityService.listMoreBuilds(urlFormatter.formatBasicUrl(url));
     }

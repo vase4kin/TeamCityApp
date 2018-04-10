@@ -133,6 +133,16 @@ public interface TeamCityService {
     Observable<Builds> listQueueBuilds(@Query("fields") String fields);
 
     /**
+     * List builds by locator
+     *
+     * @param locator - teamcity locator to list builds
+     * @return {@link Observable} with {@link Builds}
+     */
+    @Headers(APPLICATION_JSON)
+    @GET("app/rest/builds")
+    Observable<Builds> listBuilds(@Query("locator") String locator);
+
+    /**
      * List more builds
      *
      * @param url - More builds url

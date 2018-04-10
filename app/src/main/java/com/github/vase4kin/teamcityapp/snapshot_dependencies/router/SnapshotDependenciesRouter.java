@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.snapshot_dependencies.router;
 
 import android.app.Activity;
 import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
+import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
 
 /**
- * impl of {@link BuildListRouter}
+ * Router for snapshot dependencies build list
  */
-public class BuildListRouterImpl implements BuildListRouter {
+public class SnapshotDependenciesRouter extends BuildListRouterImpl {
 
-    protected Activity mActivity;
-
-    public BuildListRouterImpl(Activity mActivity) {
-        this.mActivity = mActivity;
+    public SnapshotDependenciesRouter(Activity mActivity) {
+        super(mActivity);
     }
 
     /**
@@ -40,22 +37,6 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openBuildPage(Build build, @Nullable String buildTypeName) {
-        BuildDetailsActivity.start(mActivity, build, buildTypeName);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openRunBuildPage(String buildTypeId) {
-        RunBuildActivity.startForResult(mActivity, buildTypeId);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openFilterBuildsPage(String buildTypeId) {
-        FilterBuildsActivity.startForResult(mActivity, buildTypeId);
+        BuildDetailsActivity.startNotAsNewTask(mActivity, build, buildTypeName);
     }
 }
