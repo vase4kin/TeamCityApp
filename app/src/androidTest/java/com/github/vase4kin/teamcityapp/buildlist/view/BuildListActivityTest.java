@@ -62,6 +62,7 @@ import rx.Observable;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.assertNoUnverifiedIntents;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.Intents.intending;
 import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
@@ -395,5 +396,28 @@ public class BuildListActivityTest {
 
         // Check data was loaded with new filter
         verify(mTeamCityService).listBuilds(eq("build_type_id"), eq("canceled:true,branch:name:branch,personal:true,pinned:true,count:10"));
+    }
+
+    @Test
+    public void testUserCannotClickOnSection() throws Exception {
+        mActivityRule.launchActivity(null);
+
+        // Open build type
+        onView(withText("build type"))
+                .perform(click());
+
+        intended(allOf(
+                hasComponent(BuildListActivity.class.getName()),
+                hasExtras(allOf(
+                        hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo(null)),
+                        hasEntry(equalTo(BundleExtractorValues.ID), equalTo("build_type_id")),
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type"))))));
+
+        // Clicking on header
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(0, R.id.section_text))
+                .check(matches(withText("22 June")))
+                .perform(click());
+
+        assertNoUnverifiedIntents();
     }
 }
