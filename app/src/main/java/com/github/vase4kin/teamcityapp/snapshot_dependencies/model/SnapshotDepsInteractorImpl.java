@@ -40,6 +40,6 @@ public class SnapshotDepsInteractorImpl extends BuildListDataManagerImpl impleme
      */
     @Override
     public void load(@NonNull String id, @NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        loadBuilds(mRepository.listSnapshotBuilds(id, update), loadingListener);
+        loadNotSortedBuilds(mRepository.listSnapshotBuilds(id, update), loadingListener);
     }
 }

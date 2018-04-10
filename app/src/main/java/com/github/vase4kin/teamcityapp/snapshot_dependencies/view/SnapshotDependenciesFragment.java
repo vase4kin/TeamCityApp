@@ -55,7 +55,7 @@ public class SnapshotDependenciesFragment extends Fragment {
 
         // Injecting presenter
         DaggerSnapshotDependenciesComponent.builder()
-                .snapshotDepsModule(new SnapshotDependenciesModule(view, (AppCompatActivity) this.getActivity(), getArguments()))
+                .snapshotDependenciesModule(new SnapshotDependenciesModule(view, (AppCompatActivity) this.getActivity(), getArguments()))
                 .restApiComponent(((TeamCityApplication) getActivity().getApplication()).getRestApiInjector())
                 .build()
                 .inject(this);
