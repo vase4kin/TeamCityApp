@@ -296,7 +296,11 @@ public class BuildListPresenterImplTest {
 
     @Test
     public void testOnCreateOptions() throws Exception {
+        when(mValueExtractor.getId()).thenReturn("id");
+        when(mDataManager.hasBuildTypeAsFavorite(eq("id"))).thenReturn(true);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
+        verify(mValueExtractor).getId();
+        verify(mDataManager).hasBuildTypeAsFavorite(eq("id"));
         verify(mView).createFavOptionsMenu(eq(mMenu), eq(mMenuInflater));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
