@@ -122,8 +122,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     protected void loadBuilds(@NonNull Observable<Builds> call,
                               @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mSubscriptions.clear();
-        Subscription subscription = getBuildDetailsObservable(call)
+        Observable<List<BuildDetails>> buildDetailsList = getBuildDetailsObservable(call)
                 // putting them all to the sorted list
                 // where queued builds go first
                 .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
@@ -135,7 +134,14 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                                 ? -1
                                 : 1);
                     }
-                })
+                });
+        loadBuildDetailsList(buildDetailsList, loadingListener);
+    }
+
+    protected void loadBuildDetailsList(@NonNull Observable<List<BuildDetails>> call,
+                                        @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+        mSubscriptions.clear();
+        Subscription subscription = call
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<BuildDetails>>() {
@@ -161,30 +167,12 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     protected void loadNotSortedBuilds(@NonNull Observable<Builds> call,
                                        @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mSubscriptions.clear();
-        Subscription subscription = getBuildDetailsObservable(call)
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<BuildDetails>>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loadingListener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<BuildDetails> builds) {
-                        loadingListener.onSuccess(builds);
-                    }
-                });
-        mSubscriptions.add(subscription);
+        Observable<List<BuildDetails>> buildDetailsList = getBuildDetailsObservable(call)
+                .toList();
+        loadBuildDetailsList(buildDetailsList, loadingListener);
     }
 
-    private Observable<BuildDetails> getBuildDetailsObservable(@NonNull Observable<Builds> call) {
+    protected Observable<BuildDetails> getBuildDetailsObservable(@NonNull Observable<Builds> call) {
         return call
                 // converting all received builds to observables
                 .flatMap(new Func1<Builds, Observable<Build>>() {
