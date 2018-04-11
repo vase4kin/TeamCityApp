@@ -85,14 +85,14 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
 
         if (dataModel.getItemCount() != 0) {
             for (int i = 0; i < dataModel.getItemCount(); i++) {
-                final String buildTypeTitle = dataModel.getProjectName(i);
+                final String projectName = dataModel.getProjectName(i);
                 if (sections.size() != 0) {
                     SimpleSectionedRecyclerViewAdapter.Section prevSection = sections.get(sections.size() - 1);
-                    if (!prevSection.getTitle().equals(buildTypeTitle)) {
-                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeTitle));
+                    if (!prevSection.getTitle().equals(projectName)) {
+                        sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, projectName));
                     }
                 } else {
-                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeTitle));
+                    sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, projectName));
                 }
             }
             mAdapter.setListener(new SimpleSectionedRecyclerViewAdapter.OnSectionClickListener() {

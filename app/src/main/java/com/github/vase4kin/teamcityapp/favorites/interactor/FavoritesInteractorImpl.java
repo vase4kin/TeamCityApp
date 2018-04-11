@@ -30,6 +30,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Impl of {@link FavoritesInteractor}
@@ -69,7 +70,13 @@ public class FavoritesInteractorImpl extends BaseListRxDataManagerImpl<Favorites
                                 });
                     }
                 })
-                .toList()
+                .toSortedList(new Func2<NavigationItem, NavigationItem, Integer>() {
+                    @Override
+                    public Integer call(NavigationItem navigationItem, NavigationItem navigationItem2) {
+                        // sort by build type ids
+                        return navigationItem.getId().compareToIgnoreCase(navigationItem2.getId());
+                    }
+                })
                 .flatMap(new Func1<List<NavigationItem>, Observable<NavigationItemsList>>() {
                     @Override
                     public Observable<NavigationItemsList> call(List<NavigationItem> navigationItems) {
