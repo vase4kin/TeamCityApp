@@ -229,6 +229,7 @@ public class DrawerViewImpl implements DrawerView {
                                 .withName(R.string.favorites_drawer_item)
                                 .withIcon(new IconDrawable(mActivity, MaterialIcons.md_favorite).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
+                                .withBadgeStyle(badgeStyle)
                                 .withIdentifier(FAVORITES),
                         new PrimaryDrawerItem()
                                 .withName(R.string.running_builds_drawer_item)
@@ -368,6 +369,14 @@ public class DrawerViewImpl implements DrawerView {
     @Override
     public void updateBuildQueueBadge(int count) {
         mDrawerResult.updateBadge(BUILD_QUEUE, new StringHolder(String.valueOf(count)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateFavoritesBadge(int count) {
+        mDrawerResult.updateBadge(FAVORITES, new StringHolder(String.valueOf(count)));
     }
 
     /**

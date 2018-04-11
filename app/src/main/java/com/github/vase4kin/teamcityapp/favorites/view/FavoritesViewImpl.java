@@ -25,18 +25,19 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
+import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements NavigationView {
+public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
 
-    private OnNavigationItemClickListener mOnNavigationItemClickListener;
+    private FavoritesView.ViewListener listener;
 
     public FavoritesViewImpl(View view,
                              Activity activity,
@@ -49,17 +50,18 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
      * {@inheritDoc}
      */
     @Override
-    public void setNavigationAdapterClickListener(OnNavigationItemClickListener clickListener) {
-        mOnNavigationItemClickListener = clickListener;
+    public void setViewListener(FavoritesView.ViewListener listener) {
+        this.listener = listener;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void setTitle(String title) {
+    public void updateTitleCount(int count) {
         ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
         if (actionBar != null) {
+            String title = String.format(Locale.ENGLISH, "%s (%d)", mActivity.getString(R.string.favorites_drawer_item), count);
             actionBar.setTitle(title);
         }
     }
@@ -71,7 +73,12 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
     public void showData(final NavigationDataModel dataModel) {
         NavigationAdapter baseAdapter = mAdapter.getBaseAdapter();
         baseAdapter.setDataModel(dataModel);
-        baseAdapter.setOnClickListener(mOnNavigationItemClickListener);
+        baseAdapter.setOnClickListener(new OnNavigationItemClickListener() {
+            @Override
+            public void onClick(NavigationItem navigationItem) {
+                listener.onClick(navigationItem);
+            }
+        });
 
         List<SimpleSectionedRecyclerViewAdapter.Section> sections =
                 new ArrayList<>();

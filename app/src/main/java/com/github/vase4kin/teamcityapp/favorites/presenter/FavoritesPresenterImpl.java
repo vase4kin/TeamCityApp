@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractor;
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesView;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
@@ -28,8 +29,6 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
-import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
 
 import java.util.List;
 
@@ -41,15 +40,15 @@ import javax.inject.Inject;
 public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         NavigationDataModel,
         NavigationItem,
-        NavigationView,
+        FavoritesView,
         FavoritesInteractor,
         NavigationTracker,
-        NavigationValueExtractor> implements OnNavigationItemClickListener {
+        NavigationValueExtractor> implements FavoritesView.ViewListener {
 
     private NavigationRouter router;
 
     @Inject
-    FavoritesPresenterImpl(@NonNull NavigationView view,
+    FavoritesPresenterImpl(@NonNull FavoritesView view,
                            @NonNull FavoritesInteractor interactor,
                            @NonNull NavigationTracker tracker,
                            @NonNull NavigationValueExtractor valueExtractor,
@@ -72,7 +71,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setNavigationAdapterClickListener(this);
+        mView.setViewListener(this);
     }
 
     /**
@@ -93,6 +92,13 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         } else {
             router.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
+    }
+
+    @Override
+    protected void onSuccessCallBack(List<NavigationItem> data) {
+        super.onSuccessCallBack(data);
+        int favorites = mDataManager.getFavoritesCount();
+        mView.updateTitleCount(favorites);
     }
 
     /**

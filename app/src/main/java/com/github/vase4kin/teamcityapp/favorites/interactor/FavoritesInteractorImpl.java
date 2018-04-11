@@ -79,6 +79,14 @@ public class FavoritesInteractorImpl extends BaseListRxDataManagerImpl<Favorites
         load(favoritesObservable, loadingListener);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getFavoritesCount() {
+        return storage.getFavoriteBuildTypeIds().size();
+    }
+
     static class NavigationItemsList implements Collectible<NavigationItem> {
 
         private final List<NavigationItem> items;

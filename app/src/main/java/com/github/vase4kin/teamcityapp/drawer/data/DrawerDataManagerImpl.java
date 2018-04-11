@@ -88,4 +88,12 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
     public void loadBuildQueueCount(final OnLoadingListener<Integer> loadingListener) {
         new BuildQueueDataManagerImpl(mRepository, mSharedUserStorage).loadCount(loadingListener);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int getFavoritesCount() {
+        return mSharedUserStorage.getFavoriteBuildTypeIds().size();
+    }
 }

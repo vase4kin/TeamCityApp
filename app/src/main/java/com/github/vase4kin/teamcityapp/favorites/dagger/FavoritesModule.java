@@ -29,6 +29,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractor;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractorImpl;
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesView;
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesViewImpl;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
@@ -39,7 +40,6 @@ import com.github.vase4kin.teamcityapp.navigation.tracker.FirebaseNavigationTrac
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
@@ -66,7 +66,7 @@ public class FavoritesModule {
     }
 
     @Provides
-    NavigationView providesNavigationView(SimpleSectionedRecyclerViewAdapter<NavigationAdapter> adapter) {
+    FavoritesView providesNavigationView(SimpleSectionedRecyclerViewAdapter<NavigationAdapter> adapter) {
         return new FavoritesViewImpl(mView, mActivity, R.string.empty_list_message_favorites, adapter);
     }
 

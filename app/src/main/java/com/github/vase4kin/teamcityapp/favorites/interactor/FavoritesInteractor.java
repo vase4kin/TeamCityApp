@@ -36,4 +36,9 @@ public interface FavoritesInteractor extends BaseListRxDataManager<FavoritesInte
      * @param loadingListener - Listener to receive server callbacks
      */
     void loadFavorites(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, boolean update);
+
+    /**
+     * @return the count of favorite build types
+     */
+    int getFavoritesCount();
 }

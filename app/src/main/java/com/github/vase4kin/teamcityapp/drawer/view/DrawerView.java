@@ -78,6 +78,13 @@ public interface DrawerView {
     void updateBuildQueueBadge(int count);
 
     /**
+     * Update favorites badge
+     *
+     * @param count - Number to update
+     */
+    void updateFavoritesBadge(int count);
+
+    /**
      * Set default color for drawer
      * @param color - Color to make default
      */

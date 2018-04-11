@@ -107,6 +107,7 @@ public class DrawerPresenterImpl<
         loadRunningBuildsCount();
         loadAgentsCount();
         loadQueueBuildsCount();
+        loadFavoritesCount();
     }
 
     /**
@@ -173,6 +174,15 @@ public class DrawerPresenterImpl<
 
             }
         });
+    }
+
+    /**
+     * Load favorites count
+     */
+    private void loadFavoritesCount() {
+        int favoritesCount = mDataManager.getFavoritesCount();
+        mView.updateFavoritesBadge(favoritesCount);
+
     }
 
     /**
