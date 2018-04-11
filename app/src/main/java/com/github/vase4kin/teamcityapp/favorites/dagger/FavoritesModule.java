@@ -17,16 +17,19 @@
 package com.github.vase4kin.teamcityapp.favorites.dagger;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
+import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractor;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractorImpl;
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesViewImpl;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
@@ -38,7 +41,6 @@ import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -64,8 +66,8 @@ public class FavoritesModule {
     }
 
     @Provides
-    NavigationView providesNavigationView(NavigationAdapter adapter) {
-        return new NavigationViewImpl(mView, mActivity, R.string.empty_list_message_favorites, adapter);
+    NavigationView providesNavigationView(SimpleSectionedRecyclerViewAdapter<NavigationAdapter> adapter) {
+        return new FavoritesViewImpl(mView, mActivity, R.string.empty_list_message_favorites, adapter);
     }
 
     @Provides
@@ -112,6 +114,11 @@ public class FavoritesModule {
     @Provides
     NavigationAdapter providesNavigationAdapter(Map<Integer, ViewHolderFactory<NavigationDataModel>> viewHolderFactories) {
         return new NavigationAdapter(viewHolderFactories);
+    }
+
+    @Provides
+    SimpleSectionedRecyclerViewAdapter<NavigationAdapter> providesSimpleSectionedRecyclerViewAdapter(Context context, NavigationAdapter adapter) {
+        return new SimpleSectionedRecyclerViewAdapter<>(context, adapter);
     }
 
     @IntoMap

@@ -57,4 +57,20 @@ public interface NavigationDataModel extends BaseDataModel {
      * @return navigation item
      */
     NavigationItem getNavigationItem(int position);
+
+    /**
+     * Get project name
+     *
+     * @param position - Adapter position
+     * @return project name
+     */
+    String getProjectName(int position);
+
+    /**
+     * Get build type id
+     *
+     * @param position - Adapter position
+     * @return project name
+     */
+    String getProjectId(int position);
 }
