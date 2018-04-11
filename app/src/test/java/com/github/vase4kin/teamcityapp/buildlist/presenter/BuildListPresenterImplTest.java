@@ -297,7 +297,7 @@ public class BuildListPresenterImplTest {
     @Test
     public void testOnCreateOptions() throws Exception {
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
-        verify(mView).createOptionsMenu(eq(mMenu), eq(mMenuInflater));
+        verify(mView).createFavOptionsMenu(eq(mMenu), eq(mMenuInflater));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager);
     }
 

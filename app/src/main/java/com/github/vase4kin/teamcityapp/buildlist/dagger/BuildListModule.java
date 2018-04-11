@@ -38,6 +38,7 @@ import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTracke
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Set;
@@ -58,8 +59,8 @@ public class BuildListModule {
     }
 
     @Provides
-    BuildListDataManager providesBuildListDataManager(Repository repository) {
-        return new BuildListDataManagerImpl(repository);
+    BuildListDataManager providesBuildListDataManager(Repository repository, SharedUserStorage storage) {
+        return new BuildListDataManagerImpl(repository, storage);
     }
 
     @Provides

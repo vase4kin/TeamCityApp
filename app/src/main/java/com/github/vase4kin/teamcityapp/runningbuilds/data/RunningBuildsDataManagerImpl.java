@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.List;
 
@@ -38,8 +39,8 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     private BuildListFilter mFilter;
 
-    public RunningBuildsDataManagerImpl(Repository repository) {
-        super(repository);
+    public RunningBuildsDataManagerImpl(Repository repository, SharedUserStorage storage) {
+        super(repository, storage);
         // Creating running filter
         mFilter = new BuildListFilterImpl();
         mFilter.setFilter(FilterBuildsView.FILTER_RUNNING);

@@ -70,7 +70,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadRunningBuildsCount(final OnLoadingListener<Integer> loadingListener) {
-        new RunningBuildsDataManagerImpl(mRepository).loadCount(loadingListener);
+        new RunningBuildsDataManagerImpl(mRepository, mSharedUserStorage).loadCount(loadingListener);
     }
 
     /**
@@ -86,6 +86,6 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadBuildQueueCount(final OnLoadingListener<Integer> loadingListener) {
-        new BuildQueueDataManagerImpl(mRepository).loadCount(loadingListener);
+        new BuildQueueDataManagerImpl(mRepository, mSharedUserStorage).loadCount(loadingListener);
     }
 }

@@ -47,4 +47,9 @@ public interface BuildListRouter {
      * @param buildTypeId - Build type id
      */
     void openFilterBuildsPage(String buildTypeId);
+
+    /**
+     * Open favorites
+     */
+    void openFavorites();
 }

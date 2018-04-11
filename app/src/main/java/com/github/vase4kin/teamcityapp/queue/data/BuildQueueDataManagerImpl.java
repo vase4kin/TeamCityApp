@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.List;
 
@@ -31,8 +32,8 @@ import java.util.List;
  */
 public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implements RunningBuildsDataManager {
 
-    public BuildQueueDataManagerImpl(Repository repository) {
-        super(repository);
+    public BuildQueueDataManagerImpl(Repository repository, SharedUserStorage storage) {
+        super(repository, storage);
     }
 
     /**

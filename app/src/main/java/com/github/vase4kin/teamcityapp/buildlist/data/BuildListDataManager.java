@@ -58,4 +58,25 @@ public interface BuildListDataManager extends BaseListRxDataManager<Builds, Buil
      * Is there any more builds to load
      */
     boolean canLoadMore();
+
+    /**
+     * Add build type id to favorites
+     *
+     * @param buildTypeId - build type id
+     */
+    void addToFavorites(String buildTypeId);
+
+    /**
+     * Remove build type id from favorites
+     *
+     * @param buildTypeId - build type id
+     */
+    void removeFromFavorites(String buildTypeId);
+
+    /**
+     * @param buildTypeId - build type id
+     *                    <p>
+     *                    return {true} if user has this build type id
+     */
+    boolean hasBuildTypeAsFavorite(String buildTypeId);
 }

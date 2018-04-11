@@ -24,8 +24,8 @@ import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observable;
@@ -37,9 +37,11 @@ import rx.functions.Func1;
 public class FavoritesInteractorImpl extends BaseListRxDataManagerImpl<FavoritesInteractorImpl.NavigationItemsList, NavigationItem> implements FavoritesInteractor {
 
     private final Repository repository;
+    private final SharedUserStorage storage;
 
-    public FavoritesInteractorImpl(Repository repository) {
+    public FavoritesInteractorImpl(Repository repository, SharedUserStorage storage) {
         this.repository = repository;
+        this.storage = storage;
     }
 
     /**
@@ -47,10 +49,7 @@ public class FavoritesInteractorImpl extends BaseListRxDataManagerImpl<Favorites
      */
     @Override
     public void loadFavorites(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, final boolean update) {
-        List<String> ids = new ArrayList<>();
-        ids.add("ApacheAnt_BuildAntUsingMave1");
-        ids.add("bt132");
-        ids.add("bt133");
+        List<String> ids = storage.getFavoriteBuildTypeIds();
         Observable<NavigationItemsList> favoritesObservable = Observable.from(ids)
                 .flatMap(new Func1<String, Observable<NavigationItem>>() {
                     @Override

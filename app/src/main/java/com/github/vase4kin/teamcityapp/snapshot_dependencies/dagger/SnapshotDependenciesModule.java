@@ -39,6 +39,7 @@ import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl;
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesInteractorImpl;
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.SnapshotDependenciesRouter;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Set;
@@ -93,8 +94,8 @@ public class SnapshotDependenciesModule {
     }
 
     @Provides
-    BuildListDataManager providesBuildListDataManager(Repository repository) {
-        return new SnapshotDependenciesInteractorImpl(repository);
+    BuildListDataManager providesBuildListDataManager(Repository repository, SharedUserStorage storage) {
+        return new SnapshotDependenciesInteractorImpl(repository, storage);
     }
 
     @Provides

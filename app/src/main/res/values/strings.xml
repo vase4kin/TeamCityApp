@@ -112,6 +112,7 @@
     <string name="empty_list_message_parameters">No user defined parameters</string>
     <string name="empty_list_message_changes">No changes</string>
     <string name="empty_list_message_projects_or_build_types">No projects or build configurations</string>
+    <string name="empty_list_message_favorites">No favorites</string>
     <string name="empty_passed_tests">There are no failed tests</string>
     <string name="empty_list_files">No files</string>
 
@@ -283,9 +284,14 @@
 
     <!--Build list activity-->
     <string name="text_menu_filter_builds">Filter builds</string>
+    <string name="text_menu_add_to_favorites">Add to favorites</string>
+    <string name="text_menu_remove_from_favorites">Remove from favorites</string>
     <string name="text_filters_applied">Build filters have been applied</string>
     <string name="text_queued_header">Queued</string>
     <string name="text_snackbar_button_reset_filters">Reset filters</string>
+    <string name="text_add_to_favorites">The configuration has been added to favorites</string>
+    <string name="text_remove_from_favorites">The configuration has been removed from favorites</string>
+    <string name="text_view_favorites">Open favorites</string>
 
     <!--Filter builds activity-->
     <string name="title_filter_builds">Filter builds</string>

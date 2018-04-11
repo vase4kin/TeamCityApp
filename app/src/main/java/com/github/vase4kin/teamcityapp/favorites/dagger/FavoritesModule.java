@@ -40,6 +40,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
@@ -64,7 +65,7 @@ public class FavoritesModule {
 
     @Provides
     NavigationView providesNavigationView(NavigationAdapter adapter) {
-        return new NavigationViewImpl(mView, mActivity, R.string.empty_list_message_projects_or_build_types, adapter);
+        return new NavigationViewImpl(mView, mActivity, R.string.empty_list_message_favorites, adapter);
     }
 
     @Provides
@@ -104,8 +105,8 @@ public class FavoritesModule {
     }
 
     @Provides
-    FavoritesInteractor providesFavoritesInteractor(Repository repository) {
-        return new FavoritesInteractorImpl(repository);
+    FavoritesInteractor providesFavoritesInteractor(Repository repository, SharedUserStorage storage) {
+        return new FavoritesInteractorImpl(repository, storage);
     }
 
     @Provides
