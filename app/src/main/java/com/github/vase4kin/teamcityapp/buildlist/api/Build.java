@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
 import java.util.List;
@@ -58,6 +59,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     private boolean personal;
     private boolean cleanSources;
     private boolean queueAtTop;
+    @SerializedName("snapshot-dependencies")
+    private Builds snapshotBuilds;
 
     public String getNumber() {
         return number;
@@ -245,5 +248,17 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
 
     public void setBuildType(BuildType buildType) {
         this.buildType = buildType;
+    }
+
+    public void setSnapshotBuilds(Builds snapshotBuilds) {
+        this.snapshotBuilds = snapshotBuilds;
+    }
+
+    public Builds getSnapshotBuilds() {
+        return snapshotBuilds;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

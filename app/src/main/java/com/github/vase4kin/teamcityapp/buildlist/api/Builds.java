@@ -18,12 +18,13 @@ package com.github.vase4kin.teamcityapp.buildlist.api;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Builds
  */
-public class Builds implements Collectible<Build> {
+public class Builds implements Collectible<Build>, Serializable {
 
     private int count;
 

@@ -31,5 +31,6 @@
     <item type="id" name="overview_recycler_view" />
     <item type="id" name="properties_recycler_view" />
     <item type="id" name="tests_recycler_view" />
+    <item type="id" name="snapshot_recycler_view" />
     <item type="id" name="toolbar" />
 </resources>

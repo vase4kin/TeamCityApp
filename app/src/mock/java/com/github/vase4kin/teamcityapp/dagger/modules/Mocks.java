@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.artifact.api.Artifacts;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles;
@@ -239,6 +240,7 @@ public class Mocks {
         buildType.setProjectName("Project name one two");
         buildType.setProjectId("id");
         build.setBuildType(buildType);
+        build.setSnapshotBuilds(new Builds(0, Collections.<Build>emptyList()));
         return build;
     }
 

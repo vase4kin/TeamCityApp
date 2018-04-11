@@ -298,6 +298,11 @@ public interface BuildDetails extends Jsonable {
     boolean isPinned();
 
     /**
+     * @return {true} if the build has snapshot dependencies builds
+     */
+    boolean hasSnapshotDependencies();
+
+    /**
      * @return build wrapped by build details
      */
     Build toBuild();
@@ -545,6 +550,11 @@ public interface BuildDetails extends Jsonable {
 
         @Override
         public boolean isPinned() {
+            return false;
+        }
+
+        @Override
+        public boolean hasSnapshotDependencies() {
             return false;
         }
 

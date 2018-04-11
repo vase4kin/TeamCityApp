@@ -127,6 +127,11 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     }
 
     @Override
+    public Observable<Builds> listBuilds(String locator) {
+        return listQueueBuilds(null);
+    }
+
+    @Override
     public Observable<Builds> listMoreBuilds(@Url String url) {
         return Observable.empty();
     }

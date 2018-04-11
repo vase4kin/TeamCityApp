@@ -52,6 +52,7 @@
     <string name="tab_build_log">Build Log</string>
     <string name="tab_artifacts">Artifacts</string>
     <string name="tab_parameters">Parameters</string>
+    <string name="tab_snapshot_dependencies">Snapshot dependencies</string>
 
     <!--progress creating new account dialog-->
     <string name="progress_dialog_title">Checking</string>

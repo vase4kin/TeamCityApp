@@ -463,6 +463,14 @@ public class BuildDetailsImpl implements BuildDetails {
      * {@inheritDoc}
      */
     @Override
+    public boolean hasSnapshotDependencies() {
+        return mBuild.getSnapshotBuilds() != null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Build toBuild() {
         return mBuild;
     }

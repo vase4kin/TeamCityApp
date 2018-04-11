@@ -43,6 +43,7 @@ import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment;
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 import com.joanzapata.iconify.IconDrawable;
@@ -113,6 +114,9 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
         fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.newInstance(mBuildDetails.toBuild()));
         if (!mBuildDetails.isQueued() && !mBuildDetails.isRunning()) {
             fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.newInstance(mBuildDetails.toBuild(), mBuildDetails.getArtifactsHref()));
+        }
+        if (mBuildDetails.hasSnapshotDependencies()) {
+            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.newInstance(mBuildDetails.getId()));
         }
     }
 

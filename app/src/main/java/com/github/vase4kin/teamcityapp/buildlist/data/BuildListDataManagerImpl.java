@@ -88,10 +88,72 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * {@inheritDoc}
      */
-    public void loadBuilds(@NonNull Observable<Builds> call,
-                           @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+    protected void loadBuilds(@NonNull Observable<Builds> call,
+                              @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
         mSubscriptions.clear();
-        Subscription subscription = call
+        Subscription subscription = getBuildDetailsObservable(call)
+                // putting them all to the sorted list
+                // where queued builds go first
+                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
+                    @Override
+                    public Integer call(BuildDetails build, BuildDetails build2) {
+                        return (build.isQueued() == build2.isQueued())
+                                ? 0
+                                : (build.isQueued()
+                                ? -1
+                                : 1);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<BuildDetails>>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingListener.onFail(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<BuildDetails> builds) {
+                        loadingListener.onSuccess(builds);
+                    }
+                });
+        mSubscriptions.add(subscription);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void loadNotSortedBuilds(@NonNull Observable<Builds> call,
+                                       @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+        mSubscriptions.clear();
+        Subscription subscription = getBuildDetailsObservable(call)
+                .toList()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<BuildDetails>>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingListener.onFail(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<BuildDetails> builds) {
+                        loadingListener.onSuccess(builds);
+                    }
+                });
+        mSubscriptions.add(subscription);
+    }
+
+    private Observable<BuildDetails> getBuildDetailsObservable(@NonNull Observable<Builds> call) {
+        return call
                 // converting all received builds to observables
                 .flatMap(new Func1<Builds, Observable<Build>>() {
                     @Override
@@ -137,37 +199,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                     public Observable<BuildDetails> call(Build build) {
                         return Observable.<BuildDetails>just(new BuildDetailsImpl(build));
                     }
-                })
-                // putting them all to the sorted list
-                // where queued builds go first
-                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
-                    @Override
-                    public Integer call(BuildDetails build, BuildDetails build2) {
-                        return (build.isQueued() == build2.isQueued())
-                                ? 0
-                                : (build.isQueued()
-                                ? -1
-                                : 1);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<BuildDetails>>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loadingListener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<BuildDetails> builds) {
-                        loadingListener.onSuccess(builds);
-                    }
                 });
-        mSubscriptions.add(subscription);
     }
 
     /**
