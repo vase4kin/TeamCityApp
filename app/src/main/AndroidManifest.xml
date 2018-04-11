@@ -87,6 +87,9 @@
         <activity
             android:name=".about.AboutActivity"
             android:label="@string/about_drawer_item" />
+        <activity
+            android:name=".favorites.view.FavoritesActivity"
+            android:label="@string/favorites_drawer_item" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

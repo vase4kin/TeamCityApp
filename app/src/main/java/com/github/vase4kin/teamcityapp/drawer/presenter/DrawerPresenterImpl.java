@@ -238,4 +238,12 @@ public class DrawerPresenterImpl<
     public void startAboutActivity() {
         mRouter.startAboutActivity();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void startFavoritesActivity() {
+        mRouter.startFavoritesActivity();
+    }
 }

@@ -29,6 +29,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
@@ -225,6 +226,11 @@ public class DrawerViewImpl implements DrawerView {
                                 .withSelectedTextColorRes(mDefaultColor)
                                 .withIdentifier(PROJECTS),
                         new PrimaryDrawerItem()
+                                .withName(R.string.favorites_drawer_item)
+                                .withIcon(new IconDrawable(mActivity, MaterialIcons.md_favorite).colorRes(mDefaultColor))
+                                .withSelectedTextColorRes(mDefaultColor)
+                                .withIdentifier(FAVORITES),
+                        new PrimaryDrawerItem()
                                 .withName(R.string.running_builds_drawer_item)
                                 .withIcon(new IconDrawable(mActivity, MaterialIcons.md_directions_run).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
@@ -284,6 +290,12 @@ public class DrawerViewImpl implements DrawerView {
                                         break;
                                     }
                                     mOnDrawerPresenterListener.startAboutActivity();
+                                    break;
+                                case FAVORITES:
+                                    if (mActivity instanceof FavoritesActivity) {
+                                        break;
+                                    }
+                                    mOnDrawerPresenterListener.startFavoritesActivity();
                                     break;
                                 default:
                                     showDialogWithAdvice();
