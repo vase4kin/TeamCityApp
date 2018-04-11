@@ -27,7 +27,6 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
@@ -50,17 +49,11 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -178,40 +171,5 @@ public class SnapshotDependenciesFragmentTest {
                 .check(matches(withText("This build will not start because there are no compatible agents which can run it")));
         onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(4, R.id.itemSubTitle))
                 .check(matches(withText("refs/heads/dev0feature")));
-    }
-
-    @Test
-    public void testUserCanClickOnSection() {
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        Build mockedBuild = Mocks.queuedBuild3();
-        mockedBuild.setId("buildId");
-        Intent intent = new Intent();
-        Bundle b = new Bundle();
-        b.putSerializable(BundleExtractorValues.BUILD, mockedBuild);
-        b.putString(BundleExtractorValues.NAME, NAME);
-        intent.putExtras(b);
-
-        // Start activity
-        mActivityRule.launchActivity(intent);
-
-        // Scroll to properties tab title
-        onView(withText(R.string.tab_snapshot_dependencies))
-                .perform(scrollTo())
-                .check(matches(isDisplayed()))
-                .perform(click());
-
-        // Click on header header
-        onView(withText("project name - build type name"))
-                .perform(click());
-
-        intended(allOf(
-                hasComponent(BuildListActivity.class.getName()),
-                hasExtras(allOf(
-                        hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo(null)),
-                        hasEntry(equalTo(BundleExtractorValues.ID), equalTo("Checkstyle_IdeaInspectionsPullRequest")),
-                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))))));
     }
 }
