@@ -257,4 +257,8 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     public Builds getSnapshotBuilds() {
         return snapshotBuilds;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

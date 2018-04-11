@@ -29,9 +29,9 @@ import java.util.List;
 /**
  * Snapshot dependencies build list interactor
  */
-public class SnapshotDepsInteractorImpl extends BuildListDataManagerImpl implements BuildListDataManager {
+public class SnapshotDependenciesInteractorImpl extends BuildListDataManagerImpl implements BuildListDataManager {
 
-    public SnapshotDepsInteractorImpl(Repository repository) {
+    public SnapshotDependenciesInteractorImpl(Repository repository) {
         super(repository);
     }
 

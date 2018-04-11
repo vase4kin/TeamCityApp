@@ -37,7 +37,7 @@ import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTracke
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl;
-import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDepsInteractorImpl;
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesInteractorImpl;
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.SnapshotDependenciesRouter;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -94,12 +94,17 @@ public class SnapshotDependenciesModule {
 
     @Provides
     BuildListDataManager providesBuildListDataManager(Repository repository) {
-        return new SnapshotDepsInteractorImpl(repository);
+        return new SnapshotDependenciesInteractorImpl(repository);
     }
 
     @Provides
     RunningBuildListView providesBuildListView(SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
         // Add text
-        return new RunningBuildsListViewImpl(mView, mActivity, R.string.empty_list_message_builds, adapter);
+        return new RunningBuildsListViewImpl(mView, mActivity, R.string.empty_list_message_builds, adapter) {
+            @Override
+            protected int recyclerViewId() {
+                return R.id.snapshot_recycler_view;
+            }
+        };
     }
 }
