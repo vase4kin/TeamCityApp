@@ -39,6 +39,11 @@ public interface FavoritesView extends BaseListView<NavigationDataModel> {
      */
     void updateTitleCount(int count);
 
+    /**
+     * Show add favorites info snack bar
+     */
+    void showInfoSnackbar();
+
     interface ViewListener {
 
         /**
@@ -47,5 +52,15 @@ public interface FavoritesView extends BaseListView<NavigationDataModel> {
          * @param navigationItem - Navigation being clicked
          */
         void onClick(NavigationItem navigationItem);
+
+        /**
+         * On FAB click
+         */
+        void onFabClick();
+
+        /**
+         * On snack bar action click
+         */
+        void onSnackBarAction();
     }
 }

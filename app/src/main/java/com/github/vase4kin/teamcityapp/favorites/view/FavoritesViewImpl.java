@@ -17,12 +17,18 @@
 package com.github.vase4kin.teamcityapp.favorites.view;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
@@ -30,12 +36,21 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+
 public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
+
+    @BindView(R.id.floating_action_button)
+    FloatingActionButton mFloatingActionButton;
+    @BindView(R.id.container)
+    View mContainer;
 
     private FavoritesView.ViewListener listener;
 
@@ -44,6 +59,23 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                              @StringRes int emptyMessage,
                              SimpleSectionedRecyclerViewAdapter<NavigationAdapter> adapter) {
         super(view, activity, emptyMessage, adapter);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void initViews(@NonNull BaseListView.ViewListener listener) {
+        super.initViews(listener);
+        mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_add).color(Color.WHITE));
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (FavoritesViewImpl.this.listener != null) {
+                    FavoritesViewImpl.this.listener.onFabClick();
+                }
+            }
+        });
     }
 
     /**
@@ -64,6 +96,28 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
             String title = String.format(Locale.ENGLISH, "%s (%d)", mActivity.getString(R.string.favorites_drawer_item), count);
             actionBar.setTitle(title);
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showInfoSnackbar() {
+        Snackbar snackBar = Snackbar.make(
+                mContainer,
+                R.string.text_info_add,
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.text_info_add_action, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (listener != null) {
+                            listener.onSnackBarAction();
+                        }
+                    }
+                });
+        TextView textView = snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
     }
 
     /**

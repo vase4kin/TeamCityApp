@@ -94,6 +94,22 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onFabClick() {
+        mView.showInfoSnackbar();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onSnackBarAction() {
+        router.startProjectActivity();
+    }
+
     @Override
     protected void onSuccessCallBack(List<NavigationItem> data) {
         super.onSuccessCallBack(data);

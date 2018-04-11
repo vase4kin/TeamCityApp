@@ -57,7 +57,7 @@ public class FavoritesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_navigation_list);
+        setContentView(R.layout.activity_favorites);
         View view = findViewById(android.R.id.content);
 
         // Injecting presenters
