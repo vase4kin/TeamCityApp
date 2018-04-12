@@ -76,9 +76,9 @@ public class NavigationPresenterImplTest {
 
     @Test
     public void testLoadData() throws Exception {
-        when(mValueExtractor.getUrl()).thenReturn("url");
+        when(mValueExtractor.getId()).thenReturn("url");
         mPresenter.loadData(mLoadingListener, false);
-        verify(mValueExtractor).getUrl();
+        verify(mValueExtractor).getId();
         verify(mDataManager).load(eq("url"), eq(false), eq(mLoadingListener));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
@@ -109,9 +109,9 @@ public class NavigationPresenterImplTest {
     @Test
     public void testOnClickIfNotBuildType() throws Exception {
         when(mNavigationItem.getName()).thenReturn("name");
-        when(mNavigationItem.getHref()).thenReturn("url");
+        when(mNavigationItem.getId()).thenReturn("id");
         mPresenter.onClick(mNavigationItem);
-        verify(mRouter).startNavigationActivity(eq("name"), eq("url"));
+        verify(mRouter).startNavigationActivity(eq("name"), eq("id"));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);
     }
 }

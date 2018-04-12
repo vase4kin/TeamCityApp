@@ -129,4 +129,14 @@ public class BuildDetailsActivity extends AppCompatActivity {
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
     }
+
+    public static void startNotAsNewTask(Activity activity, Build build, @Nullable String buildTypeName) {
+        Intent intent = new Intent(activity, BuildDetailsActivity.class);
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, build);
+        b.putString(BundleExtractorValues.NAME, buildTypeName);
+        intent.putExtras(b);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
+    }
 }

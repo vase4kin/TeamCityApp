@@ -270,6 +270,40 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
+    public void showAddToFavoritesSnackBar() {
+        Snackbar snackBar = Snackbar.make(
+                mRecyclerView,
+                R.string.text_add_to_favorites,
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.text_view_favorites, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOnBuildListPresenterListener.onNavigateToFavorites();
+                    }
+                });
+        TextView textView = snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showRemoveFavoritesSnackBar() {
+        Snackbar snackBar = Snackbar.make(
+                mRecyclerView,
+                R.string.text_remove_from_favorites,
+                Snackbar.LENGTH_LONG);
+        TextView textView = snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        snackBar.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void showBuildLoadingProgress() {
         mProgressDialog.show();
     }
@@ -299,8 +333,10 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setCaptureTouchEventOutsidePrompt(true)
                 .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        listener.onPromptShown();
+                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                            listener.onPromptShown();
+                        }
                     }
                 })
                 .show();
@@ -321,7 +357,33 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setCaptureTouchEventOutsidePrompt(true)
                 .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                            listener.onPromptShown();
+                        }
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showFavPrompt(final OnboardingManager.OnPromptShownListener listener) {
+        int color = getToolbarColor();
+        new MaterialTapTargetPrompt.Builder(mActivity)
+                .setTarget(R.id.add_to_favorites)
+                .setPrimaryText(R.string.title_onboarding_add_fav)
+                .setSecondaryText(R.string.text_onboarding_add_fav)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_favorite_border_wgite_24dp)
+                .setIconDrawableTintList(ColorStateList.valueOf(color))
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                    @Override
+                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
                         if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
                             listener.onPromptShown();
                         }
@@ -342,8 +404,16 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void createOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_filter_builds_activity, menu);
+    public void createFavOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_not_fav_builds_activity, menu);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void createNotFavOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_fav_builds_activity, menu);
     }
 
     /**
@@ -355,6 +425,9 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         switch (item.getItemId()) {
             case R.id.filter_builds:
                 mOnBuildListPresenterListener.onFilterBuildsOptionMenuClick();
+                return true;
+            case R.id.add_to_favorites:
+                mOnBuildListPresenterListener.onAddToFavoritesOptionMenuClick();
                 return true;
             default:
                 return false;

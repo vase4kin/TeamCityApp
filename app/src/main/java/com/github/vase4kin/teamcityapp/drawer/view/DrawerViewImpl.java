@@ -29,6 +29,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
@@ -54,8 +55,6 @@ import java.util.ArrayList;
  * Impl of {@link DrawerView}
  */
 public class DrawerViewImpl implements DrawerView {
-
-    public static final int DELAY_ON_CLOSE = 350;
 
     protected AppCompatActivity mActivity;
     protected Drawer mDrawerResult;
@@ -225,6 +224,12 @@ public class DrawerViewImpl implements DrawerView {
                                 .withSelectedTextColorRes(mDefaultColor)
                                 .withIdentifier(PROJECTS),
                         new PrimaryDrawerItem()
+                                .withName(R.string.favorites_drawer_item)
+                                .withIcon(new IconDrawable(mActivity, MaterialIcons.md_favorite).colorRes(mDefaultColor))
+                                .withSelectedTextColorRes(mDefaultColor)
+                                .withBadgeStyle(badgeStyle)
+                                .withIdentifier(FAVORITES),
+                        new PrimaryDrawerItem()
                                 .withName(R.string.running_builds_drawer_item)
                                 .withIcon(new IconDrawable(mActivity, MaterialIcons.md_directions_run).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
@@ -284,6 +289,12 @@ public class DrawerViewImpl implements DrawerView {
                                         break;
                                     }
                                     mOnDrawerPresenterListener.startAboutActivity();
+                                    break;
+                                case FAVORITES:
+                                    if (mActivity instanceof FavoritesActivity) {
+                                        break;
+                                    }
+                                    mOnDrawerPresenterListener.startFavoritesActivity();
                                     break;
                                 default:
                                     showDialogWithAdvice();
@@ -356,6 +367,14 @@ public class DrawerViewImpl implements DrawerView {
     @Override
     public void updateBuildQueueBadge(int count) {
         mDrawerResult.updateBadge(BUILD_QUEUE, new StringHolder(String.valueOf(count)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateFavoritesBadge(int count) {
+        mDrawerResult.updateBadge(FAVORITES, new StringHolder(String.valueOf(count)));
     }
 
     /**

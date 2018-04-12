@@ -35,6 +35,7 @@ public interface DrawerView {
     int NO_SELECTION = -1;
     int PROFILES_MANAGING = 4;
     int ABOUT = 5;
+    int FAVORITES = 6;
 
     /**
      * Init views
@@ -75,6 +76,13 @@ public interface DrawerView {
      * @param count - Number to update
      */
     void updateBuildQueueBadge(int count);
+
+    /**
+     * Update favorites badge
+     *
+     * @param count - Number to update
+     */
+    void updateFavoritesBadge(int count);
 
     /**
      * Set default color for drawer

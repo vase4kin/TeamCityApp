@@ -86,7 +86,7 @@ public class BuildQueueActivityTest {
         onView(withId(R.id.build_recycler_view)).check(hasItemsCount(5));
         // Checking header 1
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(0, R.id.section_text))
-                .check(matches(withText("Checkstyle_IdeaInspectionsPullRequest")));
+                .check(matches(withText("project name - build type name")));
         // Checking adapter item 1
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Queued build")));
@@ -99,7 +99,7 @@ public class BuildQueueActivityTest {
                 .check(matches(withText("refs/heads/dev")));
         // Checking header 2
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(3, R.id.section_text))
-                .check(matches(withText("Checkstyle_My_Pants_Solution")));
+                .check(matches(withText("Project name one two - Another configuration")));
         // Checking adapter item 3
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(4, R.id.itemTitle))
                 .check(matches(withText("This build will not start because there are no compatible agents which can run it")));

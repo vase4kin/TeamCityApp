@@ -34,7 +34,12 @@ public interface NavigationRouter {
     /**
      * Start navigation activity
      * @param name - Project id
-     * @param url - Project Url
+     * @param id - Project id
      */
-    void startNavigationActivity(@NonNull String name, @NonNull String url);
+    void startNavigationActivity(@NonNull String name, @NonNull String id);
+
+    /**
+     * Start projects activity
+     */
+    void startProjectActivity();
 }

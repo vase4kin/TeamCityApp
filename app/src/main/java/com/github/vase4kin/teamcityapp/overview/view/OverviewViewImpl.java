@@ -64,6 +64,8 @@ public class OverviewViewImpl implements OverviewView {
     private static final String ICON_BRANCH = "{mdi-git}";
     private static final String ICON_AGENT = "{md-directions-railway}";
     private static final String ICON_TRIGGER_BY = "{md-account-circle}";
+    private static final String ICON_BUILD_TYPE = "{md-crop-din}";
+    private static final String ICON_PROJECT = "{md-filter-none}";
 
     private static final String TAG_BOTTOM_SHEET = "BottomSheet Dialog";
 
@@ -292,6 +294,22 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
+    public void addBuildTypeNameCard(String buildTypeName) {
+        addCard(R.string.build_type_by_section_text, ICON_BUILD_TYPE, buildTypeName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void addBuildTypeProjectNameCard(String buildTypeProjectName) {
+        addCard(R.string.build_project_by_section_text, ICON_PROJECT, buildTypeProjectName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void addPersonalCard(String userName) {
         addCard(R.string.build_personal_text, ICON_TRIGGER_BY, userName);
     }
@@ -367,6 +385,24 @@ public class OverviewViewImpl implements OverviewView {
     @Override
     public void showBranchCardBottomSheetDialog(String description) {
         BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_branch_section_text), description, MenuItemsFactory.TYPE_BRANCH);
+        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showBuildTypeCardBottomSheetDialog(String description) {
+        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_type_by_section_text), description, MenuItemsFactory.TYPE_BUILD_TYPE);
+        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showProjectCardBottomSheetDialog(String description) {
+        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_project_by_section_text), description, MenuItemsFactory.TYPE_PROJECT);
         bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 

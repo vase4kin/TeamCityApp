@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,10 +51,12 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * repository Api instance
      */
-    protected Repository mRepository;
+    protected final Repository mRepository;
+    private final SharedUserStorage sharedUserStorage;
 
-    public BuildListDataManagerImpl(Repository repository) {
+    public BuildListDataManagerImpl(Repository repository, SharedUserStorage sharedUserStorage) {
         this.mRepository = repository;
+        this.sharedUserStorage = sharedUserStorage;
     }
 
     /**
@@ -88,10 +91,89 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * {@inheritDoc}
      */
-    public void loadBuilds(@NonNull Observable<Builds> call,
-                           @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+    @Override
+    public void addToFavorites(String buildTypeId) {
+        sharedUserStorage.addBuildTypeToFavorites(buildTypeId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeFromFavorites(String buildTypeId) {
+        sharedUserStorage.removeBuildTypeFromFavorites(buildTypeId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasBuildTypeAsFavorite(String buildTypeId) {
+        for (String favBuildTypeId : sharedUserStorage.getActiveUser().getBuildTypeIds()) {
+            if (favBuildTypeId.equals(buildTypeId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void loadBuilds(@NonNull Observable<Builds> call,
+                              @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+        Observable<List<BuildDetails>> buildDetailsList = getBuildDetailsObservable(call)
+                // putting them all to the sorted list
+                // where queued builds go first
+                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
+                    @Override
+                    public Integer call(BuildDetails build, BuildDetails build2) {
+                        return (build.isQueued() == build2.isQueued())
+                                ? 0
+                                : (build.isQueued()
+                                ? -1
+                                : 1);
+                    }
+                });
+        loadBuildDetailsList(buildDetailsList, loadingListener);
+    }
+
+    protected void loadBuildDetailsList(@NonNull Observable<List<BuildDetails>> call,
+                                        @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
         mSubscriptions.clear();
         Subscription subscription = call
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<List<BuildDetails>>() {
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        loadingListener.onFail(e.getMessage());
+                    }
+
+                    @Override
+                    public void onNext(List<BuildDetails> builds) {
+                        loadingListener.onSuccess(builds);
+                    }
+                });
+        mSubscriptions.add(subscription);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected void loadNotSortedBuilds(@NonNull Observable<Builds> call,
+                                       @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+        Observable<List<BuildDetails>> buildDetailsList = getBuildDetailsObservable(call)
+                .toList();
+        loadBuildDetailsList(buildDetailsList, loadingListener);
+    }
+
+    protected Observable<BuildDetails> getBuildDetailsObservable(@NonNull Observable<Builds> call) {
+        return call
                 // converting all received builds to observables
                 .flatMap(new Func1<Builds, Observable<Build>>() {
                     @Override
@@ -137,37 +219,7 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                     public Observable<BuildDetails> call(Build build) {
                         return Observable.<BuildDetails>just(new BuildDetailsImpl(build));
                     }
-                })
-                // putting them all to the sorted list
-                // where queued builds go first
-                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
-                    @Override
-                    public Integer call(BuildDetails build, BuildDetails build2) {
-                        return (build.isQueued() == build2.isQueued())
-                                ? 0
-                                : (build.isQueued()
-                                ? -1
-                                : 1);
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<BuildDetails>>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loadingListener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<BuildDetails> builds) {
-                        loadingListener.onSuccess(builds);
-                    }
                 });
-        mSubscriptions.add(subscription);
     }
 
     /**

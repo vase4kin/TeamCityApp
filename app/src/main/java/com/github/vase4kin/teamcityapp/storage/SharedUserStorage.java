@@ -146,6 +146,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                 // Who's gonna set 'Guest user' as real user name for TC user, right?
                 if (userAccount.getUserName().equals(UsersFactory.GUEST_USER_USER_NAME)) {
                     UserAccount guestUser = UsersFactory.guestUser(userAccount.getTeamcityUrl());
+                    guestUser.setBuildTypeIds(userAccount.getBuildTypeIds());
                     guestUser.setSslDisabled(userAccount.isSslDisabled());
                     return guestUser;
                 }
@@ -158,6 +159,7 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                 if (!mCryptoManager.isFailed(decryptedPassword)) {
                     UserAccount user = UsersFactory.user(userAccount, decryptedPassword);
                     user.setSslDisabled(userAccount.isSslDisabled());
+                    user.setBuildTypeIds(userAccount.getBuildTypeIds());
                     return user;
                 } else {
                     return UsersFactory.EMPTY_USER;
@@ -212,6 +214,30 @@ public class SharedUserStorage implements Collectible<UserAccount> {
             usersContainer.getUsersAccounts().get(0).setIsActive(true);
         }
         commitUserChanges();
+    }
+
+    public void addBuildTypeToFavorites(String buildTypeId) {
+        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+            if (userAccount.isActive()) {
+                userAccount.addBuildType(buildTypeId);
+                commitUserChanges();
+                break;
+            }
+        }
+    }
+
+    public void removeBuildTypeFromFavorites(String buildTypeId) {
+        for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
+            if (userAccount.isActive()) {
+                userAccount.getBuildTypeIds().remove(buildTypeId);
+                commitUserChanges();
+                break;
+            }
+        }
+    }
+
+    public List<String> getFavoriteBuildTypeIds() {
+        return getActiveUser().getBuildTypeIds();
     }
 
     /**

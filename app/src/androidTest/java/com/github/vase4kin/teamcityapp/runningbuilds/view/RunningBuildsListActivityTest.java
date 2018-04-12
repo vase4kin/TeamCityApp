@@ -22,17 +22,18 @@ import android.support.test.runner.AndroidJUnit4;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
-import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,13 +45,20 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.intent.Intents.intended;
+import static android.support.test.espresso.intent.matcher.BundleMatchers.hasEntry;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -72,19 +80,11 @@ public class RunningBuildsListActivityTest {
             });
 
     @Rule
-    public CustomActivityTestRule<RunningBuildsListActivity> mActivityRule = new CustomActivityTestRule<>(RunningBuildsListActivity.class);
+    public CustomIntentsTestRule<RunningBuildsListActivity> mActivityRule = new CustomIntentsTestRule<>(RunningBuildsListActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
 
-    /**
-     * java.lang.RuntimeException: Could not launch intent Intent { act=android.intent.action.MAIN flg=0x10000000 cmp=com.github.vase4kin.teamcityapp.mock/com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity } within 45 seconds. Perhaps the main thread has not gone idle within a reasonable amount of time? There could be an animation or something constantly repainting the screen. Or the activity is doing network calls on creation? See the threaddump logs. For your reference the last time the event queue was idle before your activity launch request was 1469282567161 and now the last time the queue went idle was: 1469282572365. If these numbers are the same your activity might be hogging the event queue.
-     *
-     * FIX ME
-     *
-     * @throws Exception
-     */
-    @Ignore
     @Test
     public void testUserCanSeeSuccessFullyLoadedRunningBuilds() throws Exception {
         mActivityRule.launchActivity(null);
@@ -92,13 +92,30 @@ public class RunningBuildsListActivityTest {
         // Checking toolbar title
         matchToolbarTitle("Running builds (1)");
         // List has item with header
-        onView(withId(R.id.my_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.build_recycler_view)).check(hasItemsCount(2));
         // Checking header
-        onView(withId(R.id.section_text)).check(matches(withText("Checkstyle_IdeaInspectionsPullRequest")));
+        onView(withId(R.id.section_text)).check(matches(withText("project name - build type name")));
         // Checking adapter item
-        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("Running tests")));
-        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("refs/heads/master")));
-        onView(withRecyclerView(R.id.my_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(matches(withText("#2458")));
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("Running tests")));
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("refs/heads/master")));
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(matches(withText("#2458")));
+    }
+
+    @Test
+    public void testUserCanClickOnSection() throws Exception {
+        mActivityRule.launchActivity(null);
+
+        // Click on header header
+        onView(withId(R.id.section_text))
+                .check(matches(withText("project name - build type name")))
+                .perform(click());
+
+        intended(allOf(
+                hasComponent(BuildListActivity.class.getName()),
+                hasExtras(allOf(
+                        hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo(null)),
+                        hasEntry(equalTo(BundleExtractorValues.ID), equalTo("Checkstyle_IdeaInspectionsPullRequest")),
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))))));
     }
 
     @Test

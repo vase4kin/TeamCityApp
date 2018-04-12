@@ -24,6 +24,8 @@ import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDownloadEvent;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenEvent;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenInBrowserEvent;
 import com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListEvent;
+import com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListFilteredByBranchEvent;
+import com.github.vase4kin.teamcityapp.overview.data.NavigateToProjectEvent;
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent;
 
 import org.greenrobot.eventbus.EventBus;
@@ -74,7 +76,23 @@ public class BottomSheetInteractorImpl implements BottomSheetInteractor {
      */
     @Override
     public void postNavigateToBuildListEvent(String branchName) {
-        eventBus.post(new NavigateToBuildListEvent(branchName));
+        eventBus.post(new NavigateToBuildListFilteredByBranchEvent(branchName));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postNavigateToBuildTypeEvent() {
+        eventBus.post(new NavigateToBuildListEvent());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void postNavigateToProjectEvent() {
+        eventBus.post(new NavigateToProjectEvent());
     }
 
     /**

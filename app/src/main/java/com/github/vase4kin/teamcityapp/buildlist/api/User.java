@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 import java.io.Serializable;
@@ -38,7 +36,6 @@ public class User extends BaseObject implements Serializable {
         return name;
     }
 
-    @VisibleForTesting
     public User(String username, String name) {
         this.username = username;
         this.name = name;

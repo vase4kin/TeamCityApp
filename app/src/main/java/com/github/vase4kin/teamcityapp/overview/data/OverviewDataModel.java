@@ -46,4 +46,16 @@ public interface OverviewDataModel extends BaseDataModel {
      * @return {true} if card is branch one
      */
     boolean isBranchCard(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return {true} if card is build type one
+     */
+    boolean isBuildTypeCard(int position);
+
+    /**
+     * @param position - Adapter position
+     * @return {true} if card is project one
+     */
+    boolean isProjectCard(int position);
 }

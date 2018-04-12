@@ -38,6 +38,7 @@ import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManag
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Set;
@@ -58,8 +59,8 @@ public class RunningListModule {
     }
 
     @Provides
-    RunningBuildsDataManager providesRunningBuildsDataManager(Repository repository) {
-        return new RunningBuildsDataManagerImpl(repository);
+    RunningBuildsDataManager providesRunningBuildsDataManager(Repository repository, SharedUserStorage storage) {
+        return new RunningBuildsDataManagerImpl(repository, storage);
     }
 
     @Provides

@@ -76,7 +76,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
 
     @Override
     public Observable<BuildType> buildType(@Path("id") String id) {
-        return Observable.just(Mocks.buildType());
+        return Observable.just(Mocks.buildTypeMock());
     }
 
     @Override
@@ -124,6 +124,11 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
         builds.add(Mocks.queuedBuild2());
         builds.add(Mocks.queuedBuild3());
         return Observable.just(new Builds(3, builds));
+    }
+
+    @Override
+    public Observable<Builds> listBuilds(String locator) {
+        return listQueueBuilds(null);
     }
 
     @Override

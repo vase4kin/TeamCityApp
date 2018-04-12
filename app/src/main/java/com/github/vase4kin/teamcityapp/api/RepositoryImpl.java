@@ -77,10 +77,10 @@ public class RepositoryImpl implements Repository {
      * {@inheritDoc}
      */
     @Override
-    public Observable<NavigationNode> listBuildTypes(String url, boolean update) {
+    public Observable<NavigationNode> listBuildTypes(String id, boolean update) {
         return mCacheCacheProviders.listBuildTypes(
-                mTeamCityService.listBuildTypes(urlFormatter.formatBasicUrl(url)),
-                new DynamicKey(url),
+                mTeamCityService.listBuildTypes(id),
+                new DynamicKey(id),
                 new EvictDynamicKey(update));
     }
 
@@ -136,6 +136,18 @@ public class RepositoryImpl implements Repository {
         return mCacheCacheProviders.listQueuedBuilds(
                 mTeamCityService.listQueueBuilds(fields),
                 new DynamicKey(fields != null ? fields : "empty"),
+                new EvictDynamicKey(update));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Observable<Builds> listSnapshotBuilds(String id, boolean update) {
+        String locator = String.format("snapshotDependency:(to:(id:%s),includeInitial:true),defaultFilter:false", id);
+        return mCacheCacheProviders.listSnapshotBuilds(
+                mTeamCityService.listBuilds(locator),
+                new DynamicKey(id),
                 new EvictDynamicKey(update));
     }
 

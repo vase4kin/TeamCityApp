@@ -162,6 +162,20 @@ public interface OverviewView {
     void addRestartedByCard(String restartedBy);
 
     /**
+     * Add card showing build's build type
+     *
+     * @param buildTypeName - build's build type name
+     */
+    void addBuildTypeNameCard(String buildTypeName);
+
+    /**
+     * Add card showing build's project
+     *
+     * @param buildTypeProjectName - build's project name
+     */
+    void addBuildTypeProjectNameCard(String buildTypeProjectName);
+
+    /**
      * Show build details cards
      */
     void showCards();
@@ -215,6 +229,20 @@ public interface OverviewView {
     void showBranchCardBottomSheetDialog(String description);
 
     /**
+     * Show bottom sheet dialog for build type card
+     *
+     * @param description - description of the card
+     */
+    void showBuildTypeCardBottomSheetDialog(String description);
+
+    /**
+     * Show bottom sheet dialog for project card
+     *
+     * @param description - description of the card
+     */
+    void showProjectCardBottomSheetDialog(String description);
+
+    /**
      * Show stop build onboarding prompt
      *
      * @param listener - Listener to know when prompt is shown
@@ -263,6 +291,16 @@ public interface OverviewView {
          * On branch card click
          */
         void onBranchCardClick(String value);
+
+        /**
+         * On build type card click
+         */
+        void onBuildTypeCardClick(String value);
+
+        /**
+         * On project card click
+         */
+        void onProjectCardClick(String value);
 
         /**
          * On bottom sheet show

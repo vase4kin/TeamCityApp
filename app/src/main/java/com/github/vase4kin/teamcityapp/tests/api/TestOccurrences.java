@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.tests.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
@@ -64,7 +62,6 @@ public class TestOccurrences extends BaseObject implements Collectible<TestOccur
         return nextHref;
     }
 
-    @VisibleForTesting
     public TestOccurrences(int passed, int failed, int ignored, String href) {
         this.passed = passed;
         this.failed = failed;
@@ -72,12 +69,10 @@ public class TestOccurrences extends BaseObject implements Collectible<TestOccur
         this.href = href;
     }
 
-    @VisibleForTesting
     public TestOccurrences(List<TestOccurrence> testOccurrence) {
         this.testOccurrence = testOccurrence;
     }
 
-    @VisibleForTesting
     public TestOccurrences(int count) {
         this.count = count;
     }
@@ -116,12 +111,10 @@ public class TestOccurrences extends BaseObject implements Collectible<TestOccur
         public TestOccurrence() {
         }
 
-        @VisibleForTesting
         public TestOccurrence(String details) {
             this.details = details;
         }
 
-        @VisibleForTesting
         public TestOccurrence(String name, String status, String href) {
             this.name = name;
             this.status = status;

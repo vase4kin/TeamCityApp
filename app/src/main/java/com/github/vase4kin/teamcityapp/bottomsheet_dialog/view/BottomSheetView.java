@@ -57,6 +57,16 @@ public interface BottomSheetView {
         void onShowBuildsActionClick(String branch);
 
         /**
+         * On show build type click
+         */
+        void onShowBuildTypeActionClick();
+
+        /**
+         * On show project click
+         */
+        void onShowProjectActionClick();
+
+        /**
          * On artifact download click
          *
          * @param fileName - file name

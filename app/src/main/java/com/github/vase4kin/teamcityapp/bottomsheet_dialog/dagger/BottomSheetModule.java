@@ -26,8 +26,10 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.ArtifactDef
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.ArtifactFolderMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.ArtifactFullMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.BranchMenuItemsFactory;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.BuildTypeMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.DefaultMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.ProjectMenuItemsFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModelImpl;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetInteractor;
@@ -141,6 +143,20 @@ public class BottomSheetModule {
     @Provides
     ViewHolderFactory<BottomSheetDataModel> providesViewHolderFactory() {
         return new BottomSheetItemViewHolderFactory();
+    }
+
+    @IntoMap
+    @IntKey(DefaultMenuItemsFactory.TYPE_BUILD_TYPE)
+    @Provides
+    MenuItemsFactory providesBuildTypeMenu() {
+        return new BuildTypeMenuItemsFactory(view.getContext(), descriptions);
+    }
+
+    @IntoMap
+    @IntKey(DefaultMenuItemsFactory.TYPE_PROJECT)
+    @Provides
+    MenuItemsFactory providesProjectMenu() {
+        return new ProjectMenuItemsFactory(view.getContext(), descriptions);
     }
 
 }

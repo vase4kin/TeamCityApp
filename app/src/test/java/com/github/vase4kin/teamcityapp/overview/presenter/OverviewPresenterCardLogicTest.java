@@ -332,4 +332,17 @@ public class OverviewPresenterCardLogicTest {
         verify(mView).addPersonalCard(eq(USER));
     }
 
+    @Test
+    public void testAddBuildTypeAndProjectCard() throws Exception {
+        when(mBuildDetails.hasBuildTypeInfo()).thenReturn(true);
+        when(mBuildDetails.getBuildTypeName()).thenReturn("bt_name");
+        when(mBuildDetails.getProjectName()).thenReturn("p_name");
+        mPresenter.onSuccess(mBuildDetails);
+        verify(mBuildDetails).hasBuildTypeInfo();
+        verify(mBuildDetails).getBuildTypeName();
+        verify(mView).addBuildTypeNameCard(eq("bt_name"));
+        verify(mBuildDetails).getProjectName();
+        verify(mView).addBuildTypeProjectNameCard(eq("p_name"));
+    }
+
 }

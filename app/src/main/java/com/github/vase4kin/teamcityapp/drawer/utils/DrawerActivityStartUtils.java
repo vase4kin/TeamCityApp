@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.os.Handler;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
+import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut;
 
 /**
  * Helper for start activities from the drawer
@@ -43,7 +43,7 @@ public class DrawerActivityStartUtils {
                     activity.startActivity(finalLaunchIntent);
                     activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                 }
-            }, DrawerViewImpl.DELAY_ON_CLOSE);
+            }, DrawerTimeOut.DELAY_ON_CLOSE);
         }
     }
 }

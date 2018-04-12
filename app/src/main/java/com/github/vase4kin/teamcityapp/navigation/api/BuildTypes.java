@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.navigation.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import java.util.List;
 
 /**
@@ -31,7 +29,6 @@ public class BuildTypes {
         return buildType;
     }
 
-    @VisibleForTesting
     public BuildTypes(List<BuildType> buildType) {
         this.buildType = buildType;
     }

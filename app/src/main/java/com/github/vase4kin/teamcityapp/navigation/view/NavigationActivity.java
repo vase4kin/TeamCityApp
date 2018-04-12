@@ -48,11 +48,11 @@ public class NavigationActivity extends AppCompatActivity {
     @Inject
     NavigationPresenterImpl mNavigationPresenter;
 
-    public static void start(@NonNull String name, @NonNull String url, @NonNull Activity activity) {
+    public static void start(@NonNull String name, @NonNull String id, @NonNull Activity activity) {
         Bundle bundle = new Bundle();
         bundle.putString(BundleExtractorValues.NAME, name);
         Intent intent = new Intent(activity, NavigationActivity.class);
-        bundle.putString(BundleExtractorValues.URL, url);
+        bundle.putString(BundleExtractorValues.ID, id);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);

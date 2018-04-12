@@ -81,6 +81,11 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
+    public Observable<Builds> listSnapshotBuilds(String id, boolean update) {
+        return mTeamCityService.listBuilds(id);
+    }
+
+    @Override
     public Observable<Builds> listMoreBuilds(String url) {
         return mTeamCityService.listMoreBuilds(url);
     }

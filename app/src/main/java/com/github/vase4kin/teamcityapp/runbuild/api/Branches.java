@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import java.util.List;
 
 /**
@@ -31,7 +29,6 @@ public class Branches {
         return branch;
     }
 
-    @VisibleForTesting
     public Branches(List<Branch> branch) {
         this.branch = branch;
     }

@@ -16,16 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Builds
  */
-public class Builds implements Collectible<Build> {
+public class Builds implements Collectible<Build>, Serializable {
 
     private int count;
 
@@ -52,7 +51,6 @@ public class Builds implements Collectible<Build> {
         return build;
     }
 
-    @VisibleForTesting
     public Builds(int count, List<Build> build) {
         this.count = count;
         this.build = build;

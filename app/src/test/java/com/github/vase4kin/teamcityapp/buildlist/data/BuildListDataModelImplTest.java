@@ -121,8 +121,8 @@ public class BuildListDataModelImplTest {
 
     @Test
     public void testGetBuildTypeName() throws Exception {
-        when(mBuildDetails.getBuildTypeName()).thenReturn("name");
-        assertThat(mDataModel.getBuildTypeName(0), is("name"));
+        when(mBuildDetails.getBuildTypeFullName()).thenReturn("name");
+        assertThat(mDataModel.getBuildTypeFullName(0), is("name"));
     }
 
     @Test

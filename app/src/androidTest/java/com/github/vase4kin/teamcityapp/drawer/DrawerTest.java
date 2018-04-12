@@ -230,6 +230,26 @@ public class DrawerTest {
         matchToolbarTitle("Manage Accounts");
     }
 
+    @Test
+    public void testUserCanNavigateToFavorites() throws Exception {
+        // Opening drawer
+        clickOnBurgerButton();
+
+        // Check fav is opened
+        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.favorites_drawer_item), isDisplayed()))
+                .perform(click());
+
+        // Checking toolbar title
+        matchToolbarTitle("Favorites (0)");
+
+        // Opening drawer
+        clickOnBurgerButton();
+
+        // Check fav is selected
+        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.favorites_drawer_item), isDisplayed()))
+                .check(matches(isSelected()));
+    }
+
     /**
      * Open drawer by clicking on burger button
      */

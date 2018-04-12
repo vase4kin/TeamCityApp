@@ -23,16 +23,20 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.List;
+
+import rx.Observable;
+import rx.functions.Func2;
 
 /**
  * Data manager to handle build queue server operations
  */
 public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implements RunningBuildsDataManager {
 
-    public BuildQueueDataManagerImpl(Repository repository) {
-        super(repository);
+    public BuildQueueDataManagerImpl(Repository repository, SharedUserStorage storage) {
+        super(repository, storage);
     }
 
     /**
@@ -40,7 +44,14 @@ public class BuildQueueDataManagerImpl extends BuildListDataManagerImpl implemen
      */
     @Override
     public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        loadBuilds(mRepository.listQueueBuilds(null, update), loadingListener);
+        Observable<List<BuildDetails>> runningBuildsObservable = getBuildDetailsObservable(mRepository.listQueueBuilds(null, update))
+                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
+                    @Override
+                    public Integer call(BuildDetails buildDetails, BuildDetails buildDetails2) {
+                        return buildDetails.getBuildTypeId().compareToIgnoreCase(buildDetails2.getBuildTypeId());
+                    }
+                });
+        loadBuildDetailsList(runningBuildsObservable, loadingListener);
     }
 
     /**

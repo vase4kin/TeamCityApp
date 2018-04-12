@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.api;
 
-import android.support.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 /**
@@ -69,7 +67,6 @@ public class File extends BaseObject {
      */
     public static class Children extends BaseObject {
 
-        @VisibleForTesting
         public Children(String href) {
             this.href = href;
         }
@@ -80,14 +77,12 @@ public class File extends BaseObject {
      */
     public static class Content extends BaseObject {
 
-        @VisibleForTesting
         public Content(String href) {
             this.href = href;
         }
     }
 
     //folder
-    @VisibleForTesting
     public File(String name, Children children, String href) {
         this.name = name;
         this.children = children;
@@ -95,7 +90,6 @@ public class File extends BaseObject {
     }
 
     // file
-    @VisibleForTesting
     public File(String name, long size, Content content, String href) {
         this.name = name;
         this.size = size;

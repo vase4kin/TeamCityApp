@@ -24,11 +24,6 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 public interface NavigationValueExtractor extends BaseValueExtractor {
 
     /**
-     * @return Url of project/buildType
-     */
-    String getUrl();
-
-    /**
      * @return Title of project/buildType
      */
     String getName();

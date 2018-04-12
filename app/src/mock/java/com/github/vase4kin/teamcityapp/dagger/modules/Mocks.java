@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.artifact.api.Artifacts;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.api.Files;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered;
 import com.github.vase4kin.teamcityapp.buildlist.api.User;
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles;
@@ -78,12 +79,18 @@ public class Mocks {
         Project project = new Project();
         project.setName("Project");
         project.setDescription("Description");
+        return new NavigationNode(
+                new Projects(Collections.singletonList(project)),
+                new BuildTypes(Collections.singletonList(buildTypeMock())));
+    }
+
+    public static BuildType buildTypeMock() {
         BuildType buildType = new BuildType();
         buildType.setId("build_type_id");
         buildType.setName("build type");
-        return new NavigationNode(
-                new Projects(Collections.singletonList(project)),
-                new BuildTypes(Collections.singletonList(buildType)));
+        buildType.setProjectName("Secret project");
+        buildType.setProjectId("projectId123");
+        return buildType;
     }
 
     /**
@@ -221,7 +228,7 @@ public class Mocks {
      * @return queued build 3
      */
     public static Build queuedBuild3() {
-        return createNotFailedBuildMock(
+        Build build = createNotFailedBuildMock(
                 "/guestAuth/app/rest/buildQueue/id:823052",
                 null,
                 "Checkstyle_My_Pants_Solution",
@@ -234,6 +241,13 @@ public class Mocks {
                 null,
                 "20160621T233008+0700",
                 null);
+        BuildType buildType = new BuildType();
+        buildType.setName("Another configuration");
+        buildType.setProjectName("Project name one two");
+        buildType.setProjectId("id");
+        build.setBuildType(buildType);
+        build.setSnapshotBuilds(new Builds(0, Collections.<Build>emptyList()));
+        return build;
     }
 
     /**
@@ -298,6 +312,12 @@ public class Mocks {
         propertyList.add(new Properties.Property("userName", "Murdock"));
         build.setProperties(new Properties(propertyList));
         build.setTestOccurrences(new TestOccurrences(10, 2, 4, "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695)"));
+        BuildType buildType = new BuildType();
+        buildType.setId("Checkstyle_IdeaInspectionsPullRequest");
+        buildType.setProjectId("projectId");
+        buildType.setProjectName("project name");
+        buildType.setName("build type name");
+        build.setBuildType(buildType);
         return build;
     }
 
@@ -369,9 +389,5 @@ public class Mocks {
         files.add(new File("AndroidManifest.xml", 7768L, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/AndroidManifest.xml"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/AndroidManifest.xml"));
         files.add(new File("index.html", 697840, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/index.html"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/index.html"));
         return new Files(files);
-    }
-
-    public static BuildType buildType() {
-        return new BuildType();
     }
 }

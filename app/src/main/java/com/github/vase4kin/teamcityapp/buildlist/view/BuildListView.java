@@ -74,6 +74,16 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void showOpeningBuildErrorSnackBar();
 
     /**
+     * Show configuration has been added to favorites
+     */
+    void showAddToFavoritesSnackBar();
+
+    /**
+     * Show configuration has been removed from favorites
+     */
+    void showRemoveFavoritesSnackBar();
+
+    /**
      * Show build loading progress
      */
     void showBuildLoadingProgress();
@@ -98,11 +108,25 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void showRunBuildPrompt(OnboardingManager.OnPromptShownListener listener);
 
     /**
+     * Show fav onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showFavPrompt(OnboardingManager.OnPromptShownListener listener);
+
+    /**
      * {@inheritDoc}
      * <p>
      * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
      */
-    void createOptionsMenu(Menu menu, MenuInflater inflater);
+    void createFavOptionsMenu(Menu menu, MenuInflater inflater);
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     */
+    void createNotFavOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
      * {@inheritDoc}

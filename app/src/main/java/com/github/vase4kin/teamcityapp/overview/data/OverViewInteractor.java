@@ -39,7 +39,7 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     /**
      * Load build details
      *
-     * @param url             - Build ROOT_PROJECTS_URL
+     * @param url             - Build url
      * @param update          - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
@@ -90,6 +90,16 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
     void postStartBuildListActivityFilteredByBranchEvent(String branchName);
 
     /**
+     * Post {@link StartBuildsListActivityEvent}
+     */
+    void postStartBuildListActivityEvent();
+
+    /**
+     * Post {@link StartProjectActivityEvent}
+     */
+    void postStartProjectActivityEvent();
+
+    /**
      * @return {@link BuildDetails} passed through intent
      */
     BuildDetails getBuildDetails();
@@ -104,9 +114,19 @@ public interface OverViewInteractor extends BaseListRxDataManager<Build, BuildEl
         void onDataRefreshEvent();
 
         /**
-         * On post {@link NavigateToBuildListEvent}
+         * On post {@link NavigateToBuildListFilteredByBranchEvent}
          */
         void onNavigateToBuildListEvent(String branchName);
+
+        /**
+         * On post {@link NavigateToBuildListEvent}
+         */
+        void onNavigateToBuildListEvent();
+
+        /**
+         * On post {@link NavigateToProjectEvent}
+         */
+        void onNavigateToProjectEvent();
     }
 
 }

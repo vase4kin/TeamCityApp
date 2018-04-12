@@ -65,4 +65,9 @@ public interface DrawerDataManager {
      * @param loadingListener - Listener to receive callbacks
      */
     void loadBuildQueueCount(OnLoadingListener<Integer> loadingListener);
+
+    /**
+     * @return the count of favorite build types
+     */
+    int getFavoritesCount();
 }
