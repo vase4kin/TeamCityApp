@@ -180,11 +180,6 @@ public class FavoritesActivityTest {
         // click on snack bar action
         onView(withText(R.string.text_view_favorites)).perform(click());
 
-        // check activity is opened
-        intended(allOf(
-                hasComponent(FavoritesActivity.class.getName()),
-                hasFlags(FLAG_ACTIVITY_SINGLE_TOP)));
-
         // Checking toolbar title
         matchToolbarTitle("Favorites (1)");
 
