@@ -76,7 +76,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
 
     @Override
     public Observable<BuildType> buildType(@Path("id") String id) {
-        return Observable.just(Mocks.buildType());
+        return Observable.just(Mocks.buildTypeMock());
     }
 
     @Override

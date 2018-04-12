@@ -79,12 +79,18 @@ public class Mocks {
         Project project = new Project();
         project.setName("Project");
         project.setDescription("Description");
+        return new NavigationNode(
+                new Projects(Collections.singletonList(project)),
+                new BuildTypes(Collections.singletonList(buildTypeMock())));
+    }
+
+    public static BuildType buildTypeMock() {
         BuildType buildType = new BuildType();
         buildType.setId("build_type_id");
         buildType.setName("build type");
-        return new NavigationNode(
-                new Projects(Collections.singletonList(project)),
-                new BuildTypes(Collections.singletonList(buildType)));
+        buildType.setProjectName("Secret project");
+        buildType.setProjectId("projectId123");
+        return buildType;
     }
 
     /**
@@ -383,9 +389,5 @@ public class Mocks {
         files.add(new File("AndroidManifest.xml", 7768L, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/AndroidManifest.xml"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/AndroidManifest.xml"));
         files.add(new File("index.html", 697840, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/index.html"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/index.html"));
         return new Files(files);
-    }
-
-    public static BuildType buildType() {
-        return new BuildType();
     }
 }
