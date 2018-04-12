@@ -89,6 +89,7 @@ public class DrawerPresenterImplTest {
     @Test
     public void testHandleOnCreateIfModelIsNotEmpty() throws Exception {
         when(mView.isModelEmpty()).thenReturn(false);
+        when(mDataManager.getFavoritesCount()).thenReturn(5);
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mDataManager).load(mArgumentCaptor.capture());
@@ -112,6 +113,8 @@ public class DrawerPresenterImplTest {
         agentsListener.onSuccess(67);
         verify(mView).updateAgentsBadge(eq(67));
         agentsListener.onFail("error");
+        verify(mDataManager).getFavoritesCount();
+        verify(mView).updateFavoritesBadge(eq(5));
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 
@@ -140,10 +143,13 @@ public class DrawerPresenterImplTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testOnDrawerSlide() throws Exception {
+        when(mDataManager.getFavoritesCount()).thenReturn(5);
         mPresenter.onDrawerSlide();
         verify(mDataManager).loadConnectedAgentsCount(Mockito.<OnLoadingListener>any());
         verify(mDataManager).loadBuildQueueCount(Mockito.<OnLoadingListener>any());
         verify(mDataManager).loadRunningBuildsCount(Mockito.<OnLoadingListener>any());
+        verify(mDataManager).getFavoritesCount();
+        verify(mView).updateFavoritesBadge(eq(5));
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 

@@ -18,6 +18,10 @@ package com.github.vase4kin.teamcityapp.storage.api;
 
 import com.github.vase4kin.teamcityapp.base.api.Jsonable;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * User account
  */
@@ -29,6 +33,7 @@ public class UserAccount implements Jsonable {
     private boolean isGuestUser;
     private boolean isActive;
     private boolean isSslDisabled;
+    private List<String> buildTypeIds = new ArrayList<>();
 
     public UserAccount(String teamcityUrl,
                        String userName,
@@ -77,6 +82,23 @@ public class UserAccount implements Jsonable {
 
     public boolean isSslDisabled() {
         return isSslDisabled;
+    }
+
+    public void addBuildType(String buildTypeId) {
+        if (buildTypeIds == null) {
+            buildTypeIds = new ArrayList<>();
+            buildTypeIds.add(buildTypeId);
+        } else {
+            buildTypeIds.add(buildTypeId);
+        }
+    }
+
+    public List<String> getBuildTypeIds() {
+        return buildTypeIds == null ? Collections.<String>emptyList() : buildTypeIds;
+    }
+
+    public void setBuildTypeIds(List<String> buildTypeIds) {
+        this.buildTypeIds = buildTypeIds;
     }
 
     @Override

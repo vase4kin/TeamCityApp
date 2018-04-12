@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,10 +51,12 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * repository Api instance
      */
-    protected Repository mRepository;
+    protected final Repository mRepository;
+    private final SharedUserStorage sharedUserStorage;
 
-    public BuildListDataManagerImpl(Repository repository) {
+    public BuildListDataManagerImpl(Repository repository, SharedUserStorage sharedUserStorage) {
         this.mRepository = repository;
+        this.sharedUserStorage = sharedUserStorage;
     }
 
     /**
@@ -88,10 +91,38 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
     /**
      * {@inheritDoc}
      */
+    @Override
+    public void addToFavorites(String buildTypeId) {
+        sharedUserStorage.addBuildTypeToFavorites(buildTypeId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeFromFavorites(String buildTypeId) {
+        sharedUserStorage.removeBuildTypeFromFavorites(buildTypeId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasBuildTypeAsFavorite(String buildTypeId) {
+        for (String favBuildTypeId : sharedUserStorage.getActiveUser().getBuildTypeIds()) {
+            if (favBuildTypeId.equals(buildTypeId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     protected void loadBuilds(@NonNull Observable<Builds> call,
                               @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mSubscriptions.clear();
-        Subscription subscription = getBuildDetailsObservable(call)
+        Observable<List<BuildDetails>> buildDetailsList = getBuildDetailsObservable(call)
                 // putting them all to the sorted list
                 // where queued builds go first
                 .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
@@ -103,7 +134,14 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
                                 ? -1
                                 : 1);
                     }
-                })
+                });
+        loadBuildDetailsList(buildDetailsList, loadingListener);
+    }
+
+    protected void loadBuildDetailsList(@NonNull Observable<List<BuildDetails>> call,
+                                        @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
+        mSubscriptions.clear();
+        Subscription subscription = call
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Observer<List<BuildDetails>>() {
@@ -129,30 +167,12 @@ public class BuildListDataManagerImpl extends BaseListRxDataManagerImpl<Builds, 
      */
     protected void loadNotSortedBuilds(@NonNull Observable<Builds> call,
                                        @NonNull final OnLoadingListener<List<BuildDetails>> loadingListener) {
-        mSubscriptions.clear();
-        Subscription subscription = getBuildDetailsObservable(call)
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<List<BuildDetails>>() {
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        loadingListener.onFail(e.getMessage());
-                    }
-
-                    @Override
-                    public void onNext(List<BuildDetails> builds) {
-                        loadingListener.onSuccess(builds);
-                    }
-                });
-        mSubscriptions.add(subscription);
+        Observable<List<BuildDetails>> buildDetailsList = getBuildDetailsObservable(call)
+                .toList();
+        loadBuildDetailsList(buildDetailsList, loadingListener);
     }
 
-    private Observable<BuildDetails> getBuildDetailsObservable(@NonNull Observable<Builds> call) {
+    protected Observable<BuildDetails> getBuildDetailsObservable(@NonNull Observable<Builds> call) {
         return call
                 // converting all received builds to observables
                 .flatMap(new Func1<Builds, Observable<Build>>() {

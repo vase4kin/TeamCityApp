@@ -42,9 +42,19 @@ public interface OnBuildListPresenterListener extends MugenCallbacks {
     void onShowQueuedBuildSnackBarClick();
 
     /**
+     * Show favorites
+     */
+    void onNavigateToFavorites();
+
+    /**
      * On filter builds option menu click
      */
     void onFilterBuildsOptionMenuClick();
+
+    /**
+     * On add to favorites build click
+     */
+    void onAddToFavoritesOptionMenuClick();
 
     /**
      * On reset filters action click

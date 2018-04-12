@@ -57,4 +57,9 @@ public interface DrawerRouter {
      * Start {@link AboutLibrariesActivity}
      */
     void startAboutActivity();
+
+    /**
+     * Start {@link com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity}
+     */
+    void startFavoritesActivity();
 }

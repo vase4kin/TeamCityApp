@@ -106,5 +106,7 @@ public class TestUtils {
         onboardingManager.saveRemoveBuildFromQueuePromptShown();
         onboardingManager.saveStopBuildPromptShown();
         onboardingManager.saveRestartBuildPromptShown();
+        onboardingManager.saveAddFavPromptShown();
+        onboardingManager.saveFavPromptShown();
     }
 }

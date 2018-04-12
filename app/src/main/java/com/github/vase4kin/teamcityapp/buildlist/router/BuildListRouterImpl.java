@@ -21,6 +21,7 @@ import android.support.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
@@ -57,5 +58,13 @@ public class BuildListRouterImpl implements BuildListRouter {
     @Override
     public void openFilterBuildsPage(String buildTypeId) {
         FilterBuildsActivity.startForResult(mActivity, buildTypeId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void openFavorites() {
+        FavoritesActivity.start(mActivity);
     }
 }

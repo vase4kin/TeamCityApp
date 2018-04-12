@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.List;
 
@@ -31,8 +32,8 @@ import java.util.List;
  */
 public class SnapshotDependenciesInteractorImpl extends BuildListDataManagerImpl implements BuildListDataManager {
 
-    public SnapshotDependenciesInteractorImpl(Repository repository) {
-        super(repository);
+    public SnapshotDependenciesInteractorImpl(Repository repository, SharedUserStorage storage) {
+        super(repository, storage);
     }
 
     /**

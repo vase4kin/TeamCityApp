@@ -28,6 +28,7 @@
     <item type="id" name="build_recycler_view" />
     <item type="id" name="changes_recycler_view" />
     <item type="id" name="navigation_recycler_view" />
+    <item type="id" name="favorites_recycler_view" />
     <item type="id" name="overview_recycler_view" />
     <item type="id" name="properties_recycler_view" />
     <item type="id" name="tests_recycler_view" />

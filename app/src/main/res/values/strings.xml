@@ -27,6 +27,7 @@
 
     <!--drawer items-->
     <string name="projects_drawer_item">Projects</string>
+    <string name="favorites_drawer_item">Favorites</string>
     <string name="running_builds_drawer_item">Running builds</string>
     <string name="agents_drawer_item">Agents</string>
     <string name="build_queue_drawer_item">Build queue</string>
@@ -111,6 +112,7 @@
     <string name="empty_list_message_parameters">No user defined parameters</string>
     <string name="empty_list_message_changes">No changes</string>
     <string name="empty_list_message_projects_or_build_types">No projects or build configurations</string>
+    <string name="empty_list_message_favorites">No favorites</string>
     <string name="empty_passed_tests">There are no failed tests</string>
     <string name="empty_list_files">No files</string>
 
@@ -282,9 +284,14 @@
 
     <!--Build list activity-->
     <string name="text_menu_filter_builds">Filter builds</string>
+    <string name="text_menu_add_to_favorites">Add to favorites</string>
+    <string name="text_menu_remove_from_favorites">Remove from favorites</string>
     <string name="text_filters_applied">Build filters have been applied</string>
     <string name="text_queued_header">Queued</string>
     <string name="text_snackbar_button_reset_filters">Reset filters</string>
+    <string name="text_add_to_favorites">The configuration has been added to favorites</string>
+    <string name="text_remove_from_favorites">The configuration has been removed from favorites</string>
+    <string name="text_view_favorites">Open favorites</string>
 
     <!--Filter builds activity-->
     <string name="title_filter_builds">Filter builds</string>
@@ -297,7 +304,7 @@
 
     <!--Onboarding-->
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
-    <string name="text_onboarding_navigation_drawer">Manage accounts, view running/queued builds and agents</string>
+    <string name="text_onboarding_navigation_drawer">Manage accounts, view favorites, running/queued builds and agents</string>
     <string name="title_onboarding_run_build">Run builds</string>
     <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
     <string name="title_onboarding_filter_builds">Filter builds</string>
@@ -306,5 +313,11 @@
     <string name="text_onboarding_stop_build">Stop running builds</string>
     <string name="text_onboarding_restart_build">Restart finished builds</string>
     <string name="text_onboarding_remove_build_from_queue">Remove builds from queue</string>
+    <string name="title_onboarding_add_fav">Add to favorites</string>
+    <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
+
+    <!--Favorites-->
+    <string name="text_info_add">Open projects and favorite configurations</string>
+    <string name="text_info_add_action">Open projects</string>
 
 </resources>

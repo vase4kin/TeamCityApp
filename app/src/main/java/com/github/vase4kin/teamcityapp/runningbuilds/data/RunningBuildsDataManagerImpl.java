@@ -25,8 +25,12 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.util.List;
+
+import rx.Observable;
+import rx.functions.Func2;
 
 /**
  * Impl of {@link RunningBuildsDataManager}
@@ -38,8 +42,8 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     private BuildListFilter mFilter;
 
-    public RunningBuildsDataManagerImpl(Repository repository) {
-        super(repository);
+    public RunningBuildsDataManagerImpl(Repository repository, SharedUserStorage storage) {
+        super(repository, storage);
         // Creating running filter
         mFilter = new BuildListFilterImpl();
         mFilter.setFilter(FilterBuildsView.FILTER_RUNNING);
@@ -52,7 +56,14 @@ public class RunningBuildsDataManagerImpl extends BuildListDataManagerImpl imple
      */
     @Override
     public void load(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        loadBuilds(mRepository.listRunningBuilds(mFilter.toLocator(), null, update), loadingListener);
+        Observable<List<BuildDetails>> runningBuildsObservable = getBuildDetailsObservable(mRepository.listRunningBuilds(mFilter.toLocator(), null, update))
+                .toSortedList(new Func2<BuildDetails, BuildDetails, Integer>() {
+                    @Override
+                    public Integer call(BuildDetails buildDetails, BuildDetails buildDetails2) {
+                        return buildDetails.getBuildTypeId().compareToIgnoreCase(buildDetails2.getBuildTypeId());
+                    }
+                });
+        loadBuildDetailsList(runningBuildsObservable, loadingListener);
     }
 
     /**

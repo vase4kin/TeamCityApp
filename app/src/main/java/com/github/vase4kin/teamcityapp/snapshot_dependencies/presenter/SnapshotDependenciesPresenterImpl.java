@@ -114,7 +114,23 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
+    public void onNavigateToFavorites() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onFilterBuildsOptionMenuClick() {
+
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onAddToFavoritesOptionMenuClick() {
 
     }
 

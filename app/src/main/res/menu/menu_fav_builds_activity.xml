@@ -17,8 +17,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/add_to_favorites"
+        android:icon="@drawable/ic_favorite_border_wgite_24dp"
+        app:showAsAction="ifRoom"
+        android:title="@string/text_menu_add_to_favorites" />
+    <item
         android:id="@+id/filter_builds"
         android:icon="@drawable/ic_filter_list_white_24px"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/text_menu_filter_builds" />
 </menu>

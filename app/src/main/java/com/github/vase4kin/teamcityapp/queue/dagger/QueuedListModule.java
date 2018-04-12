@@ -38,6 +38,7 @@ import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueViewImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Set;
@@ -58,8 +59,8 @@ public class QueuedListModule {
     }
 
     @Provides
-    RunningBuildsDataManager providesRunningBuildsDataManager(Repository repository) {
-        return new BuildQueueDataManagerImpl(repository);
+    RunningBuildsDataManager providesRunningBuildsDataManager(Repository repository, SharedUserStorage storage) {
+        return new BuildQueueDataManagerImpl(repository, storage);
     }
 
     @Provides
