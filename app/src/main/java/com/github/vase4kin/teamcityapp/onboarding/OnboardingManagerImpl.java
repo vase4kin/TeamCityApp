@@ -31,7 +31,8 @@ public class OnboardingManagerImpl implements OnboardingManager {
     private final static String KEY_STOP_BUILDS = "StopBuilds";
     private final static String KEY_RESTART_BUILDS = "RestartBuilds";
     private final static String KEY_REMOVE_BUILDS_FROM_QUEUE = "RemoveBuildsFromQueue";
-    private final static String KEY_ADD_FAV_FROM_QUEUE = "AddToFavorites";
+    private final static String KEY_ADD_FAV = "AddToFavorites";
+    private final static String KEY_FAV = "AddToFavoritesFromBuildType";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -140,7 +141,7 @@ public class OnboardingManagerImpl implements OnboardingManager {
      */
     @Override
     public boolean isAddFavPromptShown() {
-        return mSharedPreferences.getBoolean(KEY_ADD_FAV_FROM_QUEUE, false);
+        return mSharedPreferences.getBoolean(KEY_ADD_FAV, false);
     }
 
     /**
@@ -148,6 +149,16 @@ public class OnboardingManagerImpl implements OnboardingManager {
      */
     @Override
     public void saveAddFavPromptShown() {
-        mSharedPreferences.edit().putBoolean(KEY_ADD_FAV_FROM_QUEUE, true).apply();
+        mSharedPreferences.edit().putBoolean(KEY_ADD_FAV, true).apply();
+    }
+
+    @Override
+    public boolean isFavPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_FAV, false);
+    }
+
+    @Override
+    public void saveFavPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_FAV, true).apply();
     }
 }

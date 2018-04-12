@@ -91,6 +91,16 @@ public interface OnboardingManager {
      */
     void saveAddFavPromptShown();
 
+    /**
+     * @return {true} if add favorites from buildtype onboarding prompt is shown
+     */
+    boolean isFavPromptShown();
+
+    /**
+     * Save that add favorites from buildtype prompt is shown
+     */
+    void saveFavPromptShown();
+
     interface OnPromptShownListener {
         /**
          * when prompt is shown

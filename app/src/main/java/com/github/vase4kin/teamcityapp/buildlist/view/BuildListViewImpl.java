@@ -333,8 +333,10 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setCaptureTouchEventOutsidePrompt(true)
                 .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        listener.onPromptShown();
+                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                            listener.onPromptShown();
+                        }
                     }
                 })
                 .show();
@@ -355,7 +357,33 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setCaptureTouchEventOutsidePrompt(true)
                 .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
                     @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                            listener.onPromptShown();
+                        }
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showFavPrompt(final OnboardingManager.OnPromptShownListener listener) {
+        int color = getToolbarColor();
+        new MaterialTapTargetPrompt.Builder(mActivity)
+                .setTarget(R.id.add_to_favorites)
+                .setPrimaryText(R.string.title_onboarding_add_fav)
+                .setSecondaryText(R.string.text_onboarding_add_fav)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setIcon(R.drawable.ic_favorite_border_wgite_24dp)
+                .setIconDrawableTintList(ColorStateList.valueOf(color))
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                    @Override
+                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
                         if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
                             listener.onPromptShown();
                         }

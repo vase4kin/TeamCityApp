@@ -108,6 +108,13 @@ public interface BuildListView extends BaseListView<BuildListDataModel>, ViewLoa
     void showRunBuildPrompt(OnboardingManager.OnPromptShownListener listener);
 
     /**
+     * Show fav onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    void showFavPrompt(OnboardingManager.OnPromptShownListener listener);
+
+    /**
      * {@inheritDoc}
      * <p>
      * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}

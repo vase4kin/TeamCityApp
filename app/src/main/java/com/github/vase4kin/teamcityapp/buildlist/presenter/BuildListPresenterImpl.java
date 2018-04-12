@@ -106,6 +106,13 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public void onResume() {
         super.onResume();
+        showRunBuildPrompt();
+    }
+
+    /**
+     * Show run build prompt
+     */
+    private void showRunBuildPrompt() {
         if (mView.isBuildListOpen() && !onboardingManager.isRunBuildPromptShown()) {
             mView.showRunBuildPrompt(new OnboardingManager.OnPromptShownListener() {
                 @Override
@@ -126,6 +133,21 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
                 @Override
                 public void onPromptShown() {
                     onboardingManager.saveFilterBuildsPromptShown();
+                    showFavPrompt();
+                }
+            });
+        }
+    }
+
+    /**
+     * Show fav prompt
+     */
+    private void showFavPrompt() {
+        if (!onboardingManager.isFavPromptShown()) {
+            mView.showFavPrompt(new OnboardingManager.OnPromptShownListener() {
+                @Override
+                public void onPromptShown() {
+                    onboardingManager.saveFavPromptShown();
                 }
             });
         }
