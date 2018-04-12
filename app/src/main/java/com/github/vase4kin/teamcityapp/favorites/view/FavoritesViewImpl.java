@@ -18,10 +18,13 @@ package com.github.vase4kin.teamcityapp.favorites.view;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -36,6 +39,7 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -44,6 +48,7 @@ import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
+import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
 
@@ -118,6 +123,38 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
         TextView textView = snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
         textView.setTextColor(Color.WHITE);
         snackBar.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showAddFavPrompt(final OnboardingManager.OnPromptShownListener listener) {
+        int color = getToolbarColor();
+        new MaterialTapTargetPrompt.Builder(mActivity)
+                .setTarget(mFloatingActionButton)
+                .setPrimaryText(R.string.title_onboarding_add_fav)
+                .setSecondaryText(R.string.text_onboarding_add_fav)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
+                    @Override
+                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
+                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                            listener.onPromptShown();
+                        }
+                    }
+                })
+                .show();
+    }
+
+    /**
+     * @return color of toolbar
+     */
+    @ColorInt
+    private int getToolbarColor() {
+        return ((ColorDrawable) mActivity.findViewById(R.id.toolbar).getBackground()).getColor();
     }
 
     /**

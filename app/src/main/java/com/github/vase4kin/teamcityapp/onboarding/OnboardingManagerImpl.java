@@ -31,6 +31,7 @@ public class OnboardingManagerImpl implements OnboardingManager {
     private final static String KEY_STOP_BUILDS = "StopBuilds";
     private final static String KEY_RESTART_BUILDS = "RestartBuilds";
     private final static String KEY_REMOVE_BUILDS_FROM_QUEUE = "RemoveBuildsFromQueue";
+    private final static String KEY_ADD_FAV_FROM_QUEUE = "AddToFavorites";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -132,5 +133,21 @@ public class OnboardingManagerImpl implements OnboardingManager {
     @Override
     public void saveRemoveBuildFromQueuePromptShown() {
         mSharedPreferences.edit().putBoolean(KEY_REMOVE_BUILDS_FROM_QUEUE, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isAddFavPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_ADD_FAV_FROM_QUEUE, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveAddFavPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_ADD_FAV_FROM_QUEUE, true).apply();
     }
 }

@@ -81,6 +81,16 @@ public interface OnboardingManager {
      */
     void saveRemoveBuildFromQueuePromptShown();
 
+    /**
+     * @return {true} if add favorites onboarding prompt is shown
+     */
+    boolean isAddFavPromptShown();
+
+    /**
+     * Save that add favorites prompt is shown
+     */
+    void saveAddFavPromptShown();
+
     interface OnPromptShownListener {
         /**
          * when prompt is shown
