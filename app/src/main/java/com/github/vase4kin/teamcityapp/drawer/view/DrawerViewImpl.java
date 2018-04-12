@@ -56,8 +56,6 @@ import java.util.ArrayList;
  */
 public class DrawerViewImpl implements DrawerView {
 
-    public static final int DELAY_ON_CLOSE = 350;
-
     protected AppCompatActivity mActivity;
     protected Drawer mDrawerResult;
     ArrayList<IProfile> mProfileList = new ArrayList<>();
