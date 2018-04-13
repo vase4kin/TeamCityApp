@@ -14,11 +14,10 @@ Screenshot 1 | Screenshot 2 | Screenshot 3 | Screenshot 4 | Screenshot 5 |
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|
 ![Screenshot 1](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%201.png) | ![Screenshot 2](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%202.png) | ![Screenshot 3](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%203.png) | ![Screenshot 4](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%206.png) | ![Screenshot 5](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%207.png)
 
-# Contribution
+## Contribution
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-License
-=======
+## License
 
     Copyright 2016 Andrey Tolpeev
 
