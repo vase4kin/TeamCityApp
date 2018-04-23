@@ -34,7 +34,8 @@ task generateCodeCoverageReport(type: JacocoReport) {
                        '**/*$*.class',
                        '**/*$*.java',
                        '**/api/**',
-                       '**/dagger/**'
+                       '**/dagger/**',
+                       '**/BuildListActivity.class'
             ]
     )
 
