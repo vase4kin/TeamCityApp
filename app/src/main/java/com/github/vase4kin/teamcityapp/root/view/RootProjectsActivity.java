@@ -38,8 +38,8 @@ import javax.inject.Inject;
 public class RootProjectsActivity extends AppCompatActivity implements OnAccountSwitchListener {
 
     static {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { // $COVERAGE-IGNORE$
-            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true); // $COVERAGE-IGNORE$
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         }
     }
 

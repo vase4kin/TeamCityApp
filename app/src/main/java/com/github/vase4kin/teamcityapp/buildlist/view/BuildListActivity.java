@@ -55,8 +55,8 @@ import javax.inject.Inject;
 public class BuildListActivity extends AppCompatActivity {
 
     static {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) { // $COVERAGE-IGNORE$
-            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true); // $COVERAGE-IGNORE$
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         }
     }
 
