@@ -52,9 +52,9 @@ public class FavoritesInteractorImpl extends BaseListRxDataManagerImpl<Favorites
     public void loadFavorites(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, final boolean update) {
         List<String> ids = storage.getFavoriteBuildTypeIds();
         Observable<NavigationItemsList> favoritesObservable = Observable.from(ids)
-                .flatMap(new Func1<String, Observable<NavigationItem>>() {
+                .flatMap(new Func1<String, Observable<BuildType>>() {
                     @Override
-                    public Observable<NavigationItem> call(String id) {
+                    public Observable<BuildType> call(String id) {
                         return repository.buildType(id, update)
                                 .onErrorResumeNext(new Func1<Throwable, Observable<? extends BuildType>>() {
                                     @Override
@@ -62,19 +62,25 @@ public class FavoritesInteractorImpl extends BaseListRxDataManagerImpl<Favorites
                                         return Observable.empty();
                                     }
                                 })
-                                .flatMap(new Func1<BuildType, Observable<NavigationItem>>() {
+                                .flatMap(new Func1<BuildType, Observable<BuildType>>() {
                                     @Override
-                                    public Observable<NavigationItem> call(BuildType buildType) {
-                                        return Observable.just((NavigationItem) buildType);
+                                    public Observable<BuildType> call(BuildType buildType) {
+                                        return Observable.just(buildType);
                                     }
                                 });
                     }
                 })
-                .toSortedList(new Func2<NavigationItem, NavigationItem, Integer>() {
+                .toSortedList(new Func2<BuildType, BuildType, Integer>() {
                     @Override
-                    public Integer call(NavigationItem navigationItem, NavigationItem navigationItem2) {
-                        // sort by build type ids
-                        return navigationItem.getId().compareToIgnoreCase(navigationItem2.getId());
+                    public Integer call(BuildType buildType1, BuildType buildType2) {
+                        // sort by project ids
+                        return buildType1.getProjectId().compareToIgnoreCase((buildType2.getProjectId()));
+                    }
+                })
+                .flatMap(new Func1<List<BuildType>, Observable<List<NavigationItem>>>() {
+                    @Override
+                    public Observable<List<NavigationItem>> call(List<BuildType> buildTypes) {
+                        return Observable.from(buildTypes).cast(NavigationItem.class).toList();
                     }
                 })
                 .flatMap(new Func1<List<NavigationItem>, Observable<NavigationItemsList>>() {

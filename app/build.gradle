@@ -182,7 +182,7 @@ dependencies {
     // Onboarding
     implementation 'uk.co.samuelwall:material-tap-target-prompt:2.7.0'
     // Dagger
-    compile 'com.google.dagger:dagger:2.11'
+    implementation 'com.google.dagger:dagger:2.11'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.11'
     // Rx
     implementation 'io.reactivex:rxandroid:1.2.1'
