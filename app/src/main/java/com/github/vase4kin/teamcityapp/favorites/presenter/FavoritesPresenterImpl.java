@@ -21,6 +21,7 @@ import android.support.annotation.NonNull;
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractor;
+import com.github.vase4kin.teamcityapp.favorites.tracker.FavoritesTracker;
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesView;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
@@ -28,7 +29,6 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
-import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         NavigationItem,
         FavoritesView,
         FavoritesInteractor,
-        NavigationTracker,
+        FavoritesTracker,
         NavigationValueExtractor> implements FavoritesView.ViewListener {
 
     private final NavigationRouter router;
@@ -52,7 +52,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Inject
     FavoritesPresenterImpl(@NonNull FavoritesView view,
                            @NonNull FavoritesInteractor interactor,
-                           @NonNull NavigationTracker tracker,
+                           @NonNull FavoritesTracker tracker,
                            @NonNull NavigationValueExtractor valueExtractor,
                            NavigationRouter router,
                            OnboardingManager onboardingManager) {
@@ -101,6 +101,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     public void onClick(NavigationItem navigationItem) {
         if (navigationItem instanceof BuildType) {
             router.startBuildListActivity(navigationItem.getName(), navigationItem.getId());
+            mTracker.trackUserOpensBuildType();
         } else {
             router.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
@@ -112,6 +113,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onFabClick() {
         mView.showInfoSnackbar();
+        mTracker.trackUserClickOnFab();
     }
 
     /**
@@ -120,6 +122,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onSnackBarAction() {
         router.startProjectActivity();
+        mTracker.trackUserClicksOnSnackBarAction();
     }
 
     @Override

@@ -46,7 +46,7 @@ public class FavoritesActivity extends AppCompatActivity {
     @Inject
     DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker> drawerPresenter;
     @Inject
-    FavoritesPresenterImpl navigationPresenter;
+    FavoritesPresenterImpl favoritesPresenter;
 
     public static void start(@NonNull Activity activity) {
         Intent launchIntent = new Intent(activity, FavoritesActivity.class)
@@ -69,19 +69,19 @@ public class FavoritesActivity extends AppCompatActivity {
                 .inject(this);
 
         drawerPresenter.onCreate();
-        navigationPresenter.onViewsCreated();
+        favoritesPresenter.onViewsCreated();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        navigationPresenter.onViewsDestroyed();
+        favoritesPresenter.onViewsDestroyed();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        navigationPresenter.onResume();
+        favoritesPresenter.onResume();
     }
 
     @Override
