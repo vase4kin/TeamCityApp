@@ -317,7 +317,7 @@
     <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
 
     <!--Favorites-->
-    <string name="text_info_add">Open projects and favorite configurations</string>
+    <string name="text_info_add">Open projects, find a configuration and add it to favorites for an easy access</string>
     <string name="text_info_add_action">Open projects</string>
 
 </resources>

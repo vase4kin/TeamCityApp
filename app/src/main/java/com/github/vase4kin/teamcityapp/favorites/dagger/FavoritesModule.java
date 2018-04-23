@@ -29,16 +29,14 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractor;
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractorImpl;
+import com.github.vase4kin.teamcityapp.favorites.tracker.FavoritesTracker;
+import com.github.vase4kin.teamcityapp.favorites.tracker.FavoritesTrackerImpl;
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesView;
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesViewImpl;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouterImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.FabricNavigationTrackerImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.FirebaseNavigationTrackerImpl;
-import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
-import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
@@ -46,13 +44,11 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
-import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import dagger.multibindings.IntoSet;
 
 @Module
 public class FavoritesModule {
@@ -128,21 +124,9 @@ public class FavoritesModule {
         return new NavigationViewHolderFactory();
     }
 
-    @IntoSet
     @Provides
-    NavigationTracker providesFabricViewTracker() {
-        return new FabricNavigationTrackerImpl();
-    }
-
-    @IntoSet
-    @Provides
-    NavigationTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
-        return new FirebaseNavigationTrackerImpl(firebaseAnalytics);
-    }
-
-    @Provides
-    NavigationTracker providesViewTracker(Set<NavigationTracker> trackers) {
-        return new NavigationTrackerImpl(trackers);
+    FavoritesTracker providesFavoritesTracker(FirebaseAnalytics firebaseAnalytics) {
+        return new FavoritesTrackerImpl(firebaseAnalytics);
     }
 
 }
