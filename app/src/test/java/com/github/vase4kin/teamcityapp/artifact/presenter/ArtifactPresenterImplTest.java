@@ -126,6 +126,8 @@ public class ArtifactPresenterImplTest {
     public void testInitViews() throws Exception {
         mPresenter.initViews();
         verify(mView).setOnArtifactPresenterListener(eq(mPresenter));
+        verify(mDataManager).registerEventBus();
+        verify(mDataManager).setListener(eq(mPresenter));
     }
 
     @Test
@@ -147,6 +149,8 @@ public class ArtifactPresenterImplTest {
         mPresenter.onClick(mFile);
         verify(mValueExtractor).getBuildDetails();
         verify(mRouter).openArtifactFile(eq(mBuildDetails), eq("url"));
+        verify(mDataManager).unregisterEventBus();
+        verify(mDataManager).setListener(null);
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
@@ -248,6 +252,8 @@ public class ArtifactPresenterImplTest {
         mPresenter.onOpenArtifactEvent("href");
         verify(mValueExtractor).getBuildDetails();
         verify(mRouter).openArtifactFile(eq(mBuildDetails), eq("href"));
+        verify(mDataManager).unregisterEventBus();
+        verify(mDataManager).setListener(null);
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
@@ -264,22 +270,6 @@ public class ArtifactPresenterImplTest {
     public void testUnSubscribe() throws Exception {
         mPresenter.unSubscribe();
         verify(mDataManager).unsubscribe();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
-    }
-
-    @Test
-    public void testHandleOnStartIfRegistered() throws Exception {
-        mPresenter.onStart();
-        verify(mDataManager).registerEventBus();
-        verify(mDataManager).setListener(eq(mPresenter));
-        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
-    }
-
-    @Test
-    public void testHandleOnStop() throws Exception {
-        mPresenter.OnStop();
-        verify(mDataManager).unregisterEventBus();
-        verify(mDataManager).setListener(null);
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 

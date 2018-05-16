@@ -91,6 +91,8 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     protected void initViews() {
         super.initViews();
         mView.setOnArtifactPresenterListener(this);
+        mDataManager.registerEventBus();
+        mDataManager.setListener(this);
     }
 
     /**
@@ -101,6 +103,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         if (artifactFile.hasChildren() && artifactFile.isFolder()) {
             String href = artifactFile.getChildren().getHref();
             mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
+            unRegister();
         } else {
             onLongClick(artifactFile);
         }
@@ -164,20 +167,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         mDataManager.unsubscribe();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onStart() {
-        mDataManager.registerEventBus();
-        mDataManager.setListener(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void OnStop() {
+    private void unRegister() {
         mDataManager.unregisterEventBus();
         mDataManager.setListener(null);
     }
@@ -227,6 +217,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onOpenArtifactEvent(String href) {
         mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
+        unRegister();
     }
 
     /**
