@@ -42,6 +42,14 @@ public interface BottomSheetDataModel extends BaseDataModel {
     String getDescription(int position);
 
     /**
+     * Get file name
+     *
+     * @param position - adapter position
+     * @return description
+     */
+    String getFileName(int position);
+
+    /**
      * Get icon for menu item
      *
      * @param position - adapter position
