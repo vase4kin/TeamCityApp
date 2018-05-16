@@ -55,9 +55,6 @@ public class BottomSheetDataModelImpl implements BottomSheetDataModel {
     public String getFileName(int position) {
         String url = getDescription(position);
         List<String> segments = Arrays.asList(url.split("/"));
-        if (segments.size() == 1) {
-            return url;
-        }
         return segments.get(segments.size() - 1);
     }
 
