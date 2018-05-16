@@ -24,16 +24,6 @@ import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter;
 public interface ArtifactPresenter extends BaseListPresenter {
 
     /**
-     * Handle fragment on start
-     */
-    void onStart();
-
-    /**
-     * Handle fragment on stop
-     */
-    void OnStop();
-
-    /**
      * Handle fragment on request permissions result
      */
     void onRequestPermissionsResult(int requestCode,

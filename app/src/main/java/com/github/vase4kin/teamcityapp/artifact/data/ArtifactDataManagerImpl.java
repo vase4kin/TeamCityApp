@@ -115,7 +115,9 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
      */
     @Override
     public void unregisterEventBus() {
-        mEventBus.unregister(this);
+        if (mEventBus.isRegistered(this)) {
+            mEventBus.unregister(this);
+        }
     }
 
     /**

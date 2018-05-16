@@ -69,18 +69,6 @@ public class ArtifactListFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        mPresenter.onStart();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mPresenter.OnStop();
-    }
-
-    @Override
     public void onDestroyView() {
         mPresenter.onViewsDestroyed();
         super.onDestroyView();
