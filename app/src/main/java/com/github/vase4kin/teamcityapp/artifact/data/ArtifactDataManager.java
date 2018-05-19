@@ -47,6 +47,11 @@ public interface ArtifactDataManager extends BaseListRxDataManager<Files, File> 
     void downloadArtifact(@NonNull String url, @NonNull String name, @NonNull OnLoadingListener<java.io.File> loadingListener);
 
     /**
+     * Check if file is apk file
+     */
+    boolean isTheFileApk(String fileName);
+
+    /**
      * Register event bus
      */
     void registerEventBus();

@@ -17,7 +17,12 @@
 package com.github.vase4kin.teamcityapp.artifact.permissions;
 
 import android.Manifest;
+import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 
@@ -25,8 +30,6 @@ import android.support.v4.app.Fragment;
  * Impl of {@link PermissionManager}
  */
 public class PermissionManagerImpl implements PermissionManager {
-
-    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 42;
 
     private Fragment mFragment;
 
@@ -39,18 +42,9 @@ public class PermissionManagerImpl implements PermissionManager {
      */
     @Override
     public boolean isWriteStoragePermissionsGranted() {
-        return ActivityCompat.checkSelfPermission(mFragment.getActivity(),
+        return ActivityCompat.checkSelfPermission(mFragment.requireContext(),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isNeedToShowInfoPermissionsDialog() {
-        return ActivityCompat.shouldShowRequestPermissionRationale(mFragment.getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**
@@ -60,6 +54,27 @@ public class PermissionManagerImpl implements PermissionManager {
     public void requestWriteStoragePermissions() {
         mFragment.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    @Override
+    public boolean isInstallPackagesPermissionGranted() {
+        return mFragment.requireContext().getPackageManager().canRequestPackageInstalls();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    @Override
+    public void requestInstallPackagesPermission() {
+        Intent intent = new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES);
+        Uri packageUri = Uri.parse("package:" + mFragment.requireContext().getPackageName());
+        intent.setData(packageUri);
+        mFragment.startActivity(intent);
     }
 
     /**

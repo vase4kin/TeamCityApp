@@ -79,4 +79,11 @@ public interface ArtifactView extends BaseListView<ArtifactDataModel> {
      * @param onPermissionsDialogListener - Listener to handle callbacks on {@link com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl}
      */
     void showPermissionsInfoDialog(OnPermissionsDialogListener onPermissionsDialogListener);
+
+    /**
+     * Show install packages permissions dialogue
+     *
+     * @param onPermissionsDialogListener - Listener to handle callbacks on {@link com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl}
+     */
+    void showInstallPackagesPermissionsInfoDialog(OnPermissionsDialogListener onPermissionsDialogListener);
 }

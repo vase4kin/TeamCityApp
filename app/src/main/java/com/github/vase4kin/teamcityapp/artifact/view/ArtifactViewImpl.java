@@ -191,4 +191,23 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
                 })
                 .show();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showInstallPackagesPermissionsInfoDialog(final OnPermissionsDialogListener onPermissionsDialogListener) {
+        new MaterialDialog.Builder(mActivity)
+                .title(R.string.permissions_dialog_title)
+                .content(R.string.permissions_install_packages_dialog_content)
+                .widgetColor(Color.GRAY)
+                .positiveText(R.string.dialog_ok_title)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        onPermissionsDialogListener.onAllow();
+                    }
+                })
+                .show();
+    }
 }

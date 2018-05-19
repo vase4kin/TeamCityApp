@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.artifact.data;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.webkit.MimeTypeMap;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.api.Repository;
@@ -43,6 +44,8 @@ import rx.schedulers.Schedulers;
  * Impl of {@link ArtifactDataManager}
  */
 public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, File> implements ArtifactDataManager {
+
+    private final static String EXT_APK = "apk";
 
     private Repository mRepository;
     private EventBus mEventBus;
@@ -98,6 +101,15 @@ public class ArtifactDataManagerImpl extends BaseListRxDataManagerImpl<Files, Fi
                     }
                 });
         mSubscriptions.add(subscription);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTheFileApk(String fileName) {
+        String ext = MimeTypeMap.getFileExtensionFromUrl(fileName);
+        return EXT_APK.equals(ext);
     }
 
     /**
