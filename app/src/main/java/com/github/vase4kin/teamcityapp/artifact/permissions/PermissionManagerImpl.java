@@ -59,10 +59,13 @@ public class PermissionManagerImpl implements PermissionManager {
     /**
      * {@inheritDoc}
      */
-    @TargetApi(Build.VERSION_CODES.O)
     @Override
     public boolean isInstallPackagesPermissionGranted() {
-        return mFragment.requireContext().getPackageManager().canRequestPackageInstalls();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return mFragment.requireContext().getPackageManager().canRequestPackageInstalls();
+        } else {
+            return true;
+        }
     }
 
     /**
