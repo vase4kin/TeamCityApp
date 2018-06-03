@@ -509,4 +509,76 @@ public class ArtifactListFragmentTest {
         onView(withText(R.string.download_artifact_retry_snack_bar_text))
                 .check(matches(isDisplayed()));
     }
+
+    @Test
+    public void testUserBeingAskedToGrantAllowInstallPackagesPermissions() throws Exception {
+        // Prepare mocks
+        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        List<File> files = new ArrayList<>();
+        files.add(new File("my-fancy-app.apk", 697840, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/my-fancy-app.apk"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/my-fancy-app.apk"));
+        Files filesMock = new Files(files);
+        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Observable.just(filesMock));
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        Intent intent = new Intent();
+        Bundle b = new Bundle();
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild());
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME);
+        intent.putExtras(b);
+
+        // Start activity
+        mActivityRule.launchActivity(intent);
+
+        // Checking artifact tab title
+        onView(withText("Artifacts"))
+                .perform(scrollTo())
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Clicking on apk to download
+        onView(withRecyclerView(R.id.artifact_recycler_view)
+                .atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("my-fancy-app.apk")))
+                .perform(click());
+
+        ConditionWatcher.waitForCondition(new Instruction() {
+            @Override
+            public String getDescription() {
+                return "The artifact menu is not opened";
+            }
+
+            @Override
+            public boolean checkCondition() {
+                boolean isMenuOpened = false;
+                try {
+                    onView(withText(R.string.artifact_download))
+                            .check(matches(isDisplayed()));
+                    isMenuOpened = true;
+                } catch (Exception ignored) {
+                    onView(withRecyclerView(R.id.artifact_recycler_view)
+                            .atPositionOnView(0, R.id.itemTitle))
+                            .perform(click());
+                }
+                return isMenuOpened;
+            }
+        });
+
+        // Click on download option
+        onView(withText(R.string.artifact_download))
+                .perform(click());
+
+        // Check dialog text
+        onView(withText(R.string.permissions_install_packages_dialog_content)).check(matches(isDisplayed()));
+
+        /*// Confirm dialog
+        onView(withText(R.string.dialog_ok_title)).perform(click());
+
+        // Check filter builds activity is opened
+        intended(allOf(
+                hasAction(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES),
+                hasData("package:com.github.vase4kin.teamcityapp.mock.debug")));*/
+    }
 }
