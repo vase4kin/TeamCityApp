@@ -180,34 +180,41 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         this.fileName = fileName;
         this.fileHref = href;
         if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
-            if (mPermissionManager.isNeedToShowInfoPermissionsDialog()) {
-                mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
+            mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
+                @Override
+                public void onAllow() {
+                    mPermissionManager.requestWriteStoragePermissions();
+                }
+            });
+        } else {
+            if (mDataManager.isTheFileApk(fileName)
+                    && !mPermissionManager.isInstallPackagesPermissionGranted()) {
+                mView.showInstallPackagesPermissionsInfoDialog(new OnPermissionsDialogListener() {
                     @Override
                     public void onAllow() {
-                        mPermissionManager.requestWriteStoragePermissions();
+                        mPermissionManager.requestInstallPackagesPermission();
                     }
                 });
             } else {
-                mPermissionManager.requestWriteStoragePermissions();
-            }
-        } else {
-            mView.showProgressDialog();
-            mDataManager.downloadArtifact(
-                    href,
-                    fileName,
-                    new OnLoadingListener<java.io.File>() {
-                        @Override
-                        public void onSuccess(java.io.File data) {
-                            mView.dismissProgressDialog();
-                            mRouter.startFileActivity(data);
-                        }
+                mView.showProgressDialog();
+                mDataManager.downloadArtifact(
+                        href,
+                        fileName,
+                        new OnLoadingListener<java.io.File>() {
+                            @Override
+                            public void onSuccess(java.io.File data) {
+                                mView.dismissProgressDialog();
+                                // TODO: Snack bar with file downloaded
+                                mRouter.startFileActivity(data);
+                            }
 
-                        @Override
-                        public void onFail(String errorMessage) {
-                            mView.dismissProgressDialog();
-                            showRetryDownloadArtifactSnackBar();
-                        }
-                    });
+                            @Override
+                            public void onFail(String errorMessage) {
+                                mView.dismissProgressDialog();
+                                showRetryDownloadArtifactSnackBar();
+                            }
+                        });
+            }
         }
     }
 

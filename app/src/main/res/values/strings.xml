@@ -148,7 +148,9 @@
     <!--permissions dialog-->
     <string name="permissions_dialog_title">Permissions warning</string>
     <string name="permissions_dialog_content">In order to download artifact the app requires to have WRITE_EXTERNAL_STORAGE permissions granted.</string>
+    <string name="permissions_install_packages_dialog_content">In order to install apk files the app requires to have install unknown apps permissions enabled.</string>
     <string name="permissions_dialog_text_no_permissions">The download artifacts functionality is disabled. Please enable required permissions.</string>
+    <string name="permissions_install_packages_dialog_text_no_permissions">You can\'t install packages. You haven\'t granted permission. Please enable required permissions.</string>
 
     <!--Build element-->
     <string name="build_element_copy">Copy</string>
