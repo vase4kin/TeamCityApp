@@ -60,7 +60,6 @@ public class ArtifactPresenterImplTest {
     @Captor
     private ArgumentCaptor<OnPermissionsResultListener> mOnPermissionsResultListenerArgumentCaptor;
 
-
     @Mock
     private File.Children children;
 
@@ -290,7 +289,10 @@ public class ArtifactPresenterImplTest {
         verify(mView).showPermissionsDeniedDialog();
         listener.onGranted();
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
-        verify(mView).showPermissionsInfoDialog(any(OnPermissionsDialogListener.class));
+        verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
+        OnPermissionsDialogListener onPermissionsDialogListener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
+        onPermissionsDialogListener.onAllow();
+        verify(mPermissionManager).requestWriteStoragePermissions();
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
@@ -311,7 +313,40 @@ public class ArtifactPresenterImplTest {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
         mPresenter.onDownloadArtifactEvent("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
-        verify(mView).showPermissionsInfoDialog(any(OnPermissionsDialogListener.class));
+        verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
+        OnPermissionsDialogListener listener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
+        listener.onAllow();
+        verify(mPermissionManager).requestWriteStoragePermissions();
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
+    }
+
+    @Test
+    public void testDownloadArtifactFileIfThFileIsApk() {
+        when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
+        when(mPermissionManager.isInstallPackagesPermissionGranted()).thenReturn(false);
+        when(mDataManager.isTheFileApk(anyString())).thenReturn(true);
+        mPresenter.onDownloadArtifactEvent("", "");
+        verify(mPermissionManager).isWriteStoragePermissionsGranted();
+        verify(mDataManager).isTheFileApk(eq(""));
+        verify(mPermissionManager).isInstallPackagesPermissionGranted();
+        verify(mView).showInstallPackagesPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
+        OnPermissionsDialogListener listener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
+        listener.onAllow();
+        verify(mPermissionManager).requestInstallPackagesPermission();
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
+    }
+
+    @Test
+    public void testDownloadArtifactFileIfThFileIsApk2() {
+        when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
+        when(mPermissionManager.isInstallPackagesPermissionGranted()).thenReturn(true);
+        when(mDataManager.isTheFileApk(eq("name.apk"))).thenReturn(true);
+        mPresenter.onDownloadArtifactEvent("name.apk", "url");
+        verify(mPermissionManager).isWriteStoragePermissionsGranted();
+        verify(mDataManager).isTheFileApk(eq("name.apk"));
+        verify(mPermissionManager).isInstallPackagesPermissionGranted();
+        verify(mView).showProgressDialog();
+        verify(mDataManager).downloadArtifact(eq("url"), eq("name.apk"), any(OnLoadingListener.class));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 
