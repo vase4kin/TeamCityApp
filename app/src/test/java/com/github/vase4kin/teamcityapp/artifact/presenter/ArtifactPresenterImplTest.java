@@ -41,6 +41,8 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -57,7 +59,6 @@ public class ArtifactPresenterImplTest {
 
     @Captor
     private ArgumentCaptor<OnPermissionsResultListener> mOnPermissionsResultListenerArgumentCaptor;
-
 
     @Mock
     private File.Children children;
@@ -179,6 +180,7 @@ public class ArtifactPresenterImplTest {
         when(mFile.getName()).thenReturn("name");
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
+        when(mDataManager.isTheFileApk(anyString())).thenReturn(false);
 
         mPresenter.onClick(mFile);
         verify(mView).showDefaultBottomSheet(eq(mFile));
@@ -188,6 +190,7 @@ public class ArtifactPresenterImplTest {
         mPresenter.downloadArtifactFile();
         verify(mView).showProgressDialog();
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
+        verify(mDataManager).isTheFileApk(eq("name"));
         verify(mDataManager).downloadArtifact(eq("url"), eq("name"), mArgumentCaptor.capture());
 
         OnLoadingListener<java.io.File> onLoadingListener = mArgumentCaptor.getValue();
@@ -276,7 +279,6 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testHandleOnRequestPermissionsResult() throws Exception {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
-        when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(false);
         int requestCode = 12;
         String[] permissions = new String[]{"123"};
         int[] grantResults = new int[]{12, 123};
@@ -287,7 +289,9 @@ public class ArtifactPresenterImplTest {
         verify(mView).showPermissionsDeniedDialog();
         listener.onGranted();
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
-        verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
+        verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
+        OnPermissionsDialogListener onPermissionsDialogListener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
+        onPermissionsDialogListener.onAllow();
         verify(mPermissionManager).requestWriteStoragePermissions();
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
@@ -295,10 +299,8 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testDownloadArtifactFileIfUserDoesNotHaveRequiredPermissionsAndNeedToShowTheDialogInfo() {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
-        when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(true);
         mPresenter.onDownloadArtifactEvent("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
-        verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
         verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
         OnPermissionsDialogListener listener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
         listener.onAllow();
@@ -309,11 +311,42 @@ public class ArtifactPresenterImplTest {
     @Test
     public void testDownloadArtifactFileIfUserDoesNotHaveRequiredPermissionsAndNoNeedToShowTheDialogInfo() {
         when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(false);
-        when(mPermissionManager.isNeedToShowInfoPermissionsDialog()).thenReturn(false);
         mPresenter.onDownloadArtifactEvent("", "");
         verify(mPermissionManager).isWriteStoragePermissionsGranted();
-        verify(mPermissionManager).isNeedToShowInfoPermissionsDialog();
+        verify(mView).showPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
+        OnPermissionsDialogListener listener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
+        listener.onAllow();
         verify(mPermissionManager).requestWriteStoragePermissions();
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
+    }
+
+    @Test
+    public void testDownloadArtifactFileIfThFileIsApk() {
+        when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
+        when(mPermissionManager.isInstallPackagesPermissionGranted()).thenReturn(false);
+        when(mDataManager.isTheFileApk(anyString())).thenReturn(true);
+        mPresenter.onDownloadArtifactEvent("", "");
+        verify(mPermissionManager).isWriteStoragePermissionsGranted();
+        verify(mDataManager).isTheFileApk(eq(""));
+        verify(mPermissionManager).isInstallPackagesPermissionGranted();
+        verify(mView).showInstallPackagesPermissionsInfoDialog(mOnPermissionsDialogListenerArgumentCaptor.capture());
+        OnPermissionsDialogListener listener = mOnPermissionsDialogListenerArgumentCaptor.getValue();
+        listener.onAllow();
+        verify(mPermissionManager).requestInstallPackagesPermission();
+        verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
+    }
+
+    @Test
+    public void testDownloadArtifactFileIfThFileIsApk2() {
+        when(mPermissionManager.isWriteStoragePermissionsGranted()).thenReturn(true);
+        when(mPermissionManager.isInstallPackagesPermissionGranted()).thenReturn(true);
+        when(mDataManager.isTheFileApk(eq("name.apk"))).thenReturn(true);
+        mPresenter.onDownloadArtifactEvent("name.apk", "url");
+        verify(mPermissionManager).isWriteStoragePermissionsGranted();
+        verify(mDataManager).isTheFileApk(eq("name.apk"));
+        verify(mPermissionManager).isInstallPackagesPermissionGranted();
+        verify(mView).showProgressDialog();
+        verify(mDataManager).downloadArtifact(eq("url"), eq("name.apk"), any(OnLoadingListener.class));
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mValueExtractor, mPermissionManager, mTracker);
     }
 

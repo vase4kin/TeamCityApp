@@ -21,20 +21,27 @@ package com.github.vase4kin.teamcityapp.artifact.permissions;
  */
 public interface PermissionManager {
 
+    int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 42;
+
     /**
      * Check is permissions are granted
      */
     boolean isWriteStoragePermissionsGranted();
 
     /**
-     * Need to show permission info dialog
+     * Request write storage permissions
      */
-    boolean isNeedToShowInfoPermissionsDialog();
+    void requestWriteStoragePermissions();
+
+    /**
+     * Check is permissions are granted
+     */
+    boolean isInstallPackagesPermissionGranted();
 
     /**
      * Request write storage permissions
      */
-    void requestWriteStoragePermissions();
+    void requestInstallPackagesPermission();
 
     /**
      * Callback to handle on request fragment permissions callbacks
@@ -43,5 +50,4 @@ public interface PermissionManager {
                                     String[] permissions,
                                     int[] grantResults,
                                     OnPermissionsResultListener onPermissionsResultListener);
-
 }
