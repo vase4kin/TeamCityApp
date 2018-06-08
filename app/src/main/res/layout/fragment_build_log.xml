@@ -16,6 +16,7 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/build_log_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,8 +47,8 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="@dimen/default_margin"
-            android:background="@drawable/ic_accessible_black_24px"
-            android:backgroundTint="@color/main_text_color" />
+            android:backgroundTint="@color/main_text_color"
+            app:srcCompat="@drawable/ic_accessible_black_24px" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -81,8 +82,8 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="32dp"
-            android:background="@drawable/ic_warning_black_24dp"
-            android:backgroundTint="@color/main_text_color" />
+            android:backgroundTint="@color/main_text_color"
+            app:srcCompat="@drawable/ic_warning_black_24dp" />
 
         <TextView
             android:layout_width="wrap_content"
