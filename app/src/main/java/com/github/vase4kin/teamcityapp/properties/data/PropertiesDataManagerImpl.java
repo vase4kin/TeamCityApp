@@ -65,6 +65,11 @@ public class PropertiesDataManagerImpl extends BaseListRxDataManagerImpl<Propert
                     public void call(List<Properties.Property> objects) {
                         loadingListener.onSuccess(objects);
                     }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        loadingListener.onFail(throwable.getMessage());
+                    }
                 });
     }
 }
