@@ -83,7 +83,7 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected NavigationDataModel createModel(List<NavigationItem> data) {
         if (mDataManager.showRateTheApp()) {
-            // track we show shit
+            mTracker.trackUserSawRateTheApp();
             data.add(RateTheApp.POSITION, new RateTheApp());
         }
         return new NavigationDataModelImpl(data);

@@ -39,6 +39,11 @@ public interface NavigationTracker extends ViewTracker {
     String EVENT_RATE_NOW = "rate_now";
 
     /**
+     * Event 3
+     */
+    String EVENT_RATE_SHOW = "rate_show";
+
+    /**
      * Track that user clicked on rate later
      */
     void trackUserClickedOnRateLater();
@@ -47,4 +52,9 @@ public interface NavigationTracker extends ViewTracker {
      * Track that user clicked on rate now
      */
     void trackUserClickedOnRateNow();
+
+    /**
+     * Track user saw rate the app
+     */
+    void trackUserSawRateTheApp();
 }

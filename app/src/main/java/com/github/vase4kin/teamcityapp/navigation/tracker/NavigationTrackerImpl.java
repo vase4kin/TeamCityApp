@@ -54,4 +54,17 @@ public class NavigationTrackerImpl extends BaseViewTracker<NavigationTracker> im
             }
         });
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserSawRateTheApp() {
+        logEvent(new TrackerMethod<NavigationTracker>() {
+            @Override
+            public void execute(NavigationTracker tracker) {
+                tracker.trackUserSawRateTheApp();
+            }
+        });
+    }
 }

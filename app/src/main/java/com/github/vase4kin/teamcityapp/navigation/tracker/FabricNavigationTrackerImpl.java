@@ -51,4 +51,12 @@ public class FabricNavigationTrackerImpl implements NavigationTracker {
     public void trackUserClickedOnRateNow() {
         // No impl
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserSawRateTheApp() {
+        // No impl
+    }
 }
