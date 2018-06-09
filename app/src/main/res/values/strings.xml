@@ -324,7 +324,7 @@
 
     <!--Rate-->
     <string name="rate_title">Rate TeamCityApp</string>
-    <string name="rate_description">Like the app? Give us a review, we\'ll appreciate it. Thanks!</string>
+    <string name="rate_description">Like the app? Give us a review, we\'ll appreciate it.</string>
     <string name="rate_cancel">Cancel</string>
     <string name="rate_now">Rate</string>
 
