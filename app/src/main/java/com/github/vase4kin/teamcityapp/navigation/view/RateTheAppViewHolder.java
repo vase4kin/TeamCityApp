@@ -36,8 +36,8 @@ public class RateTheAppViewHolder extends BaseViewHolder<NavigationDataModel> {
 
     private static final String ICON_RATE_THE_APP = "{md-shop}";
 
-    @BindView(R.id.button_later)
-    Button buttonLater;
+    @BindView(R.id.button_cancel)
+    Button buttonCancel;
 
     @BindView(R.id.button_rate)
     Button buttonRate;
@@ -63,8 +63,8 @@ public class RateTheAppViewHolder extends BaseViewHolder<NavigationDataModel> {
         mIcon.setText(ICON_RATE_THE_APP);
     }
 
-    public void setListeners(View.OnClickListener later, View.OnClickListener rate) {
-        buttonLater.setOnClickListener(later);
+    public void setListeners(View.OnClickListener cancel, View.OnClickListener rate) {
+        buttonCancel.setOnClickListener(cancel);
         buttonRate.setOnClickListener(rate);
     }
 }

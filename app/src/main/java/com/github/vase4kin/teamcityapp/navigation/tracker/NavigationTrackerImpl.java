@@ -33,11 +33,11 @@ public class NavigationTrackerImpl extends BaseViewTracker<NavigationTracker> im
      * {@inheritDoc}
      */
     @Override
-    public void trackUserClickedOnRateLater() {
+    public void trackUserClickedOnRateCancel() {
         logEvent(new TrackerMethod<NavigationTracker>() {
             @Override
             public void execute(NavigationTracker tracker) {
-                tracker.trackUserClickedOnRateLater();
+                tracker.trackUserClickedOnRateCancel();
             }
         });
     }

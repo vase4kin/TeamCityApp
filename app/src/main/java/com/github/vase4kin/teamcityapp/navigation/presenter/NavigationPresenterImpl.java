@@ -105,10 +105,10 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    public void onRateLaterButtonClick() {
+    public void onRateCancelButtonClick() {
         mView.hideTheRateApp();
-        mDataManager.saveRateLaterClickedOn();
-        mTracker.trackUserClickedOnRateLater();
+        mDataManager.saveRateCancelClickedOn();
+        mTracker.trackUserClickedOnRateCancel();
     }
 
     /**

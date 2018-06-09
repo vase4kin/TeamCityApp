@@ -31,7 +31,7 @@ public interface NavigationTracker extends ViewTracker {
     /**
      * Event 1
      */
-    String EVENT_RATE_LATER = "rate_later";
+    String EVENT_RATE_LATER = "rate_cancel";
 
     /**
      * Event 2
@@ -46,7 +46,7 @@ public interface NavigationTracker extends ViewTracker {
     /**
      * Track that user clicked on rate later
      */
-    void trackUserClickedOnRateLater();
+    void trackUserClickedOnRateCancel();
 
     /**
      * Track that user clicked on rate now

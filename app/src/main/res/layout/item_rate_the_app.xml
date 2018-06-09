@@ -32,12 +32,12 @@
                     android:id="@id/itemTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rate TeamCityApp"
+                    android:text="@string/rate_title"
                     style="@style/ItemTitle" />
 
                 <TextView
                     style="@style/ItemSubTitle"
-                    android:text="Like the app? Give us a review, we'll appreciate it." />
+                    android:text="@string/rate_description" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -46,18 +46,18 @@
                     android:layout_margin="@dimen/small_margin">
 
                     <Button
-                        android:id="@+id/button_later"
+                        android:id="@+id/button_cancel"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Later" />
+                        android:text="@string/rate_cancel" />
 
                     <Button
                         android:id="@+id/button_rate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Rate" />
+                        android:text="@string/rate_now" />
 
                 </LinearLayout>
 

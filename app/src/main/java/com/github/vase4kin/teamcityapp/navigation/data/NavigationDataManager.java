@@ -47,7 +47,7 @@ public interface NavigationDataManager extends BaseListRxDataManager<NavigationN
     /**
      * Save state
      */
-    void saveRateLaterClickedOn();
+    void saveRateCancelClickedOn();
 
     /**
      * Save state

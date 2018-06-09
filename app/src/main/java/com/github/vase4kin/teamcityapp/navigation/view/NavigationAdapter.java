@@ -69,7 +69,7 @@ public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
             rateTheAppViewHolder.setListeners(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnClickListener.onRateLaterButtonClick();
+                    mOnClickListener.onRateCancelButtonClick();
                 }
             }, new View.OnClickListener() {
                 @Override

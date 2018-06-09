@@ -40,7 +40,7 @@ public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implement
      * {@inheritDoc}
      */
     @Override
-    public void trackUserClickedOnRateLater() {
+    public void trackUserClickedOnRateCancel() {
         mFirebaseAnalytics.logEvent(EVENT_RATE_LATER, null);
     }
 

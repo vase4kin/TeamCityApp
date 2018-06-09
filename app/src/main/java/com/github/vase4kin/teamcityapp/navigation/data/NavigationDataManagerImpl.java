@@ -67,7 +67,7 @@ public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<Navigat
      * {@inheritDoc}
      */
     @Override
-    public void saveRateLaterClickedOn() {
+    public void saveRateCancelClickedOn() {
         saveRatedState();
     }
 

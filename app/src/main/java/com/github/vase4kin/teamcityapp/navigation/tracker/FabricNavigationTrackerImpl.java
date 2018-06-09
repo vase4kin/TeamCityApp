@@ -40,7 +40,7 @@ public class FabricNavigationTrackerImpl implements NavigationTracker {
      * {@inheritDoc}
      */
     @Override
-    public void trackUserClickedOnRateLater() {
+    public void trackUserClickedOnRateCancel() {
         // No impl
     }
 

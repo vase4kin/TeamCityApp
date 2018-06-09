@@ -31,9 +31,9 @@ public interface OnNavigationItemClickListener {
     void onClick(NavigationItem navigationItem);
 
     /**
-     * On rate later button click
+     * On rate cancel button click
      */
-    void onRateLaterButtonClick();
+    void onRateCancelButtonClick();
 
     /**
      * On rate now button click

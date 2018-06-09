@@ -322,4 +322,10 @@
     <string name="text_info_add">Add a configuration to favorites for an easy access</string>
     <string name="text_info_add_action">Open projects</string>
 
+    <!--Rate-->
+    <string name="rate_title">Rate TeamCityApp</string>
+    <string name="rate_description">Like the app? Give us a review, we\'ll appreciate it. Thanks!</string>
+    <string name="rate_cancel">Cancel</string>
+    <string name="rate_now">Rate</string>
+
 </resources>

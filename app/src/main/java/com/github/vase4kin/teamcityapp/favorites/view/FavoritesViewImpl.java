@@ -171,7 +171,7 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
             }
 
             @Override
-            public void onRateLaterButtonClick() {
+            public void onRateCancelButtonClick() {
 
             }
 
