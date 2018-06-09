@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
 
 import java.util.List;
 
@@ -38,10 +39,12 @@ public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<Navigat
 
     private final Repository mRepository;
     private final SharedPreferences sharedPreferences;
+    private final RemoteService remoteService;
 
-    public NavigationDataManagerImpl(Repository repository, Context context) {
+    public NavigationDataManagerImpl(Repository repository, Context context, RemoteService remoteService) {
         this.mRepository = repository;
         this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        this.remoteService = remoteService;
     }
 
     /**
@@ -57,7 +60,7 @@ public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<Navigat
      */
     @Override
     public boolean showRateTheApp() {
-        return !isRated() && true;
+        return !isRated() && remoteService.isNotChurn();
     }
 
     /**

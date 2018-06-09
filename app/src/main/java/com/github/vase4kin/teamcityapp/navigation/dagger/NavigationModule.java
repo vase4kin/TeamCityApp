@@ -41,6 +41,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
 import com.github.vase4kin.teamcityapp.navigation.view.RateTheAppViewHolderFactory;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
@@ -81,8 +82,8 @@ public class NavigationModule {
     }
 
     @Provides
-    NavigationDataManager providesNavigationDataManager(Repository repository, Context context) {
-        return new NavigationDataManagerImpl(repository, context);
+    NavigationDataManager providesNavigationDataManager(Repository repository, Context context, RemoteService remoteService) {
+        return new NavigationDataManagerImpl(repository, context, remoteService);
     }
 
     @Provides

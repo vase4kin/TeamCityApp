@@ -21,6 +21,7 @@ import android.content.Context;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -63,4 +64,6 @@ public interface AppComponent {
     FirebaseAnalytics firebaseAnalytics();
 
     OnboardingManager onboardingManager();
+
+    RemoteService remoteService();
 }
