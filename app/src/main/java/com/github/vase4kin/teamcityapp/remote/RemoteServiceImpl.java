@@ -23,6 +23,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 
+import io.fabric.sdk.android.Fabric;
+
 public class RemoteServiceImpl implements RemoteService {
 
     private final static long cache = 43200L;
@@ -51,7 +53,7 @@ public class RemoteServiceImpl implements RemoteService {
                     remoteConfig.activateFetched();
                 } else {
                     Exception exception = task.getException();
-                    if (exception != null) {
+                    if (exception != null && Fabric.isInitialized()) {
                         Crashlytics.logException(task.getException());
                     }
                 }
