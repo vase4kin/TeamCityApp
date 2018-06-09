@@ -42,6 +42,7 @@ import com.github.vase4kin.teamcityapp.remote.RemoteService;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -232,6 +233,7 @@ public class RootProjectsActivityTest {
                 .check(matches(withText("Build and run tests")));
     }
 
+    @Ignore
     @Test
     public void testUserCanRateTheApp() {
         // Prepare data
