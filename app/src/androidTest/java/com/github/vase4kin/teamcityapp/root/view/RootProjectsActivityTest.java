@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.root.view;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
@@ -35,12 +36,14 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildTypes;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.navigation.api.Project;
 import com.github.vase4kin.teamcityapp.navigation.api.Projects;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Spy;
 
 import java.util.Collections;
@@ -82,6 +85,9 @@ public class RootProjectsActivityTest {
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
 
+    @Mock
+    private RemoteService remoteService;
+
     @BeforeClass
     public static void disableOnboarding() {
         TestUtils.disableOnboarding();
@@ -92,6 +98,7 @@ public class RootProjectsActivityTest {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getAppInjector().sharedUserStorage().clearAll();
         app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
+        app.getSharedPreferences("rateTheAppPref", Context.MODE_PRIVATE).edit().clear().commit();
     }
 
     @Test
@@ -107,6 +114,7 @@ public class RootProjectsActivityTest {
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
         when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(remoteService.isNotChurn()).thenReturn(false);
 
         mActivityRule.launchActivity(null);
 
@@ -126,6 +134,81 @@ public class RootProjectsActivityTest {
                 .perform(click());
         // Check toolbar
         matchToolbarTitle("Project");
+        // Check Project data
+        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("New project")));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
+                .check(matches(withText("Contains a lof of projects")));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+                .check(matches(withText("Build and run tests")));
+    }
+
+    @Test
+    public void testUserCanSeeRateTheApp() {
+        // Prepare data
+        Project project = new Project();
+        project.setName("New project");
+        project.setDescription("Contains a lof of projects");
+        BuildType buildType = new BuildType();
+        buildType.setId("build_type_id");
+        buildType.setName("Build and run tests");
+        NavigationNode navigationNode = new NavigationNode(
+                new Projects(Collections.singletonList(project)),
+                new BuildTypes(Collections.singletonList(buildType)));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(remoteService.isNotChurn()).thenReturn(true);
+
+        mActivityRule.launchActivity(null);
+
+        // Checking data
+        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(3));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("Project")));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
+                .check(matches(withText("Description")));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+                .check(matches(withText(R.string.rate_title)));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemSubTitle))
+                .check(matches(withText(R.string.rate_description)));
+
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(2, R.id.itemTitle))
+                .check(matches(withText("build type")));
+    }
+
+    @Test
+    public void testUserCanCancelRateTheApp() {
+        // Prepare data
+        Project project = new Project();
+        project.setName("New project");
+        project.setDescription("Contains a lof of projects");
+        BuildType buildType = new BuildType();
+        buildType.setId("build_type_id");
+        buildType.setName("Build and run tests");
+        NavigationNode navigationNode = new NavigationNode(
+                new Projects(Collections.singletonList(project)),
+                new BuildTypes(Collections.singletonList(buildType)));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(remoteService.isNotChurn()).thenReturn(true);
+
+        mActivityRule.launchActivity(null);
+
+        // Cancel rate the app
+        onView(withId(R.id.button_cancel)).perform(click());
+
+        // Checking data
+        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+                .check(matches(withText("Project")));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
+                .check(matches(withText("Description")));
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+                .check(matches(withText("build type")));
+
+        // Click on projects
+        onView(withText("Project"))
+                .perform(click());
+
         // Check Project data
         onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
