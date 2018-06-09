@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
+import com.github.vase4kin.teamcityapp.navigation.api.RateTheApp;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManager;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl;
@@ -81,6 +82,10 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected NavigationDataModel createModel(List<NavigationItem> data) {
+        if (mDataManager.showRateTheApp()) {
+            // track we show shit
+            data.add(RateTheApp.POSITION, new RateTheApp());
+        }
         return new NavigationDataModelImpl(data);
     }
 
@@ -94,6 +99,27 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
         } else {
             mRouter.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onRateLaterButtonClick() {
+        mView.hideTheRateApp();
+        mDataManager.saveRateLaterClickedOn();
+        mTracker.trackUserClickedOnRateLater();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onRateNowButtonClick() {
+        mView.hideTheRateApp();
+        mDataManager.saveRateNowClickedOn();
+        mRouter.openRateTheApp();
+        mTracker.trackUserClickedOnRateNow();
     }
 
     /**

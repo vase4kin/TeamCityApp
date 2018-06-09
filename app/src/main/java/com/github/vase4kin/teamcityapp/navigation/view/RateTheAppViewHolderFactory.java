@@ -14,37 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.tracker;
+package com.github.vase4kin.teamcityapp.navigation.view;
 
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
+import android.view.ViewGroup;
+
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 
 /**
- * Navigation tracker
+ * Rate the app single item view factory
  */
-public interface NavigationTracker extends ViewTracker {
+public class RateTheAppViewHolderFactory implements ViewHolderFactory<NavigationDataModel> {
 
     /**
-     * Screen name
+     * {@inheritDoc}
      */
-    String SCREEN_NAME = "screen_project";
-
-    /**
-     * Event 1
-     */
-    String EVENT_RATE_LATER = "rate_later";
-
-    /**
-     * Event 2
-     */
-    String EVENT_RATE_NOW = "rate_now";
-
-    /**
-     * Track that user clicked on rate later
-     */
-    void trackUserClickedOnRateLater();
-
-    /**
-     * Track that user clicked on rate now
-     */
-    void trackUserClickedOnRateNow();
+    @Override
+    public BaseViewHolder<NavigationDataModel> createViewHolder(ViewGroup parent) {
+        return new RateTheAppViewHolder(parent);
+    }
 }

@@ -21,6 +21,7 @@ import android.view.View;
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.api.RateTheApp;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 
 import java.util.Map;
@@ -55,12 +56,41 @@ public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
         super.onBindViewHolder(holder, position);
         // Find the way how to make it through DI
         final int adapterPosition = position;
-        ((NavigationViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mOnClickListener.onClick(mDataModel.getNavigationItem(adapterPosition));
-            }
-        });
+        if (holder instanceof NavigationViewHolder) {
+            ((NavigationViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnClickListener.onClick(mDataModel.getNavigationItem(adapterPosition));
+                }
+            });
+        }
+        if (holder instanceof RateTheAppViewHolder) {
+            RateTheAppViewHolder rateTheAppViewHolder = (RateTheAppViewHolder) holder;
+            rateTheAppViewHolder.setListeners(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnClickListener.onRateLaterButtonClick();
+                }
+            }, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnClickListener.onRateNowButtonClick();
+                }
+            });
+        }
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if (mDataModel.isRateTheApp(position)) {
+            return NavigationView.TYPE_RATE_THE_APP;
+        } else {
+            return super.getItemViewType(position);
+        }
+    }
+
+    public void removeRateTheApp() {
+        mDataModel.removeItemByIndex(RateTheApp.POSITION);
+        notifyItemRemoved(RateTheApp.POSITION);
+    }
 }

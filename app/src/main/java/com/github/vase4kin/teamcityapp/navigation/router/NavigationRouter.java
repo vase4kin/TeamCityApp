@@ -42,4 +42,6 @@ public interface NavigationRouter {
      * Start projects activity
      */
     void startProjectActivity();
+
+    void openRateTheApp();
 }

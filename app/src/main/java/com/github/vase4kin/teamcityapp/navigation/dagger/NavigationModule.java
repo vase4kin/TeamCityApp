@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.navigation.dagger;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 
@@ -39,6 +40,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
+import com.github.vase4kin.teamcityapp.navigation.view.RateTheAppViewHolderFactory;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
@@ -79,8 +81,8 @@ public class NavigationModule {
     }
 
     @Provides
-    NavigationDataManager providesNavigationDataManager(Repository repository) {
-        return new NavigationDataManagerImpl(repository);
+    NavigationDataManager providesNavigationDataManager(Repository repository, Context context) {
+        return new NavigationDataManagerImpl(repository, context);
     }
 
     @Provides
@@ -93,6 +95,13 @@ public class NavigationModule {
     @Provides
     ViewHolderFactory<NavigationDataModel> providesNavigationViewHolderFactory() {
         return new NavigationViewHolderFactory();
+    }
+
+    @IntoMap
+    @IntKey(NavigationView.TYPE_RATE_THE_APP)
+    @Provides
+    ViewHolderFactory<NavigationDataModel> providesRateTheAppViewHolderFactory() {
+        return new RateTheAppViewHolderFactory();
     }
 
     @IntoSet

@@ -73,4 +73,15 @@ public interface NavigationDataModel extends BaseDataModel {
      * @return project name
      */
     String getProjectId(int position);
+
+    /**
+     * There should be a comment
+     */
+    boolean isRateTheApp(int position);
+
+    /**
+     * There should be a comment
+     */
+    void removeItemByIndex(int position);
+
 }

@@ -35,4 +35,20 @@ public class FabricNavigationTrackerImpl implements NavigationTracker {
         Answers.getInstance().logContentView(new ContentViewEvent()
                 .putContentName(SCREEN_NAME));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedOnRateLater() {
+        // No impl
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedOnRateNow() {
+        // No impl
+    }
 }

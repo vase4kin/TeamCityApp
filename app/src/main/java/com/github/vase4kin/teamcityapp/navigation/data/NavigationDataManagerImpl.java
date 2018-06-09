@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.navigation.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -31,10 +33,15 @@ import java.util.List;
  */
 public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<NavigationNode, NavigationItem> implements NavigationDataManager {
 
-    private Repository mRepository;
+    private static final String PREF_NAME = "rateTheAppPref";
+    private static final String KEY_RATED = "rated";
 
-    public NavigationDataManagerImpl(Repository repository) {
+    private final Repository mRepository;
+    private final SharedPreferences sharedPreferences;
+
+    public NavigationDataManagerImpl(Repository repository, Context context) {
         this.mRepository = repository;
+        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
     /**
@@ -43,5 +50,37 @@ public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<Navigat
     @Override
     public void load(@NonNull String id, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
         load(mRepository.listBuildTypes(id, update), loadingListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean showRateTheApp() {
+        return !isRated() && true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRateLaterClickedOn() {
+        saveRatedState();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRateNowClickedOn() {
+        saveRatedState();
+    }
+
+    private boolean isRated() {
+        return sharedPreferences.getBoolean(KEY_RATED, false);
+    }
+
+    private void saveRatedState() {
+        sharedPreferences.edit().putBoolean(KEY_RATED, true).apply();
     }
 }

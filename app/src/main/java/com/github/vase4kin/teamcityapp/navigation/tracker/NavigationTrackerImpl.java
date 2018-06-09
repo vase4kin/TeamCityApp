@@ -29,4 +29,29 @@ public class NavigationTrackerImpl extends BaseViewTracker<NavigationTracker> im
         super(trackers);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedOnRateLater() {
+        logEvent(new TrackerMethod<NavigationTracker>() {
+            @Override
+            public void execute(NavigationTracker tracker) {
+                tracker.trackUserClickedOnRateLater();
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedOnRateNow() {
+        logEvent(new TrackerMethod<NavigationTracker>() {
+            @Override
+            public void execute(NavigationTracker tracker) {
+                tracker.trackUserClickedOnRateNow();
+            }
+        });
+    }
 }
