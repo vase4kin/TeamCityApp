@@ -16,27 +16,22 @@
 
 package com.github.vase4kin.teamcityapp.navigation.view;
 
-import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
+import android.view.ViewGroup;
+
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 
 /**
- * On navigation item click listener
+ * Rate the app single item view factory
  */
-public interface OnNavigationItemClickListener {
+public class RateTheAppViewHolderFactory implements ViewHolderFactory<NavigationDataModel> {
 
     /**
-     * On navigation item click event
-     *
-     * @param navigationItem - Navigation being clicked
+     * {@inheritDoc}
      */
-    void onClick(NavigationItem navigationItem);
-
-    /**
-     * On rate cancel button click
-     */
-    void onRateCancelButtonClick();
-
-    /**
-     * On rate now button click
-     */
-    void onRateNowButtonClick();
+    @Override
+    public BaseViewHolder<NavigationDataModel> createViewHolder(ViewGroup parent) {
+        return new RateTheAppViewHolder(parent);
+    }
 }

@@ -25,6 +25,11 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 public interface NavigationView extends BaseListView<NavigationDataModel> {
 
     /**
+     * Rate the app view holder type
+     */
+    int TYPE_RATE_THE_APP = 2;
+
+    /**
      * Set adapter click listener
      *
      * @param clickListener - Listener to receive click callbacks
@@ -37,4 +42,9 @@ public interface NavigationView extends BaseListView<NavigationDataModel> {
      * @param title - Title to set
      */
     void setTitle(String title);
+
+    /**
+     * Hide rate the app item
+     */
+    void hideTheRateApp();
 }

@@ -59,6 +59,11 @@ public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel, Na
         }
     }
 
+    @Override
+    public void hideTheRateApp() {
+        mAdapter.removeRateTheApp();
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.navigation.router;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 
+import com.danielstone.materialaboutlibrary.ConvenienceBuilder;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
@@ -56,5 +57,10 @@ public class NavigationRouterImpl implements NavigationRouter {
     @Override
     public void startProjectActivity() {
         RootProjectsActivity.startWhenNavigateToRootFromDrawer(mActivity);
+    }
+
+    @Override
+    public void openRateTheApp() {
+        ConvenienceBuilder.createRateOnClickAction(mActivity).onClick();
     }
 }

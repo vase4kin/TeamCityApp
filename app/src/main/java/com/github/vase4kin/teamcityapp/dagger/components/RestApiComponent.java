@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -51,4 +52,6 @@ public interface RestApiComponent {
     FirebaseAnalytics firebaseAnalytics();
 
     OnboardingManager onboardingManager();
+
+    RemoteService remoteService();
 }

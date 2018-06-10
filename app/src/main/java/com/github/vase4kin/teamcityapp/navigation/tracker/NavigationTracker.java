@@ -27,4 +27,34 @@ public interface NavigationTracker extends ViewTracker {
      * Screen name
      */
     String SCREEN_NAME = "screen_project";
+
+    /**
+     * Event 1
+     */
+    String EVENT_RATE_LATER = "rate_cancel";
+
+    /**
+     * Event 2
+     */
+    String EVENT_RATE_NOW = "rate_now";
+
+    /**
+     * Event 3
+     */
+    String EVENT_RATE_SHOW = "rate_show";
+
+    /**
+     * Track that user clicked on rate later
+     */
+    void trackUserClickedOnRateCancel();
+
+    /**
+     * Track that user clicked on rate now
+     */
+    void trackUserClickedOnRateNow();
+
+    /**
+     * Track user saw rate the app
+     */
+    void trackUserSawRateTheApp();
 }
