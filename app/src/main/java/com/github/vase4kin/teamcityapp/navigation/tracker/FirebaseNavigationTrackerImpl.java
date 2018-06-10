@@ -35,4 +35,28 @@ public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implement
     public void trackView() {
         mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedOnRateCancel() {
+        mFirebaseAnalytics.logEvent(EVENT_RATE_LATER, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserClickedOnRateNow() {
+        mFirebaseAnalytics.logEvent(EVENT_RATE_NOW, null);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackUserSawRateTheApp() {
+        mFirebaseAnalytics.logEvent(EVENT_RATE_SHOW, null);
+    }
 }

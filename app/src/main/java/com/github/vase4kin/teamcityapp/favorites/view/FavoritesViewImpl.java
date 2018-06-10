@@ -169,6 +169,16 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
             public void onClick(NavigationItem navigationItem) {
                 listener.onClick(navigationItem);
             }
+
+            @Override
+            public void onRateCancelButtonClick() {
+
+            }
+
+            @Override
+            public void onRateNowButtonClick() {
+
+            }
         });
 
         List<SimpleSectionedRecyclerViewAdapter.Section> sections =

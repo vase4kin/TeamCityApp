@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.navigation.data;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.api.Project;
+import com.github.vase4kin.teamcityapp.navigation.api.RateTheApp;
 
 import java.util.List;
 
@@ -87,6 +88,22 @@ public class NavigationDataModelImpl implements NavigationDataModel {
     @Override
     public String getProjectId(int position) {
         return ((BuildType) mItems.get(position)).getProjectId();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isRateTheApp(int position) {
+        return mItems.get(position) instanceof RateTheApp;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void removeItemByIndex(int position) {
+        mItems.remove(position);
     }
 
     /**

@@ -14,29 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.view;
-
-import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
+package com.github.vase4kin.teamcityapp.navigation.api;
 
 /**
- * On navigation item click listener
+ * Rate the app object
  */
-public interface OnNavigationItemClickListener {
+public class RateTheApp extends NavigationItem {
 
-    /**
-     * On navigation item click event
-     *
-     * @param navigationItem - Navigation being clicked
-     */
-    void onClick(NavigationItem navigationItem);
-
-    /**
-     * On rate cancel button click
-     */
-    void onRateCancelButtonClick();
-
-    /**
-     * On rate now button click
-     */
-    void onRateNowButtonClick();
+    public static final int POSITION = 1;
 }

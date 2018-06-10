@@ -25,6 +25,7 @@ import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.keychain.KeyChain;
 import com.github.vase4kin.teamcityapp.BuildConfig;
+import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
@@ -33,9 +34,13 @@ import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
+import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -212,5 +217,23 @@ public class AppModule {
     @Singleton
     protected OnboardingManager providesOnboardingManager() {
         return new OnboardingManagerImpl(mApplication.getApplicationContext());
+    }
+
+    @Singleton
+    @Provides
+    protected FirebaseRemoteConfig providesRemoteConfig() {
+        FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .build();
+        firebaseRemoteConfig.setConfigSettings(configSettings);
+        firebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+        return firebaseRemoteConfig;
+    }
+
+    @Singleton
+    @Provides
+    protected RemoteService provicesRemoteService(FirebaseRemoteConfig remoteConfig) {
+        return new RemoteServiceImpl(remoteConfig);
     }
 }

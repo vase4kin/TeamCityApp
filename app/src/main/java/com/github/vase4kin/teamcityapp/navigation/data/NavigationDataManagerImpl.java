@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.navigation.data;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
@@ -23,6 +25,7 @@ import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
+import com.github.vase4kin.teamcityapp.remote.RemoteService;
 
 import java.util.List;
 
@@ -31,10 +34,17 @@ import java.util.List;
  */
 public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<NavigationNode, NavigationItem> implements NavigationDataManager {
 
-    private Repository mRepository;
+    private static final String PREF_NAME = "rateTheAppPref";
+    private static final String KEY_RATED = "rated";
 
-    public NavigationDataManagerImpl(Repository repository) {
+    private final Repository mRepository;
+    private final SharedPreferences sharedPreferences;
+    private final RemoteService remoteService;
+
+    public NavigationDataManagerImpl(Repository repository, Context context, RemoteService remoteService) {
         this.mRepository = repository;
+        this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        this.remoteService = remoteService;
     }
 
     /**
@@ -43,5 +53,37 @@ public class NavigationDataManagerImpl extends BaseListRxDataManagerImpl<Navigat
     @Override
     public void load(@NonNull String id, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener) {
         load(mRepository.listBuildTypes(id, update), loadingListener);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean showRateTheApp() {
+        return !isRated() && remoteService.isNotChurn();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRateCancelClickedOn() {
+        saveRatedState();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveRateNowClickedOn() {
+        saveRatedState();
+    }
+
+    private boolean isRated() {
+        return sharedPreferences.getBoolean(KEY_RATED, false);
+    }
+
+    private void saveRatedState() {
+        sharedPreferences.edit().putBoolean(KEY_RATED, true).apply();
     }
 }

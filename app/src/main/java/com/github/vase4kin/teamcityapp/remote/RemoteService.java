@@ -14,29 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.view;
+package com.github.vase4kin.teamcityapp.remote;
 
-import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
+public interface RemoteService {
 
-/**
- * On navigation item click listener
- */
-public interface OnNavigationItemClickListener {
+    String PARAMETER_NOT_CHURN = "not_churn";
 
-    /**
-     * On navigation item click event
-     *
-     * @param navigationItem - Navigation being clicked
-     */
-    void onClick(NavigationItem navigationItem);
-
-    /**
-     * On rate cancel button click
-     */
-    void onRateCancelButtonClick();
-
-    /**
-     * On rate now button click
-     */
-    void onRateNowButtonClick();
+    boolean isNotChurn();
 }

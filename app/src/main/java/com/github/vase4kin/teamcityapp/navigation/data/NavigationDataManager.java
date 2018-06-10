@@ -38,4 +38,19 @@ public interface NavigationDataManager extends BaseListRxDataManager<NavigationN
      * @param loadingListener - Listener to receive server callbacks
      */
     void load(@NonNull String id, boolean update, @NonNull OnLoadingListener<List<NavigationItem>> loadingListener);
+
+    /**
+     * @return {true} if we need to show to the user rate the app dialog
+     */
+    boolean showRateTheApp();
+
+    /**
+     * Save state
+     */
+    void saveRateCancelClickedOn();
+
+    /**
+     * Save state
+     */
+    void saveRateNowClickedOn();
 }
