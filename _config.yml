@@ -1,0 +1,56 @@
+# ----
+# Site
+
+title: TeamCityApp
+url: "/"
+baseurl:
+google_analytics_key:
+google_maps_javascript_api_key:
+disqus_shortname:
+
+# Values for the jekyll-seo-tag gem (https://github.com/jekyll/jekyll-seo-tag)
+logo: /siteicon.png
+description: TeamCity in your pocket
+author:
+  name: Andrey Tolpeev
+  email: andrey.tolpeev+googleplay@gmail.com
+social:
+  name: TeamCityApp
+  links:
+    - https://play.google.com/store/apps/details?id=com.github.vase4kin.teamcityapp
+
+# -----
+# Build
+
+timezone: Etc/UTC
+
+permalink: pretty
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - LICENCE
+
+defaults:
+  -
+    scope:
+      path: ""
+    values:
+      layout: "default"
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      image:
+        width: 2000
+        height: 1322
+        resize_style: cover
+      bottom_image:
+        width: 2000
+        height: 1322
+        resize_style: cover
