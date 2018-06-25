@@ -72,3 +72,19 @@
 		flex-direction: row-reverse;
 	}
 }
+
+.flex-header {
+		@include flexbox;
+		align-items: center;
+		flex-direction: row;
+
+		.text, .image {
+			-webkit-flex: 1;
+			flex: 1;
+			padding: 0 20px;
+		}
+	}
+
+	.content section:nth-child(even) .flex {
+		flex-direction: row-reverse;
+	}
