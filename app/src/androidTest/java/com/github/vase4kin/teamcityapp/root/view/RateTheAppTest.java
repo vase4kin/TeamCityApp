@@ -61,6 +61,7 @@ import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
@@ -260,6 +261,23 @@ public class RateTheAppTest {
         // user can see buildtype
         // Check toolbar
         matchToolbarTitle("build type");
+    }
+
+    @Test
+    public void testUserCanNotSeeRateTheAppIfProjectIsEmpty() {
+        // Prepare data
+        NavigationNode navigationNode = new NavigationNode(
+                new Projects(Collections.<Project>emptyList()),
+                new BuildTypes(Collections.<BuildType>emptyList()));
+        when(mTeamCityService.listBuildTypes(anyString())).thenReturn(Observable.just(navigationNode));
+        when(remoteService.isNotChurn()).thenReturn(true);
+
+        mActivityRule.launchActivity(null);
+
+        // Check showing empty
+        onView(withId(android.R.id.empty))
+                .check(matches(isDisplayed()))
+                .check(matches(withText(R.string.empty_list_message_projects_or_build_types)));
     }
 
     private SharedPreferences getSharedPreferences() {
