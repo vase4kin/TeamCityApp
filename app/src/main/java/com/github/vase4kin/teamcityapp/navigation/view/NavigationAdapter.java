@@ -91,6 +91,6 @@ public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
 
     public void removeRateTheApp() {
         mDataModel.removeItemByIndex(RateTheApp.POSITION);
-        notifyItemRemoved(RateTheApp.POSITION);
+        notifyDataSetChanged();
     }
 }

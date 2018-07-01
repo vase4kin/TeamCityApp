@@ -16,7 +16,7 @@
 
 <defaultsMap>
     <entry>
-        <key>not_churn</key>
+        <key>param_not_churn</key>
         <value>false</value>
     </entry>
 </defaultsMap>

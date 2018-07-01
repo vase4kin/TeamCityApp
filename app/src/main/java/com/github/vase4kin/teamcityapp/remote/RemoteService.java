@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.remote;
 
 public interface RemoteService {
 
-    String PARAMETER_NOT_CHURN = "not_churn";
+    String PARAMETER_NOT_CHURN = "param_not_churn";
 
     boolean isNotChurn();
 }
