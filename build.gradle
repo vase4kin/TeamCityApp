@@ -26,10 +26,10 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.3'
+        classpath 'com.android.tools.build:gradle:3.2.0'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
-        classpath 'com.google.gms:google-services:3.1.0'
+        classpath 'com.google.gms:google-services:4.0.2'
         classpath 'org.jacoco:org.jacoco.core:0.8.1'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -50,13 +50,13 @@ ext {
     versionName = "1.3.1.1"
 
     // sdk and tools
-    minSdkVersion = 19
-    targetSdkVersion = 27
-    compileSdkVersion = 27
-    buildToolsVersion = '27.0.3'
+    minSdkVersion = 21
+    targetSdkVersion = 28
+    compileSdkVersion = 28
+    buildToolsVersion = '28.0.3'
 
     // dependencies versions
-    supportLibraryVersion = '27.1.0'
+    supportLibraryVersion = '28.0.0'
     espressoRunnerVersion = '1.0'
     espressoVersion = '3.0.0'
     dexMakerVersion = '1.4'

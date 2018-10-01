@@ -27,7 +27,7 @@ task generateCodeCoverageReport(type: JacocoReport) {
     description = "Generate Jacoco coverage reports"
 
     classDirectories = fileTree(
-            dir: "$buildDir/intermediates/classes/mock/debug/com/github/vase4kin",
+            dir: "$buildDir/intermediates/javac/mockDebug/compileMockDebugJavaWithJavac/classes/com/github/vase4kin",
             excludes: ['android/**',
                        '**/R*.class',
                        '**/BuildConfig*',
