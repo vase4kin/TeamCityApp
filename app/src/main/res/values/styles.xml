@@ -15,17 +15,22 @@
   -->
 
 <resources>
-    <style name="AppTheme" parent="MaterialDrawerTheme.Light.DarkToolbar">
-        <item name="windowActionModeOverlay">true</item>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
     <style name="AppTheme.MaterialAboutActivity.Fragment" parent="Theme.Mal.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -83,7 +88,7 @@
     </style>
 
     <style name="SingleTextSizeItem">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
     </style>
 
     <style name="ItemTitle.WrapText" parent="ItemTitle">
@@ -110,7 +115,7 @@
     </style>
 
     <style name="SingleSubTextSizeItem">
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
     </style>
 
     <style name="Section.Build" parent="Header">
@@ -144,13 +149,18 @@
 
     <style name="Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
-        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
-        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="android:theme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
-    <style name="LoginButton" parent="Theme.AppCompat">
-        <item name="colorControlHighlight">@color/indigo_500</item>
-        <item name="colorButtonNormal">@color/pink_200</item>
+    <style name="Toolbar.NoElevation">
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="LoginButton" parent="AppTheme">
+        <!--<item name="colorControlHighlight">@color/indigo_500</item>-->
+        <!--<item name="colorButtonNormal">@color/pink_200</item>-->
     </style>
 
     <style name="Hint" parent="LoginEditTextFloatingLabel" />

@@ -485,31 +485,31 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     private void setColorsByBuildType() {
         if (mBuildDetails.isQueued()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_status_bar_color);
+            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_queued_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
         } else if (mBuildDetails.isRunning()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.running_status_bar_color);
+            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.running_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.running_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_running_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
         } else if (mBuildDetails.isFailed()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_status_bar_color);
+            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.failed_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_failed_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
         } else if (mBuildDetails.isSuccess()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.success_status_bar_color);
+            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.success_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.success_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_success_unselected_color),
                     mActivity.getResources().getColor(R.color.md_white_1000));
         } else {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_status_bar_color);
+            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             mTabLayout.setTabTextColors(
                     mActivity.getResources().getColor(R.color.tab_queued_unselected_color),

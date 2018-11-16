@@ -18,4 +18,4 @@
     android:id="@id/toolbar"
     android:layout_height="?attr/actionBarSize"
     android:layout_width="match_parent"
-    style="@style/Toolbar"/>
+    style="@style/Toolbar.NoElevation" />
