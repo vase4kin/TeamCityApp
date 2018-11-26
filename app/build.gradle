@@ -174,7 +174,7 @@ dependencies {
     implementation 'joda-time:joda-time:2.8.1'
     implementation 'com.bignerdranch.android:recyclerview-multiselect:0.2'
     implementation 'com.vinaysshenoy:mugen:1.0.2'
-    implementation('com.mikepenz:aboutlibraries:5.9.7@aar') {
+    implementation('com.mikepenz:aboutlibraries:6.1.1@aar') {
         transitive = true
     }
     implementation 'io.supercharge:shimmerlayout:2.1.0'

@@ -79,7 +79,7 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="BaseFloatingActionButton">
+    <style name="BaseFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="android:layout_gravity">end|bottom</item>
         <item name="android:layout_margin">@dimen/default_margin</item>
         <item name="elevation">@dimen/default_elevation</item>
