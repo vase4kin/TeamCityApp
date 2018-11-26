@@ -59,7 +59,8 @@
         <activity
             android:name=".account.manage.view.AccountListActivity"
             android:label="@string/title_activity_account_list"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/AccountsListTheme" />
         <activity
             android:name=".runningbuilds.view.RunningBuildsListActivity"
             android:label="@string/title_activity_running_builds"
