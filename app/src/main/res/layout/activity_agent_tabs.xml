@@ -31,7 +31,7 @@
             android:layout_height="?attr/actionBarSize"
             android:layout_width="match_parent"
             app:layout_scrollFlags="scroll|enterAlways|snap"
-            style="@style/Toolbar" />
+            style="@style/Toolbar.NoElevation" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/tabLayout"
