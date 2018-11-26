@@ -87,30 +87,18 @@ public class AboutFragment extends MaterialAboutFragment {
         MaterialAboutCard.Builder authorCardBuilder = new MaterialAboutCard.Builder();
         authorCardBuilder.title(R.string.about_app_text_contacts);
         authorCardBuilder.addItem(new MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_github)
-                .icon(new IconDrawable(context, MaterialCommunityIcons.mdi_github_circle).colorRes(R.color.sub_text_color).sizeDp(24))
+                .text(R.string.about_app_text_web)
+                .subText(R.string.about_app_url_web)
+                .icon(new IconDrawable(context, MaterialCommunityIcons.mdi_web).colorRes(R.color.sub_text_color).sizeDp(24))
                 .setOnClickAction(new MaterialAboutItemOnClickAction() {
                     @Override
                     public void onClick() {
                         Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse(getString(R.string.about_app_url_github)));
+                        intent.setData(Uri.parse(getString(R.string.about_app_url_web)));
                         getActivity().startActivity(intent);
-
                     }
                 })
                 .build())
-                .addItem(new MaterialAboutActionItem.Builder()
-                        .text(R.string.about_app_text_telegram)
-                        .icon(new IconDrawable(context, MaterialCommunityIcons.mdi_telegram).colorRes(R.color.sub_text_color).sizeDp(24))
-                        .setOnClickAction(new MaterialAboutItemOnClickAction() {
-                            @Override
-                            public void onClick() {
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setData(Uri.parse(getString(R.string.about_app_url_telegram)));
-                                getActivity().startActivity(intent);
-                            }
-                        })
-                        .build())
                 .addItem(ConvenienceBuilder.createEmailItem(context, new IconDrawable(context, MaterialIcons.md_email).colorRes(R.color.sub_text_color).sizeDp(24),
                         getText(R.string.about_app_text_email), true, getString(R.string.about_app_email), getString(R.string.about_app_email_title)));
 
