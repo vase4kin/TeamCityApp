@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -46,9 +45,6 @@ public class LoginActivity extends AppCompatActivity {
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
-        getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -72,12 +68,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mPresenter.onResume();
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        mPresenter.onWindowFocusChanged(hasFocus);
-        super.onWindowFocusChanged(hasFocus);
     }
 
     /**
