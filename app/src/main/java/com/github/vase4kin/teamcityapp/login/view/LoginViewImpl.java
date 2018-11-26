@@ -21,12 +21,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -47,21 +43,6 @@ import butterknife.Unbinder;
 
 public class LoginViewImpl implements LoginView {
 
-    /**
-     * Animation startup delay
-     */
-    private static final int STARTUP_DELAY = 300;
-
-    /**
-     * Animation delay for logo
-     */
-    private static final int ANIM_ITEM_DURATION = 1000;
-
-    /**
-     * Animation delay for small items such as buttons
-     */
-    private static final int ITEM_DELAY = 300;
-
     @BindColor(R.color.md_white_1000)
     int mWhiteColor;
 
@@ -71,14 +52,8 @@ public class LoginViewImpl implements LoginView {
     @BindColor(R.color.login_text_error_color)
     int mOrangeColor;
 
-    @BindView(R.id.img_logo)
-    ImageView mLogoImageView;
-
     @BindView(R.id.img_real_logo)
     ImageView mRealLogoImageView;
-
-    @BindView(R.id.container)
-    ViewGroup mContainer;
 
     @BindView(R.id.teamcity_url)
     EditText mServerUrl;
@@ -251,39 +226,6 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void animate() {
-        ViewCompat.animate(mLogoImageView)
-                .translationY(mActivity.getResources().getInteger(R.integer.logo_move))
-                .setStartDelay(STARTUP_DELAY)
-                .setDuration(ANIM_ITEM_DURATION).setInterpolator(
-                new DecelerateInterpolator(1.2f))
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mLogoImageView != null) {
-                            mLogoImageView.setVisibility(View.GONE);
-                        }
-                        if (mRealLogoImageView != null) {
-                            mRealLogoImageView.setVisibility(View.VISIBLE);
-                        }
-                    }
-                }).start();
-
-        for (int i = 0; i < mContainer.getChildCount(); i++) {
-            View v = mContainer.getChildAt(i);
-            ViewPropertyAnimatorCompat viewAnimator = ViewCompat.animate(v)
-                    .translationY(0).alpha(1)
-                    .setStartDelay((ITEM_DELAY * i) + 500)
-                    .setDuration(1000);
-
-            viewAnimator.setInterpolator(new DecelerateInterpolator()).start();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void unbindViews() {
         mUnbinder.unbind();
     }
@@ -331,18 +273,6 @@ public class LoginViewImpl implements LoginView {
     @Override
     public void showCouldNotSaveUserError() {
         setError(R.string.error_save_account);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        if (!hasFocus) {
-            return;
-        }
-
-        animate();
     }
 
     /**

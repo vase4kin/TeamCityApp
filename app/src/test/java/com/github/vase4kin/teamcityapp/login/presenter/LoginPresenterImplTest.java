@@ -108,12 +108,6 @@ public class LoginPresenterImplTest {
     }
 
     @Test
-    public void testHandleOnWindowFocusChanged() throws Exception {
-        mPresenter.onWindowFocusChanged(true);
-        verify(mView).onWindowFocusChanged(eq(true));
-    }
-
-    @Test
     public void testOnUserLoginButtonClick() throws Exception {
         mPresenter.onUserLoginButtonClick("url", "userName", "password", false);
         verify(mView).hideError();

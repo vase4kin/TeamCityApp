@@ -43,11 +43,6 @@ public interface LoginView {
     void dismissProgressDialog();
 
     /**
-     * Start animation
-     */
-    void animate();
-
-    /**
      * Unbind views before activity is destroyed
      */
     void unbindViews();
@@ -83,11 +78,6 @@ public interface LoginView {
      * Show could not save user data error
      */
     void showCouldNotSaveUserError();
-
-    /**
-     * Handle activity callback
-     */
-    void onWindowFocusChanged(boolean hasFocus);
 
     /**
      * Hide keyboard

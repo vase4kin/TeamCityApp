@@ -35,9 +35,4 @@ public interface LoginPresenter {
      * handle activity onResume callback
      */
     void onResume();
-
-    /**
-     * handle activity onWindowFocusChanged callback
-     */
-    void onWindowFocusChanged(boolean hasFocus);
 }
