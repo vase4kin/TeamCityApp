@@ -30,10 +30,10 @@
 
                 <TextView
                     android:id="@id/itemTitle"
+                    style="@style/ItemTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/rate_title"
-                    style="@style/ItemTitle" />
+                    android:text="@string/rate_title" />
 
                 <TextView
                     style="@style/ItemSubTitle"

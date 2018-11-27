@@ -101,7 +101,7 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
             }
         }));
         mToolbar.setBackgroundDrawable(new ColorDrawable(mActivity.getResources().getColor(R.color.failed_tool_bar_color)));
-        mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_status_bar_color);
+        mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_tool_bar_color);
     }
 
     /**

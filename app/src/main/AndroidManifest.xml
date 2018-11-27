@@ -14,6 +14,7 @@
   ~ limitations under the License.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.github.vase4kin.teamcityapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,7 +28,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".splash.view.SplashActivity"
             android:theme="@style/SplashTheme">
@@ -39,8 +41,7 @@
         </activity>
         <activity
             android:name=".login.view.LoginActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".root.view.RootProjectsActivity"
             android:label="@string/app_name"
@@ -58,7 +59,8 @@
         <activity
             android:name=".account.manage.view.AccountListActivity"
             android:label="@string/title_activity_account_list"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/AccountsListTheme" />
         <activity
             android:name=".runningbuilds.view.RunningBuildsListActivity"
             android:label="@string/title_activity_running_builds"

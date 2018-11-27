@@ -14,176 +14,142 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:background="?colorPrimary">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:orientation="vertical"
+        android:paddingTop="48dp">
 
-        <LinearLayout
-            android:id="@+id/container"
+        <ImageView
+            android:id="@+id/img_real_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/launch_logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/default_margin"
+            android:text="@string/app_name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
+            android:textColor="@android:color/white"
+            android:textSize="22sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/small_margin"
+            android:gravity="center"
+            android:text="@string/text_app_description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
+            android:textSize="20sp" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/teamcity_url_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:orientation="vertical"
-            android:paddingTop="48dp">
+            android:layout_marginTop="@dimen/login_screen_margin"
+            android:layout_marginLeft="@dimen/login_screen_margin"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            style="@style/LoginEditTextLayout"
+            app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+            app:errorTextAppearance="@style/LoginTextErrorAppearance">
 
-            <ImageView
-                android:id="@+id/img_real_logo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/launch_logo"
-                android:visibility="invisible"
-                tools:visibility="visible" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/default_margin"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
-                android:textColor="@android:color/white"
-                android:textSize="22sp"
-                android:alpha="0"
-                tools:alpha="1" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="@dimen/small_margin"
-                android:gravity="center"
-                android:text="@string/text_app_description"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
-                android:textSize="20sp"
-                android:alpha="0"
-                tools:alpha="1" />
-
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/teamcity_url_wrapper"
+            <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
+                android:id="@+id/teamcity_url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/login_screen_margin"
-                android:layout_marginLeft="@dimen/login_screen_margin"
-                android:layout_marginRight="@dimen/login_screen_margin"
-                android:alpha="0"
-                style="@style/LoginEditTextLayout"
-                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-                app:errorTextAppearance="@style/LoginTextErrorAppearance"
-                tools:alpha="1">
+                android:hint="@string/server_field_hint"
+                android:inputType="textUri"
+                android:text="@string/text_teamcity_url"
+                style="@style/LoginEditText" />
 
-                <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
-                    android:id="@+id/teamcity_url"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/server_field_hint"
-                    android:inputType="textUri"
-                    android:text="@string/text_teamcity_url"
-                    style="@style/LoginEditText" />
+        </android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+        <Switch
+            android:id="@+id/guest_user_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginLeft="28dp"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            android:textColor="@color/md_white_1000"
+            android:text="@string/text_guest_user_switch" />
 
-            <Switch
-                android:id="@+id/guest_user_switch"
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/user_field_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/login_screen_margin"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            style="@style/LoginEditTextLayout"
+            app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+            app:errorTextAppearance="@style/LoginTextErrorAppearance">
+
+            <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
+                android:id="@+id/user_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/small_margin"
-                android:layout_marginLeft="28dp"
-                android:layout_marginRight="@dimen/login_screen_margin"
-                android:textColor="@color/md_white_1000"
-                android:text="@string/text_guest_user_switch"
-                android:alpha="0"
-                tools:alpha="1" />
+                android:hint="@string/hint_user_name"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                style="@style/LoginEditText" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/user_field_wrapper"
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/password_field_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/login_screen_margin"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            style="@style/LoginEditTextLayout"
+            app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
+            app:errorTextAppearance="@style/LoginTextErrorAppearance">
+
+            <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
+                android:id="@+id/password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/login_screen_margin"
-                android:layout_marginRight="@dimen/login_screen_margin"
-                style="@style/LoginEditTextLayout"
-                android:alpha="0"
-                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-                app:errorTextAppearance="@style/LoginTextErrorAppearance"
-                tools:alpha="1">
+                android:hint="@string/hint_password"
+                android:imeOptions="actionDone"
+                android:inputType="textPassword"
+                style="@style/LoginEditText" />
 
-                <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
-                    android:id="@+id/user_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_user_name"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-                    style="@style/LoginEditText" />
+        </android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+        <Switch
+            android:id="@+id/disable_ssl_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginLeft="28dp"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            android:textColor="@color/md_white_1000"
+            android:text="@string/text_disable_ssl_switch" />
 
-            <android.support.design.widget.TextInputLayout
-                android:id="@+id/password_field_wrapper"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/login_screen_margin"
-                android:layout_marginRight="@dimen/login_screen_margin"
-                android:alpha="0"
-                style="@style/LoginEditTextLayout"
-                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-                app:errorTextAppearance="@style/LoginTextErrorAppearance"
-                tools:alpha="1">
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/login_screen_margin"
+            android:layout_marginLeft="@dimen/login_screen_margin"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            android:layout_marginBottom="@dimen/login_screen_margin"
+            android:text="@string/text_login_button"
+            android:theme="@style/LoginButton" />
 
-                <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
-                    android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_password"
-                    android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    style="@style/LoginEditText" />
+    </LinearLayout>
 
-            </android.support.design.widget.TextInputLayout>
-
-            <Switch
-                android:id="@+id/disable_ssl_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/small_margin"
-                android:layout_marginLeft="28dp"
-                android:layout_marginRight="@dimen/login_screen_margin"
-                android:textColor="@color/md_white_1000"
-                android:text="@string/text_disable_ssl_switch"
-                android:alpha="0"
-                tools:alpha="1" />
-
-            <Button
-                android:id="@+id/btn_login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/login_screen_margin"
-                android:layout_marginLeft="@dimen/login_screen_margin"
-                android:layout_marginRight="@dimen/login_screen_margin"
-                android:layout_marginBottom="@dimen/login_screen_margin"
-                android:text="@string/text_login_button"
-                android:theme="@style/LoginButton"
-                android:alpha="0"
-                tools:alpha="1" />
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <ImageView
-        android:id="@+id/img_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:src="@drawable/launch_logo"
-        tools:visibility="gone" />
-
-</FrameLayout>
+</ScrollView>

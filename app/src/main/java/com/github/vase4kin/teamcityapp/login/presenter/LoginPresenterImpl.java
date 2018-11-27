@@ -79,14 +79,6 @@ public class LoginPresenterImpl implements LoginPresenter, LoginView.ViewListene
      * {@inheritDoc}
      */
     @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        view.onWindowFocusChanged(hasFocus);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void onUserLoginButtonClick(String serverUrl,
                                        final String userName,
                                        final String password,

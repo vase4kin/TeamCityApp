@@ -15,6 +15,11 @@
   -->
 
 <resources>
+
+    <color name="colorAccent">#4db6ac</color>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D2</color>
+
     <color name="snackbar_action_color_done">#ffccccff</color>
 
     <color name="base_item_color">@color/md_white_1000</color>

@@ -17,5 +17,4 @@
 <resources>
     <!--(2560x1600 - Nexus 10")-->
     <dimen name="recycler_view_horizontal_margin">64dp</dimen>
-    <integer name="logo_move">-1050</integer>
 </resources>
