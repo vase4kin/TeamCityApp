@@ -103,6 +103,9 @@ class LoginPresenterImpl @Inject constructor(
         view.showDisableSslWarningDialog()
     }
 
+    /**
+     * {@inheritDoc}
+     */
     override fun onAcceptNotSecureConnectionClick(isGuest: Boolean) {
         val loginInfo = loginInfo ?: return
         if (isGuest) {
@@ -110,6 +113,13 @@ class LoginPresenterImpl @Inject constructor(
         } else {
             authUser(loginInfo.serverUrl, loginInfo.userName, loginInfo.password, loginInfo.isSslDisabled)
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onCancelNotSecureConnectionClick() {
+        clearLoginInfo()
     }
 
     private fun authUser(serverUrl: String,

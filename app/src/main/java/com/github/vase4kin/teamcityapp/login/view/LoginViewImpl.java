@@ -375,6 +375,9 @@ public class LoginViewImpl implements LoginView {
                 .onNegative(new MaterialDialog.SingleButtonCallback() {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (listener != null) {
+                            listener.onCancelNotSecureConnectionClick();
+                        }
                         dialog.dismiss();
                     }
                 })

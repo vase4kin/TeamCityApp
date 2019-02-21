@@ -126,5 +126,7 @@ interface LoginView {
         fun onDisableSslSwitchClick()
 
         fun onAcceptNotSecureConnectionClick(isGuest: Boolean)
+
+        fun onCancelNotSecureConnectionClick()
     }
 }
