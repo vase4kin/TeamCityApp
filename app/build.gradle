@@ -15,6 +15,8 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 apply from: 'jacoco.gradle'
 apply from: 'spoon.gradle'
@@ -226,6 +228,7 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 apply plugin: 'com.google.gms.google-services'

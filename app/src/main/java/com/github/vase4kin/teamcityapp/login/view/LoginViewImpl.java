@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.login.view;
 import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.design.widget.TextInputLayout;
 import android.view.KeyEvent;
@@ -87,6 +88,9 @@ public class LoginViewImpl implements LoginView {
     private Activity mActivity;
     private MaterialDialog mProgressDialog;
 
+    @Nullable
+    private ViewListener listener;
+
     public LoginViewImpl(Activity mActivity) {
         this.mActivity = mActivity;
     }
@@ -95,8 +99,10 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(final ViewListener listener) {
+    public void initViews(@NonNull final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
+
+        this.listener = listener;
 
         mProgressDialog = new MaterialDialog.Builder(mActivity)
                 .content(R.string.text_progress_bar_loading)
@@ -227,6 +233,7 @@ public class LoginViewImpl implements LoginView {
      */
     @Override
     public void unbindViews() {
+        listener = null;
         mUnbinder.unbind();
     }
 
@@ -333,6 +340,41 @@ public class LoginViewImpl implements LoginView {
                     @Override
                     public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         disableSslSwitch.setChecked(false);
+                        dialog.dismiss();
+                    }
+                })
+                .canceledOnTouchOutside(false)
+                .autoDismiss(false)
+                .cancelable(false)
+                .show();
+    }
+
+    @Override
+    public void showNotSecureConnectionDialog(final boolean isGuest) {
+        new MaterialDialog.Builder(mActivity)
+                .titleColor(mWhiteColor)
+                .title(R.string.warning_ssl_dialog_title)
+                .content(R.string.server_not_secure_http)
+                .widgetColor(mWhiteColor)
+                .contentColor(mWhiteColor)
+                .backgroundColor(mPrimaryColor)
+                .positiveColor(mOrangeColor)
+                .positiveText(R.string.dialog_ok_title)
+                .negativeColor(mOrangeColor)
+                .negativeText(R.string.warning_ssl_dialog_negative)
+                .linkColor(mOrangeColor)
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        if (listener != null) {
+                            listener.onAcceptNotSecureConnectionClick(isGuest);
+                        }
+                        dialog.dismiss();
+                    }
+                })
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                         dialog.dismiss();
                     }
                 })
