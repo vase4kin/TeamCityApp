@@ -54,6 +54,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.clearText;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.pressImeActionButton;
@@ -359,6 +360,47 @@ public class LoginActivityTest {
         onView(withId(R.id.btn_login)).perform(click());
         onView(withText(R.string.info_unauthorized_dialog_title)).check(matches(isDisplayed()));
         onView(withText(R.string.info_unauthorized_dialog_content)).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Verifies that user can be logged in as guest user with correct account url
+     */
+    @Test
+    public void testUserCanCreateGuestUserAccountWithNotSecureUrl() {
+        final String urlWithPath = "http://teamcity.com/server";
+        String savedUrl = urlWithPath.concat("/");
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                mCallbackArgumentCaptor.getValue().onResponse(
+                        mCall,
+                        new Response.Builder()
+                                .request(new Request.Builder().url(urlWithPath).build())
+                                .protocol(Protocol.HTTP_1_0)
+                                .message(MESSAGE_EMPTY)
+                                .code(200)
+                                .build());
+                return null;
+            }
+        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        onView(withId(R.id.teamcity_url)).perform(clearText(), typeText(urlWithPath), closeSoftKeyboard());
+        onView(withId(R.id.guest_user_switch)).perform(click());
+        onView(withId(R.id.btn_login)).perform(click());
+
+        onView(withText(R.string.warning_ssl_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.server_not_secure_http)).check(matches(isDisplayed()));
+        onView(withText(R.string.dialog_ok_title)).perform(click());
+
+        intended(allOf(
+                hasComponent(RootProjectsActivity.class.getName()),
+                hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
+
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
+        assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), is(true));
+        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(savedUrl));
+        assertThat(storageUtils.getActiveUser().isSslDisabled(), is(false));
     }
 
     @Ignore
