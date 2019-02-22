@@ -170,7 +170,7 @@ public class CreateAccountPresenterImplTest {
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasGuestAccountWithUrl(eq("url"));
-        verify(mDataManager).authGuestUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq(false));
+        verify(mDataManager).authGuestUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq(false), eq(false));
 
         CustomOnLoadingListener<String> listener = mCustomOnLoadingListenerArgumentCaptor.getValue();
         listener.onSuccess("url");
@@ -195,7 +195,7 @@ public class CreateAccountPresenterImplTest {
         verify(mView).hideError();
         verify(mView).showProgressDialog();
         verify(mDataModel).hasAccountWithUrl(eq("url"), eq("userName"));
-        verify(mDataManager).authUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false));
+        verify(mDataManager).authUser(mCustomOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false), eq(false));
 
         CustomOnLoadingListener<String> customOnLoadingListener = mCustomOnLoadingListenerArgumentCaptor.getValue();
         customOnLoadingListener.onSuccess("url");

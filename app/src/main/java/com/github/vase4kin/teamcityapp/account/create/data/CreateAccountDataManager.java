@@ -24,6 +24,11 @@ import android.support.annotation.NonNull;
 public interface CreateAccountDataManager {
 
     /**
+     * Code for not secure http
+     */
+    int ERROR_CODE_HTTP_NOT_SECURE = 1001;
+
+    /**
      * Server auth with credentials
      *
      * @param listener - to receive callbacks on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
@@ -36,7 +41,8 @@ public interface CreateAccountDataManager {
                   String url,
                   String userName,
                   String password,
-                  boolean isSslDisabled);
+                  boolean isSslDisabled,
+                  boolean checkSecureConnection);
 
     /**
      * Server guest auth
@@ -47,7 +53,8 @@ public interface CreateAccountDataManager {
      */
     void authGuestUser(@NonNull CustomOnLoadingListener<String> listener,
                        String url,
-                       boolean isSslDisabled);
+                       boolean isSslDisabled,
+                       boolean checkSecureConnection);
 
     /**
      * Save user account in the local storage

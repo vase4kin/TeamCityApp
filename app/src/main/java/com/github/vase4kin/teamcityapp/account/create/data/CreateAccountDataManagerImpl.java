@@ -48,6 +48,8 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
     private static final String AUTH_URL = "httpAuth/app/rest/server";
     private static final String AUTH_GUEST_URL = "guestAuth/app/rest/server";
 
+    private static final String SCHEME_HTTP = "http";
+
     /**
      * Default error code
      */
@@ -79,9 +81,18 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                          final String url,
                          final String userName,
                          final String password,
-                         boolean isSslDisabled) {
+                         boolean isSslDisabled,
+                         boolean checkSecureConnection) {
         // Creating okHttpClient with authenticator
-        OkHttpClient okHttpClient = getClient(isSslDisabled).newBuilder().authenticator(new Authenticator() {
+        OkHttpClient okHttpClient = createClientWithAuthenticator(userName, password, isSslDisabled);
+        // Handling request
+        handleAuthRequest(url, AUTH_URL, okHttpClient, listener, checkSecureConnection);
+    }
+
+    private OkHttpClient createClientWithAuthenticator(final String userName,
+                                                       final String password,
+                                                       boolean isSslDisabled) {
+        return getClient(isSslDisabled).newBuilder().authenticator(new Authenticator() {
             @Override
             public Request authenticate(@NonNull Route route, @NonNull Response response) {
                 String credential = Credentials.basic(userName, password);
@@ -95,8 +106,6 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
                         .build();
             }
         }).build();
-        // Handling request
-        handleAuthRequest(url, AUTH_URL, okHttpClient, listener);
     }
 
     /**
@@ -105,8 +114,9 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
     @Override
     public void authGuestUser(@NonNull final CustomOnLoadingListener<String> listener,
                               final String url,
-                              boolean isSslDisabled) {
-        handleAuthRequest(url, AUTH_GUEST_URL, getClient(isSslDisabled), listener);
+                              boolean isSslDisabled,
+                              boolean checkSecureConnection) {
+        handleAuthRequest(url, AUTH_GUEST_URL, getClient(isSslDisabled), listener, checkSecureConnection);
     }
 
     /**
@@ -127,17 +137,23 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
     private void handleAuthRequest(final String serverUrl,
                                    final String authUrl,
                                    final OkHttpClient okHttpClient,
-                                   final CustomOnLoadingListener<String> listener) {
+                                   final CustomOnLoadingListener<String> listener,
+                                   final boolean checkSecureConnection) {
+
+        Uri serverAuthUri = Uri.parse(serverUrl).buildUpon()
+                .appendEncodedPath(authUrl).build();
+
+        if (checkSecureConnection && SCHEME_HTTP.equals(serverAuthUri.getScheme())) {
+            listener.onFail(ERROR_CODE_HTTP_NOT_SECURE, mContext.getString(R.string.server_not_secure_http));
+            return;
+        }
+
         final Handler handler = new Handler(mContext.getMainLooper());
 
         try {
 
-            String serverAuthUrl = Uri.parse(serverUrl).buildUpon()
-                    .appendEncodedPath(authUrl)
-                    .toString();
-
             final Request request = new Request.Builder()
-                    .url(serverAuthUrl)
+                    .url(serverAuthUri.toString())
                     .build();
 
             okHttpClient

@@ -112,7 +112,7 @@ public class LoginPresenterImplTest {
         mPresenter.onUserLoginButtonClick("url", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataManager).authUser(mArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false));
+        verify(mDataManager).authUser(mArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false), eq(true));
 
         CustomOnLoadingListener<String> customOnLoadingListener = mArgumentCaptor.getValue();
         customOnLoadingListener.onSuccess("url");
@@ -167,7 +167,7 @@ public class LoginPresenterImplTest {
         mPresenter.onGuestUserLoginButtonClick("url", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
-        verify(mDataManager).authGuestUser(mArgumentCaptor.capture(), eq("url"), eq(false));
+        verify(mDataManager).authGuestUser(mArgumentCaptor.capture(), eq("url"), eq(false), eq(true));
 
         CustomOnLoadingListener<String> listener = mArgumentCaptor.getValue();
         listener.onSuccess("url");
@@ -188,7 +188,7 @@ public class LoginPresenterImplTest {
 
         listener.onFail(401, "error");
         verify(mView, times(3)).dismissProgressDialog();
-        verify(mView, times(2)).showError(eq("error"));
+        verify(mView, times(1)).showError(eq("error"));
         verify(mTracker, times(2)).trackGuestUserLoginFailed(eq("error"));
         verify(mView, times(2)).hideKeyboard();
         verify(mView).showUnauthorizedInfoDialog();
