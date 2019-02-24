@@ -14,88 +14,93 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.view;
+package com.github.vase4kin.teamcityapp.login.view
 
 /**
- * View callbacks of {@link LoginActivity}
+ * View callbacks of [LoginActivity]
  */
-public interface LoginView {
+interface LoginView {
 
     /**
      * Init views
      * @param listener
      */
-    void initViews(ViewListener listener);
+    fun initViews(listener: ViewListener)
 
     /**
      * Close activity
      */
-    void close();
+    fun close()
 
     /**
      * Show progress loading dialog
      */
-    void showProgressDialog();
+    fun showProgressDialog()
 
     /**
      * Dismiss progress loading dialog
      */
-    void dismissProgressDialog();
+    fun dismissProgressDialog()
 
     /**
      * Unbind views before activity is destroyed
      */
-    void unbindViews();
+    fun unbindViews()
 
     /**
      * Show auth error
      *
      * @param errorMessage - Error message which comes from server response
      */
-    void showError(String errorMessage);
+    fun showError(errorMessage: String)
 
     /**
      * Hide error
      */
-    void hideError();
+    fun hideError()
 
     /**
      * Show server url cannot be empty error
      */
-    void showServerUrlCanNotBeEmptyError();
+    fun showServerUrlCanNotBeEmptyError()
 
     /**
      * Show server user name cannot be empty error
      */
-    void showUserNameCanNotBeEmptyError();
+    fun showUserNameCanNotBeEmptyError()
 
     /**
      * Show server password cannot be empty error
      */
-    void showPasswordCanNotBeEmptyError();
+    fun showPasswordCanNotBeEmptyError()
 
     /**
      * Show could not save user data error
      */
-    void showCouldNotSaveUserError();
+    fun showCouldNotSaveUserError()
 
     /**
      * Hide keyboard
      */
-    void hideKeyboard();
+    fun hideKeyboard()
 
     /**
      * Show permissions unauthorized dialog
      */
-    void showUnauthorizedInfoDialog();
+    fun showUnauthorizedInfoDialog()
 
     /**
      * Show warning dialog about disabling ssl
      */
-    void showDisableSslWarningDialog();
+    fun showDisableSslWarningDialog()
 
     /**
-     * Receiving callback from {@link LoginViewImpl} to {@link com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl}
+     * Show dialog about not secure connection
+     */
+    fun showNotSecureConnectionDialog(isGuest: Boolean)
+
+    /**
+     * Receiving callback from [LoginViewImpl] to [com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl]
      */
     interface ViewListener {
 
@@ -106,18 +111,22 @@ public interface LoginView {
          * @param userName  - User name
          * @param password  - User password
          */
-        void onUserLoginButtonClick(String serverUrl, String userName, String password, boolean isSslDisabled);
+        fun onUserLoginButtonClick(serverUrl: String, userName: String, password: String, isSslDisabled: Boolean)
 
         /**
          * Handle on login button click for guest user creation
          *
          * @param serverUrl - TeamCity server url
          */
-        void onGuestUserLoginButtonClick(String serverUrl, boolean isSslDisabled);
+        fun onGuestUserLoginButtonClick(serverUrl: String, isSslDisabled: Boolean)
 
         /**
          * On ignore ssl switch click
          */
-        void onDisableSslSwitchClick();
+        fun onDisableSslSwitchClick()
+
+        fun onAcceptNotSecureConnectionClick(isGuest: Boolean)
+
+        fun onCancelNotSecureConnectionClick()
     }
 }
