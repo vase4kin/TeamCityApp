@@ -21,6 +21,7 @@ import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -36,7 +37,7 @@ class AccountsDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    fun load(call: Observable<SharedUserStorage>, loadingListener: OnLoadingListener<List<UserAccount>>) {
+    override fun load(call: Single<SharedUserStorage>, loadingListener: OnLoadingListener<List<UserAccount>>) {
         Observable.fromIterable(sharedUserStorage.objects)
                 .toList()
                 .subscribeOn(Schedulers.io())

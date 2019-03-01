@@ -27,6 +27,7 @@ import com.github.vase4kin.teamcityapp.account.manage.view.OnAccountRemoveListen
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import java.util.List;
@@ -60,7 +61,7 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
     @SuppressWarnings("unchecked")
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<UserAccount>> loadingListener, boolean update) {
-        mDataManager.load(Observable.empty().singleOrError(), loadingListener);
+        mDataManager.load(Observable.<SharedUserStorage>empty().singleOrError(), loadingListener);
     }
 
     /**
