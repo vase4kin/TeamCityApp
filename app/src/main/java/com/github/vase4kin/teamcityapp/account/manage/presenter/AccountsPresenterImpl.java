@@ -29,12 +29,11 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 
 /**
  * Presenter impl for managing {@link com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity}
@@ -61,7 +60,7 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
     @SuppressWarnings("unchecked")
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<UserAccount>> loadingListener, boolean update) {
-        mDataManager.load(Single.just(Collections.<UserAccount>emptyList()), loadingListener);
+        mDataManager.load(Observable.empty().singleOrError(), loadingListener);
     }
 
     /**
