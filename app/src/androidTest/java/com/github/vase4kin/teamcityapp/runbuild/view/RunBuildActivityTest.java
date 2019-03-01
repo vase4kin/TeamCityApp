@@ -50,11 +50,11 @@ import org.mockito.Spy;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import retrofit2.Response;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -138,7 +138,7 @@ public class RunBuildActivityTest {
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));
         branches.add(new Branch("dev2"));
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(branches)));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(branches)));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
@@ -179,7 +179,7 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeErrorSnackBarIfServerReturnsAnError() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Observable.<Build>error(new RuntimeException()));
+        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Single.<Build>error(new RuntimeException()));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
@@ -195,7 +195,7 @@ public class RunBuildActivityTest {
     public void testUserCanSeeErrorForbiddenSnackBarIfServerReturnsAnError() throws Exception {
         // Prepare mocks
         HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
-        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Single.<Build>error(httpException));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
@@ -213,7 +213,7 @@ public class RunBuildActivityTest {
         List<Agent> agents = new ArrayList<>();
         Agent agent = new Agent("agent 1");
         agents.add(agent);
-        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Observable.just(new Agents(1, agents)));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Single.just(new Agents(1, agents)));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
@@ -246,7 +246,7 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeNoAgentsAvailableTextIfNoAgentsAvailable() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Observable.<Agents>error(new RuntimeException()));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Single.<Agents>error(new RuntimeException()));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");

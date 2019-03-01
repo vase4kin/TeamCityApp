@@ -196,7 +196,7 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnAgentSelectedIfAgentsAreEmpty() throws Exception {
-        mPresenter.setMAgents(Collections.emptyList());
+        mPresenter.setMAgents(Collections.<Agent>emptyList());
         mPresenter.onAgentSelected(0);
     }
 

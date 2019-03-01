@@ -51,11 +51,11 @@ import org.mockito.Spy;
 
 import java.util.Collections;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import retrofit2.Response;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openContextualActionModeOverflowMenu;
@@ -69,6 +69,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.CODE_FORBIDDEN;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -126,9 +127,9 @@ public class RestartBuildTest {
     @Test
     public void testUserCanRestartBuildWithTheSameParameters() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild))
-                .thenReturn(Observable.just(mBuild2));
-        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Observable.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild))
+                .thenReturn(Single.just(mBuild2));
+        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Single.just(Mocks.queuedBuild2()));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -189,10 +190,10 @@ public class RestartBuildTest {
     public void testUserCanRestartBuildWithTheSameParametersButFailedToOpenItThen() {
         // Prepare mocks
         HttpException httpException = new HttpException(Response.<Build>error(500, mResponseBody));
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild))
-                .thenReturn(Observable.<Build>error(httpException))
-                .thenReturn(Observable.<Build>error(httpException));
-        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Observable.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild))
+                .thenReturn(Single.<Build>error(httpException))
+                .thenReturn(Single.<Build>error(httpException));
+        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Single.just(Mocks.queuedBuild2()));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -239,9 +240,9 @@ public class RestartBuildTest {
     @Test
     public void testUserCanSeeForbiddenErrorWhenRestartingBuild() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        HttpException httpException = new HttpException(Response.<Build>error(Companion.getCODE_FORBIDDEN(), mResponseBody));
-        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
+        HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
+        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Single.<Build>error(httpException));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -272,9 +273,9 @@ public class RestartBuildTest {
     @Test
     public void testUserCanSeeServerErrorWhenRestartingBuild() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         HttpException httpException = new HttpException(Response.<Build>error(500, mResponseBody));
-        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Single.<Build>error(httpException));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

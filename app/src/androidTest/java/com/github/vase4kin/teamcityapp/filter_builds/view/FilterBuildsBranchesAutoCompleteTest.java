@@ -33,7 +33,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,8 +43,8 @@ import org.mockito.Spy;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -56,6 +55,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -99,7 +99,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
     public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID(), TYPE_ID);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field is not visible
@@ -111,10 +111,10 @@ public class FilterBuildsBranchesAutoCompleteTest {
     @Test
     public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasEmptyBranchesList() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(new ArrayList<Branch>())));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(new ArrayList<Branch>())));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID(), TYPE_ID);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field is not visible
@@ -129,10 +129,10 @@ public class FilterBuildsBranchesAutoCompleteTest {
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));
         branches.add(new Branch("dev2"));
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(branches)));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(branches)));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID(), TYPE_ID);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Choose branch from autocomplete and verify it is appeared

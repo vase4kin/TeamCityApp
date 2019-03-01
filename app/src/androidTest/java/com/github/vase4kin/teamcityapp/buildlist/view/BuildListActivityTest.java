@@ -43,7 +43,6 @@ import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
@@ -56,8 +55,8 @@ import org.mockito.Spy;
 
 import java.util.Collections;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -74,6 +73,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
@@ -167,7 +167,7 @@ public class BuildListActivityTest {
 
     @Test
     public void testUserCanSeeFailureMessageIfSmthBadHappensInBuildListLoading() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.<Builds>error(new RuntimeException("smth bad happend!")));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
 
         mActivityRule.launchActivity(null);
 
@@ -181,7 +181,7 @@ public class BuildListActivityTest {
 
     @Test
     public void testUserCanSeeLoadEmptyListMessageIfBuildListIsEmpty() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         mActivityRule.launchActivity(null);
 
@@ -195,7 +195,7 @@ public class BuildListActivityTest {
 
     @Test
     public void testUserCanOpenRunBuild() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         mActivityRule.launchActivity(null);
 
@@ -210,12 +210,12 @@ public class BuildListActivityTest {
         // Check run build activity is opened
         intended(allOf(
                 hasComponent(RunBuildActivity.class.getName()),
-                hasExtras(hasEntry(equalTo(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID()), equalTo("build_type_id")))));
+                hasExtras(hasEntry(equalTo(EXTRA_BUILD_TYPE_ID), equalTo("build_type_id")))));
     }
 
     @Test
     public void testUserCanSeeSnackBarIfBuildIsAddedToQueue() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
@@ -242,7 +242,7 @@ public class BuildListActivityTest {
     @Test
     public void testUserCanSeeBuildListIsRefreshedIfBuildIsAddedToQueue() throws Exception {
         when(mTeamCityService.listBuilds(anyString(), anyString()))
-                .thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())))
+                .thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())))
                 .thenCallRealMethod();
 
         // Preparing stubbing intent
@@ -273,7 +273,7 @@ public class BuildListActivityTest {
 
     @Test
     public void testUserCanOpenRecentlyQueuedBuildFromSnackBarIfNoErrors() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
@@ -295,7 +295,7 @@ public class BuildListActivityTest {
 
         // Mock build call
         Build build = Mocks.runningBuild();
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(build));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(build));
 
         // Click on show button of queued build snack bar
         onView(withText(R.string.text_show_build)).perform(click());
@@ -308,7 +308,7 @@ public class BuildListActivityTest {
 
     @Test
     public void testUserCanSeeErrorSnackbarWhenOpenRecentlyQueuedBuildIfThereAreErrors() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
@@ -329,7 +329,7 @@ public class BuildListActivityTest {
                 .perform(click());
 
         // Mock build call
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.<Build>error(new RuntimeException()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.<Build>error(new RuntimeException()));
 
         // Click on show button of queued build snack bar
         onView(withText(R.string.text_show_build)).perform(click());
@@ -346,7 +346,7 @@ public class BuildListActivityTest {
 
     @Test
     public void testUserCanOpenFilterBuilds() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         mActivityRule.launchActivity(null);
 
@@ -361,12 +361,12 @@ public class BuildListActivityTest {
         // Check filter builds activity is opened
         intended(allOf(
                 hasComponent(FilterBuildsActivity.class.getName()),
-                hasExtras(hasEntry(equalTo(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID()), equalTo("build_type_id")))));
+                hasExtras(hasEntry(equalTo(EXTRA_BUILD_TYPE_ID), equalTo("build_type_id")))));
     }
 
     @Test
     public void testUserCanSeeSnackBarIfBuildFiltersHaveBeenApplied() throws Exception {
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         // Preparing stubbing intent
         Intent resultData = new Intent();

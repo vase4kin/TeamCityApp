@@ -43,8 +43,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -103,7 +104,7 @@ public class ChangesFragmentTest {
     @Test
     public void testUserCanSeeBuildChanges() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -145,7 +146,7 @@ public class ChangesFragmentTest {
     @Test
     public void testUserCanSeeChangesFailureMessageIfSmthBadHappens() {
         // Prepare mocks
-        when(mTeamCityService.listChanges(anyString())).thenReturn(Observable.<Changes>error(new RuntimeException("Fake error happened!")));
+        when(mTeamCityService.listChanges(anyString())).thenReturn(Single.<Changes>error(new RuntimeException("Fake error happened!")));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -172,7 +173,7 @@ public class ChangesFragmentTest {
     @Test
     public void testUserCanSeeEmptyChangesMessageIfNoChangesAreAvailable() {
         // Prepare mocks
-        when(mTeamCityService.listChanges(anyString())).thenReturn(Observable.<Changes>empty());
+        when(mTeamCityService.listChanges(anyString())).thenReturn(Observable.<Changes>empty().singleOrError());
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

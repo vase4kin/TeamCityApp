@@ -42,8 +42,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
 import static android.support.test.espresso.Espresso.onView;
@@ -107,7 +107,7 @@ public class FavoritesActivityTest {
     @Test
     public void testUserCanSeeFavoritesListIfSmthBadHappensInFavoritesLoading() {
         // prepare mocks
-        when(teamCityService.buildType(anyString())).thenReturn(Observable.<BuildType>error(new RuntimeException("smth bad happend!")));
+        when(teamCityService.buildType(anyString())).thenReturn(Single.<BuildType>error(new RuntimeException("smth bad happend!")));
         getStorage().addBuildTypeToFavorites("id");
         getStorage().addBuildTypeToFavorites("id2");
         getStorage().addBuildTypeToFavorites("id3");
@@ -156,7 +156,7 @@ public class FavoritesActivityTest {
     @Test
     public void testUserCanAddBuildTypeToFavorites() {
         //prepare mocks
-        when(teamCityService.buildType(Mocks.buildTypeMock().getId())).thenReturn(Observable.just(Mocks.buildTypeMock()));
+        when(teamCityService.buildType(Mocks.buildTypeMock().getId())).thenReturn(Single.just(Mocks.buildTypeMock()));
 
         // launch activity
         activityRule.launchActivity(null);
