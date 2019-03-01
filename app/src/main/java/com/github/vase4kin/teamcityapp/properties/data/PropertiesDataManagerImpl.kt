@@ -37,17 +37,12 @@ class PropertiesDataManagerImpl : BaseListRxDataManagerImpl<Properties, Properti
     override fun load(buildDetails: BuildDetails, loadingListener: OnLoadingListener<List<Properties.Property>>) {
         // Getting properties from the build
         val properties = buildDetails.properties
+        if (properties == null) {
+            loadingListener.onSuccess(emptyList())
+            return
+        }
         Observable.just(properties)
-                .flatMap {
-                    if (properties == null)
-                        Observable.empty()
-                    else
-                        Observable.just(properties)
-                }
-                .defaultIfEmpty(Properties(emptyList()))
-                .flatMap {
-                    Observable.fromIterable(it.objects)
-                }
+                .flatMap { Observable.fromIterable(it.objects) }
                 .toList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
