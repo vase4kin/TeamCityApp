@@ -65,7 +65,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
@@ -210,7 +209,7 @@ public class CancelBuildTest {
     public void testUserCanSeeForbiddenErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
+        HttpException httpException = new HttpException(Response.<Build>error(Companion.getCODE_FORBIDDEN(), mResponseBody));
         when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.<Build>error(httpException));
 
         // Prepare intent
@@ -359,7 +358,7 @@ public class CancelBuildTest {
     public void testUserCanSeeForbiddenErrorWhenStoppingBuild() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()));
-        HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
+        HttpException httpException = new HttpException(Response.<Build>error(Companion.getCODE_FORBIDDEN(), mResponseBody));
         when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.<Build>error(httpException));
 
         // Prepare intent

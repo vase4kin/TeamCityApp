@@ -210,7 +210,7 @@ public class BuildListActivityTest {
         // Check run build activity is opened
         intended(allOf(
                 hasComponent(RunBuildActivity.class.getName()),
-                hasExtras(hasEntry(equalTo(RunBuildInteractor.EXTRA_BUILD_TYPE_ID), equalTo("build_type_id")))));
+                hasExtras(hasEntry(equalTo(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID()), equalTo("build_type_id")))));
     }
 
     @Test
@@ -361,7 +361,7 @@ public class BuildListActivityTest {
         // Check filter builds activity is opened
         intended(allOf(
                 hasComponent(FilterBuildsActivity.class.getName()),
-                hasExtras(hasEntry(equalTo(RunBuildInteractor.EXTRA_BUILD_TYPE_ID), equalTo("build_type_id")))));
+                hasExtras(hasEntry(equalTo(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID()), equalTo("build_type_id")))));
     }
 
     @Test

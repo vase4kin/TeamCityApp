@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
-import io.rx_cache.internal.RxCache;
+import io.rx_cache2.internal.RxCache;
 
 /**
  * Impl of {@link RootDataManager}

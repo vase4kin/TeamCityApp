@@ -99,7 +99,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
     public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, TYPE_ID);
+        intent.putExtra(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID(), TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field is not visible
@@ -114,7 +114,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
         when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(new ArrayList<Branch>())));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, TYPE_ID);
+        intent.putExtra(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID(), TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field is not visible
@@ -132,7 +132,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
         when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(branches)));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, TYPE_ID);
+        intent.putExtra(RunBuildInteractor.Companion.getEXTRA_BUILD_TYPE_ID(), TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Choose branch from autocomplete and verify it is appeared

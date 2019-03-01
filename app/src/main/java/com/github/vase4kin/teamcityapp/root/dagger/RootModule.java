@@ -42,7 +42,7 @@ import java.util.Set;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
-import io.rx_cache.internal.RxCache;
+import io.rx_cache2.internal.RxCache;
 
 @Module
 public class RootModule {

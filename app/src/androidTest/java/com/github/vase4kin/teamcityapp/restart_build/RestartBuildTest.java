@@ -69,7 +69,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -241,7 +240,7 @@ public class RestartBuildTest {
     public void testUserCanSeeForbiddenErrorWhenRestartingBuild() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
+        HttpException httpException = new HttpException(Response.<Build>error(Companion.getCODE_FORBIDDEN(), mResponseBody));
         when(mTeamCityService.queueBuild(Matchers.any(Build.class))).thenReturn(Observable.<Build>error(httpException));
 
         // Prepare intent
