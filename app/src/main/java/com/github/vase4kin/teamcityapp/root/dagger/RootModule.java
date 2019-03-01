@@ -37,6 +37,8 @@ import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Set;
 
 import dagger.Module;
@@ -62,8 +64,9 @@ public class RootModule {
     RootDataManager providesRootDataManager(Context context,
                                             Repository repository,
                                             SharedUserStorage sharedUserStorage,
-                                            RxCache rxCache) {
-        return new RootDataManagerImpl(context, repository, sharedUserStorage, rxCache);
+                                            RxCache rxCache,
+                                            EventBus eventBus) {
+        return new RootDataManagerImpl(context, repository, sharedUserStorage, rxCache, eventBus);
     }
 
     @Provides

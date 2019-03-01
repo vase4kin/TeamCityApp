@@ -25,6 +25,8 @@ import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
+import org.greenrobot.eventbus.EventBus;
+
 import io.rx_cache2.internal.RxCache;
 
 /**
@@ -38,8 +40,9 @@ public class RootDataManagerImpl extends DrawerDataManagerImpl implements RootDa
     public RootDataManagerImpl(Context context,
                                Repository repository,
                                SharedUserStorage sharedUserStorage,
-                               RxCache rxCache) {
-        super(repository, sharedUserStorage);
+                               RxCache rxCache,
+                               EventBus eventBus) {
+        super(repository, sharedUserStorage, eventBus);
         this.mContext = context;
         this.mRxCache = rxCache;
     }

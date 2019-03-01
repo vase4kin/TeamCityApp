@@ -32,6 +32,8 @@ import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.Set;
 
 import dagger.Module;
@@ -57,8 +59,10 @@ public class DrawerModule {
     }
 
     @Provides
-    DrawerDataManager providesDrawerDataManager(Repository repository, SharedUserStorage sharedUserStorage) {
-        return new DrawerDataManagerImpl(repository, sharedUserStorage);
+    DrawerDataManager providesDrawerDataManager(Repository repository,
+                                                SharedUserStorage sharedUserStorage,
+                                                EventBus eventBus) {
+        return new DrawerDataManagerImpl(repository, sharedUserStorage, eventBus);
     }
 
     @Provides
