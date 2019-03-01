@@ -62,7 +62,7 @@ interface BuildDetailsInteractor : BaseTabsDataManager {
      *
      * @param listener - Listener to receive callbacks
      */
-    fun setOnBuildTabsEventsListener(listener: OnBuildDetailsEventsListener)
+    fun setOnBuildTabsEventsListener(listener: OnBuildDetailsEventsListener?)
 
     /**
      * Post [OnOverviewRefreshDataEvent]

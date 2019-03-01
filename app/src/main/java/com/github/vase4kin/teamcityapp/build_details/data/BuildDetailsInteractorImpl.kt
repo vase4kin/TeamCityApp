@@ -52,7 +52,7 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
     /**
      * {@inheritDoc}
      */
-    override fun setOnBuildTabsEventsListener(listener: OnBuildDetailsEventsListener) {
+    override fun setOnBuildTabsEventsListener(listener: OnBuildDetailsEventsListener?) {
         this.listener = listener
     }
 
