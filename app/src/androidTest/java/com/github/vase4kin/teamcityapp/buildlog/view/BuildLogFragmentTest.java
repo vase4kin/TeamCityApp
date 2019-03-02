@@ -42,8 +42,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -103,7 +103,7 @@ public class BuildLogFragmentTest {
     @Test
     public void testUserCanSeeBuildLog() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

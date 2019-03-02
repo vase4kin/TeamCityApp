@@ -27,9 +27,10 @@ import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.DaggerFilterBuildsComponent;
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule;
 import com.github.vase4kin.teamcityapp.filter_builds.presenter.FilterBuildsPresenterImpl;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 
 import javax.inject.Inject;
+
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 
 /**
  * Activity to manage builds filtering logic
@@ -90,7 +91,7 @@ public class FilterBuildsActivity extends AppCompatActivity {
      */
     public static void startForResult(@NonNull Activity activity, String buildTypeId) {
         Intent intent = new Intent(activity, FilterBuildsActivity.class);
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, buildTypeId);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, buildTypeId);
         activity.startActivityForResult(intent, REQUEST_CODE);
         activity.overridePendingTransition(R.anim.slide_in_bottom, R.anim.hold);
     }

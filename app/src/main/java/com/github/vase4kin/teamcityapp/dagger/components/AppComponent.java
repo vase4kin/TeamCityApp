@@ -31,7 +31,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
-import io.rx_cache.internal.RxCache;
+import io.rx_cache2.internal.RxCache;
 import okhttp3.OkHttpClient;
 
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;

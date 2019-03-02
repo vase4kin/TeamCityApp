@@ -25,7 +25,6 @@ import com.crashlytics.android.Crashlytics;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
-import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import java.io.IOException;
@@ -39,6 +38,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
+
+import static com.github.vase4kin.teamcityapp.api.TeamCityServiceKt.AUTHORIZATION;
 
 /**
  * Impl of {@link CreateAccountDataManager}
@@ -97,12 +98,12 @@ public class CreateAccountDataManagerImpl implements CreateAccountDataManager {
             public Request authenticate(@NonNull Route route, @NonNull Response response) {
                 String credential = Credentials.basic(userName, password);
 
-                if (credential.equals(response.request().header(TeamCityService.AUTHORIZATION))) {
+                if (credential.equals(response.request().header(AUTHORIZATION))) {
                     return null; // If we already failed with these credentials, don't retry.
                 }
 
                 return response.request().newBuilder()
-                        .header(TeamCityService.AUTHORIZATION, credential)
+                        .header(AUTHORIZATION, credential)
                         .build();
             }
         }).build();

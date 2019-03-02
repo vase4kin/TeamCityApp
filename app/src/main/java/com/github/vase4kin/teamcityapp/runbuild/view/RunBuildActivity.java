@@ -26,10 +26,11 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.runbuild.dagger.DaggerRunBuildComponent;
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.presenter.RunBuildPresenterImpl;
 
 import javax.inject.Inject;
+
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 
 /**
  * Run build activity
@@ -90,7 +91,7 @@ public class RunBuildActivity extends AppCompatActivity {
      */
     public static void startForResult(@NonNull Activity activity, String buildTypeId) {
         Intent intent = new Intent(activity, RunBuildActivity.class);
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, buildTypeId);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, buildTypeId);
         activity.startActivityForResult(intent, REQUEST_CODE);
         activity.overridePendingTransition(R.anim.slide_in_bottom, R.anim.hold);
     }
