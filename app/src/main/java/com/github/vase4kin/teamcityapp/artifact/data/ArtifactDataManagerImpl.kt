@@ -42,7 +42,7 @@ class ArtifactDataManagerImpl(
         private val eventBus: EventBus
 ) : BaseListRxDataManagerImpl<Files, File>(), ArtifactDataManager {
 
-    private var mListener: OnArtifactEventListener? = null
+    private var listener: OnArtifactEventListener? = null
 
     /**
      * {@inheritDoc}
@@ -108,8 +108,8 @@ class ArtifactDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun setListener(listener: OnArtifactEventListener) {
-        this.mListener = listener
+    override fun setListener(listener: OnArtifactEventListener?) {
+        this.listener = listener
     }
 
     /**
@@ -124,7 +124,7 @@ class ArtifactDataManagerImpl(
      */
     @Subscribe
     fun onEvent(event: ArtifactDownloadEvent) {
-        mListener?.onDownloadArtifactEvent(event.name, event.value)
+        listener?.onDownloadArtifactEvent(event.name, event.value)
     }
 
     /**
@@ -132,7 +132,7 @@ class ArtifactDataManagerImpl(
      */
     @Subscribe
     fun onEvent(event: ArtifactOpenEvent) {
-        mListener?.onOpenArtifactEvent(event.href)
+        listener?.onOpenArtifactEvent(event.href)
     }
 
     /**
@@ -140,6 +140,6 @@ class ArtifactDataManagerImpl(
      */
     @Subscribe
     fun onEvent(event: ArtifactOpenInBrowserEvent) {
-        mListener?.onStartBrowserEvent(event.href)
+        listener?.onStartBrowserEvent(event.href)
     }
 }

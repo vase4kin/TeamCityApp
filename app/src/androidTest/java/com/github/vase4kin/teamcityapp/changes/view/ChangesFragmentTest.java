@@ -43,7 +43,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
-import io.reactivex.Observable;
+import java.util.Collections;
+
 import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
@@ -173,7 +174,7 @@ public class ChangesFragmentTest {
     @Test
     public void testUserCanSeeEmptyChangesMessageIfNoChangesAreAvailable() {
         // Prepare mocks
-        when(mTeamCityService.listChanges(anyString())).thenReturn(Observable.<Changes>empty().singleOrError());
+        when(mTeamCityService.listChanges(anyString())).thenReturn(Single.just(new Changes(Collections.<Changes.Change>emptyList(), 0)));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -189,7 +190,7 @@ public class ChangesFragmentTest {
         mActivityRule.launchActivity(intent);
 
         // Checking changes tab title
-        onView(withText("Changes"))
+        onView(withText("Changes (0)"))
                 .check(matches(isDisplayed()))
                 .perform(click());
 

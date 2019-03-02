@@ -60,7 +60,7 @@ interface RunBuildInteractor {
      * @param properties      - properties to use for new build
      * @param loadingListener - listener to receive callbacks
      */
-    fun queueBuild(branchName: String, properties: Properties, loadingListener: LoadingListenerWithForbiddenSupport<String>)
+    fun queueBuild(branchName: String?, properties: Properties?, loadingListener: LoadingListenerWithForbiddenSupport<String>)
 
     /**
      * Unsubscribe all rx subscriptions

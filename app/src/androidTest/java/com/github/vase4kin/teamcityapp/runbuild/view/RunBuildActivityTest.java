@@ -179,7 +179,7 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeErrorSnackBarIfServerReturnsAnError() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Single.<Build>error(new RuntimeException()));
+        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Single.<Build>error(new RuntimeException("error")));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
@@ -246,7 +246,7 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeNoAgentsAvailableTextIfNoAgentsAvailable() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Single.<Agents>error(new RuntimeException()));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Single.<Agents>error(new RuntimeException("error")));
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");

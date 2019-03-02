@@ -68,7 +68,7 @@ class RunBuildInteractorImpl(
     /**
      * {@inheritDoc}
      */
-    override fun queueBuild(branchName: String, properties: Properties, loadingListener: LoadingListenerWithForbiddenSupport<String>) {
+    override fun queueBuild(branchName: String?, properties: Properties?, loadingListener: LoadingListenerWithForbiddenSupport<String>) {
         val build = Build()
         build.buildTypeId = buildTypeId
         build.branchName = branchName

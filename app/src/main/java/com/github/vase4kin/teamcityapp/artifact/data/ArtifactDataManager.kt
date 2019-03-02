@@ -60,7 +60,7 @@ interface ArtifactDataManager : BaseListRxDataManager<Files, File> {
     /**
      * @param listener - Listener
      */
-    fun setListener(listener: OnArtifactEventListener)
+    fun setListener(listener: OnArtifactEventListener?)
 
     /**
      * Post [ArtifactErrorDownloadingEvent]

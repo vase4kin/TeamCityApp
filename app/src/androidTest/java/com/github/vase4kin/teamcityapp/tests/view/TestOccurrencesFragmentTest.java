@@ -44,7 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
-import io.reactivex.Observable;
 import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
@@ -185,7 +184,7 @@ public class TestOccurrencesFragmentTest {
     public void testUserCanSeeEmptyFailedTestsMessage() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
-        when(mTeamCityService.listTestOccurrences("/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10")).thenReturn(Observable.<TestOccurrences>empty().singleOrError());
+        when(mTeamCityService.listTestOccurrences("/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10")).thenReturn(Single.just(new TestOccurrences(0)));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

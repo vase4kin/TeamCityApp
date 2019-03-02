@@ -20,10 +20,13 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
+import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Observable
 import io.reactivex.Single
+
+private val EMPTY_BUILDTYPE = BuildType()
 
 /**
  * Impl of [FavoritesInteractor]
@@ -40,8 +43,9 @@ class FavoritesInteractorImpl(private val repository: Repository,
         val favoritesObservable = Observable.fromIterable(ids)
                 .flatMapSingle { id ->
                     repository.buildType(id, update)
-                            .onErrorResumeNext { Single.fromObservable(Observable.empty()) }
+                            .onErrorResumeNext { Single.just(EMPTY_BUILDTYPE) }
                 }
+                .filter { it != EMPTY_BUILDTYPE }
                 .toSortedList { buildType1, buildType2 ->
                     buildType1.projectId.compareTo(buildType2.projectId, ignoreCase = true)
                 }
