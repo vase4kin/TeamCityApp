@@ -15,12 +15,66 @@
   -->
 
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginBottom="8dp"
-    android:layout_marginTop="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Widget.MaterialComponents.CardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:layout_marginTop="4dp"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
-    style="@style/BaseItem.WrapHeight">
+    app:cardCornerRadius="@dimen/default_corner_radius">
 
-    <include layout="@layout/layout_item_base_element_list" />
+    <FrameLayout
+        style="@style/Item.Clickable"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.joanzapata.iconify.widget.IconTextView
+                android:id="@id/itemIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/default_margin"
+                android:text="@string/default_icon_text"
+                android:textColor="@color/main_text_color"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/default_margin"
+                android:paddingTop="@dimen/default_margin"
+                android:paddingEnd="@dimen/default_margin"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/itemHeader"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    style="@style/ItemTitle"
+                    tools:text="header" />
+
+                <TextView
+                    android:id="@id/itemTitle"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    tools:text="@string/default_description_value"
+                    style="@style/ItemSubTitle" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </android.support.v7.widget.CardView>
