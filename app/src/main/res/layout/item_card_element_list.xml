@@ -68,6 +68,7 @@
                     android:id="@id/itemTitle"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
+                    android:maxLines="5"
                     tools:text="@string/default_description_value"
                     style="@style/ItemSubTitle" />
 
