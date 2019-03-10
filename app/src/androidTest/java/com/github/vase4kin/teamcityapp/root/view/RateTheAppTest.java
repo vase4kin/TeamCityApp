@@ -51,8 +51,8 @@ import org.mockito.Spy;
 
 import java.util.Collections;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -124,7 +124,7 @@ public class RateTheAppTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
-        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Single.just(navigationNode));
         when(remoteService.isNotChurn()).thenReturn(true);
 
         mActivityRule.launchActivity(null);
@@ -156,7 +156,7 @@ public class RateTheAppTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
-        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Single.just(navigationNode));
         when(remoteService.isNotChurn()).thenReturn(true);
 
         mActivityRule.launchActivity(null);
@@ -204,7 +204,7 @@ public class RateTheAppTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
-        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Single.just(navigationNode));
         when(remoteService.isNotChurn()).thenReturn(true);
 
         mActivityRule.launchActivity(null);
@@ -233,7 +233,7 @@ public class RateTheAppTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
-        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Single.just(navigationNode));
         when(remoteService.isNotChurn()).thenReturn(true);
 
         mActivityRule.launchActivity(null);
@@ -269,7 +269,7 @@ public class RateTheAppTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.<Project>emptyList()),
                 new BuildTypes(Collections.<BuildType>emptyList()));
-        when(mTeamCityService.listBuildTypes(anyString())).thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenReturn(Single.just(navigationNode));
         when(remoteService.isNotChurn()).thenReturn(true);
 
         mActivityRule.launchActivity(null);

@@ -24,6 +24,8 @@ import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManag
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 /**
@@ -31,12 +33,16 @@ import java.util.List;
  */
 public class DrawerDataManagerImpl implements DrawerDataManager {
 
-    private Repository mRepository;
-    protected SharedUserStorage mSharedUserStorage;
+    private final Repository mRepository;
+    protected final SharedUserStorage mSharedUserStorage;
+    private final EventBus eventBus;
 
-    public DrawerDataManagerImpl(Repository repository, SharedUserStorage sharedUserStorage) {
+    public DrawerDataManagerImpl(Repository repository,
+                                 SharedUserStorage sharedUserStorage,
+                                 EventBus eventBus) {
         this.mRepository = repository;
         this.mSharedUserStorage = sharedUserStorage;
+        this.eventBus = eventBus;
     }
 
     /**
@@ -78,7 +84,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadConnectedAgentsCount(final OnLoadingListener<Integer> loadingListener) {
-        new AgentsDataManagerImpl(mRepository, null).loadCount(loadingListener);
+        new AgentsDataManagerImpl(mRepository, eventBus).loadCount(loadingListener);
     }
 
     /**

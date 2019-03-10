@@ -28,7 +28,6 @@ import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsViewImpl;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractorImpl;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentViewImpl;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -38,6 +37,8 @@ import java.util.Set;
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
+
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 
 @Module
 public class FilterBuildsModule {
@@ -60,7 +61,7 @@ public class FilterBuildsModule {
 
     @Provides
     BranchesInteractor providesBranchesInteractor(Repository repository) {
-        return new BranchesInteractorImpl(repository, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
+        return new BranchesInteractorImpl(repository, mActivity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides

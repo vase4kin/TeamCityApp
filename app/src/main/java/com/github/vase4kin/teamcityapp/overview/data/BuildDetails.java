@@ -244,6 +244,7 @@ public interface BuildDetails extends Jsonable {
      */
     String getId();
 
+    @Nullable
     Properties getProperties();
 
     /**

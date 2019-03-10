@@ -45,8 +45,8 @@ import org.mockito.Spy;
 
 import java.util.Collections;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -106,7 +106,7 @@ public class RootProjectsActivityTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
-        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Single.just(navigationNode));
 
         mActivityRule.launchActivity(null);
 
