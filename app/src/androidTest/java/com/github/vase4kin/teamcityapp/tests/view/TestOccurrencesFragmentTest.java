@@ -44,8 +44,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu;
@@ -113,7 +113,7 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanSeeBuildFailedTests() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -147,7 +147,7 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanBeNavigatedToFailedTest() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -183,8 +183,8 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanSeeEmptyFailedTestsMessage() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        when(mTeamCityService.listTestOccurrences("/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10")).thenReturn(Observable.<TestOccurrences>empty());
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
+        when(mTeamCityService.listTestOccurrences("/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10")).thenReturn(Single.just(new TestOccurrences(0)));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -212,7 +212,7 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanSeePassedTests() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -252,7 +252,7 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanNotInteractWithPassedTests() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -289,7 +289,7 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanSeeIgnoredTests() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -329,7 +329,7 @@ public class TestOccurrencesFragmentTest {
     @Test
     public void testUserCanNotInteractWithIgnoredTests() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

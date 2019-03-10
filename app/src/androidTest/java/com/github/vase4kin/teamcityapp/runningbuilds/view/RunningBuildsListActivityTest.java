@@ -41,8 +41,8 @@ import org.mockito.Spy;
 
 import java.util.Collections;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -120,7 +120,7 @@ public class RunningBuildsListActivityTest {
 
     @Test
     public void testUserCanSeeFailureMessageIfSmthHappendsOnRunningBuildsLoading() throws Exception {
-        when(mTeamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Observable.<Builds>error(new RuntimeException("smth bad happend!")));
+        when(mTeamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
 
         mActivityRule.launchActivity(null);
 
@@ -130,7 +130,7 @@ public class RunningBuildsListActivityTest {
 
     @Test
     public void testUserCanSeeEmptyDataMessageIfRunningBuildListIsEmpty() throws Exception {
-        when(mTeamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         mActivityRule.launchActivity(null);
 

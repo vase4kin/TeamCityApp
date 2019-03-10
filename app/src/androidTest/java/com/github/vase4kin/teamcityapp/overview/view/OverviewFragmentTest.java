@@ -47,8 +47,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -114,7 +114,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeSuccessBuildDetails() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -157,7 +157,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeFailureMessageIfSmthBadHappens() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.<Build>error(new RuntimeException("Fake error happened!")));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.<Build>error(new RuntimeException("Fake error happened!")));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -179,7 +179,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanCopyElementValueFromTheList() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -208,7 +208,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeCanceledInfoAsUserRealName() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         mBuild.setCanceledInfo(new CanceledInfo(CANCELED_TIME_STAMP, new User("user.name", "User name")));
 
         // Prepare intent
@@ -232,7 +232,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeCanceledInfoAsUserName() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         mBuild.setCanceledInfo(new CanceledInfo(CANCELED_TIME_STAMP, new User("user.name", null)));
 
         // Prepare intent
@@ -256,7 +256,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeCanceledInfoAsTimeStampOfCancellation() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         mBuild.setCanceledInfo(new CanceledInfo(CANCELED_TIME_STAMP, new User("user.name", null)));
 
         // Prepare intent
@@ -280,7 +280,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeUserWhatUserTriggeredBuildIfUserHasName() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, NAME));
         mBuild.setTriggered(triggered);
 
@@ -308,7 +308,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeUserWhatUserTriggeredBuildIfUserHasOnLyName() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, null));
         mBuild.setTriggered(triggered);
 
@@ -336,7 +336,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeWhatUserRestartedBuildIfUserHasName() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_RESTARTED, null, new User(USER_NAME, NAME));
         mBuild.setTriggered(triggered);
 
@@ -364,7 +364,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeWhatUserRestartedBuildIfUserHasOnlyUserName() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_RESTARTED, null, new User(USER_NAME, null));
         mBuild.setTriggered(triggered);
 
@@ -392,7 +392,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeWhatConfigurationTriggeredBuildIfConfigurationIsDeleted() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_BUILD_TYPE, null, null);
         mBuild.setTriggered(triggered);
 
@@ -420,7 +420,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeWhatUserRestartedBuildIfUserWasDeleted() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_RESTARTED, null, null);
         mBuild.setTriggered(triggered);
 
@@ -448,7 +448,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeeWhatUserTriggeredBuildIfUserWasDeleted() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, null);
         mBuild.setTriggered(triggered);
 
@@ -476,7 +476,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanSeePersonalInfoIfBuildIsPersonal() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         Triggered triggered = new Triggered(TRIGGER_TYPE_USER, null, new User(USER_NAME, null));
         mBuild.setTriggered(triggered);
         mBuild.setPersonal(true);
@@ -507,7 +507,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanViewBuildListFilteredByBranch() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -538,7 +538,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanViewBuildTypeFromCard() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -580,7 +580,7 @@ public class OverviewFragmentTest {
     @Test
     public void testUserCanViewProjectFromCard() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

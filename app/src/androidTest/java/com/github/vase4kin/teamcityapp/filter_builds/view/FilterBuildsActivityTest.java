@@ -48,8 +48,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -101,7 +101,7 @@ public class FilterBuildsActivityTest {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getRestApiInjector().sharedUserStorage().clearAll();
         app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
-        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Observable.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class FilterBuildsActivityTest {
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));
         branches.add(new Branch("dev2"));
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(branches)));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(branches)));
 
         // Starting the activity
         mActivityRule.launchActivity(null);
