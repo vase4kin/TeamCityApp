@@ -83,6 +83,14 @@ public class TeamCityApplication extends Application {
         }
     }
 
+    private void initWorkManagerRequests() {
+        // TODO: If running already DO not start!
+        WorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                NotifyAboutNewBuildsWorker.class, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance().enqueue(workRequest);
+    }
+
     /**
      * Build rest api injector with provided url
      */

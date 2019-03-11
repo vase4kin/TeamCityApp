@@ -327,4 +327,7 @@
     <string name="rate_cancel">Cancel</string>
     <string name="rate_now">Rate</string>
 
+    <!--Notifications-->
+    <string name="default_notification_channel">Default</string>
+
 </resources>
