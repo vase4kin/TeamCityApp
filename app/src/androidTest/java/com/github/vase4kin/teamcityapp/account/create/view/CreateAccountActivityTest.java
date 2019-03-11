@@ -168,7 +168,7 @@ public class CreateAccountActivityTest {
                         hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
-        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity(), null);
+        SharedUserStorage storageUtils = SharedUserStorage.Companion.init(mActivityRule.getActivity(), null);
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
         assertThat(storageUtils.getActiveUser().isSslDisabled(), is(false));
@@ -210,7 +210,7 @@ public class CreateAccountActivityTest {
                         hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
-        SharedUserStorage storageUtils = SharedUserStorage.init(mActivityRule.getActivity(), null);
+        SharedUserStorage storageUtils = SharedUserStorage.Companion.init(mActivityRule.getActivity(), null);
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
         assertThat(storageUtils.getActiveUser().isSslDisabled(), is(true));

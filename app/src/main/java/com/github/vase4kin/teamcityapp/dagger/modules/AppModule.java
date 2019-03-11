@@ -91,7 +91,7 @@ public class AppModule {
     @Provides
     @Singleton
     protected SharedUserStorage provideSharedUserStorage(CryptoManager cryptoManager) {
-        return SharedUserStorage.init(mApplication.getApplicationContext(), cryptoManager);
+        return SharedUserStorage.Companion.init(mApplication.getApplicationContext(), cryptoManager);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

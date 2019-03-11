@@ -21,6 +21,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.text.TextUtils;
 
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
+
 import com.crashlytics.android.Crashlytics;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.DaggerAppComponent;
@@ -28,10 +32,14 @@ import com.github.vase4kin.teamcityapp.dagger.components.DaggerRestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
+import com.github.vase4kin.teamcityapp.utils.NotificationUtilsKt;
+import com.github.vase4kin.teamcityapp.workmanager.NotifyAboutNewBuildsWorker;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.joanzapata.iconify.fonts.MaterialCommunityModule;
 import com.joanzapata.iconify.fonts.MaterialModule;
+
+import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -64,11 +72,14 @@ public class TeamCityApplication extends Application {
         mAppInjector = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
+
         //Get default url
         String mBaseUrl = mAppInjector.sharedUserStorage().getActiveUser().getTeamcityUrl();
         // Rest api init
         if (!TextUtils.isEmpty(mBaseUrl)) {
             buildRestApiInjectorWithBaseUrl(mBaseUrl);
+            NotificationUtilsKt.initAppNotificationChannels(this);
+            initWorkManagerRequests();
         }
     }
 

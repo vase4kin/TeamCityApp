@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.storage.api;
-
-import java.util.List;
+package com.github.vase4kin.teamcityapp.storage.api
 
 /**
  * Container for user accounts
  */
-public class UsersContainer {
-
-    private List<UserAccount> users;
-
-    public List<UserAccount> getUsersAccounts() {
-        return users;
-    }
-
-    public void setUsersAccounts(List<UserAccount> users) {
-        this.users = users;
-    }
-}
+data class UsersContainer(var usersAccounts: MutableList<UserAccount> = mutableListOf())

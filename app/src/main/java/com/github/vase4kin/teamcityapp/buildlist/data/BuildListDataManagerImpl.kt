@@ -89,12 +89,7 @@ open class BuildListDataManagerImpl(
      * {@inheritDoc}
      */
     override fun hasBuildTypeAsFavorite(buildTypeId: String): Boolean {
-        for (favBuildTypeId in sharedUserStorage.activeUser.buildTypeIds) {
-            if (favBuildTypeId == buildTypeId) {
-                return true
-            }
-        }
-        return false
+        return sharedUserStorage.activeUser.favoriteBuildTypes.containsKey(buildTypeId)
     }
 
     /**

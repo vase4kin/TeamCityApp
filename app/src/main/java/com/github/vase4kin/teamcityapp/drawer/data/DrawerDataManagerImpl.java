@@ -100,6 +100,6 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public int getFavoritesCount() {
-        return mSharedUserStorage.getFavoriteBuildTypeIds().size();
+        return mSharedUserStorage.getActiveUser().getFavoriteBuildTypes().size();
     }
 }

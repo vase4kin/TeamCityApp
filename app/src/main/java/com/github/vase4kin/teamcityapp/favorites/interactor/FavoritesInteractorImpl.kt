@@ -39,7 +39,7 @@ class FavoritesInteractorImpl(private val repository: Repository,
      * {@inheritDoc}
      */
     override fun loadFavorites(loadingListener: OnLoadingListener<List<NavigationItem>>, update: Boolean) {
-        val ids = storage.favoriteBuildTypeIds
+        val ids = storage.activeUser.favoriteBuildTypes.keys
         val favoritesObservable = Observable.fromIterable(ids)
                 .flatMapSingle { id ->
                     repository.buildType(id, update)
@@ -59,7 +59,7 @@ class FavoritesInteractorImpl(private val repository: Repository,
      * {@inheritDoc}
      */
     override fun getFavoritesCount(): Int {
-        return storage.favoriteBuildTypeIds.size
+        return storage.activeUser.favoriteBuildTypes.size
     }
 
     class NavigationItemsList(private val items: List<NavigationItem>) : Collectible<NavigationItem> {
