@@ -52,6 +52,7 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.swipeUp;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static android.support.test.espresso.intent.Intents.intended;
@@ -596,6 +597,7 @@ public class OverviewFragmentTest {
 
         //Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition(6));
+        onView(withId(android.R.id.content)).perform(swipeUp());
 
         // Checking configuration  details
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).check(matches(withText(R.string.build_project_by_section_text)));
