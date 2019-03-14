@@ -26,6 +26,8 @@
 
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_background</item>
+        <item name="colorPrimaryDark">@color/white</item>
+        <item name="android:navigationBarColor">@color/white</item>
     </style>
 
     <style name="AccountsListTheme" parent="AppTheme">
@@ -37,6 +39,12 @@
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
+    <style name="PrimaryColorNavBarTheme" parent="AppTheme">
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="WhiteColorNavBarTheme" parent="AppTheme" />
 
     <style name="RecyclerView">
         <item name="android:paddingBottom">@dimen/recycler_view_vertical_margin</item>

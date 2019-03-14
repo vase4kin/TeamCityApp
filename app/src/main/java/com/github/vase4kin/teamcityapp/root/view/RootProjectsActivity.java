@@ -18,10 +18,8 @@ package com.github.vase4kin.teamcityapp.root.view;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.AppCompatDelegate;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -36,12 +34,6 @@ import javax.inject.Inject;
 
 
 public class RootProjectsActivity extends AppCompatActivity implements OnAccountSwitchListener {
-
-    static {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        }
-    }
 
     @Inject
     RootDrawerPresenterImpl mPresenter;

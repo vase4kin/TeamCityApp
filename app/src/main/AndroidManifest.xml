@@ -42,7 +42,8 @@
         </activity>
         <activity
             android:name=".login.view.LoginActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/PrimaryColorNavBarTheme" />
         <activity
             android:name=".root.view.RootProjectsActivity"
             android:label="@string/app_name"
@@ -75,7 +76,8 @@
             android:label="@string/title_activity_navigation" />
         <activity
             android:name=".account.create.view.CreateAccountActivity"
-            android:label="@string/title_activity_create_account" />
+            android:label="@string/title_activity_create_account"
+            android:theme="@style/PrimaryColorNavBarTheme" />
         <activity android:name=".testdetails.view.TestDetailsActivity" />
         <activity
             android:name=".about.AboutLibrariesActivity"
@@ -83,10 +85,12 @@
             android:launchMode="singleTop" />
         <activity
             android:name=".runbuild.view.RunBuildActivity"
-            android:label="@string/title_run_build" />
+            android:label="@string/title_run_build"
+            android:theme="@style/WhiteColorNavBarTheme" />
         <activity
             android:name=".filter_builds.view.FilterBuildsActivity"
-            android:label="@string/title_filter_builds" />
+            android:label="@string/title_filter_builds"
+            android:theme="@style/WhiteColorNavBarTheme" />
         <activity
             android:name=".about.AboutActivity"
             android:label="@string/about_drawer_item" />
