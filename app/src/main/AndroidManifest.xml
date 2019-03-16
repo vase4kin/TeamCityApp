@@ -47,17 +47,21 @@
         <activity
             android:name=".root.view.RootProjectsActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".buildlist.view.BuildListActivity"
-            android:label="@string/title_activity_build_list" />
+            android:label="@string/title_activity_build_list"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".agenttabs.view.AgentTabsActivity"
             android:label="@string/title_activity_agent_tabs"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".build_details.view.BuildDetailsActivity"
-            android:label="@string/title_activity_build" />
+            android:label="@string/title_activity_build"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".account.manage.view.AccountListActivity"
             android:label="@string/title_activity_account_list"
@@ -66,23 +70,29 @@
         <activity
             android:name=".runningbuilds.view.RunningBuildsListActivity"
             android:label="@string/title_activity_running_builds"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".queue.view.BuildQueueActivity"
             android:label="@string/title_activity_queued_builds"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".navigation.view.NavigationActivity"
-            android:label="@string/title_activity_navigation" />
+            android:label="@string/title_activity_navigation"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".account.create.view.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
             android:theme="@style/PrimaryColorNavBarTheme" />
-        <activity android:name=".testdetails.view.TestDetailsActivity" />
+        <activity
+            android:name=".testdetails.view.TestDetailsActivity"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".about.AboutLibrariesActivity"
             android:label="@string/title_activity_about_libraries"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".runbuild.view.RunBuildActivity"
             android:label="@string/title_run_build"
@@ -93,10 +103,12 @@
             android:theme="@style/WhiteColorNavBarTheme" />
         <activity
             android:name=".about.AboutActivity"
-            android:label="@string/about_drawer_item" />
+            android:label="@string/about_drawer_item"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".favorites.view.FavoritesActivity"
-            android:label="@string/favorites_drawer_item" />
+            android:label="@string/favorites_drawer_item"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
