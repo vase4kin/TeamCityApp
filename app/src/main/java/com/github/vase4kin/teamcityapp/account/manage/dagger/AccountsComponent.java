@@ -19,12 +19,12 @@ package com.github.vase4kin.teamcityapp.account.manage.dagger;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
+import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
 
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {AccountsModule.class, CustomDrawerModule.class})
+@Component(dependencies = RestApiComponent.class, modules = {AccountsModule.class, DrawerModule.class})
 public interface AccountsComponent {
 
     void inject(AccountListActivity accountListActivity);
