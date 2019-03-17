@@ -162,7 +162,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$rootProject.retrofitVersion"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$rootProject.retrofitVersion"
     // Drawer
-    implementation('com.mikepenz:materialdrawer:6.0.9@aar') {
+    implementation('com.mikepenz:materialdrawer:6.1.2') {
         transitive = true
     }
     // Icons
