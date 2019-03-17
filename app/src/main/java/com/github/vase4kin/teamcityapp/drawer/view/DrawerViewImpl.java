@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.drawer.view;
 
 import android.graphics.Color;
-import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -47,7 +46,6 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem;
-import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IProfile;
 
 import java.util.ArrayList;
@@ -59,7 +57,7 @@ public class DrawerViewImpl implements DrawerView {
 
     protected AppCompatActivity mActivity;
     protected Drawer mDrawerResult;
-    ArrayList<IProfile> mProfileList = new ArrayList<>();
+    private ArrayList<IProfile> mProfileList = new ArrayList<>();
     protected Toolbar mToolbar;
     private AccountHeader mHeaderResult;
     protected DrawerDataModel mDrawerDataModel;
@@ -181,29 +179,26 @@ public class DrawerViewImpl implements DrawerView {
                 .withProfileImagesVisible(true)
                 .withHeaderBackground(mDefaultColor)
                 .withTextColorRes(R.color.md_white_1000)
-                .withOnAccountHeaderListener(new AccountHeader.OnAccountHeaderListener() {
-                    @Override
-                    public boolean onProfileChanged(View view, IProfile iProfile, boolean b) {
-                        if (iProfile != null) {
-                            switch ((int) iProfile.getIdentifier()) {
-                                case PROFILES_MANAGING:
-                                    mOnDrawerPresenterListener.startAccountListActivity();
-                                    break;
-                                default:
-                                    if (!mOnDrawerPresenterListener.isActiveProfile(
+                .withOnAccountHeaderListener((view, iProfile, b) -> {
+                    if (iProfile != null) {
+                        switch ((int) iProfile.getIdentifier()) {
+                            case PROFILES_MANAGING:
+                                mOnDrawerPresenterListener.startAccountListActivity();
+                                break;
+                            default:
+                                if (!mOnDrawerPresenterListener.isActiveProfile(
+                                        iProfile.getEmail().toString(),
+                                        iProfile.getName().toString())) {
+                                    mOnDrawerPresenterListener.setActiveUser(
                                             iProfile.getEmail().toString(),
-                                            iProfile.getName().toString())) {
-                                        mOnDrawerPresenterListener.setActiveUser(
-                                                iProfile.getEmail().toString(),
-                                                iProfile.getName().toString());
-                                        mOnDrawerPresenterListener.startRootProjectsActivityWhenSwitchingAccounts();
-                                        mOnDrawerPresenterListener.onUserChange();
-                                    }
-                                    break;
-                            }
+                                            iProfile.getName().toString());
+                                    mOnDrawerPresenterListener.startRootProjectsActivityWhenSwitchingAccounts();
+                                    mOnDrawerPresenterListener.onUserChange();
+                                }
+                                break;
                         }
-                        return false;
                     }
+                    return false;
                 })
                 .withProfileImagesVisible(false)
                 .build();
@@ -255,65 +250,59 @@ public class DrawerViewImpl implements DrawerView {
                                 .withSelectedTextColorRes(mDefaultColor)
                                 .withIdentifier(ABOUT)
                 )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        if (drawerItem != null) {
+                .withOnDrawerItemClickListener((view, position, drawerItem) -> {
+                    if (drawerItem != null) {
 
-                            switch ((int) drawerItem.getIdentifier()) {
-                                case PROJECTS:
-                                    if (mActivity instanceof RootProjectsActivity) {
-                                        break;
-                                    }
-                                    mOnDrawerPresenterListener.startRootProjectsActivity();
+                        switch ((int) drawerItem.getIdentifier()) {
+                            case PROJECTS:
+                                if (mActivity instanceof RootProjectsActivity) {
                                     break;
-                                case AGENTS:
-                                    if (mActivity instanceof AgentTabsActivity) {
-                                        break;
-                                    }
-                                    mOnDrawerPresenterListener.startAgentActivity();
+                                }
+                                mOnDrawerPresenterListener.startRootProjectsActivity();
+                                break;
+                            case AGENTS:
+                                if (mActivity instanceof AgentTabsActivity) {
                                     break;
-                                case RUNNING_BUILDS:
-                                    if (mActivity instanceof RunningBuildsListActivity) {
-                                        break;
-                                    }
-                                    mOnDrawerPresenterListener.startBuildRunningActivity();
+                                }
+                                mOnDrawerPresenterListener.startAgentActivity();
+                                break;
+                            case RUNNING_BUILDS:
+                                if (mActivity instanceof RunningBuildsListActivity) {
                                     break;
-                                case BUILD_QUEUE:
-                                    if (mActivity instanceof BuildQueueActivity) {
-                                        break;
-                                    }
-                                    mOnDrawerPresenterListener.startQueuedBuildsActivity();
+                                }
+                                mOnDrawerPresenterListener.startBuildRunningActivity();
+                                break;
+                            case BUILD_QUEUE:
+                                if (mActivity instanceof BuildQueueActivity) {
                                     break;
-                                case ABOUT:
-                                    if (mActivity instanceof AboutLibrariesActivity) {
-                                        break;
-                                    }
-                                    mOnDrawerPresenterListener.startAboutActivity();
+                                }
+                                mOnDrawerPresenterListener.startQueuedBuildsActivity();
+                                break;
+                            case ABOUT:
+                                if (mActivity instanceof AboutLibrariesActivity) {
                                     break;
-                                case FAVORITES:
-                                    if (mActivity instanceof FavoritesActivity) {
-                                        break;
-                                    }
-                                    mOnDrawerPresenterListener.startFavoritesActivity();
+                                }
+                                mOnDrawerPresenterListener.startAboutActivity();
+                                break;
+                            case FAVORITES:
+                                if (mActivity instanceof FavoritesActivity) {
                                     break;
-                                default:
-                                    showDialogWithAdvice();
-                                    break;
-                            }
+                                }
+                                mOnDrawerPresenterListener.startFavoritesActivity();
+                                break;
+                            default:
+                                showDialogWithAdvice();
+                                break;
                         }
-                        return false;
                     }
+                    return false;
                 })
-                .withOnDrawerNavigationListener(new Drawer.OnDrawerNavigationListener() {
-                    @Override
-                    public boolean onNavigationClickListener(View clickedView) {
-                        //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
-                        //if the back arrow is shown. close the activity
-                        backButtonPressed();
-                        //return true if we have consumed the event
-                        return true;
-                    }
+                .withOnDrawerNavigationListener(clickedView -> {
+                    //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
+                    //if the back arrow is shown. close the activity
+                    backButtonPressed();
+                    //return true if we have consumed the event
+                    return true;
                 })
                 .withOnDrawerListener(new OnDrawerListenerImpl(mOnDrawerPresenterListener))
                 .withShowDrawerOnFirstLaunch(false)
@@ -352,6 +341,7 @@ public class DrawerViewImpl implements DrawerView {
     @Override
     public void updateRunningBuildsBadge(int count) {
         mDrawerResult.updateBadge(RUNNING_BUILDS, new StringHolder(String.valueOf(count)));
+        mDrawerResult.setSelection(mDrawerSelection, false);
     }
 
     /**
@@ -360,6 +350,7 @@ public class DrawerViewImpl implements DrawerView {
     @Override
     public void updateAgentsBadge(int count) {
         mDrawerResult.updateBadge(AGENTS, new StringHolder(String.valueOf(count)));
+        mDrawerResult.setSelection(mDrawerSelection, false);
     }
 
     /**
@@ -368,6 +359,7 @@ public class DrawerViewImpl implements DrawerView {
     @Override
     public void updateBuildQueueBadge(int count) {
         mDrawerResult.updateBadge(BUILD_QUEUE, new StringHolder(String.valueOf(count)));
+        mDrawerResult.setSelection(mDrawerSelection, false);
     }
 
     /**
@@ -376,6 +368,7 @@ public class DrawerViewImpl implements DrawerView {
     @Override
     public void updateFavoritesBadge(int count) {
         mDrawerResult.updateBadge(FAVORITES, new StringHolder(String.valueOf(count)));
+        mDrawerResult.setSelection(mDrawerSelection, false);
     }
 
     /**
