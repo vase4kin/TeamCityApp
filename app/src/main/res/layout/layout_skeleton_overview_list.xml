@@ -15,11 +15,9 @@
   -->
 
 <io.supercharge.shimmerlayout.ShimmerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/ShimmerStyle"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:shimmer_animation_duration="@integer/shimmer_length"
-    app:shimmer_color="@color/divider_color">
+    android:layout_height="wrap_content">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

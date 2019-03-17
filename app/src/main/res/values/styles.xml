@@ -16,7 +16,9 @@
 
 <resources>
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
+    <style name="AppTheme" parent="BaseTheme" />
+
+    <style name="BaseTheme" parent="Theme.MaterialComponents.Light">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -30,7 +32,7 @@
         <item name="android:navigationBarColor">@color/white</item>
     </style>
 
-    <style name="AccountsListTheme" parent="AppTheme">
+    <style name="AccountsListTheme" parent="WhiteColorNavBarWithSeparatorTheme">
         <item name="windowActionModeOverlay">true</item>
     </style>
 
@@ -46,8 +48,10 @@
 
     <style name="WhiteColorNavBarTheme" parent="AppTheme" />
 
+    <style name="WhiteColorNavBarWithSeparatorTheme" parent="AppTheme" />
+
     <style name="RecyclerView">
-        <item name="android:paddingBottom">@dimen/recycler_view_vertical_margin</item>
+        <item name="android:paddingBottom">24dp</item>
         <item name="android:paddingLeft">@dimen/recycler_view_horizontal_margin</item>
         <item name="android:paddingRight">@dimen/recycler_view_horizontal_margin</item>
         <item name="android:paddingTop">@dimen/recycler_view_vertical_margin</item>
@@ -239,6 +243,12 @@
 
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@color/transparent</item>
+    </style>
+
+    <style name="ShimmerStyle">
+        <item name="android:layout_marginBottom">24dp</item>
+        <item name="shimmer_animation_duration">@integer/shimmer_length</item>
+        <item name="shimmer_color">@color/divider_color</item>
     </style>
 
 </resources>
