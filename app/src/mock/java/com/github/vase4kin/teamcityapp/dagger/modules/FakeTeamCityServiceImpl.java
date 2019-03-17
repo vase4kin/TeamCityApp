@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;

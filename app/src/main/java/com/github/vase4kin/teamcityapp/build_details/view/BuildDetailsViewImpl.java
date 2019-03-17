@@ -20,16 +20,13 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -46,6 +43,9 @@ import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment;
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.tabs.TabLayout;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -475,8 +475,6 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
                 mContainer,
                 text,
                 Snackbar.LENGTH_LONG);
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         return snackBar;
     }
 

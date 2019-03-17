@@ -17,8 +17,9 @@
 package com.github.vase4kin.teamcityapp.account.create.helper;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 /**
  * Impl of {@link UrlFormatter}

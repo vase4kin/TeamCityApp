@@ -16,8 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.agents.dagger;
 
-import android.support.v4.app.Fragment;
 import android.view.View;
+
+import androidx.fragment.app.Fragment;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel;

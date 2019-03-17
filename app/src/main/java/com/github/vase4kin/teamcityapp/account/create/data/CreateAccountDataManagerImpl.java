@@ -19,7 +19,8 @@ package com.github.vase4kin.teamcityapp.account.create.data;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.vase4kin.teamcityapp.R;

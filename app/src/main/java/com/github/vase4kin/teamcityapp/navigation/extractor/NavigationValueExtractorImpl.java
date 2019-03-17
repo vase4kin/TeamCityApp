@@ -17,7 +17,8 @@
 package com.github.vase4kin.teamcityapp.navigation.extractor;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 

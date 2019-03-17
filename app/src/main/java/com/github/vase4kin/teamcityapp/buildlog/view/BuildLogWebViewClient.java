@@ -18,12 +18,13 @@ package com.github.vase4kin.teamcityapp.buildlog.view;
 
 import android.graphics.Bitmap;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import androidx.annotation.Nullable;
 
 /**
  * Build log web client with listener to receive client callbacks

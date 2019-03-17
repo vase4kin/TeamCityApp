@@ -17,9 +17,10 @@
 package com.github.vase4kin.teamcityapp.login.view;
 
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.test.InstrumentationRegistry;
 import android.view.View;
+
+import androidx.annotation.RequiresApi;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Test;

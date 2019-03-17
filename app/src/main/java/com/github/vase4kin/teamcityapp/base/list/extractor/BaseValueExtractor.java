@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.base.list.extractor;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;

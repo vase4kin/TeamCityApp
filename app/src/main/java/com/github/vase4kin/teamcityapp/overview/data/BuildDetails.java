@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.overview.data;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.base.api.Jsonable;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;

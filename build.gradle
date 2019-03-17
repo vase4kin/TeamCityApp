@@ -58,9 +58,6 @@ ext {
     buildToolsVersion = '28.0.3'
 
     // dependencies versions
-    supportLibraryVersion = '28.0.0'
-    espressoRunnerVersion = '1.0'
-    espressoVersion = '3.0.0'
     dexMakerVersion = '1.4'
     mockitoCoreVersion = '1.10.19'
     powerMockVersion = '1.6.4'

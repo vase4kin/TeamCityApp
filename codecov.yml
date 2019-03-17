@@ -3,4 +3,4 @@ coverage:
     project: off
     patch:
       default:
-        target: 70%
+        target: 50%

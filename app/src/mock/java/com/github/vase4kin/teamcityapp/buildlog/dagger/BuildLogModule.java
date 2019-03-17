@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.dagger;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor;

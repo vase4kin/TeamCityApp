@@ -21,7 +21,7 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/default_margin">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/parameter_name_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -35,9 +35,9 @@
             android:inputType="text"
             android:hint="@string/hint_parameter_name" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -50,6 +50,6 @@
             android:inputType="text"
             android:hint="@string/hint_parameter_value" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </LinearLayout>

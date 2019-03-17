@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.base.list.view;
 
-import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.annotation.NonNull;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import tr.xip.errorview.ErrorView;
 

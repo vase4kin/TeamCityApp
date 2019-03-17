@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.base.tabs.presenter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager;
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEventListener;

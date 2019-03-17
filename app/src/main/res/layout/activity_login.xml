@@ -55,7 +55,7 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
             android:textSize="20sp" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/teamcity_url_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -75,7 +75,7 @@
                 android:text="@string/text_teamcity_url"
                 style="@style/LoginEditText" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Switch
             android:id="@+id/guest_user_switch"
@@ -87,7 +87,7 @@
             android:textColor="@color/md_white_1000"
             android:text="@string/text_guest_user_switch" />
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_field_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -106,9 +106,9 @@
                 android:inputType="text"
                 style="@style/LoginEditText" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_field_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -127,7 +127,7 @@
                 android:inputType="textPassword"
                 style="@style/LoginEditText" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <Switch
             android:id="@+id/disable_ssl_switch"

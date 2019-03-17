@@ -18,10 +18,11 @@ package com.github.vase4kin.teamcityapp.utils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 
 /**
  * Status bar utils class

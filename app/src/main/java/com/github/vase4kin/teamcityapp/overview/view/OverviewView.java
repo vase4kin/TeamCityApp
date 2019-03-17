@@ -16,10 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.overview.view;
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
@@ -188,28 +190,28 @@ public interface OverviewView {
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
      */
     void createStopBuildOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
      */
     void createRemoveBuildFromQueueOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
      */
     void createDefaultOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
+     * See {@link Fragment#onOptionsItemSelected(MenuItem)}
      */
     boolean onOptionsItemSelected(MenuItem item);
 
