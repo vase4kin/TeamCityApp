@@ -21,6 +21,7 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
@@ -50,7 +51,9 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @BindView(R.id.error_view)
     ErrorView mErrorView;
     @BindView(android.R.id.empty)
-    TextView mEmpty;
+    LinearLayout mEmpty;
+    @BindView(R.id.empty_title)
+    TextView emptyTitle;
     @BindView(R.id.skeleton_view)
     ViewGroup skeletonView;
 
@@ -84,7 +87,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         // <!--------------------------------------->!
         mErrorView.setImageTint(Color.LTGRAY);
         mErrorView.setRetryListener(listener);
-        mEmpty.setText(mEmptyMessage);
+        emptyTitle.setText(mEmptyMessage);
         mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
     }

@@ -135,6 +135,6 @@ public class RunningBuildsListActivityTest {
         mActivityRule.launchActivity(null);
 
         matchToolbarTitle("Running builds (0)");
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_running_builds)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_running_builds)));
     }
 }

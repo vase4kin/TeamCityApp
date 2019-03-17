@@ -191,7 +191,7 @@ public class BuildListActivityTest {
                 .perform(click());
 
         // Check the list is empty
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_builds)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_builds)));
     }
 
     @Test
@@ -258,7 +258,7 @@ public class BuildListActivityTest {
                 .perform(click());
 
         // Check the list is empty
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_builds)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_builds)));
 
         // Set up result stubbing
         intending(hasComponent(RunBuildActivity.class.getName())).respondWith(result);

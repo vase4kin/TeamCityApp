@@ -276,7 +276,7 @@ public class RateTheAppTest {
         mActivityRule.launchActivity(null);
 
         // Check showing empty
-        onView(withId(android.R.id.empty))
+        onView(withId(R.id.empty_title))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(R.string.empty_list_message_projects_or_build_types)));
     }

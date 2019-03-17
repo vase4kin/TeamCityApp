@@ -124,6 +124,6 @@ public class BuildQueueActivityTest {
         mActivityRule.launchActivity(null);
 
         matchToolbarTitle("Build queue (0)");
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_build_queue)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_build_queue)));
     }
 }
