@@ -14,10 +14,28 @@
   ~ limitations under the License.
   -->
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@android:id/empty"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:visibility="gone"
-    android:textColor="@color/main_text_color" />
+    android:orientation="vertical"
+    tools:visibility="visible">
+
+    <ImageView
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:src="@drawable/ic_format_list_bulleted_black_24dp"
+        android:tint="#FFCCCCCC" />
+
+    <TextView
+        android:id="@+id/empty_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/default_margin"
+        android:textColor="@color/main_text_color"
+        tools:text="@string/empty_list_message_builds" />
+
+</LinearLayout>
