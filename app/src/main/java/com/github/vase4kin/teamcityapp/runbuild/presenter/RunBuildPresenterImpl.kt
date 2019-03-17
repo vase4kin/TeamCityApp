@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.presenter
 
-import android.support.annotation.VisibleForTesting
+import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
 import com.github.vase4kin.teamcityapp.properties.api.Properties

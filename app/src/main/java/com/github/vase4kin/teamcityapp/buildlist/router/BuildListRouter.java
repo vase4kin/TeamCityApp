@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.router;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;

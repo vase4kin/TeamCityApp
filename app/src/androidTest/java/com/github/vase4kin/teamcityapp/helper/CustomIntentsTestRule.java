@@ -18,12 +18,13 @@ package com.github.vase4kin.teamcityapp.helper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.FailureHandler;
-import android.support.test.espresso.base.DefaultFailureHandler;
-import android.support.test.espresso.intent.rule.IntentsTestRule;
 import android.view.View;
+
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.FailureHandler;
+import androidx.test.espresso.base.DefaultFailureHandler;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 import org.junit.runner.Description;

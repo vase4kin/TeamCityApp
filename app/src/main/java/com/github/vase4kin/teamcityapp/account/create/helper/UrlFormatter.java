@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.account.create.helper;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Url formatter

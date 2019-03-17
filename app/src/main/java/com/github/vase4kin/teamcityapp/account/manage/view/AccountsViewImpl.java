@@ -19,15 +19,13 @@ package com.github.vase4kin.teamcityapp.account.manage.view;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.view.ActionMode;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bignerdranch.android.multiselector.ModalMultiSelectorCallback;
@@ -39,6 +37,8 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -154,8 +154,6 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
                             : backUpAccountMap.size() + " " + mActivity.getString(R.string.snack_bar_remove_account_multiple_accounts_removed_text);
 
             mUndoSnackBar = Snackbar.make(mRecyclerView, snackBarText, Snackbar.LENGTH_LONG);
-            TextView textView = (TextView) mUndoSnackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-            textView.setTextColor(Color.WHITE);
             mUndoSnackBar.setAction(R.string.snack_bar_remove_account_undo_button_text, new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -166,10 +164,10 @@ public class AccountsViewImpl extends BaseListViewImpl<AccountDataModel, SimpleS
                     backUpAccountMap.clear();
                 }
             });
-            mUndoSnackBar.setCallback(new android.support.design.widget.Snackbar.Callback() {
+            mUndoSnackBar.setCallback(new Snackbar.Callback() {
                 @Override
-                public void onDismissed(android.support.design.widget.Snackbar snackbar, int event) {
-                    if (event != android.support.design.widget.Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                public void onDismissed(Snackbar snackbar, int event) {
+                    if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
                         for (UserAccount account : backUpAccountMap.values()) {
                             mSharedUserStorage.removeUserAccount(account);
                             mOnAccountRemoveListener.onAccountRemove();

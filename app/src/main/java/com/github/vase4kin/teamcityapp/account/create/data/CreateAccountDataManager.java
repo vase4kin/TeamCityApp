@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.account.create.data;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Handling create account data

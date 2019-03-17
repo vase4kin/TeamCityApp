@@ -20,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
+
 /**
  * Base menu presenter to handle logic of menu
  */
@@ -28,21 +30,21 @@ public interface BaseMenuPresenter {
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
      */
     void onCreateOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onPrepareOptionsMenu(Menu)} )}
+     * See {@link Fragment#onPrepareOptionsMenu(Menu)} )}
      */
     void onPrepareOptionsMenu(Menu menu);
 
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
+     * See {@link Fragment#onOptionsItemSelected(MenuItem)}
      */
     boolean onOptionsItemSelected(MenuItem item);
 }

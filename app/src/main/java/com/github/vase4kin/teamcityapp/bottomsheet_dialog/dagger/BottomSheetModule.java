@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
@@ -38,6 +37,7 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetAdapte
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetItemViewHolderFactory;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetView;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetViewImpl;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import org.greenrobot.eventbus.EventBus;
 

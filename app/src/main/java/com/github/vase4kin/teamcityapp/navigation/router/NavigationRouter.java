@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.navigation.router;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Router to handle navigation

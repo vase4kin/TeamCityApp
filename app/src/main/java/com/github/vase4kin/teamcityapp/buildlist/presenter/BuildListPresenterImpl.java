@@ -16,11 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.presenter;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;

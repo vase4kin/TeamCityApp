@@ -17,8 +17,9 @@
 package com.github.vase4kin.teamcityapp.account.manage.dagger;
 
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
