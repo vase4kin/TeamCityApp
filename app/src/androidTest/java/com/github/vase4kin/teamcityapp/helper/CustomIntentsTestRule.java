@@ -18,15 +18,12 @@ package com.github.vase4kin.teamcityapp.helper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 
 import androidx.test.espresso.Espresso;
-import androidx.test.espresso.FailureHandler;
 import androidx.test.espresso.base.DefaultFailureHandler;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.hamcrest.Matcher;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -43,13 +40,10 @@ public class CustomIntentsTestRule<T extends Activity> extends IntentsTestRule<T
     public Statement apply(Statement base, Description description) {
         final String testClassName = description.getClassName();
         final String testMethodName = description.getMethodName();
-        final Context context = InstrumentationRegistry.getTargetContext();
-        Espresso.setFailureHandler(new FailureHandler() {
-            @Override
-            public void handle(Throwable throwable, Matcher<View> matcher) {
-                FalconScreenshotAction.perform("failure", testClassName, testMethodName);
-                new DefaultFailureHandler(context).handle(throwable, matcher);
-            }
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Espresso.setFailureHandler((throwable, matcher) -> {
+            FalconScreenshotAction.perform("failure", testClassName, testMethodName);
+            new DefaultFailureHandler(context).handle(throwable, matcher);
         });
         return super.apply(base, description);
     }

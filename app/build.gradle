@@ -230,7 +230,6 @@ dependencies {
     androidTestImplementation 'com.github.fabioCollini:DaggerMock:0.7.0'
     androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
     // Resolve conflits between apks
-    androidTestImplementation 'androidx.annotation:annotation:1.0.2'
     androidTestImplementation 'com.google.android.material:material:1.0.0'
     androidTestImplementation 'androidx.recyclerview:recyclerview:1.0.0'
     // Crashlytics
