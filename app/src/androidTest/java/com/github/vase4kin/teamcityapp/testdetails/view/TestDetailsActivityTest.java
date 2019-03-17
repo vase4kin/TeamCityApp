@@ -121,7 +121,7 @@ public class TestDetailsActivityTest {
         matchToolbarTitle("Details");
 
         // check no data message
-        onView(withId(R.id.empty)).check(matches(allOf(withText(R.string.text_empty_test_details), isDisplayed())));
+        onView(withId(R.id.empty_title)).check(matches(allOf(withText(R.string.text_empty_test_details), isDisplayed())));
     }
 
     @Test

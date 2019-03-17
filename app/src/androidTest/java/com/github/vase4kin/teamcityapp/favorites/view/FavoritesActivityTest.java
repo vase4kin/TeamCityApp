@@ -117,7 +117,7 @@ public class FavoritesActivityTest {
         activityRule.launchActivity(null);
 
         // Check empty list
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class FavoritesActivityTest {
         matchToolbarTitle("Favorites (0)");
 
         // Check the list is empty
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
     }
 
     @Test
