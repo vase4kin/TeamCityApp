@@ -28,7 +28,7 @@ import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule;
 import com.github.vase4kin.teamcityapp.account.manage.dagger.DaggerAccountsComponent;
 import com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl;
-import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
+import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
@@ -56,7 +56,7 @@ public class AccountListActivity extends AppCompatActivity {
 
         // Injecting presenters to activity
         DaggerAccountsComponent.builder()
-                .customDrawerModule(new CustomDrawerModule(this, true, DrawerView.NO_SELECTION))
+                .drawerModule(new DrawerModule(this, true, DrawerView.NO_SELECTION))
                 .accountsModule(new AccountsModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
