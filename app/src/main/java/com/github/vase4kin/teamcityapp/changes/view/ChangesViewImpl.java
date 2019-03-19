@@ -17,18 +17,17 @@
 package com.github.vase4kin.teamcityapp.changes.view;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.StringRes;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
+import com.google.android.material.snackbar.Snackbar;
 import com.mugen.Mugen;
 import com.mugen.MugenCallbacks;
 
@@ -108,8 +107,6 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
                         mLoadMoreCallbacks.onLoadMore();
                     }
                 });
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 

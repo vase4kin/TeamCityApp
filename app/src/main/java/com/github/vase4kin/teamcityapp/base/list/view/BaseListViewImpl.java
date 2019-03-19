@@ -18,16 +18,18 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.vase4kin.teamcityapp.R;
 
@@ -49,7 +51,9 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     @BindView(R.id.error_view)
     ErrorView mErrorView;
     @BindView(android.R.id.empty)
-    TextView mEmpty;
+    LinearLayout mEmpty;
+    @BindView(R.id.empty_title)
+    TextView emptyTitle;
     @BindView(R.id.skeleton_view)
     ViewGroup skeletonView;
 
@@ -83,7 +87,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         // <!--------------------------------------->!
         mErrorView.setImageTint(Color.LTGRAY);
         mErrorView.setRetryListener(listener);
-        mEmpty.setText(mEmptyMessage);
+        emptyTitle.setText(mEmptyMessage);
         mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
     }

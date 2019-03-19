@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.drawer.view;
 
-import android.support.annotation.ColorRes;
+import androidx.annotation.ColorRes;
 
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
 

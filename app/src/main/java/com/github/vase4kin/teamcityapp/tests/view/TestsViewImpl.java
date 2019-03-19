@@ -17,20 +17,19 @@
 package com.github.vase4kin.teamcityapp.tests.view;
 
 import android.app.Activity;
-import android.graphics.Color;
-import android.support.annotation.StringRes;
-import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.StringRes;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel;
 import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractor;
+import com.google.android.material.snackbar.Snackbar;
 import com.mugen.Mugen;
 import com.mugen.MugenCallbacks;
 
@@ -274,8 +273,6 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
                         mLoadMoreCallbacks.onLoadMore();
                     }
                 });
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 

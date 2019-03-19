@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.root.view;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -45,14 +45,14 @@ import org.mockito.Spy;
 
 import java.util.Collections;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
@@ -106,7 +106,7 @@ public class RootProjectsActivityTest {
         NavigationNode navigationNode = new NavigationNode(
                 new Projects(Collections.singletonList(project)),
                 new BuildTypes(Collections.singletonList(buildType)));
-        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Observable.just(navigationNode));
+        when(mTeamCityService.listBuildTypes(anyString())).thenCallRealMethod().thenReturn(Single.just(navigationNode));
 
         mActivityRule.launchActivity(null);
 

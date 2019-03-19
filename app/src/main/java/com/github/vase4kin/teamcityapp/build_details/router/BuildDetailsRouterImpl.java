@@ -18,7 +18,8 @@ package com.github.vase4kin.teamcityapp.build_details.router;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;

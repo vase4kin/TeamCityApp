@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;
@@ -36,13 +36,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
 import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
-import rx.Observable;
 
 /**
  * Fake TC REST impl
@@ -50,168 +51,168 @@ import rx.Observable;
 public class FakeTeamCityServiceImpl implements TeamCityService {
 
     @Override
-    public Observable<Agents> listAgents(
+    public Single<Agents> listAgents(
             @Nullable @Query("includeDisconnected") Boolean includeDisconnected,
             @Nullable @Query("fields") String fields,
             @Nullable @Query("locator") String locator) {
         if (includeDisconnected != null && includeDisconnected) {
-            return Observable
+            return Single
                     .just(Mocks.disconnectedAgents());
         } else if (includeDisconnected != null && !includeDisconnected) {
-            return Observable
+            return Single
                     .just(Mocks.connectedAgents());
         } else {
             List<Agent> merged = new ArrayList<>();
             merged.addAll(Mocks.connectedAgents().getObjects());
             merged.addAll(Mocks.disconnectedAgents().getObjects());
-            return Observable
+            return Single
                     .just(new Agents(4, merged));
         }
     }
 
     @Override
-    public Observable<NavigationNode> listBuildTypes(@Url String url) {
-        return Observable.just(Mocks.navigationNode());
+    public Single<NavigationNode> listBuildTypes(@Url String url) {
+        return Single.just(Mocks.navigationNode());
     }
 
     @Override
-    public Observable<BuildType> buildType(@Path("id") String id) {
-        return Observable.just(Mocks.buildTypeMock());
+    public Single<BuildType> buildType(@Path("id") String id) {
+        return Single.just(Mocks.buildTypeMock());
     }
 
     @Override
-    public Observable<Build> build(@Url String url) {
+    public Single<Build> build(@Url String url) {
         switch (url) {
             // queued builds
             case "/guestAuth/app/rest/buildQueue/id:823050":
-                return Observable.just(Mocks.queuedBuild1());
+                return Single.just(Mocks.queuedBuild1());
             case "/guestAuth/app/rest/buildQueue/id:823051":
-                return Observable.just(Mocks.queuedBuild2());
+                return Single.just(Mocks.queuedBuild2());
             case "/guestAuth/app/rest/buildQueue/id:823052":
-                return Observable.just(Mocks.queuedBuild3());
+                return Single.just(Mocks.queuedBuild3());
             // running build
             case "/guestAuth/app/rest/builds/id:783911":
-                return Observable.just(Mocks.runningBuild());
+                return Single.just(Mocks.runningBuild());
             case "/guestAuth/app/rest/builds/id:783912":
-                return Observable.just(Mocks.successBuild());
+                return Single.just(Mocks.successBuild());
             case "/guestAuth/app/rest/builds/id:783913":
-                return Observable.just(Mocks.failedBuild());
+                return Single.just(Mocks.failedBuild());
             default:
-                return Observable.empty();
+                return Observable.<Build>empty().singleOrError();
         }
     }
 
     @Override
-    public Observable<Builds> listBuilds(@Path("id") String id, @Query("locator") String locator) {
+    public Single<Builds> listBuilds(@Path("id") String id, @Query("locator") String locator) {
         List<Build> builds = new ArrayList<>();
         builds.add(Mocks.runningBuild());
         builds.add(Mocks.successBuild());
         builds.add(Mocks.failedBuild());
-        return Observable.just(new Builds(3, builds));
+        return Single.just(new Builds(3, builds));
     }
 
     @Override
-    public Observable<Builds> listRunningBuilds(@Query("locator") String locator, @Query("fields") String fields) {
+    public Single<Builds> listRunningBuilds(@Query("locator") String locator, @Query("fields") String fields) {
         List<Build> builds = new ArrayList<>();
         builds.add(Mocks.runningBuild());
-        return Observable.just(new Builds(1, builds));
+        return Single.just(new Builds(1, builds));
     }
 
     @Override
-    public Observable<Builds> listQueueBuilds(@Query("fields") String fields) {
+    public Single<Builds> listQueueBuilds(@Query("fields") String fields) {
         List<Build> builds = new ArrayList<>();
         builds.add(Mocks.queuedBuild1());
         builds.add(Mocks.queuedBuild2());
         builds.add(Mocks.queuedBuild3());
-        return Observable.just(new Builds(3, builds));
+        return Single.just(new Builds(3, builds));
     }
 
     @Override
-    public Observable<Builds> listBuilds(String locator) {
+    public Single<Builds> listBuilds(String locator) {
         return listQueueBuilds(null);
     }
 
     @Override
-    public Observable<Builds> listMoreBuilds(@Url String url) {
-        return Observable.empty();
+    public Single<Builds> listMoreBuilds(@Url String url) {
+        return Observable.<Builds>empty().singleOrError();
     }
 
     @Override
-    public Observable<Files> listArtifacts(@Url String url, @Query("locator") String locator) {
+    public Single<Files> listArtifacts(@Url String url, @Query("locator") String locator) {
         switch (url) {
             case "/guestAuth/app/rest/builds/id:92912/artifacts/children/":
-                return Observable.just(Mocks.artifacts());
+                return Single.just(Mocks.artifacts());
             default:
-                return Observable.empty();
+                return Observable.<Files>empty().singleOrError();
         }
     }
 
     @Override
-    public Observable<ResponseBody> downloadFile(@Url String url) {
-        return Observable.just(ResponseBody.create(MediaType.parse("text"), "text"));
+    public Single<ResponseBody> downloadFile(@Url String url) {
+        return Single.just(ResponseBody.create(MediaType.parse("text"), "text"));
     }
 
     @Override
-    public Observable<TestOccurrences> listTestOccurrences(@Url String url) {
+    public Single<TestOccurrences> listTestOccurrences(@Url String url) {
         switch (url) {
             case "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10":
-                return Observable.just(Mocks.failedTests());
+                return Single.just(Mocks.failedTests());
             case "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:SUCCESS,count:10":
-                return Observable.just(Mocks.passedTests());
+                return Single.just(Mocks.passedTests());
             case "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:UNKNOWN,count:10":
-                return Observable.just(Mocks.ignoredTests());
+                return Single.just(Mocks.ignoredTests());
             case "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),count:2147483647&fields=count":
-                return Observable.just(new TestOccurrences(16));
+                return Single.just(new TestOccurrences(16));
             default:
-                return Observable.empty();
+                return Observable.<TestOccurrences>empty().singleOrError();
         }
     }
 
     @Override
-    public Observable<TestOccurrences.TestOccurrence> testOccurrence(@Url String url) {
+    public Single<TestOccurrences.TestOccurrence> testOccurrence(@Url String url) {
         switch (url) {
             case "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)":
-                return Observable.just(new TestOccurrences.TestOccurrence("exception error"));
+                return Single.just(new TestOccurrences.TestOccurrence("exception error"));
             case "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)":
-                return Observable.error(new RuntimeException("Something bad happens!"));
+                return Single.error(new RuntimeException("Something bad happens!"));
             default:
-                return Observable.empty();
+                return Observable.<TestOccurrences.TestOccurrence>empty().singleOrError();
         }
     }
 
     @Override
-    public Observable<Changes> listChanges(@Url String url) {
+    public Single<Changes> listChanges(@Url String url) {
         switch (url) {
             case "/guestAuth/app/rest/changes?locator=build:(id:826073),count:10":
             case "/guestAuth/app/rest/changes?locator=build:(id:826073),count:2147483647&fields=count":
-                return Observable.just(Mocks.changes());
+                return Single.just(Mocks.changes());
             default:
-                return Observable.empty();
+                return Observable.<Changes>empty().singleOrError();
         }
     }
 
     @Override
-    public Observable<Changes.Change> change(@Url String url) {
+    public Single<Changes.Change> change(@Url String url) {
         switch (url) {
             case "/guestAuth/app/rest/changes/id:2503722":
-                return Observable.just(Mocks.singleChange());
+                return Single.just(Mocks.singleChange());
             default:
-                return Observable.empty();
+                return Observable.<Changes.Change>empty().singleOrError();
         }
     }
 
     @Override
-    public Observable<Branches> listBranches(@Path("id") String id) {
-        return Observable.just(new Branches(Collections.singletonList(new Branch("master"))));
+    public Single<Branches> listBranches(@Path("id") String id) {
+        return Single.just(new Branches(Collections.singletonList(new Branch("master"))));
     }
 
     @Override
-    public Observable<Build> queueBuild(@Body Build build) {
-        return Observable.just(Mocks.queuedBuild1());
+    public Single<Build> queueBuild(@Body Build build) {
+        return Single.just(Mocks.queuedBuild1());
     }
 
     @Override
-    public Observable<Build> cancelBuild(@Url String url, @Body BuildCancelRequest buildCancelRequest) {
-        return Observable.just(Mocks.failedBuild());
+    public Single<Build> cancelBuild(@Url String url, @Body BuildCancelRequest buildCancelRequest) {
+        return Single.just(Mocks.failedBuild());
     }
 }

@@ -17,9 +17,10 @@
 package com.github.vase4kin.teamcityapp.runbuild.view;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.matcher.RootMatchers;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.espresso.matcher.RootMatchers;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -37,7 +38,6 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,25 +51,26 @@ import org.mockito.Spy;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import retrofit2.Response;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
 
-import static android.support.test.espresso.Espresso.onData;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static android.support.test.espresso.action.ViewActions.swipeUp;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.swipeUp;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.CODE_FORBIDDEN;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -125,7 +126,7 @@ public class RunBuildActivityTest {
     public void testUserCanSeeSingleBranchChosenIfBuildTypeHasSingleBranchAvailable() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field has branch as master and it's disabled
@@ -138,10 +139,10 @@ public class RunBuildActivityTest {
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));
         branches.add(new Branch("dev2"));
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(branches)));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(branches)));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Choose branch from autocomplete and verify it is appeared
@@ -159,7 +160,7 @@ public class RunBuildActivityTest {
     public void testUserCanStartTheBuild() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Starting the build
@@ -179,10 +180,10 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeErrorSnackBarIfServerReturnsAnError() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Observable.<Build>error(new RuntimeException()));
+        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Single.<Build>error(new RuntimeException("error")));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Starting the build
@@ -195,10 +196,10 @@ public class RunBuildActivityTest {
     public void testUserCanSeeErrorForbiddenSnackBarIfServerReturnsAnError() throws Exception {
         // Prepare mocks
         HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
-        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.queueBuild(any(Build.class))).thenReturn(Single.<Build>error(httpException));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Starting the build
@@ -213,10 +214,10 @@ public class RunBuildActivityTest {
         List<Agent> agents = new ArrayList<>();
         Agent agent = new Agent("agent 1");
         agents.add(agent);
-        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Observable.just(new Agents(1, agents)));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Single.just(new Agents(1, agents)));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Choose agent
@@ -236,7 +237,7 @@ public class RunBuildActivityTest {
     public void testUserCanSeeChooseDefaultAgentIfAgentsAvailable() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check hint for selected agent
@@ -246,10 +247,10 @@ public class RunBuildActivityTest {
     @Test
     public void testUserCanSeeNoAgentsAvailableTextIfNoAgentsAvailable() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Observable.<Agents>error(new RuntimeException()));
+        when(mTeamCityService.listAgents(false, null, null)).thenReturn(Single.<Agents>error(new RuntimeException("error")));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check no agents
@@ -260,7 +261,7 @@ public class RunBuildActivityTest {
     public void testUserCleanAllFilesCheckBoxIsCheckedByDefault() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check clean all files is checked by default
@@ -271,7 +272,7 @@ public class RunBuildActivityTest {
     public void testUserCanStartTheBuildWithDefaultParams() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check personal
@@ -298,7 +299,7 @@ public class RunBuildActivityTest {
     public void testUserCanStartTheBuildWithCustomParams() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Scroll to
@@ -332,7 +333,7 @@ public class RunBuildActivityTest {
     public void testUserCanStartTheBuildWithClearAllCustomParams() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Scroll to
@@ -365,7 +366,7 @@ public class RunBuildActivityTest {
     public void testUserCanNotCreateEmptyBuildParamWithEmptyName() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, "href");
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href");
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Scroll to

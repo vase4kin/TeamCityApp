@@ -17,9 +17,10 @@
 package com.github.vase4kin.teamcityapp.filter_builds.view;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.matcher.RootMatchers;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.espresso.matcher.RootMatchers;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -33,7 +34,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -44,18 +44,19 @@ import org.mockito.Spy;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
-import static android.support.test.espresso.Espresso.onData;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onData;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -99,7 +100,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
     public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() throws Exception {
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, TYPE_ID);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field is not visible
@@ -111,10 +112,10 @@ public class FilterBuildsBranchesAutoCompleteTest {
     @Test
     public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasEmptyBranchesList() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(new ArrayList<Branch>())));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(new ArrayList<Branch>())));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, TYPE_ID);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Check the branches autocomplete field is not visible
@@ -129,10 +130,10 @@ public class FilterBuildsBranchesAutoCompleteTest {
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));
         branches.add(new Branch("dev2"));
-        when(mTeamCityService.listBranches(anyString())).thenReturn(Observable.just(new Branches(branches)));
+        when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(branches)));
         // Prepare intent
         Intent intent = new Intent();
-        intent.putExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID, TYPE_ID);
+        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
         // Starting the activity
         mActivityRule.launchActivity(intent);
         // Choose branch from autocomplete and verify it is appeared

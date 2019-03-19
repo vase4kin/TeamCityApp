@@ -18,14 +18,15 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Custom edit text with disabled autofill
  */
-public class EditTextNoAutofill extends android.support.v7.widget.AppCompatEditText {
+public class EditTextNoAutofill extends androidx.appcompat.widget.AppCompatEditText {
 
     public EditTextNoAutofill(Context context) {
         super(context);

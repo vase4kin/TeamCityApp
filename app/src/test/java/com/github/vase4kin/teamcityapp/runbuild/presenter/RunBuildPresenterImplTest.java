@@ -118,18 +118,18 @@ public class RunBuildPresenterImplTest {
         verify(mInteractor).loadAgents(mAgentsLoadingListenerCaptor.capture());
         OnLoadingListener<List<Agent>> agentListOnLoadingListener = mAgentsLoadingListenerCaptor.getValue();
         agentListOnLoadingListener.onFail("fail");
-        assertThat(mPresenter.mAgents.isEmpty(), is(equalTo(true)));
+        assertThat(mPresenter.getMAgents().isEmpty(), is(equalTo(true)));
         verify(mView).hideLoadingAgentsProgress();
         verify(mView).showNoAgentsAvailable();
         agentListOnLoadingListener.onSuccess(Collections.singletonList(mAgent));
-        assertThat(mPresenter.mAgents.size(), is(equalTo(1)));
-        assertThat(mPresenter.mAgents.get(0), is(equalTo(mAgent)));
+        assertThat(mPresenter.getMAgents().size(), is(equalTo(1)));
+        assertThat(mPresenter.getMAgents().get(0), is(equalTo(mAgent)));
         verify(mView, times(2)).hideLoadingAgentsProgress();
         verify(mView).showSelectedAgentView();
         verify(mView).enableAgentSelectionControl();
         verify(mView).setAgentListDialogWithAgentsList(Collections.singletonList("agentName"));
         agentListOnLoadingListener.onSuccess(Collections.<Agent>emptyList());
-        assertThat(mPresenter.mAgents.isEmpty(), is(equalTo(true)));
+        assertThat(mPresenter.getMAgents().isEmpty(), is(equalTo(true)));
         verify(mView, times(3)).hideLoadingAgentsProgress();
         verify(mView, times(2)).showNoAgentsAvailable();
     }
@@ -144,8 +144,8 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnBuildQueue() throws Exception {
-        mPresenter.mSelectedAgent = mAgent;
-        mPresenter.mProperties.add(new Properties.Property(PROPERTY_NAME, PROPERTY_VALUE));
+        mPresenter.setMSelectedAgent(mAgent);
+        mPresenter.getMProperties().add(new Properties.Property(PROPERTY_NAME, PROPERTY_VALUE));
         when(mBranchesComponentView.getBranchName()).thenReturn("branch");
         mPresenter.onBuildQueue(true, true, true);
         verify(mBranchesComponentView).getBranchName();
@@ -161,7 +161,7 @@ public class RunBuildPresenterImplTest {
         verify(mView).hideQueuingBuildProgress();
         verify(mRouter).closeOnSuccess(eq("href"));
         verify(mTracker).trackUserRunBuildWithCustomParamsSuccess();
-        mPresenter.mProperties.clear();
+        mPresenter.getMProperties().clear();
         loadingListener.onSuccess("href");
         verify(mView, times(2)).hideQueuingBuildProgress();
         verify(mRouter, times(2)).closeOnSuccess(eq("href"));
@@ -196,15 +196,15 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnAgentSelectedIfAgentsAreEmpty() throws Exception {
-        mPresenter.mAgents = Collections.emptyList();
+        mPresenter.setMAgents(Collections.<Agent>emptyList());
         mPresenter.onAgentSelected(0);
     }
 
     @Test
     public void testOnAgentSelectedIfAgentsAreNotEmpty() throws Exception {
-        mPresenter.mAgents = Collections.singletonList(mAgent);
+        mPresenter.setMAgents(Collections.singletonList(mAgent));
         mPresenter.onAgentSelected(0);
-        assertThat(mPresenter.mSelectedAgent, is(equalTo(mAgent)));
+        assertThat(mPresenter.getMSelectedAgent(), is(equalTo(mAgent)));
     }
 
     @Test
@@ -217,7 +217,7 @@ public class RunBuildPresenterImplTest {
     @Test
     public void testOnClearAllParametersButtonClick() throws Exception {
         mPresenter.onClearAllParametersButtonClick();
-        assertThat(mPresenter.mProperties.size(), is(equalTo(0)));
+        assertThat(mPresenter.getMProperties().size(), is(equalTo(0)));
         verify(mView).disableClearAllParametersButton();
         verify(mView).showNoneParametersView();
         verify(mView).removeAllParameterViews();
@@ -227,9 +227,9 @@ public class RunBuildPresenterImplTest {
     @Test
     public void testOnParameterAdded() throws Exception {
         mPresenter.onParameterAdded(PROPERTY_NAME, PROPERTY_VALUE);
-        assertThat(mPresenter.mProperties.size(), is(equalTo(1)));
-        assertThat(mPresenter.mProperties.get(0).getName(), is(equalTo(PROPERTY_NAME)));
-        assertThat(mPresenter.mProperties.get(0).getValue(), is(equalTo(PROPERTY_VALUE)));
+        assertThat(mPresenter.getMProperties().size(), is(equalTo(1)));
+        assertThat(mPresenter.getMProperties().get(0).getName(), is(equalTo(PROPERTY_NAME)));
+        assertThat(mPresenter.getMProperties().get(0).getValue(), is(equalTo(PROPERTY_VALUE)));
         verify(mView).hideNoneParametersView();
         verify(mView).enableClearAllParametersButton();
         verify(mView).addParameterView(eq(PROPERTY_NAME), eq(PROPERTY_VALUE));

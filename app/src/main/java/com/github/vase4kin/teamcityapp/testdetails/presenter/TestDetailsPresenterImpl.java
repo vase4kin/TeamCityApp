@@ -16,8 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.presenter;
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager;

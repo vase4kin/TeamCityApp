@@ -17,12 +17,6 @@
 package com.github.vase4kin.teamcityapp.runbuild.view;
 
 import android.graphics.Color;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,10 +26,17 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -209,8 +210,6 @@ public class RunBuildViewImpl implements RunBuildView {
                 mContainer,
                 R.string.error_forbidden_error,
                 Snackbar.LENGTH_LONG);
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 
@@ -223,8 +222,6 @@ public class RunBuildViewImpl implements RunBuildView {
                 mContainer,
                 R.string.error_base_error,
                 Snackbar.LENGTH_LONG);
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 

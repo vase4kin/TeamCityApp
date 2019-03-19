@@ -17,8 +17,9 @@
 package com.github.vase4kin.teamcityapp.favorites.view;
 
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -42,19 +43,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
-import rx.Observable;
 
 import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasFlags;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasFlags;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
@@ -107,7 +108,7 @@ public class FavoritesActivityTest {
     @Test
     public void testUserCanSeeFavoritesListIfSmthBadHappensInFavoritesLoading() {
         // prepare mocks
-        when(teamCityService.buildType(anyString())).thenReturn(Observable.<BuildType>error(new RuntimeException("smth bad happend!")));
+        when(teamCityService.buildType(anyString())).thenReturn(Single.<BuildType>error(new RuntimeException("smth bad happend!")));
         getStorage().addBuildTypeToFavorites("id");
         getStorage().addBuildTypeToFavorites("id2");
         getStorage().addBuildTypeToFavorites("id3");
@@ -116,7 +117,7 @@ public class FavoritesActivityTest {
         activityRule.launchActivity(null);
 
         // Check empty list
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class FavoritesActivityTest {
         matchToolbarTitle("Favorites (0)");
 
         // Check the list is empty
-        onView(withId(android.R.id.empty)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
     }
 
     @Test
@@ -156,7 +157,7 @@ public class FavoritesActivityTest {
     @Test
     public void testUserCanAddBuildTypeToFavorites() {
         //prepare mocks
-        when(teamCityService.buildType(Mocks.buildTypeMock().getId())).thenReturn(Observable.just(Mocks.buildTypeMock()));
+        when(teamCityService.buildType(Mocks.buildTypeMock().getId())).thenReturn(Single.just(Mocks.buildTypeMock()));
 
         // launch activity
         activityRule.launchActivity(null);

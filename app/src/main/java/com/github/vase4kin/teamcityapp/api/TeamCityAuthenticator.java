@@ -18,12 +18,12 @@ package com.github.vase4kin.teamcityapp.api;
 
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
-import java.io.IOException;
-
 import okhttp3.Credentials;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.Route;
+
+import static com.github.vase4kin.teamcityapp.api.TeamCityServiceKt.AUTHORIZATION;
 
 /**
  * Authenticator
@@ -44,7 +44,7 @@ public class TeamCityAuthenticator implements okhttp3.Authenticator {
      * {@inheritDoc}
      */
     @Override
-    public Request authenticate(Route route, Response response) throws IOException {
+    public Request authenticate(Route route, Response response) {
         // by default do three attempts
         if (responseCount(response) >= ATTEMPTS_COUNT) {
             return null; // If we've failed 3 times, give up.
@@ -52,7 +52,7 @@ public class TeamCityAuthenticator implements okhttp3.Authenticator {
         // Use user credentials
         String credential = Credentials.basic(mUserAccount.getUserName(), mUserAccount.getPasswordAsString());
         return response.request().newBuilder()
-                .header(TeamCityService.AUTHORIZATION, credential)
+                .header(AUTHORIZATION, credential)
                 .build();
     }
 

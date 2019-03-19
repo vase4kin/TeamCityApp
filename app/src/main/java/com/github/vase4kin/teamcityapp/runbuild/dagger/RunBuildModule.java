@@ -40,6 +40,8 @@ import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntoSet;
 
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
+
 @Module
 public class RunBuildModule {
 
@@ -61,12 +63,12 @@ public class RunBuildModule {
 
     @Provides
     RunBuildInteractor providesRunBuildInteractor(Repository repository) {
-        return new RunBuildInteractorImpl(repository, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
+        return new RunBuildInteractorImpl(repository, mActivity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides
     BranchesInteractor providesBranchesInteractor(Repository repository) {
-        return new BranchesInteractorImpl(repository, mActivity.getIntent().getStringExtra(RunBuildInteractor.EXTRA_BUILD_TYPE_ID));
+        return new BranchesInteractorImpl(repository, mActivity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides

@@ -31,7 +31,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.greenrobot.eventbus.EventBus;
 
 import dagger.Component;
-import io.rx_cache.internal.RxCache;
+import io.rx_cache2.internal.RxCache;
 
 @UserScope
 @Component(dependencies = AppComponent.class, modules = {RestApiModule.class, UrlFormatterModule.class})

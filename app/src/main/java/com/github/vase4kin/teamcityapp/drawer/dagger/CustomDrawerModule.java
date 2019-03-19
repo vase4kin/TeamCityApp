@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.drawer.dagger;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
@@ -31,6 +31,8 @@ import com.github.vase4kin.teamcityapp.drawer.view.CustomAnimationDrawerViewImpl
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.Set;
 
@@ -57,8 +59,10 @@ public class CustomDrawerModule {
     }
 
     @Provides
-    DrawerDataManager providesDrawerDataManager(Repository repository, SharedUserStorage sharedUserStorage) {
-        return new DrawerDataManagerImpl(repository, sharedUserStorage);
+    DrawerDataManager providesDrawerDataManager(Repository repository,
+                                                SharedUserStorage sharedUserStorage,
+                                                EventBus eventBus) {
+        return new DrawerDataManagerImpl(repository, sharedUserStorage, eventBus);
     }
 
     @Provides

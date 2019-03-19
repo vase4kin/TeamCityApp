@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.changes.data;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;

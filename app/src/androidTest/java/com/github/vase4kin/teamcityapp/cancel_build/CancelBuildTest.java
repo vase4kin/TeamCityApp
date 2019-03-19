@@ -18,8 +18,9 @@ package com.github.vase4kin.teamcityapp.cancel_build;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -50,22 +51,22 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.ResponseBody;
+import retrofit2.HttpException;
 import retrofit2.Response;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.Espresso.openContextualActionModeOverflowMenu;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.assertThat;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.openContextualActionModeOverflowMenu;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor.CODE_FORBIDDEN;
+import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.CODE_FORBIDDEN;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Matchers.anyString;
@@ -126,9 +127,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanRemoveQueuedBuildFromQueueWhichWasStartedByHim() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild))
-                .thenReturn(Observable.just(Mocks.queuedBuild2()));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild))
+                .thenReturn(Single.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.queuedBuild2()));
         when(mUserAccount.getUserName()).thenReturn("code-lover");
 
         // Prepare intent
@@ -168,9 +169,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanRemoveQueuedBuildFromQueueWhichWasStartedNotByHim() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild))
-                .thenReturn(Observable.just(Mocks.queuedBuild2()));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild))
+                .thenReturn(Single.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.queuedBuild2()));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -209,9 +210,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanSeeForbiddenErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.<Build>error(httpException));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -242,9 +243,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanSeeServerErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         HttpException httpException = new HttpException(Response.<Build>error(500, mResponseBody));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.<Build>error(httpException));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -275,9 +276,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanStopBuildWhichWasStartedByNotHim() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()))
-                .thenReturn(Observable.just(Mocks.failedBuild()));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.failedBuild()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
+                .thenReturn(Single.just(Mocks.failedBuild()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.failedBuild()));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -316,9 +317,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanStopBuildWhichWasStartedByHim() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()))
-                .thenReturn(Observable.just(Mocks.failedBuild()));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.failedBuild()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
+                .thenReturn(Single.just(Mocks.failedBuild()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.failedBuild()));
         when(mUserAccount.getUserName()).thenReturn("code-lover");
 
         // Prepare intent
@@ -358,9 +359,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanSeeForbiddenErrorWhenStoppingBuild() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()));
         HttpException httpException = new HttpException(Response.<Build>error(CODE_FORBIDDEN, mResponseBody));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.<Build>error(httpException));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -391,9 +392,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanSeeServerErrorWhenStoppingBuild() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()));
         HttpException httpException = new HttpException(Response.<Build>error(500, mResponseBody));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.<Build>error(httpException));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.<Build>error(httpException));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -424,9 +425,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanReAddBuildWhenStoppingIt() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(Mocks.runningBuild()))
-                .thenReturn(Observable.just(Mocks.failedBuild()));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.failedBuild()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
+                .thenReturn(Single.just(Mocks.failedBuild()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.failedBuild()));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -472,9 +473,9 @@ public class CancelBuildTest {
     @Test
     public void testUserCanNotReAddBuildToQueueWhenRemovingItFromQueue() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild))
-                .thenReturn(Observable.just(Mocks.queuedBuild2()));
-        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Observable.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild))
+                .thenReturn(Single.just(Mocks.queuedBuild2()));
+        when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.queuedBuild2()));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

@@ -59,4 +59,8 @@
 
     <color name="recycler_view_background">#F5F5F5</color>
 
+    <color name="transparent">#00000000</color>
+
+    <color name="white">@color/md_white_1000</color>
+
 </resources>

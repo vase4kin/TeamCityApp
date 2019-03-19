@@ -19,9 +19,10 @@ package com.github.vase4kin.teamcityapp.artifact.view;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.rule.GrantPermissionRule;
-import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.azimolabs.conditionwatcher.ConditionWatcher;
 import com.azimolabs.conditionwatcher.Instruction;
@@ -54,22 +55,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 import okhttp3.ResponseBody;
-import rx.Observable;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.action.ViewActions.longClick;
-import static android.support.test.espresso.action.ViewActions.scrollTo;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.intent.Intents.intended;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAction;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasData;
-import static android.support.test.espresso.intent.matcher.IntentMatchers.hasType;
-import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static org.hamcrest.core.AllOf.allOf;
@@ -134,7 +135,7 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanSeeArtifacts() {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -167,8 +168,8 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanSeeArtifactsEmptyMessageIfArtifactsAreEmpty() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Observable.just(new Files(Collections.<File>emptyList())));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
+        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(new Files(Collections.<File>emptyList())));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -196,8 +197,8 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanSeeArtifactsErrorMessageIfSmthBadHappens() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Observable.<Files>error(new RuntimeException("Fake error happened!")));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
+        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.<Files>error(new RuntimeException("Fake error happened!")));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -225,7 +226,7 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanOpenArtifactWithChildren() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         File folderOne = new File("res", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
         File folderTwo = new File("res_level_deeper1", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
         File folderThree = new File("res_level_deeper2", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
@@ -233,8 +234,8 @@ public class ArtifactListFragmentTest {
         deeperArtifacts.add(folderTwo);
         deeperArtifacts.add(folderThree);
         when(mTeamCityService.listArtifacts(anyString(), anyString()))
-                .thenReturn(Observable.just(new Files(Collections.singletonList(folderOne))))
-                .thenReturn(Observable.just(new Files(deeperArtifacts)));
+                .thenReturn(Single.just(new Files(Collections.singletonList(folderOne))))
+                .thenReturn(Single.just(new Files(deeperArtifacts)));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -292,7 +293,7 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanOpenArtifactWithChildrenByLongTap() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         File folderOne = new File("res", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
         File folderTwo = new File("res_level_deeper1", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
         File folderThree = new File("res_level_deeper2", new File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res");
@@ -300,8 +301,8 @@ public class ArtifactListFragmentTest {
         deeperArtifacts.add(folderTwo);
         deeperArtifacts.add(folderThree);
         when(mTeamCityService.listArtifacts(anyString(), anyString()))
-                .thenReturn(Observable.just(new Files(Collections.singletonList(folderOne))))
-                .thenReturn(Observable.just(new Files(deeperArtifacts)));
+                .thenReturn(Single.just(new Files(Collections.singletonList(folderOne))))
+                .thenReturn(Single.just(new Files(deeperArtifacts)));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -366,8 +367,8 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanDownloadArtifact() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        when(mTeamCityService.downloadFile(anyString())).thenReturn(Observable.just(ResponseBody.create(null, "text")));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
+        when(mTeamCityService.downloadFile(anyString())).thenReturn(Single.just(ResponseBody.create(null, "text")));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -408,7 +409,7 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserCanOpenHtmlFileInBrowser() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -448,8 +449,8 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserSeeSnackBarWithErrorMessageIfArtifactWasNotDownloaded() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
-        when(mTeamCityService.downloadFile(anyString())).thenReturn(Observable.<ResponseBody>error(new RuntimeException("ERROR!")));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
+        when(mTeamCityService.downloadFile(anyString())).thenReturn(Single.<ResponseBody>error(new RuntimeException("ERROR!")));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -513,11 +514,11 @@ public class ArtifactListFragmentTest {
     @Test
     public void testUserBeingAskedToGrantAllowInstallPackagesPermissions() throws Exception {
         // Prepare mocks
-        when(mTeamCityService.build(anyString())).thenReturn(Observable.just(mBuild));
+        when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         List<File> files = new ArrayList<>();
         files.add(new File("my-fancy-app.apk", 697840, new File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/my-fancy-app.apk"), "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/my-fancy-app.apk"));
         Files filesMock = new Files(files);
-        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Observable.just(filesMock));
+        when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(filesMock));
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>

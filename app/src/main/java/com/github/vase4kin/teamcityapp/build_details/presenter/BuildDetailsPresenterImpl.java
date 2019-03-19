@@ -17,7 +17,8 @@
 package com.github.vase4kin.teamcityapp.build_details.presenter;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenterImpl;
