@@ -20,6 +20,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import androidx.fragment.app.Fragment;
+
 import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel;
@@ -38,21 +40,21 @@ public interface TestsView extends BaseListView<TestsDataModel>, ViewLoadMore<Te
     /**
      * {@inheritDoc}
      * <p>
-     * See {@link android.support.v4.app.Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
      */
     void onCreateOptionsMenu(Menu menu, MenuInflater inflater);
 
     /**
      * {@inheritDoc}
      *
-     * See {@link android.support.v4.app.Fragment#onPrepareOptionsMenu(Menu)} )}
+     * See {@link Fragment#onPrepareOptionsMenu(Menu)} )}
      */
     void onPrepareOptionsMenu(Menu menu);
 
     /**
      * {@inheritDoc}
      *
-     * See {@link android.support.v4.app.Fragment#onOptionsItemSelected(MenuItem)}
+     * See {@link Fragment#onOptionsItemSelected(MenuItem)}
      */
     boolean onOptionsItemSelected(MenuItem item);
 

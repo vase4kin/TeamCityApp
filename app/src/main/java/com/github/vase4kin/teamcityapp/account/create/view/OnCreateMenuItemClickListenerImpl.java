@@ -16,10 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.account.create.view;
 
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.Switch;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import com.github.vase4kin.teamcityapp.R;
 

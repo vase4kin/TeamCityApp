@@ -17,7 +17,8 @@
 package com.github.vase4kin.teamcityapp.navigation.router;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;

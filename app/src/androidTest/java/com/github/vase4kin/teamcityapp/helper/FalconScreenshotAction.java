@@ -19,9 +19,10 @@ package com.github.vase4kin.teamcityapp.helper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.test.espresso.UiController;
-import android.support.test.espresso.ViewAction;
 import android.view.View;
+
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 
 import com.jraska.falcon.FalconSpoon;
 

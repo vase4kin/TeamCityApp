@@ -1,9 +1,9 @@
 package com.github.vase4kin.teamcityapp.workmanager
 
 import android.content.Context
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.ListenableWorker
 import androidx.work.RxWorker
 import androidx.work.WorkerParameters

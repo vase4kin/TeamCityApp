@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.drawer.dagger;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;

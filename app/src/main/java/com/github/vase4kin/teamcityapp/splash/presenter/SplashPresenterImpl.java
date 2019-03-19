@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.splash.presenter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.splash.data.SplashDataManager;
 import com.github.vase4kin.teamcityapp.splash.router.SplashRouter;

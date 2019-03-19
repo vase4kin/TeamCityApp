@@ -18,14 +18,12 @@ package com.github.vase4kin.teamcityapp.helper;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.FailureHandler;
-import android.support.test.espresso.base.DefaultFailureHandler;
-import android.support.test.rule.ActivityTestRule;
-import android.view.View;
 
-import org.hamcrest.Matcher;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.base.DefaultFailureHandler;
+import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.ActivityTestRule;
+
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
@@ -42,13 +40,10 @@ public class CustomActivityTestRule<T extends Activity> extends ActivityTestRule
     public Statement apply(Statement base, Description description) {
         final String testClassName = description.getClassName();
         final String testMethodName = description.getMethodName();
-        final Context context = InstrumentationRegistry.getTargetContext();
-        Espresso.setFailureHandler(new FailureHandler() {
-            @Override
-            public void handle(Throwable throwable, Matcher<View> matcher) {
-                FalconScreenshotAction.perform("failure", testClassName, testMethodName);
-                new DefaultFailureHandler(context).handle(throwable, matcher);
-            }
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        Espresso.setFailureHandler((throwable, matcher) -> {
+            FalconScreenshotAction.perform("failure", testClassName, testMethodName);
+            new DefaultFailureHandler(context).handle(throwable, matcher);
         });
         return super.apply(base, description);
     }

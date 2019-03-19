@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.presenter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;

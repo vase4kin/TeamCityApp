@@ -17,7 +17,8 @@
 package com.github.vase4kin.teamcityapp.splash.view;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.splash.dagger.DaggerSplashComponent;

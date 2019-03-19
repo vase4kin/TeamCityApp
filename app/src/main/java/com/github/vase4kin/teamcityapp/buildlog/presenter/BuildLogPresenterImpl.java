@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.presenter;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter;

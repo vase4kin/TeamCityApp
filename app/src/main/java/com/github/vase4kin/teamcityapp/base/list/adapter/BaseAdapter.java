@@ -16,8 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.base.list.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;

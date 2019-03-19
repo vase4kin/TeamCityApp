@@ -17,8 +17,9 @@
 package com.github.vase4kin.teamcityapp.runningbuilds.view;
 
 import android.app.Activity;
-import android.support.annotation.StringRes;
 import android.view.View;
+
+import androidx.annotation.StringRes;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;

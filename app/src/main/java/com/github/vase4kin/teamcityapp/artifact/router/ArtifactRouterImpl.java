@@ -18,10 +18,11 @@ package com.github.vase4kin.teamcityapp.artifact.router;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
 import android.webkit.MimeTypeMap;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;

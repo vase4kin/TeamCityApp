@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.build_details.api;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Build cancel request api object

@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.api;
 
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
 

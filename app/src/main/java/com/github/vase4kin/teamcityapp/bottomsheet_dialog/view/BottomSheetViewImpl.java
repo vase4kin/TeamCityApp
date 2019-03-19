@@ -16,14 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
 
-import android.support.design.widget.BottomSheetDialogFragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

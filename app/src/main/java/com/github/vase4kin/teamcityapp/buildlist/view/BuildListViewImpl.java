@@ -20,19 +20,17 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
@@ -41,6 +39,8 @@ import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerVie
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.mugen.Mugen;
@@ -167,8 +167,6 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                         mOnBuildListPresenterListener.onLoadMore();
                     }
                 });
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 
@@ -221,8 +219,6 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                         mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
                     }
                 });
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 
@@ -241,8 +237,6 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                         mOnBuildListPresenterListener.onResetFiltersSnackBarActionClick();
                     }
                 });
-        TextView textView = (TextView) mFiltersAppliedSnackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         mFiltersAppliedSnackBar.show();
     }
 
@@ -261,8 +255,6 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                         mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
                     }
                 });
-        TextView textView = (TextView) snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 
@@ -281,8 +273,6 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                         mOnBuildListPresenterListener.onNavigateToFavorites();
                     }
                 });
-        TextView textView = snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 
@@ -295,8 +285,6 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 mRecyclerView,
                 R.string.text_remove_from_favorites,
                 Snackbar.LENGTH_LONG);
-        TextView textView = snackBar.getView().findViewById(android.support.design.R.id.snackbar_text);
-        textView.setTextColor(Color.WHITE);
         snackBar.show();
     }
 

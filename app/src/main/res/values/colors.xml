@@ -61,4 +61,6 @@
 
     <color name="transparent">#00000000</color>
 
+    <color name="white">@color/md_white_1000</color>
+
 </resources>

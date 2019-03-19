@@ -17,15 +17,16 @@
 package com.github.vase4kin.teamcityapp.base.tabs.view;
 
 import android.annotation.SuppressLint;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
 import com.github.vase4kin.teamcityapp.R;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 

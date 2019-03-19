@@ -22,13 +22,13 @@
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
-    <android.support.v4.widget.SwipeRefreshLayout
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/md_white_1000">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -37,13 +37,13 @@
             android:clipToPadding="false"
             style="@style/RecyclerView" />
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <include layout="@layout/layout_empty" />
 
     <include layout="@layout/layout_error_view" />
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/skeleton_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -53,6 +53,6 @@
             layout="@layout/layout_skeleton_navigation_list"
             android:id="@+id/skeleton_view_items" />
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </FrameLayout>
