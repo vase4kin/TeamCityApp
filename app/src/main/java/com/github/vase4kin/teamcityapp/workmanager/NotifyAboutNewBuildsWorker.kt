@@ -65,13 +65,21 @@ class NotifyAboutNewBuildsWorker(
                     .map { BuildDetailsImpl(it) }
                     .toList()
                     .map { list ->
-                        val buildListByBuildTypeIds = mutableMapOf<String, List<BuildDetails>>()
-                        favoriteBuildTypeIds.forEach { buildTypeId ->
-                            val buildList = list.filter { buildDetails -> buildDetails.buildTypeId == buildTypeId }
-                            if (buildList.isEmpty()) return@forEach
-                            buildListByBuildTypeIds[buildTypeId] = buildList
+                        val notifications = mutableSetOf<BuildTypeNotification>()
+                        list.forEach { buildDetails ->
+                            val buildTypeId = buildDetails.buildTypeId
+                            val buildTypeName = buildDetails.buildTypeName
+                            val buildTypeNotification = BuildTypeNotification(buildTypeId, buildTypeName)
+                            if (notifications.contains(buildTypeNotification)) {
+                                val index = notifications.indexOf(buildTypeNotification)
+                                notifications.elementAt(index).apply { this.addBuildNotification(buildDetails.toNotification()) }
+                            } else {
+                                buildTypeNotification.apply { this.addBuildNotification(buildDetails.toNotification()) }
+                                notifications.add(buildTypeNotification)
+                            }
+
                         }
-                        buildListByBuildTypeIds
+                        notifications.toSet()
                     }
                     .doOnSuccess { processResults(it) }
                     .map { Result.success() }
@@ -82,42 +90,63 @@ class NotifyAboutNewBuildsWorker(
         }
     }
 
-    private fun processResults(buildListByBuildTypeIds: Map<String, List<BuildDetails>>) {
-        buildListByBuildTypeIds.forEach {
-            val buildTypeId = it.key
-            val buildList = it.value
-
-            buildList.forEach { buildDetails ->
-                val contentTitle = "${buildDetails.number} on ${buildDetails.branchName}"
-                val contentText = buildDetails.statusText
-                val summaryText = buildDetails.buildTypeName
-
-                val notification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_done_24px)
-                        .setContentTitle(contentTitle)
-                        .setContentText(contentText)
-                        .setSubText(summaryText)
-                        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                        .setGroup(buildTypeId)
-                        .setStyle(NotificationCompat.BigTextStyle()
-                                .setBigContentTitle(contentTitle))
-                        .build()
-                NotificationManagerCompat.from(applicationContext).apply {
-                    notify(buildDetails.id.hashCode(), notification)
-                }
+    private fun processResults(notifications: Set<BuildTypeNotification>) {
+        notifications.forEach { buildTypeNotification ->
+            buildTypeNotification.buildNotifications.forEach { notification ->
+                sendNotification(notification)
             }
-            val buildTypeName = buildList[0].buildTypeName
-            val summaryNotification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
-                    .setContentTitle("You got new notifications")
-                    .setSubText(buildTypeName)
-                    .setSmallIcon(R.drawable.ic_done_24px)
-                    .setGroup(buildTypeId)
-                    //set this notification as the summary for the group
-                    .setGroupSummary(true)
-                    .build()
-            NotificationManagerCompat.from(applicationContext).apply {
-                notify(buildTypeId.hashCode(), summaryNotification)
-            }
+            sendSummaryNotification(buildTypeNotification)
         }
     }
+
+    private fun sendNotification(buildNotification: BuildNotification) {
+        val notification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_done_24px)
+                .setContentTitle(buildNotification.contentTitle)
+                .setContentText(buildNotification.contentText)
+                .setSubText(buildNotification.summaryText)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setGroup(buildNotification.groupId)
+                .setStyle(NotificationCompat.BigTextStyle()
+                        .setBigContentTitle(buildNotification.contentTitle))
+                .build()
+        NotificationManagerCompat.from(applicationContext).apply {
+            notify(buildNotification.id, notification)
+        }
+    }
+
+    private fun sendSummaryNotification(buildTypeNotification: BuildTypeNotification) {
+        val summaryNotification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
+                .setContentTitle("You got new buildNotifications")
+                .setSubText(buildTypeNotification.text)
+                .setSmallIcon(R.drawable.ic_done_24px)
+                .setGroup(buildTypeNotification.groupId)
+                .setGroupSummary(true)
+                .build()
+        NotificationManagerCompat.from(applicationContext).apply {
+            notify(buildTypeNotification.groupId.hashCode(), summaryNotification)
+        }
+    }
+
+    private data class BuildTypeNotification(val groupId: String,
+                                             val text: String) {
+        internal val buildNotifications: MutableSet<BuildNotification> = mutableSetOf()
+    }
+
+    private fun BuildTypeNotification.addBuildNotification(buildNotification: BuildNotification) =
+            this.buildNotifications.add(buildNotification)
+
+    private data class BuildNotification(
+            val id: Int,
+            val contentTitle: String,
+            val contentText: String,
+            val summaryText: String,
+            val groupId: String)
+
+    private fun BuildDetails.toNotification() = BuildNotification(
+            this.id.hashCode(),
+            "${this.number} on ${this.branchName}",
+            this.statusText,
+            this.buildTypeName,
+            this.buildTypeId)
 }
