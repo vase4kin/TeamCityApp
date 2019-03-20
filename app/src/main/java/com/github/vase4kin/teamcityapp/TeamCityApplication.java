@@ -21,7 +21,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
@@ -74,18 +73,22 @@ public class TeamCityApplication extends Application {
                 .appModule(new AppModule(this))
                 .build();
 
+        // Init notification channels
+        NotificationUtilsKt.initAppNotificationChannels(this);
+
         //Get default url
         String mBaseUrl = mAppInjector.sharedUserStorage().getActiveUser().getTeamcityUrl();
         // Rest api init
         if (!TextUtils.isEmpty(mBaseUrl)) {
             buildRestApiInjectorWithBaseUrl(mBaseUrl);
-            NotificationUtilsKt.initAppNotificationChannels(this);
-            initWorkManagerRequests();
+            scheduleWorkManager();
         }
     }
 
-    private void initWorkManagerRequests() {
+    private void scheduleWorkManager() {
         // TODO: If running already DO not start!
+        // Save working id to shared preferences, check if we have it -> check if the job running, ift's not started it and update it
+        // If we dont have id, clear all jobs start a new one and save id
         WorkRequest workRequest = new PeriodicWorkRequest.Builder(
                 NotifyAboutNewBuildsWorker.class, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
                 .build();

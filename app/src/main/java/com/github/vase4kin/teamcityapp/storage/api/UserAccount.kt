@@ -34,7 +34,7 @@ data class UserAccount(
         return teamcityUrl
     }
 
-    data class FavoriteBuildTypeInfo(val lastLoadedDate: String = "",
+    data class FavoriteBuildTypeInfo(val sinceBuild: String = "",
                                      val isNotificationsEnabled: Boolean = true)
 }
 

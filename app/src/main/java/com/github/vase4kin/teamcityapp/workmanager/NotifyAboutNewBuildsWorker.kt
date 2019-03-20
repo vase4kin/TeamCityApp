@@ -10,15 +10,14 @@ import androidx.work.WorkerParameters
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.github.vase4kin.teamcityapp.utils.DEFAULT_NOTIFICATIONS_CHANNEL_ID
 import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
-
 
 class NotifyAboutNewBuildsWorker(
         appContext: Context, workerParams: WorkerParameters
@@ -39,10 +38,18 @@ class NotifyAboutNewBuildsWorker(
             val favoriteBuildTypeIds = favoriteBuildTypes.keys
             Observable.fromIterable(favoriteBuildTypeIds)
                     .flatMapSingle { buildTypeId ->
-                        repository.listBuilds(buildTypeId, BuildListFilter.DEFAULT_FILTER_LOCATOR, true)
+                        // if last build is empty just fetch last 10 ones, but still have default value like 20?
+                        val lastBuild = favoriteBuildTypes.getValue(buildTypeId).sinceBuild
+                        val locator = if (lastBuild.isEmpty()) {
+                            "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10"
+                        } else {
+                            "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,sinceBuild:$lastBuild,count:10"
+                        }
+                        repository.listBuilds(buildTypeId, locator, true)
                     }
                     .flatMap { Observable.fromIterable(it.objects) }
                     .flatMapSingle { serverBuild ->
+                        // TODO: Move to ext function
                         // Make sure cache is updated
                         val serverBuildDetails = BuildDetailsImpl(serverBuild)
                         // If server build's running update cache immediately
@@ -64,24 +71,17 @@ class NotifyAboutNewBuildsWorker(
                     }
                     .map { BuildDetailsImpl(it) }
                     .toList()
-                    .map { list ->
-                        val notifications = mutableSetOf<BuildTypeNotification>()
-                        list.forEach { buildDetails ->
-                            val buildTypeId = buildDetails.buildTypeId
-                            val buildTypeName = buildDetails.buildTypeName
-                            val buildTypeNotification = BuildTypeNotification(buildTypeId, buildTypeName)
-                            if (notifications.contains(buildTypeNotification)) {
-                                val index = notifications.indexOf(buildTypeNotification)
-                                notifications.elementAt(index).apply { this.addBuildNotification(buildDetails.toNotification()) }
-                            } else {
-                                buildTypeNotification.apply { this.addBuildNotification(buildDetails.toNotification()) }
-                                notifications.add(buildTypeNotification)
-                            }
-
+                    .map { buildList ->
+                        val buildTypeBuilds = mutableMapOf<String, Set<BuildDetails>>()
+                        favoriteBuildTypeIds.forEach { buildTypeId ->
+                            val buildsByBuildTypeId = buildList.filter { buildDetails -> buildDetails.buildTypeId == buildTypeId }
+                            buildTypeBuilds[buildTypeId] = buildsByBuildTypeId.toSet()
                         }
-                        notifications.toSet()
+                        buildTypeBuilds
                     }
-                    .doOnSuccess { processResults(it) }
+                    .doOnSuccess { updateLastBuildForFavoriteBuildType(favoriteBuildTypes, it) }
+                    .map { list -> createNotifications(list) }
+                    .doOnSuccess { sendNotifications(it) }
                     .map { Result.success() }
                     .onErrorReturn {
                         Log.d("WorkManager", it.toString())
@@ -90,7 +90,34 @@ class NotifyAboutNewBuildsWorker(
         }
     }
 
-    private fun processResults(notifications: Set<BuildTypeNotification>) {
+    private fun updateLastBuildForFavoriteBuildType(
+            favoriteBuildTypes: MutableMap<String, UserAccount.FavoriteBuildTypeInfo>,
+            buildTypeBuilds: MutableMap<String, Set<BuildDetails>>) {
+        buildTypeBuilds.forEach {
+            val buildTypeId = it.key
+            val builds = it.value
+            if (builds.isEmpty()) return@forEach
+            val lastBuildId = builds.last().id
+            val updatedInfo = favoriteBuildTypes.getValue(buildTypeId).copy(sinceBuild = lastBuildId)
+            favoriteBuildTypes[buildTypeId] = updatedInfo
+        }
+    }
+
+    private fun createNotifications(buildTypeBuilds: MutableMap<String, Set<BuildDetails>>): Set<BuildTypeNotification> {
+        val notifications = mutableSetOf<BuildTypeNotification>()
+        buildTypeBuilds.forEach {
+            val buildTypeId = it.key
+            val builds = it.value
+            if (builds.isEmpty()) return@forEach
+            val buildTypeName = builds.last().buildTypeName
+            val buildTypeNotification = BuildTypeNotification(buildTypeId, buildTypeName)
+            buildTypeNotification.buildNotifications.addAll(builds.map { buildDetails -> buildDetails.toNotification() })
+            notifications.add(buildTypeNotification)
+        }
+        return notifications.toSet()
+    }
+
+    private fun sendNotifications(notifications: Set<BuildTypeNotification>) {
         notifications.forEach { buildTypeNotification ->
             buildTypeNotification.buildNotifications.forEach { notification ->
                 sendNotification(notification)
@@ -132,9 +159,6 @@ class NotifyAboutNewBuildsWorker(
                                              val text: String) {
         internal val buildNotifications: MutableSet<BuildNotification> = mutableSetOf()
     }
-
-    private fun BuildTypeNotification.addBuildNotification(buildNotification: BuildNotification) =
-            this.buildNotifications.add(buildNotification)
 
     private data class BuildNotification(
             val id: Int,
