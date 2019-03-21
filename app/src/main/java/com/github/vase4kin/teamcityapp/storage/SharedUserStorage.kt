@@ -30,8 +30,8 @@ import java.util.*
  * SharePreferences json based storage for user accounts
  */
 open class SharedUserStorage private constructor(
-        private val mContext: Context,
-        private val mCryptoManager: CryptoManager) : Collectible<UserAccount> {
+        private val context: Context,
+        private val cryptoManager: CryptoManager) : Collectible<UserAccount> {
 
     private var usersContainer: UsersContainer = UsersContainer()
 
@@ -39,7 +39,7 @@ open class SharedUserStorage private constructor(
      * @return default shared preferences instance
      */
     private val sharedPreferences: SharedPreferences
-        get() = mContext.getSharedPreferences(SHARED_PREF_NAME, 0)
+        get() = context.getSharedPreferences(SHARED_PREF_NAME, 0)
 
     /**
      * @return Active user
@@ -62,8 +62,8 @@ open class SharedUserStorage private constructor(
                     if (userAccount.isGuestUser) {
                         return userAccount
                     }
-                    val decryptedPassword = mCryptoManager.decrypt(userAccount.passwordAsBytes)
-                    return if (!mCryptoManager.isFailed(decryptedPassword)) {
+                    val decryptedPassword = cryptoManager.decrypt(userAccount.passwordAsBytes)
+                    return if (!cryptoManager.isFailed(decryptedPassword)) {
                         UsersFactory.user(userAccount, decryptedPassword)
                                 .copy(favoriteBuildTypes = userAccount.favoriteBuildTypes, isSslDisabled = userAccount.isSslDisabled)
                     } else {
@@ -139,8 +139,8 @@ open class SharedUserStorage private constructor(
                                         password: String,
                                         disableSsl: Boolean,
                                         listener: OnStorageListener) {
-        val encryptedPassword = mCryptoManager.encrypt(password)
-        if (!mCryptoManager.isFailed(encryptedPassword)) {
+        val encryptedPassword = cryptoManager.encrypt(password)
+        if (!cryptoManager.isFailed(encryptedPassword)) {
             val userAccount = UsersFactory.user(baseUrl, userName, encryptedPassword)
             userAccount.isSslDisabled = disableSsl
             setActiveUserNotActive()
