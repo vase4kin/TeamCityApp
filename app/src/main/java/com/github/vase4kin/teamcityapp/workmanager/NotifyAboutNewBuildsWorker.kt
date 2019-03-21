@@ -1,6 +1,8 @@
 package com.github.vase4kin.teamcityapp.workmanager
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -10,6 +12,10 @@ import androidx.work.WorkerParameters
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -72,10 +78,10 @@ class NotifyAboutNewBuildsWorker(
                     .map { BuildDetailsImpl(it) }
                     .toList()
                     .map { buildList ->
-                        val buildTypeBuilds = mutableMapOf<String, Set<BuildDetails>>()
+                        val buildTypeBuilds = mutableMapOf<String, List<BuildDetails>>()
                         favoriteBuildTypeIds.forEach { buildTypeId ->
                             val buildsByBuildTypeId = buildList.filter { buildDetails -> buildDetails.buildTypeId == buildTypeId }
-                            buildTypeBuilds[buildTypeId] = buildsByBuildTypeId.toSet()
+                            buildTypeBuilds[buildTypeId] = buildsByBuildTypeId
                         }
                         buildTypeBuilds
                     }
@@ -92,7 +98,7 @@ class NotifyAboutNewBuildsWorker(
 
     private fun updateLastBuildForFavoriteBuildType(
             favoriteBuildTypes: MutableMap<String, UserAccount.FavoriteBuildTypeInfo>,
-            buildTypeBuilds: MutableMap<String, Set<BuildDetails>>) {
+            buildTypeBuilds: MutableMap<String, List<BuildDetails>>) {
         buildTypeBuilds.forEach {
             val buildTypeId = it.key
             val builds = it.value
@@ -103,7 +109,7 @@ class NotifyAboutNewBuildsWorker(
         }
     }
 
-    private fun createNotifications(buildTypeBuilds: MutableMap<String, Set<BuildDetails>>): Set<BuildTypeNotification> {
+    private fun createNotifications(buildTypeBuilds: MutableMap<String, List<BuildDetails>>): Set<BuildTypeNotification> {
         val notifications = mutableSetOf<BuildTypeNotification>()
         buildTypeBuilds.forEach {
             val buildTypeId = it.key
@@ -136,6 +142,8 @@ class NotifyAboutNewBuildsWorker(
                 .setGroup(buildNotification.groupId)
                 .setStyle(NotificationCompat.BigTextStyle()
                         .setBigContentTitle(buildNotification.contentTitle))
+                .setContentIntent(buildNotification.createBuildIntent())
+                .setAutoCancel(true)
                 .build()
         NotificationManagerCompat.from(applicationContext).apply {
             notify(buildNotification.id, notification)
@@ -149,11 +157,31 @@ class NotifyAboutNewBuildsWorker(
                 .setSmallIcon(R.drawable.ic_done_24px)
                 .setGroup(buildTypeNotification.groupId)
                 .setGroupSummary(true)
+                .setContentIntent(buildTypeNotification.createBuildTypeIntent())
+                .setAutoCancel(true)
                 .build()
         NotificationManagerCompat.from(applicationContext).apply {
             notify(buildTypeNotification.groupId.hashCode(), summaryNotification)
         }
     }
+
+    private fun BuildNotification.createBuildIntent(): PendingIntent = PendingIntent.getActivities(
+            applicationContext,
+            0,
+            arrayOf(Intent(applicationContext, FavoritesActivity::class.java),
+                    Intent(applicationContext, BuildDetailsActivity::class.java)
+                            .putExtra(BundleExtractorValues.BUILD, this.buildDetails.toBuild())
+                            .putExtra(BundleExtractorValues.NAME, this.buildDetails.buildTypeName)),
+            0)
+
+    private fun BuildTypeNotification.createBuildTypeIntent(): PendingIntent = PendingIntent.getActivities(
+            applicationContext,
+            0,
+            arrayOf(Intent(applicationContext, FavoritesActivity::class.java),
+                    Intent(applicationContext, BuildListActivity::class.java)
+                            .putExtra(BundleExtractorValues.NAME, this.text)
+                            .putExtra(BundleExtractorValues.ID, this.groupId)),
+            0)
 
     private data class BuildTypeNotification(val groupId: String,
                                              val text: String) {
@@ -161,6 +189,7 @@ class NotifyAboutNewBuildsWorker(
     }
 
     private data class BuildNotification(
+            val buildDetails: BuildDetails,
             val id: Int,
             val contentTitle: String,
             val contentText: String,
@@ -168,6 +197,7 @@ class NotifyAboutNewBuildsWorker(
             val groupId: String)
 
     private fun BuildDetails.toNotification() = BuildNotification(
+            this,
             this.id.hashCode(),
             "${this.number} on ${this.branchName}",
             this.statusText,
