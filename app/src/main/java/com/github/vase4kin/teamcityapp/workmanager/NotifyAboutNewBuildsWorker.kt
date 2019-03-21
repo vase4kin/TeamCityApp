@@ -28,6 +28,8 @@ import javax.inject.Inject
 private const val DEFAULT_LOCATOR = "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:1"
 private const val SINCE_BUILD_LOCATOR = "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,sinceBuild:%s,count:10"
 
+const val UNIQUE_WORKER_ID = "UNIQUE_WORKER_ID"
+
 class NotifyAboutNewBuildsWorker(
         appContext: Context, workerParams: WorkerParameters
 ) : RxWorker(appContext, workerParams) {
@@ -39,7 +41,8 @@ class NotifyAboutNewBuildsWorker(
     internal lateinit var repository: Repository
 
     override fun createWork(): Single<ListenableWorker.Result>? {
-        (applicationContext as TeamCityApplication).restApiInjector.inject(this)
+        (applicationContext as TeamCityApplication).restApiInjector?.inject(this)
+                ?: return Single.just(Result.retry())
         val favoriteBuildTypes = sharedUserStorage.activeUser.favoriteBuildTypes
         return if (favoriteBuildTypes.isEmpty()) {
             Single.just<Result>(ListenableWorker.Result.success())

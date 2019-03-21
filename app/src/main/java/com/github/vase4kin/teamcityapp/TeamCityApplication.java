@@ -20,10 +20,11 @@ import android.app.Application;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
 
 import com.crashlytics.android.Crashlytics;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
@@ -34,6 +35,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.utils.NotificationUtilsKt;
 import com.github.vase4kin.teamcityapp.workmanager.NotifyAboutNewBuildsWorker;
+import com.github.vase4kin.teamcityapp.workmanager.NotifyAboutNewBuildsWorkerKt;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.joanzapata.iconify.fonts.MaterialCommunityModule;
@@ -81,18 +83,10 @@ public class TeamCityApplication extends Application {
         // Rest api init
         if (!TextUtils.isEmpty(mBaseUrl)) {
             buildRestApiInjectorWithBaseUrl(mBaseUrl);
-            scheduleWorkManager();
         }
-    }
 
-    private void scheduleWorkManager() {
-        // TODO: If running already DO not start!
-        // Save working id to shared preferences, check if we have it -> check if the job running, ift's not started it and update it
-        // If we dont have id, clear all jobs start a new one and save id
-        WorkRequest workRequest = new PeriodicWorkRequest.Builder(
-                NotifyAboutNewBuildsWorker.class, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
-                .build();
-        WorkManager.getInstance().enqueue(workRequest);
+        // Schedule workers
+        scheduleWorkers();
     }
 
     /**
@@ -108,6 +102,7 @@ public class TeamCityApplication extends Application {
     /**
      * @return instance of RestApiInjector
      */
+    @Nullable
     public RestApiComponent getRestApiInjector() {
         return mRestApiInjector;
     }
@@ -133,5 +128,12 @@ public class TeamCityApplication extends Application {
     @VisibleForTesting
     public void setAppInjector(AppComponent mAppComponent) {
         this.mAppInjector = mAppComponent;
+    }
+
+    private void scheduleWorkers() {
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                NotifyAboutNewBuildsWorker.class, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
+                .build();
+        WorkManager.getInstance().enqueueUniquePeriodicWork(NotifyAboutNewBuildsWorkerKt.UNIQUE_WORKER_ID, ExistingPeriodicWorkPolicy.KEEP, workRequest);
     }
 }
