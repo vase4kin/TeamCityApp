@@ -25,6 +25,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
+private const val DEFAULT_LOCATOR = "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:1"
+private const val SINCE_BUILD_LOCATOR = "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,sinceBuild:%s,count:10"
+
 class NotifyAboutNewBuildsWorker(
         appContext: Context, workerParams: WorkerParameters
 ) : RxWorker(appContext, workerParams) {
@@ -46,11 +49,7 @@ class NotifyAboutNewBuildsWorker(
                     .flatMapSingle { buildTypeId ->
                         // if last build is empty just fetch last 10 ones, but still have default value like 20?
                         val lastBuild = favoriteBuildTypes.getValue(buildTypeId).sinceBuild
-                        val locator = if (lastBuild.isEmpty()) {
-                            "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10"
-                        } else {
-                            "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,sinceBuild:$lastBuild,count:10"
-                        }
+                        val locator = if (lastBuild.isEmpty()) DEFAULT_LOCATOR else String.format(SINCE_BUILD_LOCATOR, lastBuild)
                         repository.listBuilds(buildTypeId, locator, true)
                     }
                     .flatMap { Observable.fromIterable(it.objects) }
