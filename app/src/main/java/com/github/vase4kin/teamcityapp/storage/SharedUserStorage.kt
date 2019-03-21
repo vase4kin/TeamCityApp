@@ -29,7 +29,7 @@ import java.util.*
 /**
  * SharePreferences json based storage for user accounts
  */
-class SharedUserStorage private constructor(
+open class SharedUserStorage private constructor(
         private val mContext: Context,
         private val mCryptoManager: CryptoManager) : Collectible<UserAccount> {
 
