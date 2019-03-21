@@ -103,7 +103,7 @@ class NotifyAboutNewBuildsWorker(
             val buildTypeId = it.key
             val builds = it.value
             if (builds.isEmpty()) return@forEach
-            val lastBuildId = builds.last().id
+            val lastBuildId = builds.first().id
             val updatedInfo = favoriteBuildTypes.getValue(buildTypeId).copy(sinceBuild = lastBuildId)
             favoriteBuildTypes[buildTypeId] = updatedInfo
         }
