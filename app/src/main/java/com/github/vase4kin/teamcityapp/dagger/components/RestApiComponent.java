@@ -26,7 +26,7 @@ import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import com.github.vase4kin.teamcityapp.workmanager.NotifyAboutNewBuildsWorker;
+import com.github.vase4kin.teamcityapp.workmanager.BuildNotificationsWorker;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
@@ -56,5 +56,5 @@ public interface RestApiComponent {
 
     RemoteService remoteService();
 
-    void inject(NotifyAboutNewBuildsWorker worker);
+    void inject(BuildNotificationsWorker worker);
 }

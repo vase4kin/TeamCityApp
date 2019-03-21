@@ -6,23 +6,22 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.work.ListenableWorker
-import androidx.work.RxWorker
-import androidx.work.WorkerParameters
+import androidx.work.*
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
+import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.github.vase4kin.teamcityapp.utils.DEFAULT_NOTIFICATIONS_CHANNEL_ID
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val DEFAULT_LOCATOR = "status:FAILURE,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:1"
@@ -30,7 +29,7 @@ private const val SINCE_BUILD_LOCATOR = "status:FAILURE,branch:default:any,perso
 
 const val UNIQUE_WORKER_ID = "UNIQUE_WORKER_ID"
 
-class NotifyAboutNewBuildsWorker(
+class BuildNotificationsWorker(
         appContext: Context, workerParams: WorkerParameters
 ) : RxWorker(appContext, workerParams) {
 
@@ -136,7 +135,7 @@ class NotifyAboutNewBuildsWorker(
 
     private fun sendNotification(buildNotification: BuildNotification) {
         val notification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_done_24px)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(buildNotification.contentTitle)
                 .setContentText(buildNotification.contentText)
                 .setSubText(buildNotification.summaryText)
@@ -156,7 +155,7 @@ class NotifyAboutNewBuildsWorker(
         val summaryNotification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
                 .setContentTitle("You got new buildNotifications")
                 .setSubText(buildTypeNotification.text)
-                .setSmallIcon(R.drawable.ic_done_24px)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setGroup(buildTypeNotification.groupId)
                 .setGroupSummary(true)
                 .setContentIntent(buildTypeNotification.createBuildTypeIntent())
@@ -170,7 +169,7 @@ class NotifyAboutNewBuildsWorker(
     private fun BuildNotification.createBuildIntent(): PendingIntent = PendingIntent.getActivities(
             applicationContext,
             0,
-            arrayOf(Intent(applicationContext, FavoritesActivity::class.java),
+            arrayOf(Intent(applicationContext, RootProjectsActivity::class.java),
                     Intent(applicationContext, BuildDetailsActivity::class.java)
                             .putExtra(BundleExtractorValues.BUILD, this.buildDetails.toBuild())
                             .putExtra(BundleExtractorValues.NAME, this.buildDetails.buildTypeName)),
@@ -179,7 +178,7 @@ class NotifyAboutNewBuildsWorker(
     private fun BuildTypeNotification.createBuildTypeIntent(): PendingIntent = PendingIntent.getActivities(
             applicationContext,
             0,
-            arrayOf(Intent(applicationContext, FavoritesActivity::class.java),
+            arrayOf(Intent(applicationContext, RootProjectsActivity::class.java),
                     Intent(applicationContext, BuildListActivity::class.java)
                             .putExtra(BundleExtractorValues.NAME, this.text)
                             .putExtra(BundleExtractorValues.ID, this.groupId)),
@@ -205,4 +204,11 @@ class NotifyAboutNewBuildsWorker(
             this.statusText,
             this.buildTypeName,
             this.buildTypeId)
+}
+
+fun WorkManager.scheduleWorkers() {
+    val workRequest = PeriodicWorkRequest.Builder(
+            BuildNotificationsWorker::class.java, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
+            .build()
+    this.enqueueUniquePeriodicWork(UNIQUE_WORKER_ID, ExistingPeriodicWorkPolicy.KEEP, workRequest)
 }

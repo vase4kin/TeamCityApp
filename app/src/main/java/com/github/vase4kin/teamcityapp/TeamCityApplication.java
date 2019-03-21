@@ -22,8 +22,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
 import com.crashlytics.android.Crashlytics;
@@ -34,14 +32,11 @@ import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.utils.NotificationUtilsKt;
-import com.github.vase4kin.teamcityapp.workmanager.NotifyAboutNewBuildsWorker;
-import com.github.vase4kin.teamcityapp.workmanager.NotifyAboutNewBuildsWorkerKt;
+import com.github.vase4kin.teamcityapp.workmanager.BuildNotificationsWorkerKt;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.joanzapata.iconify.fonts.MaterialCommunityModule;
 import com.joanzapata.iconify.fonts.MaterialModule;
-
-import java.util.concurrent.TimeUnit;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -86,7 +81,7 @@ public class TeamCityApplication extends Application {
         }
 
         // Schedule workers
-        scheduleWorkers();
+        BuildNotificationsWorkerKt.scheduleWorkers(WorkManager.getInstance());
     }
 
     /**
@@ -128,12 +123,5 @@ public class TeamCityApplication extends Application {
     @VisibleForTesting
     public void setAppInjector(AppComponent mAppComponent) {
         this.mAppInjector = mAppComponent;
-    }
-
-    private void scheduleWorkers() {
-        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
-                NotifyAboutNewBuildsWorker.class, PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS, TimeUnit.MILLISECONDS)
-                .build();
-        WorkManager.getInstance().enqueueUniquePeriodicWork(NotifyAboutNewBuildsWorkerKt.UNIQUE_WORKER_ID, ExistingPeriodicWorkPolicy.KEEP, workRequest);
     }
 }
