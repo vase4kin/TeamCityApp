@@ -76,6 +76,8 @@ interface Repository {
      */
     fun build(url: String, update: Boolean): Single<Build>
 
+    fun cacheBuild(serverBuild: Build): Single<Build>
+
     /**
      * List builds (cache's supported)
      *

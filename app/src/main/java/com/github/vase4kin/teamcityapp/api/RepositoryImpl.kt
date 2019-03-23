@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 
@@ -89,6 +90,30 @@ class RepositoryImpl(private val teamCityService: TeamCityService,
                 teamCityService.build(urlFormatter.formatBasicUrl(url)),
                 DynamicKey(url),
                 EvictDynamicKey(update))
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun cacheBuild(serverBuild: Build): Single<Build> {
+        // Make sure cache is updated
+        val serverBuildDetails = BuildDetailsImpl(serverBuild)
+        // If server build's running update cache immediately
+        return if (serverBuildDetails.isRunning) {
+            build(serverBuild.href, true)
+        } else {
+            // Call cache
+            build(serverBuild.href, false)
+                    .flatMap { cachedBuild ->
+                        val cacheBuildDetails = BuildDetailsImpl(cachedBuild)
+                        // Compare if server side and cache are updated
+                        // If cache's not updated -> update it
+                        build(
+                                cachedBuild.href,
+                                // Don't update cache if server and cache builds are finished
+                                serverBuildDetails.isFinished != cacheBuildDetails.isFinished)
+                    }
+        }
     }
 
     /**

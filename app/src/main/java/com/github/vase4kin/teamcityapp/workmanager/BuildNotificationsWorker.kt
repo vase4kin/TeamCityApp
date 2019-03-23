@@ -55,27 +55,7 @@ class BuildNotificationsWorker(
                         repository.listBuilds(buildTypeId, locator, true)
                     }
                     .flatMap { Observable.fromIterable(it.objects) }
-                    .flatMapSingle { serverBuild ->
-                        // TODO: Move to ext function
-                        // Make sure cache is updated
-                        val serverBuildDetails = BuildDetailsImpl(serverBuild)
-                        // If server build's running update cache immediately
-                        if (serverBuildDetails.isRunning) {
-                            repository.build(serverBuild.href, true)
-                        } else {
-                            // Call cache
-                            repository.build(serverBuild.href, false)
-                                    .flatMap { cachedBuild ->
-                                        val cacheBuildDetails = BuildDetailsImpl(cachedBuild)
-                                        // Compare if server side and cache are updated
-                                        // If cache's not updated -> update it
-                                        repository.build(
-                                                cachedBuild.href,
-                                                // Don't update cache if server and cache builds are finished
-                                                serverBuildDetails.isFinished != cacheBuildDetails.isFinished)
-                                    }
-                        }
-                    }
+                    .flatMapSingle { serverBuild -> repository.cacheBuild(serverBuild) }
                     .map { BuildDetailsImpl(it) }
                     .toList()
                     .map { buildList ->
