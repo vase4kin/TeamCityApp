@@ -31,6 +31,8 @@ import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
+import org.jetbrains.annotations.NotNull;
+
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 
@@ -133,5 +135,11 @@ public class FakeRepositoryImpl implements Repository {
     @Override
     public Single<Build> cancelBuild(String url, BuildCancelRequest buildCancelRequest) {
         return mTeamCityService.cancelBuild(url, buildCancelRequest);
+    }
+
+    @NotNull
+    @Override
+    public Single<Build> cacheBuild(@NotNull Build serverBuild) {
+        return mTeamCityService.build(serverBuild.getHref());
     }
 }

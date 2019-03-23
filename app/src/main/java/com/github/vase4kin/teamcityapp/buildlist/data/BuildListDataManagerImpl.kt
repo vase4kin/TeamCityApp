@@ -51,7 +51,7 @@ open class BuildListDataManagerImpl(
     override fun load(id: String,
                       loadingListener: OnLoadingListener<List<BuildDetails>>,
                       update: Boolean) {
-        loadBuilds(repository.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR, update), loadingListener)
+        loadBuilds(repository.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR, update), loadingListener, updateSinceBuild = true)
     }
 
     /**
@@ -61,7 +61,7 @@ open class BuildListDataManagerImpl(
                       filter: BuildListFilter,
                       loadingListener: OnLoadingListener<List<BuildDetails>>,
                       update: Boolean) {
-        loadBuilds(repository.listBuilds(id, filter.toLocator(), update), loadingListener)
+        loadBuilds(repository.listBuilds(id, filter.toLocator(), update), loadingListener, updateSinceBuild = true)
     }
 
     /**
@@ -96,7 +96,8 @@ open class BuildListDataManagerImpl(
      * {@inheritDoc}
      */
     private fun loadBuilds(call: Single<Builds>,
-                           loadingListener: OnLoadingListener<List<BuildDetails>>) {
+                           loadingListener: OnLoadingListener<List<BuildDetails>>,
+                           updateSinceBuild: Boolean = false) {
         val buildDetailsList = getBuildDetailsObservable(call)
                 // putting them all to the sorted list
                 // where queued builds go first
@@ -107,13 +108,18 @@ open class BuildListDataManagerImpl(
                         else -> 1
                     }
                 }
-        loadBuildDetailsList(buildDetailsList, loadingListener)
+        loadBuildDetailsList(buildDetailsList, loadingListener, updateSinceBuild)
     }
 
     protected fun loadBuildDetailsList(call: Single<List<BuildDetails>>,
-                                       loadingListener: OnLoadingListener<List<BuildDetails>>) {
+                                       loadingListener: OnLoadingListener<List<BuildDetails>>,
+                                       updateSinceBuild: Boolean = false) {
         subscriptions.clear()
         call
+                .doOnSuccess { buildDetailsList ->
+                    if (!updateSinceBuild) return@doOnSuccess
+                    updateSinceBuild(buildDetailsList)
+                }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
@@ -121,6 +127,20 @@ open class BuildListDataManagerImpl(
                         onError = { loadingListener.onFail(it.message) }
                 )
                 .addTo(subscriptions)
+    }
+
+    private fun updateSinceBuild(buildDetailsList: List<BuildDetails>) {
+        val favoriteBuildTypes = sharedUserStorage.activeUser.favoriteBuildTypes
+        if (favoriteBuildTypes.isEmpty()) return
+        val failedList = buildDetailsList.filter { it.isFailed }
+        if (failedList.isNotEmpty()) {
+            val firstBuild = failedList.first()
+            val buildTypeId = firstBuild.buildTypeId
+            if (favoriteBuildTypes.containsKey(buildTypeId)) {
+                val updatedInfo = favoriteBuildTypes.getValue(buildTypeId).copy(sinceBuild = firstBuild.id)
+                favoriteBuildTypes[buildTypeId] = updatedInfo
+            }
+        }
     }
 
     /**

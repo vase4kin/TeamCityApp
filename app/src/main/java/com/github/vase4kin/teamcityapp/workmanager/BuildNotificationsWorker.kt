@@ -84,8 +84,8 @@ class BuildNotificationsWorker(
             val buildTypeId = it.key
             val builds = it.value
             if (builds.isEmpty()) return@forEach
-            val lastBuildId = builds.first().id
-            val updatedInfo = favoriteBuildTypes.getValue(buildTypeId).copy(sinceBuild = lastBuildId)
+            val firstBuildId = builds.first().id
+            val updatedInfo = favoriteBuildTypes.getValue(buildTypeId).copy(sinceBuild = firstBuildId)
             favoriteBuildTypes[buildTypeId] = updatedInfo
         }
     }
@@ -96,7 +96,7 @@ class BuildNotificationsWorker(
             val buildTypeId = it.key
             val builds = it.value
             if (builds.isEmpty()) return@forEach
-            val buildTypeName = builds.last().buildTypeName
+            val buildTypeName = builds.first().buildTypeName
             val buildTypeNotification = BuildTypeNotification(buildTypeId, buildTypeName)
             buildTypeNotification.buildNotifications.addAll(builds.map { buildDetails -> buildDetails.toNotification() })
             notifications.add(buildTypeNotification)
