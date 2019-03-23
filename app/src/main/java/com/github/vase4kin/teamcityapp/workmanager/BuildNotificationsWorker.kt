@@ -3,6 +3,7 @@ package com.github.vase4kin.teamcityapp.workmanager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -132,6 +133,9 @@ class BuildNotificationsWorker(
     }
 
     private fun sendSummaryNotification(buildTypeNotification: BuildTypeNotification) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return
+        }
         val summaryNotification = NotificationCompat.Builder(applicationContext, DEFAULT_NOTIFICATIONS_CHANNEL_ID)
                 .setContentTitle("You got new buildNotifications")
                 .setSubText(buildTypeNotification.text)
