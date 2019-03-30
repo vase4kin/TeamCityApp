@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.storage
 
+import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 
 /**
@@ -25,7 +26,8 @@ object UsersFactory {
 
     internal const val GUEST_USER_USER_NAME = "Guest user"
     private const val EMPTY_STRING = ""
-    internal val EMPTY_USER = UserAccount(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING.toByteArray(), isGuestUser = true, isActive = true)
+    @VisibleForTesting
+    val EMPTY_USER = UserAccount(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING.toByteArray(), isGuestUser = true, isActive = true)
 
     /**
      * @return Guest user

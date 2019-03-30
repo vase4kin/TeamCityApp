@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.root.router.RootRouter;
 import com.github.vase4kin.teamcityapp.root.tracker.RootTracker;
 import com.github.vase4kin.teamcityapp.root.view.OnAccountSwitchListener;
 import com.github.vase4kin.teamcityapp.root.view.RootDrawerView;
+import com.github.vase4kin.teamcityapp.storage.UsersFactory;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.junit.Before;
@@ -63,8 +64,7 @@ public class RootDrawerPresenterImplTest {
     BuildLogInteractor mInteractor;
     @Mock
     RootTracker mTracker;
-    @Mock
-    private UserAccount mUserAccount;
+    private UserAccount mUserAccount = UsersFactory.INSTANCE.getEMPTY_USER();
     @Mock
     private OnboardingManager mOnboardingManager;
 
@@ -81,7 +81,6 @@ public class RootDrawerPresenterImplTest {
     public void testOnResume() throws Exception {
         when(TextUtils.isEmpty(anyString())).thenReturn(false);
         when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
-        when(mUserAccount.getTeamcityUrl()).thenReturn("");
         mPresenter.onResume();
         verify(mTracker).trackView();
     }
@@ -90,7 +89,6 @@ public class RootDrawerPresenterImplTest {
     public void testPromptIfItIsShown() throws Exception {
         when(TextUtils.isEmpty(anyString())).thenReturn(false);
         when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
-        when(mUserAccount.getTeamcityUrl()).thenReturn("");
         when(mOnboardingManager.isNavigationDrawerPromptShown()).thenReturn(true);
         mPresenter.onResume();
         verify(mOnboardingManager).isNavigationDrawerPromptShown();
@@ -100,7 +98,6 @@ public class RootDrawerPresenterImplTest {
     public void testPromptIfItIsNotShown() throws Exception {
         when(TextUtils.isEmpty(anyString())).thenReturn(false);
         when(mDataManager.getActiveUser()).thenReturn(mUserAccount);
-        when(mUserAccount.getTeamcityUrl()).thenReturn("");
         when(mOnboardingManager.isNavigationDrawerPromptShown()).thenReturn(false);
         mPresenter.onResume();
         verify(mOnboardingManager).isNavigationDrawerPromptShown();
