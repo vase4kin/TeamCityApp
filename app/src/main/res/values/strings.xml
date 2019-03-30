@@ -330,4 +330,9 @@
     <!--Notifications-->
     <string name="default_notification_channel">Default</string>
 
+    <!-- Settings -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="title_notifications">Manage notifications</string>
+    <string name="notifications_state">Enable notifications</string>
+
 </resources>

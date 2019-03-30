@@ -100,7 +100,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isRunning() {
-        return mBuild.getState().equals(STATE_RUNNING);
+        return STATE_RUNNING.equals(mBuild.getState());
     }
 
     /**
@@ -110,7 +110,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isFinished() {
-        return mBuild.getState().equals(STATE_FINISHED);
+        return STATE_FINISHED.equals(mBuild.getState());
     }
 
     /**
@@ -118,7 +118,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isQueued() {
-        return mBuild.getState().equals(STATE_QUEUED);
+        return STATE_QUEUED.equals(mBuild.getState());
     }
 
     /**
@@ -126,7 +126,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isSuccess() {
-        return mBuild.getStatus().equals(STATUS_SUCCESS);
+        return STATUS_SUCCESS.equals(mBuild.getStatus());
     }
 
     /**
@@ -134,7 +134,7 @@ public class BuildDetailsImpl implements BuildDetails {
      */
     @Override
     public boolean isFailed() {
-        return mBuild.getStatus().equals(STATUS_FAILURE);
+        return STATUS_FAILURE.equals(mBuild.getStatus());
     }
 
     /**

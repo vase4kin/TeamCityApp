@@ -109,6 +109,10 @@
             android:name=".favorites.view.FavoritesActivity"
             android:label="@string/favorites_drawer_item"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

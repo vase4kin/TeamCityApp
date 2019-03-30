@@ -36,6 +36,7 @@ public interface DrawerView {
     int PROFILES_MANAGING = 4;
     int ABOUT = 5;
     int FAVORITES = 6;
+    int SETTINGS = 7;
 
     /**
      * Init views

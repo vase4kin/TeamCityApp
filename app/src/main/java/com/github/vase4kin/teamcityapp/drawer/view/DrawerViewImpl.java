@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
+import com.github.vase4kin.teamcityapp.settings.SettingsActivity;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -245,6 +246,11 @@ public class DrawerViewImpl implements DrawerView {
                                 .withIdentifier(AGENTS),
                         new DividerDrawerItem(),
                         new PrimaryDrawerItem()
+                                .withName(R.string.title_activity_settings)
+                                .withIcon(new IconDrawable(mActivity, MaterialIcons.md_settings).colorRes(mDefaultColor))
+                                .withSelectedTextColorRes(mDefaultColor)
+                                .withIdentifier(SETTINGS),
+                        new PrimaryDrawerItem()
                                 .withName("About")
                                 .withIcon(new IconDrawable(mActivity, MaterialIcons.md_help).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
@@ -289,6 +295,12 @@ public class DrawerViewImpl implements DrawerView {
                                     break;
                                 }
                                 mOnDrawerPresenterListener.startFavoritesActivity();
+                                break;
+                            case SETTINGS:
+                                if (mActivity instanceof SettingsActivity) {
+                                    break;
+                                }
+                                mOnDrawerPresenterListener.startSettingsActivity();
                                 break;
                             default:
                                 showDialogWithAdvice();

@@ -177,6 +177,7 @@ dependencies {
     implementation 'tr.xip.errorview:library:3.0.0'
     // View injection
     implementation 'com.jakewharton:butterknife:10.1.0'
+    implementation 'androidx.preference:preference:1.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.1.0'
     kapt 'com.jakewharton:butterknife-compiler:10.1.0'
     // Event bus

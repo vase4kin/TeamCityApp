@@ -86,4 +86,9 @@ public interface OnDrawerPresenterListener {
      * {@inheritDoc}
      */
     void startFavoritesActivity();
+
+    /**
+     * {@inheritDoc}
+     */
+    void startSettingsActivity();
 }
