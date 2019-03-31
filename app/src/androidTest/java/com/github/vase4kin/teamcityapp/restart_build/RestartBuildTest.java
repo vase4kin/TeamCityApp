@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.BeforeClass;
@@ -92,12 +91,9 @@ public class RestartBuildTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
@@ -116,9 +112,6 @@ public class RestartBuildTest {
 
     @Mock
     ResponseBody mResponseBody;
-
-    @Mock
-    private UserAccount mUserAccount;
 
     @BeforeClass
     public static void disableOnboarding() {

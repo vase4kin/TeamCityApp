@@ -50,7 +50,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.Mockito.when;
 
 /**
  * Validation tests for {@link CreateAccountActivity}
@@ -62,27 +61,33 @@ public class CreateAccountActivityValidationTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-                @Override
-                public void setComponent(AppComponent appComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setAppInjector(appComponent);
-                }
+            .set(appComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setAppInjector(appComponent);
             });
 
     @Rule
     public CustomActivityTestRule<CreateAccountActivity> mActivityRule = new CustomActivityTestRule<>(CreateAccountActivity.class);
 
     @Mock
-    private SharedUserStorage mStorage;
-
-    @Mock
     private OkHttpClient mClient;
 
     @Before
     public void setUp() {
-        when(mStorage.hasGuestAccountWithUrl(URL)).thenReturn(true);
-        when(mStorage.hasAccountWithUrl(URL, "user")).thenReturn(true);
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        app.getAppInjector().sharedUserStorage().clearAll();
+        app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(URL, false);
+        app.getAppInjector().sharedUserStorage().saveUserAccountAndSetItAsActive(URL, "user", "", false, new SharedUserStorage.OnStorageListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFail() {
+
+            }
+        });
         mActivityRule.launchActivity(null);
     }
 

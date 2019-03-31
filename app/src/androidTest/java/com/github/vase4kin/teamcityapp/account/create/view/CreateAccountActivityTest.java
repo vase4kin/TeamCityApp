@@ -41,8 +41,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 
@@ -93,12 +91,9 @@ public class CreateAccountActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-                @Override
-                public void setComponent(AppComponent appComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setAppInjector(appComponent);
-                }
+            .set(appComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setAppInjector(appComponent);
             });
 
     @Rule
@@ -141,19 +136,16 @@ public class CreateAccountActivityTest {
      */
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrl() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(200)
-                                .message("")
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(200)
+                            .message("")
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
@@ -169,7 +161,8 @@ public class CreateAccountActivityTest {
                         hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
-        SharedUserStorage storageUtils = SharedUserStorage.Companion.init(mActivityRule.getActivity(), null);
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        SharedUserStorage storageUtils = app.getAppInjector().sharedUserStorage();
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
         assertThat(storageUtils.getActiveUser().isSslDisabled(), is(false));
@@ -180,19 +173,16 @@ public class CreateAccountActivityTest {
      */
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(200)
-                                .message("")
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(200)
+                            .message("")
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
@@ -211,7 +201,8 @@ public class CreateAccountActivityTest {
                         hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
-        SharedUserStorage storageUtils = SharedUserStorage.Companion.init(mActivityRule.getActivity(), null);
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        SharedUserStorage storageUtils = app.getAppInjector().sharedUserStorage();
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
         assertThat(storageUtils.getActiveUser().isSslDisabled(), is(true));
@@ -223,18 +214,15 @@ public class CreateAccountActivityTest {
     @Ignore
     @Test
     public void testUserCanCreateUserAccountWithCorrectUrlAndCredentials() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
@@ -256,19 +244,16 @@ public class CreateAccountActivityTest {
      */
     @Test
     public void testUserIsNotifiedIfServerReturnsBadResponse() throws IOException {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(404)
-                                .message("Client Error")
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(404)
+                            .message("Client Error")
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(URL), closeSoftKeyboard());

@@ -18,17 +18,20 @@ package com.github.vase4kin.teamcityapp.storage.api
 
 import com.github.vase4kin.teamcityapp.base.api.Jsonable
 
+private const val EMPTY_PASSWORD = ""
+
 /**
  * User account
  */
 data class UserAccount(
         val teamcityUrl: String,
         val userName: String,
-        val passwordAsBytes: ByteArray,
-        val isGuestUser: Boolean,
-        var isActive: Boolean,
-        var isSslDisabled: Boolean = false,
-        val favoriteBuildTypes: MutableMap<String, FavoriteBuildTypeInfo> = mutableMapOf()) : Jsonable {
+        val isGuestUser: Boolean) : Jsonable {
+
+    var passwordAsBytes: ByteArray = EMPTY_PASSWORD.toByteArray()
+    var isActive: Boolean = false
+    var isSslDisabled: Boolean = false
+    var favoriteBuildTypes: MutableMap<String, FavoriteBuildTypeInfo> = mutableMapOf()
 
     override fun getId(): String {
         return teamcityUrl

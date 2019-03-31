@@ -27,27 +27,31 @@ object UsersFactory {
     internal const val GUEST_USER_USER_NAME = "Guest user"
     private const val EMPTY_STRING = ""
     @VisibleForTesting
-    val EMPTY_USER = UserAccount(EMPTY_STRING, EMPTY_STRING, EMPTY_STRING.toByteArray(), isGuestUser = true, isActive = true)
+    val EMPTY_USER = UserAccount(EMPTY_STRING, EMPTY_STRING, isGuestUser = true).apply { isActive = true }
 
     /**
      * @return Guest user
      */
     internal fun guestUser(serverUrl: String): UserAccount {
-        return UserAccount(serverUrl, GUEST_USER_USER_NAME, EMPTY_STRING.toByteArray(), isGuestUser = true, isActive = true)
+        return UserAccount(serverUrl, GUEST_USER_USER_NAME, isGuestUser = true).apply { isActive = true }
     }
 
     /**
      * @return Registered user
      */
     internal fun user(serverUrl: String, userName: String, password: ByteArray): UserAccount {
-        return UserAccount(serverUrl, userName, password, isGuestUser = false, isActive = true)
+        return UserAccount(serverUrl, userName, isGuestUser = false)
+                .apply {
+                    this.passwordAsBytes = password
+                    this.isActive = true
+                }
     }
 
     /**
      * @return User for equal operations
      */
     internal fun user(serverUrl: String, userName: String): UserAccount {
-        return UserAccount(serverUrl, userName, EMPTY_STRING.toByteArray(), isGuestUser = false, isActive = true)
+        return UserAccount(serverUrl, userName, isGuestUser = false)
     }
 
     /**
@@ -57,8 +61,9 @@ object UsersFactory {
         return UserAccount(
                 userAccount.teamcityUrl,
                 userAccount.userName,
-                decryptedPassword,
-                userAccount.isGuestUser,
-                userAccount.isActive)
+                userAccount.isGuestUser).apply {
+            this.passwordAsBytes = decryptedPassword
+            this.isActive = userAccount.isActive
+        }
     }
 }

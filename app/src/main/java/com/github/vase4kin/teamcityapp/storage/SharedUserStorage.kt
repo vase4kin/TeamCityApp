@@ -56,16 +56,20 @@ open class SharedUserStorage private constructor(
             for (userAccount in usersContainer.usersAccounts) {
                 if (userAccount.isActive) {
                     if (userAccount.userName == UsersFactory.GUEST_USER_USER_NAME) {
-                        return UsersFactory.guestUser(userAccount.teamcityUrl)
-                                .copy(favoriteBuildTypes = userAccount.favoriteBuildTypes, isSslDisabled = userAccount.isSslDisabled)
+                        return UsersFactory.guestUser(userAccount.teamcityUrl).apply {
+                            favoriteBuildTypes = userAccount.favoriteBuildTypes
+                            isSslDisabled = userAccount.isSslDisabled
+                        }
                     }
                     if (userAccount.isGuestUser) {
                         return userAccount
                     }
                     val decryptedPassword = cryptoManager.decrypt(userAccount.passwordAsBytes)
                     return if (!cryptoManager.isFailed(decryptedPassword)) {
-                        UsersFactory.user(userAccount, decryptedPassword)
-                                .copy(favoriteBuildTypes = userAccount.favoriteBuildTypes, isSslDisabled = userAccount.isSslDisabled)
+                        UsersFactory.user(userAccount, decryptedPassword).apply {
+                            favoriteBuildTypes = userAccount.favoriteBuildTypes
+                            isSslDisabled = userAccount.isSslDisabled
+                        }
                     } else {
                         UsersFactory.EMPTY_USER
                     }
@@ -210,9 +214,9 @@ open class SharedUserStorage private constructor(
     }
 
     fun removeBuildTypeFromFavorites(buildTypeId: String) {
-        for ((_, _, _, _, isActive, _, favoriteBuildTypes1) in usersContainer.usersAccounts) {
-            if (isActive) {
-                favoriteBuildTypes1.remove(buildTypeId)
+        for (userAccount in usersContainer.usersAccounts) {
+            if (userAccount.isActive) {
+                userAccount.favoriteBuildTypes.remove(buildTypeId)
                 commitUserChanges()
                 break
             }
