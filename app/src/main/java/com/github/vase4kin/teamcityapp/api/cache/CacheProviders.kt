@@ -104,9 +104,9 @@ interface CacheProviders {
                    evictDynamicKeyGroup: EvictDynamicKeyGroup): Single<Builds>
 
     /**
-     * Cache build list for 10 minutes (we cache only builds which have finished state)
+     * Cache build for 1 hour (we cache only builds which have finished state)
      */
-    @LifeCache(duration = 10, timeUnit = TimeUnit.MINUTES)
+    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun build(buildSingle: Single<Build>,
               buildUrl: DynamicKey,
               evictDynamicKey: EvictDynamicKey): Single<Build>
