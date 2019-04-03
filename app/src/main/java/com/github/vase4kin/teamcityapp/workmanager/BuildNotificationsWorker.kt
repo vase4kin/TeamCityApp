@@ -152,21 +152,21 @@ class BuildNotificationsWorker(
 
     private fun BuildNotification.createBuildIntent(): PendingIntent = PendingIntent.getActivities(
             applicationContext,
-            0,
-            arrayOf(Intent(applicationContext, RootProjectsActivity::class.java),
+            id,
+            arrayOf(Intent(applicationContext, RootProjectsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     Intent(applicationContext, BuildDetailsActivity::class.java)
-                            .putExtra(BundleExtractorValues.BUILD, this.buildDetails.toBuild())
-                            .putExtra(BundleExtractorValues.NAME, this.buildDetails.buildTypeName)),
-            0)
+                            .putExtra(BundleExtractorValues.BUILD, buildDetails.toBuild())
+                            .putExtra(BundleExtractorValues.NAME, buildDetails.buildTypeName)),
+            PendingIntent.FLAG_UPDATE_CURRENT)
 
     private fun BuildTypeNotification.createBuildTypeIntent(): PendingIntent = PendingIntent.getActivities(
             applicationContext,
-            0,
-            arrayOf(Intent(applicationContext, RootProjectsActivity::class.java),
+            groupId.hashCode(),
+            arrayOf(Intent(applicationContext, RootProjectsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                     Intent(applicationContext, BuildListActivity::class.java)
                             .putExtra(BundleExtractorValues.NAME, this.text)
                             .putExtra(BundleExtractorValues.ID, this.groupId)),
-            0)
+            PendingIntent.FLAG_UPDATE_CURRENT)
 
     private data class BuildTypeNotification(val groupId: String,
                                              val text: String) {
