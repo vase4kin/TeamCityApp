@@ -154,6 +154,9 @@ class BuildNotificationsWorker(
             applicationContext,
             id,
             arrayOf(Intent(applicationContext, RootProjectsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                    Intent(applicationContext, BuildListActivity::class.java)
+                            .putExtra(BundleExtractorValues.NAME, buildDetails.buildTypeName)
+                            .putExtra(BundleExtractorValues.ID, buildDetails.buildTypeId),
                     Intent(applicationContext, BuildDetailsActivity::class.java)
                             .putExtra(BundleExtractorValues.BUILD, buildDetails.toBuild())
                             .putExtra(BundleExtractorValues.NAME, buildDetails.buildTypeName)),
