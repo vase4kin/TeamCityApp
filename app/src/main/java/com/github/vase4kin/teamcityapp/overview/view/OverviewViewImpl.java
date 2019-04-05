@@ -440,7 +440,7 @@ public class OverviewViewImpl implements OverviewView {
     private void showPrompt(@StringRes int secondaryText,
                             final OnboardingManager.OnPromptShownListener listener) {
         // Creating prompt
-        final Toolbar toolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
+        final Toolbar toolbar = mActivity.findViewById(R.id.toolbar);
         int color = ((ColorDrawable) toolbar.getBackground()).getColor();
         final MaterialTapTargetPrompt.Builder promptBuilder = new MaterialTapTargetPrompt.Builder(mActivity)
                 .setPrimaryText(R.string.title_onboarding_build_menu)
@@ -450,23 +450,15 @@ public class OverviewViewImpl implements OverviewView {
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        listener.onPromptShown();
-                    }
-                });
+                .setPromptStateChangeListener((prompt, state) -> listener.onPromptShown());
         // Show prompt
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                final View child = toolbar.getChildAt(2);
-                if (child instanceof ActionMenuView) {
-                    final ActionMenuView actionMenuView = ((ActionMenuView) child);
-                    promptBuilder.setTarget(actionMenuView.getChildAt(actionMenuView.getChildCount() - 1));
-                }
-                promptBuilder.show();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            final View child = toolbar.getChildAt(3);
+            if (child instanceof ActionMenuView) {
+                final ActionMenuView actionMenuView = ((ActionMenuView) child);
+                promptBuilder.setTarget(actionMenuView.getChildAt(actionMenuView.getChildCount() - 1));
             }
+            promptBuilder.show();
         }, TIMEOUT_PROMPT);
     }
 }
