@@ -54,6 +54,12 @@ public class TestUtils {
                 .check(matches(withToolbarTitle(is(title))));
     }
 
+    public static void matchToolbarSubTitle(
+            CharSequence title) {
+        onView(isAssignableFrom(Toolbar.class))
+                .check(matches(withToolbarSubTitle(is(title))));
+    }
+
     /**
      * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
      *
@@ -71,6 +77,22 @@ public class TestUtils {
             @Override
             public void describeTo(org.hamcrest.Description description) {
                 description.appendText("with toolbar title: ");
+                textMatcher.describeTo(description);
+            }
+        };
+    }
+
+    private static Matcher<Object> withToolbarSubTitle(
+            final Matcher<CharSequence> textMatcher) {
+        return new BoundedMatcher<Object, Toolbar>(Toolbar.class) {
+            @Override
+            public boolean matchesSafely(Toolbar toolbar) {
+                return textMatcher.matches(toolbar.getSubtitle());
+            }
+
+            @Override
+            public void describeTo(org.hamcrest.Description description) {
+                description.appendText("with toolbar subtitle: ");
                 textMatcher.describeTo(description);
             }
         };

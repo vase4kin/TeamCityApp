@@ -532,16 +532,10 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * Set toolbar title
      */
     private void setTitle() {
-        String startDate;
-        if (mBuildDetails.isQueued()) {
-            startDate = mBuildDetails.getQueuedDate();
-        } else {
-            startDate = mBuildDetails.getStartDate();
-        }
-        String title = String.format("#%s (%s)", mBuildDetails.getNumber(), startDate);
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(title);
+            actionBar.setTitle("#" + mBuildDetails.getNumber());
+            actionBar.setSubtitle(mBuildDetails.getBuildTypeName());
         }
     }
 
