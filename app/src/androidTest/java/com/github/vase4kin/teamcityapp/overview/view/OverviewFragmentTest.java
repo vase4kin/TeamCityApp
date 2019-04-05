@@ -68,6 +68,7 @@ import static com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TY
 import static com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_USER;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
+import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarSubTitle;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
@@ -131,7 +132,8 @@ public class OverviewFragmentTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        matchToolbarTitle("#2459 (21 Jun 16 23:00)");
+        matchToolbarTitle("#2459");
+        matchToolbarSubTitle("build type name");
         // List has item with header
         onView(withId(R.id.overview_recycler_view)).check(hasItemsCount(7));
         // Checking Result

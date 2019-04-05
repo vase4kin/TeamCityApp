@@ -534,7 +534,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     private void setTitle() {
         ActionBar actionBar = mActivity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle(mBuildDetails.getNumber());
+            actionBar.setTitle("#" + mBuildDetails.getNumber());
             actionBar.setSubtitle(mBuildDetails.getBuildTypeName());
         }
     }
