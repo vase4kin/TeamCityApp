@@ -48,6 +48,7 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP;
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
@@ -68,23 +69,17 @@ public class FavoritesActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> daggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-                @Override
-                public void setComponent(AppComponent appComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setAppInjector(appComponent);
-                }
+            .set(appComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setAppInjector(appComponent);
             });
 
     @Rule
     public DaggerMockRule<RestApiComponent> restComponentDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
@@ -192,6 +187,46 @@ public class FavoritesActivityTest {
         // Checking adapter item 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("build type")));
+    }
+
+    @Test
+    public void testFavoritesListRefreshesOnResume() {
+        //prepare mocks
+        getStorage().addBuildTypeToFavorites(Mocks.buildTypeMock().getId());
+        when(teamCityService.buildType(Mocks.buildTypeMock().getId())).thenReturn(Single.just(Mocks.buildTypeMock()));
+
+        // launch activity
+        activityRule.launchActivity(null);
+
+        // Checking toolbar title
+        matchToolbarTitle("Favorites (1)");
+
+        // List has item with header
+        onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2));
+        // Checking header 1
+        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
+                .check(matches(withText("Secret project")));
+        // Checking adapter item 1
+        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
+                .check(matches(withText("build type")));
+
+        // Click on item 1
+        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
+                .perform(click());
+
+        // Click on add to favorites
+        onView(withId(R.id.add_to_favorites)).perform(click());
+
+        // check snack bar text
+        onView(withText(R.string.text_remove_from_favorites)).check(matches(isDisplayed()));
+
+        pressBack();
+
+        // Checking toolbar title
+        matchToolbarTitle("Favorites (0)");
+
+        // Check the list is empty
+        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)));
     }
 
     private SharedUserStorage getStorage() {
