@@ -77,12 +77,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         super.initViews();
         mView.setViewListener(this);
         if (!onboardingManager.isAddFavPromptShown()) {
-            mView.showAddFavPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    onboardingManager.saveAddFavPromptShown();
-                }
-            });
+            mView.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
         }
     }
 
@@ -139,5 +134,14 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
         mDataManager.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadData(loadingListener, false);
     }
 }
