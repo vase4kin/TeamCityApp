@@ -20,8 +20,10 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openContextualActionModeOverflowMenu
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.swipeUp
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
 import androidx.test.espresso.intent.Intents.intended
@@ -31,6 +33,8 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.azimolabs.conditionwatcher.ConditionWatcher
+import com.azimolabs.conditionwatcher.Instruction
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.TeamCityService
@@ -53,11 +57,12 @@ import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerVi
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.*
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.AllOf.allOf
-import org.junit.BeforeClass
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -92,17 +97,27 @@ class OverviewFragmentTest {
     @Spy
     val build: Build = Mocks.successBuild()
 
+    private val storage: SharedUserStorage
+        get() {
+            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            return app.appInjector.sharedUserStorage()
+        }
+
     companion object {
 
         private const val CANCELED_TIME_STAMP = "20161223T151154+0300"
         private const val USER_NAME = "john.117"
         private const val NAME = "John one one seven"
         private const val BUILD_TYPE_NAME = "name"
+    }
 
-        @BeforeClass
-        fun disableOnboarding() {
-            TestUtils.disableOnboarding()
-        }
+    @Before
+    fun disableOnboarding() {
+        TestUtils.disableOnboarding()
+        val storage = storage
+        storage.clearAll()
+        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+
     }
 
     @Test
@@ -616,6 +631,46 @@ class OverviewFragmentTest {
 
         // Check buid list filter is applied
         verify(teamCityService).listBuildTypes(eq("projectId"))
+    }
+
+    @Test
+    fun testUserCanSeeSuccessRestartBuildOnboardingForSuccessBuild() {
+        // Prepare mocks
+        TestUtils.enableOnboarding()
+        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "No onboarding view is opened"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(withId(R.id.material_target_prompt_view)).check(matches(isDisplayed()))
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
+
+        openContextualActionModeOverflowMenu()
+
+        onView(withId(R.id.material_target_prompt_view)).check(doesNotExist())
     }
 }
 
