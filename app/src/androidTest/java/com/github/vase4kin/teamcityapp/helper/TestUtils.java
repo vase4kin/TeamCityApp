@@ -35,6 +35,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl.PREF_NAME;
 import static org.hamcrest.core.Is.is;
 
 /**
@@ -131,5 +132,10 @@ public class TestUtils {
         onboardingManager.saveRestartBuildPromptShown();
         onboardingManager.saveAddFavPromptShown();
         onboardingManager.saveFavPromptShown();
+    }
+
+    public static void enableOnboarding() {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit();
     }
 }

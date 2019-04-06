@@ -19,12 +19,15 @@ package com.github.vase4kin.teamcityapp.onboarding;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.VisibleForTesting;
+
 /**
  * Impl of {@link OnboardingManager}
  */
 public class OnboardingManagerImpl implements OnboardingManager {
 
-    private final static String PREF_NAME = "OnboardingPref";
+    @VisibleForTesting
+    public final static String PREF_NAME = "OnboardingPref";
     private final static String KEY_NAV_DRAWER = "NavDrawer";
     private final static String KEY_RUN_BUILD = "RunBuild";
     private final static String KEY_FILTER_BUILDS = "FilterBuilds";
