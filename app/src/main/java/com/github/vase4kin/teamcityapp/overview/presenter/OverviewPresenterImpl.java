@@ -37,20 +37,20 @@ public class OverviewPresenterImpl implements OverviewPresenter,
         OverviewView.ViewListener,
         OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<BuildDetails> {
 
-    private OverviewView mView;
-    private OverViewInteractor mInteractor;
-    private OverviewTracker mTracker;
-    private OnboardingManager mOnboardingManager;
+    private final OverviewView view;
+    private final OverViewInteractor interactor;
+    private final OverviewTracker tracker;
+    private final OnboardingManager onboardingManager;
 
     @Inject
     OverviewPresenterImpl(OverviewView view,
                           OverViewInteractor interactor,
                           OverviewTracker tracker,
                           OnboardingManager onboardingManager) {
-        this.mView = view;
-        this.mInteractor = interactor;
-        this.mTracker = tracker;
-        this.mOnboardingManager = onboardingManager;
+        this.view = view;
+        this.interactor = interactor;
+        this.tracker = tracker;
+        this.onboardingManager = onboardingManager;
     }
 
     /**
@@ -58,10 +58,10 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onCreate() {
-        mView.initViews(this);
-        mInteractor.setListener(this);
-        mView.showSkeletonView();
-        BuildDetails buildDetails = mInteractor.getBuildDetails();
+        view.initViews(this);
+        interactor.setListener(this);
+        view.showSkeletonView();
+        BuildDetails buildDetails = interactor.getBuildDetails();
         loadBuildDetails(buildDetails.isRunning());
     }
 
@@ -71,14 +71,14 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      * @param update - Force cache update
      */
     private void loadBuildDetails(boolean update) {
-        String buildHref = mInteractor.getBuildDetails().getHref();
-        mInteractor.load(buildHref, this, update);
+        String buildHref = interactor.getBuildDetails().getHref();
+        interactor.load(buildHref, this, update);
     }
 
     @Override
     public void onDestroy() {
-        mView.unbindViews();
-        mInteractor.unsubscribe();
+        view.unbindViews();
+        interactor.unsubscribe();
     }
 
     /**
@@ -86,7 +86,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onStart() {
-        mInteractor.subscribeToEventBusEvents();
+        interactor.subscribeToEventBusEvents();
     }
 
     /**
@@ -94,7 +94,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onStop() {
-        mInteractor.unsubsribeFromEventBusEvents();
+        interactor.unsubsribeFromEventBusEvents();
     }
 
     /**
@@ -102,28 +102,13 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onResume() {
-        BuildDetails buildDetails = mInteractor.getBuildDetails();
-        if (buildDetails.isFinished() && !mOnboardingManager.isRestartBuildPromptShown()) {
-            mView.showRestartBuildPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    mOnboardingManager.saveRestartBuildPromptShown();
-                }
-            });
-        } else if (buildDetails.isRunning() && !mOnboardingManager.isStopBuildPromptShown()) {
-            mView.showStopBuildPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    mOnboardingManager.saveStopBuildPromptShown();
-                }
-            });
-        } else if (buildDetails.isQueued() && !mOnboardingManager.isRemoveBuildFromQueuePromptShown()) {
-            mView.showRemoveBuildFromQueuePrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    mOnboardingManager.saveRemoveBuildFromQueuePromptShown();
-                }
-            });
+        BuildDetails buildDetails = interactor.getBuildDetails();
+        if (buildDetails.isFinished() && !onboardingManager.isRestartBuildPromptShown()) {
+            view.showRestartBuildPrompt(onboardingManager::saveRestartBuildPromptShown);
+        } else if (buildDetails.isRunning() && !onboardingManager.isStopBuildPromptShown()) {
+            view.showStopBuildPrompt(onboardingManager::saveStopBuildPromptShown);
+        } else if (buildDetails.isQueued() && !onboardingManager.isRemoveBuildFromQueuePromptShown()) {
+            view.showRemoveBuildFromQueuePrompt(onboardingManager::saveRemoveBuildFromQueuePromptShown);
         }
     }
 
@@ -132,13 +117,13 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        BuildDetails buildDetails = mInteractor.getBuildDetails();
+        BuildDetails buildDetails = interactor.getBuildDetails();
         if (buildDetails.isRunning()) {
-            mView.createStopBuildOptionsMenu(menu, inflater);
+            view.createStopBuildOptionsMenu(menu, inflater);
         } else if (buildDetails.isQueued()) {
-            mView.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
+            view.createRemoveBuildFromQueueOptionsMenu(menu, inflater);
         } else {
-            mView.createDefaultOptionsMenu(menu, inflater);
+            view.createDefaultOptionsMenu(menu, inflater);
         }
     }
 
@@ -154,7 +139,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return mView.onOptionsItemSelected(item);
+        return view.onOptionsItemSelected(item);
     }
 
     /**
@@ -162,8 +147,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onDataRefreshEvent() {
-        mView.showRefreshingProgress();
-        mView.hideErrorView();
+        view.showRefreshingProgress();
+        view.hideErrorView();
         loadBuildDetails(true);
         // TODO: Disable cancel build menu when data is updated and build has finished status
     }
@@ -173,8 +158,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onNavigateToBuildListEvent(String branchName) {
-        mInteractor.postStartBuildListActivityFilteredByBranchEvent(branchName);
-        mTracker.trackUserWantsToSeeBuildListFilteredByBranch();
+        interactor.postStartBuildListActivityFilteredByBranchEvent(branchName);
+        tracker.trackUserWantsToSeeBuildListFilteredByBranch();
     }
 
     /**
@@ -182,8 +167,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onNavigateToBuildListEvent() {
-        mInteractor.postStartBuildListActivityEvent();
-        mTracker.trackUserOpensBuildType();
+        interactor.postStartBuildListActivityEvent();
+        tracker.trackUserOpensBuildType();
     }
 
     /**
@@ -191,8 +176,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onNavigateToProjectEvent() {
-        mInteractor.postStartProjectActivityEvent();
-        mTracker.trackUserOpensProject();
+        interactor.postStartProjectActivityEvent();
+        tracker.trackUserOpensProject();
     }
 
     /**
@@ -200,8 +185,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onCancelBuildContextMenuClick() {
-        mInteractor.postStopBuildEvent();
-        mTracker.trackUserClickedCancelBuildOption();
+        interactor.postStopBuildEvent();
+        tracker.trackUserClickedCancelBuildOption();
     }
 
     /**
@@ -209,8 +194,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onShareButtonClick() {
-        mInteractor.postShareBuildInfoEvent();
-        mTracker.trackUserSharedBuild();
+        interactor.postShareBuildInfoEvent();
+        tracker.trackUserSharedBuild();
     }
 
     /**
@@ -218,8 +203,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onRestartBuildButtonClick() {
-        mInteractor.postRestartBuildEvent();
-        mTracker.trackUserRestartedBuild();
+        interactor.postRestartBuildEvent();
+        tracker.trackUserRestartedBuild();
     }
 
     /**
@@ -227,7 +212,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onBranchCardClick(String branch) {
-        mView.showBranchCardBottomSheetDialog(branch);
+        view.showBranchCardBottomSheetDialog(branch);
     }
 
     /**
@@ -235,7 +220,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onBuildTypeCardClick(String value) {
-        mView.showBuildTypeCardBottomSheetDialog(value);
+        view.showBuildTypeCardBottomSheetDialog(value);
     }
 
     /**
@@ -243,7 +228,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onProjectCardClick(String value) {
-        mView.showProjectCardBottomSheetDialog(value);
+        view.showProjectCardBottomSheetDialog(value);
     }
 
     /**
@@ -251,7 +236,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onCardClick(String header, String value) {
-        mView.showDefaultCardBottomSheetDialog(header, value);
+        view.showDefaultCardBottomSheetDialog(header, value);
     }
 
     /**
@@ -259,7 +244,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onBottomSheetDismiss() {
-        mInteractor.postFABVisibleEvent();
+        interactor.postFABVisibleEvent();
     }
 
     /**
@@ -267,7 +252,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onBottomSheetShow() {
-        mInteractor.postFABGoneEvent();
+        interactor.postFABGoneEvent();
     }
 
     /**
@@ -275,7 +260,7 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onRefresh() {
-        mView.hideErrorView();
+        view.hideErrorView();
         loadBuildDetails(true);
     }
 
@@ -284,8 +269,8 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onRetry() {
-        mView.hideErrorView();
-        mView.showRefreshingProgress();
+        view.hideErrorView();
+        view.showRefreshingProgress();
         loadBuildDetails(true);
     }
 
@@ -294,90 +279,90 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onSuccess(BuildDetails buildDetails) {
-        mView.hideCards();
-        mView.hideSkeletonView();
-        mView.hideRefreshingProgress();
+        view.hideCards();
+        view.hideSkeletonView();
+        view.hideRefreshingProgress();
         // Status
         String statusIcon = buildDetails.getStatusIcon();
         String statusText = buildDetails.getStatusText();
         if (buildDetails.isQueued()) {
-            mView.addWaitReasonStatusCard(statusIcon, statusText);
+            view.addWaitReasonStatusCard(statusIcon, statusText);
         } else {
-            mView.addResultStatusCard(statusIcon, statusText);
+            view.addResultStatusCard(statusIcon, statusText);
         }
         // Cancellation info
         if (buildDetails.hasCancellationInfo()) {
             // Cancelled by user
             if (buildDetails.hasUserInfoWhoCancelledBuild()) {
                 String userName = buildDetails.getUserNameWhoCancelledBuild();
-                mView.addCancelledByCard(statusIcon, userName);
+                view.addCancelledByCard(statusIcon, userName);
             }
             // Cancellation time
             String cancellationTime = buildDetails.getCancellationTime();
-            mView.addCancellationTimeCard(cancellationTime);
+            view.addCancellationTimeCard(cancellationTime);
         }
         // Time
         if (buildDetails.isRunning()) {
             String startTime = buildDetails.getStartDate();
-            mView.addTimeCard(startTime);
+            view.addTimeCard(startTime);
         } else if (buildDetails.isQueued()) {
             String queuedTime = buildDetails.getQueuedDate();
-            mView.addQueuedTimeCard(queuedTime);
+            view.addQueuedTimeCard(queuedTime);
         } else {
             String finishTime = buildDetails.getFinishTime();
-            mView.addTimeCard(finishTime);
+            view.addTimeCard(finishTime);
         }
         // Estimated start time
         if (buildDetails.isQueued() && !TextUtils.isEmpty(buildDetails.getEstimatedStartTime())) {
             String estimatedStartTime = buildDetails.getEstimatedStartTime();
-            mView.addEstimatedTimeToStartCard(estimatedStartTime);
+            view.addEstimatedTimeToStartCard(estimatedStartTime);
         }
         // Branch
         if (!TextUtils.isEmpty(buildDetails.getBranchName())) {
             String branchName = buildDetails.getBranchName();
-            mView.addBranchCard(branchName);
+            view.addBranchCard(branchName);
         }
         // Agent
         if (buildDetails.hasAgentInfo()) {
             String agentName = buildDetails.getAgentName();
-            mView.addAgentCard(agentName);
+            view.addAgentCard(agentName);
         }
         // Triggered by
         if (buildDetails.isTriggeredByVcs()) {
             String vcsName = buildDetails.getTriggeredDetails();
-            mView.addTriggeredByCard(vcsName);
+            view.addTriggeredByCard(vcsName);
         } else if (buildDetails.isTriggeredByUnknown()) {
             String unknownConfigurationInfo = buildDetails.getTriggeredDetails();
-            mView.addTriggeredByCard(unknownConfigurationInfo);
+            view.addTriggeredByCard(unknownConfigurationInfo);
         } else if (buildDetails.isTriggeredByUser()) {
             String triggeredUserNameInfo = buildDetails.getUserNameOfUserWhoTriggeredBuild();
-            mView.addTriggeredByCard(triggeredUserNameInfo);
+            view.addTriggeredByCard(triggeredUserNameInfo);
         } else if (buildDetails.isRestarted()) {
             String restartedUserInfo = buildDetails.getUserNameOfUserWhoTriggeredBuild();
-            mView.addRestartedByCard(restartedUserInfo);
+            view.addRestartedByCard(restartedUserInfo);
         } else if (buildDetails.isTriggeredByBuildType()) {
             String buildTypeName = buildDetails.getNameOfTriggeredBuildType();
-            mView.addTriggeredByCard(buildTypeName);
+            view.addTriggeredByCard(buildTypeName);
         } else {
-            mView.addTriggeredByUnknownTriggerTypeCard();
+            view.addTriggeredByUnknownTriggerTypeCard();
         }
 
         // Is personal build
         if (buildDetails.isPersonal()) {
             String userWhoTriggeredBuild = buildDetails.getUserNameOfUserWhoTriggeredBuild();
-            mView.addPersonalCard(userWhoTriggeredBuild);
+            view.addPersonalCard(userWhoTriggeredBuild);
         }
 
         // has build type info
         if (buildDetails.hasBuildTypeInfo()) {
             String buildTypeName = buildDetails.getBuildTypeName();
-            mView.addBuildTypeNameCard(buildTypeName);
+            view.addBuildTypeNameCard(buildTypeName);
             String projectName = buildDetails.getProjectName();
-            mView.addBuildTypeProjectNameCard(projectName);
+            view.addBuildTypeProjectNameCard(projectName);
         }
 
         // Show all added cards
-        mView.showCards();
+        view.showCards();
     }
 
     /**
@@ -385,9 +370,9 @@ public class OverviewPresenterImpl implements OverviewPresenter,
      */
     @Override
     public void onFail(String errorMessage) {
-        mView.hideCards();
-        mView.hideSkeletonView();
-        mView.hideRefreshingProgress();
-        mView.showErrorView();
+        view.hideCards();
+        view.hideSkeletonView();
+        view.hideRefreshingProgress();
+        view.showErrorView();
     }
 }
