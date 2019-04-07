@@ -48,8 +48,8 @@ allprojects {
 
 ext {
     // versions
-    versionCode = 56
-    versionName = "1.3.3.0"
+    versionCode = 57
+    versionName = "1.3.4.0"
 
     // sdk and tools
     minSdkVersion = 21
