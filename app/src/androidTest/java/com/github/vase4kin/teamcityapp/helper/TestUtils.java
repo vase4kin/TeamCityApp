@@ -35,6 +35,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl.PREF_NAME;
 import static org.hamcrest.core.Is.is;
 
 /**
@@ -54,6 +55,12 @@ public class TestUtils {
                 .check(matches(withToolbarTitle(is(title))));
     }
 
+    public static void matchToolbarSubTitle(
+            CharSequence title) {
+        onView(isAssignableFrom(Toolbar.class))
+                .check(matches(withToolbarSubTitle(is(title))));
+    }
+
     /**
      * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
      *
@@ -71,6 +78,22 @@ public class TestUtils {
             @Override
             public void describeTo(org.hamcrest.Description description) {
                 description.appendText("with toolbar title: ");
+                textMatcher.describeTo(description);
+            }
+        };
+    }
+
+    private static Matcher<Object> withToolbarSubTitle(
+            final Matcher<CharSequence> textMatcher) {
+        return new BoundedMatcher<Object, Toolbar>(Toolbar.class) {
+            @Override
+            public boolean matchesSafely(Toolbar toolbar) {
+                return textMatcher.matches(toolbar.getSubtitle());
+            }
+
+            @Override
+            public void describeTo(org.hamcrest.Description description) {
+                description.appendText("with toolbar subtitle: ");
                 textMatcher.describeTo(description);
             }
         };
@@ -109,5 +132,10 @@ public class TestUtils {
         onboardingManager.saveRestartBuildPromptShown();
         onboardingManager.saveAddFavPromptShown();
         onboardingManager.saveFavPromptShown();
+    }
+
+    public static void enableOnboarding() {
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit();
     }
 }

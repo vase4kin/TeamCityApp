@@ -70,27 +70,14 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
         mUnbinder = ButterKnife.bind(this, mView);
 
         mErrorView.setImageTint(Color.LTGRAY);
-        mErrorView.setRetryListener(new ErrorView.RetryListener() {
-            @Override
-            public void onRetry() {
-                listener.loadBuildLog();
-            }
-        });
-        mAuthButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onAuthButtonClick();
-            }
-        });
-        mOpenBuildLogInBrowserButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onOpenBuildLogInBrowser();
-            }
-        });
+        mErrorView.setRetryListener(listener::loadBuildLog);
+        mAuthButton.setOnClickListener(v -> listener.onAuthButtonClick());
+        mOpenBuildLogInBrowserButton.setOnClickListener(v -> listener.onOpenBuildLogInBrowser());
 
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
+        mWebView.getSettings().setBuiltInZoomControls(true);
+        mWebView.getSettings().setDisplayZoomControls(false);
         client.setListener(this);
 
         mWebView.setWebViewClient(client);
@@ -191,11 +178,7 @@ public class BuildLogViewImpl implements BuildLogView, OnBuildLogViewListener {
      */
     @Override
     public void evaluateScript(String script) {
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            mWebView.evaluateJavascript(script, null);
-        } else {
-            mWebView.loadUrl("javascript:" + script + "void(0);");
-        }
+        mWebView.evaluateJavascript(script, null);
     }
 
 }

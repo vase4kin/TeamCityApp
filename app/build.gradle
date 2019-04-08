@@ -227,7 +227,7 @@ dependencies {
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$rootProject.dexMakerVersion"
     androidTestImplementation 'com.squareup.spoon:spoon-client:1.7.1'
     androidTestImplementation 'com.jraska:falcon-spoon-compat:1.0.4'
-    androidTestImplementation 'com.github.fabioCollini:DaggerMock:0.7.0'
+    androidTestImplementation 'com.github.fabioCollini:DaggerMock:0.8.5'
     androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
     // Resolve conflits between apks
     androidTestImplementation 'com.google.android.material:material:1.0.0'
