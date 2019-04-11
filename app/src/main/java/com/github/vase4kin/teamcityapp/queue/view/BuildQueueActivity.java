@@ -56,7 +56,7 @@ public class BuildQueueActivity extends AppCompatActivity {
 
         // Injecting presenter
         DaggerQueuedListComponent.builder()
-                .drawerModule(new DrawerModule(this, false, DrawerView.BUILD_QUEUE))
+                .drawerModule(new DrawerModule(this, true, DrawerView.BUILD_QUEUE))
                 .queuedListModule(new QueuedListModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()

@@ -50,7 +50,7 @@ public class AboutActivity extends AppCompatActivity {
 
         // Injecting DrawerPresenterImpl to activity
         DaggerAboutPageComponent.builder()
-                .drawerModule(new DrawerModule(this, false, DrawerView.ABOUT))
+                .drawerModule(new DrawerModule(this, true, DrawerView.ABOUT))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
                 .inject(this);
