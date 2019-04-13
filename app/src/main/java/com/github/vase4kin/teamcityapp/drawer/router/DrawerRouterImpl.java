@@ -95,6 +95,6 @@ public class DrawerRouterImpl implements DrawerRouter {
 
     @Override
     public void startFavoritesActivity() {
-        FavoritesActivity.start(mActivity);
+        FavoritesActivity.Companion.start(mActivity);
     }
 }

@@ -66,6 +66,6 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openFavorites() {
-        FavoritesActivity.start(mActivity);
+        FavoritesActivity.Companion.start(mActivity);
     }
 }

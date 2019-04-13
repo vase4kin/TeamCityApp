@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp;
 
+import android.app.Activity;
 import android.app.Application;
 import android.text.TextUtils;
 
@@ -34,15 +35,23 @@ import com.joanzapata.iconify.fonts.FontAwesomeModule;
 import com.joanzapata.iconify.fonts.MaterialCommunityModule;
 import com.joanzapata.iconify.fonts.MaterialModule;
 
+import javax.inject.Inject;
+
+import dagger.android.AndroidInjector;
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 import io.fabric.sdk.android.Fabric;
 
 /**
  * TeamCityApplication class
  */
-public class TeamCityApplication extends Application {
+public class TeamCityApplication extends Application implements HasActivityInjector {
 
-    private RestApiComponent mRestApiInjector;
-    private AppComponent mAppInjector;
+    @Inject
+    DispatchingAndroidInjector<Activity> activityInjector;
+
+    private RestApiComponent restApiInjector;
+    private AppComponent appInjector;
 
     @Override
     public void onCreate() {
@@ -62,14 +71,15 @@ public class TeamCityApplication extends Application {
         //#=============== Dagger ================#//
         // app injector init
         // net injector init
-        mAppInjector = DaggerAppComponent.builder()
+        appInjector = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
         //Get default url
-        String mBaseUrl = mAppInjector.sharedUserStorage().getActiveUser().getTeamcityUrl();
+        String baseUrl = appInjector.sharedUserStorage().getActiveUser().getTeamcityUrl();
         // Rest api init
-        if (!TextUtils.isEmpty(mBaseUrl)) {
-            buildRestApiInjectorWithBaseUrl(mBaseUrl);
+        if (!TextUtils.isEmpty(baseUrl)) {
+            buildRestApiInjectorWithBaseUrl(baseUrl);
+            restApiInjector.inject(this);
         }
     }
 
@@ -77,9 +87,9 @@ public class TeamCityApplication extends Application {
      * Build rest api injector with provided url
      */
     public void buildRestApiInjectorWithBaseUrl(@NonNull String baseUrl) {
-        mRestApiInjector = DaggerRestApiComponent.builder()
+        restApiInjector = DaggerRestApiComponent.builder()
                 .restApiModule(new RestApiModule(baseUrl))
-                .appComponent(mAppInjector)
+                .appComponent(appInjector)
                 .build();
     }
 
@@ -87,7 +97,7 @@ public class TeamCityApplication extends Application {
      * @return instance of RestApiInjector
      */
     public RestApiComponent getRestApiInjector() {
-        return mRestApiInjector;
+        return restApiInjector;
     }
 
     /**
@@ -95,14 +105,14 @@ public class TeamCityApplication extends Application {
      */
     @VisibleForTesting
     public void setRestApiInjector(RestApiComponent mRestApiComponent) {
-        this.mRestApiInjector = mRestApiComponent;
+        this.restApiInjector = mRestApiComponent;
     }
 
     /**
      * @return instance of AppInjector
      */
     public AppComponent getAppInjector() {
-        return mAppInjector;
+        return appInjector;
     }
 
     /**
@@ -110,6 +120,11 @@ public class TeamCityApplication extends Application {
      */
     @VisibleForTesting
     public void setAppInjector(AppComponent mAppComponent) {
-        this.mAppInjector = mAppComponent;
+        this.appInjector = mAppComponent;
+    }
+
+    @Override
+    public AndroidInjector<Activity> activityInjector() {
+        return activityInjector;
     }
 }
