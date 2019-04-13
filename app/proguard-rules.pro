@@ -182,3 +182,5 @@
   void set*(***);
   *** get*();
 }
+
+-keep class javax.inject.** { *; }
