@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.favorites.dagger
 
 import android.content.Context
 import android.view.View
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
@@ -41,7 +40,6 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFacto
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
-
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey

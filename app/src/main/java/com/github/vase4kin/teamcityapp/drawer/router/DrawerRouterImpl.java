@@ -90,7 +90,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startAboutActivity() {
-        AboutActivity.start(mActivity);
+        AboutActivity.Companion.start(mActivity);
     }
 
     @Override

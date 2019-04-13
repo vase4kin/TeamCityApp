@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.favorites.dagger
+package com.github.vase4kin.teamcityapp.about.dagger
 
+import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.drawer.dagger.BaseDrawerModule
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouterImpl
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
 import dagger.Module
 import dagger.Provides
 
 @Module(includes = [BaseDrawerModule::class])
-class FavoritesDrawerModule {
+class AboutDrawerModule {
 
     @Provides
-    fun providesDrawerView(activity: FavoritesActivity): DrawerView {
-        return DrawerViewImpl(activity, DrawerView.FAVORITES, true)
+    fun providesDrawerView(activity: AboutActivity): DrawerView {
+        return DrawerViewImpl(activity, DrawerView.ABOUT, true)
     }
 
     @Provides
-    fun providesDrawerRouter(activity: FavoritesActivity): DrawerRouter {
+    fun providesDrawerRouter(activity: AboutActivity): DrawerRouter {
         return DrawerRouterImpl(activity)
     }
 }
