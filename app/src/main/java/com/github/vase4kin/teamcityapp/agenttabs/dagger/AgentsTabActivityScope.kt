@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about.dagger;
+package com.github.vase4kin.teamcityapp.agenttabs.dagger
 
-import javax.inject.Scope;
+import javax.inject.Scope
 
 @Scope
-public @interface AboutActivityScope {
-}
+annotation class AgentsTabActivityScope

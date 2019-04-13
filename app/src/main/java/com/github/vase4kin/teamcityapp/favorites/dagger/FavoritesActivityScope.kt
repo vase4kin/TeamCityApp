@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agenttabs.tracker;
+package com.github.vase4kin.teamcityapp.favorites.dagger
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import javax.inject.Scope
 
-/**
- * Tracker firebase impl
- */
-public class FirebaseAgentTabsViewTrackerImpl extends BaseFirebaseTracker implements AgentTabsViewTracker {
-
-    public FirebaseAgentTabsViewTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        super(firebaseAnalytics);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
-    }
-}
+@Scope
+annotation class FavoritesActivityScope

@@ -66,7 +66,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startAgentActivity() {
-        AgentTabsActivity.start(mActivity);
+        AgentTabsActivity.Companion.start(mActivity);
     }
 
     /**

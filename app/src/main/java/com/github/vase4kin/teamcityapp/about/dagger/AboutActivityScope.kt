@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.favorites.dagger;
+package com.github.vase4kin.teamcityapp.about.dagger
 
-import javax.inject.Scope;
+import javax.inject.Scope
 
 @Scope
-public @interface FavoritesActivityScope {
-}
+annotation class AboutActivityScope
