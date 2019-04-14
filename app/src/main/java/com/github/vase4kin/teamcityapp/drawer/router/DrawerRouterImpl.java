@@ -74,7 +74,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startBuildRunningActivity() {
-        RunningBuildsListActivity.start(mActivity);
+        RunningBuildsListActivity.Companion.start(mActivity);
     }
 
     /**

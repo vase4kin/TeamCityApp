@@ -9,10 +9,15 @@ import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityScope
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabDrawerModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabsModule
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity
+import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesActivityScope
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesDrawerModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesModule
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
+import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsActivityScope
+import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsDrawerModule
+import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsModule
+import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
@@ -41,4 +46,8 @@ abstract class ActivityBindingModule {
     @TestDetailsActivityScope
     @ContributesAndroidInjector(modules = [TestDetailsModule::class])
     abstract fun testDetailsActivity(): TestDetailsActivity
+
+    @RunningBuildsActivityScope
+    @ContributesAndroidInjector(modules = [RunningBuildsModule::class, RunningBuildsDrawerModule::class, BuildListAdapterModule::class])
+    abstract fun runningBuildsListActivity(): RunningBuildsListActivity
 }

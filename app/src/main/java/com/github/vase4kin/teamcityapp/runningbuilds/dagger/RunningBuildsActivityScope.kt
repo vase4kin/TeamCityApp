@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runningbuilds.view;
+package com.github.vase4kin.teamcityapp.runningbuilds.dagger
 
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
+import javax.inject.Scope
 
-/**
- * Custom view interactions for {@link com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity}
- */
-public interface RunningBuildListView extends BuildListView {
-
-    /**
-     * Update tool bar title with value
-     *
-     * @param count - value to update
-     */
-    void updateTitle(int count);
-}
+@Scope
+annotation class RunningBuildsActivityScope
