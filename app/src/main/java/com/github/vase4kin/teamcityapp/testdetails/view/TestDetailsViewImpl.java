@@ -23,14 +23,16 @@ import android.os.Build;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -59,8 +61,9 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
     private Activity mActivity;
     private StatusBarUtils mStatusBarUtils;
 
-    public TestDetailsViewImpl(Activity dialogFragment, StatusBarUtils statusBarUtils) {
-        this.mActivity = dialogFragment;
+    @Inject
+    public TestDetailsViewImpl(TestDetailsActivity activity, StatusBarUtils statusBarUtils) {
+        this.mActivity = activity;
         this.mStatusBarUtils = statusBarUtils;
     }
 
@@ -68,7 +71,7 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
      * {@inheritDoc}
      */
     @Override
-    public void initViews(ErrorView.RetryListener retryListener) {
+    public void initViews(@NonNull ErrorView.RetryListener retryListener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
         mErrorView.setRetryListener(retryListener);
         mErrorView.setImageTint(Color.LTGRAY);
@@ -95,12 +98,7 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
         mToolbar.setTitle(R.string.test_details_title);
         mToolbar.setNavigationIcon(
                 new IconDrawable(mActivity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize());
-        mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(new OnToolBarNavigationListener() {
-            @Override
-            public void onClick() {
-                finish();
-            }
-        }));
+        mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(() -> finish()));
         mToolbar.setBackgroundDrawable(new ColorDrawable(mActivity.getResources().getColor(R.color.failed_tool_bar_color)));
         mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_tool_bar_color);
     }
@@ -117,7 +115,7 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
      * {@inheritDoc}
      */
     @Override
-    public void showTestDetails(String testDetails) {
+    public void showTestDetails(@NonNull String testDetails) {
         mTestDetailsTextView.setVisibility(View.VISIBLE);
         mTestDetailsTextView.setText(testDetails);
     }
@@ -134,7 +132,7 @@ public class TestDetailsViewImpl implements TestDetailsView, OnActionModeListene
      * {@inheritDoc}
      */
     @Override
-    public void showRetryView(String errorMessage) {
+    public void showRetryView(@NonNull String errorMessage) {
         mErrorView.setVisibility(View.VISIBLE);
         mErrorView.setSubtitle(errorMessage);
     }

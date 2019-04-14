@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.tracker;
+package com.github.vase4kin.teamcityapp.testdetails.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 
-/**
- * Test details tracking class
- */
-public class FirebaseTestDetailsTrackerImpl extends BaseFirebaseTracker implements TestDetailsTracker {
 
-    public FirebaseTestDetailsTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        super(firebaseAnalytics);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+interface TestDetailsTracker : ViewTracker {
+    companion object {
+        /**
+         * Screen name
+         */
+        const val SCREEN_NAME = "screen_test_details"
     }
 }

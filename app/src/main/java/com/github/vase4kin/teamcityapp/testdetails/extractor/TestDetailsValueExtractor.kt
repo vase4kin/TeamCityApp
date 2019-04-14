@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.tracker;
-
-import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.ContentViewEvent;
-
-import io.fabric.sdk.android.Fabric;
+package com.github.vase4kin.teamcityapp.testdetails.extractor
 
 /**
- * Test details tracking class
+ * [com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity] bundle extractor
  */
-public class FabricTestDetailsViewTrackerImpl implements TestDetailsTracker {
+interface TestDetailsValueExtractor {
 
     /**
-     * {@inheritDoc}
+     * @return Test url
      */
-    @Override
-    public void trackView() {
-        if (!Fabric.isInitialized()) return;
-        Answers.getInstance().logContentView(new ContentViewEvent()
-                .putContentName(SCREEN_NAME));
-    }
+    val testUrl: String
 }

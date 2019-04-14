@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.tracker;
+package com.github.vase4kin.teamcityapp.testdetails.dagger
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
+import javax.inject.Scope
 
-import java.util.Set;
-
-/**
- * Tracker impl
- */
-public class TestDetailsTrackerImpl extends BaseViewTracker<TestDetailsTracker> implements TestDetailsTracker {
-
-    public TestDetailsTrackerImpl(Set<TestDetailsTracker> trackers) {
-        super(trackers);
-    }
-}
+@Scope
+annotation class TestDetailsActivityScope

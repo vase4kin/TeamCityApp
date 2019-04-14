@@ -14,58 +14,58 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.view;
+package com.github.vase4kin.teamcityapp.testdetails.view
 
-import tr.xip.errorview.ErrorView;
+import tr.xip.errorview.ErrorView
 
 /**
- * View to manage interactions of {@link TestDetailsActivity}
+ * View to manage interactions of [TestDetailsActivity]
  */
-public interface TestDetailsView {
+interface TestDetailsView {
 
     /**
      * Init views
      *
      * @param retryListener - Listener to handle on retry callback
      */
-    void initViews(ErrorView.RetryListener retryListener);
+    fun initViews(retryListener: ErrorView.RetryListener)
 
     /**
      * Show loading progress
      */
-    void showProgress();
+    fun showProgress()
 
     /**
      * Hide loading progress
      */
-    void hideProgress();
+    fun hideProgress()
 
     /**
      * Set views after loading
      *
      * @param testDetails - Test details data
      */
-    void showTestDetails(String testDetails);
+    fun showTestDetails(testDetails: String)
 
     /**
      * Show empty data message if no test details is available
      */
-    void showEmptyData();
+    fun showEmptyData()
 
     /**
      * Show error view
      *
      * @param errorMessage - Error message to show
      */
-    void showRetryView(String errorMessage);
+    fun showRetryView(errorMessage: String)
 
     /**
      * Unbind views
      */
-    void unBindViews();
+    fun unBindViews()
 
     /**
      * Finish activity
      */
-    void finish();
+    fun finish()
 }

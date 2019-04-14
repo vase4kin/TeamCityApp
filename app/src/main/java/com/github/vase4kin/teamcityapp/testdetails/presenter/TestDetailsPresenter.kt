@@ -14,15 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.tracker;
+package com.github.vase4kin.teamcityapp.testdetails.presenter
 
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
-
-
-public interface TestDetailsTracker extends ViewTracker {
+/**
+ * Presenter to manage logic of [com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity]
+ */
+interface TestDetailsPresenter {
 
     /**
-     * Screen name
+     * On activity create
      */
-    String SCREEN_NAME = "screen_test_details";
+    fun onCreate()
+
+    /**
+     * On activity destroy
+     */
+    fun onDestroy()
+
+    /**
+     * On activity on back button pressed
+     */
+    fun onBackPressed()
+
+    /**
+     * On activity resume
+     */
+    fun onResume()
 }

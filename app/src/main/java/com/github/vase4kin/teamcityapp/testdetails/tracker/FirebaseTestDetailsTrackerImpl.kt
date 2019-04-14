@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.presenter;
+package com.github.vase4kin.teamcityapp.testdetails.tracker
+
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
+import com.google.firebase.analytics.FirebaseAnalytics
+
+import javax.inject.Inject
 
 /**
- * Presenter to manage logic of {@link com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity}
+ * Test details tracking class
  */
-public interface TestDetailsPresenter {
+class FirebaseTestDetailsTrackerImpl @Inject constructor(
+        firebaseAnalytics: FirebaseAnalytics
+) : BaseFirebaseTracker(firebaseAnalytics), TestDetailsTracker {
 
     /**
-     * On activity create
+     * {@inheritDoc}
      */
-    void onCreate();
-
-    /**
-     * On activity destroy
-     */
-    void onDestroy();
-
-    /**
-     * On activity on back button pressed
-     */
-    void onBackPressed();
-
-    /**
-     * On activity resume
-     */
-    void onResume();
+    override fun trackView() {
+        mFirebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
+    }
 }

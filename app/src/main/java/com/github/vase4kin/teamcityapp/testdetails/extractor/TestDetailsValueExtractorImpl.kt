@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.router;
+package com.github.vase4kin.teamcityapp.testdetails.extractor
 
-import android.app.Activity;
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl
+import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
 
-import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity;
+import javax.inject.Inject
 
 /**
- * Impl of {@link TestsRouter}
+ * Impl of [TestDetailsValueExtractor]
  */
-public class TestsRouterImpl implements TestsRouter {
-
-    private Activity mActivity;
-
-    public TestsRouterImpl(Activity mActivity) {
-        this.mActivity = mActivity;
-    }
+class TestDetailsValueExtractorImpl @Inject constructor(
+        activity: TestDetailsActivity) : BaseValueExtractorImpl(activity.intent.extras!!), TestDetailsValueExtractor {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void openFailedTest(String url) {
-        TestDetailsActivity.Companion.openFailedTest(url, mActivity);
-    }
+    override val testUrl: String
+        get() = mBundle.getString(BundleExtractorValues.TEST_URL) ?: ""
 }

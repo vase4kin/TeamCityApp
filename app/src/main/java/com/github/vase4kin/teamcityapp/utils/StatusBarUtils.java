@@ -24,10 +24,16 @@ import android.view.WindowManager;
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
 
+import javax.inject.Inject;
+
 /**
  * Status bar utils class
  */
 public class StatusBarUtils {
+
+    @Inject
+    public StatusBarUtils() {
+    }
 
     /**
      * Changing the status bar color
