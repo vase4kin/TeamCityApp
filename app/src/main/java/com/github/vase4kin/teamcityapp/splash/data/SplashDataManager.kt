@@ -14,26 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.view;
-
-import android.app.Activity;
+package com.github.vase4kin.teamcityapp.splash.data
 
 /**
- * impl of {@link SplashView}
+ * Data manager for [com.github.vase4kin.teamcityapp.splash.view.SplashActivity]
  */
-public class SplashViewImpl implements SplashView {
-
-    private Activity mActivity;
-
-    public SplashViewImpl(Activity mActivity) {
-        this.mActivity = mActivity;
-    }
+interface SplashDataManager {
 
     /**
-     * {@inheritDoc}
+     * Does app have user accounts?
      */
-    @Override
-    public void close() {
-        mActivity.finish();
-    }
+    fun hasUserAccounts(): Boolean
 }

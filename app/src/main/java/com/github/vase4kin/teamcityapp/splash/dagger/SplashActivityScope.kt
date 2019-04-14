@@ -14,26 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.data;
+package com.github.vase4kin.teamcityapp.splash.dagger
 
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import javax.inject.Scope
 
-/**
- * impl of {@link SplashDataManager}
- */
-public class SplashDataManagerImpl implements SplashDataManager {
-
-    private SharedUserStorage mSharedUserStorage;
-
-    public SplashDataManagerImpl(SharedUserStorage sharedUserStorage) {
-        this.mSharedUserStorage = sharedUserStorage;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean hasUserAccounts() {
-        return mSharedUserStorage.hasUserAccounts();
-    }
-}
+@Scope
+annotation class SplashActivityScope

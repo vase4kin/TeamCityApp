@@ -74,6 +74,7 @@ public class TeamCityApplication extends Application implements HasActivityInjec
         appInjector = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
                 .build();
+        appInjector.inject(this);
         //Get default url
         String baseUrl = appInjector.sharedUserStorage().getActiveUser().getTeamcityUrl();
         // Rest api init

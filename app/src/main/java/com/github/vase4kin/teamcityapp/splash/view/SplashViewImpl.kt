@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.router;
+package com.github.vase4kin.teamcityapp.splash.view
+
+import javax.inject.Inject
 
 /**
- * Router to handle {@link com.github.vase4kin.teamcityapp.splash.view.SplashActivity} navigation
+ * impl of [SplashView]
  */
-public interface SplashRouter {
+class SplashViewImpl @Inject constructor(private val activity: SplashActivity) : SplashView {
 
     /**
-     * Open login page {@link com.github.vase4kin.teamcityapp.login.view.LoginActivity}
+     * {@inheritDoc}
      */
-    void openLoginPage();
-
-    /**
-     * Open root projects activity {@link com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity}
-     */
-    void openProjectsRootPage();
+    override fun close() {
+        activity.finish()
+    }
 }

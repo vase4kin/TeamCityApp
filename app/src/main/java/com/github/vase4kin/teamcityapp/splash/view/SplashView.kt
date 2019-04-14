@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.dagger;
+package com.github.vase4kin.teamcityapp.splash.view
 
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.splash.view.SplashActivity;
+/**
+ * View interactions for [SplashActivity]
+ */
+interface SplashView {
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = AppComponent.class, modules = SplashModule.class)
-public interface SplashComponent {
-
-    void inject(SplashActivity splashActivity);
+    /**
+     * Close activity
+     */
+    fun close()
 }

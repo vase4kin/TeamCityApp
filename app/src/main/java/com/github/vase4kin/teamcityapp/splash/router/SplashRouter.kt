@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.view;
+package com.github.vase4kin.teamcityapp.splash.router
 
 /**
- * View interactions for {@link SplashActivity}
+ * Router to handle [com.github.vase4kin.teamcityapp.splash.view.SplashActivity] navigation
  */
-public interface SplashView {
+interface SplashRouter {
 
     /**
-     * Close activity
+     * Open login page [com.github.vase4kin.teamcityapp.login.view.LoginActivity]
      */
-    void close();
+    fun openLoginPage()
+
+    /**
+     * Open root projects activity [com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity]
+     */
+    fun openProjectsRootPage()
 }

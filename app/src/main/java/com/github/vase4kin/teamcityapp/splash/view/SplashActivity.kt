@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.data;
+package com.github.vase4kin.teamcityapp.splash.view
+
+import android.os.Bundle
+import com.github.vase4kin.teamcityapp.splash.presenter.SplashPresenterImpl
+import dagger.android.support.DaggerAppCompatActivity
+import javax.inject.Inject
 
 /**
- * Data manager for {@link com.github.vase4kin.teamcityapp.splash.view.SplashActivity}
+ * Activity to handle splash screen
  */
-public interface SplashDataManager {
+class SplashActivity : DaggerAppCompatActivity() {
 
-    /**
-     * Does app have user accounts?
-     */
-    boolean hasUserAccounts();
+    @Inject
+    lateinit var presenter: SplashPresenterImpl
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.onCreate()
+    }
 }

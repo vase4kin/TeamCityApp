@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.presenter;
+package com.github.vase4kin.teamcityapp.splash.presenter
 
 /**
- * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.splash.view.SplashActivity}
+ * Presenter to handle logic of [com.github.vase4kin.teamcityapp.splash.view.SplashActivity]
  */
-public interface SplashPresenter {
+interface SplashPresenter {
 
     /**
      * On activity create
      */
-    void onCreate();
+    fun onCreate()
 }

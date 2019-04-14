@@ -18,7 +18,9 @@ package com.github.vase4kin.teamcityapp.dagger.components;
 
 import android.content.Context;
 
+import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
+import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.remote.RemoteService;
@@ -31,6 +33,8 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import dagger.android.AndroidInjectionModule;
+import dagger.android.AndroidInjector;
 import io.rx_cache2.internal.RxCache;
 import okhttp3.OkHttpClient;
 
@@ -39,8 +43,8 @@ import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BA
 import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE;
 
 @Singleton
-@Component(modules = AppModule.class)
-public interface AppComponent {
+@Component(modules = {AppModule.class, AndroidInjectionModule.class, AppActivityBindingModule.class})
+public interface AppComponent extends AndroidInjector<TeamCityApplication> {
 
     Context context();
 

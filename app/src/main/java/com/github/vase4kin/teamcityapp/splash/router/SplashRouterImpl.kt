@@ -14,37 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.router;
+package com.github.vase4kin.teamcityapp.splash.router
 
-import android.app.Activity;
-
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.login.view.LoginActivity
+import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
+import com.github.vase4kin.teamcityapp.splash.view.SplashActivity
+import javax.inject.Inject
 
 /**
- * Impl of {@link SplashRouter}
+ * Impl of [SplashRouter]
  */
-public class SplashRouterImpl implements SplashRouter {
+class SplashRouterImpl @Inject constructor(private val activity: SplashActivity) : SplashRouter {
 
-    private Activity mActivity;
-
-    public SplashRouterImpl(Activity mActivity) {
-        this.mActivity = mActivity;
+    /**
+     * {@inheritDoc}
+     */
+    override fun openLoginPage() {
+        LoginActivity.start(activity)
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void openLoginPage() {
-        LoginActivity.start(mActivity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openProjectsRootPage() {
-        RootProjectsActivity.start(mActivity);
+    override fun openProjectsRootPage() {
+        RootProjectsActivity.start(activity)
     }
 }
