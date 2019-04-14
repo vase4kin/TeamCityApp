@@ -18,13 +18,13 @@ package com.github.vase4kin.teamcityapp.favorites.dagger;
 
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
+import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {FavoritesModule.class, CustomDrawerModule.class})
+@Component(dependencies = RestApiComponent.class, modules = {FavoritesModule.class, DrawerModule.class})
 public interface FavoritesComponent {
 
     void inject(FavoritesActivity activity);

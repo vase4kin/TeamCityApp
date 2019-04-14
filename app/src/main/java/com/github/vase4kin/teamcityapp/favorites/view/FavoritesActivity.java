@@ -26,7 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
-import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
+import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
@@ -63,7 +63,7 @@ public class FavoritesActivity extends AppCompatActivity {
 
         // Injecting presenters
         DaggerFavoritesComponent.builder()
-                .customDrawerModule(new CustomDrawerModule(this, false, DrawerView.FAVORITES))
+                .drawerModule(new DrawerModule(this, true, DrawerView.FAVORITES))
                 .favoritesModule(new FavoritesModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
