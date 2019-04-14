@@ -107,6 +107,7 @@ public class TeamCityApplication extends Application implements HasActivityInjec
     @VisibleForTesting
     public void setRestApiInjector(RestApiComponent mRestApiComponent) {
         this.restApiInjector = mRestApiComponent;
+        this.restApiInjector.inject(this);
     }
 
     /**
@@ -122,6 +123,7 @@ public class TeamCityApplication extends Application implements HasActivityInjec
     @VisibleForTesting
     public void setAppInjector(AppComponent mAppComponent) {
         this.appInjector = mAppComponent;
+        this.appInjector.inject(this);
     }
 
     @Override
