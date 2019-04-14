@@ -82,7 +82,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startQueuedBuildsActivity() {
-        BuildQueueActivity.start(mActivity);
+        BuildQueueActivity.Companion.start(mActivity);
     }
 
     /**
