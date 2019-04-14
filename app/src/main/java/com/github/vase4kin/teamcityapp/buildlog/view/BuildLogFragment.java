@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -49,14 +50,14 @@ public class BuildLogFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_build_log, container, false);
 
         // Injecting presenter
         DaggerBuildLogComponent.builder()
                 .buildLogModule(new BuildLogModule(view, this))
-                .appComponent(((TeamCityApplication) getActivity().getApplication()).getAppInjector())
+                .restApiComponent(((TeamCityApplication) getActivity().getApplication()).getRestApiInjector())
                 .build()
                 .inject(this);
 

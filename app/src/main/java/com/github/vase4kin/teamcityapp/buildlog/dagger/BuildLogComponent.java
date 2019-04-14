@@ -17,13 +17,13 @@
 package com.github.vase4kin.teamcityapp.buildlog.dagger;
 
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment;
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
+import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 
 import dagger.Component;
 
 @PresenterScope
-@Component(dependencies = AppComponent.class, modules = {BuildLogModule.class, BuildLogInteractorModule.class})
+@Component(dependencies = RestApiComponent.class, modules = {BuildLogModule.class, BuildLogInteractorModule.class})
 public interface BuildLogComponent {
 
     void inject(BuildLogFragment buildLogFragment);

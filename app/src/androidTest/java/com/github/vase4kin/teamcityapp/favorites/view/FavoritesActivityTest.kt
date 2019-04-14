@@ -61,14 +61,6 @@ class FavoritesActivityTest {
 
     @Rule
     @JvmField
-    val daggerRule = DaggerMockRule(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
-            .set { appComponent ->
-                val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-                app.appInjector = appComponent
-            }
-
-    @Rule
-    @JvmField
     val restComponentDaggerRule = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
             .set { restApiComponent ->
