@@ -59,7 +59,7 @@ public class AgentTabsActivity extends AppCompatActivity {
 
         // Injecting presenters
         DaggerAgentsTabsComponent.builder()
-                .drawerModule(new DrawerModule(this, false, DrawerView.AGENTS))
+                .drawerModule(new DrawerModule(this, true, DrawerView.AGENTS))
                 .agentsTabsModule(new AgentsTabsModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()

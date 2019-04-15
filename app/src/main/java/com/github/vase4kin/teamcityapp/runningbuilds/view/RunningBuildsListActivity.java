@@ -56,7 +56,7 @@ public class RunningBuildsListActivity extends AppCompatActivity {
 
         // Injecting presenter
         DaggerRunningListComponent.builder()
-                .drawerModule(new DrawerModule(this, false, DrawerView.RUNNING_BUILDS))
+                .drawerModule(new DrawerModule(this, true, DrawerView.RUNNING_BUILDS))
                 .runningListModule(new RunningListModule(view, this))
                 .restApiComponent(((TeamCityApplication) getApplication()).getRestApiInjector())
                 .build()
