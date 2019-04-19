@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agents.dagger;
+package com.github.vase4kin.teamcityapp.agents.dagger
 
-import com.github.vase4kin.teamcityapp.agents.view.BaseAgentListFragment;
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+import javax.inject.Scope
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {AgentModule.class})
-public interface AgentComponent {
-
-    void inject(BaseAgentListFragment baseAgentListFragment);
-}
+@Scope
+annotation class AgentFragmentScope

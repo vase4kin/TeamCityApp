@@ -22,7 +22,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.agents.view.BaseAgentListFragment;
+import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment;
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl;
 import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter;
 
@@ -37,8 +37,8 @@ public class AgentTabsViewModelImpl extends BaseTabsViewModelImpl {
 
     @Override
     public void addFragments(FragmentAdapter fragmentAdapter) {
-        fragmentAdapter.add(R.string.tab_connected, BaseAgentListFragment.newInstance(false));
-        fragmentAdapter.add(R.string.tab_disconnected, BaseAgentListFragment.newInstance(true));
+        fragmentAdapter.add(R.string.tab_connected, AgentListFragment.Companion.newInstance(false));
+        fragmentAdapter.add(R.string.tab_disconnected, AgentListFragment.Companion.newInstance(true));
     }
 
     @Override

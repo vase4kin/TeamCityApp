@@ -22,7 +22,7 @@ import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager
 
 /**
- * Data manager for [com.github.vase4kin.teamcityapp.agents.view.BaseAgentListFragment]
+ * Data manager for [com.github.vase4kin.teamcityapp.agents.view.AgentListFragment]
  */
 interface AgentsDataManager : BaseListRxDataManager<Agents, Agent> {
 
