@@ -78,6 +78,6 @@ public class BaseValueExtractorImplTest {
     @Test
     public void testIsBundleNull() throws Exception {
         mValueExtractor = new BaseValueExtractorImpl(null);
-        assertThat(mValueExtractor.isBundleNull(), is(true));
+        assertThat(mValueExtractor.isBundleNullOrEmpty(), is(true));
     }
 }

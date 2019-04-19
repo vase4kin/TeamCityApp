@@ -86,7 +86,7 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onBuildClick(Build build) {
-        if (mValueExtractor.isBundleNull()) {
+        if (mValueExtractor.isBundleNullOrEmpty()) {
             mRouter.openBuildPage(build, null);
         } else {
             String buildTypeName = mValueExtractor.getName();

@@ -76,7 +76,7 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      * {@inheritDoc}
      */
     @Override
-    public boolean isBundleNull() {
-        return mBundle == null;
+    public boolean isBundleNullOrEmpty() {
+        return mBundle == null || mBundle == Bundle.EMPTY;
     }
 }

@@ -78,7 +78,7 @@ class FavoritesModule {
                 return null
             }
 
-            override fun isBundleNull(): Boolean {
+            override fun isBundleNullOrEmpty(): Boolean {
                 return false
             }
         }
