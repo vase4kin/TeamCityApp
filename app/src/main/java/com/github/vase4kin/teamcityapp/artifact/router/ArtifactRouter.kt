@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.router;
+package com.github.vase4kin.teamcityapp.artifact.router
 
-import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 
-import java.io.File;
+import java.io.File
 
 /**
- * {@link com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment} router
+ * [com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment] router
  */
-public interface ArtifactRouter {
+interface ArtifactRouter {
 
     /**
      * Open artifact with proper activity
      *
      * @param file - Artifact file
      */
-    void startFileActivity(File file);
+    fun startFileActivity(file: File)
 
     /**
      * Open artifact file (navigate deeper)
@@ -38,12 +38,12 @@ public interface ArtifactRouter {
      * @param buildDetails - Build details
      * @param href         - Artifact file href
      */
-    void openArtifactFile(BuildDetails buildDetails, String href);
+    fun openArtifactFile(buildDetails: BuildDetails, href: String)
 
     /**
      * Unbind customs chrome tabs
      */
-    void unbindCustomsTabs();
+    fun unbindCustomsTabs()
 
     /**
      * Start the browser
@@ -51,5 +51,5 @@ public interface ArtifactRouter {
      * @param buildDetails - Build details
      * @param href         - Artifact file href
      */
-    void startBrowser(BuildDetails buildDetails, String href);
+    fun startBrowser(buildDetails: BuildDetails, href: String)
 }

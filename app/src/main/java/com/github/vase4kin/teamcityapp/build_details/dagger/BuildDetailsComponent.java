@@ -22,9 +22,12 @@ import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
 
 import dagger.Component;
+import dagger.android.AndroidInjectionModule;
 
 @PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {BuildDetailsModule.class, CustomDrawerModule.class})
+@Component(
+        dependencies = RestApiComponent.class,
+        modules = {BuildDetailsModule.class, CustomDrawerModule.class, AndroidInjectionModule.class, BuildDetailsActivityBindingModule.class})
 public interface BuildDetailsComponent {
 
     void inject(BuildDetailsActivity buildTabsActivity);

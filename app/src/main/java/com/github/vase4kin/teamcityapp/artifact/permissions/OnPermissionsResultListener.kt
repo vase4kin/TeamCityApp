@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.view;
+package com.github.vase4kin.teamcityapp.artifact.permissions
 
 /**
- * On permissions dialog listener
+ * On permissions request result listener
  */
-public interface OnPermissionsDialogListener {
+interface OnPermissionsResultListener {
 
     /**
-     * On allow callback
+     * Permissions are granted
      */
-    void onAllow();
+    fun onGranted()
+
+    /**
+     * Permissions are not granted
+     */
+    fun onDenied()
 }

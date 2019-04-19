@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.presenter;
-
-import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter;
+package com.github.vase4kin.teamcityapp.artifact.view
 
 /**
- * Handles logic of {@link com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment}
+ * On permissions dialog listener
  */
-public interface ArtifactPresenter extends BaseListPresenter {
+interface OnPermissionsDialogListener {
 
     /**
-     * Handle fragment on request permissions result
+     * On allow callback
      */
-    void onRequestPermissionsResult(int requestCode,
-                                    String permissions[], int[] grantResults);
+    fun onAllow()
 }

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.dagger;
+package com.github.vase4kin.teamcityapp.artifact.dagger
 
-import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment;
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+import javax.inject.Scope
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = ArtifactsModule.class)
-public interface ArtifactsComponent {
-
-    void inject(ArtifactListFragment artifactListFragment);
-}
+@Scope
+annotation class ArtifactFragmentScope

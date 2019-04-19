@@ -16,10 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.artifact.dagger;
 
-import android.view.View;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.Repository;
@@ -33,6 +30,7 @@ import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManagerImp
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouter;
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouterImpl;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactAdapter;
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewHolderFactory;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewImpl;
@@ -53,32 +51,24 @@ import dagger.multibindings.IntoMap;
 @Module
 public class ArtifactsModule {
 
-    private View mView;
-    private Fragment mFragment;
-
-    public ArtifactsModule(View mView, Fragment fragment) {
-        this.mView = mView;
-        this.mFragment = fragment;
-    }
-
     @Provides
     ArtifactDataManager providesArtifactDataManager(Repository repository, EventBus eventBus) {
         return new ArtifactDataManagerImpl(repository, eventBus);
     }
 
     @Provides
-    ArtifactView providesArtifactView(ArtifactAdapter adapter) {
-        return new ArtifactViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_artifacts, adapter);
+    ArtifactView providesArtifactView(ArtifactListFragment fragment, ArtifactAdapter adapter) {
+        return new ArtifactViewImpl(fragment.getView(), fragment.getActivity(), R.string.empty_list_message_artifacts, adapter);
     }
 
     @Provides
-    ArtifactRouter providesArtifactRouter(SharedUserStorage sharedUserStorage) {
-        return new ArtifactRouterImpl(sharedUserStorage, (AppCompatActivity) mFragment.getActivity());
+    ArtifactRouter providesArtifactRouter(ArtifactListFragment fragment, SharedUserStorage sharedUserStorage) {
+        return new ArtifactRouterImpl(sharedUserStorage, (AppCompatActivity) fragment.getActivity());
     }
 
     @Provides
-    ArtifactValueExtractor providesArtifactValueExtractor() {
-        return new ArtifactValueExtractorImpl(mFragment.getArguments());
+    ArtifactValueExtractor providesArtifactValueExtractor(ArtifactListFragment fragment) {
+        return new ArtifactValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides
@@ -87,8 +77,8 @@ public class ArtifactsModule {
     }
 
     @Provides
-    PermissionManager providesPermissionManager() {
-        return new PermissionManagerImpl(mFragment);
+    PermissionManager providesPermissionManager(ArtifactListFragment fragment) {
+        return new PermissionManagerImpl(fragment);
     }
 
     @Provides

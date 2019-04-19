@@ -14,40 +14,42 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.permissions;
+package com.github.vase4kin.teamcityapp.artifact.permissions
 
 /**
- * Manages permissions handling for {@link com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment}
+ * Manages permissions handling for [com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment]
  */
-public interface PermissionManager {
-
-    int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 42;
+interface PermissionManager {
 
     /**
      * Check is permissions are granted
      */
-    boolean isWriteStoragePermissionsGranted();
-
-    /**
-     * Request write storage permissions
-     */
-    void requestWriteStoragePermissions();
+    val isWriteStoragePermissionsGranted: Boolean
 
     /**
      * Check is permissions are granted
      */
-    boolean isInstallPackagesPermissionGranted();
+    val isInstallPackagesPermissionGranted: Boolean
 
     /**
      * Request write storage permissions
      */
-    void requestInstallPackagesPermission();
+    fun requestWriteStoragePermissions()
+
+    /**
+     * Request write storage permissions
+     */
+    fun requestInstallPackagesPermission()
 
     /**
      * Callback to handle on request fragment permissions callbacks
      */
-    void onRequestPermissionsResult(int requestCode,
-                                    String[] permissions,
-                                    int[] grantResults,
-                                    OnPermissionsResultListener onPermissionsResultListener);
+    fun onRequestPermissionsResult(requestCode: Int,
+                                   permissions: Array<String>,
+                                   grantResults: IntArray,
+                                   onPermissionsResultListener: OnPermissionsResultListener)
+
+    companion object {
+        const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 42
+    }
 }
