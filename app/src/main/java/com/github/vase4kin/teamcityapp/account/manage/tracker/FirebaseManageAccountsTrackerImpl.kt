@@ -14,33 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.tracker;
+package com.github.vase4kin.teamcityapp.account.manage.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Firebase tracker
  */
-public class FirebaseManageAccountsTrackerImpl extends BaseFirebaseTracker implements ManageAccountsTracker {
+class FirebaseManageAccountsTrackerImpl(
+        firebaseAnalytics: FirebaseAnalytics
+) : BaseFirebaseTracker(firebaseAnalytics), ManageAccountsTracker {
 
-    public FirebaseManageAccountsTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        super(firebaseAnalytics);
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackView() {
+        firebaseAnalytics.logEvent(ManageAccountsTracker.SCREEN_NAME, null)
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void trackAccountRemove() {
-        mFirebaseAnalytics.logEvent(EVENT_REMOVE_ACCOUNT, null);
+    override fun trackAccountRemove() {
+        firebaseAnalytics.logEvent(ManageAccountsTracker.EVENT_REMOVE_ACCOUNT, null)
     }
 }

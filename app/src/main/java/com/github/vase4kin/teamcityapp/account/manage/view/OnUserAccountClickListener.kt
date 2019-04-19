@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.view;
+package com.github.vase4kin.teamcityapp.account.manage.view
 
 /**
  * User account click listener
  */
-public interface OnUserAccountClickListener {
+interface OnUserAccountClickListener {
 
     /**
      * Click on User position
      *
      * @param position - adapter position
      */
-    void click(int position);
+    fun click(position: Int)
 }

@@ -51,7 +51,7 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
     public void trackUserLoginSuccess(boolean isSslEnabled) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ATTRIBUTE_NAME_SSL_ENABLED, isSslEnabled);
-        mFirebaseAnalytics.logEvent(EVENT_LOGIN_USER_SUCCESS, bundle);
+        firebaseAnalytics.logEvent(EVENT_LOGIN_USER_SUCCESS, bundle);
     }
 
     /**
@@ -61,7 +61,7 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
     public void trackGuestUserLoginSuccess(boolean isSslEnabled) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(ATTRIBUTE_NAME_SSL_ENABLED, isSslEnabled);
-        mFirebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_SUCCESS, bundle);
+        firebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_SUCCESS, bundle);
     }
 
     /**
@@ -71,7 +71,7 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
     public void trackUserLoginFailed(String errorMessage) {
         Bundle bundle = new Bundle();
         bundle.putString(ATTRIBUTE_NAME_ERROR, errorMessage);
-        mFirebaseAnalytics.logEvent(EVENT_LOGIN_USER_FAILED, bundle);
+        firebaseAnalytics.logEvent(EVENT_LOGIN_USER_FAILED, bundle);
     }
 
     /**
@@ -81,7 +81,7 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
     public void trackGuestUserLoginFailed(String errorMessage) {
         Bundle bundle = new Bundle();
         bundle.putString(ATTRIBUTE_NAME_ERROR, errorMessage);
-        mFirebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_FAILED, bundle);
+        firebaseAnalytics.logEvent(EVENT_LOGIN_GUEST_USER_FAILED, bundle);
     }
 
     /**
@@ -97,6 +97,6 @@ public class FirebaseCreateAccountTrackerImpl extends BaseFirebaseTracker implem
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
 }

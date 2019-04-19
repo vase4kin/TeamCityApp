@@ -33,7 +33,7 @@ public class FirebaseLoginTrackerImpl extends FirebaseCreateAccountTrackerImpl i
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null);
+        firebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null);
     }
 
 }

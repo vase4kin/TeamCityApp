@@ -32,6 +32,6 @@ class FirebaseTestDetailsTrackerImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun trackView() {
-        mFirebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
+        firebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
     }
 }

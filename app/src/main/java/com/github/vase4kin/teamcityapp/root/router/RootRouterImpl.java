@@ -48,6 +48,6 @@ public class RootRouterImpl extends DrawerRouterImpl implements RootRouter {
      */
     @Override
     public void openAccountsList() {
-        AccountListActivity.start(mActivity);
+        AccountListActivity.Companion.start(mActivity);
     }
 }

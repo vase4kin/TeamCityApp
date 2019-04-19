@@ -8,6 +8,10 @@ import com.github.vase4kin.teamcityapp.about.dagger.AboutLibrariesDrawerModule
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
+import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListActivityScope
+import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListDrawerModule
+import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityScope
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabDrawerModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabsModule
@@ -65,4 +69,8 @@ abstract class ActivityBindingModule {
     @CreateAccountActivityScope
     @ContributesAndroidInjector(modules = [CreateAccountModule::class])
     abstract fun createAccountActivity(): CreateAccountActivity
+
+    @AccountListActivityScope
+    @ContributesAndroidInjector(modules = [AccountsModule::class, AccountListDrawerModule::class])
+    abstract fun accountListActivity(): AccountListActivity
 }

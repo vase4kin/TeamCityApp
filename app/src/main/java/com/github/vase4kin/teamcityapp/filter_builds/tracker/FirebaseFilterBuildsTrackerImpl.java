@@ -33,7 +33,7 @@ public class FirebaseFilterBuildsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserFilteredBuilds() {
-        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_BUTTON_PRESSED, null);
+        firebaseAnalytics.logEvent(EVENT_RUN_BUILD_BUTTON_PRESSED, null);
     }
 
     /**
@@ -41,6 +41,6 @@ public class FirebaseFilterBuildsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME_FILTER_BUILDS, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME_FILTER_BUILDS, null);
     }
 }

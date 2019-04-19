@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.tracker;
+package com.github.vase4kin.teamcityapp.account.manage.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 
 /**
  * Tracker interface
  */
-public interface ManageAccountsTracker extends ViewTracker {
-
-    /**
-     * Account list screen name
-     */
-    String SCREEN_NAME = "screen_account_list";
-
-    /**
-     * Remove account event
-     */
-    String EVENT_REMOVE_ACCOUNT = "remove_account";
+interface ManageAccountsTracker : ViewTracker {
 
     /**
      * Track account is removed
      */
-    void trackAccountRemove();
+    fun trackAccountRemove()
+
+    companion object {
+
+        /**
+         * Account list screen name
+         */
+        const val SCREEN_NAME = "screen_account_list"
+
+        /**
+         * Remove account event
+         */
+        const val EVENT_REMOVE_ACCOUNT = "remove_account"
+    }
 }

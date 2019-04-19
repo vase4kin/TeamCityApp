@@ -33,6 +33,6 @@ public class AgentTabsViewTrackerImpl extends BaseFirebaseTracker implements Age
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
 }

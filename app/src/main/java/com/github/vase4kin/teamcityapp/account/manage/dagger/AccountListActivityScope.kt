@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.view;
+package com.github.vase4kin.teamcityapp.account.manage.dagger
 
-/**
- * Listener to handle account events
- */
-public interface OnAccountRemoveListener {
+import javax.inject.Scope
 
-    /**
-     * On account remove event
-     */
-    void onAccountRemove();
-}
+@Scope
+annotation class AccountListActivityScope

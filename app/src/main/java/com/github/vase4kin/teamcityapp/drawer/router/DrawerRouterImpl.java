@@ -58,7 +58,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startAccountListActivity() {
-        AccountListActivity.start(mActivity);
+        AccountListActivity.Companion.start(mActivity);
     }
 
     /**

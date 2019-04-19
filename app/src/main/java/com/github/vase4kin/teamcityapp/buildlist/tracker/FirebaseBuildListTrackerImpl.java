@@ -36,7 +36,7 @@ public class FirebaseBuildListTrackerImpl extends BaseFirebaseTracker implements
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(mScreenName, null);
+        firebaseAnalytics.logEvent(mScreenName, null);
     }
 
     /**
@@ -44,7 +44,7 @@ public class FirebaseBuildListTrackerImpl extends BaseFirebaseTracker implements
      */
     @Override
     public void trackRunBuildButtonPressed() {
-        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_BUTTON_PRESSED, null);
+        firebaseAnalytics.logEvent(EVENT_RUN_BUILD_BUTTON_PRESSED, null);
     }
 
     /**
@@ -52,6 +52,6 @@ public class FirebaseBuildListTrackerImpl extends BaseFirebaseTracker implements
      */
     @Override
     public void trackUserWantsToSeeQueuedBuildDetails() {
-        mFirebaseAnalytics.logEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS, null);
+        firebaseAnalytics.logEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS, null);
     }
 }
