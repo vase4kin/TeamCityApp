@@ -14,30 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.presenter;
+package com.github.vase4kin.teamcityapp.account.create.dagger
 
-/**
- * Presenter to handle logic for {@link com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity}
- */
-public interface CreateAccountPresenter {
+import javax.inject.Scope
 
-    /**
-     * OnCreateViews activity callback
-     */
-    void handleOnCreateView();
-
-    /**
-     * OnResume activity callback
-     */
-    void handleOnResume();
-
-    /**
-     * OnDestroy activity callback
-     */
-    void handleOnDestroy();
-
-    /**
-     * Finish activity
-     */
-    void finish();
-}
+@Scope
+annotation class CreateAccountActivityScope

@@ -5,6 +5,9 @@ import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
 import com.github.vase4kin.teamcityapp.about.dagger.AboutActivityScope
 import com.github.vase4kin.teamcityapp.about.dagger.AboutDrawerModule
 import com.github.vase4kin.teamcityapp.about.dagger.AboutLibrariesDrawerModule
+import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
+import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
+import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityScope
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabDrawerModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabsModule
@@ -58,4 +61,8 @@ abstract class ActivityBindingModule {
     @BuildQueueActivityScope
     @ContributesAndroidInjector(modules = [BuildQueueModule::class, BuildQueueDrawerModule::class, BuildListAdapterModule::class])
     abstract fun buildQueueActivity(): BuildQueueActivity
+
+    @CreateAccountActivityScope
+    @ContributesAndroidInjector(modules = [CreateAccountModule::class])
+    abstract fun createAccountActivity(): CreateAccountActivity
 }

@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.view;
+package com.github.vase4kin.teamcityapp.account.create.presenter
 
 /**
- * Listener to handle field validation
+ * Presenter to handle logic for [com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity]
  */
-public interface OnValidateListener {
+interface CreateAccountPresenter {
 
     /**
-     * Validate guest user data
-     *
-     * @param url - TeamCity server url
-     * @param isSslDisabled - ssl state
+     * OnCreateViews activity callback
      */
-    void validateGuestUserData(String url, boolean isSslDisabled);
+    fun handleOnCreateView()
 
     /**
-     * Validate user data
-     *
-     * @param url      - TeamCity server url
-     * @param userName - User name
-     * @param password - User password
-     * @param isSslDisabled - ssl state
+     * OnResume activity callback
      */
-    void validateUserData(String url, String userName, String password, boolean isSslDisabled);
+    fun handleOnResume()
+
+    /**
+     * OnDestroy activity callback
+     */
+    fun handleOnDestroy()
+
+    /**
+     * Finish activity
+     */
+    fun finish()
 }

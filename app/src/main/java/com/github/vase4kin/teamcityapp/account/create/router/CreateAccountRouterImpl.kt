@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.dagger;
+package com.github.vase4kin.teamcityapp.account.create.router
 
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter;
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatterImpl;
+import android.app.Activity
 
-import dagger.Module;
-import dagger.Provides;
+import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 
-@Module
-public class UrlFormatterModule {
+/**
+ * Impl of [CreateAccountRouter]
+ */
+class CreateAccountRouterImpl(private val activity: Activity) : CreateAccountRouter {
 
-    @Provides
-    UrlFormatter providesUrlFormatter() {
-        return new UrlFormatterImpl();
+    /**
+     * {@inheritDoc}
+     */
+    override fun startRootProjectActivityWhenNewAccountIsCreated() {
+        RootProjectsActivity.startWhenNewAccountIsCreated(activity)
     }
 }

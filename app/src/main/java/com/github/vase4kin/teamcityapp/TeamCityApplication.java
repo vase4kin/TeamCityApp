@@ -92,6 +92,7 @@ public class TeamCityApplication extends Application implements HasActivityInjec
                 .restApiModule(new RestApiModule(baseUrl))
                 .appComponent(appInjector)
                 .build();
+        restApiInjector.inject(this);
     }
 
     /**

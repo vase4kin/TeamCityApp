@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.helper;
-
-import androidx.annotation.NonNull;
+package com.github.vase4kin.teamcityapp.account.create.helper
 
 /**
  * Url formatter
  */
-public interface UrlFormatter {
+interface UrlFormatter {
 
     /**
      * Format server url
@@ -29,17 +27,20 @@ public interface UrlFormatter {
      * @param serverUrl - Server url to format
      * @return formatted server url
      */
-    String formatServerUrl(String serverUrl);
+    fun formatServerUrl(serverUrl: String): String
 
     /**
      * Remove leading slash from url to able load data if server url contains trailing path, teamcity.com/server
-     * <p>
+     *
+     *
      * https://github.com/square/retrofit/issues/907
-     * <p>
+     *
+     *
      * ¯\_(ツ)_/¯
-     * <p>
+     *
+     *
      * /app/rest/buildTypes/id:buildType/builds?locator=locator:any - > app/rest/buildTypes/id:buildType/builds?locator=locator:any
      */
-    String formatBasicUrl(@NonNull String url);
+    fun formatBasicUrl(url: String): String
 }
 

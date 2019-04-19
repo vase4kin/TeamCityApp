@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.view;
-
-import android.view.View;
+package com.github.vase4kin.teamcityapp.account.create.view
 
 /**
- * Impl of {@link OnToolBarNavigationListener}
+ * Listener to handle field validation
  */
-public class OnToolBarNavigationListenerImpl implements View.OnClickListener {
-
-    private OnToolBarNavigationListener mOnToolBarNavigationListener;
-
-    public OnToolBarNavigationListenerImpl(OnToolBarNavigationListener mOnToolBarNavigationListener) {
-        this.mOnToolBarNavigationListener = mOnToolBarNavigationListener;
-    }
+interface OnValidateListener {
 
     /**
-     * {@inheritDoc}
+     * Validate guest user data
+     *
+     * @param url - TeamCity server url
+     * @param isSslDisabled - ssl state
      */
-    @Override
-    public void onClick(View v) {
-        mOnToolBarNavigationListener.onClick();
-    }
+    fun validateGuestUserData(url: String, isSslDisabled: Boolean)
+
+    /**
+     * Validate user data
+     *
+     * @param url      - TeamCity server url
+     * @param userName - User name
+     * @param password - User password
+     * @param isSslDisabled - ssl state
+     */
+    fun validateUserData(url: String, userName: String, password: String, isSslDisabled: Boolean)
 }

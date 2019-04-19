@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.view;
+package com.github.vase4kin.teamcityapp.account.create.router
 
 /**
- * On toolbar navigation listener
+ * Create account activity router
  */
-public interface OnToolBarNavigationListener {
+interface CreateAccountRouter {
 
     /**
-     * Click on home/back arrow button
+     * Start root project activity when new account is created
      */
-    void onClick();
+    fun startRootProjectActivityWhenNewAccountIsCreated()
 }

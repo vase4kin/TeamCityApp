@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.dagger;
+package com.github.vase4kin.teamcityapp.account.create.view
 
-import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity;
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+/**
+ * On toolbar navigation listener
+ */
+interface OnToolBarNavigationListener {
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = AppComponent.class, modules = {CreateAccountModule.class, UrlFormatterModule.class})
-public interface CreateAccountComponent {
-
-    void inject(CreateAccountActivity createAccountActivity);
+    /**
+     * Click on home/back arrow button
+     */
+    fun onClick()
 }

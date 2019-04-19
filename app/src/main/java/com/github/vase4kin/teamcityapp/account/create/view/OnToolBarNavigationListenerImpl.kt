@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.router;
+package com.github.vase4kin.teamcityapp.account.create.view
+
+import android.view.View
 
 /**
- * Create account activity router
+ * Impl of [OnToolBarNavigationListener]
  */
-public interface CreateAccountRouter {
+class OnToolBarNavigationListenerImpl(
+        private val onToolBarNavigationListener: OnToolBarNavigationListener
+) : View.OnClickListener {
 
     /**
-     * Start root project activity when new account is created
+     * {@inheritDoc}
      */
-    void startRootProjectActivityWhenNewAccountIsCreated();
+    override fun onClick(v: View) {
+        onToolBarNavigationListener.onClick()
+    }
 }
