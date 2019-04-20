@@ -14,172 +14,172 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.build_details.view;
+package com.github.vase4kin.teamcityapp.build_details.view
 
-import android.os.Bundle;
+import android.os.Bundle
 
-import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel;
+import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel
 
 /**
- * View interactions of {@link BuildDetailsActivity}
+ * View interactions of [BuildDetailsActivity]
  */
-public interface BuildDetailsView extends BaseTabsViewModel {
+interface BuildDetailsView : BaseTabsViewModel {
 
     /**
      * On save activity state
      *
      * @param bundle - Bundle with state to save
      */
-    void onSave(Bundle bundle);
+    fun onSave(bundle: Bundle)
 
     /**
      * On restore activity state
      *
      * @param bundle - Bundle with saved state
      */
-    void onRestore(Bundle bundle);
+    fun onRestore(bundle: Bundle)
 
     /**
      * Show run build float action button
      *
      * Disabled until run build feature is implemented
      */
-    void showRunBuildFloatActionButton();
+    fun showRunBuildFloatActionButton()
 
     /**
      * Hide run build float action button
      *
      * Disabled until run build feature is implemented
      */
-    void hideRunBuildFloatActionButton();
+    fun hideRunBuildFloatActionButton()
 
     /**
      * @param onBuildDetailsViewListener - Listener to handle view changes
      */
-    void setOnBuildTabsViewListener(OnBuildDetailsViewListener onBuildDetailsViewListener);
+    fun setOnBuildTabsViewListener(onBuildDetailsViewListener: OnBuildDetailsViewListener)
 
     /**
      * Show you are about to restart build dialog
      */
-    void showYouAreAboutToRestartBuildDialog();
+    fun showYouAreAboutToRestartBuildDialog()
 
     /**
      * Show you are about to stop build dialog
      */
-    void showYouAreAboutToStopBuildDialog();
+    fun showYouAreAboutToStopBuildDialog()
 
     /**
      * Show you are about to stop build not ran by you dialog
      */
-    void showYouAreAboutToStopNotYoursBuildDialog();
+    fun showYouAreAboutToStopNotYoursBuildDialog()
 
     /**
      * Show you are about to remove build from queuedialog
      */
-    void showYouAreAboutToRemoveBuildFromQueueDialog();
+    fun showYouAreAboutToRemoveBuildFromQueueDialog()
 
     /**
      * Show you are about to remove build from queue not triggered by you dialog
      */
-    void showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog();
+    fun showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog()
 
     /**
      * Show restarting build progress dialog
      */
-    void showRestartingBuildProgressDialog();
+    fun showRestartingBuildProgressDialog()
 
     /**
      * Hide restarting build progress dialog
      */
-    void hideRestartingBuildProgressDialog();
+    fun hideRestartingBuildProgressDialog()
 
     /**
      * Show stopping build progress dialog
      */
-    void showStoppingBuildProgressDialog();
+    fun showStoppingBuildProgressDialog()
 
     /**
      * Hide stopping build progress dialog
      */
-    void hideStoppingBuildProgressDialog();
+    fun hideStoppingBuildProgressDialog()
 
     /**
      * Show removing build from queue progress dialog
      */
-    void showRemovingBuildFromQueueProgressDialog();
+    fun showRemovingBuildFromQueueProgressDialog()
 
     /**
      * Hide removing build from queue progress dialog
      */
-    void hideRemovingBuildFromQueueProgressDialog();
+    fun hideRemovingBuildFromQueueProgressDialog()
 
     /**
      * Show build is stopped snack bar
      */
-    void showBuildIsStoppedSnackBar();
+    fun showBuildIsStoppedSnackBar()
 
     /**
      * Show build stop error snack bar
      */
-    void showBuildIsStoppedErrorSnackBar();
+    fun showBuildIsStoppedErrorSnackBar()
 
     /**
      * Show forbidden to stop snack bar
      */
-    void showForbiddenToStopBuildSnackBar();
+    fun showForbiddenToStopBuildSnackBar()
 
     /**
      * Show build is removed from queue snack bar
      */
-    void showBuildIsRemovedFromQueueSnackBar();
+    fun showBuildIsRemovedFromQueueSnackBar()
 
     /**
      * Show build remove from queue error snack bar
      */
-    void showBuildIsRemovedFromQueueErrorSnackBar();
+    fun showBuildIsRemovedFromQueueErrorSnackBar()
 
     /**
      * Show forbidden to remove from queue snack bar
      */
-    void showForbiddenToRemoveBuildFromQueueSnackBar();
+    fun showForbiddenToRemoveBuildFromQueueSnackBar()
 
     /**
      * Show build restart success snack bar
      */
-    void showBuildRestartSuccessSnackBar();
+    fun showBuildRestartSuccessSnackBar()
 
     /**
      * Show build restart error snack bar
      */
-    void showBuildRestartErrorSnackBar();
+    fun showBuildRestartErrorSnackBar()
 
     /**
      * Show forbidden to restart snack bar
      */
-    void showForbiddenToRestartBuildSnackBar();
+    fun showForbiddenToRestartBuildSnackBar()
 
     /**
      * Show build loading progress
      */
-    void showBuildLoadingProgress();
+    fun showBuildLoadingProgress()
 
     /**
      * Hide build loading progress
      */
-    void hideBuildLoadingProgress();
+    fun hideBuildLoadingProgress()
 
     /**
      * Show error opening build snack bar
      */
-    void showOpeningBuildErrorSnackBar();
+    fun showOpeningBuildErrorSnackBar()
 
     /**
      * Show text copied snack bar
      */
-    void showTextCopiedSnackBar();
+    fun showTextCopiedSnackBar()
 
     /**
      * Show error downloading artifact snack bar
      */
-    void showErrorDownloadingArtifactSnackBar();
+    fun showErrorDownloadingArtifactSnackBar()
 }

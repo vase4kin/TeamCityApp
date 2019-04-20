@@ -42,7 +42,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openBuildPage(Build build, @Nullable String buildTypeName) {
-        BuildDetailsActivity.start(mActivity, build, buildTypeName);
+        BuildDetailsActivity.Companion.start(mActivity, build, buildTypeName);
     }
 
     /**

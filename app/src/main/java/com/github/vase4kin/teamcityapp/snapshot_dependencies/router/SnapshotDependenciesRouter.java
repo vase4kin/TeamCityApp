@@ -38,6 +38,6 @@ public class SnapshotDependenciesRouter extends BuildListRouterImpl {
      */
     @Override
     public void openBuildPage(Build build, @Nullable String buildTypeName) {
-        BuildDetailsActivity.startNotAsNewTask(mActivity, build, buildTypeName);
+        BuildDetailsActivity.Companion.startNotAsNewTask(mActivity, build, buildTypeName);
     }
 }

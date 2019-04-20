@@ -44,7 +44,7 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      */
     @Override
     public void reopenBuildTabsActivity(Build build, String buildTypeName) {
-        BuildDetailsActivity.start(mActivity, build, buildTypeName);
+        BuildDetailsActivity.Companion.start(mActivity, build, buildTypeName);
     }
 
     /**

@@ -17,6 +17,11 @@ import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityScope
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabDrawerModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabsModule
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity
+import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityBindingModule
+import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityScope
+import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsDrawerModule
+import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesActivityScope
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesDrawerModule
@@ -74,4 +79,8 @@ abstract class ActivityBindingModule {
     @AccountListActivityScope
     @ContributesAndroidInjector(modules = [AccountsModule::class, AccountListDrawerModule::class])
     abstract fun accountListActivity(): AccountListActivity
+
+    @BuildDetailsActivityScope
+    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsDrawerModule::class, BuildDetailsActivityBindingModule::class])
+    abstract fun buildDetailsActivity(): BuildDetailsActivity
 }

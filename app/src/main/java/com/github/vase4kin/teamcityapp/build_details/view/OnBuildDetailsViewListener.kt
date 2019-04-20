@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.build_details.view;
+package com.github.vase4kin.teamcityapp.build_details.view
 
 /**
  * Listener to handle build tabs view UI updates
  */
-public interface OnBuildDetailsViewListener {
+interface OnBuildDetailsViewListener {
 
     /**
      * On confirming stop build click
      *
      * @param isReAddToTheQueue - Re-add build to the queue flag
      */
-    void onConfirmCancelingBuild(boolean isReAddToTheQueue);
+    fun onConfirmCancelingBuild(isReAddToTheQueue: Boolean)
 
     /**
      * On confirming restarting build click
      */
-    void onConfirmRestartBuild();
+    fun onConfirmRestartBuild()
 
     /**
      * On showing queued build
      */
-    void onShowQueuedBuild();
+    fun onShowQueuedBuild()
 }

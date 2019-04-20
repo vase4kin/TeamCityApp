@@ -14,33 +14,31 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.build_details.router;
+package com.github.vase4kin.teamcityapp.build_details.router
 
-import androidx.annotation.Nullable;
-
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 
 /**
- * Router for {@link BuildDetailsActivity}
+ * Router for [BuildDetailsActivity]
  */
-public interface BuildDetailsRouter {
+interface BuildDetailsRouter {
 
     /**
-     * Reopen {@link BuildDetailsActivity}
+     * Reopen [BuildDetailsActivity]
      *
      * @param build         - Build is passed as new intent
      * @param buildTypeName - Build type name
      */
-    void reopenBuildTabsActivity(Build build, String buildTypeName);
+    fun reopenBuildTabsActivity(build: Build, buildTypeName: String)
 
     /**
      * Share build web url
      *
      * @param webUrl - url to share
      */
-    void startShareBuildWebUrlActivity(String webUrl);
+    fun startShareBuildWebUrlActivity(webUrl: String)
 
     /**
      * Start build list activity
@@ -49,10 +47,10 @@ public interface BuildDetailsRouter {
      * @param id     - build type id
      * @param filter - build list filter
      */
-    void startBuildListActivity(String name, String id, @Nullable BuildListFilter filter);
+    fun startBuildListActivity(name: String, id: String, filter: BuildListFilter?)
 
     /**
      * Start project activity
      */
-    void startProjectActivity(String name, String id);
+    fun startProjectActivity(name: String, id: String)
 }
