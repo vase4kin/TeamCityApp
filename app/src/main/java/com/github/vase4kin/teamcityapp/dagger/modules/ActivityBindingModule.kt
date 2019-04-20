@@ -22,7 +22,11 @@ import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsDrawerModule
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
+import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListActivityScope
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
+import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListDrawerModule
+import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesActivityScope
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesDrawerModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesModule
@@ -83,4 +87,8 @@ abstract class ActivityBindingModule {
     @BuildDetailsActivityScope
     @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsDrawerModule::class, BuildDetailsActivityBindingModule::class])
     abstract fun buildDetailsActivity(): BuildDetailsActivity
+
+    @BuildListActivityScope
+    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListDrawerModule::class, BuildListAdapterModule::class, BuildDetailsActivityBindingModule::class])
+    abstract fun buildListActivity(): BuildListActivity
 }

@@ -64,7 +64,7 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      */
     @Override
     public void startBuildListActivity(String name, String id, @Nullable BuildListFilter filter) {
-        BuildListActivity.start(name, id, filter, mActivity);
+        BuildListActivity.Companion.start(name, id, filter, mActivity);
     }
 
     /**

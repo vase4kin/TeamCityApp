@@ -41,7 +41,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      */
     @Override
     public void startBuildListActivity(@NonNull String name, @NonNull String id) {
-        BuildListActivity.start(name, id, null, mActivity);
+        BuildListActivity.Companion.start(name, id, null, mActivity);
     }
 
     /**

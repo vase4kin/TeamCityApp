@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.build_details.dagger
+package com.github.vase4kin.teamcityapp.buildlist.dagger
 
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.drawer.dagger.BaseDrawerModule
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouterImpl
@@ -26,15 +26,15 @@ import dagger.Module
 import dagger.Provides
 
 @Module(includes = [BaseDrawerModule::class])
-class BuildDetailsDrawerModule {
+class BuildListDrawerModule {
 
     @Provides
-    fun providesDrawerView(activity: BuildDetailsActivity): DrawerView {
+    fun providesDrawerView(activity: BuildListActivity): DrawerView {
         return CustomAnimationDrawerViewImpl(activity, DrawerView.NO_SELECTION, true)
     }
 
     @Provides
-    fun providesDrawerRouter(activity: BuildDetailsActivity): DrawerRouter {
+    fun providesDrawerRouter(activity: BuildListActivity): DrawerRouter {
         return DrawerRouterImpl(activity)
     }
 }

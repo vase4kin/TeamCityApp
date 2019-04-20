@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.presenter;
+package com.github.vase4kin.teamcityapp.buildlist.presenter
 
 
-import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter;
-import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter;
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter
+import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 
 /**
- * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity}
+ * Presenter to handle logic of [com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity]
  */
-public interface BuildListPresenter extends BaseListPresenter, BaseMenuPresenter {
+interface BuildListPresenter : BaseListPresenter, BaseMenuPresenter {
 
     /**
      * On run build activity result
      *
      * @param queuedBuildHref - Queued build href
      */
-    void onRunBuildActivityResult(String queuedBuildHref);
+    fun onRunBuildActivityResult(queuedBuildHref: String)
 
     /**
      * On filter builds activity result
      *
      * @param filter - filter to filter builds
      */
-    void onFilterBuildsActivityResult(BuildListFilter filter);
+    fun onFilterBuildsActivityResult(filter: BuildListFilter)
 }

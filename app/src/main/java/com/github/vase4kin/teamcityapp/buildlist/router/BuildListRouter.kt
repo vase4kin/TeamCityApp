@@ -14,42 +14,40 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.router;
+package com.github.vase4kin.teamcityapp.buildlist.router
 
-import androidx.annotation.Nullable;
-
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 
 /**
  * Build list router
  */
-public interface BuildListRouter {
+interface BuildListRouter {
 
     /**
-     * Start build details activity {@link com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity}
+     * Start build details activity [com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity]
      *
      * @param build         - Build
      * @param buildTypeName - Build type name
      */
-    void openBuildPage(Build build, @Nullable String buildTypeName);
+    fun openBuildPage(build: Build, buildTypeName: String?)
 
     /**
-     * Open run build page {@link com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity}
+     * Open run build page [com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity]
      *
      * @param buildTypeId - Build type id
      */
-    void openRunBuildPage(String buildTypeId);
+    fun openRunBuildPage(buildTypeId: String)
 
     /**
-     * Open filter builds page {@link FilterBuildsActivity}
+     * Open filter builds page [FilterBuildsActivity]
      *
      * @param buildTypeId - Build type id
      */
-    void openFilterBuildsPage(String buildTypeId);
+    fun openFilterBuildsPage(buildTypeId: String)
 
     /**
      * Open favorites
      */
-    void openFavorites();
+    fun openFavorites()
 }
