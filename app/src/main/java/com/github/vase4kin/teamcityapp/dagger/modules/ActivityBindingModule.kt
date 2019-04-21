@@ -12,14 +12,14 @@ import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListActivity
 import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListDrawerModule
 import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
-import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityBindingModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityScope
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabDrawerModule
+import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabFragmentsBindingModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabsModule
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity
-import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityBindingModule
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityScope
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsDrawerModule
+import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsFragmentsBindingModule
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListActivityScope
@@ -53,7 +53,7 @@ abstract class ActivityBindingModule {
     abstract fun favoritesActivity(): FavoritesActivity
 
     @AgentsTabActivityScope
-    @ContributesAndroidInjector(modules = [AgentsTabsModule::class, AgentsTabDrawerModule::class, AgentsTabActivityBindingModule::class])
+    @ContributesAndroidInjector(modules = [AgentsTabsModule::class, AgentsTabDrawerModule::class, AgentsTabFragmentsBindingModule::class])
     abstract fun agentTabsActivity(): AgentTabsActivity
 
     @AboutActivityScope
@@ -85,10 +85,10 @@ abstract class ActivityBindingModule {
     abstract fun accountListActivity(): AccountListActivity
 
     @BuildDetailsActivityScope
-    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsDrawerModule::class, BuildDetailsActivityBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsDrawerModule::class, BuildDetailsFragmentsBindingModule::class])
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope
-    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListDrawerModule::class, BuildListAdapterModule::class, BuildDetailsActivityBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListDrawerModule::class, BuildListAdapterModule::class, BuildDetailsFragmentsBindingModule::class])
     abstract fun buildListActivity(): BuildListActivity
 }

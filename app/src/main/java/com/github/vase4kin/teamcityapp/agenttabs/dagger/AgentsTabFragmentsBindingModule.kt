@@ -7,7 +7,7 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class AgentsTabActivityBindingModule {
+abstract class AgentsTabFragmentsBindingModule {
 
     @AgentFragmentScope
     @ContributesAndroidInjector(modules = [AgentModule::class])

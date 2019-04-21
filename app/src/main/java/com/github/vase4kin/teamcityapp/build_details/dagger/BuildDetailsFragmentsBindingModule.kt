@@ -11,7 +11,7 @@ import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
-abstract class BuildDetailsActivityBindingModule {
+abstract class BuildDetailsFragmentsBindingModule {
 
     @ArtifactFragmentScope
     @ContributesAndroidInjector(modules = [ArtifactsModule::class])
