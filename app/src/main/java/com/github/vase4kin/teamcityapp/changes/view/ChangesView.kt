@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.changes.view;
+package com.github.vase4kin.teamcityapp.changes.view
 
-import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
-import com.mugen.MugenCallbacks;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
+import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel
+import com.mugen.MugenCallbacks
 
 /**
- * View interactions of {@link ChangesFragment}
+ * View interactions of [ChangesFragment]
  */
-public interface ChangesView extends BaseListView<ChangesDataModel>, ViewLoadMore<ChangesDataModel>, OnChangeClickListener {
+interface ChangesView : BaseListView<ChangesDataModel>, ViewLoadMore<ChangesDataModel>, OnChangeClickListener {
 
     /**
      * @param loadMoreCallbacks - Listener to receive load more callbacks
      */
-    void setLoadMoreListener(MugenCallbacks loadMoreCallbacks);
+    fun setLoadMoreListener(loadMoreCallbacks: MugenCallbacks)
 
     /**
      * Show retry load more snack bar
      */
-    void showRetryLoadMoreSnackBar();
+    fun showRetryLoadMoreSnackBar()
 }

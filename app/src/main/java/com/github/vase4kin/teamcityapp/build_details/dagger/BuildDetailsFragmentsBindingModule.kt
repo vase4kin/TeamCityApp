@@ -7,6 +7,9 @@ import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogFragmentScope
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogModule
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
+import com.github.vase4kin.teamcityapp.changes.dagger.ChangesFragmentScope
+import com.github.vase4kin.teamcityapp.changes.dagger.ChangesModule
+import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -20,4 +23,8 @@ abstract class BuildDetailsFragmentsBindingModule {
     @BuildLogFragmentScope
     @ContributesAndroidInjector(modules = [BuildLogModule::class, BuildLogInteractorModule::class])
     abstract fun buildLogFragment(): BuildLogFragment
+
+    @ChangesFragmentScope
+    @ContributesAndroidInjector(modules = [ChangesModule::class])
+    abstract fun changesFragment(): ChangesFragment
 }

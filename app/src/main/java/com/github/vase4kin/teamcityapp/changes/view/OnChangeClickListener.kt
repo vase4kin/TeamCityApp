@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.changes.view;
+package com.github.vase4kin.teamcityapp.changes.view
 
-import com.github.vase4kin.teamcityapp.changes.api.Changes;
+import com.github.vase4kin.teamcityapp.changes.api.Changes
 
 /**
  * Handle adapter clicks
  */
-public interface OnChangeClickListener {
+interface OnChangeClickListener {
 
     /**
      * On adapter item click
      *
      * @param change - Change
      */
-    void onClick(Changes.Change change);
+    fun onClick(change: Changes.Change)
 }

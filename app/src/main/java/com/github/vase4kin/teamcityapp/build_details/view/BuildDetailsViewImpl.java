@@ -100,7 +100,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     @Override
     public void addFragments(FragmentAdapter fragmentAdapter) {
         fragmentAdapter.add(R.string.tab_overview, OverviewFragment.newInstance(mBuildDetails.toBuild()));
-        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.newInstance(mBuildDetails.getChangesHref()));
+        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.Companion.newInstance(mBuildDetails.getChangesHref()));
         if (mBuildDetails.hasTests()) {
             fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.newInstance(
                     mBuildDetails.getTestsHref(),

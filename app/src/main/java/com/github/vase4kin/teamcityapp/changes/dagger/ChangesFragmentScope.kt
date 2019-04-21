@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.changes.dagger;
+package com.github.vase4kin.teamcityapp.changes.dagger
 
-import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment;
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+import javax.inject.Scope
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = ChangesModule.class)
-public interface ChangesComponent {
-
-    void inject(ChangesFragment changesFragment);
-}
+@Scope
+annotation class ChangesFragmentScope
