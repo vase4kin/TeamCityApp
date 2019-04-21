@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.urlprovider;
+package com.github.vase4kin.teamcityapp.buildlog.dagger
 
-/**
- * Build log url provider
- */
-public interface BuildLogUrlProvider {
+import javax.inject.Scope
 
-    /**
-     * Provide url for build log
-     *
-     * @return Url
-     */
-    String provideUrl();
-}
+@Scope
+annotation class BuildLogFragmentScope

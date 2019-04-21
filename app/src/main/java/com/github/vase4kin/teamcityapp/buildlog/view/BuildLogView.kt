@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view;
+package com.github.vase4kin.teamcityapp.buildlog.view
 
 /**
- * Handle view interactions of {@link BuildLogFragment}
+ * Handle view interactions of [BuildLogFragment]
  */
-public interface BuildLogView {
+interface BuildLogView {
 
     /**
      * Init view
      *
      * @param listener - Listener to receive view callbacks
      */
-    void initViews(final OnBuildLogLoadListener listener);
+    fun initViews(listener: OnBuildLogLoadListener)
 
     /**
      * Unbind views
      */
-    void unBindViews();
+    fun unBindViews()
 
     /**
      * Load build log
      *
      * @param buildLogUrl - Build log url
      */
-    void loadBuildLog(String buildLogUrl);
+    fun loadBuildLog(buildLogUrl: String)
 
     /**
      * Show need auth view
      */
-    void showAuthView();
+    fun showAuthView()
 
     /**
      * Hide need authDialog
      */
-    void hideAuthView();
+    fun hideAuthView()
 
     /**
      * Show ssl warning view
      */
-    void showSslWarningView();
+    fun showSslWarningView()
 }

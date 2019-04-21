@@ -14,25 +14,47 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view;
+package com.github.vase4kin.teamcityapp.buildlog.view
 
 /**
- * View build log listener
+ * Build log view listener
  */
-public interface OnBuildLogLoadListener {
+interface OnBuildLogViewListener {
 
     /**
-     * Load build log
+     * Show build log web view
      */
-    void loadBuildLog();
+    fun showWebView()
 
     /**
-     * On auth button click
+     * Hide build log web view
      */
-    void onAuthButtonClick();
+    fun hideWebView()
 
     /**
-     * Open build log in the browser
+     * Show progress loading
      */
-    void onOpenBuildLogInBrowser();
+    fun showProgressWheel()
+
+    /**
+     * Hide progress loading
+     */
+    fun hideProgressWheel()
+
+    /**
+     * Show error view
+     */
+    fun showError()
+
+    /**
+     * Hide error view
+     */
+    fun hideError()
+
+    /**
+     * Evaluate js script
+     *
+     * @param script - Script
+     */
+    fun evaluateScript(script: String)
 }

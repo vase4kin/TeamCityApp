@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.presenter;
+package com.github.vase4kin.teamcityapp.buildlog.router
 
 /**
- * Handle logic of {@link com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment}
+ * Router for build log
  */
-public interface BuildLogPresenter {
+interface BuildLogRouter {
 
     /**
-     * On create views
+     * Open url in the web browser
+     *
+     * @param url - url to open
      */
-    void onCreateViews();
+    fun openUrl(url: String)
 
     /**
-     * On destroy views
+     * Unbind customs tabs
      */
-    void onDestroyViews();
+    fun unbindCustomsTabs()
 }

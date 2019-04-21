@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.dagger;
+package com.github.vase4kin.teamcityapp.buildlog.presenter
 
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment;
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
+/**
+ * Handle logic of [com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment]
+ */
+interface BuildLogPresenter {
 
-import dagger.Component;
+    /**
+     * On create views
+     */
+    fun onCreateViews()
 
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {BuildLogModule.class, BuildLogInteractorModule.class})
-public interface BuildLogComponent {
-
-    void inject(BuildLogFragment buildLogFragment);
+    /**
+     * On destroy views
+     */
+    fun onDestroyViews()
 }

@@ -109,7 +109,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
                     mBuildDetails.getIgnoredTestCount()));
         }
         if (!mBuildDetails.isQueued()) {
-            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.newInstance(mBuildDetails.getId()));
+            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.Companion.newInstance(mBuildDetails.getId()));
         }
         fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.newInstance(mBuildDetails.toBuild()));
         if (!mBuildDetails.isQueued() && !mBuildDetails.isRunning()) {
