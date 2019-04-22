@@ -91,12 +91,9 @@ public class BuildListActivityTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
@@ -376,7 +373,7 @@ public class BuildListActivityTest {
         filter.setBranch("branch");
         filter.setPersonal(true);
         filter.setPinned(true);
-        resultData.putExtra(FilterBuildsRouter.Companion.getEXTRA_FILTER(), filter);
+        resultData.putExtra(FilterBuildsRouter.EXTRA_FILTER, filter);
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
 
         mActivityRule.launchActivity(null);
