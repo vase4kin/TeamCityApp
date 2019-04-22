@@ -14,28 +14,31 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.filter_builds.tracker;
+package com.github.vase4kin.teamcityapp.filter_builds.tracker
 
 
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 
 /**
  * Filter builds tracking class
  */
-public interface FilterBuildsTracker extends ViewTracker {
-
-    /**
-     * Filter builds screen name
-     */
-    String SCREEN_NAME_FILTER_BUILDS = "screen_filter_builds";
-
-    /**
-     * Event when user filtered builds
-     */
-    String EVENT_RUN_BUILD_BUTTON_PRESSED = "build_list_filters_applied";
+interface FilterBuildsTracker : ViewTracker {
 
     /**
      * Track user filter builds
      */
-    void trackUserFilteredBuilds();
+    fun trackUserFilteredBuilds()
+
+    companion object {
+
+        /**
+         * Filter builds screen name
+         */
+        const val SCREEN_NAME_FILTER_BUILDS = "screen_filter_builds"
+
+        /**
+         * Event when user filtered builds
+         */
+        const val EVENT_RUN_BUILD_BUTTON_PRESSED = "build_list_filters_applied"
+    }
 }

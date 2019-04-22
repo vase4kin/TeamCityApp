@@ -376,7 +376,7 @@ public class BuildListActivityTest {
         filter.setBranch("branch");
         filter.setPersonal(true);
         filter.setPinned(true);
-        resultData.putExtra(FilterBuildsRouter.EXTRA_FILTER, filter);
+        resultData.putExtra(FilterBuildsRouter.Companion.getEXTRA_FILTER(), filter);
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
 
         mActivityRule.launchActivity(null);

@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.filter_builds.dagger;
+package com.github.vase4kin.teamcityapp.filter_builds.dagger
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
+import javax.inject.Scope
 
-import dagger.Component;
-
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = FilterBuildsModule.class)
-public interface FilterBuildsComponent {
-
-    void inject(FilterBuildsActivity filterBuildsActivity);
-}
+@Scope
+annotation class FilterBuildsActivityScope

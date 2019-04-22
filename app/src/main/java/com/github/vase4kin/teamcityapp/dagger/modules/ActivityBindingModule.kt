@@ -31,6 +31,9 @@ import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesActivityScope
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesDrawerModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesModule
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
+import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
+import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
@@ -91,4 +94,8 @@ abstract class ActivityBindingModule {
     @BuildListActivityScope
     @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListDrawerModule::class, BuildListAdapterModule::class, BuildDetailsFragmentsBindingModule::class])
     abstract fun buildListActivity(): BuildListActivity
+
+    @FilterBuildsActivityScope
+    @ContributesAndroidInjector(modules = [FilterBuildsModule::class])
+    abstract fun filterBuildsActivity(): FilterBuildsActivity
 }

@@ -13,35 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.github.vase4kin.teamcityapp.filter_builds.presenter
 
-package com.github.vase4kin.teamcityapp.filter_builds.router;
 
-import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
+import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter
 
 /**
- * Router to manage {@link com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity} navigation
+ * Presenter to manage [com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity]
  */
-public interface FilterBuildsRouter {
+interface FilterBuildsPresenter : BasePresenter {
 
     /**
-     * Bundle extra key
+     * Handle on resume
      */
-    String EXTRA_FILTER = "filter";
+    fun onResume()
 
     /**
-     * Close activity with success result
-     *
-     * @param filter - filter locator
+     * Handle on back button pressed
      */
-    void closeOnSuccess(BuildListFilter filter);
-
-    /**
-     * Close activity with cancel result
-     */
-    void closeOnCancel();
-
-    /**
-     * On back button pressed
-     */
-    void closeOnBackButtonPressed();
+    fun onBackPressed()
 }
