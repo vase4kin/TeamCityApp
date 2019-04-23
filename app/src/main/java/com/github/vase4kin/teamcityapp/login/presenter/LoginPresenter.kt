@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.dagger;
+package com.github.vase4kin.teamcityapp.login.presenter
 
-import com.github.vase4kin.teamcityapp.account.create.dagger.UrlFormatterModule;
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
+/**
+ * Manages [com.github.vase4kin.teamcityapp.login.view.LoginActivity]
+ */
+interface LoginPresenter {
 
-import dagger.Component;
+    /**
+     * handle activity onCreate callback
+     */
+    fun onCreate()
 
-@PresenterScope
-@Component(dependencies = AppComponent.class, modules = {LoginModule.class, UrlFormatterModule.class})
-public interface LoginComponent {
+    /**
+     * handle activity onDestroy callback
+     */
+    fun onDestroy()
 
-    void inject(LoginActivity loginActivity);
+    /**
+     * handle activity onResume callback
+     */
+    fun onResume()
 }

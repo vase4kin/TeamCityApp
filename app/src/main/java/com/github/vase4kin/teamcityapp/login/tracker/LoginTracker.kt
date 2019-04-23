@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.tracker;
+package com.github.vase4kin.teamcityapp.login.tracker
 
-import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker;
+import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker
 
 /**
  * Login tracking class
  */
-public interface LoginTracker extends CreateAccountTracker {
+interface LoginTracker : CreateAccountTracker {
+    companion object {
 
-    /**
-     * First login screen name
-     */
-    String SCREEN_NAME = "screen_first_login";
+        /**
+         * First login screen name
+         */
+        const val SCREEN_NAME = "screen_first_login"
+    }
 }

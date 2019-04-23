@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router;
-
-import android.app.Activity;
-
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+package com.github.vase4kin.teamcityapp.login.router
 
 /**
- * Impl of {@link LoginRouter}
+ * [com.github.vase4kin.teamcityapp.login.view.LoginActivity] router
  */
-public class LoginRouterImpl implements LoginRouter {
-
-    private Activity mActivity;
-
-    public LoginRouterImpl(Activity mActivity) {
-        this.mActivity = mActivity;
-    }
+interface LoginRouter {
 
     /**
-     * {@inheritDoc}
+     * Open root projects activity for the first start
      */
-    @Override
-    public void openProjectsRootPageForFirstStart() {
-        RootProjectsActivity.startForTheFirstStart(mActivity);
-    }
+    fun openProjectsRootPageForFirstStart()
 }

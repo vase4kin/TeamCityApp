@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.tracker;
+package com.github.vase4kin.teamcityapp.login.tracker
 
-import com.github.vase4kin.teamcityapp.account.create.tracker.FirebaseCreateAccountTrackerImpl;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.github.vase4kin.teamcityapp.account.create.tracker.FirebaseCreateAccountTrackerImpl
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
- * Tracker fabric impl of {@link LoginTracker}
+ * Tracker fabric impl of [LoginTracker]
  */
-public class FirebaseLoginTrackerImpl extends FirebaseCreateAccountTrackerImpl implements LoginTracker {
-
-    public FirebaseLoginTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        super(firebaseAnalytics);
-    }
+class FirebaseLoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : FirebaseCreateAccountTrackerImpl(firebaseAnalytics), LoginTracker {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void trackView() {
-        firebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null);
+    override fun trackView() {
+        firebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null)
     }
 
 }

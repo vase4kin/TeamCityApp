@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router;
+package com.github.vase4kin.teamcityapp.login.dagger
 
-/**
- * {@link com.github.vase4kin.teamcityapp.login.view.LoginActivity} router
- */
-public interface LoginRouter {
+import javax.inject.Scope
 
-    /**
-     * Open root projects activity for the first start
-     */
-    void openProjectsRootPageForFirstStart();
-}
+@Scope
+annotation class LoginActivityScope

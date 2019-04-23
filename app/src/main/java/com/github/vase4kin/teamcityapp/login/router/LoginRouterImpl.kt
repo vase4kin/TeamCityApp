@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.presenter;
+package com.github.vase4kin.teamcityapp.login.router
+
+import android.app.Activity
+
+import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 
 /**
- * Manages {@link com.github.vase4kin.teamcityapp.login.view.LoginActivity}
+ * Impl of [LoginRouter]
  */
-public interface LoginPresenter {
+class LoginRouterImpl(private val activity: Activity) : LoginRouter {
 
     /**
-     * handle activity onCreate callback
+     * {@inheritDoc}
      */
-    void onCreate();
-
-    /**
-     * handle activity onDestroy callback
-     */
-    void onDestroy();
-
-    /**
-     * handle activity onResume callback
-     */
-    void onResume();
+    override fun openProjectsRootPageForFirstStart() {
+        RootProjectsActivity.startForTheFirstStart(activity)
+    }
 }
