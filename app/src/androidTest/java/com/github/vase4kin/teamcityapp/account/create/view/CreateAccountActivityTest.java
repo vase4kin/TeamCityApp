@@ -130,7 +130,7 @@ public class CreateAccountActivityTest {
     @Before
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.getAppInjector().sharedUserStorage().clearAll();
+        app.getRestApiInjector().sharedUserStorage().clearAll();
         when(clientBase.newCall(Matchers.any(Request.class))).thenReturn(call);
         when(unsafeOkHttpClient.newCall(Matchers.any(Request.class))).thenReturn(call);
         activityRule.launchActivity(null);
@@ -140,20 +140,17 @@ public class CreateAccountActivityTest {
      * Verifies that user can be logged in as guest user with correct account url
      */
     @Test
-    public void testUserCanCreateGuestUserAccountWithCorrectUrl() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                callbackArgumentCaptor.getValue().onResponse(
-                        call,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(200)
-                                .message("")
-                                .build());
-                return null;
-            }
+    public void testUserCanCreateGuestUserAccountWithCorrectUrl() {
+        doAnswer(invocation -> {
+            callbackArgumentCaptor.getValue().onResponse(
+                    call,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(200)
+                            .message("")
+                            .build());
+            return null;
         }).when(call).enqueue(callbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
