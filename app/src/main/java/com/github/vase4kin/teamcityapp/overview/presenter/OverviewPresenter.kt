@@ -14,34 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.router;
+package com.github.vase4kin.teamcityapp.overview.presenter
 
-import androidx.annotation.NonNull;
+import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter
+import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter
 
 /**
- * Router to handle navigation
+ * Presenter to handle logic for [com.github.vase4kin.teamcityapp.overview.view.OverviewFragment]
  */
-public interface NavigationRouter {
+interface OverviewPresenter : BaseMenuPresenter, BasePresenter {
 
     /**
-     * Start build list activity
-     *
-     * @param name - Build type title
-     * @param id   - Build type id
+     * Handle on start behavior
      */
-    void startBuildListActivity(@NonNull String name, @NonNull String id);
+    fun onStart()
 
     /**
-     * Start navigation activity
-     * @param name - Project id
-     * @param id - Project id
+     * Handle on stop behavior
      */
-    void startNavigationActivity(@NonNull String name, @NonNull String id);
+    fun onStop()
 
     /**
-     * Start projects activity
+     * Handle on resume behavior
      */
-    void startProjectActivity();
-
-    void openRateTheApp();
+    fun onResume()
 }

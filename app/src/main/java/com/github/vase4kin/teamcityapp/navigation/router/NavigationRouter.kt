@@ -14,10 +14,32 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.navigation.router
 
 /**
- * Text copied event sending/receiving by {@link org.greenrobot.eventbus.EventBus}
+ * Router to handle navigation
  */
-public class TextCopiedEvent {
+interface NavigationRouter {
+
+    /**
+     * Start build list activity
+     *
+     * @param name - Build type title
+     * @param id   - Build type id
+     */
+    fun startBuildListActivity(name: String, id: String)
+
+    /**
+     * Start navigation activity
+     * @param name - Project id
+     * @param id - Project id
+     */
+    fun startNavigationActivity(name: String, id: String)
+
+    /**
+     * Start projects activity
+     */
+    fun startProjectActivity()
+
+    fun openRateTheApp()
 }

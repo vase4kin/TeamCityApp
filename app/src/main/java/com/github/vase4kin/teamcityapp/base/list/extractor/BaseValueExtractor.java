@@ -20,11 +20,12 @@ import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
+import com.github.vase4kin.teamcityapp.overview.data.OverviewValueExtractor;
 
 /**
  * Base bundle value extractor interface
  */
-public interface BaseValueExtractor {
+public interface BaseValueExtractor extends OverviewValueExtractor {
 
     /**
      * @return Build type id

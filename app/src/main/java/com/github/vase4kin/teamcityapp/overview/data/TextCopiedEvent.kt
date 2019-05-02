@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.overview.data
 
-public class NavigateToProjectEvent {
-}
+/**
+ * Text copied event sending/receiving by [org.greenrobot.eventbus.EventBus]
+ */
+class TextCopiedEvent

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.overview.data
 
-public class StartBuildsListActivityEvent {
-
-}
+class StartProjectActivityEvent

@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.presenter;
+package com.github.vase4kin.teamcityapp.overview.data
 
-import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter;
-import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter;
-
-/**
- * Presenter to handle logic for {@link com.github.vase4kin.teamcityapp.overview.view.OverviewFragment}
- */
-public interface OverviewPresenter extends BaseMenuPresenter, BasePresenter {
-
-    /**
-     * Handle on start behavior
-     */
-    void onStart();
-
-    /**
-     * Handle on stop behavior
-     */
-    void onStop();
-
-    /**
-     * Handle on resume behavior
-     */
-    void onResume();
-}
+class StartBuildsListActivityEvent

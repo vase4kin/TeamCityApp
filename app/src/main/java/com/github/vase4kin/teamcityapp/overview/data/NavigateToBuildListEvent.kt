@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.overview.data
 
-/**
- * Restart build event sending/receiving by {@link de.greenrobot.event.EventBus}
- */
-public class RestartBuildEvent {
-}
+class NavigateToBuildListEvent

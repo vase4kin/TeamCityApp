@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.overview.data
 
-/**
- * Stop build event sending/receiving by {@link de.greenrobot.event.EventBus}
- */
-public class StopBuildEvent {
-}
+class NavigateToProjectEvent

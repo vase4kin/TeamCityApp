@@ -17,10 +17,8 @@
 package com.github.vase4kin.teamcityapp.overview.dagger;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
@@ -30,11 +28,11 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewInteractorImpl;
-import com.github.vase4kin.teamcityapp.overview.tracker.FabricOverviewTrackerImpl;
+import com.github.vase4kin.teamcityapp.overview.data.OverviewValueExtractor;
 import com.github.vase4kin.teamcityapp.overview.tracker.FirebaseOverviewTrackerImpl;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
-import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTrackerImpl;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewAdapter;
+import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
@@ -43,24 +41,14 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Map;
-import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import dagger.multibindings.IntoSet;
 
 @Module
 public class OverviewModule {
-
-    private View mView;
-    private Fragment mFragment;
-
-    public OverviewModule(View mView, Fragment mFragment) {
-        this.mView = mView;
-        this.mFragment = mFragment;
-    }
 
     @Provides
     OverViewInteractor providesOverViewDataManager(Repository repository,
@@ -71,13 +59,13 @@ public class OverviewModule {
     }
 
     @Provides
-    BaseValueExtractor providesBaseValueExtractor() {
-        return new BaseValueExtractorImpl(mFragment.getArguments());
+    OverviewValueExtractor providesBaseValueExtractor(OverviewFragment fragment) {
+        return new BaseValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides
-    OverviewView providesBaseListView(OverviewAdapter adapter) {
-        return new OverviewViewImpl(mView, (AppCompatActivity) mFragment.getActivity(), adapter);
+    OverviewView providesBaseListView(OverviewAdapter adapter, OverviewFragment fragment) {
+        return new OverviewViewImpl(fragment.getView(), (AppCompatActivity) fragment.getActivity(), adapter);
     }
 
     @Provides
@@ -92,20 +80,8 @@ public class OverviewModule {
         return new OverviewViewHolderFactory();
     }
 
-    @IntoSet
-    @Provides
-    OverviewTracker providesFabricViewTracker() {
-        return new FabricOverviewTrackerImpl();
-    }
-
-    @IntoSet
     @Provides
     OverviewTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseOverviewTrackerImpl(firebaseAnalytics);
-    }
-
-    @Provides
-    OverviewTracker providesViewTracker(Set<OverviewTracker> trackers) {
-        return new OverviewTrackerImpl(trackers);
     }
 }

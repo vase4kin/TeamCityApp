@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.overview.dagger
 
-public class StartProjectActivityEvent {
+import javax.inject.Scope
 
-}
+@Scope
+annotation class OverviewFragmentScope

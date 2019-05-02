@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.data;
+package com.github.vase4kin.teamcityapp.properties.dagger
 
-public class NavigateToBuildListEvent {
-}
+import javax.inject.Scope
+
+@Scope
+annotation class PropertiesFragmentScope
