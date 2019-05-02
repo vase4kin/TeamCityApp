@@ -13,25 +13,32 @@ import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
 import com.github.vase4kin.teamcityapp.overview.dagger.OverviewFragmentScope
 import com.github.vase4kin.teamcityapp.overview.dagger.OverviewModule
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
+import com.github.vase4kin.teamcityapp.properties.dagger.PropertiesFragmentScope
+import com.github.vase4kin.teamcityapp.properties.dagger.PropertiesModule
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class BuildDetailsFragmentsBindingModule {
 
-    @ArtifactFragmentScope
-    @ContributesAndroidInjector(modules = [ArtifactsModule::class])
-    abstract fun artifactListFragment(): ArtifactListFragment
-
-    @BuildLogFragmentScope
-    @ContributesAndroidInjector(modules = [BuildLogModule::class, BuildLogInteractorModule::class])
-    abstract fun buildLogFragment(): BuildLogFragment
+    @OverviewFragmentScope
+    @ContributesAndroidInjector(modules = [OverviewModule::class])
+    abstract fun overviewFragment(): OverviewFragment
 
     @ChangesFragmentScope
     @ContributesAndroidInjector(modules = [ChangesModule::class])
     abstract fun changesFragment(): ChangesFragment
 
-    @OverviewFragmentScope
-    @ContributesAndroidInjector(modules = [OverviewModule::class])
-    abstract fun overviewFragment(): OverviewFragment
+    @BuildLogFragmentScope
+    @ContributesAndroidInjector(modules = [BuildLogModule::class, BuildLogInteractorModule::class])
+    abstract fun buildLogFragment(): BuildLogFragment
+
+    @PropertiesFragmentScope
+    @ContributesAndroidInjector(modules = [PropertiesModule::class])
+    abstract fun propertiesFragment(): PropertiesFragment
+
+    @ArtifactFragmentScope
+    @ContributesAndroidInjector(modules = [ArtifactsModule::class])
+    abstract fun artifactListFragment(): ArtifactListFragment
 }

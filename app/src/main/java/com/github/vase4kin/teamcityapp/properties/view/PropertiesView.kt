@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.properties.view;
+package com.github.vase4kin.teamcityapp.properties.view
 
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel
 
+interface PropertiesView : BaseListView<PropertiesDataModel> {
 
-public interface PropertiesView extends BaseListView<PropertiesDataModel> {
+    fun setListener(listener: Listener)
 
-    void setListener(Listener listener);
-
-    void showCopyValueBottomSheet(String title, String value);
+    fun showCopyValueBottomSheet(title: String, value: String)
 
     interface Listener {
 
         /**
          * On card click
          */
-        void onCardClick(String header, String value);
+        fun onCardClick(header: String, value: String)
     }
 }

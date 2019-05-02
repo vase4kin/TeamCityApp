@@ -16,20 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.properties.dagger;
 
-import android.view.View;
-
-import androidx.fragment.app.Fragment;
-
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManagerImpl;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractor;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesAdapter;
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewImpl;
@@ -44,27 +41,19 @@ import dagger.multibindings.IntoMap;
 @Module
 public class PropertiesModule {
 
-    private View mView;
-    private Fragment mFragment;
-
-    public PropertiesModule(View mView, Fragment mFragment) {
-        this.mView = mView;
-        this.mFragment = mFragment;
-    }
-
     @Provides
     PropertiesDataManager providesPropertiesDataManager() {
         return new PropertiesDataManagerImpl();
     }
 
     @Provides
-    BaseValueExtractor providesBaseValueExtractor() {
-        return new BaseValueExtractorImpl(mFragment.getArguments());
+    PropertiesValueExtractor providesBaseValueExtractor(PropertiesFragment fragment) {
+        return new PropertiesValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides
-    PropertiesView providesPropertiesView(PropertiesAdapter adapter) {
-        return new PropertiesViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_parameters, adapter);
+    PropertiesView providesPropertiesView(PropertiesFragment fragment, PropertiesAdapter adapter) {
+        return new PropertiesViewImpl(fragment.getView(), fragment.getActivity(), R.string.empty_list_message_parameters, adapter);
     }
 
     @Provides

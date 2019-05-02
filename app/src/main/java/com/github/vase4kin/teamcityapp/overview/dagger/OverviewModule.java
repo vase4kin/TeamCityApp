@@ -16,19 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.overview.dagger;
 
-import android.content.Context;
-
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewInteractorImpl;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewValueExtractor;
+import com.github.vase4kin.teamcityapp.overview.data.OverviewValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.overview.tracker.FirebaseOverviewTrackerImpl;
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewAdapter;
@@ -53,14 +50,13 @@ public class OverviewModule {
     @Provides
     OverViewInteractor providesOverViewDataManager(Repository repository,
                                                    EventBus eventBus,
-                                                   BaseValueExtractor valueExtractor,
-                                                   Context context) {
-        return new OverviewInteractorImpl(repository, eventBus, valueExtractor, context);
+                                                   OverviewValueExtractor valueExtractor) {
+        return new OverviewInteractorImpl(repository, eventBus, valueExtractor);
     }
 
     @Provides
     OverviewValueExtractor providesBaseValueExtractor(OverviewFragment fragment) {
-        return new BaseValueExtractorImpl(fragment.getArguments());
+        return new OverviewValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides
