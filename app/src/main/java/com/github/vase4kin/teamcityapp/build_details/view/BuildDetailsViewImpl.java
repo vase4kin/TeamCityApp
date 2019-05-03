@@ -116,7 +116,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
             fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.Companion.newInstance(mBuildDetails.toBuild(), mBuildDetails.getArtifactsHref()));
         }
         if (mBuildDetails.hasSnapshotDependencies()) {
-            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.newInstance(mBuildDetails.getId()));
+            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.Companion.newInstance(mBuildDetails.getId()));
         }
     }
 

@@ -3,6 +3,7 @@ package com.github.vase4kin.teamcityapp.build_details.dagger
 import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactFragmentScope
 import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactsModule
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
+import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogFragmentScope
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogModule
@@ -16,6 +17,9 @@ import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
 import com.github.vase4kin.teamcityapp.properties.dagger.PropertiesFragmentScope
 import com.github.vase4kin.teamcityapp.properties.dagger.PropertiesModule
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.dagger.SnapshotDependenciesFragmentScope
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.dagger.SnapshotDependenciesModule
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -41,4 +45,8 @@ abstract class BuildDetailsFragmentsBindingModule {
     @ArtifactFragmentScope
     @ContributesAndroidInjector(modules = [ArtifactsModule::class])
     abstract fun artifactListFragment(): ArtifactListFragment
+
+    @SnapshotDependenciesFragmentScope
+    @ContributesAndroidInjector(modules = [SnapshotDependenciesModule::class, BuildListAdapterModule::class])
+    abstract fun snapshotDependenciesFragment(): SnapshotDependenciesFragment
 }

@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.snapshot_dependencies.router;
+package com.github.vase4kin.teamcityapp.snapshot_dependencies.router
 
-import android.app.Activity;
+import android.app.Activity
 
-import androidx.annotation.Nullable;
-
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity;
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl
 
 /**
  * Router for snapshot dependencies build list
  */
-public class SnapshotDependenciesRouter extends BuildListRouterImpl {
-
-    public SnapshotDependenciesRouter(Activity mActivity) {
-        super(mActivity);
-    }
+class SnapshotDependenciesRouterImpl(activity: Activity) : BuildListRouterImpl(activity), SnapshotDependenciesRouter {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void openBuildPage(Build build, @Nullable String buildTypeName) {
-        BuildDetailsActivity.Companion.startNotAsNewTask(mActivity, build, buildTypeName);
+    override fun openBuildPage(build: Build, buildTypeName: String?) {
+        BuildDetailsActivity.startNotAsNewTask(mActivity, build, buildTypeName)
     }
 }
+
+interface SnapshotDependenciesRouter {
+    fun openBuildPage(build: Build, buildTypeName: String?);
+}
+
+
