@@ -14,28 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.router;
+package com.github.vase4kin.teamcityapp.tests.presenter
 
-import android.app.Activity;
-
-import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity;
+import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter
+import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter
 
 /**
- * Impl of {@link TestsRouter}
+ * Presenter to handle logic of [com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment]
  */
-public class TestsRouterImpl implements TestsRouter {
-
-    private Activity mActivity;
-
-    public TestsRouterImpl(Activity mActivity) {
-        this.mActivity = mActivity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void openFailedTest(String url) {
-        TestDetailsActivity.Companion.openFailedTest(url, mActivity);
-    }
-}
+interface TestsPresenter : BaseListPresenter, BaseMenuPresenter

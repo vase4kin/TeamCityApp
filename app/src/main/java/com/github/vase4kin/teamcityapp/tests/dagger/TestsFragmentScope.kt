@@ -14,17 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.router;
+package com.github.vase4kin.teamcityapp.tests.dagger
 
-/**
- * Router to handle {@link com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment} navigation
- */
-public interface TestsRouter {
+import javax.inject.Scope
 
-    /**
-     * Start {@link com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity}
-     *
-     * @param url - Test details url
-     */
-    void openFailedTest(String url);
-}
+@Scope
+annotation class TestsFragmentScope

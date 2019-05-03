@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.dagger;
+package com.github.vase4kin.teamcityapp.tests.router
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
+import android.app.Activity
 
-import dagger.Component;
+import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
 
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = TestsModule.class)
-public interface TestsComponent {
+/**
+ * Impl of [TestsRouter]
+ */
+class TestsRouterImpl(private val activity: Activity) : TestsRouter {
 
-    void inject(TestOccurrencesFragment testOccurrencesFragment);
+    /**
+     * {@inheritDoc}
+     */
+    override fun openFailedTest(url: String) {
+        TestDetailsActivity.openFailedTest(url, activity)
+    }
 }

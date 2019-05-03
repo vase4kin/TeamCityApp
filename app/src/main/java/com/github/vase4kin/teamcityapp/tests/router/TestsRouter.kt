@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.presenter;
-
-import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenter;
-import com.github.vase4kin.teamcityapp.base.presenter.BaseMenuPresenter;
+package com.github.vase4kin.teamcityapp.tests.router
 
 /**
- * Presenter to handle logic of {@link com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment}
+ * Router to handle [com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment] navigation
  */
-public interface TestsPresenter extends BaseListPresenter, BaseMenuPresenter {
+interface TestsRouter {
+
+    /**
+     * Start [com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity]
+     *
+     * @param url - Test details url
+     */
+    fun openFailedTest(url: String)
 }

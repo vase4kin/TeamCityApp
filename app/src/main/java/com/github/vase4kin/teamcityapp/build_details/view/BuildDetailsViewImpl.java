@@ -102,7 +102,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
         fragmentAdapter.add(R.string.tab_overview, OverviewFragment.Companion.newInstance(mBuildDetails.toBuild()));
         fragmentAdapter.add(R.string.tab_changes, ChangesFragment.Companion.newInstance(mBuildDetails.getChangesHref()));
         if (mBuildDetails.hasTests()) {
-            fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.newInstance(
+            fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.Companion.newInstance(
                     mBuildDetails.getTestsHref(),
                     mBuildDetails.getPassedTestCount(),
                     mBuildDetails.getFailedTestCount(),
