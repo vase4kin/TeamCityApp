@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.bottomsheet_dialog;
+package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,39 +29,38 @@ import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger.BottomSheetModule;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger.DaggerBottomSheetComponent;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.presenter.BottomSheetPresenterImpl;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import javax.inject.Inject;
 
 /**
  * Bottom sheet dialog
  */
-public class BottomSheetDialog extends BottomSheetDialogFragment {
+public class BottomSheetDialogFragment extends com.google.android.material.bottomsheet.BottomSheetDialogFragment {
 
     @Inject
     BottomSheetPresenterImpl presenter;
 
-    public BottomSheetDialog() {
+    public BottomSheetDialogFragment() {
     }
 
-    public static BottomSheetDialog createBottomSheetDialog(String title, String description, int menuType) {
+    public static BottomSheetDialogFragment createBottomSheetDialog(String title, String description, int menuType) {
         return createBottomSheetDialog(title, new String[]{description}, menuType);
     }
 
-    public static BottomSheetDialog createBottomSheetDialog(String title, String[] descriptions, int menuType) {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog();
+    public static BottomSheetDialogFragment createBottomSheetDialog(String title, String[] descriptions, int menuType) {
+        BottomSheetDialogFragment bottomSheetDialogFragment = new BottomSheetDialogFragment();
         Bundle bundle = new Bundle();
         bundle.putString(BottomSheetModule.ARG_TITLE, title);
         bundle.putStringArray(BottomSheetModule.ARG_DESCRIPTION, descriptions);
         bundle.putInt(BottomSheetModule.ARG_BOTTOM_SHEET_TYPE, menuType);
-        bottomSheetDialog.setArguments(bundle);
-        return bottomSheetDialog;
+        bottomSheetDialogFragment.setArguments(bundle);
+        return bottomSheetDialogFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
+        setStyle(com.google.android.material.bottomsheet.BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
     }
 
     @Nullable
