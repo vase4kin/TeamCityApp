@@ -35,6 +35,10 @@ import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationBaseModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentScope
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
@@ -113,4 +117,8 @@ abstract class ActivityBindingModule {
     @RootActivityScope
     @ContributesAndroidInjector(modules = [RootModule::class, BuildLogInteractorModule::class])
     abstract fun rootProjectsActivity(): RootProjectsActivity
+
+    @NavigationFragmentScope
+    @ContributesAndroidInjector(modules = [NavigationFragmentModule::class, NavigationBaseModule::class])
+    abstract fun navigationListFragment(): NavigationListFragment
 }
