@@ -17,14 +17,13 @@
 package com.github.vase4kin.teamcityapp.navigation.dagger;
 
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
 import com.github.vase4kin.teamcityapp.drawer.dagger.CustomDrawerModule;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 
 import dagger.Component;
 
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = {NavigationModule.class, CustomDrawerModule.class})
+@NavigationActivityScope
+@Component(dependencies = RestApiComponent.class, modules = {NavigationModule.class, NavigationBaseModule.class, CustomDrawerModule.class})
 public interface NavigationComponent {
 
     void inject(NavigationActivity navigationActivity);

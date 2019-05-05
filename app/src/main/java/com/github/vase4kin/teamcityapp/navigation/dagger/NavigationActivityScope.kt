@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.dagger;
+package com.github.vase4kin.teamcityapp.navigation.dagger
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment;
+import javax.inject.Scope
 
-import dagger.Component;
-
-@NavigationFragmentScope
-@Component(dependencies = RestApiComponent.class, modules = {NavigationModule.class, NavigationBaseModule.class})
-public interface NavigationFragmentComponent {
-
-    void inject(NavigationListFragment navigationListFragment);
-}
+@Scope
+annotation class NavigationActivityScope

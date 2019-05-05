@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.dagger.scopes;
+package com.github.vase4kin.teamcityapp.navigation.dagger
 
-import javax.inject.Scope;
+import javax.inject.Scope
 
 @Scope
-public @interface PresenterScope {
-}
+annotation class NavigationFragmentScope
