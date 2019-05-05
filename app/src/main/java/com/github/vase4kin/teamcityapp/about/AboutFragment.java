@@ -79,7 +79,7 @@ public class AboutFragment extends MaterialAboutFragment {
                         .setOnClickAction(new MaterialAboutItemOnClickAction() {
                             @Override
                             public void onClick() {
-                                AboutLibrariesActivity.start(getActivity());
+                                AboutLibrariesActivity.Companion.start(getActivity());
                             }
                         })
                         .build());

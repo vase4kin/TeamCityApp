@@ -44,7 +44,7 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      */
     @Override
     public void reopenBuildTabsActivity(Build build, String buildTypeName) {
-        BuildDetailsActivity.start(mActivity, build, buildTypeName);
+        BuildDetailsActivity.Companion.start(mActivity, build, buildTypeName);
     }
 
     /**
@@ -64,7 +64,7 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      */
     @Override
     public void startBuildListActivity(String name, String id, @Nullable BuildListFilter filter) {
-        BuildListActivity.start(name, id, filter, mActivity);
+        BuildListActivity.Companion.start(name, id, filter, mActivity);
     }
 
     /**
@@ -72,6 +72,6 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      */
     @Override
     public void startProjectActivity(String name, String id) {
-        NavigationActivity.start(name, id, mActivity);
+        NavigationActivity.Companion.start(name, id, mActivity);
     }
 }

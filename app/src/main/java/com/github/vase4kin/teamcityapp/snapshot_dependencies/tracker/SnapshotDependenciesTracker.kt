@@ -1,0 +1,10 @@
+package com.github.vase4kin.teamcityapp.snapshot_dependencies.tracker
+
+import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
+import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTrackerImpl
+import com.google.firebase.analytics.FirebaseAnalytics
+
+interface SnapshotDependenciesTracker : BuildListTracker
+
+class SnapshotDependenciesTrackerImpl(firebaseAnalytics: FirebaseAnalytics
+) : FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_SNAPSHOT_DEPENDECIES), SnapshotDependenciesTracker

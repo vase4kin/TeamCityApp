@@ -35,7 +35,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
 
     /**
@@ -45,7 +45,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
     public void trackUserConfirmedCancel(boolean isReAddToTheQueue) {
         Bundle bundle = new Bundle();
         bundle.putBoolean(PARAM_IS_RE_ADD_TO_QUEUE, isReAddToTheQueue);
-        mFirebaseAnalytics.logEvent(EVENT_USER_CONFIRMED_BUILD_CANCELLATION, bundle);
+        firebaseAnalytics.logEvent(EVENT_USER_CONFIRMED_BUILD_CANCELLATION, bundle);
     }
 
     /**
@@ -53,7 +53,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserGetsForbiddenErrorOnBuildCancel() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_CANCELLATION, null);
+        firebaseAnalytics.logEvent(EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_CANCELLATION, null);
     }
 
     /**
@@ -61,7 +61,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserGetsServerErrorOnBuildCancel() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_CANCELLATION, null);
+        firebaseAnalytics.logEvent(EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_CANCELLATION, null);
     }
 
     /**
@@ -69,7 +69,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserCanceledBuildSuccessfully() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_CANCELLED_BUILD_SUCCESSFULLY, null);
+        firebaseAnalytics.logEvent(EVENT_USER_CANCELLED_BUILD_SUCCESSFULLY, null);
     }
 
     /**
@@ -77,7 +77,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserGetsForbiddenErrorOnBuildRestart() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_RESTARTING, null);
+        firebaseAnalytics.logEvent(EVENT_USER_GETS_FORBIDDEN_ERROR_ON_BUILD_RESTARTING, null);
     }
 
     /**
@@ -85,7 +85,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserGetsServerErrorOnBuildRestart() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_RESTARTING, null);
+        firebaseAnalytics.logEvent(EVENT_USER_GETS_SERVER_ERROR_ON_BUILD_RESTARTING, null);
     }
 
     /**
@@ -93,7 +93,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserRestartedBuildSuccessfully() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_RESTARTED_BUILD_SUCCESSFULLY, null);
+        firebaseAnalytics.logEvent(EVENT_USER_RESTARTED_BUILD_SUCCESSFULLY, null);
     }
 
     /**
@@ -101,7 +101,7 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserWantsToSeeQueuedBuildDetails() {
-        mFirebaseAnalytics.logEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS_AFTER_RESTARTING, null);
+        firebaseAnalytics.logEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS_AFTER_RESTARTING, null);
     }
 
     /**
@@ -109,6 +109,6 @@ public class FirebaseBuildDetailsTrackerImpl extends BaseFirebaseTracker impleme
      */
     @Override
     public void trackUserFailedToSeeQueuedBuildDetails() {
-        mFirebaseAnalytics.logEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS_FAILED_AFTER_RESTARTING, null);
+        firebaseAnalytics.logEvent(EVENT_SHOW_QUEUED_BUILD_DETAILS_FAILED_AFTER_RESTARTING, null);
     }
 }

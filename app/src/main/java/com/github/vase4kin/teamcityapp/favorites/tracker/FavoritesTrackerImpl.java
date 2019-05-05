@@ -33,7 +33,7 @@ public class FavoritesTrackerImpl extends BaseFirebaseTracker implements Favorit
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
 
     /**
@@ -41,7 +41,7 @@ public class FavoritesTrackerImpl extends BaseFirebaseTracker implements Favorit
      */
     @Override
     public void trackUserClickOnFab() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_CLICKS_ON_FAB, null);
+        firebaseAnalytics.logEvent(EVENT_USER_CLICKS_ON_FAB, null);
     }
 
     /**
@@ -49,7 +49,7 @@ public class FavoritesTrackerImpl extends BaseFirebaseTracker implements Favorit
      */
     @Override
     public void trackUserClicksOnSnackBarAction() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_CLICKS_SNACK_BAR_ACTION, null);
+        firebaseAnalytics.logEvent(EVENT_USER_CLICKS_SNACK_BAR_ACTION, null);
     }
 
     /**
@@ -57,6 +57,6 @@ public class FavoritesTrackerImpl extends BaseFirebaseTracker implements Favorit
      */
     @Override
     public void trackUserOpensBuildType() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_OPENS_BUILD_TYPE, null);
+        firebaseAnalytics.logEvent(EVENT_USER_OPENS_BUILD_TYPE, null);
     }
 }

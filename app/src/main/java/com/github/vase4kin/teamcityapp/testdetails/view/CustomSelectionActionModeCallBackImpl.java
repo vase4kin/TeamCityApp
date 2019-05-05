@@ -27,7 +27,7 @@ public class CustomSelectionActionModeCallBackImpl implements ActionMode.Callbac
 
     private OnActionModeListener mOnActionModeListener;
 
-    public CustomSelectionActionModeCallBackImpl(OnActionModeListener onActionModeListener) {
+    CustomSelectionActionModeCallBackImpl(OnActionModeListener onActionModeListener) {
         this.mOnActionModeListener = onActionModeListener;
     }
 

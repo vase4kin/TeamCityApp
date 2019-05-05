@@ -29,7 +29,7 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 class SnapshotDependenciesInteractorImpl(
         repository: Repository,
         storage: SharedUserStorage
-) : BuildListDataManagerImpl(repository, storage), BuildListDataManager {
+) : BuildListDataManagerImpl(repository, storage), SnapshotDependenciesInteractor {
 
     /**
      * {@inheritDoc}
@@ -38,3 +38,5 @@ class SnapshotDependenciesInteractorImpl(
         loadNotSortedBuilds(repository.listSnapshotBuilds(id, update), loadingListener)
     }
 }
+
+interface SnapshotDependenciesInteractor : BuildListDataManager

@@ -33,7 +33,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserRunBuildSuccess() {
-        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_SUCCESS, null);
+        firebaseAnalytics.logEvent(EVENT_RUN_BUILD_SUCCESS, null);
     }
 
     /**
@@ -41,7 +41,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserRunBuildWithCustomParamsSuccess() {
-        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_SUCCESS_WITH_CUSTOM_PARAMETERS, null);
+        firebaseAnalytics.logEvent(EVENT_RUN_BUILD_SUCCESS_WITH_CUSTOM_PARAMETERS, null);
     }
 
     /**
@@ -49,7 +49,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserRunBuildFailed() {
-        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_FAILED, null);
+        firebaseAnalytics.logEvent(EVENT_RUN_BUILD_FAILED, null);
     }
 
     /**
@@ -57,7 +57,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserRunBuildFailedForbidden() {
-        mFirebaseAnalytics.logEvent(EVENT_RUN_BUILD_FAILED_FORBIDDEN, null);
+        firebaseAnalytics.logEvent(EVENT_RUN_BUILD_FAILED_FORBIDDEN, null);
     }
 
     /**
@@ -65,7 +65,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME_RUN_BUILD, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME_RUN_BUILD, null);
     }
 
     /**
@@ -73,7 +73,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserClicksOnAddNewBuildParamButton() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_CLICKS_ADD_NEW_BUILD_PARAMETER_BUTTON, null);
+        firebaseAnalytics.logEvent(EVENT_USER_CLICKS_ADD_NEW_BUILD_PARAMETER_BUTTON, null);
     }
 
     /**
@@ -81,7 +81,7 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserClicksOnClearAllBuildParamsButton() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_CLICKS_CLEAR_ALL_BUILD_PARAMETERS_BUTTON, null);
+        firebaseAnalytics.logEvent(EVENT_USER_CLICKS_CLEAR_ALL_BUILD_PARAMETERS_BUTTON, null);
     }
 
     /**
@@ -89,6 +89,6 @@ public class FirebaseRunBuildTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserAddsBuildParam() {
-        mFirebaseAnalytics.logEvent(EVENT_USER_ADDS_NEW_BUILD_PARAMETER, null);
+        firebaseAnalytics.logEvent(EVENT_USER_ADDS_NEW_BUILD_PARAMETER, null);
     }
 }

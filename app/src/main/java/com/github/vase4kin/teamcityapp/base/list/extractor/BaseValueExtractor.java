@@ -50,7 +50,7 @@ public interface BaseValueExtractor {
     /**
      * @return determines if the bundle is null or not
      */
-    boolean isBundleNull();
+    boolean isBundleNullOrEmpty();
 
     /**
      * Base value extractor stub
@@ -72,7 +72,7 @@ public interface BaseValueExtractor {
         }
 
         @Override
-        public boolean isBundleNull() {
+        public boolean isBundleNullOrEmpty() {
             return true;
         }
 

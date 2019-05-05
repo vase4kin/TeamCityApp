@@ -75,7 +75,7 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
                 public void onSectionClick(int position) {
                     final String buildTypeName = dataModel.getBuildTypeName(position);
                     final String buildTypeId = dataModel.getBuildTypeId(position);
-                    BuildListActivity.start(buildTypeName, buildTypeId, null, mActivity);
+                    BuildListActivity.Companion.start(buildTypeName, buildTypeId, null, mActivity);
                 }
             });
         }

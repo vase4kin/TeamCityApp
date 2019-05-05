@@ -58,7 +58,7 @@ public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerV
      * Setting default color for drawer
      */
     private void setBuildTabColor() {
-        if (!mValueExtractor.isBundleNull()) {
+        if (!mValueExtractor.isBundleNullOrEmpty()) {
             BuildDetails buildDetails = mValueExtractor.getBuildDetails();
             if (buildDetails.isRunning()) {
                 mView.setDefaultColors(R.color.running_tool_bar_color);

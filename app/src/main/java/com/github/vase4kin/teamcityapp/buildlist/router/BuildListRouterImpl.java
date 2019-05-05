@@ -42,7 +42,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openBuildPage(Build build, @Nullable String buildTypeName) {
-        BuildDetailsActivity.start(mActivity, build, buildTypeName);
+        BuildDetailsActivity.Companion.start(mActivity, build, buildTypeName);
     }
 
     /**
@@ -50,7 +50,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openRunBuildPage(String buildTypeId) {
-        RunBuildActivity.startForResult(mActivity, buildTypeId);
+        RunBuildActivity.Companion.startForResult(mActivity, buildTypeId);
     }
 
     /**
@@ -58,7 +58,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openFilterBuildsPage(String buildTypeId) {
-        FilterBuildsActivity.startForResult(mActivity, buildTypeId);
+        FilterBuildsActivity.Companion.startForResult(mActivity, buildTypeId);
     }
 
     /**
@@ -66,6 +66,6 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openFavorites() {
-        FavoritesActivity.start(mActivity);
+        FavoritesActivity.Companion.start(mActivity);
     }
 }

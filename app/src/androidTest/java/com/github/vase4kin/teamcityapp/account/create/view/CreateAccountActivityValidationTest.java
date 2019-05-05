@@ -22,7 +22,9 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
+import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
+import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
@@ -61,13 +63,11 @@ public class CreateAccountActivityValidationTest {
     private static final String INPUT_URL = URL.replace("https://", "");
 
     @Rule
-    public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-                @Override
-                public void setComponent(AppComponent appComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setAppInjector(appComponent);
-                }
+    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
+            .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule

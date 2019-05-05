@@ -33,7 +33,7 @@ public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implement
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
 
     /**
@@ -41,7 +41,7 @@ public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implement
      */
     @Override
     public void trackUserClickedOnRateCancel() {
-        mFirebaseAnalytics.logEvent(EVENT_RATE_LATER, null);
+        firebaseAnalytics.logEvent(EVENT_RATE_LATER, null);
     }
 
     /**
@@ -49,7 +49,7 @@ public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implement
      */
     @Override
     public void trackUserClickedOnRateNow() {
-        mFirebaseAnalytics.logEvent(EVENT_RATE_NOW, null);
+        firebaseAnalytics.logEvent(EVENT_RATE_NOW, null);
     }
 
     /**
@@ -57,6 +57,6 @@ public class FirebaseNavigationTrackerImpl extends BaseFirebaseTracker implement
      */
     @Override
     public void trackUserSawRateTheApp() {
-        mFirebaseAnalytics.logEvent(EVENT_RATE_SHOW, null);
+        firebaseAnalytics.logEvent(EVENT_RATE_SHOW, null);
     }
 }
