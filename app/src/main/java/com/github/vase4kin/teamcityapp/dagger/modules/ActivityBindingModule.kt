@@ -27,6 +27,7 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListDrawerModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
+import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesActivityScope
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesDrawerModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesModule
@@ -38,6 +39,9 @@ import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity
+import com.github.vase4kin.teamcityapp.root.dagger.RootActivityScope
+import com.github.vase4kin.teamcityapp.root.dagger.RootModule
+import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
@@ -105,4 +109,8 @@ abstract class ActivityBindingModule {
     @RunBuildActivityScope
     @ContributesAndroidInjector(modules = [RunBuildModule::class])
     abstract fun runBuildActivity(): RunBuildActivity
+
+    @RootActivityScope
+    @ContributesAndroidInjector(modules = [RootModule::class, BuildLogInteractorModule::class])
+    abstract fun rootProjectsActivity(): RootProjectsActivity
 }

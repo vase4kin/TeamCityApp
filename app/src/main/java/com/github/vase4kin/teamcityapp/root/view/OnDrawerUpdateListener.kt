@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.root.tracker;
-
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
-
-import java.util.Set;
+package com.github.vase4kin.teamcityapp.root.view
 
 /**
- * Tracker impl
+ * On drawer update listener
  */
-public class RootTrackerImpl extends BaseViewTracker<RootTracker> implements RootTracker {
+interface OnDrawerUpdateListener {
 
-    public RootTrackerImpl(Set<RootTracker> trackers) {
-        super(trackers);
-    }
-
-    @Override
-    public void trackChangeAccount() {
-        logEvent(new TrackerMethod<RootTracker>() {
-            @Override
-            public void execute(RootTracker tracker) {
-                tracker.trackChangeAccount();
-            }
-        });
-    }
+    /**
+     * On drawer update
+     */
+    fun update()
 }

@@ -57,7 +57,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      */
     @Override
     public void startProjectActivity() {
-        RootProjectsActivity.startWhenNavigateToRootFromDrawer(mActivity);
+        RootProjectsActivity.Companion.startWhenNavigateToRootFromDrawer(mActivity);
     }
 
     @Override

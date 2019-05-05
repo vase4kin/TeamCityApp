@@ -42,7 +42,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startRootProjectsActivity() {
-        RootProjectsActivity.startWhenNavigateToRootFromDrawer(mActivity);
+        RootProjectsActivity.Companion.startWhenNavigateToRootFromDrawer(mActivity);
     }
 
     /**
@@ -50,7 +50,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startRootProjectsActivityWhenSwitchingAccounts() {
-        RootProjectsActivity.startWhenSwitchingAccountsFromDrawer(mActivity);
+        RootProjectsActivity.Companion.startWhenSwitchingAccountsFromDrawer(mActivity);
     }
 
     /**

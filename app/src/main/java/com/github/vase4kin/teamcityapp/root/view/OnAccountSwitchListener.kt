@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.root.view;
-
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+package com.github.vase4kin.teamcityapp.root.view
 
 /**
- * Root drawer view interactions
+ * On switch account listener
  */
-public interface RootDrawerView extends DrawerView {
+interface OnAccountSwitchListener {
 
     /**
-     * Select drawer selection
-     *
-     * @param selection - Drawer selection
+     * Switching account
      */
-    void setDrawerSelection(int selection);
-
-    /**
-     * Show navigation drawer onboarding prompt
-     *
-     * @param listener - Listener to know when prompt is shown
-     */
-    void showNavigationDrawerPrompt(OnboardingManager.OnPromptShownListener listener);
+    fun onAccountSwitch()
 }

@@ -14,35 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.root.presenter;
+package com.github.vase4kin.teamcityapp.root.presenter
 
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenter;
-import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
+import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenter
+import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager
 
 /**
- * Custom {@link DrawerPresenter} for {@link com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity} management
+ * Custom [DrawerPresenter] for [com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity] management
  */
-public interface RootDrawerPresenter extends DrawerPresenter {
+interface RootDrawerPresenter : DrawerPresenter {
 
     /**
      * On resume activity
      */
-    void onResume();
+    fun onResume()
 
     /**
      * On new intent activity
      */
-    void onNewIntent();
+    fun onNewIntent()
 
     /**
      * On account switch
      */
-    void onAccountSwitch();
+    fun onAccountSwitch()
 
     /**
      * Update RootBundleValueManager with new one
      *
      * @param rootBundleValueManager - RootBundleValueManager to update
      */
-    void updateRootBundleValueManager(RootBundleValueManager rootBundleValueManager);
+    fun updateRootBundleValueManager(rootBundleValueManager: RootBundleValueManager)
 }
