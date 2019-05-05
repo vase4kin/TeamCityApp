@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.presenter;
+package com.github.vase4kin.teamcityapp.runbuild.interactor
 
-import com.github.vase4kin.teamcityapp.base.presenter.BasePresenter;
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 
 /**
- * Presenter to manage logic of {@link com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity}
- */
-public interface RunBuildPresenter extends BasePresenter {
+ * Custom loading listener
+ *
+ * @param <T> - Data type
+</T> */
+interface LoadingListenerWithForbiddenSupport<T> : OnLoadingListener<T> {
 
     /**
-     * Handle on resume
+     * On getting 403 error
      */
-    void onResume();
-
-    /**
-     * Handle on back button pressed
-     */
-    void onBackPressed();
+    fun onForbiddenError()
 }

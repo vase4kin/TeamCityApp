@@ -38,6 +38,9 @@ import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity
+import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
+import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
+import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsActivityScope
 import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsDrawerModule
 import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsModule
@@ -98,4 +101,8 @@ abstract class ActivityBindingModule {
     @FilterBuildsActivityScope
     @ContributesAndroidInjector(modules = [FilterBuildsModule::class])
     abstract fun filterBuildsActivity(): FilterBuildsActivity
+
+    @RunBuildActivityScope
+    @ContributesAndroidInjector(modules = [RunBuildModule::class])
+    abstract fun runBuildActivity(): RunBuildActivity
 }

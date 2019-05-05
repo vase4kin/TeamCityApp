@@ -14,17 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.dagger;
+package com.github.vase4kin.teamcityapp.runbuild.router
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
-import com.github.vase4kin.teamcityapp.dagger.scopes.PresenterScope;
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
+/**
+ * Run build activity router
+ */
+interface RunBuildRouter {
 
-import dagger.Component;
+    /**
+     * Close activity with success result
+     *
+     * @param queuedBuildHref - href of queued build
+     */
+    fun closeOnSuccess(queuedBuildHref: String)
 
-@PresenterScope
-@Component(dependencies = RestApiComponent.class, modules = RunBuildModule.class)
-public interface RunBuildComponent {
+    /**
+     * Close activity with cancel result
+     */
+    fun closeOnCancel()
 
-    void inject(RunBuildActivity runBuildActivity);
+    /**
+     * On back button pressed
+     */
+    fun closeOnBackButtonPressed()
+
+    companion object {
+
+        /**
+         * Bundle extra key
+         */
+        const val EXTRA_HREF = "href"
+    }
 }

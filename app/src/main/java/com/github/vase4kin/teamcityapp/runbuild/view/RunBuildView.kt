@@ -14,105 +14,103 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.view;
+package com.github.vase4kin.teamcityapp.runbuild.view
 
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener;
-
-import java.util.List;
+import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener
 
 /**
- * View to handle interaction with {@link RunBuildActivity}
+ * View to handle interaction with [RunBuildActivity]
  */
-public interface RunBuildView {
+interface RunBuildView {
 
     /**
      * Init views
      *
      * @param listener - to handle view interactions
      */
-    void initViews(ViewListener listener);
+    fun initViews(listener: ViewListener)
 
     /**
      * Show posting build progress
      */
-    void showQueuingBuildProgress();
+    fun showQueuingBuildProgress()
 
     /**
      * Hide posting build progress
      */
-    void hideQueuingBuildProgress();
+    fun hideQueuingBuildProgress()
 
     /**
      * Show forbidden error snackbar
      */
-    void showForbiddenErrorSnackbar();
+    fun showForbiddenErrorSnackbar()
 
     /**
      * show error snack bar
      */
-    void showErrorSnackbar();
+    fun showErrorSnackbar()
 
     /**
      * Unbind views
      */
-    void unbindViews();
+    fun unbindViews()
 
     /**
      * Disable agent selection control
      */
-    void disableAgentSelectionControl();
+    fun disableAgentSelectionControl()
 
     /**
      * Enable agent selection control
      */
-    void enableAgentSelectionControl();
+    fun enableAgentSelectionControl()
 
     /**
      * Show selected agent view
      */
-    void showSelectedAgentView();
+    fun showSelectedAgentView()
 
     /**
      * Set agent selection dialog with agents list
      *
      * @param agents - to set with
      */
-    void setAgentListDialogWithAgentsList(List<String> agents);
+    fun setAgentListDialogWithAgentsList(agents: List<String>)
 
     /**
      * Hide loading progress
      */
-    void hideLoadingAgentsProgress();
+    fun hideLoadingAgentsProgress()
 
     /**
      * Show no agent available
      */
-    void showNoAgentsAvailable();
+    fun showNoAgentsAvailable()
 
     /**
      * Show add new parameter dialog
      */
-    void showAddParameterDialog();
+    fun showAddParameterDialog()
 
     /**
      * Hide parameters none text view
      */
-    void hideNoneParametersView();
+    fun hideNoneParametersView()
 
     /**
      * Show parameters none text view
      */
-    void showNoneParametersView();
+    fun showNoneParametersView()
 
     /**
      * Enable clear all parameters button
      */
-    void enableClearAllParametersButton();
+    fun enableClearAllParametersButton()
 
     /**
      * Disable clear all parameters button
      */
-    void disableClearAllParametersButton();
+    fun disableClearAllParametersButton()
 
     /**
      * Add parameter view
@@ -120,17 +118,17 @@ public interface RunBuildView {
      * @param name  - Parameter name
      * @param value - Parameter value
      */
-    void addParameterView(String name, String value);
+    fun addParameterView(name: String, value: String)
 
     /**
      * Remove all parameter views
      */
-    void removeAllParameterViews();
+    fun removeAllParameterViews()
 
     /**
      * Listener to receive callbacks to presenter
      */
-    interface ViewListener extends OnToolBarNavigationListener {
+    interface ViewListener : OnToolBarNavigationListener {
 
         /**
          * On build queue
@@ -139,26 +137,26 @@ public interface RunBuildView {
          * @param queueToTheTop - Queue to the top
          * @param cleanAllFiles - Clean all files in the checkout directory
          */
-        void onBuildQueue(boolean isPersonal,
-                          boolean queueToTheTop,
-                          boolean cleanAllFiles);
+        fun onBuildQueue(isPersonal: Boolean,
+                         queueToTheTop: Boolean,
+                         cleanAllFiles: Boolean)
 
         /**
          * On agent selected in the dialog list
          *
          * @param agentPosition - item position which was selected
          */
-        void onAgentSelected(int agentPosition);
+        fun onAgentSelected(agentPosition: Int)
 
         /**
          * On add parameter button click
          */
-        void onAddParameterButtonClick();
+        fun onAddParameterButtonClick()
 
         /**
          * On clear all parameters button click
          */
-        void onClearAllParametersButtonClick();
+        fun onClearAllParametersButtonClick()
 
         /**
          * On parameter added
@@ -166,6 +164,6 @@ public interface RunBuildView {
          * @param name  - parameter name
          * @param value - parameter value
          */
-        void onParameterAdded(String name, String value);
+        fun onParameterAdded(name: String, value: String)
     }
 }

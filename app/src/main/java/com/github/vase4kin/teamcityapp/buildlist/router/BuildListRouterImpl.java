@@ -50,7 +50,7 @@ public class BuildListRouterImpl implements BuildListRouter {
      */
     @Override
     public void openRunBuildPage(String buildTypeId) {
-        RunBuildActivity.startForResult(mActivity, buildTypeId);
+        RunBuildActivity.Companion.startForResult(mActivity, buildTypeId);
     }
 
     /**

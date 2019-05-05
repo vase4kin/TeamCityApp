@@ -14,32 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.router;
+package com.github.vase4kin.teamcityapp.runbuild.dagger
 
-/**
- * Run build activity router
- */
-public interface RunBuildRouter {
+import javax.inject.Scope
 
-    /**
-     * Bundle extra key
-     */
-    String EXTRA_HREF = "href";
-
-    /**
-     * Close activity with success result
-     *
-     * @param queuedBuildHref - href of queued build
-     */
-    void closeOnSuccess(String queuedBuildHref);
-
-    /**
-     * Close activity with cancel result
-     */
-    void closeOnCancel();
-
-    /**
-     * On back button pressed
-     */
-    void closeOnBackButtonPressed();
-}
+@Scope
+annotation class RunBuildActivityScope

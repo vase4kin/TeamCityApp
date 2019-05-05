@@ -217,7 +217,7 @@ public class BuildListActivityTest {
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href");
+        resultData.putExtra(RunBuildRouter.Companion.getEXTRA_HREF(), "href");
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
 
         mActivityRule.launchActivity(null);
@@ -245,7 +245,7 @@ public class BuildListActivityTest {
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href");
+        resultData.putExtra(RunBuildRouter.Companion.getEXTRA_HREF(), "href");
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
 
         mActivityRule.launchActivity(null);
@@ -275,7 +275,7 @@ public class BuildListActivityTest {
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href");
+        resultData.putExtra(RunBuildRouter.Companion.getEXTRA_HREF(), "href");
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
 
         mActivityRule.launchActivity(null);
@@ -310,7 +310,7 @@ public class BuildListActivityTest {
 
         // Preparing stubbing intent
         Intent resultData = new Intent();
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href");
+        resultData.putExtra(RunBuildRouter.Companion.getEXTRA_HREF(), "href");
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
 
         mActivityRule.launchActivity(null);
