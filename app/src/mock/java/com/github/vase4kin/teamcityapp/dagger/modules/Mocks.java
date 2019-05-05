@@ -77,6 +77,7 @@ public class Mocks {
      */
     public static NavigationNode navigationNode() {
         Project project = new Project();
+        project.id = "id";
         project.setName("Project");
         project.setDescription("Description");
         return new NavigationNode(

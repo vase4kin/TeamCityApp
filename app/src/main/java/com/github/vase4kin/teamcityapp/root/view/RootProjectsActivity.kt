@@ -48,7 +48,8 @@ class RootProjectsActivity : DaggerAppCompatActivity(), OnAccountSwitchListener 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        presenter.updateRootBundleValueManager(RootBundleValueManagerImpl(intent.extras!!))
+        presenter.updateRootBundleValueManager(RootBundleValueManagerImpl(intent.extras
+                ?: Bundle.EMPTY))
         presenter.onAccountSwitch()
         presenter.onNewIntent()
     }
