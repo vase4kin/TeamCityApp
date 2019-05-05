@@ -72,6 +72,6 @@ public class BuildDetailsRouterImpl implements BuildDetailsRouter {
      */
     @Override
     public void startProjectActivity(String name, String id) {
-        NavigationActivity.start(name, id, mActivity);
+        NavigationActivity.Companion.start(name, id, mActivity);
     }
 }

@@ -49,7 +49,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      */
     @Override
     public void startNavigationActivity(@NonNull String name, @NonNull String id) {
-        NavigationActivity.start(name, id, mActivity);
+        NavigationActivity.Companion.start(name, id, mActivity);
     }
 
     /**

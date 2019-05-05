@@ -16,15 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.navigation.dagger;
 
-import android.app.Activity;
-import android.os.Bundle;
-import android.view.View;
-
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouterImpl;
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl;
@@ -35,29 +32,19 @@ import dagger.Provides;
 @Module
 public class NavigationModule {
 
-    private View mView;
-    private Activity mActivity;
-    private Bundle mBundle;
-
-    public NavigationModule(View view, Activity mActivity, Bundle mBundle) {
-        this.mView = view;
-        this.mActivity = mActivity;
-        this.mBundle = mBundle;
+    @Provides
+    NavigationView providesNavigationView(NavigationActivity activity, NavigationAdapter adapter) {
+        return new NavigationViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_projects_or_build_types, adapter);
     }
 
     @Provides
-    NavigationView providesNavigationView(NavigationAdapter adapter) {
-        return new NavigationViewImpl(mView, mActivity, R.string.empty_list_message_projects_or_build_types, adapter);
+    NavigationValueExtractor providesNavigationValueExtractor(NavigationActivity activity) {
+        return new NavigationValueExtractorImpl(activity.getIntent().getExtras());
     }
 
     @Provides
-    NavigationValueExtractor providesNavigationValueExtractor() {
-        return new NavigationValueExtractorImpl(mBundle);
-    }
-
-    @Provides
-    NavigationRouter providesNavigationRouter() {
-        return new NavigationRouterImpl(mActivity);
+    NavigationRouter providesNavigationRouter(NavigationActivity activity) {
+        return new NavigationRouterImpl(activity);
     }
 
 }

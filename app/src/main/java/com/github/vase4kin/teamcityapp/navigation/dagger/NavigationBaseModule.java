@@ -24,10 +24,8 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManager;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManagerImpl;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
-import com.github.vase4kin.teamcityapp.navigation.tracker.FabricNavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.tracker.FirebaseNavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker;
-import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory;
@@ -36,13 +34,11 @@ import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
-import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import dagger.multibindings.IntoSet;
 
 @Module
 public class NavigationBaseModule {
@@ -71,21 +67,8 @@ public class NavigationBaseModule {
         return new RateTheAppViewHolderFactory();
     }
 
-    @IntoSet
-    @Provides
-    NavigationTracker providesFabricViewTracker() {
-        return new FabricNavigationTrackerImpl();
-    }
-
-    @IntoSet
     @Provides
     NavigationTracker providesFirebaseViewTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseNavigationTrackerImpl(firebaseAnalytics);
     }
-
-    @Provides
-    NavigationTracker providesViewTracker(Set<NavigationTracker> trackers) {
-        return new NavigationTrackerImpl(trackers);
-    }
-
 }
