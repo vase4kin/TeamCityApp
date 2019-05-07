@@ -30,11 +30,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.joanzapata.iconify.IconDrawable;
@@ -53,7 +52,7 @@ import butterknife.Unbinder;
 public class RunBuildViewImpl implements RunBuildView {
 
     @BindView(R.id.fab_queue_build)
-    FloatingActionButton mQueueBuildFab;
+    MaterialButton mQueueBuildFab;
     @BindView(R.id.switcher_is_personal)
     Switch mPersonalBuildSwitch;
     @BindView(R.id.switcher_queueAtTop)
@@ -109,11 +108,11 @@ public class RunBuildViewImpl implements RunBuildView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(final ViewListener listener) {
+    public void initViews(@NonNull final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
         mListener = listener;
 
-        Toolbar mToolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
+        Toolbar mToolbar = mActivity.findViewById(R.id.toolbar);
         mActivity.setSupportActionBar(mToolbar);
 
         ActionBar actionBar = mActivity.getSupportActionBar();
@@ -126,15 +125,10 @@ public class RunBuildViewImpl implements RunBuildView {
         mToolbar.setNavigationIcon(new IconDrawable(mActivity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize());
         mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(listener));
 
-        mQueueBuildFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onBuildQueue(
-                        mPersonalBuildSwitch.isChecked(),
-                        mQueueToTheTopSwitch.isChecked(),
-                        mCleanAllFilesSwitch.isChecked());
-            }
-        });
+        mQueueBuildFab.setOnClickListener(v -> listener.onBuildQueue(
+                mPersonalBuildSwitch.isChecked(),
+                mQueueToTheTopSwitch.isChecked(),
+                mCleanAllFilesSwitch.isChecked()));
 
         mProgressDialog = new MaterialDialog.Builder(mActivity)
                 .content(R.string.text_queueing_build)
@@ -149,39 +143,31 @@ public class RunBuildViewImpl implements RunBuildView {
                 .title(R.string.title_add_parameter)
                 .customView(R.layout.layout_dialog_add_parameter, true)
                 .positiveText(R.string.text_add_parameter_button)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        View view = dialog.getCustomView();
-                        if (view != null) {
-                            // TODO: Move logic presenter
-                            EditText parameterNameEditText = (EditText)view.findViewById(R.id.parameter_name);
-                            EditText parameterValueEditText = (EditText)view.findViewById(R.id.parameter_value);
-                            TextInputLayout parameterNameWrapper = (TextInputLayout) view.findViewById(R.id.parameter_name_wrapper);
-                            String parameterName = parameterNameEditText.getText().toString();
-                            if (TextUtils.isEmpty(parameterName)) {
-                                String errorMessage = view.getResources().getString(R.string.text_error_parameter_name);
-                                parameterNameWrapper.setError(errorMessage);
-                                return;
-                            }
-                            mListener.onParameterAdded(
-                                    parameterNameEditText.getText().toString(),
-                                    parameterValueEditText.getText().toString());
-                            parameterNameWrapper.setError(null);
-                            parameterNameEditText.setText("");
-                            parameterValueEditText.setText("");
-                            parameterNameEditText.requestFocus();
-                            dialog.dismiss();
+                .onPositive((dialog, which) -> {
+                    View view = dialog.getCustomView();
+                    if (view != null) {
+                        // TODO: Move logic presenter
+                        EditText parameterNameEditText = view.findViewById(R.id.parameter_name);
+                        EditText parameterValueEditText = view.findViewById(R.id.parameter_value);
+                        TextInputLayout parameterNameWrapper = view.findViewById(R.id.parameter_name_wrapper);
+                        String parameterName = parameterNameEditText.getText().toString();
+                        if (TextUtils.isEmpty(parameterName)) {
+                            String errorMessage = view.getResources().getString(R.string.text_error_parameter_name);
+                            parameterNameWrapper.setError(errorMessage);
+                            return;
                         }
-                    }
-                })
-                .negativeText(R.string.text_cancel_button)
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        mListener.onParameterAdded(
+                                parameterNameEditText.getText().toString(),
+                                parameterValueEditText.getText().toString());
+                        parameterNameWrapper.setError(null);
+                        parameterNameEditText.setText("");
+                        parameterValueEditText.setText("");
+                        parameterNameEditText.requestFocus();
                         dialog.dismiss();
                     }
                 })
+                .negativeText(R.string.text_cancel_button)
+                .onNegative((dialog, which) -> dialog.dismiss())
                 .build();
     }
 
@@ -262,12 +248,9 @@ public class RunBuildViewImpl implements RunBuildView {
         mAgentSelectionDialog = new MaterialDialog.Builder(mActivity)
                 .title(R.string.title_agent_chooser_dialog)
                 .items(agents)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                        mListener.onAgentSelected(position);
-                        mSelectedAgent.setText(text);
-                    }
+                .itemsCallback((dialog, itemView, position, text) -> {
+                    mListener.onAgentSelected(position);
+                    mSelectedAgent.setText(text);
                 })
                 .build();
     }
@@ -332,10 +315,10 @@ public class RunBuildViewImpl implements RunBuildView {
      * {@inheritDoc}
      */
     @Override
-    public void addParameterView(String name, String value) {
+    public void addParameterView(@NonNull String name, @NonNull String value) {
         View parameterLayout = LayoutInflater.from(mActivity).inflate(R.layout.layout_parameter_view, null);
-        ((TextView)parameterLayout.findViewById(R.id.parameter_name)).setText(name);
-        ((TextView)parameterLayout.findViewById(R.id.parameter_value)).setText(value);
+        ((TextView) parameterLayout.findViewById(R.id.parameter_name)).setText(name);
+        ((TextView) parameterLayout.findViewById(R.id.parameter_value)).setText(value);
         mParametersContainer.addView(parameterLayout);
 
     }

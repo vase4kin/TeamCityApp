@@ -24,30 +24,23 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/toolbar_with_fab_height">
+        android:layout_height="?attr/actionBarSize">
 
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
+            android:id="@id/toolbar"
+            style="@style/Toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <include layout="@layout/layout_toolbar" />
-
-            <include layout="@layout/layout_branch_filter" />
-
-        </LinearLayout>
+            android:layout_height="?attr/actionBarSize" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/fab_queue_build"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_anchor="@id/app_bar"
-        app:layout_anchorGravity="bottom|end"
-        android:layout_gravity="center"
-        app:srcCompat="@drawable/ic_directions_run_white_24px"
-        style="@style/BaseFloatingActionButton" />
+        style="@style/MaterialButton"
+        app:backgroundTint="@color/colorAccent"
+        app:cornerRadius="32dp"
+        app:icon="@drawable/ic_directions_run_white_24px"
+        app:layout_behavior="com.github.vase4kin.teamcityapp.base.view.TransientBarBehavior" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
@@ -64,37 +57,42 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
                 android:orientation="vertical">
+
+                <include layout="@layout/layout_branch_filter" />
+
+                <include layout="@layout/layout_divider" />
 
                 <LinearLayout
                     android:id="@+id/chooser_agent"
                     android:layout_width="match_parent"
                     android:layout_height="82dp"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingBottom="@dimen/padding_switch"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingRight="@dimen/default_margin"
-                    android:orientation="vertical"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:background="?attr/selectableItemBackground">
+                    android:orientation="vertical"
+                    android:paddingLeft="@dimen/default_margin"
+                    android:paddingTop="@dimen/padding_switch"
+                    android:paddingRight="@dimen/default_margin"
+                    android:paddingBottom="@dimen/padding_switch">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="@color/main_text_color"
                         android:text="@string/text_agents"
+                        android:textColor="@color/main_text_color"
                         android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/selected_agent"
-                        android:layout_marginTop="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
                         android:text="@string/hint_default_filter_agent"
                         android:textSize="16sp"
-                        android:maxLines="1"
-                        android:ellipsize="end"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -159,48 +157,49 @@
                     style="@style/Switch"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="@string/text_switcher_run_as_clean_all_files"
-                    android:checked="true" />
+                    android:checked="true"
+                    android:text="@string/text_switcher_run_as_clean_all_files" />
 
                 <include layout="@layout/layout_divider" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingBottom="@dimen/padding_switch"
+                    android:orientation="vertical"
                     android:paddingLeft="@dimen/default_margin"
+                    android:paddingTop="@dimen/padding_switch"
                     android:paddingRight="@dimen/default_margin"
-                    android:orientation="vertical">
+                    android:paddingBottom="@dimen/padding_switch">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:textColor="@color/main_text_color"
                         android:text="@string/text_parameters"
+                        android:textColor="@color/main_text_color"
                         android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/parameters_none"
-                        android:layout_marginTop="4dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/text_filters_none"
-                        android:textSize="16sp"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
                         android:maxLines="1"
-                        android:ellipsize="end" />
+                        android:text="@string/text_filters_none"
+                        android:textSize="16sp" />
 
                     <LinearLayout
                         android:id="@+id/container_parameters"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:animateLayoutChanges="true">
+                        android:animateLayoutChanges="true"
+                        android:orientation="vertical">
 
-                        <include layout="@layout/layout_parameter_view"
+                        <include
+                            layout="@layout/layout_parameter_view"
                             android:visibility="gone"
-                            tools:visibility="visible"/>
+                            tools:visibility="visible" />
 
                     </LinearLayout>
 
@@ -223,8 +222,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/default_margin"
-                            android:text="@string/text_clear_parameters"
-                            android:enabled="false"/>
+                            android:enabled="false"
+                            android:text="@string/text_clear_parameters" />
 
                     </LinearLayout>
 
