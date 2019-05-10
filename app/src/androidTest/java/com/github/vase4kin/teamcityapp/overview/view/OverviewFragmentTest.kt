@@ -117,7 +117,6 @@ class OverviewFragmentTest {
         val storage = storage
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-
     }
 
     @Test

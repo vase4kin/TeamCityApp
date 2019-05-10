@@ -26,10 +26,8 @@ import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManager;
 import com.github.vase4kin.teamcityapp.root.extractor.RootBundleValueManagerImpl;
 import com.github.vase4kin.teamcityapp.root.router.RootRouter;
 import com.github.vase4kin.teamcityapp.root.router.RootRouterImpl;
-import com.github.vase4kin.teamcityapp.root.tracker.FabricRootTrackerImpl;
 import com.github.vase4kin.teamcityapp.root.tracker.FirebaseRootTrackerImpl;
 import com.github.vase4kin.teamcityapp.root.tracker.RootTracker;
-import com.github.vase4kin.teamcityapp.root.tracker.RootTrackerImpl;
 import com.github.vase4kin.teamcityapp.root.view.OnAccountSwitchListener;
 import com.github.vase4kin.teamcityapp.root.view.RootDrawerView;
 import com.github.vase4kin.teamcityapp.root.view.RootDrawerViewImpl;
@@ -39,25 +37,16 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 
 import org.greenrobot.eventbus.EventBus;
 
-import java.util.Set;
-
 import dagger.Module;
 import dagger.Provides;
-import dagger.multibindings.IntoSet;
 import io.rx_cache2.internal.RxCache;
 
 @Module
 public class RootModule {
 
-    private RootProjectsActivity mActivity;
-
-    public RootModule(RootProjectsActivity activity) {
-        this.mActivity = activity;
-    }
-
     @Provides
-    RootDrawerView providesRootDrawerView() {
-        return new RootDrawerViewImpl(mActivity, DrawerView.PROJECTS, false);
+    RootDrawerView providesRootDrawerView(RootProjectsActivity activity) {
+        return new RootDrawerViewImpl(activity, DrawerView.PROJECTS, false);
     }
 
     @Provides
@@ -70,35 +59,23 @@ public class RootModule {
     }
 
     @Provides
-    RootRouter providesRootRouter() {
-        return new RootRouterImpl(mActivity);
+    RootRouter providesRootRouter(RootProjectsActivity activity) {
+        return new RootRouterImpl(activity);
     }
 
     @Provides
-    RootBundleValueManager providesRootValueExtractor() {
-        return new RootBundleValueManagerImpl(mActivity.getIntent().getExtras());
+    RootBundleValueManager providesRootValueExtractor(RootProjectsActivity activity) {
+        return new RootBundleValueManagerImpl(activity.getIntent().getExtras());
     }
 
     @Provides
-    OnAccountSwitchListener providesOnAccountSwitchListener() {
-        return mActivity;
+    OnAccountSwitchListener providesOnAccountSwitchListener(RootProjectsActivity activity) {
+        return activity;
     }
 
-    @IntoSet
-    @Provides
-    RootTracker providesFabricRootTracker() {
-        return new FabricRootTrackerImpl();
-    }
-
-    @IntoSet
     @Provides
     RootTracker providesFirebaseRootTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseRootTrackerImpl(firebaseAnalytics);
-    }
-
-    @Provides
-    RootTracker providesRootTracker(Set<RootTracker> trackers) {
-        return new RootTrackerImpl(trackers);
     }
 
 }

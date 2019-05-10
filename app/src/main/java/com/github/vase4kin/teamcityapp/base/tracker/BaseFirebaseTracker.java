@@ -23,9 +23,9 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  */
 public abstract class BaseFirebaseTracker implements ViewTracker {
 
-    protected final FirebaseAnalytics mFirebaseAnalytics;
+    protected final FirebaseAnalytics firebaseAnalytics;
 
     public BaseFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
-        this.mFirebaseAnalytics = firebaseAnalytics;
+        this.firebaseAnalytics = firebaseAnalytics;
     }
 }

@@ -16,10 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.changes.dagger;
 
-import android.view.View;
-
-import androidx.fragment.app.Fragment;
-
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
@@ -31,6 +27,7 @@ import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor;
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractorImpl;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesAdapter;
+import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewHolderFactory;
 import com.github.vase4kin.teamcityapp.changes.view.ChangesViewImpl;
@@ -48,27 +45,19 @@ import dagger.multibindings.IntoMap;
 @Module
 public class ChangesModule {
 
-    private View mView;
-    private Fragment mFragment;
-
-    public ChangesModule(View mView, Fragment mFragment) {
-        this.mView = mView;
-        this.mFragment = mFragment;
-    }
-
     @Provides
     ChangesDataManager providesChangesDataManager(Repository repository, EventBus eventBus) {
         return new ChangesDataManagerImpl(repository, eventBus);
     }
 
     @Provides
-    ChangesView providesChangesView(ChangesAdapter changesAdapter) {
-        return new ChangesViewImpl(mView, mFragment.getActivity(), R.string.empty_list_message_changes, changesAdapter);
+    ChangesView providesChangesView(ChangesFragment fragment, ChangesAdapter changesAdapter) {
+        return new ChangesViewImpl(fragment.getView(), fragment.getActivity(), R.string.empty_list_message_changes, changesAdapter);
     }
 
     @Provides
-    ChangesValueExtractor providesChangesValueExtractor() {
-        return new ChangesValueExtractorImpl(mFragment.getArguments());
+    ChangesValueExtractor providesChangesValueExtractor(ChangesFragment fragment) {
+        return new ChangesValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides

@@ -24,8 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 
 /**
@@ -71,7 +71,7 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, Pr
 
     @Override
     public void showCopyValueBottomSheet(String title, final String value) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(title, value, MenuItemsFactory.TYPE_DEFAULT);
-        bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), "Tag Bottom Sheet");
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(title, value, MenuItemsFactory.TYPE_DEFAULT);
+        bottomSheetDialogFragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), "Tag Bottom Sheet");
     }
 }

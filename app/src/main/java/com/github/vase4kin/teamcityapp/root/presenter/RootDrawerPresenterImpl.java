@@ -80,7 +80,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         boolean isRequiredToReload = mValueExtractor.isRequiredToReload();
         boolean isNewAccountCreated = mValueExtractor.isNewAccountCreated();
-        if (!mValueExtractor.isBundleNull()) {
+        if (!mValueExtractor.isBundleNullOrEmpty()) {
             mValueExtractor.removeIsNewAccountCreated();
             mValueExtractor.removeIsRequiredToReload();
         }

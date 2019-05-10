@@ -40,6 +40,6 @@ public class FirebaseDrawerTrackerImpl extends BaseFirebaseTracker implements Dr
      */
     @Override
     public void trackChangeAccount() {
-        mFirebaseAnalytics.logEvent(EVENT_CHANGE_ACCOUNT, null);
+        firebaseAnalytics.logEvent(EVENT_CHANGE_ACCOUNT, null);
     }
 }

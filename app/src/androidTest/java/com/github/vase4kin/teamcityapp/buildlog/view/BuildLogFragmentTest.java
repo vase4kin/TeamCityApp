@@ -36,6 +36,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -67,24 +68,11 @@ import static org.mockito.Mockito.when;
 public class BuildLogFragmentTest {
 
     @Rule
-    public DaggerMockRule<AppComponent> mAppComponentDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-                @Override
-                public void setComponent(AppComponent appComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setAppInjector(appComponent);
-                }
-            });
-
-    @Rule
     public DaggerMockRule<RestApiComponent> mRestComponentDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
@@ -99,6 +87,9 @@ public class BuildLogFragmentTest {
     @BeforeClass
     public static void disableOnboarding() {
         TestUtils.disableOnboarding();
+        SharedUserStorage storage = ((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()).getAppInjector().sharedUserStorage();
+        storage.clearAll();
+        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
     }
 
     @Test

@@ -16,10 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.dagger;
 
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -33,50 +29,40 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
-import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTrackerImpl;
-import com.github.vase4kin.teamcityapp.buildlist.tracker.FabricBuildListTrackerImpl;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTrackerImpl;
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.Set;
-
 import dagger.Module;
 import dagger.Provides;
-import dagger.multibindings.IntoSet;
 
 @Module
 public class BuildListModule {
 
-    private View mView;
-    private AppCompatActivity mActivity;
-
-    public BuildListModule(View mView, AppCompatActivity mActivity) {
-        this.mView = mView;
-        this.mActivity = mActivity;
-    }
-
     @Provides
-    BuildListDataManager providesBuildListDataManager(Repository repository, SharedUserStorage storage) {
+    BuildListDataManager providesBuildListDataManager(Repository repository,
+                                                      SharedUserStorage storage) {
         return new BuildListDataManagerImpl(repository, storage);
     }
 
     @Provides
-    BuildListView providesBuildListView(SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
-        return new BuildListViewImpl(mView, mActivity, R.string.empty_list_message_builds, adapter);
+    BuildListView providesBuildListView(BuildListActivity activity,
+                                        SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
+        return new BuildListViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_builds, adapter);
     }
 
     @Provides
-    BuildListRouter providesBuildListRouter() {
-        return new BuildListRouterImpl(mActivity);
+    BuildListRouter providesBuildListRouter(BuildListActivity activity) {
+        return new BuildListRouterImpl(activity);
     }
 
     @Provides
-    BaseValueExtractor providesBuildListValueExtractor() {
-        return new BaseValueExtractorImpl(mActivity.getIntent().getExtras());
+    BaseValueExtractor providesBuildListValueExtractor(BuildListActivity activity) {
+        return new BaseValueExtractorImpl(activity.getIntent().getExtras());
     }
 
     @Provides
@@ -84,21 +70,8 @@ public class BuildListModule {
         return new BuildInteractorImpl(teamCityService);
     }
 
-    @IntoSet
-    @Provides
-    BuildListTracker providesFabricBuildListTracker() {
-        return new FabricBuildListTrackerImpl(BuildListTracker.SCREEN_NAME_BUILD_LIST);
-    }
-
-    @IntoSet
     @Provides
     BuildListTracker providesFirebaseBuildListTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_BUILD_LIST);
     }
-
-    @Provides
-    BuildListTracker providesBuildListTracker(Set<BuildListTracker> trackers) {
-        return new BuildListTrackerImpl(trackers);
-    }
-
 }

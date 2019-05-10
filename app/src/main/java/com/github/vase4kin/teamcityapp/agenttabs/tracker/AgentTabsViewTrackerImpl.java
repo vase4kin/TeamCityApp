@@ -16,16 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.agenttabs.tracker;
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseViewTracker;
-
-import java.util.Set;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 /**
- * Tracker impl
+ * Tracker firebase impl
  */
-public class AgentTabsViewTrackerImpl extends BaseViewTracker<AgentTabsViewTracker> implements AgentTabsViewTracker {
+public class AgentTabsViewTrackerImpl extends BaseFirebaseTracker implements AgentTabsViewTracker {
 
-    public AgentTabsViewTrackerImpl(Set<AgentTabsViewTracker> trackers) {
-        super(trackers);
+    public AgentTabsViewTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
+        super(firebaseAnalytics);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void trackView() {
+        firebaseAnalytics.logEvent(SCREEN_NAME, null);
     }
 }

@@ -108,6 +108,7 @@ public class SplashActivityTest {
     /**
      * Workaround test to test that root projects activity is opened
      */
+    @Ignore
     @Test
     public void testUserNavigatesToRootProjectsActivity() throws Exception {
         // Prepate data

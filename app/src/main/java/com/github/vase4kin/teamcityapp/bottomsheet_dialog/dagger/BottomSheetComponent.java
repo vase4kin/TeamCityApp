@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger;
 
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 
 import dagger.Component;
@@ -28,5 +28,5 @@ import dagger.Component;
 @Component(modules = BottomSheetModule.class, dependencies = AppComponent.class)
 public interface BottomSheetComponent {
 
-    void inject(BottomSheetDialog bottomSheetDialog);
+    void inject(BottomSheetDialogFragment bottomSheetDialogFragment);
 }

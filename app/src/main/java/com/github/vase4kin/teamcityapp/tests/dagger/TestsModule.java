@@ -17,9 +17,6 @@
 package com.github.vase4kin.teamcityapp.tests.dagger;
 
 import android.content.Context;
-import android.view.View;
-
-import androidx.fragment.app.Fragment;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.Repository;
@@ -37,6 +34,7 @@ import com.github.vase4kin.teamcityapp.tests.router.TestsRouterImpl;
 import com.github.vase4kin.teamcityapp.tests.view.LoadMoreViewHolderFactory;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrenceViewHolderFactory;
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesAdapter;
+import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment;
 import com.github.vase4kin.teamcityapp.tests.view.TestsView;
 import com.github.vase4kin.teamcityapp.tests.view.TestsViewImpl;
 
@@ -52,38 +50,31 @@ import dagger.multibindings.IntoMap;
 @Module
 public class TestsModule {
 
-    private View mView;
-    private Fragment mFragment;
-
-    public TestsModule(View mView, Fragment fragment) {
-        this.mView = mView;
-        this.mFragment = fragment;
-    }
-
     @Provides
     TestsDataManager providesTestsDataManager(Repository repository, EventBus eventBus) {
         return new TestsDataManagerImpl(repository, eventBus);
     }
 
     @Provides
-    TestsValueExtractor providesTestsValueExtractor() {
-        return new TestsValueExtractorImpl(mFragment.getArguments());
+    TestsValueExtractor providesTestsValueExtractor(TestOccurrencesFragment fragment) {
+        return new TestsValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides
     TestsView providesTestsView(TestsValueExtractor testsValueExtractor,
-                                SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> adapter) {
+                                SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> adapter,
+                                TestOccurrencesFragment fragment) {
         return new TestsViewImpl(
-                mView,
-                mFragment.getActivity(),
+                fragment.getView(),
+                fragment.getActivity(),
                 testsValueExtractor,
                 R.string.empty_passed_tests,
                 adapter);
     }
 
     @Provides
-    TestsRouter providesTestsRouter() {
-        return new TestsRouterImpl(mFragment.getActivity());
+    TestsRouter providesTestsRouter(TestOccurrencesFragment fragment) {
+        return new TestsRouterImpl(fragment.getActivity());
     }
 
     @Provides

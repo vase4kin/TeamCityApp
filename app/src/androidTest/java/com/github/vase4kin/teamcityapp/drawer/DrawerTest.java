@@ -146,7 +146,8 @@ public class DrawerTest {
         matchToolbarTitle("Running builds (1)");
 
         // Opening drawer
-        clickOnBurgerButton();
+        onView(withId(R.id.material_drawer_layout))
+                .perform(open());
 
         // Check about is selected
         onView(allOf(withId(R.id.material_drawer_name), withText(R.string.running_builds_drawer_item), isDisplayed()))
@@ -166,7 +167,8 @@ public class DrawerTest {
         matchToolbarTitle("Build queue (3)");
 
         // Opening drawer
-        clickOnBurgerButton();
+        onView(withId(R.id.material_drawer_layout))
+                .perform(open());
 
         // Check about is selected
         onView(allOf(withId(R.id.material_drawer_name), withText(R.string.build_queue_drawer_item), isDisplayed()))
@@ -186,7 +188,8 @@ public class DrawerTest {
         matchToolbarTitle("Agents");
 
         // Opening drawer
-        clickOnBurgerButton();
+        onView(withId(R.id.material_drawer_layout))
+                .perform(open());
 
         // Check about is selected
         onView(allOf(withId(R.id.material_drawer_name), withText(R.string.agents_drawer_item), isDisplayed()))
@@ -206,7 +209,8 @@ public class DrawerTest {
         matchToolbarTitle("About");
 
         // Opening drawer
-        clickOnBurgerButton();
+        onView(withId(R.id.material_drawer_layout))
+                .perform(open());
 
         // Check about is selected
         onView(allOf(withId(R.id.material_drawer_name), withText(R.string.about_drawer_item), isDisplayed()))
@@ -243,7 +247,8 @@ public class DrawerTest {
         matchToolbarTitle("Favorites (0)");
 
         // Opening drawer
-        clickOnBurgerButton();
+        onView(withId(R.id.material_drawer_layout))
+                .perform(open());
 
         // Check fav is selected
         onView(allOf(withId(R.id.material_drawer_name), withText(R.string.favorites_drawer_item), isDisplayed()))

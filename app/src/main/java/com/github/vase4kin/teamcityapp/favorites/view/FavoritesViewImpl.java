@@ -199,7 +199,7 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                 public void onSectionClick(int position) {
                     final String projectName = dataModel.getProjectName(position);
                     final String projectId = dataModel.getProjectId(position);
-                    NavigationActivity.start(projectName, projectId, mActivity);
+                    NavigationActivity.Companion.start(projectName, projectId, mActivity);
                 }
             });
         }

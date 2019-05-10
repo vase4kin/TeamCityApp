@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -54,7 +55,7 @@ public class PermissionManagerImpl implements PermissionManager {
     @Override
     public void requestWriteStoragePermissions() {
         mFragment.requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
+                PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
     }
 
     /**
@@ -86,11 +87,11 @@ public class PermissionManagerImpl implements PermissionManager {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions,
-                                           int[] grantResults,
-                                           OnPermissionsResultListener onPermissionsResultListener) {
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults,
+                                           @NonNull OnPermissionsResultListener onPermissionsResultListener) {
         switch (requestCode) {
-            case PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
+            case PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE:
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     onPermissionsResultListener.onGranted();

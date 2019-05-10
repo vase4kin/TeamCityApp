@@ -97,7 +97,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     protected void initViews() {
         super.initViews();
-        if (!mValueExtractor.isBundleNull()) {
+        if (!mValueExtractor.isBundleNullOrEmpty()) {
             mView.setTitle(mValueExtractor.getName());
         }
         mView.setOnBuildListPresenterListener(this);
@@ -159,7 +159,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onBuildClick(Build build) {
-        if (mValueExtractor.isBundleNull()) {
+        if (mValueExtractor.isBundleNullOrEmpty()) {
             mRouter.openBuildPage(build, null);
         } else {
             String buildTypeName = mValueExtractor.getName();

@@ -38,8 +38,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl;
@@ -376,8 +376,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showDefaultCardBottomSheetDialog(String header, final String description) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(header, description, MenuItemsFactory.TYPE_DEFAULT);
-        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(header, description, MenuItemsFactory.TYPE_DEFAULT);
+        bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -385,8 +385,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showBranchCardBottomSheetDialog(String description) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_branch_section_text), description, MenuItemsFactory.TYPE_BRANCH);
-        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(mActivity.getString(R.string.build_branch_section_text), description, MenuItemsFactory.TYPE_BRANCH);
+        bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -394,8 +394,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showBuildTypeCardBottomSheetDialog(String description) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_type_by_section_text), description, MenuItemsFactory.TYPE_BUILD_TYPE);
-        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(mActivity.getString(R.string.build_type_by_section_text), description, MenuItemsFactory.TYPE_BUILD_TYPE);
+        bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -403,8 +403,8 @@ public class OverviewViewImpl implements OverviewView {
      */
     @Override
     public void showProjectCardBottomSheetDialog(String description) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(mActivity.getString(R.string.build_project_by_section_text), description, MenuItemsFactory.TYPE_PROJECT);
-        bottomSheetDialog.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(mActivity.getString(R.string.build_project_by_section_text), description, MenuItemsFactory.TYPE_PROJECT);
+        bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**

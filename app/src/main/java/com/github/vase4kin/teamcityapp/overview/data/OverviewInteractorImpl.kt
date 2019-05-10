@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.data
 
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -24,7 +23,6 @@ import android.view.View
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.build_details.data.OnOverviewRefreshDataEvent
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
@@ -44,18 +42,18 @@ private const val DELAY = 500
 /**
  * Impl of [OverViewInteractor]
  */
-class OverviewInteractorImpl(private val mRepository: Repository,
-                             private val mEventBus: EventBus,
-                             private val mValueExtractor: BaseValueExtractor,
-                             private val mContext: Context) : BaseListRxDataManagerImpl<Build, BuildElement>(), OverViewInteractor {
+class OverviewInteractorImpl(private val repository: Repository,
+                             private val eventBus: EventBus,
+                             private val valueExtractor: OverviewValueExtractor
+) : BaseListRxDataManagerImpl<Build, BuildElement>(), OverViewInteractor {
 
-    private var mListener: OverViewInteractor.OnOverviewEventsListener? = null
+    private var listener: OverViewInteractor.OnOverviewEventsListener? = null
 
     /**
      * {@inheritDoc}
      */
     override fun setListener(listener: OverViewInteractor.OnOverviewEventsListener) {
-        this.mListener = listener
+        this.listener = listener
     }
 
     /**
@@ -65,7 +63,7 @@ class OverviewInteractorImpl(private val mRepository: Repository,
                       loadingListener: OnLoadingListener<BuildDetails>,
                       update: Boolean) {
         subscriptions.clear()
-        mRepository.build(url, update)
+        repository.build(url, update)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
@@ -79,42 +77,42 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      * {@inheritDoc}
      */
     override fun postStopBuildEvent() {
-        mEventBus.post(StopBuildEvent())
+        eventBus.post(StopBuildEvent())
     }
 
     /**
      * {@inheritDoc}
      */
     override fun postShareBuildInfoEvent() {
-        mEventBus.post(ShareBuildEvent())
+        eventBus.post(ShareBuildEvent())
     }
 
     /**
      * {@inheritDoc}
      */
     override fun postRestartBuildEvent() {
-        mEventBus.post(RestartBuildEvent())
+        eventBus.post(RestartBuildEvent())
     }
 
     /**
      * {@inheritDoc}
      */
     override fun subscribeToEventBusEvents() {
-        mEventBus.register(this)
+        eventBus.register(this)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun unsubsribeFromEventBusEvents() {
-        mEventBus.unregister(this)
+        eventBus.unregister(this)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun postFABGoneEvent() {
-        mEventBus.post(FloatButtonChangeVisibilityEvent(View.GONE))
+        eventBus.post(FloatButtonChangeVisibilityEvent(View.GONE))
     }
 
     /**
@@ -122,7 +120,7 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      */
     override fun postFABVisibleEvent() {
         Handler(Looper.getMainLooper()).postDelayed(
-                { mEventBus.post(FloatButtonChangeVisibilityEvent(View.VISIBLE)) },
+                { eventBus.post(FloatButtonChangeVisibilityEvent(View.VISIBLE)) },
                 DELAY.toLong())
     }
 
@@ -130,28 +128,28 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      * {@inheritDoc}
      */
     override fun postStartBuildListActivityFilteredByBranchEvent(branchName: String) {
-        mEventBus.post(StartBuildsListActivityFilteredByBranchEvent(branchName))
+        eventBus.post(StartBuildsListActivityFilteredByBranchEvent(branchName))
     }
 
     /**
      * {@inheritDoc}
      */
     override fun postStartBuildListActivityEvent() {
-        mEventBus.post(StartBuildsListActivityEvent())
+        eventBus.post(StartBuildsListActivityEvent())
     }
 
     /**
      * {@inheritDoc}
      */
     override fun postStartProjectActivityEvent() {
-        mEventBus.post(StartProjectActivityEvent())
+        eventBus.post(StartProjectActivityEvent())
     }
 
     /**
      * {@inheritDoc}
      */
     override fun getBuildDetails(): BuildDetails {
-        return mValueExtractor.buildDetails
+        return valueExtractor.buildDetails
     }
 
     /***
@@ -161,7 +159,7 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      */
     @Subscribe
     fun onEvent(event: OnOverviewRefreshDataEvent) {
-        mListener?.onDataRefreshEvent()
+        listener?.onDataRefreshEvent()
     }
 
     /***
@@ -171,7 +169,7 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      */
     @Subscribe
     fun onEvent(event: NavigateToBuildListFilteredByBranchEvent) {
-        mListener?.onNavigateToBuildListEvent(event.branchName)
+        listener?.onNavigateToBuildListEvent(event.branchName)
     }
 
     /***
@@ -181,7 +179,7 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      */
     @Subscribe
     fun onEvent(ignored: NavigateToBuildListEvent) {
-        mListener?.onNavigateToBuildListEvent()
+        listener?.onNavigateToBuildListEvent()
     }
 
     /***
@@ -191,6 +189,6 @@ class OverviewInteractorImpl(private val mRepository: Repository,
      */
     @Subscribe
     fun onEvent(ignored: NavigateToProjectEvent) {
-        mListener?.onNavigateToProjectEvent()
+        listener?.onNavigateToProjectEvent()
     }
 }

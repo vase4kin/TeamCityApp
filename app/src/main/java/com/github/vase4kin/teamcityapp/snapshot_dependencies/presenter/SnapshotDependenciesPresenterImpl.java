@@ -19,17 +19,18 @@ package com.github.vase4kin.teamcityapp.snapshot_dependencies.presenter;
 import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
-import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
-import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesInteractor;
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesValueExtractor;
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.SnapshotDependenciesRouter;
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.tracker.SnapshotDependenciesTracker;
 
 import java.util.List;
 
@@ -40,17 +41,17 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
         BuildDetails,
         RunningBuildListView,
         BuildListDataManager,
-        BuildListTracker,
-        BaseValueExtractor> implements OnBuildListPresenterListener {
+        SnapshotDependenciesTracker,
+        SnapshotDependenciesValueExtractor> implements OnBuildListPresenterListener {
 
-    private BuildListRouter mRouter;
+    private SnapshotDependenciesRouter mRouter;
 
     @Inject
     SnapshotDependenciesPresenterImpl(@NonNull RunningBuildListView view,
-                                      @NonNull BuildListDataManager dataManager,
-                                      @NonNull BuildListTracker tracker,
-                                      @NonNull BaseValueExtractor valueExtractor,
-                                      @NonNull BuildListRouter mRouter) {
+                                      @NonNull SnapshotDependenciesInteractor dataManager,
+                                      @NonNull SnapshotDependenciesTracker tracker,
+                                      @NonNull SnapshotDependenciesValueExtractor valueExtractor,
+                                      @NonNull SnapshotDependenciesRouter mRouter) {
         super(view, dataManager, tracker, valueExtractor);
         this.mRouter = mRouter;
     }
@@ -86,7 +87,7 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onBuildClick(Build build) {
-        if (mValueExtractor.isBundleNull()) {
+        if (mValueExtractor.isBundleNullOrEmpty()) {
             mRouter.openBuildPage(build, null);
         } else {
             String buildTypeName = mValueExtractor.getName();

@@ -30,8 +30,8 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.BottomSheetDialog;
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment;
 
 /**
  * Impl of {@link ArtifactView}
@@ -114,11 +114,11 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      */
     @Override
     public void showFullBottomSheet(File artifactFile) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(),
                 new String[]{artifactFile.getContent().getHref(), artifactFile.getChildren().getHref()},
                 MenuItemsFactory.TYPE_ARTIFACT_FULL);
-        bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        bottomSheetDialogFragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -126,9 +126,9 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      */
     @Override
     public void showFolderBottomSheet(File artifactFile) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(), artifactFile.getChildren().getHref(), MenuItemsFactory.TYPE_ARTIFACT_FOLDER);
-        bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        bottomSheetDialogFragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -136,11 +136,11 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      */
     @Override
     public void showBrowserBottomSheet(File artifactFile) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(),
                 new String[]{artifactFile.getContent().getHref(), artifactFile.getHref()},
                 MenuItemsFactory.TYPE_ARTIFACT_BROWSER);
-        bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        bottomSheetDialogFragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -148,9 +148,9 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      */
     @Override
     public void showDefaultBottomSheet(File artifactFile) {
-        BottomSheetDialog bottomSheetDialog = BottomSheetDialog.createBottomSheetDialog(
+        BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(), artifactFile.getContent().getHref(), MenuItemsFactory.TYPE_ARTIFACT_DEFAULT);
-        bottomSheetDialog.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        bottomSheetDialogFragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**

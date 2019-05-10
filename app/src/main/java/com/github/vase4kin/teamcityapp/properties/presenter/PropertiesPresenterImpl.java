@@ -19,13 +19,13 @@ package com.github.vase4kin.teamcityapp.properties.presenter;
 import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModelImpl;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractor;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 
 import java.util.List;
@@ -41,13 +41,13 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
         PropertiesView,
         PropertiesDataManager,
         ViewTracker,
-        BaseValueExtractor> implements PropertiesView.Listener {
+        PropertiesValueExtractor> implements PropertiesView.Listener {
 
     @Inject
     PropertiesPresenterImpl(@NonNull PropertiesView view,
                             @NonNull PropertiesDataManager dataManager,
                             @NonNull ViewTracker tracker,
-                            @NonNull BaseValueExtractor valueExtractor) {
+                            @NonNull PropertiesValueExtractor valueExtractor) {
         super(view, dataManager, tracker, valueExtractor);
     }
 

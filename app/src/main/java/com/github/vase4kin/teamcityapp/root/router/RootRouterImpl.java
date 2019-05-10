@@ -39,7 +39,7 @@ public class RootRouterImpl extends DrawerRouterImpl implements RootRouter {
     @Override
     public void openRootProjects(String baseUrl) {
         FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.navigator_fragment, NavigationListFragment.newInstance(mActivity.getString(R.string.projects_drawer_item), ROOT_PROJECTS_ID));
+        transaction.replace(R.id.navigator_fragment, NavigationListFragment.Companion.newInstance(mActivity.getString(R.string.projects_drawer_item), ROOT_PROJECTS_ID));
         transaction.commit();
     }
 
@@ -48,6 +48,6 @@ public class RootRouterImpl extends DrawerRouterImpl implements RootRouter {
      */
     @Override
     public void openAccountsList() {
-        AccountListActivity.start(mActivity);
+        AccountListActivity.Companion.start(mActivity);
     }
 }
