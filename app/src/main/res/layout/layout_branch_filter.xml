@@ -35,6 +35,7 @@
         android:hint="@string/hint_default_build_branch"
         android:lines="1"
         android:maxLines="1"
+        android:singleLine="true"
         android:visibility="gone" />
 
     <TextView

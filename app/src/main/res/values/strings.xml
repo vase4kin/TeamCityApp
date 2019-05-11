@@ -302,6 +302,7 @@
     <string name="text_filters">Filter</string>
     <string name="text_filters_none">None</string>
     <string name="hint_default_filter_branch">Any</string>
+    <string name="text_apply_filters_button">Apply filters</string>
 
     <!--Onboarding-->
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
