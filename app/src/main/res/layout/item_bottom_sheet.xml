@@ -18,10 +18,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
     android:minHeight="48dp"
-    android:orientation="horizontal"
-    android:background="?attr/selectableItemBackground">
+    android:orientation="horizontal">
 
     <ImageView
         android:id="@+id/bs_image"
@@ -29,7 +29,9 @@
         android:layout_height="24dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        tools:ignore="ContentDescription" />
+        tools:ignore="ContentDescription"
+        tools:src="@drawable/ic_done_24px"
+        tools:tint="@color/md_black_1000" />
 
     <TextView
         android:id="@+id/bs_title"
@@ -38,6 +40,6 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:textAppearance="@style/Text.Title"
-        tools:text="Title" />
+        tools:text="Action" />
 
 </LinearLayout>
