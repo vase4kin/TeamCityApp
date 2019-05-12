@@ -48,6 +48,7 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 /**
  * Impl of {@link BuildListView}
@@ -306,6 +307,9 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptFocal(new RectanglePromptFocal().setCornerRadius(
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius),
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius)))
                 .setPromptStateChangeListener((prompt, state) -> {
                     if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
                         listener.onPromptShown();

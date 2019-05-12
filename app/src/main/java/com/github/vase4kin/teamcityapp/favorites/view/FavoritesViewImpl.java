@@ -46,6 +46,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
 
@@ -126,6 +127,9 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptFocal(new RectanglePromptFocal().setCornerRadius(
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius),
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius)))
                 .setPromptStateChangeListener((prompt, state) -> {
                     if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
                         listener.onPromptShown();

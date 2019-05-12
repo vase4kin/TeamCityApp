@@ -111,7 +111,7 @@
         <item name="android:layout_marginBottom">@dimen/default_margin</item>
         <item name="android:elevation">@dimen/default_elevation</item>
         <item name="android:textSize">14sp</item>
-        <item name="cornerRadius">32dp</item>
+        <item name="cornerRadius">@dimen/default_fab_radius</item>
         <item name="backgroundTint">@color/colorAccent</item>
     </style>
 
