@@ -70,7 +70,7 @@
         android:id="@+id/floating_action_button"
         style="@style/MaterialButton"
         android:layout_gravity="bottom|end"
-        android:text="Add to fav"
+        android:text="@string/text_fab_add_fav"
         app:icon="@drawable/ic_add_black_24dp"
         app:layout_behavior="com.github.vase4kin.teamcityapp.base.view.TransientBarBehavior" />
 
