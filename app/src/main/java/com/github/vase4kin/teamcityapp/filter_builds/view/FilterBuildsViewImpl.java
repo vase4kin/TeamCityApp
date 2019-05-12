@@ -27,7 +27,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
 
@@ -42,7 +42,7 @@ import butterknife.Unbinder;
 public class FilterBuildsViewImpl implements FilterBuildsView {
 
     @BindView(R.id.fab_filter)
-    FloatingActionButton mFilterFab;
+    MaterialButton mFilterFab;
 
     @BindView(R.id.selected_filter)
     TextView mSelectedFilterStatus;
@@ -79,7 +79,7 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
     public void initViews(final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
 
-        Toolbar mToolbar = (Toolbar) mActivity.findViewById(R.id.toolbar);
+        Toolbar mToolbar = mActivity.findViewById(R.id.toolbar);
         mActivity.setSupportActionBar(mToolbar);
 
         ActionBar actionBar = mActivity.getSupportActionBar();
@@ -92,27 +92,19 @@ public class FilterBuildsViewImpl implements FilterBuildsView {
         mToolbar.setNavigationIcon(new IconDrawable(mActivity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize());
         mToolbar.setNavigationOnClickListener(new OnToolBarNavigationListenerImpl(listener));
 
-        mFilterFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listener.onFilterFabClick(mSelectedFilter, mPersonalSwitch.isChecked(), mPinnedSwitch.isChecked());
-            }
-        });
+        mFilterFab.setOnClickListener(v -> listener.onFilterFabClick(mSelectedFilter, mPersonalSwitch.isChecked(), mPinnedSwitch.isChecked()));
 
         mFilterChooser = new MaterialDialog.Builder(mActivity)
                 .title(R.string.title_filter_chooser_dialog)
                 .items(R.array.build_filters)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                        if (position == FILTER_QUEUED) {
-                            listener.onQueuedFilterSelected();
-                        } else {
-                            listener.onOtherFiltersSelected();
-                        }
-                        mSelectedFilterStatus.setText(text);
-                        mSelectedFilter = position;
+                .itemsCallback((dialog, itemView, position, text) -> {
+                    if (position == FILTER_QUEUED) {
+                        listener.onQueuedFilterSelected();
+                    } else {
+                        listener.onOtherFiltersSelected();
                     }
+                    mSelectedFilterStatus.setText(text);
+                    mSelectedFilter = position;
                 })
                 .build();
     }

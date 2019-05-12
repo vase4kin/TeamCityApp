@@ -15,10 +15,9 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/default_margin"
+    android:layout_margin="12dp"
     android:orientation="vertical">
 
     <TextView
@@ -26,14 +25,19 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:text="@string/text_build_branch"
-        style="@style/Hint" />
+        android:textColor="@color/main_text_color"
+        android:textSize="18sp" />
 
     <AutoCompleteTextView
         android:id="@+id/autocomplete_branches"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/hint_default_build_branch"
-        android:theme="@style/Autocomplete"
+        android:imeOptions="actionDone"
+        android:inputType="textNoSuggestions"
+        android:lines="1"
+        android:maxLines="1"
+        android:singleLine="true"
         android:visibility="gone" />
 
     <TextView
@@ -43,8 +47,7 @@
         android:layout_marginLeft="4dp"
         android:text="@string/text_no_branches_available"
         android:textSize="18sp"
-        android:visibility="gone"
-        style="@style/Hint" />
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/text_no_branches_available_to_filter"
@@ -53,8 +56,7 @@
         android:layout_marginLeft="4dp"
         android:text="@string/text_no_branches_available_to_filter"
         android:textSize="18sp"
-        android:visibility="gone"
-        style="@style/Hint" />
+        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/progress_branches_loading"
@@ -69,16 +71,14 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="@dimen/default_margin"
             android:text="@string/text_loading_branches"
-            android:textSize="18sp"
-            style="@style/Hint" />
+            android:textSize="18sp" />
 
         <me.zhanghai.android.materialprogressbar.MaterialProgressBar
             android:id="@+id/progress_wheel"
             style="@style/Widget.MaterialProgressBar.ProgressBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminate="true"
-            app:mpb_indeterminateTint="@color/md_white_1000" />
+            android:indeterminate="true" />
 
     </LinearLayout>
 
