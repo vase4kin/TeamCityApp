@@ -54,6 +54,7 @@ import it.cosenonjaviste.daggermock.DaggerMockRule;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -189,7 +190,7 @@ public class FilterBuildsActivityTest {
         onData(allOf(is(instanceOf(String.class)), is("dev1")))
                 .inRoot(RootMatchers.withDecorView(not(is(mActivityRule.getActivity().getWindow().getDecorView()))))
                 .perform(click());
-        onView(withText("dev1")).perform(click());
+        onView(withText("dev1")).perform(click(), closeSoftKeyboard());
 
         // Click on filter fab
         onView(withId(R.id.fab_filter)).perform(click());

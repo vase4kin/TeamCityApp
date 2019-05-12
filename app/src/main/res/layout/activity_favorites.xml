@@ -15,8 +15,8 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -24,15 +24,15 @@
     tools:context=".buildlist.view.BuildListActivity">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_height="?attr/actionBarSize"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            android:layout_height="?attr/actionBarSize"
+            style="@style/Toolbar"
             android:layout_width="match_parent"
-            app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Toolbar" />
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -45,9 +45,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
+            style="@style/RecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/RecyclerView" />
+            android:layout_height="wrap_content" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -66,6 +66,12 @@
 
     <include layout="@layout/layout_error_view" />
 
-    <include layout="@layout/layout_float_button" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/floating_action_button"
+        style="@style/MaterialButton"
+        android:layout_gravity="bottom|end"
+        android:text="@string/text_fab_add_fav"
+        app:icon="@drawable/ic_add_black_24dp"
+        app:layout_behavior="com.github.vase4kin.teamcityapp.base.view.TransientBarBehavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

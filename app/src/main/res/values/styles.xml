@@ -103,6 +103,18 @@
         <item name="fabSize">normal</item>
     </style>
 
+    <style name="MaterialButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_gravity">bottom|center</item>
+        <item name="android:layout_marginEnd">@dimen/default_margin</item>
+        <item name="android:layout_marginBottom">@dimen/default_margin</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">@dimen/default_fab_radius</item>
+        <item name="backgroundTint">@color/colorAccent</item>
+    </style>
+
     <style name="SingleTextSizeItem">
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
     </style>

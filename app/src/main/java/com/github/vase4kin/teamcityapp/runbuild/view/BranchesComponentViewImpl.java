@@ -17,9 +17,10 @@
 package com.github.vase4kin.teamcityapp.runbuild.view;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
@@ -87,7 +88,16 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
      */
     @Override
     public void setupAutoComplete(final List<String> branches) {
-        mBranchAutocomplete.setAdapter(new BranchArrayAdapter(mActivity, android.R.layout.simple_dropdown_item_1line, branches));
+        BranchArrayAdapter adapter = new BranchArrayAdapter(mActivity, android.R.layout.simple_dropdown_item_1line, branches);
+        mBranchAutocomplete.setAdapter(adapter);
+        mBranchAutocomplete.setOnItemClickListener((parent, view, position, id) -> hideKeyboard());
+        mBranchAutocomplete.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                hideKeyboard();
+                return true;
+            }
+            return false;
+        });
     }
 
     /**
@@ -96,10 +106,18 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
     @Override
     public void setupAutoCompleteForSingleBranch(List<String> branches) {
         mBranchAutocomplete.setAdapter(new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line, branches));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            mBranchAutocomplete.setText(branches.get(0), false);
-        }
+        mBranchAutocomplete.setText(branches.get(0), false);
         mBranchAutocomplete.setEnabled(false);
+    }
+
+    private void hideKeyboard() {
+        View view = mActivity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) {
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+            }
+        }
     }
 
     /**

@@ -15,23 +15,23 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
     tools:context=".buildlist.view.BuildListActivity">
 
-    <com.google.android.material.appbar.AppBarLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_height="?attr/actionBarSize"
-        android:layout_width="match_parent">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            android:layout_height="?attr/actionBarSize"
+            style="@style/Toolbar"
             android:layout_width="match_parent"
-            app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Toolbar" />
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -44,9 +44,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
+            style="@style/RecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/RecyclerView" />
+            android:layout_height="wrap_content" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -65,8 +65,14 @@
 
     <include layout="@layout/layout_error_view" />
 
-    <include
-        layout="@layout/layout_float_button"
-        style="@style/BaseFloatingActionButton.NotVisible" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/floating_action_button"
+        style="@style/MaterialButton"
+        android:layout_gravity="bottom|end"
+        android:text="@string/title_run_build"
+        android:visibility="invisible"
+        app:icon="@drawable/ic_directions_run_white_24px"
+        app:layout_behavior="com.github.vase4kin.teamcityapp.base.view.TransientBarBehavior"
+        tools:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
