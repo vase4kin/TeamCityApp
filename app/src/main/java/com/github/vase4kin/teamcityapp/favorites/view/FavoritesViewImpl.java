@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.favorites.view;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
@@ -38,10 +37,8 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialIcons;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +46,12 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
 
     @BindView(R.id.floating_action_button)
-    FloatingActionButton mFloatingActionButton;
+    MaterialButton mFloatingActionButton;
     @BindView(R.id.container)
     View mContainer;
 
@@ -72,13 +70,9 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
     @Override
     public void initViews(@NonNull BaseListView.ViewListener listener) {
         super.initViews(listener);
-        mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_add).color(Color.WHITE));
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (FavoritesViewImpl.this.listener != null) {
-                    FavoritesViewImpl.this.listener.onFabClick();
-                }
+        mFloatingActionButton.setOnClickListener(v -> {
+            if (FavoritesViewImpl.this.listener != null) {
+                FavoritesViewImpl.this.listener.onFabClick();
             }
         });
     }
@@ -112,12 +106,9 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                 mContainer,
                 R.string.text_info_add,
                 Snackbar.LENGTH_LONG)
-                .setAction(R.string.text_info_add_action, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listener != null) {
-                            listener.onSnackBarAction();
-                        }
+                .setAction(R.string.text_info_add_action, view -> {
+                    if (listener != null) {
+                        listener.onSnackBarAction();
                     }
                 });
         snackBar.show();
@@ -136,12 +127,12 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
-                            listener.onPromptShown();
-                        }
+                .setPromptFocal(new RectanglePromptFocal().setCornerRadius(
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius),
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius)))
+                .setPromptStateChangeListener((prompt, state) -> {
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                        listener.onPromptShown();
                     }
                 })
                 .show();
@@ -164,7 +155,7 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
         baseAdapter.setDataModel(dataModel);
         baseAdapter.setOnClickListener(new OnNavigationItemClickListener() {
             @Override
-            public void onClick(NavigationItem navigationItem) {
+            public void onClick(@NonNull NavigationItem navigationItem) {
                 listener.onClick(navigationItem);
             }
 
@@ -194,13 +185,10 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                     sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, projectName));
                 }
             }
-            mAdapter.setListener(new SimpleSectionedRecyclerViewAdapter.OnSectionClickListener() {
-                @Override
-                public void onSectionClick(int position) {
-                    final String projectName = dataModel.getProjectName(position);
-                    final String projectId = dataModel.getProjectId(position);
-                    NavigationActivity.start(projectName, projectId, mActivity);
-                }
+            mAdapter.setListener(position -> {
+                final String projectName = dataModel.getProjectName(position);
+                final String projectId = dataModel.getProjectId(position);
+                NavigationActivity.Companion.start(projectName, projectId, mActivity);
             });
         }
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];

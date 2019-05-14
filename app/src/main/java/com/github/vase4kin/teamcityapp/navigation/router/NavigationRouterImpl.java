@@ -41,7 +41,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      */
     @Override
     public void startBuildListActivity(@NonNull String name, @NonNull String id) {
-        BuildListActivity.start(name, id, null, mActivity);
+        BuildListActivity.Companion.start(name, id, null, mActivity);
     }
 
     /**
@@ -49,7 +49,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      */
     @Override
     public void startNavigationActivity(@NonNull String name, @NonNull String id) {
-        NavigationActivity.start(name, id, mActivity);
+        NavigationActivity.Companion.start(name, id, mActivity);
     }
 
     /**
@@ -57,7 +57,7 @@ public class NavigationRouterImpl implements NavigationRouter {
      */
     @Override
     public void startProjectActivity() {
-        RootProjectsActivity.startWhenNavigateToRootFromDrawer(mActivity);
+        RootProjectsActivity.Companion.startWhenNavigateToRootFromDrawer(mActivity);
     }
 
     @Override

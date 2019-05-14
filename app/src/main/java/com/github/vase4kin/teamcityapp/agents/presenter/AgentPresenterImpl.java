@@ -34,7 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * Handles logic of {@link com.github.vase4kin.teamcityapp.agents.view.BaseAgentListFragment}
+ * Handles logic of {@link com.github.vase4kin.teamcityapp.agents.view.AgentListFragment}
  */
 public class AgentPresenterImpl extends BaseListPresenterImpl<
         AgentDataModel,

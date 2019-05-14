@@ -34,11 +34,11 @@ public class FirebaseRootTrackerImpl extends BaseFirebaseTracker implements Root
      */
     @Override
     public void trackView() {
-        mFirebaseAnalytics.logEvent(SCREEN_NAME_ROOT, null);
+        firebaseAnalytics.logEvent(SCREEN_NAME_ROOT, null);
     }
 
     @Override
     public void trackChangeAccount() {
-        mFirebaseAnalytics.logEvent(DrawerTracker.EVENT_CHANGE_ACCOUNT, null);
+        firebaseAnalytics.logEvent(DrawerTracker.EVENT_CHANGE_ACCOUNT, null);
     }
 }

@@ -25,7 +25,9 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
+import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
+import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
@@ -41,6 +43,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 
@@ -90,21 +94,22 @@ public class CreateAccountActivityTest {
     private static final String INPUT_URL = URL.replace("https://", "");
 
     @Rule
-    public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(appComponent -> {
+    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
+            .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
+            .set(restApiComponent -> {
                 TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                app.setAppInjector(appComponent);
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
-    public CustomIntentsTestRule<CreateAccountActivity> mActivityRule = new CustomIntentsTestRule<>(CreateAccountActivity.class);
+    public CustomIntentsTestRule<CreateAccountActivity> activityRule = new CustomIntentsTestRule<>(CreateAccountActivity.class);
 
     @Captor
-    private ArgumentCaptor<Callback> mCallbackArgumentCaptor;
+    private ArgumentCaptor<Callback> callbackArgumentCaptor;
 
     @Named(CLIENT_BASE)
     @Mock
-    private OkHttpClient mClientBase;
+    private OkHttpClient clientBase;
 
     @Named(CLIENT_BASE_UNSAFE)
     @Mock
@@ -112,10 +117,10 @@ public class CreateAccountActivityTest {
 
     @Named(CLIENT_AUTH)
     @Mock
-    private OkHttpClient mClientAuth;
+    private OkHttpClient clientAuth;
 
     @Mock
-    private Call mCall;
+    private Call call;
 
     @BeforeClass
     public static void disableOnboarding() {
@@ -125,20 +130,20 @@ public class CreateAccountActivityTest {
     @Before
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        app.getAppInjector().sharedUserStorage().clearAll();
-        when(mClientBase.newCall(Matchers.any(Request.class))).thenReturn(mCall);
-        when(unsafeOkHttpClient.newCall(Matchers.any(Request.class))).thenReturn(mCall);
-        mActivityRule.launchActivity(null);
+        app.getRestApiInjector().sharedUserStorage().clearAll();
+        when(clientBase.newCall(Matchers.any(Request.class))).thenReturn(call);
+        when(unsafeOkHttpClient.newCall(Matchers.any(Request.class))).thenReturn(call);
+        activityRule.launchActivity(null);
     }
 
     /**
      * Verifies that user can be logged in as guest user with correct account url
      */
     @Test
-    public void testUserCanCreateGuestUserAccountWithCorrectUrl() throws Throwable {
+    public void testUserCanCreateGuestUserAccountWithCorrectUrl() {
         doAnswer(invocation -> {
-            mCallbackArgumentCaptor.getValue().onResponse(
-                    mCall,
+            callbackArgumentCaptor.getValue().onResponse(
+                    call,
                     new Response.Builder()
                             .request(new Request.Builder().url(URL).build())
                             .protocol(Protocol.HTTP_1_0)
@@ -146,7 +151,7 @@ public class CreateAccountActivityTest {
                             .message("")
                             .build());
             return null;
-        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+        }).when(call).enqueue(callbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -174,8 +179,8 @@ public class CreateAccountActivityTest {
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() throws Throwable {
         doAnswer(invocation -> {
-            mCallbackArgumentCaptor.getValue().onResponse(
-                    mCall,
+            callbackArgumentCaptor.getValue().onResponse(
+                    call,
                     new Response.Builder()
                             .request(new Request.Builder().url(URL).build())
                             .protocol(Protocol.HTTP_1_0)
@@ -183,7 +188,7 @@ public class CreateAccountActivityTest {
                             .message("")
                             .build());
             return null;
-        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+        }).when(call).enqueue(callbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -215,15 +220,15 @@ public class CreateAccountActivityTest {
     @Test
     public void testUserCanCreateUserAccountWithCorrectUrlAndCredentials() throws Throwable {
         doAnswer(invocation -> {
-            mCallbackArgumentCaptor.getValue().onResponse(
-                    mCall,
+            callbackArgumentCaptor.getValue().onResponse(
+                    call,
                     new Response.Builder()
                             .request(new Request.Builder().url(URL).build())
                             .protocol(Protocol.HTTP_1_0)
                             .code(200)
                             .build());
             return null;
-        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+        }).when(call).enqueue(callbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton());
@@ -245,8 +250,8 @@ public class CreateAccountActivityTest {
     @Test
     public void testUserIsNotifiedIfServerReturnsBadResponse() throws IOException {
         doAnswer(invocation -> {
-            mCallbackArgumentCaptor.getValue().onResponse(
-                    mCall,
+            callbackArgumentCaptor.getValue().onResponse(
+                    call,
                     new Response.Builder()
                             .request(new Request.Builder().url(URL).build())
                             .protocol(Protocol.HTTP_1_0)
@@ -254,7 +259,7 @@ public class CreateAccountActivityTest {
                             .message("Client Error")
                             .build());
             return null;
-        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+        }).when(call).enqueue(callbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(URL), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());

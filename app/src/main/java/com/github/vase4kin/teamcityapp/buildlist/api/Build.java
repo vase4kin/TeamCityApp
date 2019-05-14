@@ -183,6 +183,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
                  String queuedDate,
                  String finishDate,
                  String webUrl) {
+        this.id = "randomId";
         this.number = number;
         this.buildTypeId = buildTypeId;
         this.status = status;

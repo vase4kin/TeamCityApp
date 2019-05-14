@@ -21,15 +21,21 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import javax.inject.Inject;
+
 /**
  * Impl of {@link UrlFormatter}
  */
 public class UrlFormatterImpl implements UrlFormatter {
 
+    @Inject
+    public UrlFormatterImpl() {
+    }
+
     /**
      * {@inheritDoc}
      */
-    public String formatServerUrl(String serverUrl) {
+    public String formatServerUrl(@NonNull String serverUrl) {
         Uri serverUri = Uri.parse(serverUrl);
         boolean hasNoPathSegment = TextUtils.isEmpty(serverUri.getLastPathSegment());
         if (hasNoPathSegment) {

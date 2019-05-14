@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter;
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl;
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider;
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl;
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient;
@@ -38,22 +39,14 @@ import dagger.Provides;
 @Module
 public class BuildLogModule {
 
-    private View mView;
-    private Fragment mFragment;
-
-    public BuildLogModule(View mView, Fragment mFragment) {
-        this.mView = mView;
-        this.mFragment = mFragment;
+    @Provides
+    BuildLogView providesBuildLogViewModel(BuildLogFragment fragment, BuildLogWebViewClient client) {
+        return new BuildLogViewImpl(fragment.getView(), client);
     }
 
     @Provides
-    BuildLogView providesBuildLogViewModel(BuildLogWebViewClient client) {
-        return new BuildLogViewImpl(mView, client);
-    }
-
-    @Provides
-    BuildLogValueExtractor providesBuildLogValueExtractor() {
-        return new BuildLogValueExtractorImpl(mFragment.getArguments());
+    BuildLogValueExtractor providesBuildLogValueExtractor(BuildLogFragment fragment) {
+        return new BuildLogValueExtractorImpl(fragment.getArguments());
     }
 
     /**
@@ -71,7 +64,7 @@ public class BuildLogModule {
     }
 
     @Provides
-    BuildLogRouter providesBuildLogRouter() {
-        return new BuildLogRouterImpl(mFragment.getActivity());
+    BuildLogRouter providesBuildLogRouter(BuildLogFragment fragment) {
+        return new BuildLogRouterImpl(fragment.getActivity());
     }
 }

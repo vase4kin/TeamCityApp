@@ -24,11 +24,12 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 /**
  * Impl of [TestDetailsDataManager]
  */
-class TestDetailsDataManagerImpl(private val repository: Repository) : TestDetailsDataManager {
+class TestDetailsDataManagerImpl @Inject constructor(private val repository: Repository) : TestDetailsDataManager {
 
     private val subscriptions = CompositeDisposable()
 

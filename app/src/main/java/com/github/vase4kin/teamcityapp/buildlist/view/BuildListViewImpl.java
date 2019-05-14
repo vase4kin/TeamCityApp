@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.buildlist.view;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,10 +38,8 @@ import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerVie
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.joanzapata.iconify.IconDrawable;
-import com.joanzapata.iconify.fonts.MaterialIcons;
 import com.mugen.Mugen;
 
 import java.util.ArrayList;
@@ -51,6 +48,7 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
+import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 /**
  * Impl of {@link BuildListView}
@@ -60,7 +58,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @BindString(R.string.text_queued_header)
     String mQueuedHeaderText;
     @BindView(R.id.floating_action_button)
-    FloatingActionButton mFloatingActionButton;
+    MaterialButton mFloatingActionButton;
     private MaterialDialog mProgressDialog;
     private List<SimpleSectionedRecyclerViewAdapter.Section> mSections;
     private BuildListDataModel mDataModel;
@@ -78,7 +76,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     /**
      * {@inheritDoc}
      */
-    public void setOnBuildListPresenterListener(OnBuildListPresenterListener onBuildListPresenterListener) {
+    public void setOnBuildListPresenterListener(@NonNull OnBuildListPresenterListener onBuildListPresenterListener) {
         this.mOnBuildListPresenterListener = onBuildListPresenterListener;
     }
 
@@ -88,14 +86,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void initViews(@NonNull ViewListener listener) {
         super.initViews(listener);
-        mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_directions_run).color(Color.WHITE));
-        mFloatingActionButton.hide();
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mOnBuildListPresenterListener.onRunBuildFabClick();
-            }
-        });
+        mFloatingActionButton.setVisibility(View.GONE);
+        mFloatingActionButton.setOnClickListener(v -> mOnBuildListPresenterListener.onRunBuildFabClick());
         mProgressDialog = new MaterialDialog.Builder(mActivity)
                 .content(R.string.text_opening_build)
                 .progress(true, 0)
@@ -109,7 +101,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void setTitle(String title) {
+    public void setTitle(@NonNull String title) {
         ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
@@ -121,7 +113,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void showRunBuildFloatActionButton() {
-        mFloatingActionButton.show();
+        mFloatingActionButton.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -129,7 +121,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void hideRunBuildFloatActionButton() {
-        mFloatingActionButton.hide();
+        mFloatingActionButton.setVisibility(View.GONE);
     }
 
     /**
@@ -161,12 +153,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 mRecyclerView,
                 R.string.load_more_retry_snack_bar_text,
                 Snackbar.LENGTH_LONG)
-                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onLoadMore();
-                    }
-                });
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, v -> mOnBuildListPresenterListener.onLoadMore());
         snackBar.show();
     }
 
@@ -213,12 +200,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 mRecyclerView,
                 R.string.text_build_is_run,
                 Snackbar.LENGTH_LONG)
-                .setAction(R.string.text_show_build, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
-                    }
-                });
+                .setAction(R.string.text_show_build, v -> mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick());
         snackBar.show();
     }
 
@@ -231,12 +213,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 mRecyclerView,
                 R.string.text_filters_applied,
                 Snackbar.LENGTH_INDEFINITE)
-                .setAction(R.string.text_snackbar_button_reset_filters, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onResetFiltersSnackBarActionClick();
-                    }
-                });
+                .setAction(R.string.text_snackbar_button_reset_filters, v -> mOnBuildListPresenterListener.onResetFiltersSnackBarActionClick());
         mFiltersAppliedSnackBar.show();
     }
 
@@ -249,12 +226,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 mRecyclerView,
                 R.string.error_opening_build,
                 Snackbar.LENGTH_LONG)
-                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick();
-                    }
-                });
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, v -> mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick());
         snackBar.show();
     }
 
@@ -267,12 +239,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 mRecyclerView,
                 R.string.text_add_to_favorites,
                 Snackbar.LENGTH_LONG)
-                .setAction(R.string.text_view_favorites, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mOnBuildListPresenterListener.onNavigateToFavorites();
-                    }
-                });
+                .setAction(R.string.text_view_favorites, v -> mOnBuildListPresenterListener.onNavigateToFavorites());
         snackBar.show();
     }
 
@@ -308,7 +275,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void showFilterBuildsPrompt(final OnboardingManager.OnPromptShownListener listener) {
+    public void showFilterBuildsPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
         new MaterialTapTargetPrompt.Builder(mActivity)
                 .setTarget(R.id.filter_builds)
@@ -319,12 +286,9 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
-                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
-                            listener.onPromptShown();
-                        }
+                .setPromptStateChangeListener((prompt, state) -> {
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                        listener.onPromptShown();
                     }
                 })
                 .show();
@@ -334,7 +298,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void showRunBuildPrompt(final OnboardingManager.OnPromptShownListener listener) {
+    public void showRunBuildPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
         new MaterialTapTargetPrompt.Builder(mActivity)
                 .setTarget(mFloatingActionButton)
@@ -343,12 +307,12 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
-                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
-                            listener.onPromptShown();
-                        }
+                .setPromptFocal(new RectanglePromptFocal().setCornerRadius(
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius),
+                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius)))
+                .setPromptStateChangeListener((prompt, state) -> {
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                        listener.onPromptShown();
                     }
                 })
                 .show();
@@ -358,7 +322,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      * {@inheritDoc}
      */
     @Override
-    public void showFavPrompt(final OnboardingManager.OnPromptShownListener listener) {
+    public void showFavPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
         new MaterialTapTargetPrompt.Builder(mActivity)
                 .setTarget(R.id.add_to_favorites)
@@ -369,12 +333,9 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(@NonNull MaterialTapTargetPrompt prompt, int state) {
-                        if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
-                            listener.onPromptShown();
-                        }
+                .setPromptStateChangeListener((prompt, state) -> {
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                        listener.onPromptShown();
                     }
                 })
                 .show();

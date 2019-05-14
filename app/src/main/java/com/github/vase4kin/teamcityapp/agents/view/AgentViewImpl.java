@@ -27,7 +27,7 @@ import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 
 /**
- * View managing for {@link BaseAgentListFragment}
+ * View managing for {@link AgentListFragment}
  */
 public class AgentViewImpl extends BaseListViewImpl<AgentDataModel, AgentsAdapter> {
 

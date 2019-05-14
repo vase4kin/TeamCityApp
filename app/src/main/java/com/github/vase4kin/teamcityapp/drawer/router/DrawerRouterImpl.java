@@ -43,7 +43,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startRootProjectsActivity() {
-        RootProjectsActivity.startWhenNavigateToRootFromDrawer(mActivity);
+        RootProjectsActivity.Companion.startWhenNavigateToRootFromDrawer(mActivity);
     }
 
     /**
@@ -51,7 +51,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startRootProjectsActivityWhenSwitchingAccounts() {
-        RootProjectsActivity.startWhenSwitchingAccountsFromDrawer(mActivity);
+        RootProjectsActivity.Companion.startWhenSwitchingAccountsFromDrawer(mActivity);
     }
 
     /**
@@ -59,7 +59,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startAccountListActivity() {
-        AccountListActivity.start(mActivity);
+        AccountListActivity.Companion.start(mActivity);
     }
 
     /**
@@ -67,7 +67,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startAgentActivity() {
-        AgentTabsActivity.start(mActivity);
+        AgentTabsActivity.Companion.start(mActivity);
     }
 
     /**
@@ -75,7 +75,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startBuildRunningActivity() {
-        RunningBuildsListActivity.start(mActivity);
+        RunningBuildsListActivity.Companion.start(mActivity);
     }
 
     /**
@@ -83,7 +83,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startQueuedBuildsActivity() {
-        BuildQueueActivity.start(mActivity);
+        BuildQueueActivity.Companion.start(mActivity);
     }
 
     /**
@@ -91,7 +91,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startAboutActivity() {
-        AboutActivity.start(mActivity);
+        AboutActivity.Companion.start(mActivity);
     }
 
     /**
@@ -99,7 +99,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      */
     @Override
     public void startFavoritesActivity() {
-        FavoritesActivity.start(mActivity);
+        FavoritesActivity.Companion.start(mActivity);
     }
 
     /**

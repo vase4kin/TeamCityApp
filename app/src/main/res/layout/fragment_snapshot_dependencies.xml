@@ -52,8 +52,14 @@
 
     <include layout="@layout/layout_error_view" />
 
-    <include
-        layout="@layout/layout_float_button"
-        style="@style/BaseFloatingActionButton.NotVisible" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/floating_action_button"
+        style="@style/MaterialButton"
+        android:layout_gravity="bottom|end"
+        android:text="@string/title_run_build"
+        android:visibility="invisible"
+        app:icon="@drawable/ic_directions_run_white_24px"
+        app:layout_behavior="com.github.vase4kin.teamcityapp.base.view.TransientBarBehavior"
+        tools:visibility="visible" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

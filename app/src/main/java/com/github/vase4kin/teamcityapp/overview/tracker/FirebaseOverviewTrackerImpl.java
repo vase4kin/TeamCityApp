@@ -33,7 +33,7 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserClickedCancelBuildOption() {
-        mFirebaseAnalytics.logEvent(EVENT_CANCEL_BUILD, null);
+        firebaseAnalytics.logEvent(EVENT_CANCEL_BUILD, null);
     }
 
     /**
@@ -41,7 +41,7 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserSharedBuild() {
-        mFirebaseAnalytics.logEvent(EVENT_SHARE_BUILD, null);
+        firebaseAnalytics.logEvent(EVENT_SHARE_BUILD, null);
     }
 
     /**
@@ -57,7 +57,7 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserRestartedBuild() {
-        mFirebaseAnalytics.logEvent(EVENT_RESTART_BUILD, null);
+        firebaseAnalytics.logEvent(EVENT_RESTART_BUILD, null);
     }
 
     /**
@@ -65,7 +65,7 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserWantsToSeeBuildListFilteredByBranch() {
-        mFirebaseAnalytics.logEvent(EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH, null);
+        firebaseAnalytics.logEvent(EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH, null);
     }
 
     /**
@@ -73,7 +73,7 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserOpensBuildType() {
-        mFirebaseAnalytics.logEvent(EVENT_OPEN_BUILD_TYPE, null);
+        firebaseAnalytics.logEvent(EVENT_OPEN_BUILD_TYPE, null);
     }
 
     /**
@@ -81,6 +81,6 @@ public class FirebaseOverviewTrackerImpl extends BaseFirebaseTracker implements 
      */
     @Override
     public void trackUserOpensProject() {
-        mFirebaseAnalytics.logEvent(EVENT_OPEN_PROJECT, null);
+        firebaseAnalytics.logEvent(EVENT_OPEN_PROJECT, null);
     }
 }

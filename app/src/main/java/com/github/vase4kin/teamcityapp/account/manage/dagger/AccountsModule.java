@@ -17,18 +17,14 @@
 package com.github.vase4kin.teamcityapp.account.manage.dagger;
 
 import android.content.Context;
-import android.view.View;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManagerImpl;
-import com.github.vase4kin.teamcityapp.account.manage.tracker.FabricManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.FirebaseManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker;
-import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter;
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountViewHolderFactory;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsViewImpl;
@@ -41,24 +37,14 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.Map;
-import java.util.Set;
 
 import dagger.Module;
 import dagger.Provides;
 import dagger.multibindings.IntKey;
 import dagger.multibindings.IntoMap;
-import dagger.multibindings.IntoSet;
 
 @Module
 public class AccountsModule {
-
-    private View mView;
-    private AppCompatActivity mActivity;
-
-    public AccountsModule(View mView, AppCompatActivity mActivity) {
-        this.mView = mView;
-        this.mActivity = mActivity;
-    }
 
     @Provides
     BaseListRxDataManager providesBaseListRxDataManager(SharedUserStorage sharedUserStorage) {
@@ -66,8 +52,10 @@ public class AccountsModule {
     }
 
     @Provides
-    AccountsView providesAccountsView(SharedUserStorage sharedUserStorage, SimpleSectionedRecyclerViewAdapter<AccountAdapter> adapter) {
-        return new AccountsViewImpl(mView, mActivity, sharedUserStorage, R.string.empty_list_message_accounts, adapter);
+    AccountsView providesAccountsView(AccountListActivity activity,
+                                      SharedUserStorage sharedUserStorage,
+                                      SimpleSectionedRecyclerViewAdapter<AccountAdapter> adapter) {
+        return new AccountsViewImpl(activity.findViewById(android.R.id.content), activity, sharedUserStorage, R.string.empty_list_message_accounts, adapter);
     }
 
     @Provides
@@ -81,7 +69,8 @@ public class AccountsModule {
     }
 
     @Provides
-    SimpleSectionedRecyclerViewAdapter<AccountAdapter> providesSimpleSectionedRecyclerViewAdapter(Context context, AccountAdapter adapter) {
+    SimpleSectionedRecyclerViewAdapter<AccountAdapter> providesSimpleSectionedRecyclerViewAdapter(Context context,
+                                                                                                  AccountAdapter adapter) {
         return new SimpleSectionedRecyclerViewAdapter<>(context, adapter);
     }
 
@@ -92,20 +81,8 @@ public class AccountsModule {
         return new AccountViewHolderFactory();
     }
 
-    @IntoSet
-    @Provides
-    ManageAccountsTracker providesViewFabricTracker() {
-        return new FabricManageAccountsTrackerImpl();
-    }
-
-    @IntoSet
     @Provides
     ManageAccountsTracker providesViewFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseManageAccountsTrackerImpl(firebaseAnalytics);
-    }
-
-    @Provides
-    ManageAccountsTracker providesViewTracker(Set<ManageAccountsTracker> trackers) {
-        return new ManageAccountsTrackerImpl(trackers);
     }
 }

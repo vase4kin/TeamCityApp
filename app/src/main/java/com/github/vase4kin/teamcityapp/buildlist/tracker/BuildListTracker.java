@@ -40,6 +40,11 @@ public interface BuildListTracker extends ViewTracker {
     String SCREEN_NAME_QUEUED_BUILD_LIST = "screen_build_queue_list";
 
     /**
+     * Snapshot dependencies
+     */
+    String SCREEN_NAME_SNAPSHOT_DEPENDECIES = "screen_snapshot_dependencies";
+
+    /**
      * Event for run build button pressed
      */
     String EVENT_RUN_BUILD_BUTTON_PRESSED = "run_build_fab_click";

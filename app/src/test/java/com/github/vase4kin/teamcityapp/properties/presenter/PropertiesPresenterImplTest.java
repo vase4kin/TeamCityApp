@@ -17,11 +17,11 @@
 package com.github.vase4kin.teamcityapp.properties.presenter;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager;
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractor;
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView;
 
 import org.junit.Before;
@@ -61,7 +61,7 @@ public class PropertiesPresenterImplTest {
     private ViewTracker mTracker;
 
     @Mock
-    private BaseValueExtractor mValueExtractor;
+    private PropertiesValueExtractor mValueExtractor;
 
     private PropertiesPresenterImpl mPresenter;
 

@@ -16,16 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.agents.dagger;
 
-import android.view.View;
-
-import androidx.fragment.app.Fragment;
-
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor;
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractorImpl;
+import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment;
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewHolderFactory;
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewImpl;
 import com.github.vase4kin.teamcityapp.agents.view.AgentsAdapter;
@@ -46,32 +43,24 @@ import dagger.multibindings.IntoMap;
 @Module
 public class AgentModule {
 
-    private Fragment mFragment;
-    private View mView;
-
-    public AgentModule(Fragment mFragment, View mView) {
-        this.mFragment = mFragment;
-        this.mView = mView;
-    }
-
     @Provides
     AgentsDataManager providesAgentsDataManager(Repository repository, EventBus eventBus) {
         return new AgentsDataManagerImpl(repository, eventBus);
     }
 
     @Provides
-    BaseListView providesBaseListView(AgentsValueExtractor agentsValueExtractor, AgentsAdapter adapter) {
+    BaseListView providesBaseListView(AgentListFragment fragment, AgentsValueExtractor agentsValueExtractor, AgentsAdapter adapter) {
         return new AgentViewImpl(
                 agentsValueExtractor,
-                mView,
-                mFragment.getActivity(),
+                fragment.getView(),
+                fragment.getActivity(),
                 R.string.empty_list_message_agents,
                 adapter);
     }
 
     @Provides
-    AgentsValueExtractor providesAgentsValueExtractor() {
-        return new AgentsValueExtractorImpl(mFragment.getArguments());
+    AgentsValueExtractor providesAgentsValueExtractor(AgentListFragment fragment) {
+        return new AgentsValueExtractorImpl(fragment.getArguments());
     }
 
     @Provides

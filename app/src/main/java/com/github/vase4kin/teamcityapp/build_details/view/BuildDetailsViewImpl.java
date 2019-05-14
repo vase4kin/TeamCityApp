@@ -99,24 +99,24 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void addFragments(FragmentAdapter fragmentAdapter) {
-        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.newInstance(mBuildDetails.toBuild()));
-        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.newInstance(mBuildDetails.getChangesHref()));
+        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.Companion.newInstance(mBuildDetails.toBuild()));
+        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.Companion.newInstance(mBuildDetails.getChangesHref()));
         if (mBuildDetails.hasTests()) {
-            fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.newInstance(
+            fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.Companion.newInstance(
                     mBuildDetails.getTestsHref(),
                     mBuildDetails.getPassedTestCount(),
                     mBuildDetails.getFailedTestCount(),
                     mBuildDetails.getIgnoredTestCount()));
         }
         if (!mBuildDetails.isQueued()) {
-            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.newInstance(mBuildDetails.getId()));
+            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.Companion.newInstance(mBuildDetails.getId()));
         }
-        fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.newInstance(mBuildDetails.toBuild()));
+        fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.Companion.newInstance(mBuildDetails.toBuild()));
         if (!mBuildDetails.isQueued() && !mBuildDetails.isRunning()) {
-            fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.newInstance(mBuildDetails.toBuild(), mBuildDetails.getArtifactsHref()));
+            fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.Companion.newInstance(mBuildDetails.toBuild(), mBuildDetails.getArtifactsHref()));
         }
         if (mBuildDetails.hasSnapshotDependencies()) {
-            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.newInstance(mBuildDetails.getId()));
+            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.Companion.newInstance(mBuildDetails.getId()));
         }
     }
 

@@ -23,10 +23,8 @@ import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor;
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouterImpl;
-import com.github.vase4kin.teamcityapp.runbuild.tracker.FabricRunBuildTrackerImpl;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.FirebaseRunBuildTrackerImpl;
 import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTracker;
-import com.github.vase4kin.teamcityapp.runbuild.tracker.RunBuildTrackerImpl;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView;
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentViewImpl;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
@@ -34,63 +32,41 @@ import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildViewImpl;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
-import java.util.Set;
-
 import dagger.Module;
 import dagger.Provides;
-import dagger.multibindings.IntoSet;
 
 import static com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorKt.EXTRA_BUILD_TYPE_ID;
 
 @Module
 public class RunBuildModule {
 
-    private RunBuildActivity mActivity;
-
-    public RunBuildModule(RunBuildActivity mActivity) {
-        this.mActivity = mActivity;
+    @Provides
+    RunBuildView providesRunBuildView(RunBuildActivity activity) {
+        return new RunBuildViewImpl(activity);
     }
 
     @Provides
-    RunBuildView providesRunBuildView() {
-        return new RunBuildViewImpl(mActivity);
+    BranchesComponentView providesBranchesComponentView(RunBuildActivity activity) {
+        return new BranchesComponentViewImpl(activity);
     }
 
     @Provides
-    BranchesComponentView providesBranchesComponentView() {
-        return new BranchesComponentViewImpl(mActivity);
+    RunBuildInteractor providesRunBuildInteractor(RunBuildActivity activity, Repository repository) {
+        return new RunBuildInteractorImpl(repository, activity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides
-    RunBuildInteractor providesRunBuildInteractor(Repository repository) {
-        return new RunBuildInteractorImpl(repository, mActivity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
+    BranchesInteractor providesBranchesInteractor(RunBuildActivity activity, Repository repository) {
+        return new BranchesInteractorImpl(repository, activity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
     }
 
     @Provides
-    BranchesInteractor providesBranchesInteractor(Repository repository) {
-        return new BranchesInteractorImpl(repository, mActivity.getIntent().getStringExtra(EXTRA_BUILD_TYPE_ID));
+    RunBuildRouter providesRunBuildRouter(RunBuildActivity activity) {
+        return new RunBuildRouterImpl(activity);
     }
 
-    @Provides
-    RunBuildRouter providesRunBuildRouter() {
-        return new RunBuildRouterImpl(mActivity);
-    }
-
-    @IntoSet
-    @Provides
-    RunBuildTracker providesFabricRunBuildTracker() {
-        return new FabricRunBuildTrackerImpl();
-    }
-
-    @IntoSet
     @Provides
     RunBuildTracker providesFirebaseRunBuildTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseRunBuildTrackerImpl(firebaseAnalytics);
     }
-
-    @Provides
-    RunBuildTracker providesRunBuildTracker(Set<RunBuildTracker> trackers) {
-        return new RunBuildTrackerImpl(trackers);
-    }
-
 }

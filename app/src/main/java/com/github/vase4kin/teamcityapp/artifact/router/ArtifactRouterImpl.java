@@ -94,7 +94,7 @@ public class ArtifactRouterImpl implements ArtifactRouter {
     @Override
     public void openArtifactFile(BuildDetails buildDetails, String href) {
         FragmentTransaction fragmentTransaction = mActivity.getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.artifact_fragment_list, ArtifactListFragment.newInstance(buildDetails.toBuild(), href));
+        fragmentTransaction.add(R.id.artifact_fragment_list, ArtifactListFragment.Companion.newInstance(buildDetails.toBuild(), href));
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
