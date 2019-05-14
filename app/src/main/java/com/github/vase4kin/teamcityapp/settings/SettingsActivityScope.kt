@@ -16,13 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.settings
 
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
-import com.github.vase4kin.teamcityapp.drawer.dagger.DrawerModule
-import dagger.Component
+import javax.inject.Scope
 
-@SettingsActivityScope
-@Component(dependencies = [RestApiComponent::class], modules = [DrawerModule::class])
-interface SettingsComponent {
-
-    fun inject(settingsActivity: SettingsActivity)
-}
+@Scope
+annotation class SettingsActivityScope

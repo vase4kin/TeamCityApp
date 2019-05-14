@@ -27,7 +27,7 @@ class SettingsActivity : AppCompatActivity() {
 
         // Injecting presenter
         DaggerSettingsComponent.builder()
-                .drawerModule(DrawerModule(this, false, DrawerView.SETTINGS))
+                .drawerModule(DrawerModule(this, true, DrawerView.SETTINGS))
                 .restApiComponent((application as TeamCityApplication).restApiInjector)
                 .build()
                 .inject(this)
