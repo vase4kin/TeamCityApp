@@ -43,8 +43,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 
@@ -167,7 +165,7 @@ public class CreateAccountActivityTest {
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        SharedUserStorage storageUtils = app.getAppInjector().sharedUserStorage();
+        SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
         assertThat(storageUtils.getActiveUser().isSslDisabled(), is(false));
@@ -207,7 +205,7 @@ public class CreateAccountActivityTest {
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        SharedUserStorage storageUtils = app.getAppInjector().sharedUserStorage();
+        SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), is(true));
         assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(URL));
         assertThat(storageUtils.getActiveUser().isSslDisabled(), is(true));
