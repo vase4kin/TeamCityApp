@@ -34,6 +34,6 @@ public class CustomAnimationDrawerViewImpl extends DrawerViewImpl {
      */
     @Override
     public void overridePendingTransition() {
-        mActivity.overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
+        activity.overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right);
     }
 }
