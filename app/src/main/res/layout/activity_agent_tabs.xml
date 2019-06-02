@@ -15,8 +15,8 @@
   -->
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -28,18 +28,21 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            android:layout_height="?attr/actionBarSize"
+            style="@style/Toolbar.NoElevation"
             android:layout_width="match_parent"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            style="@style/Toolbar.NoElevation" />
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
+            style="@style/Widget.MaterialComponents.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
+            app:tabGravity="fill"
+            app:tabIndicator="@drawable/tabs_rounded_line_indicator"
             app:tabIndicatorColor="@color/md_white_1000"
-            app:tabMode="scrollable"
+            app:tabIndicatorFullWidth="false"
             app:tabSelectedTextColor="@color/md_white_1000"
             app:tabTextColor="@color/colorPrimaryLight" />
 
