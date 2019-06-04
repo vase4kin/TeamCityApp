@@ -19,6 +19,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.firebase.firebase-perf'
 apply from: 'jacoco.gradle'
 apply from: 'spoon.gradle'
 apply from: 'pmd.gradle'
@@ -207,8 +208,9 @@ dependencies {
     // Encryption
     implementation 'com.facebook.conceal:conceal:1.1.3@aar'
     // Firebase
-    implementation 'com.google.firebase:firebase-core:16.0.7'
-    implementation 'com.google.firebase:firebase-config:16.3.0'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.google.firebase:firebase-config:17.0.0'
+    implementation 'com.google.firebase:firebase-perf:17.0.2'
     // Unit tests
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoCoreVersion"
     testImplementation 'junit:junit:4.12'
@@ -218,12 +220,12 @@ dependencies {
     testImplementation "org.powermock:powermock-api-mockito:$rootProject.powerMockVersion"
     testImplementation "org.powermock:powermock-classloading-xstream:$rootProject.powerMockVersion"
     // Ui tests
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test:rules:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.1.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-web:3.2.0'
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoCoreVersion"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$rootProject.dexMakerVersion"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$rootProject.dexMakerVersion"

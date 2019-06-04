@@ -46,7 +46,7 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
      */
     @Override
     public void setDrawerSelection(int selection) {
-        mDrawerResult.setSelection(selection, false);
+        drawerResult.setSelection(selection, false);
     }
 
     /**
@@ -55,8 +55,8 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
     @Override
     public void showNavigationDrawerPrompt(final OnboardingManager.OnPromptShownListener listener) {
         // Creating prompt
-        int color = ContextCompat.getColor(mActivity, mDefaultColor);
-        final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(mActivity)
+        int color = ContextCompat.getColor(activity, mDefaultColor);
+        final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(activity)
                 .setPrimaryText(R.string.title_onboarding_navigation_drawer)
                 .setSecondaryText(R.string.text_onboarding_navigation_drawer)
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
@@ -74,7 +74,7 @@ public class RootDrawerViewImpl extends DrawerViewImpl implements RootDrawerView
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                navigationDrawerPrompt.setTarget(mToolbar.getChildAt(1));
+                navigationDrawerPrompt.setTarget(toolbar.getChildAt(1));
                 navigationDrawerPrompt.show();
             }
         }, TIME_NAVIGATION_DRAWER_PROMPT);
