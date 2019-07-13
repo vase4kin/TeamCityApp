@@ -16,14 +16,8 @@
 
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android"
     android:opacity="opaque">
-
+    <item android:drawable="@color/md_white_1000" />
     <item
-        android:drawable="@color/md_white_1000"/>
-
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/launch_logo"/>
-    </item>
-
+        android:drawable="@drawable/ic_launcher"
+        android:gravity="center" />
 </layer-list>
