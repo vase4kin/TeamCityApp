@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/vase4kin/TeamCityApp/branch/master/graph/badge.svg)](https://codecov.io/gh/vase4kin/TeamCityApp)
 [![Release](https://img.shields.io/badge/release-1.3.5.1-blue.svg)](https://github.com/vase4kin/TeamCityApp/releases/latest)
 
-<img src="https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/feature-graphic.png">
+<img src="https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/feature-graphic.png">
 
 # TeamCityApp
 This GitHub repository hosts the code for the Android application [TeamCityApp](https://play.google.com/store/apps/details?id=com.github.vase4kin.teamcityapp).
@@ -12,7 +12,7 @@ This GitHub repository hosts the code for the Android application [TeamCityApp](
 
 Screenshot 1 | Screenshot 2 | Screenshot 3 | Screenshot 4 | Screenshot 5 | 
 :-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|:-------------------------:|
-![Screenshot 1](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%201.png) | ![Screenshot 2](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%202.png) | ![Screenshot 3](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%203.png) | ![Screenshot 4](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%206.png) | ![Screenshot 5](https://github.com/vase4kin/TeamCityApp/raw/dev/screenshots/Phone%20Screenshot%207.png)
+![Screenshot 1](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%201.png) | ![Screenshot 2](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%202.png) | ![Screenshot 3](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%203.png) | ![Screenshot 4](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%206.png) | ![Screenshot 5](https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/Phone%20Screenshot%207.png)
 
 ## Contribution
 See [CONTRIBUTING.md](CONTRIBUTING.md).
