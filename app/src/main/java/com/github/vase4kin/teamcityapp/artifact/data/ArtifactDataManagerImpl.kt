@@ -60,7 +60,6 @@ class ArtifactDataManagerImpl(
         subscriptions.clear()
         repository.downloadFile(url)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap { response ->
                     val downloadedFile = java.io.File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name)
@@ -73,6 +72,7 @@ class ArtifactDataManagerImpl(
                         Single.error<java.io.File>(e)
                     }
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { loadingListener.onSuccess(it) },
                         onError = { loadingListener.onFail(it.message) }

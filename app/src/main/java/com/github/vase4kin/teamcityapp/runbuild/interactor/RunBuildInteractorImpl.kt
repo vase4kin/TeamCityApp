@@ -115,6 +115,7 @@ class RunBuildInteractorImpl(
      */
     override fun loadAgents(loadingListener: OnLoadingListener<List<Agent>>) {
         repository.buildType(buildTypeId, false)
+                .subscribeOn(Schedulers.io())
                 .flatMap { buildType ->
                     val isCompatibleAgentsSupported = buildType.compatibleAgents != null
                     if (isCompatibleAgentsSupported) {
@@ -125,7 +126,6 @@ class RunBuildInteractorImpl(
                         repository.listAgents(false, null, null, false)
                     }
                 }
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { loadingListener.onSuccess(it.objects) },
