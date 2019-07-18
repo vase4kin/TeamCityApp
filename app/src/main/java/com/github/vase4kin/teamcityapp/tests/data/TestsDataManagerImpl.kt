@@ -61,12 +61,12 @@ class TestsDataManagerImpl(private val repository: Repository,
                           loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
                           update: Boolean) {
         repository.listTestOccurrences(url, update)
+                .subscribeOn(Schedulers.io())
                 .flatMapObservable {
                     mLoadMoreUrl = it.nextHref
                     Observable.fromIterable(it.objects)
                 }
                 .toList()
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { loadingListener.onSuccess(it) },
