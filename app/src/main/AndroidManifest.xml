@@ -45,7 +45,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/PrimaryColorNavBarTheme" />
         <activity
-            android:name=".root.view.RootProjectsActivity"
+            android:name=".home.view.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
             android:theme="@style/HomeTheme" />

@@ -30,8 +30,8 @@ import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.joanzapata.iconify.IconDrawable;
@@ -256,7 +256,7 @@ public class DrawerViewImpl implements DrawerView {
 
                         switch ((int) drawerItem.getIdentifier()) {
                             case PROJECTS:
-                                if (activity instanceof RootProjectsActivity) {
+                                if (activity instanceof HomeActivity) {
                                     break;
                                 }
                                 mOnDrawerPresenterListener.startRootProjectsActivity();

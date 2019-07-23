@@ -30,7 +30,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -71,7 +71,7 @@ public class DrawerTest {
             });
 
     @Rule
-    public CustomActivityTestRule<RootProjectsActivity> mActivityRule = new CustomActivityTestRule<>(RootProjectsActivity.class);
+    public CustomActivityTestRule<HomeActivity> mActivityRule = new CustomActivityTestRule<>(HomeActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();

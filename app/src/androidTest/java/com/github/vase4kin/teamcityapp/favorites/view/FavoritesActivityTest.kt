@@ -42,7 +42,7 @@ import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerVi
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -138,7 +138,7 @@ class FavoritesActivityTest {
 
         // check activity is opened
         intended(allOf(
-                hasComponent(RootProjectsActivity::class.java.name),
+                hasComponent(HomeActivity::class.java.name),
                 hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         or FLAG_ACTIVITY_SINGLE_TOP)))
 

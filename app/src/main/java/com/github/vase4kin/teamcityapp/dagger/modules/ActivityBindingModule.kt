@@ -34,6 +34,9 @@ import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
+import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityScope
+import com.github.vase4kin.teamcityapp.home.dagger.HomeModule
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.*
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
@@ -41,9 +44,6 @@ import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity
-import com.github.vase4kin.teamcityapp.root.dagger.RootActivityScope
-import com.github.vase4kin.teamcityapp.root.dagger.RootModule
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
@@ -116,9 +116,9 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [RunBuildModule::class])
     abstract fun runBuildActivity(): RunBuildActivity
 
-    @RootActivityScope
-    @ContributesAndroidInjector(modules = [RootModule::class, BuildLogInteractorModule::class])
-    abstract fun rootProjectsActivity(): RootProjectsActivity
+    @HomeActivityScope
+    @ContributesAndroidInjector(modules = [HomeModule::class, BuildLogInteractorModule::class])
+    abstract fun rootProjectsActivity(): HomeActivity
 
     @NavigationActivityScope
     @ContributesAndroidInjector(modules = [NavigationModule::class, NavigationBaseModule::class, NavigationDrawerModule::class])

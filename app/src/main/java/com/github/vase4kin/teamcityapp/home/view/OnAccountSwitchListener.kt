@@ -14,21 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router
-
-import android.app.Activity
-
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+package com.github.vase4kin.teamcityapp.home.view
 
 /**
- * Impl of [LoginRouter]
+ * On switch account listener
  */
-class LoginRouterImpl(private val activity: Activity) : LoginRouter {
+interface OnAccountSwitchListener {
 
     /**
-     * {@inheritDoc}
+     * Switching account
      */
-    override fun openProjectsRootPageForFirstStart() {
-        HomeActivity.startForTheFirstStart(activity)
-    }
+    fun onAccountSwitch()
 }

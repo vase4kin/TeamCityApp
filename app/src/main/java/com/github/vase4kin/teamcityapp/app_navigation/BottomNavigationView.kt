@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -31,7 +31,7 @@ interface BottomNavigationView {
 
 class BottomNavigationViewImpl(
         private val interactor: AppNavigationInteractor,
-        private val activity: RootProjectsActivity
+        private val activity: HomeActivity
 ) : BottomNavigationView {
 
     private lateinit var favoriteFab: FloatingActionButton

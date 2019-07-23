@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router
+package com.github.vase4kin.teamcityapp.home.tracker;
 
-import android.app.Activity
-
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
 
 /**
- * Impl of [LoginRouter]
+ * Root tracker
  */
-class LoginRouterImpl(private val activity: Activity) : LoginRouter {
+public interface HomeTracker extends DrawerTracker {
 
     /**
-     * {@inheritDoc}
+     * Screen name to track
      */
-    override fun openProjectsRootPageForFirstStart() {
-        HomeActivity.startForTheFirstStart(activity)
-    }
+    String SCREEN_NAME_HOME = "screen_projects_root";
 }

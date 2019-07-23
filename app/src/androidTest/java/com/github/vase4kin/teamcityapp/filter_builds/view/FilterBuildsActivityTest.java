@@ -33,7 +33,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 
@@ -84,7 +84,7 @@ public class FilterBuildsActivityTest {
             });
 
     @Rule
-    public CustomIntentsTestRule<RootProjectsActivity> mActivityRule = new CustomIntentsTestRule<>(RootProjectsActivity.class);
+    public CustomIntentsTestRule<HomeActivity> mActivityRule = new CustomIntentsTestRule<>(HomeActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();

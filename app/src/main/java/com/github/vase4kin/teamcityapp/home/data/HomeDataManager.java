@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router
+package com.github.vase4kin.teamcityapp.home.data;
 
-import android.app.Activity
-
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 /**
- * Impl of [LoginRouter]
+ * Data manager to handle root data operations
  */
-class LoginRouterImpl(private val activity: Activity) : LoginRouter {
+public interface HomeDataManager extends DrawerDataManager {
 
     /**
-     * {@inheritDoc}
+     * @return Active user account
      */
-    override fun openProjectsRootPageForFirstStart() {
-        HomeActivity.startForTheFirstStart(activity)
-    }
+    UserAccount getActiveUser();
+
+    /**
+     * Init TC rest service
+     */
+    void initTeamCityService();
+
+    /**
+     * Clear all webview cookies
+     */
+    void clearAllWebViewCookies();
+
+    /**
+     * Evict all cache data
+     */
+    void evictAllCache();
 }

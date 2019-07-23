@@ -43,7 +43,7 @@ import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity;
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter;
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity;
 
@@ -97,7 +97,7 @@ public class BuildListActivityTest {
             });
 
     @Rule
-    public CustomIntentsTestRule<RootProjectsActivity> mActivityRule = new CustomIntentsTestRule<>(RootProjectsActivity.class);
+    public CustomIntentsTestRule<HomeActivity> mActivityRule = new CustomIntentsTestRule<>(HomeActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();

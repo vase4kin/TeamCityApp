@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router
+package com.github.vase4kin.teamcityapp.home.dagger
 
-import android.app.Activity
+import javax.inject.Scope
 
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-
-/**
- * Impl of [LoginRouter]
- */
-class LoginRouterImpl(private val activity: Activity) : LoginRouter {
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun openProjectsRootPageForFirstStart() {
-        HomeActivity.startForTheFirstStart(activity)
-    }
-}
+@Scope
+annotation class HomeActivityScope

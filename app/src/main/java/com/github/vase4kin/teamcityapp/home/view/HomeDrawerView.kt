@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router
+package com.github.vase4kin.teamcityapp.home.view
 
-import android.app.Activity
-
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 
 /**
- * Impl of [LoginRouter]
+ * Root drawer view interactions
  */
-class LoginRouterImpl(private val activity: Activity) : LoginRouter {
+interface HomeDrawerView : DrawerView {
 
     /**
-     * {@inheritDoc}
+     * Select drawer selection
+     *
+     * @param selection - Drawer selection
      */
-    override fun openProjectsRootPageForFirstStart() {
-        HomeActivity.startForTheFirstStart(activity)
-    }
+    fun setDrawerSelection(selection: Int)
+
+    /**
+     * Show navigation drawer onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener)
 }

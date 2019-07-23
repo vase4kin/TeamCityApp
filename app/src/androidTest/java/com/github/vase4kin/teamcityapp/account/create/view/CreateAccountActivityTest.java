@@ -30,7 +30,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.Before;
@@ -158,7 +158,7 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.action_create)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 hasExtras(allOf(
@@ -200,7 +200,7 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.action_create)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP),
                 hasExtras(allOf(
@@ -239,7 +239,7 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.password)).perform(typeText("pass"), pressImeActionButton());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();

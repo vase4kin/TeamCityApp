@@ -25,8 +25,8 @@ import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -86,7 +86,7 @@ public class SplashActivityTest {
 
         // Check launched intent
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
     }
 

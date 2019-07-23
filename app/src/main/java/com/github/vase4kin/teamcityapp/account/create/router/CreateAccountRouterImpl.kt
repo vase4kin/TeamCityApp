@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.account.create.router
 
 import android.app.Activity
 
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 
 /**
  * Impl of [CreateAccountRouter]
@@ -29,6 +29,6 @@ class CreateAccountRouterImpl(private val activity: Activity) : CreateAccountRou
      * {@inheritDoc}
      */
     override fun startRootProjectActivityWhenNewAccountIsCreated() {
-        RootProjectsActivity.startWhenNewAccountIsCreated(activity)
+        HomeActivity.startWhenNewAccountIsCreated(activity)
     }
 }

@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.splash.router
 
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 import com.github.vase4kin.teamcityapp.splash.view.SplashActivity
 import javax.inject.Inject
 
@@ -37,6 +37,6 @@ class SplashRouterImpl @Inject constructor(private val activity: SplashActivity)
      * {@inheritDoc}
      */
     override fun openProjectsRootPage() {
-        RootProjectsActivity.start(activity)
+        HomeActivity.start(activity)
     }
 }

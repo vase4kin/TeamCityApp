@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.login.router
+package com.github.vase4kin.teamcityapp.home.router;
 
-import android.app.Activity
-
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 
 /**
- * Impl of [LoginRouter]
+ * Router to manage {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity} navigation
  */
-class LoginRouterImpl(private val activity: Activity) : LoginRouter {
+public interface HomeRouter extends DrawerRouter {
 
     /**
-     * {@inheritDoc}
+     * TC root projects id
      */
-    override fun openProjectsRootPageForFirstStart() {
-        HomeActivity.startForTheFirstStart(activity)
-    }
+    String ROOT_PROJECTS_ID = "_Root";
+
+    /**
+     * Open account list activity
+     */
+    void openAccountsList();
 }
