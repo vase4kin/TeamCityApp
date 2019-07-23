@@ -23,7 +23,6 @@ import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
@@ -33,6 +32,7 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
 private const val EXT_APK = "apk"
+private const val LOCATOR = "browseArchives:true"
 
 /**
  * Impl of [ArtifactDataManager]
@@ -50,7 +50,7 @@ class ArtifactDataManagerImpl(
     override fun load(url: String,
                       loadingListener: OnLoadingListener<List<File>>,
                       update: Boolean) {
-        load(repository.listArtifacts(url, "browseArchives:true", update), loadingListener)
+        load(repository.listArtifacts(url, LOCATOR, update), loadingListener)
     }
 
     /**
@@ -60,19 +60,15 @@ class ArtifactDataManagerImpl(
         subscriptions.clear()
         repository.downloadFile(url)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap { response ->
+                .map { response ->
                     val downloadedFile = java.io.File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name)
-                    try {
-                        val sink = Okio.buffer(Okio.sink(downloadedFile))
-                        sink.writeAll(response.source())
-                        sink.close()
-                        Single.just<java.io.File>(downloadedFile)
-                    } catch (e: Exception) {
-                        Single.error<java.io.File>(e)
-                    }
+                    val sink = Okio.buffer(Okio.sink(downloadedFile))
+                    sink.writeAll(response.source())
+                    sink.close()
+                    downloadedFile
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { loadingListener.onSuccess(it) },
                         onError = { loadingListener.onFail(it.message) }

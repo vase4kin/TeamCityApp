@@ -42,12 +42,12 @@ class BranchesInteractorImpl(
      */
     override fun loadBranches(loadingListener: OnLoadingListener<List<String>>) {
         repository.listBranches(buildTypeId)
+                .subscribeOn(Schedulers.io())
                 .flatMapObservable {
                     Observable.fromIterable(it.branches)
                 }
                 .map { it.name }
                 .toList()
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { loadingListener.onSuccess(it) },

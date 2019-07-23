@@ -70,6 +70,7 @@ class ChangesDataManagerImpl(
                       loadingListener: OnLoadingListener<List<Changes.Change>>,
                       update: Boolean) {
         repository.listChanges(url, update)
+                .subscribeOn(Schedulers.io())
                 .flatMapObservable {
                     if (it.count == 0) {
                         Observable.fromIterable(emptyList())
@@ -80,7 +81,6 @@ class ChangesDataManagerImpl(
                 }
                 .flatMapSingle { repository.change(it.href) }
                 .toList()
-                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                         onSuccess = { loadingListener.onSuccess(it) },
