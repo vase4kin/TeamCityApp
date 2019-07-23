@@ -216,10 +216,10 @@ public class DrawerViewImpl implements DrawerView {
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new PrimaryDrawerItem()
-                                .withName(R.string.projects_drawer_item)
+                                .withName(R.string.home_drawer_item)
                                 .withIcon(new IconDrawable(activity, MaterialIcons.md_home).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
-                                .withIdentifier(PROJECTS),
+                                .withIdentifier(HOME),
                         new PrimaryDrawerItem()
                                 .withName(R.string.favorites_drawer_item)
                                 .withIcon(new IconDrawable(activity, MaterialIcons.md_favorite).colorRes(mDefaultColor))
@@ -255,11 +255,11 @@ public class DrawerViewImpl implements DrawerView {
                     if (drawerItem != null) {
 
                         switch ((int) drawerItem.getIdentifier()) {
-                            case PROJECTS:
+                            case HOME:
                                 if (activity instanceof HomeActivity) {
                                     break;
                                 }
-                                mOnDrawerPresenterListener.startRootProjectsActivity();
+                                mOnDrawerPresenterListener.startHomeActivity();
                                 break;
                             case AGENTS:
                                 if (activity instanceof AgentTabsActivity) {

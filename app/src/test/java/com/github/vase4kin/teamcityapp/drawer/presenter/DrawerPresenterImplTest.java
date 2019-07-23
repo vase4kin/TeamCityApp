@@ -155,8 +155,8 @@ public class DrawerPresenterImplTest {
 
     @Test
     public void testStartRootProjectsActivity() throws Exception {
-        mPresenter.startRootProjectsActivity();
-        verify(mRouter).startRootProjectsActivity();
+        mPresenter.startHomeActivity();
+        verify(mRouter).startHomeActivity();
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 

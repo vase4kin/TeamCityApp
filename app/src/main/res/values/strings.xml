@@ -26,6 +26,7 @@
     <string name="tab_disconnected">Disconnected</string>
 
     <!--drawer items-->
+    <string name="home_drawer_item">Home</string>
     <string name="projects_drawer_item">Projects</string>
     <string name="favorites_drawer_item">Favorites</string>
     <string name="running_builds_drawer_item">Running builds</string>

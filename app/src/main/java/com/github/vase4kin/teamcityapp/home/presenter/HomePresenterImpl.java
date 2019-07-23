@@ -85,7 +85,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeDrawerView, HomeD
      */
     @Override
     public void onResume() {
-        mView.setDrawerSelection(DrawerView.PROJECTS);
+        mView.setDrawerSelection(DrawerView.HOME);
 
         final boolean isRequiredToReload = mValueExtractor.isRequiredToReload();
         final boolean isNewAccountCreated = mValueExtractor.isNewAccountCreated();

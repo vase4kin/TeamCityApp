@@ -28,7 +28,7 @@ public interface DrawerView {
     /**
      * Drawer item ids
      */
-    int PROJECTS = 0;
+    int HOME = 0;
     int RUNNING_BUILDS = 1;
     int AGENTS = 2;
     int BUILD_QUEUE = 3;

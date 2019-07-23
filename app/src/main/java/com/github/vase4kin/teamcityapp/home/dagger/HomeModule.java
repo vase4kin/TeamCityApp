@@ -52,7 +52,7 @@ public class HomeModule {
 
     @Provides
     HomeDrawerView providesRootDrawerView(HomeActivity activity) {
-        return new HomeDrawerViewImpl(activity, DrawerView.PROJECTS, false);
+        return new HomeDrawerViewImpl(activity, DrawerView.HOME, false);
     }
 
     @Provides

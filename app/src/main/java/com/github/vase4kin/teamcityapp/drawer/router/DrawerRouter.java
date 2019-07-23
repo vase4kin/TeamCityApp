@@ -26,7 +26,7 @@ public interface DrawerRouter {
     /**
      * Start {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity}
      */
-    void startRootProjectsActivity();
+    void startHomeActivity();
 
     /**
      * Start {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity} when accounts are switched

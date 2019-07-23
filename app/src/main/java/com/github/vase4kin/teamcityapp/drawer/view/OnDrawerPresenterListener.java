@@ -50,7 +50,7 @@ public interface OnDrawerPresenterListener {
     /**
      * {@inheritDoc}
      */
-    void startRootProjectsActivity();
+    void startHomeActivity();
 
     /**
      * {@inheritDoc}

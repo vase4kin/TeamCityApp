@@ -197,8 +197,8 @@ public class DrawerPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    public void startRootProjectsActivity() {
-        mRouter.startRootProjectsActivity();
+    public void startHomeActivity() {
+        mRouter.startHomeActivity();
     }
 
     /**

@@ -41,7 +41,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startRootProjectsActivity() {
+    public void startHomeActivity() {
         HomeActivity.Companion.startWhenNavigateToRootFromDrawer(mActivity);
     }
 
