@@ -1,6 +1,7 @@
 package com.github.vase4kin.teamcityapp.app_navigation
 
 import androidx.fragment.app.Fragment
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.root.router.RootRouter
 
@@ -15,8 +16,8 @@ class FragmentFactoryImpl : FragmentFactory {
     override fun createFragment(index: Int): Fragment {
         when (index) {
             AppNavigationItem.HOME.ordinal -> return NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
-            AppNavigationItem.FAVORITES.ordinal -> NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
-            AppNavigationItem.RUNNING_BUILDS.ordinal -> NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
+            AppNavigationItem.FAVORITES.ordinal -> return FavoritesFragment()
+            AppNavigationItem.RUNNING_BUILDS.ordinal -> return NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
             AppNavigationItem.BUILD_QUEUE.ordinal -> return NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
         }
         throw IllegalStateException("Wrong index")
