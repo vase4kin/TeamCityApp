@@ -15,7 +15,8 @@ interface FragmentFactory {
 class FragmentFactoryImpl : FragmentFactory {
     override fun createFragment(index: Int): Fragment {
         when (index) {
-            AppNavigationItem.HOME.ordinal -> return NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
+            // TODO: provide a resource here
+            AppNavigationItem.HOME.ordinal -> return NavigationListFragment.newInstance("Projects", RootRouter.ROOT_PROJECTS_ID)
             AppNavigationItem.FAVORITES.ordinal -> return FavoritesFragment()
             AppNavigationItem.RUNNING_BUILDS.ordinal -> return NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
             AppNavigationItem.BUILD_QUEUE.ordinal -> return NavigationListFragment.newInstance("", RootRouter.ROOT_PROJECTS_ID)
