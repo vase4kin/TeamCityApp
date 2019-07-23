@@ -23,8 +23,6 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -42,7 +40,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import butterknife.BindView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
@@ -83,18 +80,6 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
     @Override
     public void setViewListener(FavoritesView.ViewListener listener) {
         this.listener = listener;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateTitleCount(int count) {
-        ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
-        if (actionBar != null) {
-            String title = String.format(Locale.ENGLISH, "%s (%d)", mActivity.getString(R.string.favorites_drawer_item), count);
-            actionBar.setTitle(title);
-        }
     }
 
     /**

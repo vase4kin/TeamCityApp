@@ -34,13 +34,6 @@ public interface FavoritesView extends BaseListView<NavigationDataModel> {
     void setViewListener(ViewListener listener);
 
     /**
-     * Set toolbar title with favorite count
-     *
-     * @param count - build types count
-     */
-    void updateTitleCount(int count);
-
-    /**
      * Show add favorites info snack bar
      */
     void showInfoSnackbar();

@@ -120,13 +120,6 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         mTracker.trackUserClicksOnSnackBarAction();
     }
 
-    @Override
-    protected void onSuccessCallBack(List<NavigationItem> data) {
-        super.onSuccessCallBack(data);
-        int favorites = mDataManager.getFavoritesCount();
-        mView.updateTitleCount(favorites);
-    }
-
     /**
      * {@inheritDoc}
      */

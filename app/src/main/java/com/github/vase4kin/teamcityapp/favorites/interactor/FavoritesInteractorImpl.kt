@@ -55,13 +55,6 @@ class FavoritesInteractorImpl(private val repository: Repository,
         load(favoritesObservable, loadingListener)
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun getFavoritesCount(): Int {
-        return storage.favoriteBuildTypeIds.size
-    }
-
     class NavigationItemsList(private val items: List<NavigationItem>) : Collectible<NavigationItem> {
 
         override fun getObjects(): List<NavigationItem> {
