@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.root.presenter;
 
+import androidx.annotation.NonNull;
+
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem;
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
@@ -41,11 +44,11 @@ import javax.inject.Inject;
  */
 public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter, RootTracker> implements RootDrawerPresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener {
 
-    private OnAccountSwitchListener mListener;
+    private final OnAccountSwitchListener mListener;
     private RootBundleValueManager mValueExtractor;
-    private RootRouter mRouter;
-    private BuildLogInteractor mInteractor;
-    private OnboardingManager mOnboardingManager;
+    private final RootRouter mRouter;
+    private final BuildLogInteractor mInteractor;
+    private final OnboardingManager mOnboardingManager;
     private final BottomNavigationView bottomNavigationView;
     private String mBaseUrl;
 
@@ -84,8 +87,8 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
     public void onResume() {
         mView.setDrawerSelection(DrawerView.PROJECTS);
 
-        boolean isRequiredToReload = mValueExtractor.isRequiredToReload();
-        boolean isNewAccountCreated = mValueExtractor.isNewAccountCreated();
+        final boolean isRequiredToReload = mValueExtractor.isRequiredToReload();
+        final boolean isNewAccountCreated = mValueExtractor.isNewAccountCreated();
         if (!mValueExtractor.isBundleNullOrEmpty()) {
             mValueExtractor.removeIsNewAccountCreated();
             mValueExtractor.removeIsRequiredToReload();
@@ -127,12 +130,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
 
         // Show navigation drawer prompt
         if (!mOnboardingManager.isNavigationDrawerPromptShown()) {
-            mView.showNavigationDrawerPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    mOnboardingManager.saveNavigationDrawerPromptShown();
-                }
-            });
+            mView.showNavigationDrawerPrompt(mOnboardingManager::saveNavigationDrawerPromptShown);
         }
 
 
@@ -175,7 +173,7 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
      * {@inheritDoc}
      */
     @Override
-    public void updateRootBundleValueManager(RootBundleValueManager rootBundleValueManager) {
+    public void updateRootBundleValueManager(@NonNull RootBundleValueManager rootBundleValueManager) {
         this.mValueExtractor = rootBundleValueManager;
     }
 
@@ -200,5 +198,59 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
         }
         loadNotificationsCount();
         bottomNavigationView.expandToolBar();
+    }
+
+    @Override
+    protected void loadNotificationsCount() {
+        // TODO: No needs?
+        super.loadNotificationsCount();
+        loadTabNotifications();
+    }
+
+    private void loadTabNotifications() {
+        loadRunningBuildsCount();
+        loadQueueBuildsCount();
+        loadFavoritesCount();
+    }
+
+    /**
+     * Load running builds count
+     */
+    private void loadRunningBuildsCount() {
+        mDataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
+            @Override
+            public void onSuccess(Integer data) {
+                bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal(), data);
+            }
+
+            @Override
+            public void onFail(String errorMessage) {
+            }
+        });
+    }
+
+    /**
+     * Load queued builds count
+     */
+    private void loadQueueBuildsCount() {
+        mDataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
+            @Override
+            public void onSuccess(Integer data) {
+                bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal(), data);
+            }
+
+            @Override
+            public void onFail(String errorMessage) {
+
+            }
+        });
+    }
+
+    /**
+     * Load favorites count
+     */
+    private void loadFavoritesCount() {
+        int favoritesCount = mDataManager.getFavoritesCount();
+        bottomNavigationView.updateNotifications(AppNavigationItem.FAVORITES.ordinal(), favoritesCount);
     }
 }
