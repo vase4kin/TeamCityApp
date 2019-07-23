@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.root.presenter;
 
-import android.text.TextUtils;
-
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem;
+import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
@@ -31,18 +31,22 @@ import com.github.vase4kin.teamcityapp.root.view.OnAccountSwitchListener;
 import com.github.vase4kin.teamcityapp.root.view.OnDrawerUpdateListener;
 import com.github.vase4kin.teamcityapp.root.view.RootDrawerView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 /**
  * Impl of {@link RootDrawerPresenter}
  */
-public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter, RootTracker> implements RootDrawerPresenter, OnDrawerUpdateListener {
+public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView, RootDataManager, DrawerRouter, RootTracker> implements RootDrawerPresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener {
 
     private OnAccountSwitchListener mListener;
     private RootBundleValueManager mValueExtractor;
     private RootRouter mRouter;
     private BuildLogInteractor mInteractor;
     private OnboardingManager mOnboardingManager;
+    private final BottomNavigationView bottomNavigationView;
     private String mBaseUrl;
 
     @Inject
@@ -53,13 +57,15 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
                             RootRouter router,
                             BuildLogInteractor interactor,
                             RootTracker tracker,
-                            OnboardingManager onboardingManager) {
+                            OnboardingManager onboardingManager,
+                            BottomNavigationView bottomNavigationView) {
         super(view, dataManager, router, tracker);
         this.mListener = listener;
         this.mValueExtractor = valueExtractor;
         this.mRouter = router;
         this.mInteractor = interactor;
         this.mOnboardingManager = onboardingManager;
+        this.bottomNavigationView = bottomNavigationView;
     }
 
     /**
@@ -128,6 +134,8 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
                 }
             });
         }
+
+
     }
 
     /**
@@ -176,8 +184,21 @@ public class RootDrawerPresenterImpl extends DrawerPresenterImpl<RootDrawerView,
      */
     public void start() {
         mBaseUrl = mDataManager.getActiveUser().getTeamcityUrl();
-        if (!TextUtils.isEmpty(mBaseUrl)) {
-            mRouter.openRootProjects(mBaseUrl);
+        bottomNavigationView.initViews(this);
+    }
+
+    @Override
+    public void onTabSelected(int position, boolean wasSelected) {
+        if (!wasSelected) {
+            int titleRes = new ArrayList<>(Arrays.asList(AppNavigationItem.values())).get(position).getTitle();
+            bottomNavigationView.setTitle(titleRes);
         }
+        if (position == AppNavigationItem.FAVORITES.ordinal()) {
+            bottomNavigationView.showFab();
+        } else {
+            bottomNavigationView.hideFab();
+        }
+        loadNotificationsCount();
+        bottomNavigationView.expandToolBar();
     }
 }

@@ -17,12 +17,9 @@
 package com.github.vase4kin.teamcityapp.root.router;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouterImpl;
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment;
 
 /**
  * Impl of {@link RootRouter}
@@ -31,16 +28,6 @@ public class RootRouterImpl extends DrawerRouterImpl implements RootRouter {
 
     public RootRouterImpl(AppCompatActivity activity) {
         super(activity);
-    }
-
-    /**
-     * On resume activity
-     */
-    @Override
-    public void openRootProjects(String baseUrl) {
-        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.navigator_fragment, NavigationListFragment.Companion.newInstance(mActivity.getString(R.string.projects_drawer_item), ROOT_PROJECTS_ID));
-        transaction.commit();
     }
 
     /**

@@ -19,6 +19,12 @@ package com.github.vase4kin.teamcityapp.root.dagger;
 import android.content.Context;
 
 import com.github.vase4kin.teamcityapp.api.Repository;
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor;
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl;
+import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView;
+import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl;
+import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory;
+import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManager;
 import com.github.vase4kin.teamcityapp.root.data.RootDataManagerImpl;
@@ -76,6 +82,21 @@ public class RootModule {
     @Provides
     RootTracker providesFirebaseRootTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseRootTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    FragmentFactory providesFragmentFactory() {
+        return new FragmentFactoryImpl();
+    }
+
+    @Provides
+    AppNavigationInteractor providesAppNavigationInteractor(RootProjectsActivity activity, FragmentFactory fragmentFactory) {
+        return new AppNavigationInteractorImpl(activity.getSupportFragmentManager(), fragmentFactory);
+    }
+
+    @Provides
+    BottomNavigationView providesBottomNavigationView(AppNavigationInteractor appNavigationInteractor, RootProjectsActivity activity) {
+        return new BottomNavigationViewImpl(appNavigationInteractor, activity);
     }
 
 }

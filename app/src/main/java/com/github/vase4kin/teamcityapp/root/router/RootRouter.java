@@ -29,13 +29,6 @@ public interface RootRouter extends DrawerRouter {
     String ROOT_PROJECTS_ID = "_Root";
 
     /**
-     * Open root projects
-     *
-     * @param baseUrl - Url to load projects from
-     */
-    void openRootProjects(String baseUrl);
-
-    /**
      * Open account list activity
      */
     void openAccountsList();

@@ -16,29 +16,51 @@
 
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_activity_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true">
 
     <com.google.android.material.appbar.AppBarLayout
-        android:layout_height="?attr/actionBarSize"
-        android:layout_width="match_parent">
+        android:id="@+id/toolbar_container"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            android:layout_height="?attr/actionBarSize"
+            style="@style/Toolbar"
             android:layout_width="match_parent"
-            app:layout_scrollFlags="scroll|enterAlways"
-            style="@style/Toolbar" />
+            android:layout_height="?attr/actionBarSize"
+            app:layout_scrollFlags="scroll|enterAlways" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
-        android:id="@+id/navigator_fragment"
+        android:id="@+id/container"
         android:name="com.github.vase4kin.teamcityapp.ui.fragments.NavigatorListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floating_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginBottom="74dp"
+        android:src="@drawable/ic_favorite_white_24dp"
+        android:visibility="gone"
+        app:elevation="@dimen/default_elevation"
+        app:fabSize="normal"
+        tools:visibility="visible" />
+
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
