@@ -62,7 +62,6 @@
         android:visibility="gone"
         app:elevation="@dimen/default_elevation"
         app:fabSize="normal"
-        app:layout_behavior=""
         tools:src="@drawable/ic_favorite_white_24dp"
         tools:visibility="visible" />
 

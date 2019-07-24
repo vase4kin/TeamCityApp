@@ -34,11 +34,6 @@ public interface FavoritesView extends BaseListView<NavigationDataModel> {
     void setViewListener(ViewListener listener);
 
     /**
-     * Show add favorites info snack bar
-     */
-    void showInfoSnackbar();
-
-    /**
      * Show add fav onboarding prompt
      *
      * @param listener - Listener to know when prompt is shown
@@ -53,15 +48,5 @@ public interface FavoritesView extends BaseListView<NavigationDataModel> {
          * @param navigationItem - Navigation being clicked
          */
         void onClick(NavigationItem navigationItem);
-
-        /**
-         * On FAB click
-         */
-        void onFabClick();
-
-        /**
-         * On snack bar action click
-         */
-        void onSnackBarAction();
     }
 }

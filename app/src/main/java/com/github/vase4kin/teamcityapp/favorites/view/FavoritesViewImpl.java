@@ -26,7 +26,6 @@ import androidx.annotation.StringRes;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
@@ -35,22 +34,14 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
-
-    @BindView(R.id.floating_action_button)
-    MaterialButton mFloatingActionButton;
-    @BindView(R.id.container)
-    View mContainer;
 
     private FavoritesView.ViewListener listener;
 
@@ -65,38 +56,8 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull BaseListView.ViewListener listener) {
-        super.initViews(listener);
-        mFloatingActionButton.setOnClickListener(v -> {
-            if (FavoritesViewImpl.this.listener != null) {
-                FavoritesViewImpl.this.listener.onFabClick();
-            }
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void setViewListener(FavoritesView.ViewListener listener) {
         this.listener = listener;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showInfoSnackbar() {
-        Snackbar snackBar = Snackbar.make(
-                mContainer,
-                R.string.text_info_add,
-                Snackbar.LENGTH_LONG)
-                .setAction(R.string.text_info_add_action, view -> {
-                    if (listener != null) {
-                        listener.onSnackBarAction();
-                    }
-                });
-        snackBar.show();
     }
 
     /**
@@ -106,7 +67,8 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
     public void showAddFavPrompt(final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
         new MaterialTapTargetPrompt.Builder(mActivity)
-                .setTarget(mFloatingActionButton)
+                // TODO: Fix it
+                .setTarget(null)
                 .setPrimaryText(R.string.title_onboarding_add_fav)
                 .setSecondaryText(R.string.text_onboarding_add_fav)
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())

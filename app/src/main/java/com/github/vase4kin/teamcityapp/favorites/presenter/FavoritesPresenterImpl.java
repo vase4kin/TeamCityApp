@@ -101,25 +101,6 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
             router.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onFabClick() {
-        mView.showInfoSnackbar();
-        mTracker.trackUserClickOnFab();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onSnackBarAction() {
-        router.startProjectActivity();
-        mTracker.trackUserClicksOnSnackBarAction();
-    }
-
     /**
      * {@inheritDoc}
      */
