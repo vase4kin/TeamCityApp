@@ -27,6 +27,8 @@ interface BottomNavigationView {
 
     interface ViewListener {
         fun onTabSelected(position: Int, wasSelected: Boolean)
+        fun onFavoritesFabClicked()
+        fun onFilterTabsClicked()
     }
 }
 
@@ -42,17 +44,27 @@ class BottomNavigationViewImpl(
 
     override fun initViews(listener: BottomNavigationView.ViewListener) {
         this.listener = listener
+        initViews()
         initBottomNavView()
-        initSimpleViews()
+        initFab()
         interactor.initNavigation()
     }
 
-    private fun initSimpleViews() {
+    private fun initViews() {
+        bottomNavigation = activity.findViewById(R.id.bottom_navigation)
         fab = activity.findViewById(R.id.floating_action_button)
     }
 
+    private fun initFab() {
+        fab.setOnClickListener {
+            when (bottomNavigation.currentItem) {
+                AppNavigationItem.FAVORITES.ordinal -> listener.onFavoritesFabClicked()
+                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal -> listener.onFilterTabsClicked()
+            }
+        }
+    }
+
     private fun initBottomNavView() {
-        bottomNavigation = activity.findViewById(R.id.bottom_navigation)
         bottomNavigation.removeAllItems()
 
         // Add bottom nav items
@@ -79,7 +91,7 @@ class BottomNavigationViewImpl(
 
     override fun showFavoritesFab() = fab.run {
         hide()
-        setImageResource(R.drawable.ic_favorite_white_24dp)
+        setImageResource(R.drawable.ic_add_black_24dp)
         show()
     }
 

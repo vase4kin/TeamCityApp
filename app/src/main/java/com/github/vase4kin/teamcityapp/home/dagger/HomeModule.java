@@ -35,8 +35,8 @@ import com.github.vase4kin.teamcityapp.home.router.HomeRouterImpl;
 import com.github.vase4kin.teamcityapp.home.tracker.FirebaseHomeTrackerImpl;
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker;
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
-import com.github.vase4kin.teamcityapp.home.view.HomeDrawerView;
-import com.github.vase4kin.teamcityapp.home.view.HomeDrawerViewImpl;
+import com.github.vase4kin.teamcityapp.home.view.HomeView;
+import com.github.vase4kin.teamcityapp.home.view.HomeViewImpl;
 import com.github.vase4kin.teamcityapp.home.view.OnAccountSwitchListener;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -51,8 +51,8 @@ import io.rx_cache2.internal.RxCache;
 public class HomeModule {
 
     @Provides
-    HomeDrawerView providesRootDrawerView(HomeActivity activity) {
-        return new HomeDrawerViewImpl(activity, DrawerView.HOME, false);
+    HomeView providesRootDrawerView(HomeActivity activity) {
+        return new HomeViewImpl(activity, DrawerView.HOME, false);
     }
 
     @Provides

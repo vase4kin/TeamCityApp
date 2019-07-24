@@ -19,26 +19,38 @@ package com.github.vase4kin.teamcityapp.home.view;
 import android.content.res.ColorStateList;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
+import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.google.android.material.snackbar.Snackbar;
 
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
 /**
- * impl of {@link HomeDrawerView}
+ * impl of {@link HomeView}
  */
-public class HomeDrawerViewImpl extends DrawerViewImpl implements HomeDrawerView {
+public class HomeViewImpl extends DrawerViewImpl implements HomeView {
 
     private static final int TIME_NAVIGATION_DRAWER_PROMPT = 500;
 
-    public HomeDrawerViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
+    private View container;
+
+    public HomeViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
         super(activity, drawerSelection, isBackArrowEnabled);
+    }
+
+    @Override
+    public void initViews(OnDrawerPresenterListener listener) {
+        super.initViews(listener);
+        container = activity.findViewById(R.id.main_container);
     }
 
     /**
@@ -49,11 +61,25 @@ public class HomeDrawerViewImpl extends DrawerViewImpl implements HomeDrawerView
         drawerResult.setSelection(selection, false);
     }
 
+    @Override
+    public void showFavoritesInfoSnackbar() {
+        Snackbar snackBar = Snackbar.make(
+                container,
+                R.string.text_info_add,
+                Snackbar.LENGTH_LONG)
+                .setAction(R.string.text_info_add_action, view -> {
+//                    if (listener != null) {
+//                        listener.onSnackBarAction();
+//                    }
+                });
+        snackBar.show();
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
-    public void showNavigationDrawerPrompt(final OnboardingManager.OnPromptShownListener listener) {
+    public void showNavigationDrawerPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         // Creating prompt
         int color = ContextCompat.getColor(activity, mDefaultColor);
         final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(activity)
@@ -64,19 +90,11 @@ public class HomeDrawerViewImpl extends DrawerViewImpl implements HomeDrawerView
                 .setIconDrawableTintList(ColorStateList.valueOf(color))
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptStateChangeListener(new MaterialTapTargetPrompt.PromptStateChangeListener() {
-                    @Override
-                    public void onPromptStateChanged(MaterialTapTargetPrompt prompt, int state) {
-                        listener.onPromptShown();
-                    }
-                });
+                .setPromptStateChangeListener((prompt, state) -> listener.onPromptShown());
         // Show prompt
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                navigationDrawerPrompt.setTarget(toolbar.getChildAt(1));
-                navigationDrawerPrompt.show();
-            }
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            navigationDrawerPrompt.setTarget(toolbar.getChildAt(1));
+            navigationDrawerPrompt.show();
         }, TIME_NAVIGATION_DRAWER_PROMPT);
     }
 }

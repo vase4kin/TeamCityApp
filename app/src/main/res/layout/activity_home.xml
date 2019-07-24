@@ -17,10 +17,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_activity_layout"
+    android:id="@+id/main_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:animateLayoutChanges="true">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolbar_container"
@@ -55,6 +54,7 @@
         android:visibility="gone"
         app:elevation="@dimen/default_elevation"
         app:fabSize="normal"
+        tools:src="@drawable/ic_favorite_white_24dp"
         tools:visibility="visible" />
 
     <com.aurelhubert.ahbottomnavigation.AHBottomNavigation

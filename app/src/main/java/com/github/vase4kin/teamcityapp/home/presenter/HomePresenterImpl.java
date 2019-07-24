@@ -29,7 +29,7 @@ import com.github.vase4kin.teamcityapp.home.data.HomeDataManager;
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager;
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter;
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker;
-import com.github.vase4kin.teamcityapp.home.view.HomeDrawerView;
+import com.github.vase4kin.teamcityapp.home.view.HomeView;
 import com.github.vase4kin.teamcityapp.home.view.OnAccountSwitchListener;
 import com.github.vase4kin.teamcityapp.home.view.OnDrawerUpdateListener;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
@@ -42,7 +42,7 @@ import javax.inject.Inject;
 /**
  * Impl of {@link HomePresenter}
  */
-public class HomePresenterImpl extends DrawerPresenterImpl<HomeDrawerView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener {
+public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener {
 
     private final OnAccountSwitchListener mListener;
     private HomeBundleValueManager mValueExtractor;
@@ -53,7 +53,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeDrawerView, HomeD
     private String mBaseUrl;
 
     @Inject
-    HomePresenterImpl(HomeDrawerView view,
+    HomePresenterImpl(HomeView view,
                       HomeDataManager dataManager,
                       OnAccountSwitchListener listener,
                       HomeBundleValueManager valueExtractor,
@@ -200,6 +200,16 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeDrawerView, HomeD
         }
         loadNotificationsCount();
         bottomNavigationView.expandToolBar();
+    }
+
+    @Override
+    public void onFavoritesFabClicked() {
+        mView.showFavoritesInfoSnackbar();
+    }
+
+    @Override
+    public void onFilterTabsClicked() {
+
     }
 
     @Override

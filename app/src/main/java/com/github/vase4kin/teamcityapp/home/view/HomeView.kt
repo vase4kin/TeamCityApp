@@ -22,7 +22,7 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 /**
  * Root drawer view interactions
  */
-interface HomeDrawerView : DrawerView {
+interface HomeView : DrawerView {
 
     /**
      * Select drawer selection
@@ -37,4 +37,9 @@ interface HomeDrawerView : DrawerView {
      * @param listener - Listener to know when prompt is shown
      */
     fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener)
+
+    /**
+     * Show add favorites info snack bar
+     */
+    fun showFavoritesInfoSnackbar()
 }
