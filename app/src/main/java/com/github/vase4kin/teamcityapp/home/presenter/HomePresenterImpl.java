@@ -202,6 +202,9 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
             bottomNavigationView.hideFab();
         }
         loadNotificationsCount();
+        if (position == AppNavigationItem.PROJECTS.ordinal()) {
+            mView.dimissSnackbar();
+        }
     }
 
     @Override

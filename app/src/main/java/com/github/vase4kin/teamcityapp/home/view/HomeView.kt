@@ -48,6 +48,11 @@ interface HomeView : DrawerView {
      */
     fun showFavoritesInfoSnackbar()
 
+    /**
+     * Dismiss snackbar
+     */
+    fun dimissSnackbar()
+
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()
     }

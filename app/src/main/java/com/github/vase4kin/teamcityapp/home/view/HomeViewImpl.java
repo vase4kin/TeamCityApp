@@ -45,6 +45,8 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
     private View snackBarAnchor;
     @Nullable
     private ViewListener listener;
+    @Nullable
+    private Snackbar snackbar;
 
     public HomeViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
         super(activity, drawerSelection, isBackArrowEnabled);
@@ -74,7 +76,7 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
      */
     @Override
     public void showFavoritesInfoSnackbar() {
-        Snackbar snackBar = Snackbar.make(
+        this.snackbar = Snackbar.make(
                 snackBarAnchor,
                 R.string.text_info_add,
                 Snackbar.LENGTH_LONG)
@@ -83,7 +85,14 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
                         listener.onFavoritesSnackBarActionClicked();
                     }
                 });
-        snackBar.show();
+        snackbar.show();
+    }
+
+    @Override
+    public void dimissSnackbar() {
+        if (snackbar != null && snackbar.isShown()) {
+            snackbar.dismiss();
+        }
     }
 
     /**
