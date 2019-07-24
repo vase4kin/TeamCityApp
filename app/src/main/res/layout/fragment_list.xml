@@ -17,6 +17,7 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,9 +31,10 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
+            style="@style/RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            style="@style/RecyclerView" />
+            tools:listitem="@layout/item_with_title_and_sub_title_list" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -47,8 +49,8 @@
         android:visibility="gone">
 
         <include
-            layout="@layout/layout_skeleton_navigation_list"
-            android:id="@+id/skeleton_view_items" />
+            android:id="@+id/skeleton_view_items"
+            layout="@layout/layout_skeleton_navigation_list" />
 
     </androidx.core.widget.NestedScrollView>
 
