@@ -18,7 +18,8 @@ interface BottomNavigationView {
      */
     fun initViews(listener: ViewListener)
 
-    fun showFab()
+    fun showFavoritesFab()
+    fun showFilterFab()
     fun hideFab()
     fun setTitle(@StringRes title: Int)
     fun updateNotifications(tabPosition: Int, count: Int)
@@ -34,7 +35,7 @@ class BottomNavigationViewImpl(
         private val activity: HomeActivity
 ) : BottomNavigationView {
 
-    private lateinit var favoriteFab: FloatingActionButton
+    private lateinit var fab: FloatingActionButton
     private lateinit var bottomNavigation: AHBottomNavigation
 
     private lateinit var listener: BottomNavigationView.ViewListener
@@ -47,7 +48,7 @@ class BottomNavigationViewImpl(
     }
 
     private fun initSimpleViews() {
-        favoriteFab = activity.findViewById(R.id.floating_action_button)
+        fab = activity.findViewById(R.id.floating_action_button)
     }
 
     private fun initBottomNavView() {
@@ -76,13 +77,19 @@ class BottomNavigationViewImpl(
         }
     }
 
-    override fun showFab() {
-        favoriteFab.show()
+    override fun showFavoritesFab() = fab.run {
+        hide()
+        setImageResource(R.drawable.ic_favorite_white_24dp)
+        show()
     }
 
-    override fun hideFab() {
-        favoriteFab.hide()
+    override fun showFilterFab() = fab.run {
+        hide()
+        setImageResource(R.drawable.ic_filter_list_white_24px)
+        show()
     }
+
+    override fun hideFab() = fab.hide()
 
     override fun setTitle(title: Int) {
         activity.supportActionBar?.apply {

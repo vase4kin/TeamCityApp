@@ -192,7 +192,9 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeDrawerView, HomeD
             bottomNavigationView.setTitle(titleRes);
         }
         if (position == AppNavigationItem.FAVORITES.ordinal()) {
-            bottomNavigationView.showFab();
+            bottomNavigationView.showFavoritesFab();
+        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal() || position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
+            bottomNavigationView.showFilterFab();
         } else {
             bottomNavigationView.hideFab();
         }
