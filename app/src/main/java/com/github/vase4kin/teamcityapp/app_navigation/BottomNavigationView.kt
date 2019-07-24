@@ -24,6 +24,7 @@ interface BottomNavigationView {
     fun setTitle(@StringRes title: Int)
     fun updateNotifications(tabPosition: Int, count: Int)
     fun expandToolBar()
+    fun selectProjectsTab()
 
     interface ViewListener {
         fun onTabSelected(position: Int, wasSelected: Boolean)
@@ -115,5 +116,9 @@ class BottomNavigationViewImpl(
 
     override fun expandToolBar() {
         activity.findViewById<AppBarLayout>(R.id.toolbar_container).setExpanded(true, true)
+    }
+
+    override fun selectProjectsTab() {
+        bottomNavigation.currentItem = AppNavigationItem.PROJECTS.ordinal
     }
 }

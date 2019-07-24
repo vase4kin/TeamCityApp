@@ -39,7 +39,16 @@ interface HomeView : DrawerView {
     fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener)
 
     /**
+     * Set listener
+     */
+    fun setListener(listener: ViewListener?)
+
+    /**
      * Show add favorites info snack bar
      */
     fun showFavoritesInfoSnackbar()
+
+    interface ViewListener {
+        fun onFavoritesSnackBarActionClicked()
+    }
 }

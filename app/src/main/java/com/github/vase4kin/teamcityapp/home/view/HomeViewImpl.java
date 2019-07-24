@@ -22,6 +22,7 @@ import android.os.Looper;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
@@ -41,7 +42,9 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
 
     private static final int TIME_NAVIGATION_DRAWER_PROMPT = 500;
 
-    private View container;
+    private View snackBarAnchor;
+    @Nullable
+    private ViewListener listener;
 
     public HomeViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
         super(activity, drawerSelection, isBackArrowEnabled);
@@ -50,7 +53,12 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
     @Override
     public void initViews(OnDrawerPresenterListener listener) {
         super.initViews(listener);
-        container = activity.findViewById(R.id.main_container);
+        snackBarAnchor = activity.findViewById(R.id.snackbar_anchor);
+    }
+
+    @Override
+    public void setListener(@Nullable ViewListener listener) {
+        this.listener = listener;
     }
 
     /**
@@ -61,16 +69,19 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
         drawerResult.setSelection(selection, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void showFavoritesInfoSnackbar() {
         Snackbar snackBar = Snackbar.make(
-                container,
+                snackBarAnchor,
                 R.string.text_info_add,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.text_info_add_action, view -> {
-//                    if (listener != null) {
-//                        listener.onSnackBarAction();
-//                    }
+                    if (listener != null) {
+                        listener.onFavoritesSnackBarActionClicked();
+                    }
                 });
         snackBar.show();
     }

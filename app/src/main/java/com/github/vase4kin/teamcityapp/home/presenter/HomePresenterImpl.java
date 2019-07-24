@@ -42,7 +42,7 @@ import javax.inject.Inject;
 /**
  * Impl of {@link HomePresenter}
  */
-public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener {
+public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener {
 
     private final OnAccountSwitchListener mListener;
     private HomeBundleValueManager mValueExtractor;
@@ -78,6 +78,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     public void onCreate() {
         start();
         super.onCreate();
+        mView.setListener(this);
     }
 
     /**
@@ -264,5 +265,13 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     private void loadFavoritesCount() {
         int favoritesCount = mDataManager.getFavoritesCount();
         bottomNavigationView.updateNotifications(AppNavigationItem.FAVORITES.ordinal(), favoritesCount);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onFavoritesSnackBarActionClicked() {
+        bottomNavigationView.selectProjectsTab();
     }
 }
