@@ -188,10 +188,12 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
 
     @Override
     public void onTabSelected(int position, boolean wasSelected) {
-        if (!wasSelected) {
-            int titleRes = new ArrayList<>(Arrays.asList(AppNavigationItem.values())).get(position).getTitle();
-            bottomNavigationView.setTitle(titleRes);
+        bottomNavigationView.expandToolBar();
+        if (wasSelected) {
+            return;
         }
+        int titleRes = new ArrayList<>(Arrays.asList(AppNavigationItem.values())).get(position).getTitle();
+        bottomNavigationView.setTitle(titleRes);
         if (position == AppNavigationItem.FAVORITES.ordinal()) {
             bottomNavigationView.showFavoritesFab();
         } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal() || position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
@@ -200,7 +202,6 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
             bottomNavigationView.hideFab();
         }
         loadNotificationsCount();
-        bottomNavigationView.expandToolBar();
     }
 
     @Override
