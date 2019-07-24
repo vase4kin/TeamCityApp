@@ -321,7 +321,7 @@
 
     <!--Favorites-->
     <string name="text_info_add">Add a configuration to favorites for an easy access</string>
-    <string name="text_info_add_action">Open projects</string>
+    <string name="text_info_add_action">Select projects</string>
     <string name="text_fab_add_fav">Add fav</string>
 
     <!--Rate-->
