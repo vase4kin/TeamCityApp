@@ -54,6 +54,7 @@
         android:paddingRight="16dp"
         android:singleLine="true"
         android:textAppearance="@style/Text.Headline"
+        android:background="?attr/selectableItemBackground"
         tools:text="Show all queue builds" />
 
 </LinearLayout>

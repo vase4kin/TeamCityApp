@@ -44,6 +44,9 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         }
         val textView = view.findViewById<TextView>(R.id.text)
         textView.text = text
+        textView.setOnClickListener {
+            this@FilterBottomSheetDialogFragment.dismiss()
+        }
         return view
     }
 
