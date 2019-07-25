@@ -87,17 +87,6 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateTitle(int count) {
-        String title = String.format("%s (%s)",
-                getTitle(),
-                count);
-        setTitle(title);
-    }
-
-    /**
      * @return default tool bar title
      */
     protected String getTitle() {

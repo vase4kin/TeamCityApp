@@ -56,22 +56,4 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
         mDataManager.load(loadingListener, update);
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onSuccessCallBack(List<BuildDetails> data) {
-        super.onSuccessCallBack(data);
-        mView.updateTitle(data.size());
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onFailCallBack(String errorMessage) {
-        super.onFailCallBack(errorMessage);
-        mView.updateTitle(0);
-    }
 }
