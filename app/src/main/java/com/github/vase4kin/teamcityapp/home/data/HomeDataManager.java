@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.home.data;
 
+import androidx.annotation.Nullable;
+
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
@@ -43,4 +45,29 @@ public interface HomeDataManager extends DrawerDataManager {
      * Evict all cache data
      */
     void evictAllCache();
+
+    /**
+     * Set listener
+     */
+    void setListener(@Nullable Listener listener);
+
+    /**
+     * Subscribe to event bus events
+     */
+    void onsubscribe();
+
+    /**
+     * Unsubsribe to event bus events
+     */
+    void unsubscribe();
+
+    interface Listener {
+        void onFilterApplied();
+    }
+
+    /**
+     * Filter applied event
+     */
+    class FilterAppliedEvent {
+    }
 }

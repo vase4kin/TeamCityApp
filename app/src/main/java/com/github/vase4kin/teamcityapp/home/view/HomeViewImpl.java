@@ -115,6 +115,18 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
      * {@inheritDoc}
      */
     @Override
+    public void showFilterAppliedSnackBar() {
+        this.snackbar = Snackbar.make(
+                snackBarAnchor,
+                R.string.text_filters_applied,
+                Snackbar.LENGTH_LONG);
+        snackbar.show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void showNavigationDrawerPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         // Creating prompt
         int color = ContextCompat.getColor(activity, mDefaultColor);

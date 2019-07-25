@@ -30,6 +30,11 @@ interface HomePresenter : DrawerPresenter {
     fun onResume()
 
     /**
+     * On pause activity
+     */
+    fun onPause()
+
+    /**
      * On new intent activity
      */
     fun onNewIntent()

@@ -22,7 +22,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import dagger.android.support.AndroidSupportInjection
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 /**
@@ -32,6 +34,8 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
 
     @Inject
     lateinit var filterProvider: FilterProvider
+    @Inject
+    lateinit var eventBus: EventBus
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +61,7 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
                 Filter.QUEUE_FAVORITES -> filterProvider.queuedBuildsFilter = Filter.QUEUE_ALL
                 Filter.RUNNING_FAVORITES -> filterProvider.runningBuildsFilter = Filter.RUNNING_ALL
             }
+            eventBus.post(HomeDataManager.FilterAppliedEvent())
             this@FilterBottomSheetDialogFragment.dismiss()
         }
         return view

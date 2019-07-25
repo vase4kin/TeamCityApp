@@ -44,7 +44,7 @@ import javax.inject.Inject;
 /**
  * Impl of {@link HomePresenter}
  */
-public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener {
+public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener, HomeDataManager.Listener {
 
     private final OnAccountSwitchListener mListener;
     private HomeBundleValueManager mValueExtractor;
@@ -139,7 +139,17 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
             mView.showNavigationDrawerPrompt(mOnboardingManager::saveNavigationDrawerPromptShown);
         }
 
+        mDataManager.onsubscribe();
+        mDataManager.setListener(this);
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onPause() {
+        mDataManager.unsubscribe();
+        mDataManager.setListener(null);
     }
 
     /**
@@ -191,6 +201,9 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         bottomNavigationView.initViews(this);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onTabSelected(int position, boolean wasSelected) {
         bottomNavigationView.expandToolBar();
@@ -212,11 +225,17 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onFavoritesFabClicked() {
         mView.showFavoritesInfoSnackbar();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onFilterTabsClicked(int position) {
         if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
@@ -228,14 +247,11 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void loadNotificationsCount() {
-        // TODO: No needs?
-        super.loadNotificationsCount();
-        loadTabNotifications();
-    }
-
-    private void loadTabNotifications() {
         loadRunningBuildsCount();
         loadQueueBuildsCount();
         loadFavoritesCount();
@@ -288,5 +304,13 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     @Override
     public void onFavoritesSnackBarActionClicked() {
         bottomNavigationView.selectProjectsTab();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onFilterApplied() {
+        mView.showFilterAppliedSnackBar();
     }
 }

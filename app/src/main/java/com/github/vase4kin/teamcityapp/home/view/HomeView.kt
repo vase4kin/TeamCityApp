@@ -59,6 +59,11 @@ interface HomeView : DrawerView {
      */
     fun showFilterBottomSheet(filter: Filter)
 
+    /**
+     * Show filter applied snack bar
+     */
+    fun showFilterAppliedSnackBar()
+
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()
     }

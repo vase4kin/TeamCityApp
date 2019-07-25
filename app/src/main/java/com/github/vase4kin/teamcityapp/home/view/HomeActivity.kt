@@ -45,6 +45,11 @@ class HomeActivity : DaggerAppCompatActivity(), OnAccountSwitchListener {
         presenter.onResume()
     }
 
+    override fun onPause() {
+        super.onPause()
+        presenter.onPause()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
