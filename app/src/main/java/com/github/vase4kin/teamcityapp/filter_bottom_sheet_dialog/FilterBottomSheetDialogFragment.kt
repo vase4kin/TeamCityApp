@@ -22,15 +22,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.github.vase4kin.teamcityapp.R
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
 /**
  * Bottom sheet dialog
  */
 class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.BottomSheetDialogFragment() {
 
+    @Inject
+    lateinit var filterProvider: FilterProvider
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+        AndroidSupportInjection.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -45,6 +51,12 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         val textView = view.findViewById<TextView>(R.id.text)
         textView.text = text
         textView.setOnClickListener {
+            when (filter) {
+                Filter.RUNNING_ALL -> filterProvider.runningBuildsFilter = Filter.RUNNING_FAVORITES
+                Filter.QUEUE_ALL -> filterProvider.queuedBuildsFilter = Filter.RUNNING_FAVORITES
+                Filter.QUEUE_FAVORITES -> filterProvider.queuedBuildsFilter = Filter.QUEUE_ALL
+                Filter.RUNNING_FAVORITES -> filterProvider.runningBuildsFilter = Filter.RUNNING_ALL
+            }
             this@FilterBottomSheetDialogFragment.dismiss()
         }
         return view

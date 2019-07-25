@@ -34,21 +34,16 @@ import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
+import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityBindingModule
 import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityScope
 import com.github.vase4kin.teamcityapp.home.dagger.HomeModule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.*
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentModule
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentScope
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsFragmentModule
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsFragmentScope
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
@@ -78,14 +73,6 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [TestDetailsModule::class])
     abstract fun testDetailsActivity(): TestDetailsActivity
 
-    @RunningBuildsFragmentScope
-    @ContributesAndroidInjector(modules = [RunningBuildsFragmentModule::class, BuildListAdapterModule::class])
-    abstract fun runningBuildsFragment(): RunningBuildsFragment
-
-    @BuildQueueFragmentScope
-    @ContributesAndroidInjector(modules = [BuildQueueFragmentModule::class, BuildListAdapterModule::class])
-    abstract fun buildQueueFragment(): BuildQueueFragment
-
     @CreateAccountActivityScope
     @ContributesAndroidInjector(modules = [CreateAccountModule::class])
     abstract fun createAccountActivity(): CreateAccountActivity
@@ -111,7 +98,7 @@ abstract class ActivityBindingModule {
     abstract fun runBuildActivity(): RunBuildActivity
 
     @HomeActivityScope
-    @ContributesAndroidInjector(modules = [HomeModule::class, BuildLogInteractorModule::class])
+    @ContributesAndroidInjector(modules = [HomeModule::class, BuildLogInteractorModule::class, HomeActivityBindingModule::class])
     abstract fun rootProjectsActivity(): HomeActivity
 
     @NavigationActivityScope

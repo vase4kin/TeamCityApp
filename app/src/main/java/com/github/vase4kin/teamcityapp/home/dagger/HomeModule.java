@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl;
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory;
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager;
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl;
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager;
@@ -97,6 +98,12 @@ public class HomeModule {
     @Provides
     BottomNavigationView providesBottomNavigationView(AppNavigationInteractor appNavigationInteractor, HomeActivity activity) {
         return new BottomNavigationViewImpl(appNavigationInteractor, activity);
+    }
+
+    @HomeActivityScope
+    @Provides
+    FilterProvider provideFilterProvider() {
+        return new FilterProvider();
     }
 
 }

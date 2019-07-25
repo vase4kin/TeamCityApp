@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl;
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView;
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager;
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager;
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter;
@@ -51,6 +52,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     private final BuildLogInteractor mInteractor;
     private final OnboardingManager mOnboardingManager;
     private final BottomNavigationView bottomNavigationView;
+    private final FilterProvider filterProvider;
     private String mBaseUrl;
 
     @Inject
@@ -62,7 +64,8 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
                       BuildLogInteractor interactor,
                       HomeTracker tracker,
                       OnboardingManager onboardingManager,
-                      BottomNavigationView bottomNavigationView) {
+                      BottomNavigationView bottomNavigationView,
+                      FilterProvider filterProvider) {
         super(view, dataManager, router, tracker);
         this.mListener = listener;
         this.mValueExtractor = valueExtractor;
@@ -70,6 +73,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         this.mInteractor = interactor;
         this.mOnboardingManager = onboardingManager;
         this.bottomNavigationView = bottomNavigationView;
+        this.filterProvider = filterProvider;
     }
 
     /**
@@ -216,9 +220,11 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     @Override
     public void onFilterTabsClicked(int position) {
         if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
-            mView.showFilterBottomSheet(Filter.QUEUE_FAVORITES);
+            Filter filter = filterProvider.getRunningBuildsFilter();
+            mView.showFilterBottomSheet(filter);
         } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
-            mView.showFilterBottomSheet(Filter.RUNNING_FAVORITES);
+            Filter filter = filterProvider.getQueuedBuildsFilter();
+            mView.showFilterBottomSheet(filter);
         }
     }
 
