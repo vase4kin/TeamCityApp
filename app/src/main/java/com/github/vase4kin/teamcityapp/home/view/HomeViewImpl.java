@@ -30,8 +30,12 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl;
 import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterBottomSheetDialogFragment;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.google.android.material.snackbar.Snackbar;
+
+import org.jetbrains.annotations.NotNull;
 
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 
@@ -40,6 +44,7 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
  */
 public class HomeViewImpl extends DrawerViewImpl implements HomeView {
 
+    private static final String TAG_BOTTOM_SHEET = "Tag filter bottom sheet";
     private static final int TIME_NAVIGATION_DRAWER_PROMPT = 500;
 
     private View snackBarAnchor;
@@ -88,11 +93,22 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
         snackbar.show();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void dimissSnackbar() {
         if (snackbar != null && snackbar.isShown()) {
             snackbar.dismiss();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showFilterBottomSheet(@NotNull Filter filter) {
+        FilterBottomSheetDialogFragment.Companion.createBottomSheetDialog(filter.getCode()).show(activity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**

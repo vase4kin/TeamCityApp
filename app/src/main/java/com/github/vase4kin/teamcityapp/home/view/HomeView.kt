@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.home.view
 
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 
 /**
@@ -52,6 +53,11 @@ interface HomeView : DrawerView {
      * Dismiss snackbar
      */
     fun dimissSnackbar()
+
+    /**
+     * Show filter bottom sheet
+     */
+    fun showFilterBottomSheet(filter: Filter)
 
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()

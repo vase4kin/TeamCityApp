@@ -29,7 +29,7 @@ interface BottomNavigationView {
     interface ViewListener {
         fun onTabSelected(position: Int, wasSelected: Boolean)
         fun onFavoritesFabClicked()
-        fun onFilterTabsClicked()
+        fun onFilterTabsClicked(position: Int)
     }
 }
 
@@ -58,9 +58,9 @@ class BottomNavigationViewImpl(
 
     private fun initFab() {
         fab.setOnClickListener {
-            when (bottomNavigation.currentItem) {
+            when (val currentItem = bottomNavigation.currentItem) {
                 AppNavigationItem.FAVORITES.ordinal -> listener.onFavoritesFabClicked()
-                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal -> listener.onFilterTabsClicked()
+                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal -> listener.onFilterTabsClicked(currentItem)
             }
         }
     }
