@@ -139,7 +139,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
             mView.showNavigationDrawerPrompt(mOnboardingManager::saveNavigationDrawerPromptShown);
         }
 
-        mDataManager.onsubscribe();
+        mDataManager.subscribeToEventBusEvents();
         mDataManager.setListener(this);
     }
 
@@ -148,7 +148,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onPause() {
-        mDataManager.unsubscribe();
+        mDataManager.unsubscribeOfEventBusEvents();
         mDataManager.setListener(null);
     }
 

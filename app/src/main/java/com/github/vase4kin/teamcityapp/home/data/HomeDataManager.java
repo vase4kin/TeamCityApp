@@ -54,12 +54,12 @@ public interface HomeDataManager extends DrawerDataManager {
     /**
      * Subscribe to event bus events
      */
-    void onsubscribe();
+    void subscribeToEventBusEvents();
 
     /**
      * Unsubsribe to event bus events
      */
-    void unsubscribe();
+    void unsubscribeOfEventBusEvents();
 
     interface Listener {
         void onFilterApplied();

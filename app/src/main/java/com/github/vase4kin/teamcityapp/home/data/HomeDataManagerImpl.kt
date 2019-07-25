@@ -73,11 +73,11 @@ class HomeDataManagerImpl(private val context: Context,
         this.listener = listener
     }
 
-    override fun onsubscribe() {
+    override fun subscribeToEventBusEvents() {
         eventBus.register(this)
     }
 
-    override fun unsubscribe() {
+    override fun unsubscribeOfEventBusEvents() {
         eventBus.unregister(this)
     }
 
