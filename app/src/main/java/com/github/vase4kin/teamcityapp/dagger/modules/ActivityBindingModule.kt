@@ -40,16 +40,14 @@ import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.*
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
+import com.github.vase4kin.teamcityapp.queue.dagger.*
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity
+import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsActivityScope
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsDrawerModule
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsModule
+import com.github.vase4kin.teamcityapp.runningbuilds.dagger.*
+import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
@@ -88,9 +86,17 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [RunningBuildsModule::class, RunningBuildsDrawerModule::class, BuildListAdapterModule::class])
     abstract fun runningBuildsListActivity(): RunningBuildsListActivity
 
+    @RunningBuildsFragmentScope
+    @ContributesAndroidInjector(modules = [RunningBuildsFragmentModule::class, BuildListAdapterModule::class])
+    abstract fun runningBuildsFragment(): RunningBuildsFragment
+
     @BuildQueueActivityScope
     @ContributesAndroidInjector(modules = [BuildQueueModule::class, BuildQueueDrawerModule::class, BuildListAdapterModule::class])
     abstract fun buildQueueActivity(): BuildQueueActivity
+
+    @BuildQueueFragmentScope
+    @ContributesAndroidInjector(modules = [BuildQueueFragmentModule::class, BuildListAdapterModule::class])
+    abstract fun buildQueueFragment(): BuildQueueFragment
 
     @CreateAccountActivityScope
     @ContributesAndroidInjector(modules = [CreateAccountModule::class])
