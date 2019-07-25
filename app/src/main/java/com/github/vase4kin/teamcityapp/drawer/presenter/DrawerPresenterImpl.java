@@ -104,10 +104,7 @@ public class DrawerPresenterImpl<
      * Load all required counts
      */
     protected void loadNotificationsCount() {
-        loadRunningBuildsCount();
         loadAgentsCount();
-        loadQueueBuildsCount();
-        loadFavoritesCount();
     }
 
     /**
@@ -118,22 +115,6 @@ public class DrawerPresenterImpl<
             @Override
             public void onSuccess(List<UserAccount> data) {
                 mView.showData(new DrawerDataModelImpl(data));
-            }
-
-            @Override
-            public void onFail(String errorMessage) {
-            }
-        });
-    }
-
-    /**
-     * Load running builds count
-     */
-    private void loadRunningBuildsCount() {
-        mDataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                mView.updateRunningBuildsBadge(data);
             }
 
             @Override
@@ -157,32 +138,6 @@ public class DrawerPresenterImpl<
 
             }
         });
-    }
-
-    /**
-     * Load queued builds count
-     */
-    private void loadQueueBuildsCount() {
-        mDataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                mView.updateBuildQueueBadge(data);
-            }
-
-            @Override
-            public void onFail(String errorMessage) {
-
-            }
-        });
-    }
-
-    /**
-     * Load favorites count
-     */
-    private void loadFavoritesCount() {
-        int favoritesCount = mDataManager.getFavoritesCount();
-        mView.updateFavoritesBadge(favoritesCount);
-
     }
 
     /**
@@ -229,31 +184,7 @@ public class DrawerPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    public void startBuildRunningActivity() {
-        mRouter.startBuildRunningActivity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startQueuedBuildsActivity() {
-        mRouter.startQueuedBuildsActivity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void startAboutActivity() {
         mRouter.startAboutActivity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startFavoritesActivity() {
-        mRouter.startFavoritesActivity();
     }
 }

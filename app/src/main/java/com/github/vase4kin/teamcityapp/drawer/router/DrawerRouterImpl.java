@@ -21,10 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.vase4kin.teamcityapp.about.AboutActivity;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
 
 /**
  * Impl of {@link DrawerRouter}
@@ -73,28 +70,7 @@ public class DrawerRouterImpl implements DrawerRouter {
      * {@inheritDoc}
      */
     @Override
-    public void startBuildRunningActivity() {
-        RunningBuildsListActivity.Companion.start(mActivity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startQueuedBuildsActivity() {
-        BuildQueueActivity.Companion.start(mActivity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void startAboutActivity() {
         AboutActivity.Companion.start(mActivity);
-    }
-
-    @Override
-    public void startFavoritesActivity() {
-        FavoritesActivity.Companion.start(mActivity);
     }
 }

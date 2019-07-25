@@ -68,16 +68,6 @@
             android:launchMode="singleTop"
             android:theme="@style/AccountsListTheme" />
         <activity
-            android:name=".runningbuilds.view.RunningBuildsListActivity"
-            android:label="@string/title_activity_running_builds"
-            android:launchMode="singleTop"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
-            android:name=".queue.view.BuildQueueActivity"
-            android:label="@string/title_activity_queued_builds"
-            android:launchMode="singleTop"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
             android:name=".navigation.view.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
@@ -104,10 +94,6 @@
         <activity
             android:name=".about.AboutActivity"
             android:label="@string/about_drawer_item"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
-            android:name=".favorites.view.FavoritesActivity"
-            android:label="@string/favorites_drawer_item"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
 
         <provider

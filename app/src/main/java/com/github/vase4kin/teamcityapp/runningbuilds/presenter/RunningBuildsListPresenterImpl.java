@@ -34,7 +34,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 /**
- * Presenter to handle {@link com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity}
+ * Presenter to handle {@link com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment}
  */
 public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<RunningBuildListView, RunningBuildsDataManager> {
 

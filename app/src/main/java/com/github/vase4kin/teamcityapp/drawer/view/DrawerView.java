@@ -28,14 +28,11 @@ public interface DrawerView {
     /**
      * Drawer item ids
      */
-    int HOME = 0;
-    int RUNNING_BUILDS = 1;
-    int AGENTS = 2;
-    int BUILD_QUEUE = 3;
     int NO_SELECTION = -1;
-    int PROFILES_MANAGING = 4;
-    int ABOUT = 5;
-    int FAVORITES = 6;
+    int HOME = 0;
+    int AGENTS = 1;
+    int PROFILES_MANAGING = 2;
+    int ABOUT = 3;
 
     /**
      * Init views
@@ -57,32 +54,11 @@ public interface DrawerView {
     void backButtonPressed();
 
     /**
-     * Update running builds badge
-     *
-     * @param count - Number to update
-     */
-    void updateRunningBuildsBadge(int count);
-
-    /**
      * Update agents badge
      *
      * @param count - Number to update
      */
     void updateAgentsBadge(int count);
-
-    /**
-     * Update queued builds badge
-     *
-     * @param count - Number to update
-     */
-    void updateBuildQueueBadge(int count);
-
-    /**
-     * Update favorites badge
-     *
-     * @param count - Number to update
-     */
-    void updateFavoritesBadge(int count);
 
     /**
      * Set default color for drawer

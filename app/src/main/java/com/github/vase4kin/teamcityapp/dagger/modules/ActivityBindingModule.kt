@@ -28,8 +28,8 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListDrawerModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
-import com.github.vase4kin.teamcityapp.favorites.dagger.*
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
+import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentModule
+import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentScope
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
@@ -40,15 +40,15 @@ import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.*
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
-import com.github.vase4kin.teamcityapp.queue.dagger.*
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity
+import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentModule
+import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentScope
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.*
+import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsFragmentModule
+import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsFragmentScope
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
@@ -57,10 +57,6 @@ import dagger.android.ContributesAndroidInjector
 
 @Module
 abstract class ActivityBindingModule {
-
-    @FavoritesActivityScope
-    @ContributesAndroidInjector(modules = [FavoritesModule::class, FavoritesDrawerModule::class])
-    abstract fun favoritesActivity(): FavoritesActivity
 
     @FavoritesFragmentScope
     @ContributesAndroidInjector(modules = [FavoritesFragmentModule::class])
@@ -82,17 +78,9 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [TestDetailsModule::class])
     abstract fun testDetailsActivity(): TestDetailsActivity
 
-    @RunningBuildsActivityScope
-    @ContributesAndroidInjector(modules = [RunningBuildsModule::class, RunningBuildsDrawerModule::class, BuildListAdapterModule::class])
-    abstract fun runningBuildsListActivity(): RunningBuildsListActivity
-
     @RunningBuildsFragmentScope
     @ContributesAndroidInjector(modules = [RunningBuildsFragmentModule::class, BuildListAdapterModule::class])
     abstract fun runningBuildsFragment(): RunningBuildsFragment
-
-    @BuildQueueActivityScope
-    @ContributesAndroidInjector(modules = [BuildQueueModule::class, BuildQueueDrawerModule::class, BuildListAdapterModule::class])
-    abstract fun buildQueueActivity(): BuildQueueActivity
 
     @BuildQueueFragmentScope
     @ContributesAndroidInjector(modules = [BuildQueueFragmentModule::class, BuildListAdapterModule::class])

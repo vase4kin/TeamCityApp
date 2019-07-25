@@ -44,22 +44,7 @@ public interface DrawerRouter {
     void startAgentActivity();
 
     /**
-     * Start {@link com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity}
-     */
-    void startBuildRunningActivity();
-
-    /**
-     * Start {@link com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity}
-     */
-    void startQueuedBuildsActivity();
-
-    /**
      * Start {@link AboutLibrariesActivity}
      */
     void startAboutActivity();
-
-    /**
-     * Start {@link com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity}
-     */
-    void startFavoritesActivity();
 }

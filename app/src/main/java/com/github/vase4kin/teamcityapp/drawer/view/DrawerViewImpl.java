@@ -29,10 +29,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -221,24 +218,6 @@ public class DrawerViewImpl implements DrawerView {
                                 .withSelectedTextColorRes(mDefaultColor)
                                 .withIdentifier(HOME),
                         new PrimaryDrawerItem()
-                                .withName(R.string.favorites_drawer_item)
-                                .withIcon(new IconDrawable(activity, MaterialIcons.md_favorite).colorRes(mDefaultColor))
-                                .withSelectedTextColorRes(mDefaultColor)
-                                .withBadgeStyle(badgeStyle)
-                                .withIdentifier(FAVORITES),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.running_builds_drawer_item)
-                                .withIcon(new IconDrawable(activity, MaterialIcons.md_directions_run).colorRes(mDefaultColor))
-                                .withSelectedTextColorRes(mDefaultColor)
-                                .withBadgeStyle(badgeStyle)
-                                .withIdentifier(RUNNING_BUILDS),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.build_queue_drawer_item)
-                                .withIcon(new IconDrawable(activity, MaterialIcons.md_layers).colorRes(mDefaultColor))
-                                .withSelectedTextColorRes(mDefaultColor)
-                                .withBadgeStyle(badgeStyle)
-                                .withIdentifier(BUILD_QUEUE),
-                        new PrimaryDrawerItem()
                                 .withName(R.string.agents_drawer_item)
                                 .withIcon(new IconDrawable(activity, MaterialIcons.md_directions_railway).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
@@ -267,29 +246,11 @@ public class DrawerViewImpl implements DrawerView {
                                 }
                                 mOnDrawerPresenterListener.startAgentActivity();
                                 break;
-                            case RUNNING_BUILDS:
-                                if (activity instanceof RunningBuildsListActivity) {
-                                    break;
-                                }
-                                mOnDrawerPresenterListener.startBuildRunningActivity();
-                                break;
-                            case BUILD_QUEUE:
-                                if (activity instanceof BuildQueueActivity) {
-                                    break;
-                                }
-                                mOnDrawerPresenterListener.startQueuedBuildsActivity();
-                                break;
                             case ABOUT:
                                 if (activity instanceof AboutLibrariesActivity) {
                                     break;
                                 }
                                 mOnDrawerPresenterListener.startAboutActivity();
-                                break;
-                            case FAVORITES:
-                                if (activity instanceof FavoritesActivity) {
-                                    break;
-                                }
-                                mOnDrawerPresenterListener.startFavoritesActivity();
                                 break;
                             default:
                                 showDialogWithAdvice();
@@ -340,35 +301,8 @@ public class DrawerViewImpl implements DrawerView {
      * {@inheritDoc}
      */
     @Override
-    public void updateRunningBuildsBadge(int count) {
-        drawerResult.updateBadge(RUNNING_BUILDS, new StringHolder(String.valueOf(count)));
-        drawerResult.setSelection(mDrawerSelection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void updateAgentsBadge(int count) {
         drawerResult.updateBadge(AGENTS, new StringHolder(String.valueOf(count)));
-        drawerResult.setSelection(mDrawerSelection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateBuildQueueBadge(int count) {
-        drawerResult.updateBadge(BUILD_QUEUE, new StringHolder(String.valueOf(count)));
-        drawerResult.setSelection(mDrawerSelection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateFavoritesBadge(int count) {
-        drawerResult.updateBadge(FAVORITES, new StringHolder(String.valueOf(count)));
         drawerResult.setSelection(mDrawerSelection, false);
     }
 
