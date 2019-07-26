@@ -48,18 +48,18 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         val arguments = arguments
         val filter = Filter.values()[arguments?.getInt(ARG_CODE, 0) ?: 0]
         val text = when (filter) {
-            Filter.RUNNING_ALL -> "Show all running builds"
-            Filter.QUEUE_ALL -> "Show all queue builds"
-            Filter.QUEUE_FAVORITES, Filter.RUNNING_FAVORITES -> "Show only favorites"
+            Filter.RUNNING_ALL, Filter.QUEUE_ALL -> "Show only favorites"
+            Filter.QUEUE_FAVORITES -> "Show all queued builds"
+            Filter.RUNNING_FAVORITES -> "Show all running builds"
         }
         val textView = view.findViewById<TextView>(R.id.text)
         textView.text = text
         textView.setOnClickListener {
             when (filter) {
                 Filter.RUNNING_ALL -> filterProvider.runningBuildsFilter = Filter.RUNNING_FAVORITES
-                Filter.QUEUE_ALL -> filterProvider.queuedBuildsFilter = Filter.RUNNING_FAVORITES
-                Filter.QUEUE_FAVORITES -> filterProvider.queuedBuildsFilter = Filter.QUEUE_ALL
                 Filter.RUNNING_FAVORITES -> filterProvider.runningBuildsFilter = Filter.RUNNING_ALL
+                Filter.QUEUE_ALL -> filterProvider.queuedBuildsFilter = Filter.QUEUE_FAVORITES
+                Filter.QUEUE_FAVORITES -> filterProvider.queuedBuildsFilter = Filter.QUEUE_ALL
             }
             eventBus.post(HomeDataManager.FilterAppliedEvent())
             this@FilterBottomSheetDialogFragment.dismiss()
