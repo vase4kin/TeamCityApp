@@ -20,9 +20,6 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.api.Repository;
-import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
-import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
-import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
@@ -36,16 +33,12 @@ import java.util.List;
 public class DrawerDataManagerImpl implements DrawerDataManager {
 
     protected final SharedUserStorage sharedUserStorage;
-    private final RunningBuildsDataManager runningBuildsDataManager;
-    private final RunningBuildsDataManager queuedBuildsDataManager;
     private final AgentsDataManager agentsDataManager;
 
     public DrawerDataManagerImpl(Repository repository,
                                  SharedUserStorage sharedUserStorage,
                                  EventBus eventBus) {
         this.sharedUserStorage = sharedUserStorage;
-        this.runningBuildsDataManager = new RunningBuildsDataManagerImpl(repository, sharedUserStorage);
-        this.queuedBuildsDataManager = new BuildQueueDataManagerImpl(repository, sharedUserStorage);
         this.agentsDataManager = new AgentsDataManagerImpl(repository, eventBus);
     }
 
@@ -79,22 +72,6 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void loadRunningBuildsCount(final OnLoadingListener<Integer> loadingListener) {
-        runningBuildsDataManager.loadCount(loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void loadFavoriteRunningBuildsCount(OnLoadingListener<Integer> loadingListener) {
-        runningBuildsDataManager.loadFavoritesCount(loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void loadConnectedAgentsCount(final OnLoadingListener<Integer> loadingListener) {
         agentsDataManager.loadCount(loadingListener);
     }
@@ -103,25 +80,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void loadBuildQueueCount(final OnLoadingListener<Integer> loadingListener) {
-        queuedBuildsDataManager.loadCount(loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getFavoritesCount() {
-        return sharedUserStorage.getFavoriteBuildTypeIds().size();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void unsubscribe() {
-        runningBuildsDataManager.unsubscribe();
         agentsDataManager.unsubscribe();
-        queuedBuildsDataManager.unsubscribe();
     }
 }

@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.home.data;
 
 import androidx.annotation.Nullable;
 
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
@@ -61,6 +62,32 @@ public interface HomeDataManager extends DrawerDataManager {
      * Unsubsribe to event bus events
      */
     void unsubscribeOfEventBusEvents();
+
+    /**
+     * Load the number of running builds
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    void loadRunningBuildsCount(OnLoadingListener<Integer> loadingListener);
+
+    /**
+     * Load the number of favorite running builds
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    void loadFavoriteRunningBuildsCount(OnLoadingListener<Integer> loadingListener);
+
+    /**
+     * Load the number queued builds
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    void loadBuildQueueCount(OnLoadingListener<Integer> loadingListener);
+
+    /**
+     * @return the count of favorite build types
+     */
+    int getFavoritesCount();
 
     interface Listener {
         void onFilterApplied(Filter filter);

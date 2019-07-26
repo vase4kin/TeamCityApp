@@ -19,8 +19,11 @@ package com.github.vase4kin.teamcityapp.home.data
 import android.content.Context
 import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl
+import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
+import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import io.rx_cache2.internal.RxCache
@@ -35,6 +38,10 @@ class HomeDataManagerImpl(private val context: Context,
                           sharedUserStorage: SharedUserStorage,
                           private val rxCache: RxCache,
                           private val eventBus: EventBus) : DrawerDataManagerImpl(repository, sharedUserStorage, eventBus), HomeDataManager {
+
+
+    private val runningBuildsDataManager = RunningBuildsDataManagerImpl(repository, sharedUserStorage)
+    private val queuedBuildsDataManager = BuildQueueDataManagerImpl(repository, sharedUserStorage)
 
     private var listener: HomeDataManager.Listener? = null
 
@@ -79,6 +86,43 @@ class HomeDataManagerImpl(private val context: Context,
 
     override fun unsubscribeOfEventBusEvents() {
         eventBus.unregister(this)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun loadRunningBuildsCount(loadingListener: OnLoadingListener<Int>) {
+        runningBuildsDataManager.loadCount(loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun loadFavoriteRunningBuildsCount(loadingListener: OnLoadingListener<Int>) {
+        runningBuildsDataManager.loadFavoritesCount(loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun loadBuildQueueCount(loadingListener: OnLoadingListener<Int>) {
+        queuedBuildsDataManager.loadCount(loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun getFavoritesCount(): Int {
+        return sharedUserStorage.favoriteBuildTypeIds.size
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun unsubscribe() {
+        super.unsubscribe()
+        runningBuildsDataManager.unsubscribe()
+        queuedBuildsDataManager.unsubscribe()
     }
 
     /***
