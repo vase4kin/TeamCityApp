@@ -50,6 +50,11 @@ class HomeActivity : DaggerAppCompatActivity(), OnAccountSwitchListener {
         presenter.onPause()
     }
 
+    override fun onDestroy() {
+        presenter.onDestroy()
+        super.onDestroy()
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)

@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.drawer.data;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.api.Repository;
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
@@ -34,18 +35,18 @@ import java.util.List;
  */
 public class DrawerDataManagerImpl implements DrawerDataManager {
 
-    private final Repository repository;
     protected final SharedUserStorage sharedUserStorage;
-    private final EventBus eventBus;
     private final RunningBuildsDataManager runningBuildsDataManager;
+    private final RunningBuildsDataManager queuedBuildsDataManager;
+    private final AgentsDataManager agentsDataManager;
 
     public DrawerDataManagerImpl(Repository repository,
                                  SharedUserStorage sharedUserStorage,
                                  EventBus eventBus) {
-        this.repository = repository;
         this.sharedUserStorage = sharedUserStorage;
-        this.eventBus = eventBus;
-        runningBuildsDataManager = new RunningBuildsDataManagerImpl(repository, sharedUserStorage);
+        this.runningBuildsDataManager = new RunningBuildsDataManagerImpl(repository, sharedUserStorage);
+        this.queuedBuildsDataManager = new BuildQueueDataManagerImpl(repository, sharedUserStorage);
+        this.agentsDataManager = new AgentsDataManagerImpl(repository, eventBus);
     }
 
     /**
@@ -95,7 +96,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadConnectedAgentsCount(final OnLoadingListener<Integer> loadingListener) {
-        new AgentsDataManagerImpl(repository, eventBus).loadCount(loadingListener);
+        agentsDataManager.loadCount(loadingListener);
     }
 
     /**
@@ -103,7 +104,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void loadBuildQueueCount(final OnLoadingListener<Integer> loadingListener) {
-        new BuildQueueDataManagerImpl(repository, sharedUserStorage).loadCount(loadingListener);
+        queuedBuildsDataManager.loadCount(loadingListener);
     }
 
     /**
@@ -120,5 +121,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
     @Override
     public void unsubscribe() {
         runningBuildsDataManager.unsubscribe();
+        agentsDataManager.unsubscribe();
+        queuedBuildsDataManager.unsubscribe();
     }
 }

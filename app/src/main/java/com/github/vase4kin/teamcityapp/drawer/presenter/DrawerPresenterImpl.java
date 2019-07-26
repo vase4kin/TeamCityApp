@@ -72,6 +72,14 @@ public class DrawerPresenterImpl<
      * {@inheritDoc}
      */
     @Override
+    public void onDestroy() {
+        mDataManager.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onBackButtonPressed() {
         mView.backButtonPressed();
     }

@@ -62,8 +62,9 @@ class AgentTabsActivity : DaggerAppCompatActivity() {
     }
 
     public override fun onDestroy() {
-        super.onDestroy()
         tabsPresenter.onViewsDestroyed()
+        drawerPresenter.onDestroy()
+        super.onDestroy()
     }
 
     override fun onBackPressed() {
