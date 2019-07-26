@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.home.data;
 import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 /**
@@ -62,12 +63,6 @@ public interface HomeDataManager extends DrawerDataManager {
     void unsubscribeOfEventBusEvents();
 
     interface Listener {
-        void onFilterApplied();
-    }
-
-    /**
-     * Filter applied event
-     */
-    class FilterAppliedEvent {
+        void onFilterApplied(Filter filter);
     }
 }

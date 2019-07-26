@@ -24,6 +24,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
@@ -38,6 +40,9 @@ import javax.inject.Inject;
  */
 public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<RunningBuildListView, RunningBuildsDataManager> {
 
+    @NonNull
+    private final FilterProvider filterProvider;
+
     @Inject
     RunningBuildsListPresenterImpl(@NonNull RunningBuildListView view,
                                    @NonNull RunningBuildsDataManager dataManager,
@@ -45,8 +50,10 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
                                    @NonNull BuildListRouter router,
                                    @NonNull BaseValueExtractor valueExtractor,
                                    @NonNull BuildInteractor buildInteractor,
-                                   @NonNull OnboardingManager onboardingManager) {
+                                   @NonNull OnboardingManager onboardingManager,
+                                   @NonNull FilterProvider filterProvider) {
         super(view, dataManager, tracker, valueExtractor, router, buildInteractor, onboardingManager);
+        this.filterProvider = filterProvider;
     }
 
     /**
@@ -54,6 +61,11 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        mDataManager.load(loadingListener, update);
+        Filter currentFilter = filterProvider.getRunningBuildsFilter();
+        if (currentFilter == Filter.RUNNING_FAVORITES) {
+            mDataManager.loadFavorites(loadingListener, update);
+        } else if (currentFilter == Filter.RUNNING_ALL) {
+            mDataManager.load(loadingListener, update);
+        }
     }
 }

@@ -45,7 +45,21 @@ class BuildQueueDataManagerImpl(
     /**
      * {@inheritDoc}
      */
+    override fun loadFavorites(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
+        // TODO: Implement
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun loadCount(loadingListener: OnLoadingListener<Int>) {
-        loadCount(repository.listQueueBuilds("count", false), loadingListener)
+        loadCount(repository.listQueueBuilds("count", false).map { it.count }, loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>) {
+        // TODO: Implement
     }
 }

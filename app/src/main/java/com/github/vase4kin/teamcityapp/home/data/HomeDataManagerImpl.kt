@@ -42,14 +42,14 @@ class HomeDataManagerImpl(private val context: Context,
      * {@inheritDoc}
      */
     override fun getActiveUser(): UserAccount {
-        return mSharedUserStorage.activeUser
+        return sharedUserStorage.activeUser
     }
 
     /**
      * {@inheritDoc}
      */
     override fun initTeamCityService() {
-        (context.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(mSharedUserStorage.activeUser.teamcityUrl)
+        (context.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(sharedUserStorage.activeUser.teamcityUrl)
     }
 
     /**
@@ -84,10 +84,10 @@ class HomeDataManagerImpl(private val context: Context,
     /***
      * Handle receiving post events from [EventBus]
      *
-     * @param event [HomeDataManager.FilterAppliedEvent]
+     * @param event [FilterAppliedEvent]
      */
     @Subscribe
-    fun onEvent(event: HomeDataManager.FilterAppliedEvent) {
-        listener?.onFilterApplied()
+    fun onEvent(event: FilterAppliedEvent) {
+        listener?.onFilterApplied(event.filter)
     }
 }

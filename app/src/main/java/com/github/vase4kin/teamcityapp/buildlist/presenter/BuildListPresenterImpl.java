@@ -115,12 +115,9 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     private void showRunBuildPrompt() {
         if (mView.isBuildListOpen() && !onboardingManager.isRunBuildPromptShown()) {
-            mView.showRunBuildPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    onboardingManager.saveRunBuildPromptShown();
-                    showFilterBuildsPrompt();
-                }
+            mView.showRunBuildPrompt(() -> {
+                onboardingManager.saveRunBuildPromptShown();
+                showFilterBuildsPrompt();
             });
         }
     }
@@ -130,12 +127,9 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     private void showFilterBuildsPrompt() {
         if (!onboardingManager.isFilterBuildsPromptShown()) {
-            mView.showFilterBuildsPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    onboardingManager.saveFilterBuildsPromptShown();
-                    showFavPrompt();
-                }
+            mView.showFilterBuildsPrompt(() -> {
+                onboardingManager.saveFilterBuildsPromptShown();
+                showFavPrompt();
             });
         }
     }
@@ -145,12 +139,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     private void showFavPrompt() {
         if (!onboardingManager.isFavPromptShown()) {
-            mView.showFavPrompt(new OnboardingManager.OnPromptShownListener() {
-                @Override
-                public void onPromptShown() {
-                    onboardingManager.saveFavPromptShown();
-                }
-            });
+            mView.showFavPrompt(() -> onboardingManager.saveFavPromptShown());
         }
     }
 

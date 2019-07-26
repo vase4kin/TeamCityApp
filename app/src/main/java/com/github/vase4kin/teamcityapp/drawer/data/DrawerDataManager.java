@@ -53,6 +53,13 @@ public interface DrawerDataManager {
     void loadRunningBuildsCount(OnLoadingListener<Integer> loadingListener);
 
     /**
+     * Load the number of favorite running builds
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    void loadFavoriteRunningBuildsCount(OnLoadingListener<Integer> loadingListener);
+
+    /**
      * Load the number of connected agents
      *
      * @param loadingListener - Listener to receive callbacks
@@ -70,4 +77,9 @@ public interface DrawerDataManager {
      * @return the count of favorite build types
      */
     int getFavoritesCount();
+
+    /**
+     * Unsubscribe
+     */
+    void unsubscribe();
 }

@@ -34,9 +34,24 @@ interface RunningBuildsDataManager : BuildListDataManager {
     fun load(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean)
 
     /**
+     * Load favorite running builds
+     *
+     * @param update          - Force cache update
+     * @param loadingListener - Listener to receive server callbacks
+     */
+    fun loadFavorites(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean)
+
+    /**
      * Load running builds count
      *
      * @param loadingListener - Listener to receive server callbacks
      */
     fun loadCount(loadingListener: OnLoadingListener<Int>)
+
+    /**
+     * Load favorite running builds count
+     *
+     * @param loadingListener - Listener to receive server callbacks
+     */
+    fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>)
 }

@@ -22,7 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
@@ -56,13 +56,18 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         val textView = view.findViewById<TextView>(R.id.text)
         textView.text = text
         textView.setOnClickListener {
-            when (filter) {
-                Filter.RUNNING_ALL -> filterProvider.runningBuildsFilter = Filter.RUNNING_FAVORITES
-                Filter.RUNNING_FAVORITES -> filterProvider.runningBuildsFilter = Filter.RUNNING_ALL
-                Filter.QUEUE_ALL -> filterProvider.queuedBuildsFilter = Filter.QUEUE_FAVORITES
-                Filter.QUEUE_FAVORITES -> filterProvider.queuedBuildsFilter = Filter.QUEUE_ALL
+            when {
+                filter.isRunning -> {
+                    val oppositeFilter = filter.opposite()
+                    filterProvider.runningBuildsFilter = oppositeFilter
+                    eventBus.post(FilterAppliedEvent(filter))
+                }
+                filter.isQueued -> {
+                    val oppositeFilter = filter.opposite()
+                    filterProvider.queuedBuildsFilter = oppositeFilter
+                    eventBus.post(FilterAppliedEvent(oppositeFilter))
+                }
             }
-            eventBus.post(HomeDataManager.FilterAppliedEvent())
             this@FilterBottomSheetDialogFragment.dismiss()
         }
         return view

@@ -250,6 +250,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     protected void loadNotificationsCount() {
+        super.loadNotificationsCount();
         loadRunningBuildsCount();
         loadQueueBuildsCount();
         loadFavoritesCount();
@@ -259,16 +260,30 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      * Load running builds count
      */
     private void loadRunningBuildsCount() {
-        mDataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal(), data);
-            }
+        Filter currentFilter = filterProvider.getRunningBuildsFilter();
+        if (currentFilter == Filter.RUNNING_FAVORITES) {
+            mDataManager.loadFavoriteRunningBuildsCount(new OnLoadingListener<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal(), data);
+                }
 
-            @Override
-            public void onFail(String errorMessage) {
-            }
-        });
+                @Override
+                public void onFail(String errorMessage) {
+                }
+            });
+        } else if (currentFilter == Filter.RUNNING_ALL) {
+            mDataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal(), data);
+                }
+
+                @Override
+                public void onFail(String errorMessage) {
+                }
+            });
+        }
     }
 
     /**
@@ -306,9 +321,17 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
 
     /**
      * {@inheritDoc}
+     *
+     * Pass filter here to understand what tab to update
      */
     @Override
-    public void onFilterApplied() {
+    public void onFilterApplied(Filter filter) {
+        if (filter.isRunning()) {
+            loadRunningBuildsCount();
+        }
+        if (filter.isQueued()) {
+            loadQueueBuildsCount();
+        }
         mView.showFilterAppliedSnackBar();
     }
 }
