@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.favorites.view;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 /**
  * View to manager Navigation screen
@@ -32,13 +31,6 @@ public interface FavoritesView extends BaseListView<NavigationDataModel> {
      * @param listener - Listener to receive click callbacks
      */
     void setViewListener(ViewListener listener);
-
-    /**
-     * Show add fav onboarding prompt
-     *
-     * @param listener - Listener to know when prompt is shown
-     */
-    void showAddFavPrompt(OnboardingManager.OnPromptShownListener listener);
 
     interface ViewListener {
 

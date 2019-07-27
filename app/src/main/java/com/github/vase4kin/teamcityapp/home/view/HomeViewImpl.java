@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener;
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterBottomSheetDialogFragment;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,13 +46,15 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
 public class HomeViewImpl extends DrawerViewImpl implements HomeView {
 
     private static final String TAG_BOTTOM_SHEET = "Tag filter bottom sheet";
-    private static final int TIME_NAVIGATION_DRAWER_PROMPT = 500;
+    private static final int TIME_PROMPT_DELAY = 500;
 
     private View snackBarAnchor;
     @Nullable
     private ViewListener listener;
     @Nullable
     private Snackbar snackbar;
+    @Nullable
+    private FloatingActionButton fab;
 
     public HomeViewImpl(AppCompatActivity activity, int drawerSelection, boolean isBackArrowEnabled) {
         super(activity, drawerSelection, isBackArrowEnabled);
@@ -61,6 +64,7 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
     public void initViews(OnDrawerPresenterListener listener) {
         super.initViews(listener);
         snackBarAnchor = activity.findViewById(R.id.snackbar_anchor);
+        fab = activity.findViewById(R.id.floating_action_button);
     }
 
     @Override
@@ -143,6 +147,26 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             navigationDrawerPrompt.setTarget(toolbar.getChildAt(1));
             navigationDrawerPrompt.show();
-        }, TIME_NAVIGATION_DRAWER_PROMPT);
+        }, TIME_PROMPT_DELAY);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showAddFavPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
+        int color = ContextCompat.getColor(activity, mDefaultColor);
+        new MaterialTapTargetPrompt.Builder(activity)
+                .setTarget(fab)
+                .setPrimaryText(R.string.title_onboarding_add_fav)
+                .setSecondaryText(R.string.text_onboarding_add_fav)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptStateChangeListener((prompt, state) -> {
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                        listener.onPromptShown();
+                    }
+                }).show();
     }
 }

@@ -29,7 +29,6 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 import java.util.List;
 
@@ -47,18 +46,15 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         NavigationValueExtractor> implements FavoritesView.ViewListener {
 
     private final NavigationRouter router;
-    private final OnboardingManager onboardingManager;
 
     @Inject
     FavoritesPresenterImpl(@NonNull FavoritesView view,
                            @NonNull FavoritesInteractor interactor,
                            @NonNull FavoritesTracker tracker,
                            @NonNull NavigationValueExtractor valueExtractor,
-                           NavigationRouter router,
-                           OnboardingManager onboardingManager) {
+                           NavigationRouter router) {
         super(view, interactor, tracker, valueExtractor);
         this.router = router;
-        this.onboardingManager = onboardingManager;
     }
 
     /**
@@ -76,9 +72,6 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     protected void initViews() {
         super.initViews();
         mView.setViewListener(this);
-        if (!onboardingManager.isAddFavPromptShown()) {
-            mView.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
-        }
     }
 
     /**
@@ -101,6 +94,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
             router.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
     }
+
     /**
      * {@inheritDoc}
      */

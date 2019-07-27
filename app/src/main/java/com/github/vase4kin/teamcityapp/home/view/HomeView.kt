@@ -64,6 +64,13 @@ interface HomeView : DrawerView {
      */
     fun showFilterAppliedSnackBar()
 
+    /**
+     * Show add fav onboarding prompt
+     *
+     * @param listener - Listener to know when prompt is shown
+     */
+    fun showAddFavPrompt(listener: OnboardingManager.OnPromptShownListener)
+
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()
     }

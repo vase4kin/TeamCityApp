@@ -46,14 +46,14 @@ import javax.inject.Inject;
  */
 public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker> implements HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener, HomeDataManager.Listener {
 
-    private final OnAccountSwitchListener mListener;
-    private HomeBundleValueManager mValueExtractor;
-    private final HomeRouter mRouter;
-    private final BuildLogInteractor mInteractor;
-    private final OnboardingManager mOnboardingManager;
+    private final OnAccountSwitchListener listener;
+    private HomeBundleValueManager valueExtractor;
+    private final HomeRouter router;
+    private final BuildLogInteractor interactor;
+    private final OnboardingManager onboardingManager;
     private final BottomNavigationView bottomNavigationView;
     private final FilterProvider filterProvider;
-    private String mBaseUrl;
+    private String baseUrl;
 
     @Inject
     HomePresenterImpl(HomeView view,
@@ -67,11 +67,11 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
                       BottomNavigationView bottomNavigationView,
                       FilterProvider filterProvider) {
         super(view, dataManager, router, tracker);
-        this.mListener = listener;
-        this.mValueExtractor = valueExtractor;
-        this.mRouter = router;
-        this.mInteractor = interactor;
-        this.mOnboardingManager = onboardingManager;
+        this.listener = listener;
+        this.valueExtractor = valueExtractor;
+        this.router = router;
+        this.interactor = interactor;
+        this.onboardingManager = onboardingManager;
         this.bottomNavigationView = bottomNavigationView;
         this.filterProvider = filterProvider;
     }
@@ -93,11 +93,11 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     public void onResume() {
         mView.setDrawerSelection(DrawerView.HOME);
 
-        final boolean isRequiredToReload = mValueExtractor.isRequiredToReload();
-        final boolean isNewAccountCreated = mValueExtractor.isNewAccountCreated();
-        if (!mValueExtractor.isBundleNullOrEmpty()) {
-            mValueExtractor.removeIsNewAccountCreated();
-            mValueExtractor.removeIsRequiredToReload();
+        final boolean isRequiredToReload = valueExtractor.isRequiredToReload();
+        final boolean isNewAccountCreated = valueExtractor.isNewAccountCreated();
+        if (!valueExtractor.isBundleNullOrEmpty()) {
+            valueExtractor.removeIsNewAccountCreated();
+            valueExtractor.removeIsRequiredToReload();
         }
 
         // TODO: Simplify logic and cover it by unit tests
@@ -115,28 +115,28 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         }
 
         // If active user was deleted
-        if (!mDataManager.getActiveUser().getTeamcityUrl().equals(mBaseUrl)) {
+        if (!mDataManager.getActiveUser().getTeamcityUrl().equals(baseUrl)) {
             mDataManager.evictAllCache();
             start();
             update();
         }
 
         if (mView.isModelEmpty()) {
-            mRouter.openAccountsList();
+            router.openAccountsList();
         }
 
         if (isNewAccountCreated) {
             mDataManager.evictAllCache();
             mDataManager.clearAllWebViewCookies();
-            mInteractor.setAuthDialogStatus(false);
+            interactor.setAuthDialogStatus(false);
         }
 
         // track view
         mTracker.trackView();
 
         // Show navigation drawer prompt
-        if (!mOnboardingManager.isNavigationDrawerPromptShown()) {
-            mView.showNavigationDrawerPrompt(mOnboardingManager::saveNavigationDrawerPromptShown);
+        if (!onboardingManager.isNavigationDrawerPromptShown()) {
+            mView.showNavigationDrawerPrompt(onboardingManager::saveNavigationDrawerPromptShown);
         }
 
         mDataManager.subscribeToEventBusEvents();
@@ -157,7 +157,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onNewIntent() {
-        if (mValueExtractor.isRequiredToReload()) {
+        if (valueExtractor.isRequiredToReload()) {
             super.onCreate();
         }
     }
@@ -167,12 +167,12 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onAccountSwitch() {
-        if (mValueExtractor.isRequiredToReload()) {
+        if (valueExtractor.isRequiredToReload()) {
             mDataManager.initTeamCityService();
             start();
-            mListener.onAccountSwitch();
+            listener.onAccountSwitch();
             mDataManager.clearAllWebViewCookies();
-            mInteractor.setAuthDialogStatus(false);
+            interactor.setAuthDialogStatus(false);
         }
     }
 
@@ -190,14 +190,14 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void updateRootBundleValueManager(@NonNull HomeBundleValueManager homeBundleValueManager) {
-        this.mValueExtractor = homeBundleValueManager;
+        this.valueExtractor = homeBundleValueManager;
     }
 
     /**
      * Open root projects if active user is available
      */
     public void start() {
-        mBaseUrl = mDataManager.getActiveUser().getTeamcityUrl();
+        baseUrl = mDataManager.getActiveUser().getTeamcityUrl();
         bottomNavigationView.initViews(this);
     }
 
@@ -213,14 +213,25 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         int titleRes = new ArrayList<>(Arrays.asList(AppNavigationItem.values())).get(position).getTitle();
         bottomNavigationView.setTitle(titleRes);
         if (position == AppNavigationItem.FAVORITES.ordinal()) {
+            showFavoritesPrompt();
             bottomNavigationView.showFavoritesFab();
-        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal() || position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
+        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
+            // Show running builds filter
+            bottomNavigationView.showFilterFab();
+        } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
+            // Show build queue filter
             bottomNavigationView.showFilterFab();
         } else {
             bottomNavigationView.hideFab();
         }
         loadNotificationsCount();
         mView.dimissSnackbar();
+    }
+
+    private void showFavoritesPrompt() {
+        if (!onboardingManager.isAddFavPromptShown()) {
+            mView.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
+        }
     }
 
     /**
@@ -336,7 +347,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Pass filter here to understand what tab to update
      */
     @Override
