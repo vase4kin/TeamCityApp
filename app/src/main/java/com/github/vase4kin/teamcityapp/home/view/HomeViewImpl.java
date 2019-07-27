@@ -169,4 +169,21 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
                     }
                 }).show();
     }
+
+    @Override
+    public void showTabsFilterPrompt(@NotNull OnboardingManager.OnPromptShownListener listener) {
+        int color = ContextCompat.getColor(activity, mDefaultColor);
+        new MaterialTapTargetPrompt.Builder(activity)
+                .setTarget(fab)
+                .setPrimaryText(R.string.title_onboarding_filter)
+                .setSecondaryText(R.string.text_onboarding_filter)
+                .setAnimationInterpolator(new FastOutSlowInInterpolator())
+                .setBackgroundColour(color)
+                .setCaptureTouchEventOutsidePrompt(true)
+                .setPromptStateChangeListener((prompt, state) -> {
+                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                        listener.onPromptShown();
+                    }
+                }).show();
+    }
 }

@@ -320,6 +320,8 @@
     <string name="text_onboarding_remove_build_from_queue">Remove builds from queue</string>
     <string name="title_onboarding_add_fav">Add to favorites</string>
     <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
+    <string name="title_onboarding_filter">Filter builds</string>
+    <string name="text_onboarding_filter">Filter builds by only your favorite configurations or the all running and queued ones. Default filter is set to show only builds by your favorite configurations.</string>
 
     <!--Favorites-->
     <string name="text_info_add">Add a configuration to favorites for an easy access</string>

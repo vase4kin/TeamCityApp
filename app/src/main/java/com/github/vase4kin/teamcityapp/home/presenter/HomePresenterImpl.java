@@ -215,11 +215,8 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         if (position == AppNavigationItem.FAVORITES.ordinal()) {
             showFavoritesPrompt();
             bottomNavigationView.showFavoritesFab();
-        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
-            // Show running builds filter
-            bottomNavigationView.showFilterFab();
-        } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
-            // Show build queue filter
+        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal() || position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
+            showFilterPrompt();
             bottomNavigationView.showFilterFab();
         } else {
             bottomNavigationView.hideFab();
@@ -228,9 +225,21 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         mView.dimissSnackbar();
     }
 
+    /**
+     * Show favorites prompt
+     */
     private void showFavoritesPrompt() {
         if (!onboardingManager.isAddFavPromptShown()) {
             mView.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
+        }
+    }
+
+    /**
+     * Show tab filter prompt
+     */
+    private void showFilterPrompt() {
+        if (!onboardingManager.isTabsFilterPromptShown()) {
+            mView.showTabsFilterPrompt(onboardingManager::saveTabsFilterPromptShown);
         }
     }
 
