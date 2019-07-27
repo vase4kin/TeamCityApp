@@ -99,11 +99,12 @@ interface Repository {
     /**
      * List queued builds (cache's supported)
      *
+     * @param locator - TC build locator
      * @param fields - Additional TC fields
      * @param update  - Update cache
      * @return [Single] with [Builds]
      */
-    fun listQueueBuilds(fields: String?, update: Boolean): Single<Builds>
+    fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds>
 
     /**
      * List snapshot dependencies builds (cache's supported)

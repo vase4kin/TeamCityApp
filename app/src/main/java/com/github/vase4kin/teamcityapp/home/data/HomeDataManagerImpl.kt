@@ -112,6 +112,13 @@ class HomeDataManagerImpl(private val context: Context,
     /**
      * {@inheritDoc}
      */
+    override fun loadFavoriteBuildQueueCount(loadingListener: OnLoadingListener<Int>) {
+        queuedBuildsDataManager.loadFavoritesCount(loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun getFavoritesCount(): Int {
         return sharedUserStorage.favoriteBuildTypeIds.size
     }

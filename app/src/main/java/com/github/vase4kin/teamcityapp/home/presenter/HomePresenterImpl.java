@@ -290,17 +290,32 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      * Load queued builds count
      */
     private void loadQueueBuildsCount() {
-        mDataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal(), data);
-            }
+        Filter currentFilter = filterProvider.getQueuedBuildsFilter();
+        if (currentFilter == Filter.QUEUE_FAVORITES) {
+            mDataManager.loadFavoriteBuildQueueCount(new OnLoadingListener<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal(), data);
+                }
 
-            @Override
-            public void onFail(String errorMessage) {
+                @Override
+                public void onFail(String errorMessage) {
 
-            }
-        });
+                }
+            });
+        } else if (currentFilter == Filter.QUEUE_ALL) {
+            mDataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
+                @Override
+                public void onSuccess(Integer data) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal(), data);
+                }
+
+                @Override
+                public void onFail(String errorMessage) {
+
+                }
+            });
+        }
     }
 
     /**

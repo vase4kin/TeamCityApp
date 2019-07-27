@@ -22,7 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.runningbuilds.presenter.RunningBuildsListPresenterImpl
+import com.github.vase4kin.teamcityapp.queue.presenter.QueueBuildsListPresenterImpl
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -32,7 +32,7 @@ import javax.inject.Inject
 class BuildQueueFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: RunningBuildsListPresenterImpl
+    lateinit var presenter: QueueBuildsListPresenterImpl
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_build_list, container, false)

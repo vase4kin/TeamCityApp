@@ -85,6 +85,13 @@ public interface HomeDataManager extends DrawerDataManager {
     void loadBuildQueueCount(OnLoadingListener<Integer> loadingListener);
 
     /**
+     * Load the number favorite queued builds
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    void loadFavoriteBuildQueueCount(OnLoadingListener<Integer> loadingListener);
+
+    /**
      * @return the count of favorite build types
      */
     int getFavoritesCount();
