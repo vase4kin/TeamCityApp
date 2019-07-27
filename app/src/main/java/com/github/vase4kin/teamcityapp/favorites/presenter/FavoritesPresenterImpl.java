@@ -115,6 +115,14 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     }
 
     /**
+     * On pause activity callback
+     */
+    public void onPause() {
+        mView.hideRefreshAnimation();
+        mDataManager.unsubscribe();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
