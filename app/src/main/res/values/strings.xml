@@ -108,7 +108,9 @@
     <string name="empty_list_message_artifacts">No artifacts</string>
     <string name="empty_list_message_builds">No builds</string>
     <string name="empty_list_message_running_builds">No running builds</string>
-    <string name="empty_list_message_build_queue">Build queue is empty</string>
+    <string name="empty_list_message_favorite_running_builds">No favorite running builds</string>
+    <string name="empty_list_message_build_queue">Builds queue is empty</string>
+    <string name="empty_list_message_favorite_build_queue">Favorite builds queue is empty</string>
     <string name="empty_list_message_agents">No agents</string>
     <string name="empty_list_message_parameters">No user defined parameters</string>
     <string name="empty_list_message_changes">No changes</string>

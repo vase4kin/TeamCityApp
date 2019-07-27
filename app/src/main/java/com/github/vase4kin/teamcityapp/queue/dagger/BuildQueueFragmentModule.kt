@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.queue.dagger
 
+import android.app.Activity
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -30,6 +31,7 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
 import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTrackerImpl
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueViewImpl
@@ -50,8 +52,14 @@ class BuildQueueFragmentModule {
 
     @Provides
     fun providesRunningBuildListView(fragment: BuildQueueFragment,
-                                     adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>): RunningBuildListView {
-        return BuildQueueViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_build_queue, adapter)
+                                     adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>,
+                                     filterProvider: FilterProvider): RunningBuildListView {
+        return BuildQueueViewImpl(
+                fragment.view!!,
+                fragment.activity as Activity,
+                R.string.empty_list_message_build_queue,
+                adapter,
+                filterProvider)
     }
 
     @Provides

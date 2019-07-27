@@ -30,6 +30,7 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
 import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTrackerImpl
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView
@@ -50,8 +51,9 @@ class RunningBuildsFragmentModule {
 
     @Provides
     fun providesRunningBuildListView(fragment: RunningBuildsFragment,
-                                     adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>): RunningBuildListView {
-        return RunningBuildsListViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_running_builds, adapter)
+                                     adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>,
+                                     filterProvider: FilterProvider): RunningBuildListView {
+        return RunningBuildsListViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_running_builds, adapter, filterProvider)
     }
 
     @Provides

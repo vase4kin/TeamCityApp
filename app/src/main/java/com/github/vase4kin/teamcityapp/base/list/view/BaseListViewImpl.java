@@ -87,9 +87,17 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         // <!--------------------------------------->!
         mErrorView.setImageTint(Color.LTGRAY);
         mErrorView.setRetryListener(listener);
-        emptyTitle.setText(mEmptyMessage);
+        emptyTitle.setText(getEmptyMessage());
         mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+    }
+
+    /**
+     * To Override get empty message
+     */
+    protected @StringRes
+    int getEmptyMessage() {
+        return mEmptyMessage;
     }
 
     /**
