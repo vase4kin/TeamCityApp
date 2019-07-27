@@ -49,7 +49,7 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         val filter = Filter.values()[arguments?.getInt(ARG_CODE, 0) ?: 0]
         val text = when (filter) {
             // TODO: Use resources
-            Filter.RUNNING_ALL, Filter.QUEUE_ALL -> "Show only favorites"
+            Filter.RUNNING_ALL, Filter.QUEUE_ALL -> "Show only favorite ones"
             Filter.QUEUE_FAVORITES -> "Show all queued builds"
             Filter.RUNNING_FAVORITES -> "Show all running builds"
         }
