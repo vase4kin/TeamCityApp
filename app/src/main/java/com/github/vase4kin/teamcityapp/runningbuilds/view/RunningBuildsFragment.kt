@@ -53,4 +53,9 @@ class RunningBuildsFragment : Fragment() {
         super.onResume()
         presenter.onResume()
     }
+
+    override fun onPause() {
+        super.onPause()
+        presenter.onPause()
+    }
 }

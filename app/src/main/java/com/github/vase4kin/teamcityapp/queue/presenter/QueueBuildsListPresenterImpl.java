@@ -80,6 +80,14 @@ public class QueueBuildsListPresenterImpl extends BuildListPresenterImpl<Running
     }
 
     /**
+     * On pause activity callback
+     */
+    public void onPause() {
+        mView.hideRefreshAnimation();
+        mDataManager.unsubscribe();
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
