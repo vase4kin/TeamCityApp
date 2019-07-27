@@ -83,6 +83,10 @@ public abstract class BaseListPresenterImpl<
         initViews();
         mView.showSkeletonView();
         mView.disableSwipeToRefresh();
+        loadDataOnViewsCreated();
+    }
+
+    protected void loadDataOnViewsCreated() {
         loadData(loadingListener, false);
     }
 

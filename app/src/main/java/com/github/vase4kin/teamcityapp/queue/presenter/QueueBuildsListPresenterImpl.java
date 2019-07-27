@@ -68,4 +68,21 @@ public class QueueBuildsListPresenterImpl extends BuildListPresenterImpl<Running
             mDataManager.load(loadingListener, update);
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadData(loadingListener, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadDataOnViewsCreated() {
+        // Don't load data when view is created, only on resume
+    }
 }

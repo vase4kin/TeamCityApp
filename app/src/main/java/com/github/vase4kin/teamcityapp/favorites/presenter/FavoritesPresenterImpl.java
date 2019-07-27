@@ -118,4 +118,12 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         super.onResume();
         loadData(loadingListener, false);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadDataOnViewsCreated() {
+        // Don't load data when view is created, only on resume
+    }
 }
