@@ -54,4 +54,6 @@ interface RunningBuildsDataManager : BuildListDataManager {
      * @param loadingListener - Listener to receive server callbacks
      */
     fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>)
+
+    fun buildTypeIdLocator(buildTypeId: String): String = "buildType:$buildTypeId"
 }

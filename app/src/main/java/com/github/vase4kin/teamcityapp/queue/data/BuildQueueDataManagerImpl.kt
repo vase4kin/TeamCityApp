@@ -49,8 +49,7 @@ class BuildQueueDataManagerImpl(
     override fun loadFavorites(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
                 .flatMap { buildTypeId ->
-                    // TODO:
-                    val locator = "buildType:$buildTypeId"
+                    val locator = buildTypeIdLocator(buildTypeId)
                     getBuildDetailsObservable(repository.listQueueBuilds(locator, null, update))
                 }.toSortedList { buildDetails, buildDetails2 ->
                     buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
@@ -71,8 +70,7 @@ class BuildQueueDataManagerImpl(
     override fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>) {
         val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
                 .flatMapSingle { buildTypeId ->
-                    // TODO:
-                    val locator = "buildType:$buildTypeId"
+                    val locator = buildTypeIdLocator(buildTypeId)
                     repository.listQueueBuilds(locator, "count", false)
                             .map { it.count }
                 }.toList().map { it.sum() }
