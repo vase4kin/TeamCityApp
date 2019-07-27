@@ -75,6 +75,7 @@ public class RunningBuildsListPresenterImpl extends BuildListPresenterImpl<Runni
     @Override
     public void onResume() {
         super.onResume();
+        mView.showRefreshAnimation();
         loadData(loadingListener, false);
     }
 
