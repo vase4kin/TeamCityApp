@@ -363,11 +363,11 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     public void onFilterApplied(Filter filter) {
         if (filter.isRunning()) {
             loadRunningBuildsCount();
-            // Post event
+            mDataManager.postRunningBuildsFilterChangedEvent();
         }
         if (filter.isQueued()) {
             loadQueueBuildsCount();
-            // Post event
+            mDataManager.postBuildQueueFilterChangedEvent();
         }
         mView.showFilterAppliedSnackBar();
     }

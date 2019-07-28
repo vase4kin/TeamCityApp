@@ -132,6 +132,20 @@ class HomeDataManagerImpl(private val context: Context,
         queuedBuildsDataManager.unsubscribe()
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    override fun postRunningBuildsFilterChangedEvent() {
+        eventBus.post(HomeDataManager.RunningBuildsFilterChangedEvent())
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun postBuildQueueFilterChangedEvent() {
+        eventBus.post(HomeDataManager.BuildQueueFilterChangedEvent())
+    }
+
     /***
      * Handle receiving post events from [EventBus]
      *

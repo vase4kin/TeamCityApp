@@ -92,11 +92,27 @@ public interface HomeDataManager extends DrawerDataManager {
     void loadFavoriteBuildQueueCount(OnLoadingListener<Integer> loadingListener);
 
     /**
+     * Post @{{@link RunningBuildsFilterChangedEvent}}
+     */
+    void postRunningBuildsFilterChangedEvent();
+
+    /**
+     * Post @{{@link BuildQueueFilterChangedEvent}}
+     */
+    void postBuildQueueFilterChangedEvent();
+
+    /**
      * @return the count of favorite build types
      */
     int getFavoritesCount();
 
     interface Listener {
         void onFilterApplied(Filter filter);
+    }
+
+    class RunningBuildsFilterChangedEvent {
+    }
+
+    class BuildQueueFilterChangedEvent {
     }
 }
