@@ -70,7 +70,7 @@ class FavoritesActivityTest {
 
     @Rule
     @JvmField
-    val activityRule = CustomIntentsTestRule(FavoritesActivity::class.java)
+    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
 
     @Spy
     val teamCityService: TeamCityService = FakeTeamCityServiceImpl()

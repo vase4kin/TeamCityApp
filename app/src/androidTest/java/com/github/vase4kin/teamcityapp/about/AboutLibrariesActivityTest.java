@@ -46,12 +46,9 @@ public class AboutLibrariesActivityTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set((DaggerMockRule.ComponentSetter<RestApiComponent>) restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule

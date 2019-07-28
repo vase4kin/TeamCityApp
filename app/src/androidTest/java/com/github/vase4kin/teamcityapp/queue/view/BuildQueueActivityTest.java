@@ -31,6 +31,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -62,16 +63,13 @@ public class BuildQueueActivityTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set((DaggerMockRule.ComponentSetter<RestApiComponent>) restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
-    public CustomActivityTestRule<BuildQueueActivity> mActivityRule = new CustomActivityTestRule<>(BuildQueueActivity.class);
+    public CustomActivityTestRule<HomeActivity> mActivityRule = new CustomActivityTestRule<>(HomeActivity.class);
 
     @Spy
     private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
@@ -109,7 +107,7 @@ public class BuildQueueActivityTest {
 
     @Test
     public void testUserCanSeeFailureMessageIfSmthHappensOnQueueBuildsLoading() throws Exception {
-        when(mTeamCityService.listQueueBuilds(anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
+        when(mTeamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
 
         mActivityRule.launchActivity(null);
 
@@ -119,7 +117,7 @@ public class BuildQueueActivityTest {
 
     @Test
     public void testUserCanSeeEmptyDataMessageIfBuildQueueIsEmpty() throws Exception {
-        when(mTeamCityService.listQueueBuilds(anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
+        when(mTeamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
         mActivityRule.launchActivity(null);
 
