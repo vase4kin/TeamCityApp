@@ -22,18 +22,19 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
-import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.mockito.Matchers.eq;
@@ -69,30 +70,23 @@ public class RunningBuildsListPresenterImplTest {
     @Mock
     private OnboardingManager mOnboardingManager;
 
+    private FilterProvider filterProvider = new FilterProvider();
+    @Mock
+    private EventBus eventBus;
+
     private RunningBuildsListPresenterImpl mPresenter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mPresenter = new RunningBuildsListPresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager);
+        mPresenter = new RunningBuildsListPresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager, filterProvider, eventBus);
     }
 
     @Test
     public void testLoadData() throws Exception {
+        filterProvider.setRunningBuildsFilter(Filter.RUNNING_ALL);
         mPresenter.loadData(mLoadingListener, false);
         verify(mDataManager).load(eq(mLoadingListener), eq(false));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor);
-    }
-
-    @Test
-    public void testOnSuccessCallBack() throws Exception {
-        mPresenter.onSuccessCallBack(Collections.<BuildDetails>singletonList(new BuildDetailsImpl(mBuild)));
-        verify(mView).updateTitle(eq(1));
-    }
-
-    @Test
-    public void testOnFailCallBack() throws Exception {
-        mPresenter.onFailCallBack("error");
-        verify(mView).updateTitle(eq(0));
     }
 }

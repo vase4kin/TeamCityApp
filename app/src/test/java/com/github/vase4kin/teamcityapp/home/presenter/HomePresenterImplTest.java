@@ -18,7 +18,9 @@ package com.github.vase4kin.teamcityapp.home.presenter;
 
 import android.text.TextUtils;
 
+import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager;
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager;
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter;
@@ -67,6 +69,10 @@ public class HomePresenterImplTest {
     private UserAccount mUserAccount;
     @Mock
     private OnboardingManager mOnboardingManager;
+    @Mock
+    private BottomNavigationView bottomNavigationView;
+
+    private FilterProvider filterProvider = new FilterProvider();
 
     private HomePresenterImpl mPresenter;
 
@@ -74,7 +80,7 @@ public class HomePresenterImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
-        mPresenter = new HomePresenterImpl(mView, mDataManager, mListener, mValueExtractor, mRouter, mInteractor, mTracker, mOnboardingManager);
+        mPresenter = new HomePresenterImpl(mView, mDataManager, mListener, mValueExtractor, mRouter, mInteractor, mTracker, mOnboardingManager, bottomNavigationView, filterProvider);
     }
 
     @Test

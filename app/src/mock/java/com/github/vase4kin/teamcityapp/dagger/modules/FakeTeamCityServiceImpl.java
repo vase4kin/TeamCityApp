@@ -119,7 +119,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     }
 
     @Override
-    public Single<Builds> listQueueBuilds(@Query("fields") String fields) {
+    public Single<Builds> listQueueBuilds(@Query("locator") String locator, @Query("fields") String fields) {
         List<Build> builds = new ArrayList<>();
         builds.add(Mocks.queuedBuild1());
         builds.add(Mocks.queuedBuild2());
@@ -129,7 +129,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
 
     @Override
     public Single<Builds> listBuilds(String locator) {
-        return listQueueBuilds(null);
+        return listQueueBuilds(null, null);
     }
 
     @Override
