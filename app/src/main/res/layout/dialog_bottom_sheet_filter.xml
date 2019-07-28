@@ -31,7 +31,7 @@
         android:background="@drawable/bottom_sheet_view" />
 
     <TextView
-        android:id="@+id/bs_main_title"
+        android:id="@+id/main_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -39,13 +39,14 @@
         android:gravity="center_vertical"
         android:minHeight="52dp"
         android:singleLine="true"
-        android:text="@string/text_filters"
-        android:textAppearance="@style/Text.Title" />
+        android:textAppearance="@style/Text.Headline"
+        tools:text="@string/text_filters" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
@@ -53,8 +54,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
         android:singleLine="true"
-        android:textAppearance="@style/Text.Headline"
-        android:background="?attr/selectableItemBackground"
+        android:textAppearance="@style/Text.Title"
         tools:text="Show all queue builds" />
 
 </LinearLayout>

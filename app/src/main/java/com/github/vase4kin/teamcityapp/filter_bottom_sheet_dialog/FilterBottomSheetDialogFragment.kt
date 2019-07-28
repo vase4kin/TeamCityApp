@@ -47,15 +47,21 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         val view = View.inflate(context, R.layout.dialog_bottom_sheet_filter, null)
         val arguments = arguments
         val filter = Filter.values()[arguments?.getInt(ARG_CODE, 0) ?: 0]
-        val text = when (filter) {
-            // TODO: Use resources
-            Filter.RUNNING_ALL, Filter.QUEUE_ALL -> "Show only favorite ones"
-            Filter.QUEUE_FAVORITES -> "Show all queued builds"
-            Filter.RUNNING_FAVORITES -> "Show all running builds"
+        val description = when (filter) {
+            Filter.RUNNING_ALL, Filter.QUEUE_ALL -> R.string.text_show_favorites
+            Filter.QUEUE_FAVORITES -> R.string.text_show_queued
+            Filter.RUNNING_FAVORITES -> R.string.text_show_running
         }
-        val textView = view.findViewById<TextView>(R.id.text)
-        textView.text = text
-        textView.setOnClickListener {
+        val descriptionTextView = view.findViewById<TextView>(R.id.text)
+        descriptionTextView.setText(description)
+        val title = when {
+            filter.isRunning -> R.string.title_filter_running_builds
+            filter.isQueued -> R.string.title_filter_queued_builds
+            else -> R.string.text_filters
+        }
+        val titleTextView = view.findViewById<TextView>(R.id.main_title)
+        titleTextView.setText(title)
+        descriptionTextView.setOnClickListener {
             when {
                 filter.isRunning -> {
                     val oppositeFilter = filter.opposite()

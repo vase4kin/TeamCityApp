@@ -334,4 +334,12 @@
     <string name="rate_cancel">Cancel</string>
     <string name="rate_now">Rate</string>
 
+    <!--Filter bottom sheet-->
+    <string name="title_filter_running_builds">Filter running builds</string>
+    <string name="title_filter_queued_builds">Filter queued builds</string>
+    <string name="text_show_favorites">Show only favorite ones</string>
+    <string name="text_show_queued">Show all queued builds</string>
+    <string name="text_show_running">Show all running builds</string>
+
+
 </resources>
