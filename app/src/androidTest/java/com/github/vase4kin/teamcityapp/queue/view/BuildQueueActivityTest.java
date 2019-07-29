@@ -44,42 +44,45 @@ import io.reactivex.Single;
 import it.cosenonjaviste.daggermock.DaggerMockRule;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
+import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-/**
- * Tests for {@link BuildQueueActivity}
- */
 @RunWith(AndroidJUnit4.class)
 public class BuildQueueActivityTest {
 
     @Rule
-    public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
+    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set((DaggerMockRule.ComponentSetter<RestApiComponent>) restApiComponent -> {
+            .set(restApiComponent -> {
                 TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
                 app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
-    public CustomActivityTestRule<HomeActivity> mActivityRule = new CustomActivityTestRule<>(HomeActivity.class);
+    public CustomActivityTestRule<HomeActivity> activityRule = new CustomActivityTestRule<>(HomeActivity.class);
 
     @Spy
-    private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
+    private TeamCityService teamCityService = new FakeTeamCityServiceImpl();
 
     @Test
     public void testUserCanSeeSuccessFullyLoadedQueueBuilds() throws Exception {
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
 
-        // Checking toolbar title
-        matchToolbarTitle("Build queue (3)");
+        // Click on build queue tab
+        clickOnBuildQueueTab();
+
+        checkBuildQueueTabBadgeCount("3");
+
         // List has item with header
         onView(withId(R.id.build_recycler_view)).check(hasItemsCount(5));
         // Checking header 1
@@ -106,22 +109,54 @@ public class BuildQueueActivityTest {
     }
 
     @Test
+    public void testUserCanSeeUpdatedToolbar() throws Exception {
+        when(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
+
+        activityRule.launchActivity(null);
+
+        // Click on build queue tab
+        clickOnBuildQueueTab();
+
+        matchToolbarTitle("Build queue");
+    }
+
+    @Test
     public void testUserCanSeeFailureMessageIfSmthHappensOnQueueBuildsLoading() throws Exception {
-        when(mTeamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
+        when(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
 
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
 
-        matchToolbarTitle("Build queue (0)");
+        // Click on build queue tab
+        clickOnBuildQueueTab();
+
+        checkBuildQueueTabBadgeCount("0");
+
         onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()));
     }
 
     @Test
     public void testUserCanSeeEmptyDataMessageIfBuildQueueIsEmpty() throws Exception {
-        when(mTeamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
+        when(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
 
-        matchToolbarTitle("Build queue (0)");
-        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_build_queue)));
+        // Click on build queue tab
+        clickOnBuildQueueTab();
+
+        checkBuildQueueTabBadgeCount("0");
+        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_build_queue)));
+    }
+
+    private void clickOnBuildQueueTab() {
+        onView(withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.build_queue_drawer_item))))
+                .perform(click());
+    }
+
+    private void checkBuildQueueTabBadgeCount(String count) {
+        onView(allOf(
+                withChild(allOf(withId(R.id.bottom_navigation_notification), withText(count))),
+                withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.build_queue_drawer_item))))
+        )
+                .check(matches(isDisplayed()));
     }
 }

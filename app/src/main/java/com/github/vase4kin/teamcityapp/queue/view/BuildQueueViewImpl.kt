@@ -50,4 +50,11 @@ class BuildQueueViewImpl(view: View,
         Filter.QUEUE_FAVORITES -> R.string.empty_list_message_favorite_build_queue
         else -> super.getEmptyMessage()
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun emptyTitleId(): Int {
+        return R.id.queued_empty_title_view
+    }
 }
