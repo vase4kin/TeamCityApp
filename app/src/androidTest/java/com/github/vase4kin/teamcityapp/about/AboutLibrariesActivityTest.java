@@ -46,7 +46,7 @@ public class AboutLibrariesActivityTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set((DaggerMockRule.ComponentSetter<RestApiComponent>) restApiComponent -> {
+            .set(restApiComponent -> {
                 TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
                 app.setRestApiInjector(restApiComponent);
             });
@@ -55,7 +55,7 @@ public class AboutLibrariesActivityTest {
     public CustomActivityTestRule<AboutLibrariesActivity> mActivityTestRule = new CustomActivityTestRule<>(AboutLibrariesActivity.class);
 
     @Test
-    public void testAboutActivity() throws Exception {
+    public void testAboutActivity() {
         mActivityTestRule.launchActivity(null);
         String toolbarTitle = mActivityTestRule.getActivity().getString(R.string.about_app_text_libraries);
         matchToolbarTitle(toolbarTitle);
