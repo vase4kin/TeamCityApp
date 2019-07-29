@@ -112,4 +112,12 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
     protected int recyclerViewId() {
         return R.id.favorites_recycler_view;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int emptyTitleId() {
+        return R.id.favorites_empty_title_view;
+    }
 }
