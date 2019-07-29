@@ -122,4 +122,12 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
         }
         return super.getEmptyMessage();
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int emptyTitleId() {
+        return R.id.running_empty_title_view;
+    }
 }

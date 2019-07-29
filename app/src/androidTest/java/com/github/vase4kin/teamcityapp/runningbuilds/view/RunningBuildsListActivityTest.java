@@ -53,6 +53,7 @@ import static androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
@@ -63,14 +64,11 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
-/**
- * Tests for {@link RunningBuildsListActivity}
- */
 @RunWith(AndroidJUnit4.class)
 public class RunningBuildsListActivityTest {
 
     @Rule
-    public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
+    public DaggerMockRule<RestApiComponent> daggerMockRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(restApiComponent -> {
                 TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -78,17 +76,29 @@ public class RunningBuildsListActivityTest {
             });
 
     @Rule
-    public CustomIntentsTestRule<HomeActivity> mActivityRule = new CustomIntentsTestRule<>(HomeActivity.class);
+    public CustomIntentsTestRule<HomeActivity> activityRule = new CustomIntentsTestRule<>(HomeActivity.class);
 
     @Spy
-    private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
+    private TeamCityService teamCityService = new FakeTeamCityServiceImpl();
+
+    @Test
+    public void testUserCanSeeUpdatedToolbar() throws Exception {
+        activityRule.launchActivity(null);
+
+        // Click on running builds tab
+        clickOnRunningbuildsTab();
+
+        // Checking toolbar title
+        matchToolbarTitle("Running builds");
+    }
 
     @Test
     public void testUserCanSeeSuccessFullyLoadedRunningBuilds() throws Exception {
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
 
-        // Checking toolbar title
-        matchToolbarTitle("Running builds (1)");
+        // Click on running builds tab
+        clickOnRunningbuildsTab();
+
         // List has item with header
         onView(withId(R.id.build_recycler_view)).check(hasItemsCount(2));
         // Checking header
@@ -101,7 +111,10 @@ public class RunningBuildsListActivityTest {
 
     @Test
     public void testUserCanClickOnSection() throws Exception {
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
+
+        // Click on running builds tab
+        clickOnRunningbuildsTab();
 
         // Click on header header
         onView(withId(R.id.section_text))
@@ -118,21 +131,39 @@ public class RunningBuildsListActivityTest {
 
     @Test
     public void testUserCanSeeFailureMessageIfSmthHappendsOnRunningBuildsLoading() throws Exception {
-        when(mTeamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
+        when(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.<Builds>error(new RuntimeException("smth bad happend!")));
 
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
 
-        matchToolbarTitle("Running builds (0)");
+        // Click on running builds tab
+        clickOnRunningbuildsTab();
+
+        checkRunningTabBadgeCount("0");
         onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()));
     }
 
     @Test
     public void testUserCanSeeEmptyDataMessageIfRunningBuildListIsEmpty() throws Exception {
-        when(mTeamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
+        when(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.just(new Builds(0, Collections.<Build>emptyList())));
 
-        mActivityRule.launchActivity(null);
+        activityRule.launchActivity(null);
 
-        matchToolbarTitle("Running builds (0)");
-        onView(withId(R.id.empty_title)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_running_builds)));
+        // Click on running builds tab
+        clickOnRunningbuildsTab();
+
+        onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_running_builds)));
+    }
+
+    private void clickOnRunningbuildsTab() {
+        onView(withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.running_builds_drawer_item))))
+                .perform(click());
+    }
+
+    private void checkRunningTabBadgeCount(String count) {
+        onView(allOf(
+                withChild(allOf(withId(R.id.bottom_navigation_notification), withText(count))),
+                withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.running_builds_drawer_item))))
+        )
+                .check(matches(isDisplayed()));
     }
 }
