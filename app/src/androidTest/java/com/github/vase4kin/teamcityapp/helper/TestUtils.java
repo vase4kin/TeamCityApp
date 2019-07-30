@@ -132,7 +132,7 @@ public class TestUtils {
         onboardingManager.saveRestartBuildPromptShown();
         onboardingManager.saveAddFavPromptShown();
         onboardingManager.saveFavPromptShown();
-        onboardingManager.saveFilterBuildsPromptShown();
+        onboardingManager.saveTabsFilterPromptShown();
     }
 
     public static void enableOnboarding() {
