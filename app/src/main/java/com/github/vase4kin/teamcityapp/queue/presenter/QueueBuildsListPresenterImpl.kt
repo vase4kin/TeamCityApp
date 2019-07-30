@@ -56,7 +56,7 @@ class QueueBuildsListPresenterImpl @Inject constructor(
         val currentFilter = filterProvider.queuedBuildsFilter
         when {
             currentFilter === Filter.QUEUE_FAVORITES -> mDataManager.loadFavorites(loadingListener, update)
-            currentFilter === Filter.QUEUE_FAVORITES -> mDataManager.load(loadingListener, update)
+            currentFilter === Filter.QUEUE_ALL -> mDataManager.load(loadingListener, update)
         }
     }
 
