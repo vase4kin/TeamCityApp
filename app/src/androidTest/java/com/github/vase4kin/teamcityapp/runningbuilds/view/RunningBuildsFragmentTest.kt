@@ -61,6 +61,7 @@ import org.mockito.Spy
 class RunningBuildsFragmentTest {
 
     @Rule
+    @JvmField
     var daggerMockRule: DaggerMockRule<RestApiComponent> = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
             .set { restApiComponent ->
@@ -69,6 +70,7 @@ class RunningBuildsFragmentTest {
             }
 
     @Rule
+    @JvmField
     var activityRule = CustomIntentsTestRule(HomeActivity::class.java)
 
     @Spy
