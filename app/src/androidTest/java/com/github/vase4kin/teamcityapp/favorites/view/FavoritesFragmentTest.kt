@@ -49,7 +49,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
 @RunWith(AndroidJUnit4::class)
-class FavoritesActivityTest {
+class FavoritesFragmentTest {
 
     @Rule
     @JvmField

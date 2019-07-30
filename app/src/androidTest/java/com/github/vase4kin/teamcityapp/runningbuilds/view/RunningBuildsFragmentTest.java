@@ -68,7 +68,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
-public class RunningBuildsListActivityTest {
+public class RunningBuildsFragmentTest {
 
     @Rule
     public DaggerMockRule<RestApiComponent> daggerMockRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))

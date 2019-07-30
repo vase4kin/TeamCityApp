@@ -53,7 +53,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
 @RunWith(AndroidJUnit4::class)
-class BuildQueueActivityTest {
+class BuildQueueFragmentTest {
 
     @Rule
     @JvmField
