@@ -100,13 +100,13 @@ public class RunningBuildsListActivityTest {
         clickOnRunningbuildsTab();
 
         // List has item with header
-        onView(withId(R.id.build_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.running_builds_recycler_view)).check(hasItemsCount(2));
         // Checking header
         onView(withId(R.id.section_text)).check(matches(withText("project name - build type name")));
         // Checking adapter item
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("Running tests")));
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("refs/heads/master")));
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(matches(withText("#2458")));
+        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("Running tests")));
+        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("refs/heads/master")));
+        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(matches(withText("#2458")));
     }
 
     @Test

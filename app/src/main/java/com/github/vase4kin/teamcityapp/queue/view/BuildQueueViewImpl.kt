@@ -57,4 +57,11 @@ class BuildQueueViewImpl(view: View,
     override fun emptyTitleId(): Int {
         return R.id.queued_empty_title_view
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun recyclerViewId(): Int {
+        return R.id.build_queue_recycler_view
+    }
 }

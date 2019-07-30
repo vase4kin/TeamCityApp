@@ -130,4 +130,12 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
     protected int emptyTitleId() {
         return R.id.running_empty_title_view;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int recyclerViewId() {
+        return R.id.running_builds_recycler_view;
+    }
 }
