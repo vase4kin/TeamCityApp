@@ -53,10 +53,10 @@ class QueueBuildsListPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun loadData(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
-        val currentFilter = filterProvider.queuedBuildsFilter
-        when {
-            currentFilter === Filter.QUEUE_FAVORITES -> mDataManager.loadFavorites(loadingListener, update)
-            currentFilter === Filter.QUEUE_ALL -> mDataManager.load(loadingListener, update)
+        when (filterProvider.queuedBuildsFilter) {
+            Filter.QUEUE_FAVORITES -> mDataManager.loadFavorites(loadingListener, update)
+            Filter.QUEUE_ALL -> mDataManager.load(loadingListener, update)
+            else -> mView.hideRefreshAnimation()
         }
     }
 

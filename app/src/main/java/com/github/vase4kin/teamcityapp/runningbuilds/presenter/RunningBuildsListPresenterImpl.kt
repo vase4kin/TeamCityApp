@@ -52,11 +52,10 @@ class RunningBuildsListPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     public override fun loadData(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
-        val currentFilter = filterProvider.runningBuildsFilter
-        if (currentFilter === Filter.RUNNING_FAVORITES) {
-            mDataManager.loadFavorites(loadingListener, update)
-        } else if (currentFilter === Filter.RUNNING_ALL) {
-            mDataManager.load(loadingListener, update)
+        when (filterProvider.runningBuildsFilter) {
+            Filter.RUNNING_FAVORITES -> mDataManager.loadFavorites(loadingListener, update)
+            Filter.RUNNING_ALL -> mDataManager.load(loadingListener, update)
+            else -> mView.hideRefreshAnimation()
         }
     }
 
