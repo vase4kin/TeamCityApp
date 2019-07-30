@@ -53,9 +53,9 @@ class RunningBuildsListPresenterImpl @Inject constructor(
      */
     public override fun loadData(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         when (filterProvider.runningBuildsFilter) {
-            Filter.RUNNING_FAVORITES -> mDataManager.loadFavorites(loadingListener, update)
-            Filter.RUNNING_ALL -> mDataManager.load(loadingListener, update)
-            else -> mView.hideRefreshAnimation()
+            Filter.RUNNING_FAVORITES -> dataManager.loadFavorites(loadingListener, update)
+            Filter.RUNNING_ALL -> dataManager.load(loadingListener, update)
+            else -> view.hideRefreshAnimation()
         }
     }
 
@@ -85,13 +85,13 @@ class RunningBuildsListPresenterImpl @Inject constructor(
     fun onEvent(event: HomeDataManager.RunningBuildsFilterChangedEvent) = loadData()
 
     private fun loadData() {
-        mView.showRefreshAnimation()
+        view.showRefreshAnimation()
         loadData(loadingListener, false)
     }
 
     private fun stopLoadingData() {
-        mView.hideRefreshAnimation()
-        mDataManager.unsubscribe()
+        view.hideRefreshAnimation()
+        dataManager.unsubscribe()
     }
 
     /**

@@ -54,9 +54,9 @@ class QueueBuildsListPresenterImpl @Inject constructor(
      */
     override fun loadData(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         when (filterProvider.queuedBuildsFilter) {
-            Filter.QUEUE_FAVORITES -> mDataManager.loadFavorites(loadingListener, update)
-            Filter.QUEUE_ALL -> mDataManager.load(loadingListener, update)
-            else -> mView.hideRefreshAnimation()
+            Filter.QUEUE_FAVORITES -> dataManager.loadFavorites(loadingListener, update)
+            Filter.QUEUE_ALL -> dataManager.load(loadingListener, update)
+            else -> view.hideRefreshAnimation()
         }
     }
 
@@ -86,13 +86,13 @@ class QueueBuildsListPresenterImpl @Inject constructor(
     fun onEvent(event: HomeDataManager.BuildQueueFilterChangedEvent) = loadData()
 
     private fun loadData() {
-        mView.showRefreshAnimation()
+        view.showRefreshAnimation()
         loadData(loadingListener, false)
     }
 
     private fun stopLoadingData() {
-        mView.hideRefreshAnimation()
-        mDataManager.unsubscribe()
+        view.hideRefreshAnimation()
+        dataManager.unsubscribe()
     }
 
     /**

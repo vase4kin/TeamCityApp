@@ -62,7 +62,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, boolean update) {
-        mDataManager.loadFavorites(loadingListener, update);
+        dataManager.loadFavorites(loadingListener, update);
     }
 
     /**
@@ -71,7 +71,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setViewListener(this);
+        view.setViewListener(this);
     }
 
     /**
@@ -89,7 +89,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     public void onClick(NavigationItem navigationItem) {
         if (navigationItem instanceof BuildType) {
             router.startBuildListActivity(navigationItem.getName(), navigationItem.getId());
-            mTracker.trackUserOpensBuildType();
+            tracker.trackUserOpensBuildType();
         } else {
             router.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
@@ -101,7 +101,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
-        mDataManager.unsubscribe();
+        dataManager.unsubscribe();
     }
 
     /**
@@ -110,7 +110,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onResume() {
         super.onResume();
-        mView.showRefreshAnimation();
+        view.showRefreshAnimation();
         loadData(loadingListener, false);
     }
 
@@ -118,8 +118,8 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
      * On pause activity callback
      */
     public void onPause() {
-        mView.hideRefreshAnimation();
-        mDataManager.unsubscribe();
+        view.hideRefreshAnimation();
+        dataManager.unsubscribe();
     }
 
     /**

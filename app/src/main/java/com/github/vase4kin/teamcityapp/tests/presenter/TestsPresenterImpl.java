@@ -71,7 +71,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<TestOccurrences.TestOccurrence>> loadingListener, boolean update) {
-        mDataManager.loadFailedTests(mValueExtractor.getUrl(), loadingListener, update);
+        dataManager.loadFailedTests(valueExtractor.getUrl(), loadingListener, update);
     }
 
     /**
@@ -88,24 +88,24 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setListener(this);
-        mView.setOnLoadMoreListener(new MugenCallbacks() {
+        view.setListener(this);
+        view.setOnLoadMoreListener(new MugenCallbacks() {
             @Override
             public void onLoadMore() {
                 mIsLoadMoreLoading = true;
-                mView.addLoadMore();
-                mDataManager.loadMore(new OnLoadingListener<List<TestOccurrences.TestOccurrence>>() {
+                view.addLoadMore();
+                dataManager.loadMore(new OnLoadingListener<List<TestOccurrences.TestOccurrence>>() {
                     @Override
                     public void onSuccess(List<TestOccurrences.TestOccurrence> data) {
-                        mView.removeLoadMore();
-                        mView.addMoreBuilds(new TestsDataModelImpl(data));
+                        view.removeLoadMore();
+                        view.addMoreBuilds(new TestsDataModelImpl(data));
                         mIsLoadMoreLoading = false;
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
-                        mView.removeLoadMore();
-                        mView.showRetryLoadMoreSnackBar();
+                        view.removeLoadMore();
+                        view.showRetryLoadMoreSnackBar();
                         mIsLoadMoreLoading = false;
                     }
                 });
@@ -118,10 +118,10 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
 
             @Override
             public boolean hasLoadedAllItems() {
-                return !mDataManager.canLoadMore();
+                return !dataManager.canLoadMore();
             }
         });
-        mView.replaceSkeletonViewContent();
+        view.replaceSkeletonViewContent();
     }
 
     /**
@@ -130,17 +130,17 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onViewsCreated() {
         super.onViewsCreated();
-        mDataManager.loadTestDetails(mValueExtractor.getUrl(), new OnLoadingListener<Integer>() {
+        dataManager.loadTestDetails(valueExtractor.getUrl(), new OnLoadingListener<Integer>() {
             @Override
             public void onSuccess(Integer data) {
-                mDataManager.postChangeTabTitleEvent(data);
+                dataManager.postChangeTabTitleEvent(data);
             }
 
             @Override
             public void onFail(String errorMessage) {
             }
         });
-        mView.invalidateOptionsMenu();
+        view.invalidateOptionsMenu();
     }
 
     /**
@@ -148,7 +148,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        mView.onCreateOptionsMenu(menu, inflater);
+        view.onCreateOptionsMenu(menu, inflater);
     }
 
     /**
@@ -156,7 +156,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
-        mView.onPrepareOptionsMenu(menu);
+        view.onPrepareOptionsMenu(menu);
     }
 
     /**
@@ -164,11 +164,11 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mView.showRefreshAnimation();
-        mView.hideErrorView();
-        mView.hideEmpty();
-        mView.showData(new TestsDataModelImpl(Collections.<TestOccurrences.TestOccurrence>emptyList()));
-        return mView.onOptionsItemSelected(item);
+        view.showRefreshAnimation();
+        view.hideErrorView();
+        view.hideEmpty();
+        view.showData(new TestsDataModelImpl(Collections.<TestOccurrences.TestOccurrence>emptyList()));
+        return view.onOptionsItemSelected(item);
     }
 
     /**
@@ -176,7 +176,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void loadFailedTests() {
-        mDataManager.loadFailedTests(mValueExtractor.getUrl());
+        dataManager.loadFailedTests(valueExtractor.getUrl());
     }
 
     /**
@@ -184,7 +184,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void loadSuccessTests() {
-        mDataManager.loadPassedTests(mValueExtractor.getUrl());
+        dataManager.loadPassedTests(valueExtractor.getUrl());
     }
 
     /**
@@ -192,7 +192,7 @@ public class TestsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void loadIgnoredTests() {
-        mDataManager.loadIgnoredTests(mValueExtractor.getUrl());
+        dataManager.loadIgnoredTests(valueExtractor.getUrl());
     }
 
     /**

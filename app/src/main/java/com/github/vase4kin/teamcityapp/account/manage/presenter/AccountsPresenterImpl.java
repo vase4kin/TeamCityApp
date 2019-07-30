@@ -61,7 +61,7 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
     @SuppressWarnings("unchecked")
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<UserAccount>> loadingListener, boolean update) {
-        mDataManager.load(Observable.<SharedUserStorage>empty().singleOrError(), loadingListener);
+        dataManager.load(Observable.<SharedUserStorage>empty().singleOrError(), loadingListener);
     }
 
     /**
@@ -77,7 +77,7 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onAccountRemove() {
-        mTracker.trackAccountRemove();
+        tracker.trackAccountRemove();
     }
 
     /**
@@ -86,6 +86,6 @@ public class AccountsPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setOnAccountRemoveListener(this);
+        view.setOnAccountRemoveListener(this);
     }
 }

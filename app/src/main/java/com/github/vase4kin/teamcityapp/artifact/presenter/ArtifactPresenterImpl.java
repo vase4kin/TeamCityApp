@@ -81,7 +81,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<File>> loadingListener, boolean update) {
-        mDataManager.load(mValueExtractor.getUrl(), loadingListener, update);
+        dataManager.load(valueExtractor.getUrl(), loadingListener, update);
     }
 
     /**
@@ -90,9 +90,9 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setOnArtifactPresenterListener(this);
-        mDataManager.registerEventBus();
-        mDataManager.setListener(this);
+        view.setOnArtifactPresenterListener(this);
+        dataManager.registerEventBus();
+        dataManager.setListener(this);
     }
 
     /**
@@ -102,7 +102,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     public void onClick(File artifactFile) {
         if (artifactFile.hasChildren() && artifactFile.isFolder()) {
             String href = artifactFile.getChildren().getHref();
-            mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
+            mRouter.openArtifactFile(valueExtractor.getBuildDetails(), href);
             unRegister();
         } else {
             onLongClick(artifactFile);
@@ -115,13 +115,13 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onLongClick(final File artifactFile) {
         if (!artifactFile.isFolder() && artifactFile.hasChildren()) {
-            mView.showFullBottomSheet(artifactFile);
+            view.showFullBottomSheet(artifactFile);
         } else if (artifactFile.isFolder()) {
-            mView.showFolderBottomSheet(artifactFile);
+            view.showFolderBottomSheet(artifactFile);
         } else if (isBrowserUrl(artifactFile.getHref())) {
-            mView.showBrowserBottomSheet(artifactFile);
+            view.showBrowserBottomSheet(artifactFile);
         } else {
-            mView.showDefaultBottomSheet(artifactFile);
+            view.showDefaultBottomSheet(artifactFile);
         }
     }
 
@@ -156,7 +156,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      * Show retry download artifact snack bar for load artifact error
      */
     private void showRetryDownloadArtifactSnackBar() {
-        mDataManager.postArtifactErrorDownloadingEvent();
+        dataManager.postArtifactErrorDownloadingEvent();
     }
 
     /**
@@ -164,12 +164,12 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void unSubscribe() {
-        mDataManager.unsubscribe();
+        dataManager.unsubscribe();
     }
 
     private void unRegister() {
-        mDataManager.unregisterEventBus();
-        mDataManager.setListener(null);
+        dataManager.unregisterEventBus();
+        dataManager.setListener(null);
     }
 
     /**
@@ -180,37 +180,37 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
         this.fileName = fileName;
         this.fileHref = href;
         if (!mPermissionManager.isWriteStoragePermissionsGranted()) {
-            mView.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
+            view.showPermissionsInfoDialog(new OnPermissionsDialogListener() {
                 @Override
                 public void onAllow() {
                     mPermissionManager.requestWriteStoragePermissions();
                 }
             });
         } else {
-            if (mDataManager.isTheFileApk(fileName)
+            if (dataManager.isTheFileApk(fileName)
                     && !mPermissionManager.isInstallPackagesPermissionGranted()) {
-                mView.showInstallPackagesPermissionsInfoDialog(new OnPermissionsDialogListener() {
+                view.showInstallPackagesPermissionsInfoDialog(new OnPermissionsDialogListener() {
                     @Override
                     public void onAllow() {
                         mPermissionManager.requestInstallPackagesPermission();
                     }
                 });
             } else {
-                mView.showProgressDialog();
-                mDataManager.downloadArtifact(
+                view.showProgressDialog();
+                dataManager.downloadArtifact(
                         href,
                         fileName,
                         new OnLoadingListener<java.io.File>() {
                             @Override
                             public void onSuccess(java.io.File data) {
-                                mView.dismissProgressDialog();
+                                view.dismissProgressDialog();
                                 // TODO: Snack bar with file downloaded
                                 mRouter.startFileActivity(data);
                             }
 
                             @Override
                             public void onFail(String errorMessage) {
-                                mView.dismissProgressDialog();
+                                view.dismissProgressDialog();
                                 showRetryDownloadArtifactSnackBar();
                             }
                         });
@@ -223,7 +223,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onOpenArtifactEvent(String href) {
-        mRouter.openArtifactFile(mValueExtractor.getBuildDetails(), href);
+        mRouter.openArtifactFile(valueExtractor.getBuildDetails(), href);
         unRegister();
     }
 
@@ -232,7 +232,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onStartBrowserEvent(String href) {
-        mRouter.startBrowser(mValueExtractor.getBuildDetails(), href);
+        mRouter.startBrowser(valueExtractor.getBuildDetails(), href);
     }
 
     /**
@@ -248,7 +248,7 @@ public class ArtifactPresenterImpl extends BaseListPresenterImpl<
 
             @Override
             public void onDenied() {
-                mView.showPermissionsDeniedDialog();
+                view.showPermissionsDeniedDialog();
             }
         });
     }

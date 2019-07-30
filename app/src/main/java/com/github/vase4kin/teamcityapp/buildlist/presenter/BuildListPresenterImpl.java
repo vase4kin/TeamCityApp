@@ -82,12 +82,12 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        String buildTypeId = mValueExtractor.getId();
-        BuildListFilter filter = mValueExtractor.getBuildListFilter();
+        String buildTypeId = valueExtractor.getId();
+        BuildListFilter filter = valueExtractor.getBuildListFilter();
         if (filter != null) {
-            mDataManager.load(buildTypeId, filter, loadingListener, update);
+            dataManager.load(buildTypeId, filter, loadingListener, update);
         } else {
-            mDataManager.load(buildTypeId, loadingListener, update);
+            dataManager.load(buildTypeId, loadingListener, update);
         }
     }
 
@@ -97,11 +97,11 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     protected void initViews() {
         super.initViews();
-        if (!mValueExtractor.isBundleNullOrEmpty()) {
-            mView.setTitle(mValueExtractor.getName());
+        if (!valueExtractor.isBundleNullOrEmpty()) {
+            view.setTitle(valueExtractor.getName());
         }
-        mView.setOnBuildListPresenterListener(this);
-        mView.showRunBuildFloatActionButton();
+        view.setOnBuildListPresenterListener(this);
+        view.showRunBuildFloatActionButton();
     }
 
     @Override
@@ -114,8 +114,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * Show run build prompt
      */
     private void showRunBuildPrompt() {
-        if (mView.isBuildListOpen() && !onboardingManager.isRunBuildPromptShown()) {
-            mView.showRunBuildPrompt(() -> {
+        if (view.isBuildListOpen() && !onboardingManager.isRunBuildPromptShown()) {
+            view.showRunBuildPrompt(() -> {
                 onboardingManager.saveRunBuildPromptShown();
                 showFilterBuildsPrompt();
             });
@@ -127,7 +127,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     private void showFilterBuildsPrompt() {
         if (!onboardingManager.isFilterBuildsPromptShown()) {
-            mView.showFilterBuildsPrompt(() -> {
+            view.showFilterBuildsPrompt(() -> {
                 onboardingManager.saveFilterBuildsPromptShown();
                 showFavPrompt();
             });
@@ -139,7 +139,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     private void showFavPrompt() {
         if (!onboardingManager.isFavPromptShown()) {
-            mView.showFavPrompt(() -> onboardingManager.saveFavPromptShown());
+            view.showFavPrompt(() -> onboardingManager.saveFavPromptShown());
         }
     }
 
@@ -148,10 +148,10 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onBuildClick(Build build) {
-        if (mValueExtractor.isBundleNullOrEmpty()) {
+        if (valueExtractor.isBundleNullOrEmpty()) {
             mRouter.openBuildPage(build, null);
         } else {
-            String buildTypeName = mValueExtractor.getName();
+            String buildTypeName = valueExtractor.getName();
             mRouter.openBuildPage(build, buildTypeName);
         }
     }
@@ -161,8 +161,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onRunBuildFabClick() {
-        mRouter.openRunBuildPage(mValueExtractor.getId());
-        mTracker.trackRunBuildButtonPressed();
+        mRouter.openRunBuildPage(valueExtractor.getId());
+        tracker.trackRunBuildButtonPressed();
     }
 
     /**
@@ -170,20 +170,20 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onShowQueuedBuildSnackBarClick() {
-        mTracker.trackUserWantsToSeeQueuedBuildDetails();
-        mView.showBuildLoadingProgress();
+        tracker.trackUserWantsToSeeQueuedBuildDetails();
+        view.showBuildLoadingProgress();
         mBuildInteractor.loadBuild(mQueuedBuildHref, new OnLoadingListener<Build>() {
             @Override
             public void onSuccess(Build data) {
-                mView.hideBuildLoadingProgress();
-                String buildTypeName = mValueExtractor.getName();
+                view.hideBuildLoadingProgress();
+                String buildTypeName = valueExtractor.getName();
                 mRouter.openBuildPage(data, buildTypeName);
             }
 
             @Override
             public void onFail(String errorMessage) {
-                mView.hideBuildLoadingProgress();
-                mView.showOpeningBuildErrorSnackBar();
+                view.hideBuildLoadingProgress();
+                view.showOpeningBuildErrorSnackBar();
             }
         });
     }
@@ -201,18 +201,18 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onFilterBuildsOptionMenuClick() {
-        mRouter.openFilterBuildsPage(mValueExtractor.getId());
+        mRouter.openFilterBuildsPage(valueExtractor.getId());
     }
 
     @Override
     public void onAddToFavoritesOptionMenuClick() {
-        String buildTypeId = mValueExtractor.getId();
-        if (mDataManager.hasBuildTypeAsFavorite(buildTypeId)) {
-            mDataManager.removeFromFavorites(buildTypeId);
-            mView.showRemoveFavoritesSnackBar();
+        String buildTypeId = valueExtractor.getId();
+        if (dataManager.hasBuildTypeAsFavorite(buildTypeId)) {
+            dataManager.removeFromFavorites(buildTypeId);
+            view.showRemoveFavoritesSnackBar();
         } else {
-            mDataManager.addToFavorites(mValueExtractor.getId());
-            mView.showAddToFavoritesSnackBar();
+            dataManager.addToFavorites(valueExtractor.getId());
+            view.showAddToFavoritesSnackBar();
         }
     }
 
@@ -221,12 +221,12 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onResetFiltersSnackBarActionClick() {
-        mView.disableSwipeToRefresh();
-        mView.showRefreshAnimation();
-        mView.hideErrorView();
-        mView.hideEmpty();
-        mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
-        mDataManager.load(mValueExtractor.getId(), loadingListener, true);
+        view.disableSwipeToRefresh();
+        view.showRefreshAnimation();
+        view.hideErrorView();
+        view.hideEmpty();
+        view.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
+        dataManager.load(valueExtractor.getId(), loadingListener, true);
     }
 
     /**
@@ -235,19 +235,19 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public void onLoadMore() {
         mIsLoadMoreLoading = true;
-        mView.addLoadMore();
-        mDataManager.loadMore(new OnLoadingListener<List<BuildDetails>>() {
+        view.addLoadMore();
+        dataManager.loadMore(new OnLoadingListener<List<BuildDetails>>() {
             @Override
             public void onSuccess(List<BuildDetails> data) {
-                mView.removeLoadMore();
-                mView.addMoreBuilds(new BuildListDataModelImpl(data));
+                view.removeLoadMore();
+                view.addMoreBuilds(new BuildListDataModelImpl(data));
                 mIsLoadMoreLoading = false;
             }
 
             @Override
             public void onFail(String errorMessage) {
-                mView.removeLoadMore();
-                mView.showRetryLoadMoreSnackBar();
+                view.removeLoadMore();
+                view.showRetryLoadMoreSnackBar();
                 mIsLoadMoreLoading = false;
             }
         });
@@ -266,7 +266,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public boolean hasLoadedAllItems() {
-        return !mDataManager.canLoadMore();
+        return !dataManager.canLoadMore();
     }
 
     /**
@@ -283,7 +283,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     protected void onSuccessCallBack(List<BuildDetails> data) {
         super.onSuccessCallBack(data);
-        mView.showRunBuildFloatActionButton();
+        view.showRunBuildFloatActionButton();
     }
 
     /**
@@ -292,7 +292,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     protected void onFailCallBack(String errorMessage) {
         super.onFailCallBack(errorMessage);
-        mView.hideRunBuildFloatActionButton();
+        view.hideRunBuildFloatActionButton();
     }
 
     /**
@@ -301,8 +301,8 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     public void onRunBuildActivityResult(String queuedBuildHref) {
         this.mQueuedBuildHref = queuedBuildHref;
-        mView.showBuildQueuedSuccessSnackBar();
-        mView.showRefreshAnimation();
+        view.showBuildQueuedSuccessSnackBar();
+        view.showRefreshAnimation();
         onSwipeToRefresh();
     }
 
@@ -311,13 +311,13 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onFilterBuildsActivityResult(BuildListFilter filter) {
-        mView.showBuildFilterAppliedSnackBar();
-        mView.disableSwipeToRefresh();
-        mView.showRefreshAnimation();
-        mView.hideErrorView();
-        mView.hideEmpty();
-        mView.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
-        mDataManager.load(mValueExtractor.getId(), filter, loadingListener, true);
+        view.showBuildFilterAppliedSnackBar();
+        view.disableSwipeToRefresh();
+        view.showRefreshAnimation();
+        view.hideErrorView();
+        view.hideEmpty();
+        view.showData(new BuildListDataModelImpl(Collections.<BuildDetails>emptyList()));
+        dataManager.load(valueExtractor.getId(), filter, loadingListener, true);
     }
 
     /**
@@ -334,11 +334,11 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        String buildTypeId = mValueExtractor.getId();
-        if (mDataManager.hasBuildTypeAsFavorite(buildTypeId)) {
-            mView.createFavOptionsMenu(menu, inflater);
+        String buildTypeId = valueExtractor.getId();
+        if (dataManager.hasBuildTypeAsFavorite(buildTypeId)) {
+            view.createFavOptionsMenu(menu, inflater);
         } else {
-            mView.createNotFavOptionsMenu(menu, inflater);
+            view.createNotFavOptionsMenu(menu, inflater);
         }
     }
 
@@ -354,7 +354,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return mView.onOptionsItemSelected(item);
+        return view.onOptionsItemSelected(item);
     }
 
     /**
@@ -363,6 +363,6 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
     @Override
     protected void onSwipeToRefresh() {
         super.onSwipeToRefresh();
-        mView.hideFiltersAppliedSnackBar();
+        view.hideFiltersAppliedSnackBar();
     }
 }

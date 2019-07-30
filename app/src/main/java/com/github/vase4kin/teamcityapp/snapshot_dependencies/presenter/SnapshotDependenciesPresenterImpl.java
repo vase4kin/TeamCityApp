@@ -61,8 +61,8 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<BuildDetails>> loadingListener, boolean update) {
-        String buildId = mValueExtractor.getId();
-        mDataManager.load(buildId, loadingListener, update);
+        String buildId = valueExtractor.getId();
+        dataManager.load(buildId, loadingListener, update);
     }
 
     /**
@@ -71,7 +71,7 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setOnBuildListPresenterListener(this);
+        view.setOnBuildListPresenterListener(this);
     }
 
     /**
@@ -87,10 +87,10 @@ public class SnapshotDependenciesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onBuildClick(Build build) {
-        if (mValueExtractor.isBundleNullOrEmpty()) {
+        if (valueExtractor.isBundleNullOrEmpty()) {
             mRouter.openBuildPage(build, null);
         } else {
-            String buildTypeName = mValueExtractor.getName();
+            String buildTypeName = valueExtractor.getName();
             mRouter.openBuildPage(build, buildTypeName);
         }
     }
