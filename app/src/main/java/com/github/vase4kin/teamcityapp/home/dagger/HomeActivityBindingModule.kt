@@ -1,8 +1,8 @@
 package com.github.vase4kin.teamcityapp.home.dagger
 
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetDialogScope
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentScope
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment

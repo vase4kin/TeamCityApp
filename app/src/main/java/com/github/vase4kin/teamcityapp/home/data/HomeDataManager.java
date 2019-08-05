@@ -20,7 +20,7 @@ import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager;
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 /**

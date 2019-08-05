@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog
+package com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,6 +22,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus

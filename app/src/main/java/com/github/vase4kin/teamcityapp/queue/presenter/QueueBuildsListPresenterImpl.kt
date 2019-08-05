@@ -22,8 +22,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails

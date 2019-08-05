@@ -20,7 +20,7 @@ import android.text.TextUtils;
 
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider;
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager;
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager;
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter;

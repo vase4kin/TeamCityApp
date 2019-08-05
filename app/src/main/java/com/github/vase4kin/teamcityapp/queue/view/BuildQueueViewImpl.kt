@@ -24,8 +24,8 @@ import androidx.annotation.StringRes
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl
 
 /**

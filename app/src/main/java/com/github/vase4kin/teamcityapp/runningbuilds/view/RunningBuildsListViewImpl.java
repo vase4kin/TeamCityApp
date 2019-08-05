@@ -27,8 +27,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl;
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter;
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -31,7 +31,7 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
 import com.github.vase4kin.teamcityapp.buildlist.tracker.FirebaseBuildListTrackerImpl
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueViewImpl

@@ -23,8 +23,8 @@ import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.FilterProvider
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter

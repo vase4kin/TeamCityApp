@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.home.view
 
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.Filter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 
 /**
