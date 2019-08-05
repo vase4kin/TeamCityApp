@@ -59,4 +59,39 @@ class HomeTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracke
     override fun trackUserSelectsFavoritesTab() {
         firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_FAVORITES, null)
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserSelectsProjectsTab() {
+        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_PROJECTS, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserSelectsRunningBuildsTab() {
+        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_RUNNING_BUILDS, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserSelectsBuildQueueTab() {
+        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_BUILD_QUEUE, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserClicksOnRunningBuildsFilterFab() {
+        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_CLICKS_ON_RUN_BUILDS_FILTER_FAB, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserClicksOnBuildsQueueFilterFab() {
+        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_CLICKS_ON_BUILD_QUEUE_FILTER_FAB, null)
+    }
 }

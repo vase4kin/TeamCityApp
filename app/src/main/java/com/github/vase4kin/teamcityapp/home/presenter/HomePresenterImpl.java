@@ -214,6 +214,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     @Override
     public void onTabSelected(int position, boolean wasSelected) {
         bottomNavigationView.expandToolBar();
+        trackTabSelection(position);
         if (wasSelected) {
             return;
         }
@@ -222,7 +223,6 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         if (position == AppNavigationItem.FAVORITES.ordinal()) {
             showFavoritesPrompt();
             bottomNavigationView.showFavoritesFab();
-            tracker.trackUserSelectsFavoritesTab();
         } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal() || position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
             showFilterPrompt();
             bottomNavigationView.showFilterFab();
@@ -231,6 +231,18 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         }
         loadNotificationsCount();
         view.dimissSnackbar();
+    }
+
+    private void trackTabSelection(int position) {
+        if (position == AppNavigationItem.PROJECTS.ordinal()) {
+            tracker.trackUserSelectsProjectsTab();
+        } else if (position == AppNavigationItem.FAVORITES.ordinal()) {
+            tracker.trackUserSelectsFavoritesTab();
+        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
+            tracker.trackUserSelectsRunningBuildsTab();
+        } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
+            tracker.trackUserSelectsBuildQueueTab();
+        }
     }
 
     /**
@@ -268,9 +280,11 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
             Filter filter = filterProvider.getRunningBuildsFilter();
             view.showFilterBottomSheet(filter);
+            tracker.trackUserClicksOnRunningBuildsFilterFab();
         } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
             Filter filter = filterProvider.getQueuedBuildsFilter();
             view.showFilterBottomSheet(filter);
+            tracker.trackUserClicksOnBuildsQueueFilterFab();
         }
     }
 
