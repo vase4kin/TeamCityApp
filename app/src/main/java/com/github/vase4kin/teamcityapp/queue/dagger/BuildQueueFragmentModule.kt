@@ -79,6 +79,8 @@ class BuildQueueFragmentModule {
 
     @Provides
     fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): BuildListTracker {
-        return FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_QUEUED_BUILD_LIST)
+        return object : FirebaseBuildListTrackerImpl(firebaseAnalytics, "") {
+            override fun trackView() {}
+        }
     }
 }

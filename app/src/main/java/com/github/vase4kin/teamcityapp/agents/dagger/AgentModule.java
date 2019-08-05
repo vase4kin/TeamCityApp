@@ -65,7 +65,7 @@ public class AgentModule {
 
     @Provides
     ViewTracker providesViewTracker() {
-        return ViewTracker.STUB;
+        return ViewTracker.Companion.getSTUB();
     }
 
     @Provides

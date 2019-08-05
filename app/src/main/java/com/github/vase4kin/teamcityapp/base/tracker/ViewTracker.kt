@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.base.tracker;
+package com.github.vase4kin.teamcityapp.base.tracker
 
 /**
  * Track base view
  */
-public interface ViewTracker {
+interface ViewTracker {
 
     /**
      * Track view
      */
-    void trackView();
+    fun trackView()
 
-    /**
-     * View tracker stub
-     */
-    ViewTracker STUB = new ViewTracker() {
-        @Override
-        public void trackView() {
-            // Do nothing
+    companion object {
+
+        /**
+         * View tracker stub
+         */
+        val STUB: ViewTracker = object : ViewTracker {
+            override fun trackView() {
+                // Do nothing
+            }
         }
-    };
+    }
 }

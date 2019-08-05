@@ -73,7 +73,7 @@ public class ArtifactsModule {
 
     @Provides
     ViewTracker providesViewTracker() {
-        return ViewTracker.STUB;
+        return ViewTracker.Companion.getSTUB();
     }
 
     @Provides
