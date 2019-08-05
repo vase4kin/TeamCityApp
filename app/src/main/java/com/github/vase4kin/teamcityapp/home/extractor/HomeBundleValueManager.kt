@@ -14,32 +14,42 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.home.extractor;
+package com.github.vase4kin.teamcityapp.home.extractor
 
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 
 /**
- * {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity} bundle value extractor
+ * [com.github.vase4kin.teamcityapp.home.view.HomeActivity] bundle value extractor
  */
-public interface HomeBundleValueManager extends BaseValueExtractor {
+interface HomeBundleValueManager {
 
     /**
      * Is projects required to reload
      */
-    boolean isRequiredToReload();
+    val isRequiredToReload: Boolean
 
     /**
      * Is new account created
      */
-    boolean isNewAccountCreated();
+    val isNewAccountCreated: Boolean
 
     /**
-     * Remove is new account create flag from the bundle
+     * If tab selected
      */
-    void removeIsNewAccountCreated();
+    val isTabSelected: Boolean
 
     /**
-     * Remove is required to reload flag from the bundle
+     * Selected tab
      */
-    void removeIsRequiredToReload();
+    val selectedTab: AppNavigationItem
+
+    /**
+     * If null or empty
+     */
+    val isNullOrEmpty: Boolean
+
+    /**
+     * Clear bundle
+     */
+    fun clear()
 }

@@ -37,6 +37,6 @@ public class ChangesValueExtractorImpl extends BaseValueExtractorImpl implements
      */
     @Override
     public String getUrl() {
-        return mBundle.getString(BundleExtractorValues.URL);
+        return bundle.getString(BundleExtractorValues.URL);
     }
 }

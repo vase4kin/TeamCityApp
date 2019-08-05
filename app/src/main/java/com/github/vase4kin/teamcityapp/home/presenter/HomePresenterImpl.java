@@ -95,10 +95,6 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
 
         final boolean isRequiredToReload = valueExtractor.isRequiredToReload();
         final boolean isNewAccountCreated = valueExtractor.isNewAccountCreated();
-        if (!valueExtractor.isBundleNullOrEmpty()) {
-            valueExtractor.removeIsNewAccountCreated();
-            valueExtractor.removeIsRequiredToReload();
-        }
 
         // TODO: Simplify logic and cover it by unit tests
 
@@ -137,6 +133,17 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         // Show navigation drawer prompt
         if (!onboardingManager.isNavigationDrawerPromptShown()) {
             mView.showNavigationDrawerPrompt(onboardingManager::saveNavigationDrawerPromptShown);
+        }
+
+        // switch tab
+        if (valueExtractor.isTabSelected()) {
+            AppNavigationItem selectedTab = valueExtractor.getSelectedTab();
+            bottomNavigationView.selectTab(selectedTab.ordinal());
+        }
+
+        // Remove all data from bundle
+        if (!valueExtractor.isNullOrEmpty()) {
+            valueExtractor.clear();
         }
 
         mDataManager.subscribeToEventBusEvents();
@@ -351,7 +358,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onFavoritesSnackBarActionClicked() {
-        bottomNavigationView.selectProjectsTab();
+        bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal());
     }
 
     /**

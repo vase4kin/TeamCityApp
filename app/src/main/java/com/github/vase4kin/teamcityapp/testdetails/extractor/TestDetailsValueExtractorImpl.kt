@@ -32,5 +32,5 @@ class TestDetailsValueExtractorImpl @Inject constructor(
      * {@inheritDoc}
      */
     override val testUrl: String
-        get() = mBundle.getString(BundleExtractorValues.TEST_URL) ?: ""
+        get() = bundle.getString(BundleExtractorValues.TEST_URL) ?: ""
 }

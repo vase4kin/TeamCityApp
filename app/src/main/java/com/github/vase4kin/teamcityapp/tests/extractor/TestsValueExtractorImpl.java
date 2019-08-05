@@ -37,7 +37,7 @@ public class TestsValueExtractorImpl extends BaseValueExtractorImpl implements T
      */
     @Override
     public String getUrl() {
-        return mBundle.getString(BundleExtractorValues.URL);
+        return bundle.getString(BundleExtractorValues.URL);
     }
 
     /**
@@ -45,7 +45,7 @@ public class TestsValueExtractorImpl extends BaseValueExtractorImpl implements T
      */
     @Override
     public int getPassedCount() {
-        return mBundle.getInt(BundleExtractorValues.PASSED_COUNT_PARAM);
+        return bundle.getInt(BundleExtractorValues.PASSED_COUNT_PARAM);
     }
 
     /**
@@ -53,7 +53,7 @@ public class TestsValueExtractorImpl extends BaseValueExtractorImpl implements T
      */
     @Override
     public int getFailedCount() {
-        return mBundle.getInt(BundleExtractorValues.FAILED_COUNT_PARAM);
+        return bundle.getInt(BundleExtractorValues.FAILED_COUNT_PARAM);
     }
 
     /**
@@ -61,6 +61,6 @@ public class TestsValueExtractorImpl extends BaseValueExtractorImpl implements T
      */
     @Override
     public int getIgnoredCount() {
-        return mBundle.getInt(BundleExtractorValues.IGNORED_COUNT_PARAM);
+        return bundle.getInt(BundleExtractorValues.IGNORED_COUNT_PARAM);
     }
 }

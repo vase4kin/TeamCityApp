@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.runningbuilds.dagger
 
+import android.app.Activity
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -58,7 +59,7 @@ class RunningBuildsFragmentModule {
 
     @Provides
     fun providesBuildListRouter(fragment: RunningBuildsFragment): BuildListRouter {
-        return BuildListRouterImpl(fragment.activity)
+        return BuildListRouterImpl(fragment.activity as Activity)
     }
 
     @Provides

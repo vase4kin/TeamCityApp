@@ -20,6 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManagerImpl
@@ -74,6 +75,8 @@ class HomeActivity : DaggerAppCompatActivity(), OnAccountSwitchListener {
 
     companion object {
 
+        const val ARG_TAB = "arg_tab"
+
         fun startForTheFirstStart(activity: Activity) {
             val intent = Intent(activity, HomeActivity::class.java)
             intent.putExtra(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED, true)
@@ -94,6 +97,15 @@ class HomeActivity : DaggerAppCompatActivity(), OnAccountSwitchListener {
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                             or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             DrawerActivityStartUtils.startActivity(launchIntent, activity)
+        }
+
+        fun startWithTabSelected(activity: Activity, navigationItem: AppNavigationItem) {
+            val launchIntent = Intent(activity, HomeActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            or Intent.FLAG_ACTIVITY_SINGLE_TOP).apply {
+                        putExtra(ARG_TAB, navigationItem.ordinal)
+                    }
+            activity.startActivity(launchIntent)
         }
 
         fun startWhenSwitchingAccountsFromDrawer(activity: Activity) {

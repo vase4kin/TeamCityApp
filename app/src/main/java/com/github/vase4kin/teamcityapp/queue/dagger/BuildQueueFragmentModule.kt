@@ -64,7 +64,7 @@ class BuildQueueFragmentModule {
 
     @Provides
     fun providesBuildListRouter(fragment: BuildQueueFragment): BuildListRouter {
-        return BuildListRouterImpl(fragment.activity)
+        return BuildListRouterImpl(fragment.activity as Activity)
     }
 
     @Provides
