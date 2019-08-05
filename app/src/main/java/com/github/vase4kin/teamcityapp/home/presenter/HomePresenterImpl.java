@@ -222,6 +222,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
         if (position == AppNavigationItem.FAVORITES.ordinal()) {
             showFavoritesPrompt();
             bottomNavigationView.showFavoritesFab();
+            tracker.trackUserSelectsFavoritesTab();
         } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal() || position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
             showFilterPrompt();
             bottomNavigationView.showFilterFab();
@@ -255,6 +256,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onFavoritesFabClicked() {
+        tracker.trackUserClickOnFavFab();
         view.showFavoritesInfoSnackbar();
     }
 
@@ -358,6 +360,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onFavoritesSnackBarActionClicked() {
+        tracker.trackUserClicksOnFavSnackBarAction();
         bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal());
     }
 

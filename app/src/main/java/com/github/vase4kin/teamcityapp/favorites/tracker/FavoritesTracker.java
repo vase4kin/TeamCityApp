@@ -24,34 +24,9 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker;
 public interface FavoritesTracker extends ViewTracker {
 
     /**
-     * Screen name
-     */
-    String SCREEN_NAME = "screen_favorites";
-
-    /**
-     * Event
-     */
-    String EVENT_USER_CLICKS_ON_FAB = "favorites_click_on_fab";
-
-    /**
-     * Event
-     */
-    String EVENT_USER_CLICKS_SNACK_BAR_ACTION = "favorites_click_on_action";
-
-    /**
      * Event
      */
     String EVENT_USER_OPENS_BUILD_TYPE = "favorites_open_build_type";
-
-    /**
-     * Track user clicks on fab
-     */
-    void trackUserClickOnFab();
-
-    /**
-     * Track user clicks on snack bar action
-     */
-    void trackUserClicksOnSnackBarAction();
 
     /**
      * Track user opens buildtype from favorites list

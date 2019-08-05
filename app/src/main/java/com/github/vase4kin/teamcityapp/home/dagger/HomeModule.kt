@@ -27,8 +27,8 @@ import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager
 import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManagerImpl
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.router.HomeRouterImpl
-import com.github.vase4kin.teamcityapp.home.tracker.FirebaseHomeTrackerImpl
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
+import com.github.vase4kin.teamcityapp.home.tracker.HomeTrackerImpl
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeView
 import com.github.vase4kin.teamcityapp.home.view.HomeViewImpl
@@ -70,7 +70,7 @@ class HomeModule {
 
     @Provides
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {
-        return FirebaseHomeTrackerImpl(firebaseAnalytics)
+        return HomeTrackerImpl(firebaseAnalytics)
     }
 
     @Provides

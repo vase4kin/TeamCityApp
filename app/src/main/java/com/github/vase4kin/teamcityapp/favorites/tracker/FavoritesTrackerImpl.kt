@@ -14,17 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.home.tracker;
+package com.github.vase4kin.teamcityapp.favorites.tracker
 
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
- * Root tracker
+ * Favorites tracking class firebase impl
  */
-public interface HomeTracker extends DrawerTracker {
+class FavoritesTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), FavoritesTracker {
 
     /**
-     * Screen name to track
+     * {@inheritDoc}
      */
-    String SCREEN_NAME_HOME = "screen_projects_root";
+    override fun trackView() {}
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserOpensBuildType() {
+        firebaseAnalytics.logEvent(FavoritesTracker.EVENT_USER_OPENS_BUILD_TYPE, null)
+    }
 }
