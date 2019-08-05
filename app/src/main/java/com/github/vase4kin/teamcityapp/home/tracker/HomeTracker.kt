@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.home.tracker
 
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
 
 /**
@@ -34,26 +35,6 @@ interface HomeTracker : DrawerTracker {
     fun trackUserClicksOnFavSnackBarAction()
 
     /**
-     * Track user selects favorite tab
-     */
-    fun trackUserSelectsFavoritesTab()
-
-    /**
-     * Track user selects projects tab
-     */
-    fun trackUserSelectsProjectsTab()
-
-    /**
-     * Track user selects running builds tab
-     */
-    fun trackUserSelectsRunningBuildsTab()
-
-    /**
-     * Track user selects build queue tab
-     */
-    fun trackUserSelectsBuildQueueTab()
-
-    /**
      * Track user clicks on running builds filter fab
      */
     fun trackUserClicksOnRunningBuildsFilterFab()
@@ -63,6 +44,11 @@ interface HomeTracker : DrawerTracker {
      */
     fun trackUserClicksOnBuildsQueueFilterFab()
 
+    /**
+     * Track user selects tab
+     */
+    fun trackTabSelected(navigationItem: AppNavigationItem)
+
     companion object {
 
         /**
@@ -71,24 +57,14 @@ interface HomeTracker : DrawerTracker {
         const val SCREEN_NAME_HOME = "screen_home"
 
         /**
-         * Fav tab selected event to track
+         * Tab selected event to track
          */
-        const val EVENT_USER_SELECTS_TAB_FAVORITES = "tab_favorites_selected"
+        const val EVENT_USER_SELECTS_TAB = "tab_selected"
 
         /**
-         * Fav tab selected event to track
+         * tab selected arg to track
          */
-        const val EVENT_USER_SELECTS_TAB_PROJECTS = "tab_projects_selected"
-
-        /**
-         * Fav tab selected event to track
-         */
-        const val EVENT_USER_SELECTS_TAB_BUILD_QUEUE = "tab_build_queue_selected"
-
-        /**
-         * Fav tab selected event to track
-         */
-        const val EVENT_USER_SELECTS_TAB_RUNNING_BUILDS = "tab_running_builds_selected"
+        const val ARG_TAB = "tab"
 
         /**
          * Event

@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.home.tracker
 
+import android.os.Bundle
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
 import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -56,34 +58,6 @@ class HomeTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracke
     /**
      * {@inheritDoc}
      */
-    override fun trackUserSelectsFavoritesTab() {
-        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_FAVORITES, null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackUserSelectsProjectsTab() {
-        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_PROJECTS, null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackUserSelectsRunningBuildsTab() {
-        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_RUNNING_BUILDS, null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackUserSelectsBuildQueueTab() {
-        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_SELECTS_TAB_BUILD_QUEUE, null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     override fun trackUserClicksOnRunningBuildsFilterFab() {
         firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_CLICKS_ON_RUN_BUILDS_FILTER_FAB, null)
     }
@@ -93,5 +67,14 @@ class HomeTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracke
      */
     override fun trackUserClicksOnBuildsQueueFilterFab() {
         firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_CLICKS_ON_BUILD_QUEUE_FILTER_FAB, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackTabSelected(navigationItem: AppNavigationItem) {
+        firebaseAnalytics.logEvent(
+                HomeTracker.EVENT_USER_SELECTS_TAB,
+                Bundle().apply { putString(HomeTracker.ARG_TAB, navigationItem.toString()) })
     }
 }

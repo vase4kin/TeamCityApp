@@ -201,12 +201,8 @@ class HomePresenterImpl @Inject constructor(
     }
 
     private fun trackTabSelection(position: Int) {
-        when (position) {
-            AppNavigationItem.PROJECTS.ordinal -> tracker.trackUserSelectsProjectsTab()
-            AppNavigationItem.FAVORITES.ordinal -> tracker.trackUserSelectsFavoritesTab()
-            AppNavigationItem.RUNNING_BUILDS.ordinal -> tracker.trackUserSelectsRunningBuildsTab()
-            AppNavigationItem.BUILD_QUEUE.ordinal -> tracker.trackUserSelectsBuildQueueTab()
-        }
+        val navItem = AppNavigationItem.values()[position]
+        tracker.trackTabSelected(navItem)
     }
 
     /**
