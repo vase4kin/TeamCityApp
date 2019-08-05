@@ -83,7 +83,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     public void onCreate() {
         start();
         super.onCreate();
-        mView.setListener(this);
+        view.setListener(this);
     }
 
     /**
@@ -91,7 +91,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onResume() {
-        mView.setDrawerSelection(DrawerView.HOME);
+        view.setDrawerSelection(DrawerView.HOME);
 
         final boolean isRequiredToReload = valueExtractor.isRequiredToReload();
         final boolean isNewAccountCreated = valueExtractor.isNewAccountCreated();
@@ -100,39 +100,39 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
 
         // if new user was created
         if (isRequiredToReload) {
-            mDataManager.evictAllCache();
+            dataManager.evictAllCache();
             start();
             update();
         }
 
         // update on every return
-        if (!mView.isModelEmpty() && !isRequiredToReload) {
+        if (!view.isModelEmpty() && !isRequiredToReload) {
             update();
         }
 
         // If active user was deleted
-        if (!mDataManager.getActiveUser().getTeamcityUrl().equals(baseUrl)) {
-            mDataManager.evictAllCache();
+        if (!dataManager.getActiveUser().getTeamcityUrl().equals(baseUrl)) {
+            dataManager.evictAllCache();
             start();
             update();
         }
 
-        if (mView.isModelEmpty()) {
+        if (view.isModelEmpty()) {
             router.openAccountsList();
         }
 
         if (isNewAccountCreated) {
-            mDataManager.evictAllCache();
-            mDataManager.clearAllWebViewCookies();
+            dataManager.evictAllCache();
+            dataManager.clearAllWebViewCookies();
             interactor.setAuthDialogStatus(false);
         }
 
         // track view
-        mTracker.trackView();
+        tracker.trackView();
 
         // Show navigation drawer prompt
         if (!onboardingManager.isNavigationDrawerPromptShown()) {
-            mView.showNavigationDrawerPrompt(onboardingManager::saveNavigationDrawerPromptShown);
+            view.showNavigationDrawerPrompt(onboardingManager::saveNavigationDrawerPromptShown);
         }
 
         // switch tab
@@ -146,8 +146,8 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
             valueExtractor.clear();
         }
 
-        mDataManager.subscribeToEventBusEvents();
-        mDataManager.setListener(this);
+        dataManager.subscribeToEventBusEvents();
+        dataManager.setListener(this);
     }
 
     /**
@@ -155,8 +155,8 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onPause() {
-        mDataManager.unsubscribeOfEventBusEvents();
-        mDataManager.setListener(null);
+        dataManager.unsubscribeOfEventBusEvents();
+        dataManager.setListener(null);
     }
 
     /**
@@ -175,10 +175,10 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     @Override
     public void onAccountSwitch() {
         if (valueExtractor.isRequiredToReload()) {
-            mDataManager.initTeamCityService();
+            dataManager.initTeamCityService();
             start();
             listener.onAccountSwitch();
-            mDataManager.clearAllWebViewCookies();
+            dataManager.clearAllWebViewCookies();
             interactor.setAuthDialogStatus(false);
         }
     }
@@ -204,7 +204,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      * Open root projects if active user is available
      */
     public void start() {
-        baseUrl = mDataManager.getActiveUser().getTeamcityUrl();
+        baseUrl = dataManager.getActiveUser().getTeamcityUrl();
         bottomNavigationView.initViews(this);
     }
 
@@ -229,7 +229,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
             bottomNavigationView.hideFab();
         }
         loadNotificationsCount();
-        mView.dimissSnackbar();
+        view.dimissSnackbar();
     }
 
     /**
@@ -237,7 +237,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     private void showFavoritesPrompt() {
         if (!onboardingManager.isAddFavPromptShown()) {
-            mView.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
+            view.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
         }
     }
 
@@ -246,7 +246,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     private void showFilterPrompt() {
         if (!onboardingManager.isTabsFilterPromptShown()) {
-            mView.showTabsFilterPrompt(onboardingManager::saveTabsFilterPromptShown);
+            view.showTabsFilterPrompt(onboardingManager::saveTabsFilterPromptShown);
         }
     }
 
@@ -255,7 +255,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      */
     @Override
     public void onFavoritesFabClicked() {
-        mView.showFavoritesInfoSnackbar();
+        view.showFavoritesInfoSnackbar();
     }
 
     /**
@@ -265,10 +265,10 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     public void onFilterTabsClicked(int position) {
         if (position == AppNavigationItem.RUNNING_BUILDS.ordinal()) {
             Filter filter = filterProvider.getRunningBuildsFilter();
-            mView.showFilterBottomSheet(filter);
+            view.showFilterBottomSheet(filter);
         } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal()) {
             Filter filter = filterProvider.getQueuedBuildsFilter();
-            mView.showFilterBottomSheet(filter);
+            view.showFilterBottomSheet(filter);
         }
     }
 
@@ -289,7 +289,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     private void loadRunningBuildsCount() {
         Filter currentFilter = filterProvider.getRunningBuildsFilter();
         if (currentFilter == Filter.RUNNING_FAVORITES) {
-            mDataManager.loadFavoriteRunningBuildsCount(new OnLoadingListener<Integer>() {
+            dataManager.loadFavoriteRunningBuildsCount(new OnLoadingListener<Integer>() {
                 @Override
                 public void onSuccess(Integer data) {
                     bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal(), data);
@@ -300,7 +300,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
                 }
             });
         } else if (currentFilter == Filter.RUNNING_ALL) {
-            mDataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
+            dataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
                 @Override
                 public void onSuccess(Integer data) {
                     bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal(), data);
@@ -319,7 +319,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     private void loadQueueBuildsCount() {
         Filter currentFilter = filterProvider.getQueuedBuildsFilter();
         if (currentFilter == Filter.QUEUE_FAVORITES) {
-            mDataManager.loadFavoriteBuildQueueCount(new OnLoadingListener<Integer>() {
+            dataManager.loadFavoriteBuildQueueCount(new OnLoadingListener<Integer>() {
                 @Override
                 public void onSuccess(Integer data) {
                     bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal(), data);
@@ -331,7 +331,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
                 }
             });
         } else if (currentFilter == Filter.QUEUE_ALL) {
-            mDataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
+            dataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
                 @Override
                 public void onSuccess(Integer data) {
                     bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal(), data);
@@ -349,7 +349,7 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
      * Load favorites count
      */
     private void loadFavoritesCount() {
-        int favoritesCount = mDataManager.getFavoritesCount();
+        int favoritesCount = dataManager.getFavoritesCount();
         bottomNavigationView.updateNotifications(AppNavigationItem.FAVORITES.ordinal(), favoritesCount);
     }
 
@@ -370,12 +370,12 @@ public class HomePresenterImpl extends DrawerPresenterImpl<HomeView, HomeDataMan
     public void onFilterApplied(Filter filter) {
         if (filter.isRunning()) {
             loadRunningBuildsCount();
-            mDataManager.postRunningBuildsFilterChangedEvent();
+            dataManager.postRunningBuildsFilterChangedEvent();
         }
         if (filter.isQueued()) {
             loadQueueBuildsCount();
-            mDataManager.postBuildQueueFilterChangedEvent();
+            dataManager.postBuildQueueFilterChangedEvent();
         }
-        mView.showFilterAppliedSnackBar();
+        view.showFilterAppliedSnackBar();
     }
 }

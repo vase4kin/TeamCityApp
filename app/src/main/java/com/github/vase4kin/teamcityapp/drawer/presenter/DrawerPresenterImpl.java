@@ -40,20 +40,20 @@ public class DrawerPresenterImpl<
         DR extends DrawerRouter,
         DT extends DrawerTracker> implements DrawerPresenter, OnDrawerPresenterListener {
 
-    protected V mView;
-    protected DM mDataManager;
-    protected DT mTracker;
-    private DR mRouter;
+    protected V view;
+    protected DM dataManager;
+    protected DT tracker;
+    private DR router;
 
     @Inject
-    public DrawerPresenterImpl(@NonNull V mView,
+    public DrawerPresenterImpl(@NonNull V view,
                                @NonNull DM dataManager,
                                @NonNull DR router,
                                @NonNull DT tracker) {
-        this.mView = mView;
-        this.mDataManager = dataManager;
-        this.mTracker = tracker;
-        this.mRouter = router;
+        this.view = view;
+        this.dataManager = dataManager;
+        this.tracker = tracker;
+        this.router = router;
     }
 
     /**
@@ -61,9 +61,9 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void onCreate() {
-        mView.initViews(this);
+        view.initViews(this);
         loadData();
-        if (!mView.isModelEmpty()) {
+        if (!view.isModelEmpty()) {
             loadNotificationsCount();
         }
     }
@@ -73,7 +73,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void onDestroy() {
-        mDataManager.unsubscribe();
+        dataManager.unsubscribe();
     }
 
     /**
@@ -81,7 +81,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void onBackButtonPressed() {
-        mView.backButtonPressed();
+        view.backButtonPressed();
     }
 
     /**
@@ -89,7 +89,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void setActiveUser(String url, String userName) {
-        mDataManager.setActiveUser(url, userName);
+        dataManager.setActiveUser(url, userName);
     }
 
     /**
@@ -97,7 +97,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public boolean isActiveProfile(String url, String userName) {
-        return mDataManager.isActiveUser(url, userName);
+        return dataManager.isActiveUser(url, userName);
     }
 
     /**
@@ -119,10 +119,10 @@ public class DrawerPresenterImpl<
      * Load drawer data
      */
     protected void loadData() {
-        mDataManager.load(new OnLoadingListener<List<UserAccount>>() {
+        dataManager.load(new OnLoadingListener<List<UserAccount>>() {
             @Override
             public void onSuccess(List<UserAccount> data) {
-                mView.showData(new DrawerDataModelImpl(data));
+                view.showData(new DrawerDataModelImpl(data));
             }
 
             @Override
@@ -135,10 +135,10 @@ public class DrawerPresenterImpl<
      * Load agents count
      */
     private void loadAgentsCount() {
-        mDataManager.loadConnectedAgentsCount(new OnLoadingListener<Integer>() {
+        dataManager.loadConnectedAgentsCount(new OnLoadingListener<Integer>() {
             @Override
             public void onSuccess(Integer data) {
-                mView.updateAgentsBadge(data);
+                view.updateAgentsBadge(data);
             }
 
             @Override
@@ -153,7 +153,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void onUserChange() {
-        mTracker.trackChangeAccount();
+        tracker.trackChangeAccount();
     }
 
     /**
@@ -161,7 +161,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startHomeActivity() {
-        mRouter.startHomeActivity();
+        router.startHomeActivity();
     }
 
     /**
@@ -169,7 +169,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startRootProjectsActivityWhenSwitchingAccounts() {
-        mRouter.startRootProjectsActivityWhenSwitchingAccounts();
+        router.startRootProjectsActivityWhenSwitchingAccounts();
     }
 
     /**
@@ -177,7 +177,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startAccountListActivity() {
-        mRouter.startAccountListActivity();
+        router.startAccountListActivity();
     }
 
     /**
@@ -185,7 +185,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startAgentActivity() {
-        mRouter.startAgentActivity();
+        router.startAgentActivity();
     }
 
     /**
@@ -193,6 +193,6 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startAboutActivity() {
-        mRouter.startAboutActivity();
+        router.startAboutActivity();
     }
 }
