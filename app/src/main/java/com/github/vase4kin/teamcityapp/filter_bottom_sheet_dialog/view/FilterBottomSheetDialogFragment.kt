@@ -24,6 +24,7 @@ import android.widget.TextView
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.tracker.FilterBottomSheetTracker
 import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus
@@ -38,6 +39,8 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
     lateinit var filterProvider: FilterProvider
     @Inject
     lateinit var eventBus: EventBus
+    @Inject
+    lateinit var bottomSheetTracker: FilterBottomSheetTracker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,11 +72,13 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
                     val oppositeFilter = filter.opposite()
                     filterProvider.runningBuildsFilter = oppositeFilter
                     eventBus.post(FilterAppliedEvent(filter))
+                    bottomSheetTracker.trackFilterSelected(oppositeFilter)
                 }
                 filter.isQueued -> {
                     val oppositeFilter = filter.opposite()
                     filterProvider.queuedBuildsFilter = oppositeFilter
                     eventBus.post(FilterAppliedEvent(oppositeFilter))
+                    bottomSheetTracker.trackFilterSelected(oppositeFilter)
                 }
             }
             this@FilterBottomSheetDialogFragment.dismiss()
