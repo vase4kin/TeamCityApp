@@ -148,6 +148,9 @@ class BuildQueueFragmentTest {
         onView(allOf(withId(R.id.floating_action_button), isDisplayed())).perform(click())
         onView(withText(R.string.text_show_queued)).perform(click())
 
+        // check snack bar text
+        onView(withText(R.string.text_filters_applied)).check(matches(isDisplayed()))
+
         // Check badge
         checkBuildQueueTabBadgeCount("3")
 
@@ -239,6 +242,13 @@ class BuildQueueFragmentTest {
 
         checkBuildQueueTabBadgeCount("0")
         onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_build_queue)))
+
+        // filter builds to show all
+        onView(allOf(withId(R.id.floating_action_button), isDisplayed())).perform(click())
+        onView(withText(R.string.text_show_queued)).perform(click())
+
+        checkBuildQueueTabBadgeCount("0")
+        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_build_queue)))
     }
 
     private fun clickOnBuildQueueTab() {

@@ -48,7 +48,7 @@ class BuildQueueViewImpl(view: View,
      */
     override fun getEmptyMessage(): Int = when (filterProvider.queuedBuildsFilter) {
         Filter.QUEUE_FAVORITES -> R.string.empty_list_message_favorite_build_queue
-        else -> super.getEmptyMessage()
+        else -> R.string.empty_list_message_build_queue
     }
 
     /**

@@ -119,8 +119,9 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
     protected int getEmptyMessage() {
         if (filterProvider.getRunningBuildsFilter() == Filter.RUNNING_FAVORITES) {
             return R.string.empty_list_message_favorite_running_builds;
+        } else {
+            return R.string.empty_list_message_running_builds;
         }
-        return super.getEmptyMessage();
     }
 
     /**
