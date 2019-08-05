@@ -119,6 +119,6 @@ class BottomNavigationViewImpl(
     }
 
     override fun selectTab(tabPosition: Int) {
-        bottomNavigation.currentItem = AppNavigationItem.FAVORITES.ordinal
+        bottomNavigation.currentItem = tabPosition
     }
 }
