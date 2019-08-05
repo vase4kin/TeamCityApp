@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.home.presenter
 
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenter
-import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager
 
 /**
  * Custom [DrawerPresenter] for [com.github.vase4kin.teamcityapp.home.view.HomeActivity] management
@@ -43,11 +42,4 @@ interface HomePresenter : DrawerPresenter {
      * On account switch
      */
     fun onAccountSwitch()
-
-    /**
-     * Update HomeBundleValueManager with new one
-     *
-     * @param homeBundleValueManager - HomeBundleValueManager to update
-     */
-    fun updateRootBundleValueManager(homeBundleValueManager: HomeBundleValueManager)
 }

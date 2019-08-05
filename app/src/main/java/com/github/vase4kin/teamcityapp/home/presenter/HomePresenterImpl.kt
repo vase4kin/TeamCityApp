@@ -41,7 +41,7 @@ class HomePresenterImpl @Inject constructor(
         view: HomeView,
         dataManager: HomeDataManager,
         tracker: HomeTracker,
-        private var valueExtractor: HomeBundleValueManager,
+        private val valueExtractor: HomeBundleValueManager,
         private val router: HomeRouter,
         private val interactor: BuildLogInteractor,
         private val onboardingManager: OnboardingManager,
@@ -156,13 +156,6 @@ class HomePresenterImpl @Inject constructor(
     override fun update() {
         loadData()
         loadNotificationsCount()
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun updateRootBundleValueManager(homeBundleValueManager: HomeBundleValueManager) {
-        this.valueExtractor = homeBundleValueManager
     }
 
     /**
