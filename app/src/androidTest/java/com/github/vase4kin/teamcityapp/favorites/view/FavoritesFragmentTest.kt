@@ -42,7 +42,10 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.core.AllOf.allOf
-import org.junit.*
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
@@ -153,7 +156,6 @@ class FavoritesFragmentTest {
         matchToolbarTitle("Projects")
     }
 
-    @Ignore("FIX ME")
     @Test
     fun testUserCanAddBuildTypeToFavorites() {
         //prepare mocks
@@ -161,12 +163,6 @@ class FavoritesFragmentTest {
 
         // launch activity
         activityRule.launchActivity(null)
-
-        // click on fab
-        onView(withId(R.id.floating_action_button)).perform(click())
-
-        // click on snack bar action
-        onView(withText(R.string.text_info_add_action)).perform(click())
 
         // Open build type
         onView(withText("build type"))
@@ -182,7 +178,7 @@ class FavoritesFragmentTest {
         onView(withText(R.string.text_view_favorites)).perform(click())
 
         // Checking toolbar title
-        matchToolbarTitle("Favorites (1)")
+        matchToolbarTitle("Favorites")
 
         // List has item with header
         onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2))
