@@ -64,7 +64,7 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
     public void initViews(OnDrawerPresenterListener listener) {
         super.initViews(listener);
         snackBarAnchor = activity.findViewById(R.id.snackbar_anchor);
-        fab = activity.findViewById(R.id.floating_action_button);
+        fab = activity.findViewById(R.id.home_floating_action_button);
     }
 
     @Override

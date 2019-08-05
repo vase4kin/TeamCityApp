@@ -53,7 +53,7 @@ class BottomNavigationViewImpl(
 
     private fun initViews() {
         bottomNavigation = activity.findViewById(R.id.bottom_navigation)
-        fab = activity.findViewById(R.id.floating_action_button)
+        fab = activity.findViewById(R.id.home_floating_action_button)
     }
 
     private fun initFab() {

@@ -23,14 +23,13 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils
-import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManagerImpl
 import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
 
-class HomeActivity : DaggerAppCompatActivity(), OnAccountSwitchListener {
+class HomeActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var presenter: HomePresenterImpl
@@ -59,18 +58,13 @@ class HomeActivity : DaggerAppCompatActivity(), OnAccountSwitchListener {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        presenter.updateRootBundleValueManager(HomeBundleValueManagerImpl(intent.extras
-                ?: Bundle.EMPTY))
+        AndroidInjection.inject(this)
         presenter.onAccountSwitch()
         presenter.onNewIntent()
     }
 
     override fun onBackPressed() {
         presenter.onBackButtonPressed()
-    }
-
-    override fun onAccountSwitch() {
-        AndroidInjection.inject(this)
     }
 
     companion object {

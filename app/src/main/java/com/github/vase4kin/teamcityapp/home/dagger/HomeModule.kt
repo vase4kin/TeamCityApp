@@ -32,7 +32,6 @@ import com.github.vase4kin.teamcityapp.home.tracker.HomeTrackerImpl
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeView
 import com.github.vase4kin.teamcityapp.home.view.HomeViewImpl
-import com.github.vase4kin.teamcityapp.home.view.OnAccountSwitchListener
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
@@ -64,9 +63,6 @@ class HomeModule {
     fun providesRootValueExtractor(activity: HomeActivity): HomeBundleValueManager {
         return HomeBundleValueManagerImpl(activity.intent.extras)
     }
-
-    @Provides
-    fun providesOnAccountSwitchListener(activity: HomeActivity): OnAccountSwitchListener = activity
 
     @Provides
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {

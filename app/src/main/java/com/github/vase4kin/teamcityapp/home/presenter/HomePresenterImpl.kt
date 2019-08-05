@@ -30,7 +30,6 @@ import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.view.HomeView
-import com.github.vase4kin.teamcityapp.home.view.OnAccountSwitchListener
 import com.github.vase4kin.teamcityapp.home.view.OnDrawerUpdateListener
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import javax.inject.Inject
@@ -43,7 +42,6 @@ class HomePresenterImpl @Inject constructor(
         dataManager: HomeDataManager,
         tracker: HomeTracker,
         private var valueExtractor: HomeBundleValueManager,
-        private val listener: OnAccountSwitchListener,
         private val router: HomeRouter,
         private val interactor: BuildLogInteractor,
         private val onboardingManager: OnboardingManager,
@@ -147,7 +145,6 @@ class HomePresenterImpl @Inject constructor(
         if (valueExtractor.isRequiredToReload) {
             dataManager.initTeamCityService()
             start()
-            listener.onAccountSwitch()
             dataManager.clearAllWebViewCookies()
             interactor.setAuthDialogStatus(false)
         }
@@ -174,6 +171,7 @@ class HomePresenterImpl @Inject constructor(
     fun start() {
         baseUrl = dataManager.activeUser.teamcityUrl
         bottomNavigationView.initViews(this)
+        bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal)
     }
 
     /**
