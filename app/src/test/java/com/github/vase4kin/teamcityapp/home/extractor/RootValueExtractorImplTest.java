@@ -71,14 +71,8 @@ public class RootValueExtractorImplTest {
     }
 
     @Test
-    public void testRemoveIsNewAccountCreated() throws Exception {
-        mValueExtractor.removeIsNewAccountCreated();
-        verify(mBundle).remove(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED);
-    }
-
-    @Test
-    public void testRemoveIsRequiredToReload() throws Exception {
-        mValueExtractor.removeIsRequiredToReload();
-        verify(mBundle).remove(BundleExtractorValues.IS_REQUIRED_TO_RELOAD);
+    public void testClear() throws Exception {
+        mValueExtractor.clear();
+        verify(mBundle).clear();
     }
 }
