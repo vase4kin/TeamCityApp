@@ -62,11 +62,17 @@ class HomeActivity : DaggerAppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        val isRequiredToReload = intent.extras?.isRequiredToReload() == true
+        val bundle = intent.extras ?: return
+        val isRequiredToReload = bundle.isRequiredToReload()
         if (isRequiredToReload) {
             reinitDeps()
+            presenter.restartMatrix()
         }
-        presenter.onNewIntent(isRequiredToReload)
+        val isTabSelected = bundle.isTabSelected()
+        if (isTabSelected) {
+            val tabToSelect = bundle.getSelectedTab()
+            presenter.selectTab(tabToSelect)
+        }
     }
 
     override fun onBackPressed() {
@@ -123,6 +129,14 @@ class HomeActivity : DaggerAppCompatActivity() {
     }
 }
 
-private fun Bundle?.isRequiredToReload(): Boolean? {
-    return this?.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false)
+private fun Bundle.isRequiredToReload(): Boolean {
+    return this.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false)
+}
+
+private fun Bundle.isTabSelected(): Boolean {
+    return this.containsKey(HomeActivity.ARG_TAB)
+}
+
+private fun Bundle.getSelectedTab(): AppNavigationItem {
+    return AppNavigationItem.values()[this.getInt(HomeActivity.ARG_TAB, 0)]
 }

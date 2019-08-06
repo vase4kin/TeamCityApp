@@ -23,8 +23,6 @@ import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
-import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager
-import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManagerImpl
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.router.HomeRouterImpl
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
@@ -58,11 +56,6 @@ class HomeModule {
 
     @Provides
     fun providesRootRouter(activity: HomeActivity): HomeRouter = HomeRouterImpl(activity)
-
-    @Provides
-    fun providesRootValueExtractor(activity: HomeActivity): HomeBundleValueManager {
-        return HomeBundleValueManagerImpl(activity.intent.extras)
-    }
 
     @Provides
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {

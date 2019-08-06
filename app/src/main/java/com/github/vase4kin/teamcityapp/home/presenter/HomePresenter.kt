@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.home.presenter
 
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenter
 
 /**
@@ -34,7 +35,12 @@ interface HomePresenter : DrawerPresenter {
     fun onPause()
 
     /**
-     * On new intent
+     * Restarting matrix
      */
-    fun onNewIntent(isRequiredToReload: Boolean)
+    fun restartMatrix()
+
+    /**
+     * Select tab
+     */
+    fun selectTab(navigationItem: AppNavigationItem)
 }

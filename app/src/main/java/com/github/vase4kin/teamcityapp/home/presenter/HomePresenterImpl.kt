@@ -25,7 +25,6 @@ import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
-import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.view.HomeView
@@ -41,7 +40,6 @@ class HomePresenterImpl @Inject constructor(
         dataManager: HomeDataManager,
         tracker: HomeTracker,
         router: HomeRouter,
-        private val valueExtractor: HomeBundleValueManager,
         private val interactor: BuildLogInteractor,
         private val onboardingManager: OnboardingManager,
         private val bottomNavigationView: BottomNavigationView,
@@ -76,19 +74,6 @@ class HomePresenterImpl @Inject constructor(
             view.showNavigationDrawerPrompt(OnboardingManager.OnPromptShownListener { onboardingManager.saveNavigationDrawerPromptShown() })
         }
 
-        // FIX THIS
-        // switch tab
-        if (valueExtractor.isTabSelected) {
-            val selectedTab = valueExtractor.selectedTab
-            bottomNavigationView.selectTab(selectedTab.ordinal)
-
-            // Remove all data from bundle
-            if (!valueExtractor.isNullOrEmpty) {
-                // remove only isRequiredToReload
-                valueExtractor.clear()
-            }
-        }
-
         dataManager.subscribeToEventBusEvents()
         dataManager.setListener(this)
     }
@@ -96,14 +81,19 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onNewIntent(isRequiredToReload: Boolean) {
-        if (isRequiredToReload) {
-            dataManager.evictAllCache()
-            dataManager.clearAllWebViewCookies()
-            interactor.setAuthDialogStatus(false)
-            onCreate()
-            bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal)
-        }
+    override fun restartMatrix() {
+        dataManager.evictAllCache()
+        dataManager.clearAllWebViewCookies()
+        interactor.setAuthDialogStatus(false)
+        onCreate()
+        bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun selectTab(navigationItem: AppNavigationItem) {
+        bottomNavigationView.selectTab(navigationItem.ordinal)
     }
 
     /**

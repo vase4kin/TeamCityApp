@@ -22,7 +22,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView;
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor;
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider;
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager;
-import com.github.vase4kin.teamcityapp.home.extractor.HomeBundleValueManager;
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter;
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker;
 import com.github.vase4kin.teamcityapp.home.view.HomeView;
@@ -55,8 +54,6 @@ public class HomePresenterImplTest {
     @Mock
     HomeDataManager mDataManager;
     @Mock
-    HomeBundleValueManager mValueExtractor;
-    @Mock
     HomeRouter mRouter;
     @Mock
     BuildLogInteractor mInteractor;
@@ -77,7 +74,7 @@ public class HomePresenterImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
-        mPresenter = new HomePresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager, bottomNavigationView, filterProvider);
+        mPresenter = new HomePresenterImpl(mView, mDataManager, mTracker, mRouter, mInteractor, mOnboardingManager, bottomNavigationView, filterProvider);
     }
 
     @Test
