@@ -77,7 +77,7 @@ public class HomePresenterImplTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
-        mPresenter = new HomePresenterImpl(mView, mDataManager, mTracker, mValueExtractor, mRouter, mInteractor, mOnboardingManager, bottomNavigationView, filterProvider);
+        mPresenter = new HomePresenterImpl(mView, mDataManager, mTracker, mRouter, mValueExtractor, mInteractor, mOnboardingManager, bottomNavigationView, filterProvider);
     }
 
     @Test
