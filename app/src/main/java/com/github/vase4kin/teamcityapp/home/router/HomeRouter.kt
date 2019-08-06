@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.home.router;
+package com.github.vase4kin.teamcityapp.home.router
 
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter;
+import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
 
 /**
- * Router to manage {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity} navigation
+ * Router to manage [com.github.vase4kin.teamcityapp.home.view.HomeActivity] navigation
  */
-public interface HomeRouter extends DrawerRouter {
+interface HomeRouter : DrawerRouter {
 
-    /**
-     * TC root projects id
-     */
-    String ROOT_PROJECTS_ID = "_Root";
+    companion object {
 
-    /**
-     * Open account list activity
-     */
-    void openAccountsList();
+        /**
+         * TC root projects id
+         */
+        const val ROOT_PROJECTS_ID = "_Root"
+    }
 }

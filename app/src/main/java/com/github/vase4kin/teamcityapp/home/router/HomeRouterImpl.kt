@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.home.router;
+package com.github.vase4kin.teamcityapp.home.router
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity;
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouterImpl;
+import androidx.appcompat.app.AppCompatActivity
+import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouterImpl
 
 /**
- * Impl of {@link HomeRouter}
+ * Impl of [HomeRouter]
  */
-public class HomeRouterImpl extends DrawerRouterImpl implements HomeRouter {
-
-    public HomeRouterImpl(AppCompatActivity activity) {
-        super(activity);
-    }
-
-    /**
-     * On resume activity
-     */
-    @Override
-    public void openAccountsList() {
-        AccountListActivity.Companion.start(mActivity);
-    }
-}
+class HomeRouterImpl(activity: AppCompatActivity) : DrawerRouterImpl(activity), HomeRouter

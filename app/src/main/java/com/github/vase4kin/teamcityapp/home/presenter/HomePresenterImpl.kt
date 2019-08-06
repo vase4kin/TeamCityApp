@@ -40,8 +40,8 @@ class HomePresenterImpl @Inject constructor(
         view: HomeView,
         dataManager: HomeDataManager,
         tracker: HomeTracker,
+        router: HomeRouter,
         private val valueExtractor: HomeBundleValueManager,
-        private val router: HomeRouter,
         private val interactor: BuildLogInteractor,
         private val onboardingManager: OnboardingManager,
         private val bottomNavigationView: BottomNavigationView,
@@ -67,20 +67,6 @@ class HomePresenterImpl @Inject constructor(
         if (!view.isModelEmpty) {
             update()
         }
-
-        // REMOVE---------------->>>>
-        // GET RID OF THIS
-        // If active user was deleted
-        if (dataManager.activeUser.teamcityUrl != baseUrl) {
-            dataManager.evictAllCache()
-            start()
-            update()
-        }
-
-        if (view.isModelEmpty) {
-            router.openAccountsList()
-        }
-        // ---------------------->>>>
 
         // track view
         tracker.trackView()
