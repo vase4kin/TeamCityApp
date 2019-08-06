@@ -20,19 +20,23 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils
 import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
-
 
 class HomeActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var presenter: HomePresenterImpl
+
+    @Inject
+    lateinit var sharedUserStorage: SharedUserStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,13 +62,20 @@ class HomeActivity : DaggerAppCompatActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        AndroidInjection.inject(this)
-        presenter.onAccountSwitch()
-        presenter.onNewIntent()
+        val isRequiredToReload = intent.extras?.isRequiredToReload() == true
+        if (isRequiredToReload) {
+            reinitDeps()
+        }
+        presenter.onNewIntent(isRequiredToReload)
     }
 
     override fun onBackPressed() {
         presenter.onBackButtonPressed()
+    }
+
+    private fun reinitDeps() {
+        (this.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(sharedUserStorage.activeUser.teamcityUrl)
+        AndroidInjection.inject(this)
     }
 
     companion object {
@@ -78,12 +89,7 @@ class HomeActivity : DaggerAppCompatActivity() {
         }
 
         fun startWhenNewAccountIsCreated(activity: Activity) {
-            val launchIntent = Intent(activity, HomeActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            launchIntent.putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
-            launchIntent.putExtra(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED, true)
-            activity.startActivity(launchIntent)
+            startWhenSwitchingAccountsFromDrawer(activity)
         }
 
         fun startWhenNavigateToRootFromDrawer(activity: Activity) {
@@ -115,4 +121,8 @@ class HomeActivity : DaggerAppCompatActivity() {
             activity.startActivity(intent)
         }
     }
+}
+
+private fun Bundle?.isRequiredToReload(): Boolean? {
+    return this?.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false)
 }

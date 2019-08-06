@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.home.data
 
 import android.content.Context
 import android.webkit.CookieManager
-import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl
@@ -50,13 +49,6 @@ class HomeDataManagerImpl(private val context: Context,
      */
     override fun getActiveUser(): UserAccount {
         return sharedUserStorage.activeUser
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun initTeamCityService() {
-        (context.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(sharedUserStorage.activeUser.teamcityUrl)
     }
 
     /**

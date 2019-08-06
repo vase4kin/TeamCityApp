@@ -18,25 +18,12 @@ package com.github.vase4kin.teamcityapp.home.extractor
 
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 
 /**
  * Impl of [HomeBundleValueManager]
  */
 class HomeBundleValueManagerImpl(private val bundle: Bundle?) : HomeBundleValueManager {
-
-    /**
-     * {@inheritDoc}
-     */
-    override val isRequiredToReload: Boolean
-        get() = bundle?.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false) ?: false
-
-    /**
-     * {@inheritDoc}
-     */
-    override val isNewAccountCreated: Boolean
-        get() = bundle?.getBoolean(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED, false) ?: false
 
     /**
      * {@inheritDoc}

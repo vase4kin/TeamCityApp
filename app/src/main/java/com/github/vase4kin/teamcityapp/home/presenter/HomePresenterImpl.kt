@@ -22,7 +22,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
 import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
@@ -64,23 +63,13 @@ class HomePresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onResume() {
-        view.setDrawerSelection(DrawerView.HOME)
-
-        val isRequiredToReload = valueExtractor.isRequiredToReload
-        val isNewAccountCreated = valueExtractor.isNewAccountCreated
-
-        // if new user was created
-        if (isRequiredToReload) {
-            dataManager.evictAllCache()
-            start()
-            update()
-        }
-
         // update on every return
-        if (!view.isModelEmpty && !isRequiredToReload) {
+        if (!view.isModelEmpty) {
             update()
         }
 
+        // REMOVE---------------->>>>
+        // GET RID OF THIS
         // If active user was deleted
         if (dataManager.activeUser.teamcityUrl != baseUrl) {
             dataManager.evictAllCache()
@@ -91,12 +80,7 @@ class HomePresenterImpl @Inject constructor(
         if (view.isModelEmpty) {
             router.openAccountsList()
         }
-
-        if (isNewAccountCreated) {
-            dataManager.evictAllCache()
-            dataManager.clearAllWebViewCookies()
-            interactor.setAuthDialogStatus(false)
-        }
+        // ---------------------->>>>
 
         // track view
         tracker.trackView()
@@ -106,15 +90,17 @@ class HomePresenterImpl @Inject constructor(
             view.showNavigationDrawerPrompt(OnboardingManager.OnPromptShownListener { onboardingManager.saveNavigationDrawerPromptShown() })
         }
 
+        // FIX THIS
         // switch tab
         if (valueExtractor.isTabSelected) {
             val selectedTab = valueExtractor.selectedTab
             bottomNavigationView.selectTab(selectedTab.ordinal)
-        }
 
-        // Remove all data from bundle
-        if (!valueExtractor.isNullOrEmpty) {
-            valueExtractor.clear()
+            // Remove all data from bundle
+            if (!valueExtractor.isNullOrEmpty) {
+                // remove only isRequiredToReload
+                valueExtractor.clear()
+            }
         }
 
         dataManager.subscribeToEventBusEvents()
@@ -124,30 +110,22 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
+    override fun onNewIntent(isRequiredToReload: Boolean) {
+        if (isRequiredToReload) {
+            dataManager.evictAllCache()
+            dataManager.clearAllWebViewCookies()
+            interactor.setAuthDialogStatus(false)
+            onCreate()
+            bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal)
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun onPause() {
         dataManager.unsubscribeOfEventBusEvents()
         dataManager.setListener(null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun onNewIntent() {
-        if (valueExtractor.isRequiredToReload) {
-            super.onCreate()
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun onAccountSwitch() {
-        if (valueExtractor.isRequiredToReload) {
-            dataManager.initTeamCityService()
-            start()
-            dataManager.clearAllWebViewCookies()
-            interactor.setAuthDialogStatus(false)
-        }
     }
 
     /**
@@ -164,7 +142,6 @@ class HomePresenterImpl @Inject constructor(
     fun start() {
         baseUrl = dataManager.activeUser.teamcityUrl
         bottomNavigationView.initViews(this)
-        bottomNavigationView.selectTab(AppNavigationItem.PROJECTS.ordinal)
     }
 
     /**

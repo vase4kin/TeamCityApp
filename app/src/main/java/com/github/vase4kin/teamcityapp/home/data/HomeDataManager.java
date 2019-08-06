@@ -34,11 +34,6 @@ public interface HomeDataManager extends DrawerDataManager {
     UserAccount getActiveUser();
 
     /**
-     * Init TC rest service
-     */
-    void initTeamCityService();
-
-    /**
      * Clear all webview cookies
      */
     void clearAllWebViewCookies();

@@ -34,12 +34,7 @@ interface HomePresenter : DrawerPresenter {
     fun onPause()
 
     /**
-     * On new intent activity
+     * On new intent
      */
-    fun onNewIntent()
-
-    /**
-     * On account switch
-     */
-    fun onAccountSwitch()
+    fun onNewIntent(isRequiredToReload: Boolean)
 }

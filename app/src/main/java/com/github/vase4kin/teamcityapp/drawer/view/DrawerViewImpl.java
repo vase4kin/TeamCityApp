@@ -123,12 +123,11 @@ public class DrawerViewImpl implements DrawerView {
      * Set active profile
      */
     private void setActiveProfile() {
-        for (IProfile iProfile : getUserProfiles(drawerDataModel)) {
+        for (IProfile iProfile : headerResult.getProfiles()) {
             if (mOnDrawerPresenterListener.isActiveProfile(
                     iProfile.getEmail().toString(),
                     iProfile.getName().toString())) {
                 headerResult.setActiveProfile(iProfile);
-                headerResult.updateProfile(iProfile);
                 break;
             }
         }
@@ -139,12 +138,7 @@ public class DrawerViewImpl implements DrawerView {
      */
     private void initProfilesDrawerItems() {
         profileList.clear();
-        for (IProfile iProfile : getUserProfiles(drawerDataModel)) {
-            // Not show profile in the profile list, which is enabled
-            if (!mOnDrawerPresenterListener.isActiveProfile(iProfile.getEmail().toString(), iProfile.getName().toString())) {
-                profileList.add(iProfile);
-            }
-        }
+        profileList.addAll(getUserProfiles(drawerDataModel));
         profileList.add(new ProfileSettingDrawerItem()
                 .withName("Manage Accounts")
                 .withIcon(new IconDrawable(activity, MaterialIcons.md_settings).colorRes(mDefaultColor))
@@ -157,10 +151,13 @@ public class DrawerViewImpl implements DrawerView {
     private ArrayList<IProfile> getUserProfiles(DrawerDataModel dataModel) {
         ArrayList<IProfile> profiles = new ArrayList<>();
         for (UserAccount userAccount : dataModel) {
+            final long id = String.format("%s+%s", userAccount.getUserName(), userAccount.getTeamcityUrl()).hashCode();
             IProfile iProfile = new ProfileDrawerItem()
                     .withName(userAccount.getUserName())
                     .withEmail(userAccount.getTeamcityUrl())
-                    .withIcon(new IconDrawable(activity, MaterialIcons.md_account_circle).colorRes(mDefaultColor));
+                    .withIcon(new IconDrawable(activity, MaterialIcons.md_account_circle).colorRes(mDefaultColor))
+                    .withNameShown(true)
+                    .withIdentifier(id);
             profiles.add(iProfile);
         }
         return profiles;
@@ -175,8 +172,7 @@ public class DrawerViewImpl implements DrawerView {
                 .withCompactStyle(true)
                 .withProfiles(profileList)
                 .withProfileImagesVisible(true)
-                .withHeaderBackground(mDefaultColor)
-                .withTextColorRes(R.color.md_white_1000)
+                .withHeaderBackground(R.color.md_white_1000)
                 .withOnAccountHeaderListener((view, iProfile, b) -> {
                     if (iProfile != null) {
                         switch ((int) iProfile.getIdentifier()) {

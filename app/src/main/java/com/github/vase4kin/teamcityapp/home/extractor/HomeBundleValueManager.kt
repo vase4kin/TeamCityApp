@@ -24,16 +24,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 interface HomeBundleValueManager {
 
     /**
-     * Is projects required to reload
-     */
-    val isRequiredToReload: Boolean
-
-    /**
-     * Is new account created
-     */
-    val isNewAccountCreated: Boolean
-
-    /**
      * If tab selected
      */
     val isTabSelected: Boolean
