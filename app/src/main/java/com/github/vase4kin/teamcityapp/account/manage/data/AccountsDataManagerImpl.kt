@@ -63,11 +63,20 @@ class AccountsDataManagerImpl(
     override fun removeAccount(account: UserAccount) {
         sharedUserStorage.removeUserAccount(account)
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun makeAnotherAccountActive() {
+        sharedUserStorage.setOtherUserActive()
+    }
 }
 
 interface AccountsDataManager : BaseListRxDataManager<SharedUserStorage, UserAccount> {
 
     fun removeAccount(account: UserAccount)
+
+    fun makeAnotherAccountActive()
 
     fun isLastAcccount(): Boolean
 }

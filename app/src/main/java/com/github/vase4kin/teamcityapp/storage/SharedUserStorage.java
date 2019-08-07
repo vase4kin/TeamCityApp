@@ -214,6 +214,13 @@ public class SharedUserStorage implements Collectible<UserAccount> {
         commitUserChanges();
     }
 
+    public void setOtherUserActive() {
+        if (usersContainer.getUsersAccounts().size() > 0) {
+            usersContainer.getUsersAccounts().get(0).setIsActive(true);
+        }
+        commitUserChanges();
+    }
+
     public void addBuildTypeToFavorites(String buildTypeId) {
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.isActive()) {

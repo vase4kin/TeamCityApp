@@ -20,6 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModelImpl
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManager
+import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
@@ -36,7 +37,8 @@ class AccountsPresenterImpl @Inject constructor(
         view: AccountsView,
         dataManager: AccountsDataManager,
         tracker: ManageAccountsTracker,
-        valueExtractor: BaseValueExtractor) : BaseListPresenterImpl<AccountDataModel, UserAccount, AccountsView, AccountsDataManager, ManageAccountsTracker, BaseValueExtractor>(view, dataManager, tracker, valueExtractor), AccountsView.ViewListener {
+        valueExtractor: BaseValueExtractor,
+        private val router: AccountListRouter) : BaseListPresenterImpl<AccountDataModel, UserAccount, AccountsView, AccountsDataManager, ManageAccountsTracker, BaseValueExtractor>(view, dataManager, tracker, valueExtractor), AccountsView.ViewListener {
 
     /**
      * {@inheritDoc}
@@ -59,7 +61,8 @@ class AccountsPresenterImpl @Inject constructor(
         tracker.trackAccountRemove()
         view.removeAccount(account)
         dataManager.removeAccount(account)
-        // router navigate to home
+        dataManager.makeAnotherAccountActive()
+        router.openHome()
     }
 
     /**
@@ -75,7 +78,7 @@ class AccountsPresenterImpl @Inject constructor(
         tracker.trackAccountRemove()
         view.removeAccount(account)
         dataManager.removeAccount(account)
-        // router navigate to login activity
+        router.openLogin()
     }
 
     /**

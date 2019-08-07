@@ -22,6 +22,8 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManager;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManagerImpl;
+import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter;
+import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouterImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.FirebaseManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter;
@@ -83,5 +85,10 @@ public class AccountsModule {
     @Provides
     ManageAccountsTracker providesViewFirebaseTracker(FirebaseAnalytics firebaseAnalytics) {
         return new FirebaseManageAccountsTrackerImpl(firebaseAnalytics);
+    }
+
+    @Provides
+    AccountListRouter provideAccountListRouter(AccountListActivity activity) {
+        return new AccountListRouterImpl(activity);
     }
 }
