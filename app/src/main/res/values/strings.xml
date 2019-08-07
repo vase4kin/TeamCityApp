@@ -88,6 +88,7 @@
     <string name="dialog_remove_active_account_positive_button_text">Sure</string>
     <string name="dialog_remove_active_account_positive_negative_text">Nope</string>
     <string name="dialog_remove_active_account_positive_content_text">Are you sure to delete active user account?</string>
+    <string name="dialog_remove_not_active_account_positive_content_text">Are you sure to delete a user account?</string>
 
     <!--All list empty message-->
     <string name="empty">No data</string>

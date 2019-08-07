@@ -211,9 +211,6 @@ public class SharedUserStorage implements Collectible<UserAccount> {
                 usersContainer.getUsersAccounts().remove(accountToRemove);
             }
         }
-        if (usersContainer.getUsersAccounts().size() > 0) {
-            usersContainer.getUsersAccounts().get(0).setIsActive(true);
-        }
         commitUserChanges();
     }
 

@@ -16,13 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.view;
 
-import android.view.View;
-
-import com.bignerdranch.android.multiselector.MultiSelector;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import java.util.Map;
 
@@ -31,38 +29,24 @@ import java.util.Map;
  */
 public class AccountAdapter extends BaseAdapter<AccountDataModel> {
 
-    private OnUserAccountClickListener mListener;
-    private MultiSelector mMultiSelector;
+    private AccountsView.ViewListener listener;
 
     public AccountAdapter(Map<Integer, ViewHolderFactory<AccountDataModel>> viewHolderFactories) {
         super(viewHolderFactories);
     }
 
-    public void setListener(OnUserAccountClickListener onUserAccountClickListener) {
-        this.mListener = onUserAccountClickListener;
-    }
-
-    public void setMultiSelector(MultiSelector multiSelector) {
-        this.mMultiSelector = multiSelector;
+    public void setListener(AccountsView.ViewListener listener) {
+        this.listener = listener;
     }
 
     @Override
     public void onBindViewHolder(BaseViewHolder<AccountDataModel> holder, int position) {
-        mMultiSelector.bindHolder(((AccountViewHolder) holder), holder.getAdapterPosition(), holder.getItemId());
         super.onBindViewHolder(holder, position);
-        final int adapterPosition = position;
-        ((AccountViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.click(adapterPosition);
-            }
-        });
-        ((AccountViewHolder) holder).mContainer.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                mListener.click(adapterPosition);
-                return true;
-            }
+        UserAccount userAccount = mDataModel.get(position);
+        ((AccountViewHolder) holder).mContainer.setOnClickListener(v -> listener.onAccountClick(userAccount));
+        ((AccountViewHolder) holder).mContainer.setOnLongClickListener(v -> {
+            listener.onAccountClick(userAccount);
+            return true;
         });
     }
 

@@ -20,6 +20,7 @@ import android.content.Context;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel;
+import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManager;
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.FirebaseManageAccountsTrackerImpl;
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker;
@@ -28,7 +29,6 @@ import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountViewHolderFactory;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView;
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsViewImpl;
-import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
@@ -47,15 +47,14 @@ import dagger.multibindings.IntoMap;
 public class AccountsModule {
 
     @Provides
-    BaseListRxDataManager providesBaseListRxDataManager(SharedUserStorage sharedUserStorage) {
+    AccountsDataManager providesBaseListRxDataManager(SharedUserStorage sharedUserStorage) {
         return new AccountsDataManagerImpl(sharedUserStorage);
     }
 
     @Provides
     AccountsView providesAccountsView(AccountListActivity activity,
-                                      SharedUserStorage sharedUserStorage,
                                       SimpleSectionedRecyclerViewAdapter<AccountAdapter> adapter) {
-        return new AccountsViewImpl(activity.findViewById(android.R.id.content), activity, sharedUserStorage, R.string.empty_list_message_accounts, adapter);
+        return new AccountsViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_accounts, adapter);
     }
 
     @Provides
