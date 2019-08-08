@@ -141,6 +141,7 @@ public class CreateAccountActivityTest {
     /**
      * Verifies that user can be logged in as guest user with correct account url
      */
+    @Ignore
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrl() {
         doAnswer(invocation -> {
@@ -175,6 +176,7 @@ public class CreateAccountActivityTest {
     /**
      * Verifies that user can be logged in as guest user with correct account url ignoring ssl
      */
+    @Ignore
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() throws Throwable {
         doAnswer(invocation -> {
