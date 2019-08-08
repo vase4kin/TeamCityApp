@@ -38,11 +38,9 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -77,7 +75,6 @@ import static org.mockito.Mockito.when;
 /**
  * Tests for cancel build feature
  */
-@Ignore
 @RunWith(AndroidJUnit4.class)
 public class CancelBuildTest {
 
@@ -104,13 +101,7 @@ public class CancelBuildTest {
     private Build mBuild = Mocks.queuedBuild1();
 
     @Mock
-    private SharedUserStorage mSharedUserStorage;
-
-    @Mock
     ResponseBody mResponseBody;
-
-    @Mock
-    private UserAccount mUserAccount;
 
     @BeforeClass
     public static void disableOnboarding() {
@@ -118,9 +109,10 @@ public class CancelBuildTest {
     }
 
     @Before
-    public void setUp() throws Exception {
-        when(mSharedUserStorage.getActiveUser()).thenReturn(mUserAccount);
-        when(mUserAccount.getUserName()).thenReturn("code-hater");
+    public void setUp() {
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        app.getRestApiInjector().sharedUserStorage().clearAll();
+        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
     }
 
     @Test
@@ -129,7 +121,17 @@ public class CancelBuildTest {
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild))
                 .thenReturn(Single.just(Mocks.queuedBuild2()));
         when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.queuedBuild2()));
-        when(mUserAccount.getUserName()).thenReturn("code-lover");
+
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        app.getRestApiInjector().sharedUserStorage().saveUserAccountAndSetItAsActive(Mocks.URL, "code-lover", "123456", false, new SharedUserStorage.OnStorageListener() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onFail() {
+            }
+        });
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
@@ -319,7 +321,17 @@ public class CancelBuildTest {
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
                 .thenReturn(Single.just(Mocks.failedBuild()));
         when(mTeamCityService.cancelBuild(anyString(), Matchers.any(BuildCancelRequest.class))).thenReturn(Single.just(Mocks.failedBuild()));
-        when(mUserAccount.getUserName()).thenReturn("code-lover");
+
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        app.getRestApiInjector().sharedUserStorage().saveUserAccountAndSetItAsActive(Mocks.URL, "code-lover", "123456", false, new SharedUserStorage.OnStorageListener() {
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onFail() {
+            }
+        });
 
         // Prepare intent
         // <! ---------------------------------------------------------------------- !>
