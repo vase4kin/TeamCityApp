@@ -23,10 +23,12 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
+import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
@@ -44,6 +46,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -95,7 +98,7 @@ public class CreateAccountActivityTest {
     private static final String INPUT_URL = URL.replace("https://", "");
 
     @Rule
-    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
+    public DaggerMockRule<RestApiComponent> daggerRestComponentRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(restApiComponent -> {
                 TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -123,6 +126,12 @@ public class CreateAccountActivityTest {
     @Mock
     private Call call;
 
+    @Spy
+    private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
+
+    @Spy
+    private SharedUserStorage sharedUserStorage = ((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()).getAppInjector().sharedUserStorage();
+
     @BeforeClass
     public static void disableOnboarding() {
         TestUtils.disableOnboarding();
@@ -141,7 +150,6 @@ public class CreateAccountActivityTest {
     /**
      * Verifies that user can be logged in as guest user with correct account url
      */
-    @Ignore
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrl() {
         doAnswer(invocation -> {
@@ -176,7 +184,6 @@ public class CreateAccountActivityTest {
     /**
      * Verifies that user can be logged in as guest user with correct account url ignoring ssl
      */
-    @Ignore
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() throws Throwable {
         doAnswer(invocation -> {
