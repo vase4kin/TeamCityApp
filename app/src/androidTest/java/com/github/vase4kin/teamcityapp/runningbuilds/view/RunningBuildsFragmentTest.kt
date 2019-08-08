@@ -44,14 +44,12 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.AllOf.allOf
-import org.junit.BeforeClass
-import org.junit.Ignore
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
@@ -76,12 +74,25 @@ class RunningBuildsFragmentTest {
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
+    private val storage: SharedUserStorage
+        get() {
+            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            return app.appInjector.sharedUserStorage()
+        }
+
     companion object {
         @JvmStatic
         @BeforeClass
         fun disableOnboarding() {
             TestUtils.disableOnboarding()
         }
+    }
+
+    @Before
+    fun setUp() {
+        val storage = storage
+        storage.clearAll()
+        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 
     @Test

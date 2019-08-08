@@ -144,7 +144,7 @@ class FavoritesFragmentTest {
         clickOnFavoritesTab()
 
         // click on fab
-        onView(withId(R.id.floating_action_button)).perform(click())
+        onView(withId(R.id.home_floating_action_button)).perform(click())
 
         // check snack bar text
         onView(withText(R.string.text_info_add)).check(matches(isDisplayed()))

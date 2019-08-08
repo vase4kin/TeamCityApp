@@ -145,7 +145,7 @@ class BuildQueueFragmentTest {
                 .check(matches(withText("refs/heads/dev0feature")))
 
         // filter builds to show all
-        onView(allOf(withId(R.id.floating_action_button), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
         onView(withText(R.string.text_show_queued)).perform(click())
 
         // check snack bar text
@@ -207,7 +207,7 @@ class BuildQueueFragmentTest {
         onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
 
         // filter builds to show all
-        onView(allOf(withId(R.id.floating_action_button), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
         onView(withText(R.string.text_show_queued)).perform(click())
 
         checkBuildQueueTabBadgeCount("0")
@@ -244,7 +244,7 @@ class BuildQueueFragmentTest {
         onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_build_queue)))
 
         // filter builds to show all
-        onView(allOf(withId(R.id.floating_action_button), isDisplayed())).perform(click())
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
         onView(withText(R.string.text_show_queued)).perform(click())
 
         checkBuildQueueTabBadgeCount("0")
