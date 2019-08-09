@@ -118,6 +118,27 @@ public class Mocks {
     /**
      * MOCK
      *
+     * @return running build 2
+     */
+    public static Build runningBuild2() {
+        return createBuildMock(
+                "/guestAuth/app/rest/builds/id:7839123",
+                "2459",
+                "Checkstyle_My_Pants_Solution",
+                "SUCCESS",
+                "running",
+                "Running tests baby",
+                null,
+                "refs/heads/dev",
+                "20160622T230008+0700",
+                null,
+                null,
+                null);
+    }
+
+    /**
+     * MOCK
+     *
      * @return success build
      */
     public static Build successBuild() {

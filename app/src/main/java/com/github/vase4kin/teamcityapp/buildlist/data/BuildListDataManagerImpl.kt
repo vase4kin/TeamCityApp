@@ -179,13 +179,13 @@ open class BuildListDataManagerImpl(
      * @param call            - Retrofit call
      * @param loadingListener - Listener to receive server callbacks
      */
-    fun loadCount(call: Single<Builds>, loadingListener: OnLoadingListener<Int>) {
+    fun loadCount(call: Single<Int>, loadingListener: OnLoadingListener<Int>) {
         subscriptions.clear()
         call
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.count) },
+                        onSuccess = { loadingListener.onSuccess(it) },
                         onError = { loadingListener.onSuccess(0) }
                 )
                 .addTo(subscriptions)

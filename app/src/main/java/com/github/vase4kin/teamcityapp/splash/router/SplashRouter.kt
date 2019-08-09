@@ -27,7 +27,7 @@ interface SplashRouter {
     fun openLoginPage()
 
     /**
-     * Open root projects activity [com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity]
+     * Open root projects activity [com.github.vase4kin.teamcityapp.home.view.HomeActivity]
      */
     fun openProjectsRootPage()
 }

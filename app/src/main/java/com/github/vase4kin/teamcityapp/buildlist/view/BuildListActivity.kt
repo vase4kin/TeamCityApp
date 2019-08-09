@@ -56,8 +56,9 @@ class BuildListActivity : DaggerAppCompatActivity() {
     }
 
     public override fun onDestroy() {
-        super.onDestroy()
         presenter.onViewsDestroyed()
+        drawerPresenter.onDestroy()
+        super.onDestroy()
     }
 
     override fun onResume() {

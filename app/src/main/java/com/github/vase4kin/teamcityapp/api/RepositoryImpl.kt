@@ -114,10 +114,10 @@ class RepositoryImpl(private val teamCityService: TeamCityService,
     /**
      * {@inheritDoc}
      */
-    override fun listQueueBuilds(fields: String?, update: Boolean): Single<Builds> {
+    override fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds> {
         return cacheProviders.listQueuedBuilds(
-                teamCityService.listQueueBuilds(fields),
-                DynamicKey(fields ?: "empty"),
+                teamCityService.listQueueBuilds(locator, fields),
+                DynamicKey(locator + fields),
                 EvictDynamicKey(update))
     }
 

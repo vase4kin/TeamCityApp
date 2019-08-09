@@ -33,5 +33,10 @@
     <item type="id" name="properties_recycler_view" />
     <item type="id" name="tests_recycler_view" />
     <item type="id" name="snapshot_recycler_view" />
+    <item type="id" name="build_queue_recycler_view" />
+    <item type="id" name="running_builds_recycler_view" />
+    <item type="id" name="favorites_empty_title_view" />
+    <item type="id" name="running_empty_title_view" />
+    <item type="id" name="queued_empty_title_view" />
     <item type="id" name="toolbar" />
 </resources>

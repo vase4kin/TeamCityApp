@@ -41,13 +41,13 @@ public abstract class BaseListPresenterImpl<
         BE extends BaseValueExtractor> implements BaseListPresenter {
 
     @NonNull
-    protected VM mView;
+    protected VM view;
     @NonNull
-    protected DM mDataManager;
+    protected DM dataManager;
     @NonNull
-    protected VT mTracker;
+    protected VT tracker;
     @NonNull
-    protected BE mValueExtractor;
+    protected BE valueExtractor;
 
     /**
      * On loading listener
@@ -69,10 +69,10 @@ public abstract class BaseListPresenterImpl<
             @NonNull DM dataManager,
             @NonNull VT tracker,
             @NonNull BE valueExtractor) {
-        this.mView = view;
-        this.mDataManager = dataManager;
-        this.mTracker = tracker;
-        this.mValueExtractor = valueExtractor;
+        this.view = view;
+        this.dataManager = dataManager;
+        this.tracker = tracker;
+        this.valueExtractor = valueExtractor;
     }
 
     /**
@@ -81,8 +81,12 @@ public abstract class BaseListPresenterImpl<
     @Override
     public void onViewsCreated() {
         initViews();
-        mView.showSkeletonView();
-        mView.disableSwipeToRefresh();
+        view.showSkeletonView();
+        view.disableSwipeToRefresh();
+        loadDataOnViewsCreated();
+    }
+
+    protected void loadDataOnViewsCreated() {
         loadData(loadingListener, false);
     }
 
@@ -106,19 +110,19 @@ public abstract class BaseListPresenterImpl<
 
             @Override
             public void onRetry() {
-                mView.showRefreshAnimation();
+                view.showRefreshAnimation();
                 onSwipeToRefresh();
             }
         };
-        mView.initViews(listener);
+        view.initViews(listener);
     }
 
     /**
      * On swipe to refresh
      */
     protected void onSwipeToRefresh() {
-        mView.hideErrorView();
-        mView.hideEmpty();
+        view.hideErrorView();
+        view.hideEmpty();
         loadData(loadingListener, true);
     }
 
@@ -127,8 +131,8 @@ public abstract class BaseListPresenterImpl<
      */
     @Override
     public void onViewsDestroyed() {
-        mView.unbindViews();
-        mDataManager.unsubscribe();
+        view.unbindViews();
+        dataManager.unsubscribe();
     }
 
     /**
@@ -136,7 +140,7 @@ public abstract class BaseListPresenterImpl<
      */
     @Override
     public void onResume() {
-        mTracker.trackView();
+        tracker.trackView();
     }
 
     /**
@@ -144,14 +148,14 @@ public abstract class BaseListPresenterImpl<
      */
     @SuppressWarnings("unchecked")
     protected void onSuccessCallBack(List<S> data) {
-        mView.hideErrorView();
+        view.hideErrorView();
         if (data.isEmpty()) {
-            mView.showEmpty();
+            view.showEmpty();
 
         } else {
-            mView.hideEmpty();
+            view.hideEmpty();
         }
-        mView.showData(createModel(data));
+        view.showData(createModel(data));
 
         onCompleteLoading();
     }
@@ -164,9 +168,9 @@ public abstract class BaseListPresenterImpl<
     protected abstract T createModel(List<S> data);
 
     protected void onFailCallBack(String errorMessage) {
-        mView.showData(createModel(Collections.<S>emptyList()));
-        mView.hideEmpty();
-        mView.showErrorView();
+        view.showData(createModel(Collections.emptyList()));
+        view.hideEmpty();
+        view.showErrorView();
 
         onCompleteLoading();
     }
@@ -175,12 +179,12 @@ public abstract class BaseListPresenterImpl<
      * Base views interaction on server request completion
      */
     private void onCompleteLoading() {
-        if (mView.isSkeletonViewVisible()) {
-            mView.hideSkeletonView();
+        if (view.isSkeletonViewVisible()) {
+            view.hideSkeletonView();
         }
 
-        mView.enableSwipeToRefresh();
+        view.enableSwipeToRefresh();
 
-        mView.hideRefreshAnimation();
+        view.hideRefreshAnimation();
     }
 }

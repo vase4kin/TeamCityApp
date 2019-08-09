@@ -46,13 +46,6 @@ public interface DrawerDataManager {
     boolean isActiveUser(String url, String userName);
 
     /**
-     * Load the number of running builds
-     *
-     * @param loadingListener - Listener to receive callbacks
-     */
-    void loadRunningBuildsCount(OnLoadingListener<Integer> loadingListener);
-
-    /**
      * Load the number of connected agents
      *
      * @param loadingListener - Listener to receive callbacks
@@ -60,14 +53,7 @@ public interface DrawerDataManager {
     void loadConnectedAgentsCount(OnLoadingListener<Integer> loadingListener);
 
     /**
-     * Load the number queued builds
-     *
-     * @param loadingListener - Listener to receive callbacks
+     * Unsubscribe
      */
-    void loadBuildQueueCount(OnLoadingListener<Integer> loadingListener);
-
-    /**
-     * @return the count of favorite build types
-     */
-    int getFavoritesCount();
+    void unsubscribe();
 }

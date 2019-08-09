@@ -29,10 +29,7 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity;
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity;
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.MaterialIcons;
@@ -126,12 +123,11 @@ public class DrawerViewImpl implements DrawerView {
      * Set active profile
      */
     private void setActiveProfile() {
-        for (IProfile iProfile : getUserProfiles(drawerDataModel)) {
+        for (IProfile iProfile : headerResult.getProfiles()) {
             if (mOnDrawerPresenterListener.isActiveProfile(
                     iProfile.getEmail().toString(),
                     iProfile.getName().toString())) {
                 headerResult.setActiveProfile(iProfile);
-                headerResult.updateProfile(iProfile);
                 break;
             }
         }
@@ -142,12 +138,7 @@ public class DrawerViewImpl implements DrawerView {
      */
     private void initProfilesDrawerItems() {
         profileList.clear();
-        for (IProfile iProfile : getUserProfiles(drawerDataModel)) {
-            // Not show profile in the profile list, which is enabled
-            if (!mOnDrawerPresenterListener.isActiveProfile(iProfile.getEmail().toString(), iProfile.getName().toString())) {
-                profileList.add(iProfile);
-            }
-        }
+        profileList.addAll(getUserProfiles(drawerDataModel));
         profileList.add(new ProfileSettingDrawerItem()
                 .withName("Manage Accounts")
                 .withIcon(new IconDrawable(activity, MaterialIcons.md_settings).colorRes(mDefaultColor))
@@ -160,10 +151,13 @@ public class DrawerViewImpl implements DrawerView {
     private ArrayList<IProfile> getUserProfiles(DrawerDataModel dataModel) {
         ArrayList<IProfile> profiles = new ArrayList<>();
         for (UserAccount userAccount : dataModel) {
+            final long id = String.format("%s+%s", userAccount.getUserName(), userAccount.getTeamcityUrl()).hashCode();
             IProfile iProfile = new ProfileDrawerItem()
                     .withName(userAccount.getUserName())
                     .withEmail(userAccount.getTeamcityUrl())
-                    .withIcon(new IconDrawable(activity, MaterialIcons.md_account_circle).colorRes(mDefaultColor));
+                    .withIcon(new IconDrawable(activity, MaterialIcons.md_account_circle).colorRes(mDefaultColor))
+                    .withNameShown(true)
+                    .withIdentifier(id);
             profiles.add(iProfile);
         }
         return profiles;
@@ -178,8 +172,7 @@ public class DrawerViewImpl implements DrawerView {
                 .withCompactStyle(true)
                 .withProfiles(profileList)
                 .withProfileImagesVisible(true)
-                .withHeaderBackground(mDefaultColor)
-                .withTextColorRes(R.color.md_white_1000)
+                .withHeaderBackground(R.color.md_white_1000)
                 .withOnAccountHeaderListener((view, iProfile, b) -> {
                     if (iProfile != null) {
                         switch ((int) iProfile.getIdentifier()) {
@@ -216,28 +209,10 @@ public class DrawerViewImpl implements DrawerView {
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new PrimaryDrawerItem()
-                                .withName(R.string.projects_drawer_item)
+                                .withName(R.string.home_drawer_item)
                                 .withIcon(new IconDrawable(activity, MaterialIcons.md_home).colorRes(mDefaultColor))
                                 .withSelectedTextColorRes(mDefaultColor)
-                                .withIdentifier(PROJECTS),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.favorites_drawer_item)
-                                .withIcon(new IconDrawable(activity, MaterialIcons.md_favorite).colorRes(mDefaultColor))
-                                .withSelectedTextColorRes(mDefaultColor)
-                                .withBadgeStyle(badgeStyle)
-                                .withIdentifier(FAVORITES),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.running_builds_drawer_item)
-                                .withIcon(new IconDrawable(activity, MaterialIcons.md_directions_run).colorRes(mDefaultColor))
-                                .withSelectedTextColorRes(mDefaultColor)
-                                .withBadgeStyle(badgeStyle)
-                                .withIdentifier(RUNNING_BUILDS),
-                        new PrimaryDrawerItem()
-                                .withName(R.string.build_queue_drawer_item)
-                                .withIcon(new IconDrawable(activity, MaterialIcons.md_layers).colorRes(mDefaultColor))
-                                .withSelectedTextColorRes(mDefaultColor)
-                                .withBadgeStyle(badgeStyle)
-                                .withIdentifier(BUILD_QUEUE),
+                                .withIdentifier(HOME),
                         new PrimaryDrawerItem()
                                 .withName(R.string.agents_drawer_item)
                                 .withIcon(new IconDrawable(activity, MaterialIcons.md_directions_railway).colorRes(mDefaultColor))
@@ -255,11 +230,11 @@ public class DrawerViewImpl implements DrawerView {
                     if (drawerItem != null) {
 
                         switch ((int) drawerItem.getIdentifier()) {
-                            case PROJECTS:
-                                if (activity instanceof RootProjectsActivity) {
+                            case HOME:
+                                if (activity instanceof HomeActivity) {
                                     break;
                                 }
-                                mOnDrawerPresenterListener.startRootProjectsActivity();
+                                mOnDrawerPresenterListener.startHomeActivity();
                                 break;
                             case AGENTS:
                                 if (activity instanceof AgentTabsActivity) {
@@ -267,29 +242,11 @@ public class DrawerViewImpl implements DrawerView {
                                 }
                                 mOnDrawerPresenterListener.startAgentActivity();
                                 break;
-                            case RUNNING_BUILDS:
-                                if (activity instanceof RunningBuildsListActivity) {
-                                    break;
-                                }
-                                mOnDrawerPresenterListener.startBuildRunningActivity();
-                                break;
-                            case BUILD_QUEUE:
-                                if (activity instanceof BuildQueueActivity) {
-                                    break;
-                                }
-                                mOnDrawerPresenterListener.startQueuedBuildsActivity();
-                                break;
                             case ABOUT:
                                 if (activity instanceof AboutLibrariesActivity) {
                                     break;
                                 }
                                 mOnDrawerPresenterListener.startAboutActivity();
-                                break;
-                            case FAVORITES:
-                                if (activity instanceof FavoritesActivity) {
-                                    break;
-                                }
-                                mOnDrawerPresenterListener.startFavoritesActivity();
                                 break;
                             default:
                                 showDialogWithAdvice();
@@ -340,35 +297,8 @@ public class DrawerViewImpl implements DrawerView {
      * {@inheritDoc}
      */
     @Override
-    public void updateRunningBuildsBadge(int count) {
-        drawerResult.updateBadge(RUNNING_BUILDS, new StringHolder(String.valueOf(count)));
-        drawerResult.setSelection(mDrawerSelection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void updateAgentsBadge(int count) {
         drawerResult.updateBadge(AGENTS, new StringHolder(String.valueOf(count)));
-        drawerResult.setSelection(mDrawerSelection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateBuildQueueBadge(int count) {
-        drawerResult.updateBadge(BUILD_QUEUE, new StringHolder(String.valueOf(count)));
-        drawerResult.setSelection(mDrawerSelection, false);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateFavoritesBadge(int count) {
-        drawerResult.updateBadge(FAVORITES, new StringHolder(String.valueOf(count)));
         drawerResult.setSelection(mDrawerSelection, false);
     }
 

@@ -26,7 +26,7 @@ import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.Before;
@@ -158,7 +158,7 @@ public class LoginActivityTest {
         onView(withId(R.id.btn_login)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -198,7 +198,7 @@ public class LoginActivityTest {
         onView(withId(R.id.btn_login)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -232,7 +232,7 @@ public class LoginActivityTest {
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), pressImeActionButton());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -266,7 +266,7 @@ public class LoginActivityTest {
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), pressImeActionButton());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -300,7 +300,7 @@ public class LoginActivityTest {
         onView(withId(R.id.password)).perform(typeText("pass"), pressImeActionButton());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -393,7 +393,7 @@ public class LoginActivityTest {
         onView(withText(R.string.dialog_ok_title)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();

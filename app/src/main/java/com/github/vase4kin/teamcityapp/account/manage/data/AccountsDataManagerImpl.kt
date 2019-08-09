@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.account.manage.data
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
@@ -32,7 +33,7 @@ import io.reactivex.schedulers.Schedulers
  */
 class AccountsDataManagerImpl(
         private val sharedUserStorage: SharedUserStorage
-) : BaseListRxDataManagerImpl<SharedUserStorage, UserAccount>() {
+) : BaseListRxDataManagerImpl<SharedUserStorage, UserAccount>(), AccountsDataManager {
 
     /**
      * {@inheritDoc}
@@ -48,4 +49,34 @@ class AccountsDataManagerImpl(
                 )
                 .addTo(subscriptions)
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun isLastAcccount(): Boolean {
+        return sharedUserStorage.userAccounts.size == 1
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun removeAccount(account: UserAccount) {
+        sharedUserStorage.removeUserAccount(account)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun makeAnotherAccountActive() {
+        sharedUserStorage.setOtherUserActive()
+    }
+}
+
+interface AccountsDataManager : BaseListRxDataManager<SharedUserStorage, UserAccount> {
+
+    fun removeAccount(account: UserAccount)
+
+    fun makeAnotherAccountActive()
+
+    fun isLastAcccount(): Boolean
 }

@@ -63,4 +63,7 @@
 
     <color name="white">@color/md_white_1000</color>
 
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteWithOpacity">#B3FFFFFF</color>
+
 </resources>

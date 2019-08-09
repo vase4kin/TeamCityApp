@@ -93,6 +93,8 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
             // running build
             case "/guestAuth/app/rest/builds/id:783911":
                 return Single.just(Mocks.runningBuild());
+            case "/guestAuth/app/rest/builds/id:7839123":
+                return Single.just(Mocks.runningBuild2());
             case "/guestAuth/app/rest/builds/id:783912":
                 return Single.just(Mocks.successBuild());
             case "/guestAuth/app/rest/builds/id:783913":
@@ -119,7 +121,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     }
 
     @Override
-    public Single<Builds> listQueueBuilds(@Query("fields") String fields) {
+    public Single<Builds> listQueueBuilds(@Query("locator") String locator, @Query("fields") String fields) {
         List<Build> builds = new ArrayList<>();
         builds.add(Mocks.queuedBuild1());
         builds.add(Mocks.queuedBuild2());
@@ -129,7 +131,7 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
 
     @Override
     public Single<Builds> listBuilds(String locator) {
-        return listQueueBuilds(null);
+        return listQueueBuilds(null, null);
     }
 
     @Override

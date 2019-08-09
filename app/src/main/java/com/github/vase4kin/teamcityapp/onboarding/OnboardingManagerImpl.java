@@ -36,6 +36,7 @@ public class OnboardingManagerImpl implements OnboardingManager {
     private final static String KEY_REMOVE_BUILDS_FROM_QUEUE = "RemoveBuildsFromQueue";
     private final static String KEY_ADD_FAV = "AddToFavorites";
     private final static String KEY_FAV = "AddToFavoritesFromBuildType";
+    private final static String KEY_TABS_FILTER = "TabsFilterBuilds";
 
     private final SharedPreferences mSharedPreferences;
 
@@ -155,11 +156,33 @@ public class OnboardingManagerImpl implements OnboardingManager {
         mSharedPreferences.edit().putBoolean(KEY_ADD_FAV, true).apply();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isTabsFilterPromptShown() {
+        return mSharedPreferences.getBoolean(KEY_TABS_FILTER, false);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void saveTabsFilterPromptShown() {
+        mSharedPreferences.edit().putBoolean(KEY_TABS_FILTER, true).apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean isFavPromptShown() {
         return mSharedPreferences.getBoolean(KEY_FAV, false);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void saveFavPromptShown() {
         mSharedPreferences.edit().putBoolean(KEY_FAV, true).apply();

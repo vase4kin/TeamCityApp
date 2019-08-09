@@ -25,8 +25,8 @@
     tools:visibility="visible">
 
     <ImageView
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="124dp"
+        android:layout_height="124dp"
         android:src="@drawable/ic_format_list_bulleted_black_24dp"
         android:tint="#FFCCCCCC" />
 
@@ -34,8 +34,9 @@
         android:id="@+id/empty_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="16sp"
         android:padding="@dimen/default_margin"
-        android:textColor="@color/main_text_color"
+        android:textColor="@color/sub_text_color"
         tools:text="@string/empty_list_message_builds" />
 
 </LinearLayout>

@@ -32,6 +32,10 @@
         <item name="android:navigationBarColor">@color/white</item>
     </style>
 
+    <style name="HomeTheme" parent="AppTheme">
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+    </style>
+
     <style name="AccountsListTheme" parent="WhiteColorNavBarWithSeparatorTheme">
         <item name="windowActionModeOverlay">true</item>
     </style>

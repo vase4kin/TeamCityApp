@@ -29,7 +29,6 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl;
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor;
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 
 import java.util.List;
 
@@ -47,18 +46,15 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
         NavigationValueExtractor> implements FavoritesView.ViewListener {
 
     private final NavigationRouter router;
-    private final OnboardingManager onboardingManager;
 
     @Inject
     FavoritesPresenterImpl(@NonNull FavoritesView view,
                            @NonNull FavoritesInteractor interactor,
                            @NonNull FavoritesTracker tracker,
                            @NonNull NavigationValueExtractor valueExtractor,
-                           NavigationRouter router,
-                           OnboardingManager onboardingManager) {
+                           NavigationRouter router) {
         super(view, interactor, tracker, valueExtractor);
         this.router = router;
-        this.onboardingManager = onboardingManager;
     }
 
     /**
@@ -66,7 +62,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, boolean update) {
-        mDataManager.loadFavorites(loadingListener, update);
+        dataManager.loadFavorites(loadingListener, update);
     }
 
     /**
@@ -75,10 +71,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setViewListener(this);
-        if (!onboardingManager.isAddFavPromptShown()) {
-            mView.showAddFavPrompt(onboardingManager::saveAddFavPromptShown);
-        }
+        view.setViewListener(this);
     }
 
     /**
@@ -96,7 +89,7 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     public void onClick(NavigationItem navigationItem) {
         if (navigationItem instanceof BuildType) {
             router.startBuildListActivity(navigationItem.getName(), navigationItem.getId());
-            mTracker.trackUserOpensBuildType();
+            tracker.trackUserOpensBuildType();
         } else {
             router.startNavigationActivity(navigationItem.getName(), navigationItem.getId());
         }
@@ -106,34 +99,9 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
      * {@inheritDoc}
      */
     @Override
-    public void onFabClick() {
-        mView.showInfoSnackbar();
-        mTracker.trackUserClickOnFab();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onSnackBarAction() {
-        router.startProjectActivity();
-        mTracker.trackUserClicksOnSnackBarAction();
-    }
-
-    @Override
-    protected void onSuccessCallBack(List<NavigationItem> data) {
-        super.onSuccessCallBack(data);
-        int favorites = mDataManager.getFavoritesCount();
-        mView.updateTitleCount(favorites);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
-        mDataManager.unsubscribe();
+        dataManager.unsubscribe();
     }
 
     /**
@@ -142,6 +110,23 @@ public class FavoritesPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onResume() {
         super.onResume();
+        view.showRefreshAnimation();
         loadData(loadingListener, false);
+    }
+
+    /**
+     * On pause activity callback
+     */
+    public void onPause() {
+        view.hideRefreshAnimation();
+        dataManager.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void loadDataOnViewsCreated() {
+        // Don't load data when view is created, only on resume
     }
 }

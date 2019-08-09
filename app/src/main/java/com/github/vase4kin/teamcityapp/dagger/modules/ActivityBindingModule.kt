@@ -28,30 +28,22 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListDrawerModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
-import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesActivityScope
-import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesDrawerModule
-import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesModule
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity
+import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentModule
+import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentScope
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
+import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityBindingModule
+import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityScope
+import com.github.vase4kin.teamcityapp.home.dagger.HomeModule
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.*
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueActivityScope
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueDrawerModule
-import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueModule
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity
-import com.github.vase4kin.teamcityapp.root.dagger.RootActivityScope
-import com.github.vase4kin.teamcityapp.root.dagger.RootModule
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsActivityScope
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsDrawerModule
-import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsModule
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
@@ -61,9 +53,9 @@ import dagger.android.ContributesAndroidInjector
 @Module
 abstract class ActivityBindingModule {
 
-    @FavoritesActivityScope
-    @ContributesAndroidInjector(modules = [FavoritesModule::class, FavoritesDrawerModule::class])
-    abstract fun favoritesActivity(): FavoritesActivity
+    @FavoritesFragmentScope
+    @ContributesAndroidInjector(modules = [FavoritesFragmentModule::class])
+    abstract fun favoritesFragment(): FavoritesFragment
 
     @AgentsTabActivityScope
     @ContributesAndroidInjector(modules = [AgentsTabsModule::class, AgentsTabDrawerModule::class, AgentsTabFragmentsBindingModule::class])
@@ -80,14 +72,6 @@ abstract class ActivityBindingModule {
     @TestDetailsActivityScope
     @ContributesAndroidInjector(modules = [TestDetailsModule::class])
     abstract fun testDetailsActivity(): TestDetailsActivity
-
-    @RunningBuildsActivityScope
-    @ContributesAndroidInjector(modules = [RunningBuildsModule::class, RunningBuildsDrawerModule::class, BuildListAdapterModule::class])
-    abstract fun runningBuildsListActivity(): RunningBuildsListActivity
-
-    @BuildQueueActivityScope
-    @ContributesAndroidInjector(modules = [BuildQueueModule::class, BuildQueueDrawerModule::class, BuildListAdapterModule::class])
-    abstract fun buildQueueActivity(): BuildQueueActivity
 
     @CreateAccountActivityScope
     @ContributesAndroidInjector(modules = [CreateAccountModule::class])
@@ -113,9 +97,9 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [RunBuildModule::class])
     abstract fun runBuildActivity(): RunBuildActivity
 
-    @RootActivityScope
-    @ContributesAndroidInjector(modules = [RootModule::class, BuildLogInteractorModule::class])
-    abstract fun rootProjectsActivity(): RootProjectsActivity
+    @HomeActivityScope
+    @ContributesAndroidInjector(modules = [HomeModule::class, BuildLogInteractorModule::class, HomeActivityBindingModule::class])
+    abstract fun rootProjectsActivity(): HomeActivity
 
     @NavigationActivityScope
     @ContributesAndroidInjector(modules = [NavigationModule::class, NavigationBaseModule::class, NavigationDrawerModule::class])

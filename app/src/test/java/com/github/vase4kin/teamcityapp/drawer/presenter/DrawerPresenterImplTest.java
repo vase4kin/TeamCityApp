@@ -89,7 +89,6 @@ public class DrawerPresenterImplTest {
     @Test
     public void testHandleOnCreateIfModelIsNotEmpty() throws Exception {
         when(mView.isModelEmpty()).thenReturn(false);
-        when(mDataManager.getFavoritesCount()).thenReturn(5);
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mDataManager).load(mArgumentCaptor.capture());
@@ -98,23 +97,11 @@ public class DrawerPresenterImplTest {
         verify(mView).showData(any(DrawerDataModelImpl.class));
         loadingListener.onFail("error");
         verify(mView).isModelEmpty();
-        verify(mDataManager).loadRunningBuildsCount(mIntegerLoadingListenerCaptor.capture());
-        OnLoadingListener<Integer> runningListener = mIntegerLoadingListenerCaptor.getAllValues().get(0);
-        runningListener.onSuccess(1);
-        verify(mView).updateRunningBuildsBadge(eq(1));
-        runningListener.onFail("error");
-        verify(mDataManager).loadBuildQueueCount(mIntegerLoadingListenerCaptor.capture());
-        OnLoadingListener<Integer> queuedListener = mIntegerLoadingListenerCaptor.getAllValues().get(1);
-        queuedListener.onSuccess(34);
-        verify(mView).updateBuildQueueBadge(eq(34));
-        queuedListener.onFail("error");
         verify(mDataManager).loadConnectedAgentsCount(mIntegerLoadingListenerCaptor.capture());
-        OnLoadingListener<Integer> agentsListener = mIntegerLoadingListenerCaptor.getAllValues().get(2);
+        OnLoadingListener<Integer> agentsListener = mIntegerLoadingListenerCaptor.getAllValues().get(0);
         agentsListener.onSuccess(67);
         verify(mView).updateAgentsBadge(eq(67));
         agentsListener.onFail("error");
-        verify(mDataManager).getFavoritesCount();
-        verify(mView).updateFavoritesBadge(eq(5));
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 
@@ -143,20 +130,15 @@ public class DrawerPresenterImplTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testOnDrawerSlide() throws Exception {
-        when(mDataManager.getFavoritesCount()).thenReturn(5);
         mPresenter.onDrawerSlide();
         verify(mDataManager).loadConnectedAgentsCount(Mockito.<OnLoadingListener>any());
-        verify(mDataManager).loadBuildQueueCount(Mockito.<OnLoadingListener>any());
-        verify(mDataManager).loadRunningBuildsCount(Mockito.<OnLoadingListener>any());
-        verify(mDataManager).getFavoritesCount();
-        verify(mView).updateFavoritesBadge(eq(5));
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 
     @Test
     public void testStartRootProjectsActivity() throws Exception {
-        mPresenter.startRootProjectsActivity();
-        verify(mRouter).startRootProjectsActivity();
+        mPresenter.startHomeActivity();
+        verify(mRouter).startHomeActivity();
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 
@@ -171,20 +153,6 @@ public class DrawerPresenterImplTest {
     public void testStartAgentActivity() throws Exception {
         mPresenter.startAgentActivity();
         verify(mRouter).startAgentActivity();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter);
-    }
-
-    @Test
-    public void testStartBuildRunningActivity() throws Exception {
-        mPresenter.startBuildRunningActivity();
-        verify(mRouter).startBuildRunningActivity();
-        verifyNoMoreInteractions(mView, mDataManager, mRouter);
-    }
-
-    @Test
-    public void testStartQueuedBuildsActivity() throws Exception {
-        mPresenter.startQueuedBuildsActivity();
-        verify(mRouter).startQueuedBuildsActivity();
         verifyNoMoreInteractions(mView, mDataManager, mRouter);
     }
 }

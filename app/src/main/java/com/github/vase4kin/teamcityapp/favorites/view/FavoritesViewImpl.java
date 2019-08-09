@@ -17,18 +17,12 @@
 package com.github.vase4kin.teamcityapp.favorites.view;
 
 import android.app.Activity;
-import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator;
 
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl;
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter;
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
@@ -36,24 +30,11 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter;
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-
-import butterknife.BindView;
-import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt;
-import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal;
 
 public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, SimpleSectionedRecyclerViewAdapter<NavigationAdapter>> implements FavoritesView {
-
-    @BindView(R.id.floating_action_button)
-    MaterialButton mFloatingActionButton;
-    @BindView(R.id.container)
-    View mContainer;
 
     private FavoritesView.ViewListener listener;
 
@@ -68,82 +49,8 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
      * {@inheritDoc}
      */
     @Override
-    public void initViews(@NonNull BaseListView.ViewListener listener) {
-        super.initViews(listener);
-        mFloatingActionButton.setOnClickListener(v -> {
-            if (FavoritesViewImpl.this.listener != null) {
-                FavoritesViewImpl.this.listener.onFabClick();
-            }
-        });
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void setViewListener(FavoritesView.ViewListener listener) {
         this.listener = listener;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateTitleCount(int count) {
-        ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
-        if (actionBar != null) {
-            String title = String.format(Locale.ENGLISH, "%s (%d)", mActivity.getString(R.string.favorites_drawer_item), count);
-            actionBar.setTitle(title);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showInfoSnackbar() {
-        Snackbar snackBar = Snackbar.make(
-                mContainer,
-                R.string.text_info_add,
-                Snackbar.LENGTH_LONG)
-                .setAction(R.string.text_info_add_action, view -> {
-                    if (listener != null) {
-                        listener.onSnackBarAction();
-                    }
-                });
-        snackBar.show();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showAddFavPrompt(final OnboardingManager.OnPromptShownListener listener) {
-        int color = getToolbarColor();
-        new MaterialTapTargetPrompt.Builder(mActivity)
-                .setTarget(mFloatingActionButton)
-                .setPrimaryText(R.string.title_onboarding_add_fav)
-                .setSecondaryText(R.string.text_onboarding_add_fav)
-                .setAnimationInterpolator(new FastOutSlowInInterpolator())
-                .setBackgroundColour(color)
-                .setCaptureTouchEventOutsidePrompt(true)
-                .setPromptFocal(new RectanglePromptFocal().setCornerRadius(
-                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius),
-                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius)))
-                .setPromptStateChangeListener((prompt, state) -> {
-                    if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
-                        listener.onPromptShown();
-                    }
-                })
-                .show();
-    }
-
-    /**
-     * @return color of toolbar
-     */
-    @ColorInt
-    private int getToolbarColor() {
-        return ((ColorDrawable) mActivity.findViewById(R.id.toolbar).getBackground()).getColor();
     }
 
     /**
@@ -204,5 +111,13 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
     @Override
     protected int recyclerViewId() {
         return R.id.favorites_recycler_view;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int emptyTitleId() {
+        return R.id.favorites_empty_title_view;
     }
 }

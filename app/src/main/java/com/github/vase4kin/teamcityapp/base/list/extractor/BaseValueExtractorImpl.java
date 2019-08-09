@@ -32,10 +32,10 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl;
  */
 public class BaseValueExtractorImpl implements BaseValueExtractor {
 
-    protected Bundle mBundle;
+    protected Bundle bundle;
 
-    public BaseValueExtractorImpl(@NonNull Bundle mBundle) {
-        this.mBundle = mBundle;
+    public BaseValueExtractorImpl(@NonNull Bundle bundle) {
+        this.bundle = bundle;
     }
 
     /**
@@ -43,7 +43,7 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      */
     @Override
     public String getId() {
-        return mBundle.getString(BundleExtractorValues.ID);
+        return bundle.getString(BundleExtractorValues.ID);
     }
 
     /**
@@ -51,7 +51,7 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      */
     @Override
     public String getName() {
-        return mBundle.getString(BundleExtractorValues.NAME);
+        return bundle.getString(BundleExtractorValues.NAME);
     }
 
     /**
@@ -59,7 +59,7 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      */
     @Override
     public BuildDetails getBuildDetails() {
-        Build build = (Build) mBundle.getSerializable(BundleExtractorValues.BUILD);
+        Build build = (Build) bundle.getSerializable(BundleExtractorValues.BUILD);
         return new BuildDetailsImpl(build);
     }
 
@@ -69,7 +69,7 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
     @Override
     @Nullable
     public BuildListFilter getBuildListFilter() {
-        return (BuildListFilter) mBundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER);
+        return (BuildListFilter) bundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER);
     }
 
     /**
@@ -77,6 +77,6 @@ public class BaseValueExtractorImpl implements BaseValueExtractor {
      */
     @Override
     public boolean isBundleNullOrEmpty() {
-        return mBundle == null || mBundle == Bundle.EMPTY;
+        return bundle == null || bundle == Bundle.EMPTY;
     }
 }

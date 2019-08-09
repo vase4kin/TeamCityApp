@@ -38,6 +38,6 @@ public class AgentsValueExtractorImpl extends BaseValueExtractorImpl implements 
      */
     @Override
     public boolean includeDisconnected() {
-        return mBundle.getBoolean(BundleExtractorValues.AGENT_TYPE);
+        return bundle.getBoolean(BundleExtractorValues.AGENT_TYPE);
     }
 }

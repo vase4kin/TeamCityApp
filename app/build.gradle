@@ -211,6 +211,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.google.firebase:firebase-config:17.0.0'
     implementation 'com.google.firebase:firebase-perf:17.0.2'
+    // Bottom nav libries
+    implementation 'com.ncapdevi:frag-nav:3.3.0'
+    implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
     // Unit tests
     testImplementation "org.mockito:mockito-core:$rootProject.mockitoCoreVersion"
     testImplementation 'junit:junit:4.12'

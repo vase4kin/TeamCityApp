@@ -17,10 +17,9 @@
 package com.github.vase4kin.teamcityapp.drawer.data;
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
+import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager;
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.api.Repository;
-import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl;
-import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
@@ -33,16 +32,14 @@ import java.util.List;
  */
 public class DrawerDataManagerImpl implements DrawerDataManager {
 
-    private final Repository mRepository;
-    protected final SharedUserStorage mSharedUserStorage;
-    private final EventBus eventBus;
+    protected final SharedUserStorage sharedUserStorage;
+    private final AgentsDataManager agentsDataManager;
 
     public DrawerDataManagerImpl(Repository repository,
                                  SharedUserStorage sharedUserStorage,
                                  EventBus eventBus) {
-        this.mRepository = repository;
-        this.mSharedUserStorage = sharedUserStorage;
-        this.eventBus = eventBus;
+        this.sharedUserStorage = sharedUserStorage;
+        this.agentsDataManager = new AgentsDataManagerImpl(repository, eventBus);
     }
 
     /**
@@ -50,7 +47,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void load(OnLoadingListener<List<UserAccount>> loadingListener) {
-        loadingListener.onSuccess(mSharedUserStorage.getUserAccounts());
+        loadingListener.onSuccess(sharedUserStorage.getUserAccounts());
     }
 
     /**
@@ -58,7 +55,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public void setActiveUser(String url, String userName) {
-        mSharedUserStorage.setUserActive(url, userName);
+        sharedUserStorage.setUserActive(url, userName);
     }
 
     /**
@@ -66,7 +63,7 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      */
     @Override
     public boolean isActiveUser(String url, String userName) {
-        UserAccount userAccount = mSharedUserStorage.getActiveUser();
+        UserAccount userAccount = sharedUserStorage.getActiveUser();
         return userAccount.getTeamcityUrl().equals(url) &&
                 userAccount.getUserName().equals(userName);
     }
@@ -75,31 +72,15 @@ public class DrawerDataManagerImpl implements DrawerDataManager {
      * {@inheritDoc}
      */
     @Override
-    public void loadRunningBuildsCount(final OnLoadingListener<Integer> loadingListener) {
-        new RunningBuildsDataManagerImpl(mRepository, mSharedUserStorage).loadCount(loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void loadConnectedAgentsCount(final OnLoadingListener<Integer> loadingListener) {
-        new AgentsDataManagerImpl(mRepository, eventBus).loadCount(loadingListener);
+        agentsDataManager.loadCount(loadingListener);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void loadBuildQueueCount(final OnLoadingListener<Integer> loadingListener) {
-        new BuildQueueDataManagerImpl(mRepository, mSharedUserStorage).loadCount(loadingListener);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getFavoritesCount() {
-        return mSharedUserStorage.getFavoriteBuildTypeIds().size();
+    public void unsubscribe() {
+        agentsDataManager.unsubscribe();
     }
 }

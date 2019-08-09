@@ -21,12 +21,4 @@ import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView
 /**
  * Custom view interactions for [com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity]
  */
-interface RunningBuildListView : BuildListView {
-
-    /**
-     * Update tool bar title with value
-     *
-     * @param count - value to update
-     */
-    fun updateTitle(count: Int)
-}
+interface RunningBuildListView : BuildListView

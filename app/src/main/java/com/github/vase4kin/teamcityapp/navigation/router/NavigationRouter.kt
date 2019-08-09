@@ -36,10 +36,5 @@ interface NavigationRouter {
      */
     fun startNavigationActivity(name: String, id: String)
 
-    /**
-     * Start projects activity
-     */
-    fun startProjectActivity()
-
     fun openRateTheApp()
 }

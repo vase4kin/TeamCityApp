@@ -30,16 +30,6 @@ public interface BuildListTracker extends ViewTracker {
     String SCREEN_NAME_BUILD_LIST = "screen_build_list";
 
     /**
-     * Running build list screen name
-     */
-    String SCREEN_NAME_RUNNING_BUILD_LIST = "screen_running_build_list";
-
-    /**
-     * Queued build list screen name
-     */
-    String SCREEN_NAME_QUEUED_BUILD_LIST = "screen_build_queue_list";
-
-    /**
      * Snapshot dependencies
      */
     String SCREEN_NAME_SNAPSHOT_DEPENDECIES = "screen_snapshot_dependencies";

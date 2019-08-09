@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
@@ -84,12 +85,20 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
         mUnbinder = ButterKnife.bind(this, mView);
         // <!----Setting id for testing purpose----->!
         mRecyclerView.setId(recyclerViewId());
+        emptyTitle.setId(emptyTitleId());
         // <!--------------------------------------->!
         mErrorView.setImageTint(Color.LTGRAY);
         mErrorView.setRetryListener(listener);
-        emptyTitle.setText(mEmptyMessage);
         mSwipeRefreshLayout.setOnRefreshListener(listener);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
+    }
+
+    /**
+     * To Override get empty message
+     */
+    protected @StringRes
+    int getEmptyMessage() {
+        return mEmptyMessage;
     }
 
     /**
@@ -143,6 +152,7 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
      */
     @Override
     public void showEmpty() {
+        emptyTitle.setText(getEmptyMessage());
         mEmpty.setVisibility(View.VISIBLE);
     }
 
@@ -223,5 +233,14 @@ public abstract class BaseListViewImpl<T extends BaseDataModel, RA extends Recyc
     /**
      * Provide recycler view id for each view impl to easy determine them by Espresso
      */
-    protected abstract int recyclerViewId();
+    protected abstract @IdRes
+    int recyclerViewId();
+
+    /**
+     * Provide empty title view id for each view impl to easy determine them by Espresso
+     */
+    protected @IdRes
+    int emptyTitleId() {
+        return R.id.empty_title;
+    }
 }
