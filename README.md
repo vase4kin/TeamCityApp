@@ -1,7 +1,7 @@
 [![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Circle CI](https://circleci.com/gh/vase4kin/TeamCityApp/tree/master.svg?style=shield)](https://circleci.com/gh/vase4kin/TeamCityApp/tree/master)
 [![codecov](https://codecov.io/gh/vase4kin/TeamCityApp/branch/master/graph/badge.svg)](https://codecov.io/gh/vase4kin/TeamCityApp)
-[![Release](https://img.shields.io/badge/release-1.3.6.1-blue.svg)](https://github.com/vase4kin/TeamCityApp/releases/latest)
+[![Release](https://img.shields.io/badge/release-1.4.0.0-blue.svg)](https://github.com/vase4kin/TeamCityApp/releases/latest)
 
 <img src="https://github.com/vase4kin/TeamCityApp/raw/dev/res/screenshots/feature-graphic.png">
 
