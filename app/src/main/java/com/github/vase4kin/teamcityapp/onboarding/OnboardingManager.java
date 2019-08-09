@@ -92,6 +92,16 @@ public interface OnboardingManager {
     void saveAddFavPromptShown();
 
     /**
+     * @return {true} if tab filter builds onboarding prompt is shown
+     */
+    boolean isTabsFilterPromptShown();
+
+    /**
+     * Save that tab filter builds prompt is shown
+     */
+    void saveTabsFilterPromptShown();
+
+    /**
      * @return {true} if add favorites from buildtype onboarding prompt is shown
      */
     boolean isFavPromptShown();

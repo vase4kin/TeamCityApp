@@ -51,6 +51,11 @@ class AboutActivity : DaggerAppCompatActivity() {
                 .commit()
     }
 
+    override fun onDestroy() {
+        drawerPresenter.onDestroy()
+        super.onDestroy()
+    }
+
     override fun onBackPressed() {
         drawerPresenter.onBackButtonPressed()
     }

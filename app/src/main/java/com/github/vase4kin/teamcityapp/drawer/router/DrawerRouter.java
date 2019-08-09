@@ -24,12 +24,12 @@ import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity;
 public interface DrawerRouter {
 
     /**
-     * Start {@link com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity}
+     * Start {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity}
      */
-    void startRootProjectsActivity();
+    void startHomeActivity();
 
     /**
-     * Start {@link com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity} when accounts are switched
+     * Start {@link com.github.vase4kin.teamcityapp.home.view.HomeActivity} when accounts are switched
      */
     void startRootProjectsActivityWhenSwitchingAccounts();
 
@@ -44,22 +44,7 @@ public interface DrawerRouter {
     void startAgentActivity();
 
     /**
-     * Start {@link com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListActivity}
-     */
-    void startBuildRunningActivity();
-
-    /**
-     * Start {@link com.github.vase4kin.teamcityapp.queue.view.BuildQueueActivity}
-     */
-    void startQueuedBuildsActivity();
-
-    /**
      * Start {@link AboutLibrariesActivity}
      */
     void startAboutActivity();
-
-    /**
-     * Start {@link com.github.vase4kin.teamcityapp.favorites.view.FavoritesActivity}
-     */
-    void startFavoritesActivity();
 }

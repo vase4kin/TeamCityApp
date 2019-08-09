@@ -27,6 +27,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +38,15 @@ import java.util.List;
  */
 public class RunningBuildsListViewImpl extends BuildListViewImpl implements RunningBuildListView {
 
+    protected final FilterProvider filterProvider;
+
     public RunningBuildsListViewImpl(View mView,
                                      Activity activity,
                                      @StringRes int emptyMessage,
-                                     SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
+                                     SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter,
+                                     FilterProvider filterProvider) {
         super(mView, activity, emptyMessage, adapter);
+        this.filterProvider = filterProvider;
     }
 
     /**
@@ -70,13 +76,10 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
                     sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, buildTypeTitle));
                 }
             }
-            mAdapter.setListener(new SimpleSectionedRecyclerViewAdapter.OnSectionClickListener() {
-                @Override
-                public void onSectionClick(int position) {
-                    final String buildTypeName = dataModel.getBuildTypeName(position);
-                    final String buildTypeId = dataModel.getBuildTypeId(position);
-                    BuildListActivity.Companion.start(buildTypeName, buildTypeId, null, mActivity);
-                }
+            mAdapter.setListener(position -> {
+                final String buildTypeName = dataModel.getBuildTypeName(position);
+                final String buildTypeId = dataModel.getBuildTypeId(position);
+                BuildListActivity.Companion.start(buildTypeName, buildTypeId, null, mActivity);
             });
         }
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
@@ -84,17 +87,6 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
 
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void updateTitle(int count) {
-        String title = String.format("%s (%s)",
-                getTitle(),
-                count);
-        setTitle(title);
     }
 
     /**
@@ -118,5 +110,33 @@ public class RunningBuildsListViewImpl extends BuildListViewImpl implements Runn
     @Override
     public void hideRunBuildFloatActionButton() {
         // Do not show running build float action button here
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int getEmptyMessage() {
+        if (filterProvider.getRunningBuildsFilter() == Filter.RUNNING_FAVORITES) {
+            return R.string.empty_list_message_favorite_running_builds;
+        } else {
+            return R.string.empty_list_message_running_builds;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int emptyTitleId() {
+        return R.id.running_empty_title_view;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected int recyclerViewId() {
+        return R.id.running_builds_recycler_view;
     }
 }

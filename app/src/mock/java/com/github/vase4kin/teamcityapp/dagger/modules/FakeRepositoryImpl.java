@@ -76,8 +76,8 @@ public class FakeRepositoryImpl implements Repository {
     }
 
     @Override
-    public Single<Builds> listQueueBuilds(String fields, boolean update) {
-        return mTeamCityService.listQueueBuilds(fields);
+    public Single<Builds> listQueueBuilds(String locator, String fields, boolean update) {
+        return mTeamCityService.listQueueBuilds(locator, fields);
     }
 
     @Override

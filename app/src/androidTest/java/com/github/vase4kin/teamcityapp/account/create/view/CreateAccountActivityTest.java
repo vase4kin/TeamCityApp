@@ -23,14 +23,17 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.api.TeamCityService;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
+import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
+import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 
 import org.junit.Before;
@@ -43,6 +46,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -94,7 +98,7 @@ public class CreateAccountActivityTest {
     private static final String INPUT_URL = URL.replace("https://", "");
 
     @Rule
-    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
+    public DaggerMockRule<RestApiComponent> daggerRestComponentRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
             .set(restApiComponent -> {
                 TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
@@ -122,6 +126,12 @@ public class CreateAccountActivityTest {
     @Mock
     private Call call;
 
+    @Spy
+    private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
+
+    @Spy
+    private SharedUserStorage sharedUserStorage = ((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()).getAppInjector().sharedUserStorage();
+
     @BeforeClass
     public static void disableOnboarding() {
         TestUtils.disableOnboarding();
@@ -131,6 +141,7 @@ public class CreateAccountActivityTest {
     public void setUp() {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getRestApiInjector().sharedUserStorage().clearAll();
+        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL + "/server", false);
         when(clientBase.newCall(Matchers.any(Request.class))).thenReturn(call);
         when(unsafeOkHttpClient.newCall(Matchers.any(Request.class))).thenReturn(call);
         activityRule.launchActivity(null);
@@ -158,12 +169,10 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.action_create)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                hasExtras(allOf(
-                        hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)),
-                        hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
+                hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true))),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
         SharedUserStorage storageUtils = SharedUserStorage.init(activityRule.getActivity(), null);
@@ -177,19 +186,16 @@ public class CreateAccountActivityTest {
      */
     @Test
     public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                callbackArgumentCaptor.getValue().onResponse(
-                        call,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(200)
-                                .message("")
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            callbackArgumentCaptor.getValue().onResponse(
+                    call,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(200)
+                            .message("")
+                            .build());
+            return null;
         }).when(call).enqueue(callbackArgumentCaptor.capture());
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
@@ -200,12 +206,10 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.action_create)).perform(click());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK
                         | Intent.FLAG_ACTIVITY_SINGLE_TOP),
-                hasExtras(allOf(
-                        hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)),
-                        hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true)))),
+                hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_REQUIRED_TO_RELOAD), equalTo(true))),
                 toPackage("com.github.vase4kin.teamcityapp.mock.debug")));
 
         SharedUserStorage storageUtils = SharedUserStorage.init(activityRule.getActivity(), null);
@@ -239,7 +243,7 @@ public class CreateAccountActivityTest {
         onView(withId(R.id.password)).perform(typeText("pass"), pressImeActionButton());
 
         intended(allOf(
-                hasComponent(RootProjectsActivity.class.getName()),
+                hasComponent(HomeActivity.class.getName()),
                 hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
 
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();

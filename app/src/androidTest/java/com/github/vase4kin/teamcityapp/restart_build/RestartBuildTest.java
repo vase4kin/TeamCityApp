@@ -40,6 +40,7 @@ import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -123,6 +124,13 @@ public class RestartBuildTest {
     @BeforeClass
     public static void disableOnboarding() {
         TestUtils.disableOnboarding();
+    }
+
+    @Before
+    public void setUp() {
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        app.getRestApiInjector().sharedUserStorage().clearAll();
+        app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
     }
 
     @Test

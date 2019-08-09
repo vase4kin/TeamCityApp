@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity;
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
 
 /**
  * Impl of {@link NavigationRouter}
@@ -50,14 +49,6 @@ public class NavigationRouterImpl implements NavigationRouter {
     @Override
     public void startNavigationActivity(@NonNull String name, @NonNull String id) {
         NavigationActivity.Companion.start(name, id, mActivity);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startProjectActivity() {
-        RootProjectsActivity.Companion.startWhenNavigateToRootFromDrawer(mActivity);
     }
 
     @Override

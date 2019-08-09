@@ -62,23 +62,23 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setLoadMoreListener(new MugenCallbacks() {
+        view.setLoadMoreListener(new MugenCallbacks() {
             @Override
             public void onLoadMore() {
                 mIsLoadMoreLoading = true;
-                mView.addLoadMore();
-                mDataManager.loadMore(new OnLoadingListener<List<Changes.Change>>() {
+                view.addLoadMore();
+                dataManager.loadMore(new OnLoadingListener<List<Changes.Change>>() {
                     @Override
                     public void onSuccess(List<Changes.Change> data) {
-                        mView.removeLoadMore();
-                        mView.addMoreBuilds(new ChangesDataModelImpl(data));
+                        view.removeLoadMore();
+                        view.addMoreBuilds(new ChangesDataModelImpl(data));
                         mIsLoadMoreLoading = false;
                     }
 
                     @Override
                     public void onFail(String errorMessage) {
-                        mView.removeLoadMore();
-                        mView.showRetryLoadMoreSnackBar();
+                        view.removeLoadMore();
+                        view.showRetryLoadMoreSnackBar();
                         mIsLoadMoreLoading = false;
                     }
                 });
@@ -91,10 +91,10 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl<
 
             @Override
             public boolean hasLoadedAllItems() {
-                return !mDataManager.canLoadMore();
+                return !dataManager.canLoadMore();
             }
         });
-        mView.replaceSkeletonViewContent();
+        view.replaceSkeletonViewContent();
     }
 
     /**
@@ -102,7 +102,7 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<Changes.Change>> loadingListener, boolean update) {
-        mDataManager.loadLimited(mValueExtractor.getUrl(), loadingListener, update);
+        dataManager.loadLimited(valueExtractor.getUrl(), loadingListener, update);
     }
 
     /**
@@ -119,10 +119,10 @@ public class ChangesPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onViewsCreated() {
         super.onViewsCreated();
-        mDataManager.loadTabTitle(mValueExtractor.getUrl(), new OnLoadingListener<Integer>() {
+        dataManager.loadTabTitle(valueExtractor.getUrl(), new OnLoadingListener<Integer>() {
             @Override
             public void onSuccess(Integer data) {
-                mDataManager.postChangeTabTitleEvent(data);
+                dataManager.postChangeTabTitleEvent(data);
             }
 
             @Override

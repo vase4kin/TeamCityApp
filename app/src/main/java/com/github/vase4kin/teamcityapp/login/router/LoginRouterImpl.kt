@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.login.router
 
 import android.app.Activity
 
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 
 /**
  * Impl of [LoginRouter]
@@ -29,6 +29,6 @@ class LoginRouterImpl(private val activity: Activity) : LoginRouter {
      * {@inheritDoc}
      */
     override fun openProjectsRootPageForFirstStart() {
-        RootProjectsActivity.startForTheFirstStart(activity)
+        HomeActivity.startForTheFirstStart(activity)
     }
 }

@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.account.manage.data;
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -54,11 +53,7 @@ public class AccountDataModelImpl implements AccountDataModel {
      */
     @Override
     public void sort() {
-        Collections.sort(mAccounts, new Comparator<UserAccount>() {
-            public int compare(UserAccount o1, UserAccount o2) {
-                return (o1.isActive() == o2.isActive() ? 0 : (o2.isActive() ? 1 : -1));
-            }
-        });
+        Collections.sort(mAccounts, (o1, o2) -> (o1.isActive() == o2.isActive() ? 0 : (o2.isActive() ? 1 : -1)));
     }
 
     /**

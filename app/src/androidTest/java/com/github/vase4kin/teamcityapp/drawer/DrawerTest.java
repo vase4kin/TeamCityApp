@@ -30,7 +30,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity;
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -60,21 +60,18 @@ import static org.hamcrest.core.AllOf.allOf;
 public class DrawerTest {
 
     @Rule
-    public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
+    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
-    public CustomActivityTestRule<RootProjectsActivity> mActivityRule = new CustomActivityTestRule<>(RootProjectsActivity.class);
+    public CustomActivityTestRule<HomeActivity> activityTestRule = new CustomActivityTestRule<>(HomeActivity.class);
 
     @Spy
-    private TeamCityService mTeamCityService = new FakeTeamCityServiceImpl();
+    private TeamCityService teamCityService = new FakeTeamCityServiceImpl();
 
     @BeforeClass
     public static void disableOnboarding() {
@@ -86,11 +83,11 @@ public class DrawerTest {
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getRestApiInjector().sharedUserStorage().clearAll();
         app.getRestApiInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
-        mActivityRule.launchActivity(null);
+        activityTestRule.launchActivity(null);
     }
 
     @Test
-    public void testUserCanSeeInfo() throws Exception {
+    public void testUserCanSeeInfo() {
         // Opening drawer
         clickOnBurgerButton();
 
@@ -103,17 +100,17 @@ public class DrawerTest {
     }
 
     @Test
-    public void testUserCanSeeProjectsIsSelectedByDefault() throws Exception {
+    public void testUserCanSeeProjectsIsSelectedByDefault() {
         // Opening drawer
         clickOnBurgerButton();
 
         // Check projects is selected
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.projects_drawer_item), isDisplayed()))
+        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.home_drawer_item), isDisplayed()))
                 .check(matches(isSelected()));
     }
 
     @Test
-    public void testUserCanNavigateToProjectsScreen() throws Exception {
+    public void testUserCanNavigateToProjectsScreen() {
         // open build type
         onView(withText("build type"))
                 .perform(click());
@@ -126,7 +123,7 @@ public class DrawerTest {
                 .perform(open());
 
         // Check projects is opened
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.projects_drawer_item), isDisplayed()))
+        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.home_drawer_item), isDisplayed()))
                 .perform(click());
 
         // Checking toolbar title
@@ -134,49 +131,7 @@ public class DrawerTest {
     }
 
     @Test
-    public void testUserCanNavigateToRunningBuildsScreen() throws Exception {
-        // Opening drawer
-        clickOnBurgerButton();
-
-        // Check running builds is opened
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.running_builds_drawer_item), isDisplayed()))
-                .perform(click());
-
-        // Checking toolbar title
-        matchToolbarTitle("Running builds (1)");
-
-        // Opening drawer
-        onView(withId(R.id.material_drawer_layout))
-                .perform(open());
-
-        // Check about is selected
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.running_builds_drawer_item), isDisplayed()))
-                .check(matches(isSelected()));
-    }
-
-    @Test
-    public void testUserCanNavigateToQueuedBuildsScreen() throws Exception {
-        // Opening drawer
-        clickOnBurgerButton();
-
-        // Check queued builds is opened
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.build_queue_drawer_item), isDisplayed()))
-                .perform(click());
-
-        // Checking toolbar title
-        matchToolbarTitle("Build queue (3)");
-
-        // Opening drawer
-        onView(withId(R.id.material_drawer_layout))
-                .perform(open());
-
-        // Check about is selected
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.build_queue_drawer_item), isDisplayed()))
-                .check(matches(isSelected()));
-    }
-
-    @Test
-    public void testUserCanNavigateToAgentsScreen() throws Exception {
+    public void testUserCanNavigateToAgentsScreen() {
         // Opening drawer
         clickOnBurgerButton();
 
@@ -197,7 +152,7 @@ public class DrawerTest {
     }
 
     @Test
-    public void testUserCanNavigateToAboutScreen() throws Exception {
+    public void testUserCanNavigateToAboutScreen() {
         // Opening drawer
         clickOnBurgerButton();
 
@@ -218,7 +173,7 @@ public class DrawerTest {
     }
 
     @Test
-    public void testUserCanNavigateToAccounts() throws Exception {
+    public void testUserCanNavigateToAccounts() {
         // Opening drawer
         clickOnBurgerButton();
 
@@ -232,27 +187,6 @@ public class DrawerTest {
 
         // Checking toolbar title
         matchToolbarTitle("Manage Accounts");
-    }
-
-    @Test
-    public void testUserCanNavigateToFavorites() throws Exception {
-        // Opening drawer
-        clickOnBurgerButton();
-
-        // Check fav is opened
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.favorites_drawer_item), isDisplayed()))
-                .perform(click());
-
-        // Checking toolbar title
-        matchToolbarTitle("Favorites (0)");
-
-        // Opening drawer
-        onView(withId(R.id.material_drawer_layout))
-                .perform(open());
-
-        // Check fav is selected
-        onView(allOf(withId(R.id.material_drawer_name), withText(R.string.favorites_drawer_item), isDisplayed()))
-                .check(matches(isSelected()));
     }
 
     /**

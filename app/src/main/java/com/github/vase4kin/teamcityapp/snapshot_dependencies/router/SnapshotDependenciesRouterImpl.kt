@@ -31,7 +31,7 @@ class SnapshotDependenciesRouterImpl(activity: Activity) : BuildListRouterImpl(a
      * {@inheritDoc}
      */
     override fun openBuildPage(build: Build, buildTypeName: String?) {
-        BuildDetailsActivity.startNotAsNewTask(mActivity, build, buildTypeName)
+        BuildDetailsActivity.startNotAsNewTask(activity, build, buildTypeName)
     }
 }
 

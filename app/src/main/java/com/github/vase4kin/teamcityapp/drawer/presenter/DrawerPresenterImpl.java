@@ -40,20 +40,20 @@ public class DrawerPresenterImpl<
         DR extends DrawerRouter,
         DT extends DrawerTracker> implements DrawerPresenter, OnDrawerPresenterListener {
 
-    protected V mView;
-    protected DM mDataManager;
-    protected DT mTracker;
-    private DR mRouter;
+    protected V view;
+    protected DM dataManager;
+    protected DT tracker;
+    private DR router;
 
     @Inject
-    public DrawerPresenterImpl(@NonNull V mView,
+    public DrawerPresenterImpl(@NonNull V view,
                                @NonNull DM dataManager,
                                @NonNull DR router,
                                @NonNull DT tracker) {
-        this.mView = mView;
-        this.mDataManager = dataManager;
-        this.mTracker = tracker;
-        this.mRouter = router;
+        this.view = view;
+        this.dataManager = dataManager;
+        this.tracker = tracker;
+        this.router = router;
     }
 
     /**
@@ -61,9 +61,9 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void onCreate() {
-        mView.initViews(this);
+        view.initViews(this);
         loadData();
-        if (!mView.isModelEmpty()) {
+        if (!view.isModelEmpty()) {
             loadNotificationsCount();
         }
     }
@@ -72,8 +72,16 @@ public class DrawerPresenterImpl<
      * {@inheritDoc}
      */
     @Override
+    public void onDestroy() {
+        dataManager.unsubscribe();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void onBackButtonPressed() {
-        mView.backButtonPressed();
+        view.backButtonPressed();
     }
 
     /**
@@ -81,7 +89,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void setActiveUser(String url, String userName) {
-        mDataManager.setActiveUser(url, userName);
+        dataManager.setActiveUser(url, userName);
     }
 
     /**
@@ -89,7 +97,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public boolean isActiveProfile(String url, String userName) {
-        return mDataManager.isActiveUser(url, userName);
+        return dataManager.isActiveUser(url, userName);
     }
 
     /**
@@ -104,36 +112,17 @@ public class DrawerPresenterImpl<
      * Load all required counts
      */
     protected void loadNotificationsCount() {
-        loadRunningBuildsCount();
         loadAgentsCount();
-        loadQueueBuildsCount();
-        loadFavoritesCount();
     }
 
     /**
      * Load drawer data
      */
     protected void loadData() {
-        mDataManager.load(new OnLoadingListener<List<UserAccount>>() {
+        dataManager.load(new OnLoadingListener<List<UserAccount>>() {
             @Override
             public void onSuccess(List<UserAccount> data) {
-                mView.showData(new DrawerDataModelImpl(data));
-            }
-
-            @Override
-            public void onFail(String errorMessage) {
-            }
-        });
-    }
-
-    /**
-     * Load running builds count
-     */
-    private void loadRunningBuildsCount() {
-        mDataManager.loadRunningBuildsCount(new OnLoadingListener<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                mView.updateRunningBuildsBadge(data);
+                view.showData(new DrawerDataModelImpl(data));
             }
 
             @Override
@@ -146,10 +135,10 @@ public class DrawerPresenterImpl<
      * Load agents count
      */
     private void loadAgentsCount() {
-        mDataManager.loadConnectedAgentsCount(new OnLoadingListener<Integer>() {
+        dataManager.loadConnectedAgentsCount(new OnLoadingListener<Integer>() {
             @Override
             public void onSuccess(Integer data) {
-                mView.updateAgentsBadge(data);
+                view.updateAgentsBadge(data);
             }
 
             @Override
@@ -157,32 +146,6 @@ public class DrawerPresenterImpl<
 
             }
         });
-    }
-
-    /**
-     * Load queued builds count
-     */
-    private void loadQueueBuildsCount() {
-        mDataManager.loadBuildQueueCount(new OnLoadingListener<Integer>() {
-            @Override
-            public void onSuccess(Integer data) {
-                mView.updateBuildQueueBadge(data);
-            }
-
-            @Override
-            public void onFail(String errorMessage) {
-
-            }
-        });
-    }
-
-    /**
-     * Load favorites count
-     */
-    private void loadFavoritesCount() {
-        int favoritesCount = mDataManager.getFavoritesCount();
-        mView.updateFavoritesBadge(favoritesCount);
-
     }
 
     /**
@@ -190,15 +153,15 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void onUserChange() {
-        mTracker.trackChangeAccount();
+        tracker.trackChangeAccount();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void startRootProjectsActivity() {
-        mRouter.startRootProjectsActivity();
+    public void startHomeActivity() {
+        router.startHomeActivity();
     }
 
     /**
@@ -206,7 +169,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startRootProjectsActivityWhenSwitchingAccounts() {
-        mRouter.startRootProjectsActivityWhenSwitchingAccounts();
+        router.startRootProjectsActivityWhenSwitchingAccounts();
     }
 
     /**
@@ -214,7 +177,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startAccountListActivity() {
-        mRouter.startAccountListActivity();
+        router.startAccountListActivity();
     }
 
     /**
@@ -222,23 +185,7 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startAgentActivity() {
-        mRouter.startAgentActivity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startBuildRunningActivity() {
-        mRouter.startBuildRunningActivity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startQueuedBuildsActivity() {
-        mRouter.startQueuedBuildsActivity();
+        router.startAgentActivity();
     }
 
     /**
@@ -246,14 +193,6 @@ public class DrawerPresenterImpl<
      */
     @Override
     public void startAboutActivity() {
-        mRouter.startAboutActivity();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void startFavoritesActivity() {
-        mRouter.startFavoritesActivity();
+        router.startAboutActivity();
     }
 }

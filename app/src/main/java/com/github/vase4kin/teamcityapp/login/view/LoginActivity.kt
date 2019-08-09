@@ -62,5 +62,11 @@ class LoginActivity : DaggerAppCompatActivity() {
             val intent = Intent(activity, LoginActivity::class.java)
             activity.startActivity(intent)
         }
+
+        fun startWithClearStack(activity: Activity) {
+            val launchIntent = Intent(activity, LoginActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            activity.startActivity(launchIntent)
+        }
     }
 }

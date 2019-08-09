@@ -50,7 +50,7 @@ public interface OnDrawerPresenterListener {
     /**
      * {@inheritDoc}
      */
-    void startRootProjectsActivity();
+    void startHomeActivity();
 
     /**
      * {@inheritDoc}
@@ -70,20 +70,5 @@ public interface OnDrawerPresenterListener {
     /**
      * {@inheritDoc}
      */
-    void startBuildRunningActivity();
-
-    /**
-     * {@inheritDoc}
-     */
-    void startQueuedBuildsActivity();
-
-    /**
-     * {@inheritDoc}
-     */
     void startAboutActivity();
-
-    /**
-     * {@inheritDoc}
-     */
-    void startFavoritesActivity();
 }

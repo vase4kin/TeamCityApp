@@ -104,7 +104,7 @@ public class BuildListFilterImpl implements BuildListFilter {
         }
         locatorBuilder.append(",");
         locatorBuilder.append("personal:");
-        locatorBuilder.append(String.valueOf(mIsPersonal));
+        locatorBuilder.append(mIsPersonal);
         locatorBuilder.append(",");
         locatorBuilder.append("pinned:");
         // Queued builds can be shown if only pinned:any, because queued builds can't be pinned
@@ -112,7 +112,7 @@ public class BuildListFilterImpl implements BuildListFilter {
         if (mFilterType == FilterBuildsView.FILTER_QUEUED) {
             locatorBuilder.append("any");
         } else {
-            locatorBuilder.append(String.valueOf(mIsPinned));
+            locatorBuilder.append(mIsPinned);
         }
         // Remove count for queued and running build cause they don't have next href
         if (mFilterType == FilterBuildsView.FILTER_RUNNING) {

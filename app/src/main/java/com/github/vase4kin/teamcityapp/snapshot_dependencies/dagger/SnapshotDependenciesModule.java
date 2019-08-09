@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerVie
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractorImpl;
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter;
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView;
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl;
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesInteractor;
@@ -69,9 +70,10 @@ public class SnapshotDependenciesModule {
     }
 
     @Provides
-    RunningBuildListView providesBuildListView(SnapshotDependenciesFragment fragment, SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
+    RunningBuildListView providesBuildListView(SnapshotDependenciesFragment fragment,
+                                               SimpleSectionedRecyclerViewAdapter<BuildListAdapter> adapter) {
         // Add text
-        return new RunningBuildsListViewImpl(fragment.getView(), fragment.getActivity(), R.string.empty_list_message_builds, adapter) {
+        return new RunningBuildsListViewImpl(fragment.getView(), fragment.getActivity(), R.string.empty_list_message_builds, adapter, new FilterProvider()) {
             @Override
             protected int recyclerViewId() {
                 return R.id.snapshot_recycler_view;

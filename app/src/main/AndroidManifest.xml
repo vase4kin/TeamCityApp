@@ -45,10 +45,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/PrimaryColorNavBarTheme" />
         <activity
-            android:name=".root.view.RootProjectsActivity"
+            android:name=".home.view.HomeActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+            android:theme="@style/HomeTheme" />
         <activity
             android:name=".buildlist.view.BuildListActivity"
             android:label="@string/title_activity_build_list"
@@ -67,16 +67,6 @@
             android:label="@string/title_activity_account_list"
             android:launchMode="singleTop"
             android:theme="@style/AccountsListTheme" />
-        <activity
-            android:name=".runningbuilds.view.RunningBuildsListActivity"
-            android:label="@string/title_activity_running_builds"
-            android:launchMode="singleTop"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
-            android:name=".queue.view.BuildQueueActivity"
-            android:label="@string/title_activity_queued_builds"
-            android:launchMode="singleTop"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".navigation.view.NavigationActivity"
             android:label="@string/title_activity_navigation"
@@ -104,10 +94,6 @@
         <activity
             android:name=".about.AboutActivity"
             android:label="@string/about_drawer_item"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
-            android:name=".favorites.view.FavoritesActivity"
-            android:label="@string/favorites_drawer_item"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
 
         <provider

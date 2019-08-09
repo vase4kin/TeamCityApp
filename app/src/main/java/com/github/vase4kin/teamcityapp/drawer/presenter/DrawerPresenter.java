@@ -27,6 +27,11 @@ public interface DrawerPresenter {
     void onCreate();
 
     /**
+     * On activity destroy callback
+     */
+    void onDestroy();
+
+    /**
      * On activity back button pressed
      */
     void onBackButtonPressed();

@@ -26,6 +26,7 @@
     <string name="tab_disconnected">Disconnected</string>
 
     <!--drawer items-->
+    <string name="home_drawer_item">Home</string>
     <string name="projects_drawer_item">Projects</string>
     <string name="favorites_drawer_item">Favorites</string>
     <string name="running_builds_drawer_item">Running builds</string>
@@ -87,6 +88,7 @@
     <string name="dialog_remove_active_account_positive_button_text">Sure</string>
     <string name="dialog_remove_active_account_positive_negative_text">Nope</string>
     <string name="dialog_remove_active_account_positive_content_text">Are you sure to delete active user account?</string>
+    <string name="dialog_remove_not_active_account_positive_content_text">Are you sure to delete a user account?</string>
 
     <!--All list empty message-->
     <string name="empty">No data</string>
@@ -107,12 +109,14 @@
     <string name="empty_list_message_artifacts">No artifacts</string>
     <string name="empty_list_message_builds">No builds</string>
     <string name="empty_list_message_running_builds">No running builds</string>
-    <string name="empty_list_message_build_queue">Build queue is empty</string>
+    <string name="empty_list_message_favorite_running_builds">No favorite running builds</string>
+    <string name="empty_list_message_build_queue">Builds queue is empty</string>
+    <string name="empty_list_message_favorite_build_queue">Favorite builds queue is empty</string>
     <string name="empty_list_message_agents">No agents</string>
     <string name="empty_list_message_parameters">No user defined parameters</string>
     <string name="empty_list_message_changes">No changes</string>
     <string name="empty_list_message_projects_or_build_types">No projects or build configurations</string>
-    <string name="empty_list_message_favorites">No favorites</string>
+    <string name="empty_list_message_favorites">No favorite configurations added</string>
     <string name="empty_passed_tests">There are no failed tests</string>
     <string name="empty_list_files">No files</string>
 
@@ -306,7 +310,7 @@
 
     <!--Onboarding-->
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
-    <string name="text_onboarding_navigation_drawer">Manage accounts, view favorites, running/queued builds and agents</string>
+    <string name="text_onboarding_navigation_drawer">Manage accounts and view agents</string>
     <string name="title_onboarding_run_build">Run builds</string>
     <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
     <string name="title_onboarding_filter_builds">Filter builds</string>
@@ -317,10 +321,12 @@
     <string name="text_onboarding_remove_build_from_queue">Remove builds from queue</string>
     <string name="title_onboarding_add_fav">Add to favorites</string>
     <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
+    <string name="title_onboarding_filter">Filter builds</string>
+    <string name="text_onboarding_filter">Filter builds by only your favorite configurations or the all running and queued ones. Default filter is set to show only builds by your favorite configurations.</string>
 
     <!--Favorites-->
     <string name="text_info_add">Add a configuration to favorites for an easy access</string>
-    <string name="text_info_add_action">Open projects</string>
+    <string name="text_info_add_action">Add projects</string>
     <string name="text_fab_add_fav">Add fav</string>
 
     <!--Rate-->
@@ -328,5 +334,13 @@
     <string name="rate_description">Like the app? Give us a review, we\'ll appreciate it.</string>
     <string name="rate_cancel">Cancel</string>
     <string name="rate_now">Rate</string>
+
+    <!--Filter bottom sheet-->
+    <string name="title_filter_running_builds">Filter running builds</string>
+    <string name="title_filter_queued_builds">Filter queued builds</string>
+    <string name="text_show_favorites">Show only favorite ones</string>
+    <string name="text_show_queued">Show all queued builds</string>
+    <string name="text_show_running">Show all running builds</string>
+
 
 </resources>

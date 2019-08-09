@@ -24,11 +24,11 @@ import com.google.firebase.analytics.FirebaseAnalytics;
  */
 public class FirebaseBuildListTrackerImpl extends BaseFirebaseTracker implements BuildListTracker {
 
-    private final String mScreenName;
+    private final String screenName;
 
     public FirebaseBuildListTrackerImpl(FirebaseAnalytics firebaseAnalytics, String screenName) {
         super(firebaseAnalytics);
-        this.mScreenName = screenName;
+        this.screenName = screenName;
     }
 
     /**
@@ -36,7 +36,7 @@ public class FirebaseBuildListTrackerImpl extends BaseFirebaseTracker implements
      */
     @Override
     public void trackView() {
-        firebaseAnalytics.logEvent(mScreenName, null);
+        firebaseAnalytics.logEvent(screenName, null);
     }
 
     /**

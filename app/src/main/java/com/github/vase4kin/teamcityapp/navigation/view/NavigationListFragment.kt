@@ -28,7 +28,7 @@ import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
 /**
- * Navigation fragment to handle first projects screen for [com.github.vase4kin.teamcityapp.root.view.RootProjectsActivity]
+ * Navigation fragment to handle first projects screen for [com.github.vase4kin.teamcityapp.home.view.HomeActivity]
  */
 class NavigationListFragment : Fragment() {
 

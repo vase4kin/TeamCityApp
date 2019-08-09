@@ -61,15 +61,15 @@ public class BuildDetailsDrawerPresenterImpl extends DrawerPresenterImpl<DrawerV
         if (!mValueExtractor.isBundleNullOrEmpty()) {
             BuildDetails buildDetails = mValueExtractor.getBuildDetails();
             if (buildDetails.isRunning()) {
-                mView.setDefaultColors(R.color.running_tool_bar_color);
+                view.setDefaultColors(R.color.running_tool_bar_color);
             } else if (buildDetails.isQueued()) {
-                mView.setDefaultColors(R.color.queued_tool_bar_color);
+                view.setDefaultColors(R.color.queued_tool_bar_color);
             } else if (buildDetails.isSuccess()) {
-                mView.setDefaultColors(R.color.success_tool_bar_color);
+                view.setDefaultColors(R.color.success_tool_bar_color);
             } else if (buildDetails.isFailed()) {
-                mView.setDefaultColors(R.color.failed_tool_bar_color);
+                view.setDefaultColors(R.color.failed_tool_bar_color);
             } else {
-                mView.setDefaultColors(R.color.queued_tool_bar_color);
+                view.setDefaultColors(R.color.queued_tool_bar_color);
             }
         }
     }

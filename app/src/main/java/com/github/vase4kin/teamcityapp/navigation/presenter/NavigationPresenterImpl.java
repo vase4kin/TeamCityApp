@@ -64,7 +64,7 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<NavigationItem>> loadingListener, boolean update) {
-        mDataManager.load(mValueExtractor.getId(), update, loadingListener);
+        dataManager.load(valueExtractor.getId(), update, loadingListener);
     }
 
     /**
@@ -73,8 +73,8 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.setTitle(mValueExtractor.getName());
-        mView.setNavigationAdapterClickListener(this);
+        view.setTitle(valueExtractor.getName());
+        view.setNavigationAdapterClickListener(this);
     }
 
     /**
@@ -82,8 +82,8 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected NavigationDataModel createModel(List<NavigationItem> data) {
-        if (!data.isEmpty() && mDataManager.showRateTheApp()) {
-            mTracker.trackUserSawRateTheApp();
+        if (!data.isEmpty() && dataManager.showRateTheApp()) {
+            tracker.trackUserSawRateTheApp();
             data.add(RateTheApp.POSITION, new RateTheApp());
         }
         return new NavigationDataModelImpl(data);
@@ -106,9 +106,9 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onRateCancelButtonClick() {
-        mView.hideTheRateApp();
-        mDataManager.saveRateCancelClickedOn();
-        mTracker.trackUserClickedOnRateCancel();
+        view.hideTheRateApp();
+        dataManager.saveRateCancelClickedOn();
+        tracker.trackUserClickedOnRateCancel();
     }
 
     /**
@@ -116,10 +116,10 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onRateNowButtonClick() {
-        mView.hideTheRateApp();
-        mDataManager.saveRateNowClickedOn();
+        view.hideTheRateApp();
+        dataManager.saveRateNowClickedOn();
         mRouter.openRateTheApp();
-        mTracker.trackUserClickedOnRateNow();
+        tracker.trackUserClickedOnRateNow();
     }
 
     /**
@@ -128,6 +128,6 @@ public class NavigationPresenterImpl extends BaseListPresenterImpl<
     @Override
     public void onViewsDestroyed() {
         super.onViewsDestroyed();
-        mDataManager.unsubscribe();
+        dataManager.unsubscribe();
     }
 }

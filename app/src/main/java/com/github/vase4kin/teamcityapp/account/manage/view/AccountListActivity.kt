@@ -49,6 +49,7 @@ class AccountListActivity : DaggerAppCompatActivity() {
 
     override fun onDestroy() {
         presenter.onViewsDestroyed()
+        drawerPresenter.onDestroy()
         super.onDestroy()
     }
 

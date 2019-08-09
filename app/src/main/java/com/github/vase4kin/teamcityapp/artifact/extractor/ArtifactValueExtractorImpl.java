@@ -37,6 +37,6 @@ public class ArtifactValueExtractorImpl extends BaseValueExtractorImpl implement
      */
     @Override
     public String getUrl() {
-        return mBundle.getString(BundleExtractorValues.URL);
+        return bundle.getString(BundleExtractorValues.URL);
     }
 }

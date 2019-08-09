@@ -53,7 +53,7 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
 
     @Override
     protected void initViews() {
-        mView.setListener(this);
+        view.setListener(this);
         super.initViews();
     }
 
@@ -62,7 +62,7 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<Properties.Property>> loadingListener, boolean update) {
-        mDataManager.load(mValueExtractor.getBuildDetails(), loadingListener);
+        dataManager.load(valueExtractor.getBuildDetails(), loadingListener);
     }
 
     /**
@@ -78,7 +78,7 @@ public class PropertiesPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     public void onCardClick(String header, String value) {
-        mView.showCopyValueBottomSheet(header, value);
+        view.showCopyValueBottomSheet(header, value);
     }
 
 }

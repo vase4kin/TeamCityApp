@@ -116,12 +116,14 @@ interface TeamCityService {
     /**
      * List queued builds
      *
+     * @param locator - TC build locator
      * @param fields - Additional TC fields
      * @return [Single] with [Builds]
      */
     @Headers(APPLICATION_JSON)
     @GET("app/rest/buildQueue")
-    fun listQueueBuilds(@Query("fields") fields: String?): Single<Builds>
+    fun listQueueBuilds(@Query("locator") locator: String?,
+                        @Query("fields") fields: String?): Single<Builds>
 
     /**
      * List builds by locator

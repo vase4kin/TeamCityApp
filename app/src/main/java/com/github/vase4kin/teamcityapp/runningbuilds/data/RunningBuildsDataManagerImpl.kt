@@ -24,13 +24,14 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import io.reactivex.Observable
 
 /**
  * Impl of [RunningBuildsDataManager]
  */
 class RunningBuildsDataManagerImpl(
         repository: Repository,
-        storage: SharedUserStorage
+        private val storage: SharedUserStorage
 ) : BuildListDataManagerImpl(repository, storage), RunningBuildsDataManager {
 
     /**
@@ -48,6 +49,8 @@ class RunningBuildsDataManagerImpl(
      * {@inheritDoc}
      *
      * TODO: WTF RUNNING BUILDS?
+     *
+     * I have no idea what that comment above means
      */
     override fun load(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         val runningBuilds = getBuildDetailsObservable(repository.listRunningBuilds(filter.toLocator(), null, update))
@@ -60,7 +63,36 @@ class RunningBuildsDataManagerImpl(
     /**
      * {@inheritDoc}
      */
+    override fun loadFavorites(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
+        val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
+                .flatMap { buildTypeId ->
+                    val locator = filter.toLocator() + ",${buildTypeIdLocator(buildTypeId)}"
+                    getBuildDetailsObservable(repository.listRunningBuilds(locator, null, update))
+                }.toSortedList { buildDetails, buildDetails2 ->
+                    buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
+                }
+        loadBuildDetailsList(runningBuildsByBuildTypeIds, loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun loadCount(loadingListener: OnLoadingListener<Int>) {
-        loadCount(repository.listRunningBuilds(filter.toLocator(), "count", false), loadingListener)
+        val runningBuildsCount = repository.listRunningBuilds(filter.toLocator(), "count", false)
+                .map { it.count }
+        loadCount(runningBuildsCount, loadingListener)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>) {
+        val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
+                .flatMapSingle { buildTypeId ->
+                    val locator = filter.toLocator() + ",${buildTypeIdLocator(buildTypeId)}"
+                    repository.listRunningBuilds(locator, "count", false)
+                            .map { it.count }
+                }.toList().map { it.sum() }
+        loadCount(runningBuildsByBuildTypeIds, loadingListener)
     }
 }

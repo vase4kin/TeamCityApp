@@ -55,7 +55,7 @@ public class AgentPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void initViews() {
         super.initViews();
-        mView.replaceSkeletonViewContent();
+        view.replaceSkeletonViewContent();
     }
 
     /**
@@ -63,7 +63,7 @@ public class AgentPresenterImpl extends BaseListPresenterImpl<
      */
     @Override
     protected void loadData(@NonNull OnLoadingListener<List<Agent>> loadingListener, boolean update) {
-        mDataManager.load(mValueExtractor.includeDisconnected(), loadingListener, update);
+        dataManager.load(valueExtractor.includeDisconnected(), loadingListener, update);
     }
 
     /**
@@ -72,8 +72,8 @@ public class AgentPresenterImpl extends BaseListPresenterImpl<
     @Override
     protected void onSuccessCallBack(List<Agent> data) {
         super.onSuccessCallBack(data);
-        int type = mValueExtractor.includeDisconnected() ? AgentTabsViewModelImpl.DISCONNECTED_TAB : AgentTabsViewModelImpl.CONNECTED_TAB;
-        mDataManager.postUpdateTabTitleEvent(data.size(), type);
+        int type = valueExtractor.includeDisconnected() ? AgentTabsViewModelImpl.DISCONNECTED_TAB : AgentTabsViewModelImpl.CONNECTED_TAB;
+        dataManager.postUpdateTabTitleEvent(data.size(), type);
     }
 
     /**

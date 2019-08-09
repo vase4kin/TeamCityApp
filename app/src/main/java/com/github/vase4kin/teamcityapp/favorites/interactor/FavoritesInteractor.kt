@@ -26,11 +26,6 @@ import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem
 interface FavoritesInteractor : BaseListRxDataManager<FavoritesInteractorImpl.NavigationItemsList, NavigationItem> {
 
     /**
-     * @return the count of favorite build types
-     */
-    fun getFavoritesCount(): Int
-
-    /**
      * Load favorites
      *
      * @param update          - Force data update

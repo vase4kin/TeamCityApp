@@ -37,6 +37,6 @@ public class BuildLogValueExtractorImpl extends BaseValueExtractorImpl implement
      */
     @Override
     public String getBuildId() {
-        return mBundle.getString(BundleExtractorValues.BUILD_ID);
+        return bundle.getString(BundleExtractorValues.BUILD_ID);
     }
 }

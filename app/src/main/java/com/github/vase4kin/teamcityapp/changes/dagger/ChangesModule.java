@@ -62,7 +62,7 @@ public class ChangesModule {
 
     @Provides
     ViewTracker providesViewTracker() {
-        return ViewTracker.STUB;
+        return ViewTracker.Companion.getSTUB();
     }
 
     @Provides
