@@ -30,7 +30,9 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
+import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
@@ -38,6 +40,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
+import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -106,9 +109,38 @@ class RunningBuildsFragmentTest {
         matchToolbarTitle("Running builds")
     }
 
-    @Ignore("FIX ME")
+    @Ignore
     @Test
     fun testUserCanSeeSuccessFullyLoadedRunningBuilds() {
+        // Favorites two builds
+        val locator = BuildListFilterImpl().apply {
+            setFilter(FilterBuildsView.FILTER_RUNNING)
+        }.toLocator()
+        val buildTypeId1 = "id1"
+        val buildTypeId2 = "id2"
+        storage.addBuildTypeToFavorites(buildTypeId1)
+        storage.addBuildTypeToFavorites(buildTypeId2)
+        val buildsByBuildTypeId1 = listOf<Build>(Mocks.runningBuild())
+        val buildsByBuildTypeId2 = listOf<Build>(Mocks.runningBuild2())
+
+        val buildTypeLocator1 = locator + ",${buildTypeIdLocator(buildTypeId1)}"
+        val buildTypeLocator2 = locator + ",${buildTypeIdLocator(buildTypeId2)}"
+        `when`(teamCityService.listRunningBuilds(buildTypeLocator1, null))
+                .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+        `when`(teamCityService.listRunningBuilds(buildTypeLocator1, "count"))
+                .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+        `when`(teamCityService.listRunningBuilds(buildTypeLocator2, null))
+                .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+        `when`(teamCityService.listRunningBuilds(buildTypeLocator2, "count"))
+                .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+
+        // ALL (one build by all)
+        val builds = listOf<Build>(Mocks.runningBuild())
+        `when`(teamCityService.listRunningBuilds(locator, null))
+                .thenReturn(Single.just(Builds(builds.size, builds)))
+        `when`(teamCityService.listRunningBuilds(locator, "count"))
+                .thenReturn(Single.just(Builds(builds.size, builds)))
+
         activityRule.launchActivity(null)
 
         // Click on running builds tab
@@ -124,9 +156,9 @@ class RunningBuildsFragmentTest {
         onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(matches(withText("#2458")))
     }
 
-    @Ignore("FIX ME")
     @Test
     fun testUserCanClickOnSection() {
+        storage.addBuildTypeToFavorites("id")
         activityRule.launchActivity(null)
 
         // Click on running builds tab
@@ -146,9 +178,9 @@ class RunningBuildsFragmentTest {
                         hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))))))
     }
 
-    @Ignore("FIX ME")
     @Test
     fun testUserCanSeeFailureMessageIfSmthHappendsOnRunningBuildsLoading() {
+        storage.addBuildTypeToFavorites("id")
         `when`(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.error(RuntimeException("smth bad happend!")))
 
         activityRule.launchActivity(null)
@@ -174,6 +206,13 @@ class RunningBuildsFragmentTest {
 
         // Check empty view
         onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_running_builds)))
+
+        // filter builds to show all
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
+        onView(withText(R.string.text_show_running)).perform(click())
+
+        checkRunningTabBadgeCount("0")
+        onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_running_builds)))
     }
 
     private fun clickOnRunningbuildsTab() {
@@ -188,4 +227,6 @@ class RunningBuildsFragmentTest {
         )
                 .check(matches(isDisplayed()))
     }
+
+    private fun buildTypeIdLocator(buildTypeId: String): String = "buildType:$buildTypeId"
 }

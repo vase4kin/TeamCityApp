@@ -93,6 +93,8 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
             // running build
             case "/guestAuth/app/rest/builds/id:783911":
                 return Single.just(Mocks.runningBuild());
+            case "/guestAuth/app/rest/builds/id:7839123":
+                return Single.just(Mocks.runningBuild2());
             case "/guestAuth/app/rest/builds/id:783912":
                 return Single.just(Mocks.successBuild());
             case "/guestAuth/app/rest/builds/id:783913":
