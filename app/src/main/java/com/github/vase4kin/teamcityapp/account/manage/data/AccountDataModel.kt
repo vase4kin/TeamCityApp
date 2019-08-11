@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.data;
+package com.github.vase4kin.teamcityapp.account.manage.data
 
-import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 
 /**
- * Manages data in {@link com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter}
+ * Manages data in [com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter]
  */
-public interface AccountDataModel extends BaseDataModel {
+interface AccountDataModel : BaseDataModel {
 
     /**
      * Get TeamCity server url
@@ -30,7 +30,7 @@ public interface AccountDataModel extends BaseDataModel {
      * @param position adapter position
      * @return TeamCity server url
      */
-    String getTeamcityUrl(int position);
+    fun getTeamcityUrl(position: Int): String
 
     /**
      * Get account user name
@@ -38,32 +38,32 @@ public interface AccountDataModel extends BaseDataModel {
      * @param position adapter position
      * @return Account user name
      */
-    String getUserName(int position);
+    fun getUserName(position: Int): String
 
     /**
      * Sort model data with active account first
      */
-    void sort();
+    fun sort()
 
     /**
      * Add TeamCity account to the model
      *
      * @param account TeamCity account
      */
-    void add(UserAccount account);
+    fun add(account: UserAccount)
 
     /**
      * Remove TeamCity account from the model
      *
      * @param account TeamCity account
      */
-    void remove(UserAccount account);
+    fun remove(account: UserAccount)
 
     /**
      * Get User account object
      *
      * @param position adapter postion
-     * @return {@link UserAccount}
+     * @return [UserAccount]
      */
-    UserAccount get(int position);
+    operator fun get(position: Int): UserAccount
 }
