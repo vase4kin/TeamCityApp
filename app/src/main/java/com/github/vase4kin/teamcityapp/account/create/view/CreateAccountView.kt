@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,102 +14,102 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.create.view;
+package com.github.vase4kin.teamcityapp.account.create.view
 
 /**
- * View to manage {@link CreateAccountActivity}
+ * View to manage [CreateAccountActivity]
  */
-public interface CreateAccountView {
-
-    /**
-     * Init views
-     *
-     * @param listener - Listener to receive callback on {@link com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl}
-     */
-    void initViews(ViewListener listener);
-
-    /**
-     * Set error text for text field
-     *
-     * @param errorMessage - Error message
-     */
-    void showError(String errorMessage);
-
-    /**
-     * Show server url cannot be empty error
-     */
-    void showServerUrlCanNotBeEmptyError();
-
-    /**
-     * Show server user name cannot be empty error
-     */
-    void showUserNameCanNotBeEmptyError();
-
-    /**
-     * Show server password cannot be empty error
-     */
-    void showPasswordCanNotBeEmptyError();
-
-    /**
-     * Show could not save user data error
-     */
-    void showCouldNotSaveUserError();
-
-    /**
-     * Hide error
-     */
-    void hideError();
-
-    /**
-     * Unbind all views
-     */
-    void onDestroyView();
-
-    /**
-     * Show progress loading dialog
-     */
-    void showProgressDialog();
-
-    /**
-     * Hide progress loading dialog
-     */
-    void dismissProgressDialog();
-
-    /**
-     * Show discard changes dialog
-     */
-    void showDiscardDialog();
+interface CreateAccountView {
 
     /**
      * Check if email is empty
      *
      * @return boolean email field empty or not
      */
-    boolean isEmailEmpty();
+    val isEmailEmpty: Boolean
+
+    /**
+     * Init views
+     *
+     * @param listener - Listener to receive callback on [com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl]
+     */
+    fun initViews(listener: ViewListener)
+
+    /**
+     * Set error text for text field
+     *
+     * @param errorMessage - Error message
+     */
+    fun showError(errorMessage: String)
+
+    /**
+     * Show server url cannot be empty error
+     */
+    fun showServerUrlCanNotBeEmptyError()
+
+    /**
+     * Show server user name cannot be empty error
+     */
+    fun showUserNameCanNotBeEmptyError()
+
+    /**
+     * Show server password cannot be empty error
+     */
+    fun showPasswordCanNotBeEmptyError()
+
+    /**
+     * Show could not save user data error
+     */
+    fun showCouldNotSaveUserError()
+
+    /**
+     * Hide error
+     */
+    fun hideError()
+
+    /**
+     * Unbind all views
+     */
+    fun onDestroyView()
+
+    /**
+     * Show progress loading dialog
+     */
+    fun showProgressDialog()
+
+    /**
+     * Hide progress loading dialog
+     */
+    fun dismissProgressDialog()
+
+    /**
+     * Show discard changes dialog
+     */
+    fun showDiscardDialog()
 
     /**
      * Finish activity
      */
-    void finish();
+    fun finish()
 
     /**
      * Show error message that account exists
      */
-    void showNewAccountExistErrorMessage();
+    fun showNewAccountExistErrorMessage()
 
     /**
      * Show warning dialog about disabling ssl
      */
-    void showDisableSslWarningDialog();
+    fun showDisableSslWarningDialog()
 
     /**
      * On create account listener
      */
-    interface ViewListener extends OnValidateListener, OnToolBarNavigationListener {
+    interface ViewListener : OnValidateListener, OnToolBarNavigationListener {
 
         /**
          * On ignore ssl switch click
          */
-        void onDisableSslSwitchClick();
+        fun onDisableSslSwitchClick()
     }
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,18 +19,14 @@ package com.github.vase4kin.teamcityapp.account.create.view;
 import android.app.Activity;
 import android.graphics.Color;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -97,35 +93,29 @@ public class CreateAccountViewImpl implements CreateAccountView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(final ViewListener listener) {
+    public void initViews(@NonNull final ViewListener listener) {
         mUnbinder = ButterKnife.bind(this, mActivity);
         initDialogs();
         initToolbar(listener);
 
-        mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    listener.validateUserData(
-                            mServerUrl.getText().toString().trim(),
-                            mUserName.getText().toString().trim(),
-                            mPassword.getText().toString().trim(),
-                            disableSslSwitch.isChecked());
-                    return true;
-                }
-                return false;
+        mPassword.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                listener.validateUserData(
+                        mServerUrl.getText().toString().trim(),
+                        mUserName.getText().toString().trim(),
+                        mPassword.getText().toString().trim(),
+                        disableSslSwitch.isChecked());
+                return true;
             }
+            return false;
         });
 
-        mGuestUserSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
-                mUserNameInputLayout.setVisibility(b ? View.GONE : View.VISIBLE);
-                mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
-                mPasswordInputLayout.setVisibility(b ? View.GONE : View.VISIBLE);
-                setupViewsRegardingUserType(b, listener);
-            }
+        mGuestUserSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
+            mUserNameInputLayout.setVisibility(b ? View.GONE : View.VISIBLE);
+            mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
+            mPasswordInputLayout.setVisibility(b ? View.GONE : View.VISIBLE);
+            setupViewsRegardingUserType(b, listener);
         });
 
         setupViewsRegardingUserType(false, listener);
@@ -133,12 +123,9 @@ public class CreateAccountViewImpl implements CreateAccountView {
         //Set text selection to the end
         mServerUrl.setSelection(mServerUrl.getText().length());
 
-        disableSslSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    listener.onDisableSslSwitchClick();
-                }
+        disableSslSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                listener.onDisableSslSwitchClick();
             }
         });
     }
@@ -153,23 +140,20 @@ public class CreateAccountViewImpl implements CreateAccountView {
         if (isGuestUser) {
             // guest user
             mServerUrl.setImeOptions(EditorInfo.IME_ACTION_DONE);
-            mServerUrl.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        if (mGuestUserSwitch.isChecked()) {
-                            listener.validateGuestUserData(
-                                    mServerUrl.getText().toString().trim(), disableSslSwitch.isChecked());
-                        } else {
-                            listener.validateUserData(
-                                    mServerUrl.getText().toString().trim(),
-                                    mUserName.getText().toString().trim(),
-                                    mPassword.getText().toString().trim(),
-                                    disableSslSwitch.isChecked());
-                        }
+            mServerUrl.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    if (mGuestUserSwitch.isChecked()) {
+                        listener.validateGuestUserData(
+                                mServerUrl.getText().toString().trim(), disableSslSwitch.isChecked());
+                    } else {
+                        listener.validateUserData(
+                                mServerUrl.getText().toString().trim(),
+                                mUserName.getText().toString().trim(),
+                                mPassword.getText().toString().trim(),
+                                disableSslSwitch.isChecked());
                     }
-                    return false;
                 }
+                return false;
             });
         } else {
             // not guest user
@@ -182,7 +166,7 @@ public class CreateAccountViewImpl implements CreateAccountView {
      * {@inheritDoc}
      */
     @Override
-    public void showError(String errorMessage) {
+    public void showError(@NonNull String errorMessage) {
         mUrlInputLayout.setError(errorMessage);
     }
 
@@ -352,19 +336,13 @@ public class CreateAccountViewImpl implements CreateAccountView {
                 .negativeColor(mOrangeColor)
                 .negativeText(R.string.warning_ssl_dialog_negative)
                 .linkColor(mOrangeColor)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        disableSslSwitch.setChecked(true);
-                        dialog.dismiss();
-                    }
+                .onPositive((dialog, which) -> {
+                    disableSslSwitch.setChecked(true);
+                    dialog.dismiss();
                 })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        disableSslSwitch.setChecked(false);
-                        dialog.dismiss();
-                    }
+                .onNegative((dialog, which) -> {
+                    disableSslSwitch.setChecked(false);
+                    dialog.dismiss();
                 })
                 .canceledOnTouchOutside(false)
                 .autoDismiss(false)
