@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouterImpl
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker
-import com.github.vase4kin.teamcityapp.account.create.tracker.FirebaseCreateAccountTrackerImpl
+import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTrackerImpl
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountViewImpl
@@ -67,6 +67,6 @@ class CreateAccountModule {
 
     @Provides
     fun providesFirebaseCreateAccountTracker(firebaseAnalytics: FirebaseAnalytics): CreateAccountTracker {
-        return FirebaseCreateAccountTrackerImpl(firebaseAnalytics)
+        return CreateAccountTrackerImpl(firebaseAnalytics)
     }
 }
