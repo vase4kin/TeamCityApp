@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agents.view;
+package com.github.vase4kin.teamcityapp.agents.view
 
-import android.view.ViewGroup;
+import android.view.ViewGroup
 
-import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
-import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory;
+import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
+import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 
 /**
  * Agent single item view factory
  */
-public class AgentViewHolderFactory implements ViewHolderFactory<AgentDataModel> {
+class AgentViewHolderFactory : ViewHolderFactory<AgentDataModel> {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public BaseViewHolder<AgentDataModel> createViewHolder(ViewGroup parent) {
-        return new AgentViewHolder(parent);
+    override fun createViewHolder(parent: ViewGroup): BaseViewHolder<AgentDataModel> {
+        return AgentViewHolder(parent)
     }
 }
