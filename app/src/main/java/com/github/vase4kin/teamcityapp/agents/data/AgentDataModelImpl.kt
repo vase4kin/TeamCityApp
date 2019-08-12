@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agents.api;
+package com.github.vase4kin.teamcityapp.agents.data
 
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+import com.github.vase4kin.teamcityapp.agents.api.Agent
 
 /**
- * Agent
+ * Impl of [AgentDataModel]
  */
-public class Agent extends BaseObject {
+class AgentDataModelImpl(private val agents: List<Agent>) : AgentDataModel {
 
-    private String name;
-
-    public Agent(String name) {
-        super();
-        this.name = name;
+    /**
+     * {@inheritDoc}
+     */
+    override fun getName(position: Int): String {
+        return agents[position].name
     }
 
-    public String getName() {
-        return name;
+    /**
+     * {@inheritDoc}
+     */
+    override fun getItemCount(): Int {
+        return agents.size
     }
 }
