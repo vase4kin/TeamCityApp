@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,13 +43,13 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
 
     private Unbinder mUnbinder;
 
-    protected AppCompatActivity mActivity;
+    protected AppCompatActivity activity;
     FragmentAdapter mAdapter;
     private View mView;
 
-    public BaseTabsViewModelImpl(View mView, AppCompatActivity mActivity) {
+    public BaseTabsViewModelImpl(View mView, AppCompatActivity activity) {
         this.mView = mView;
-        this.mActivity = mActivity;
+        this.activity = activity;
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
         mUnbinder = ButterKnife.bind(this, mView);
         // Make sure there're no fragments saved in fragment manager (in case the view was reloaded)
         removeAllFragmentsFromFragmentManager();
-        mAdapter = new FragmentAdapter(mActivity.getSupportFragmentManager(), mActivity);
+        mAdapter = new FragmentAdapter(activity.getSupportFragmentManager(), activity);
         addFragments(mAdapter);
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -83,7 +83,7 @@ public abstract class BaseTabsViewModelImpl implements BaseTabsViewModel {
      */
     @SuppressLint("RestrictedApi")
     private void removeAllFragmentsFromFragmentManager() {
-        FragmentManager fragmentManager = mActivity.getSupportFragmentManager();
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
         List<Fragment> fragments = fragmentManager.getFragments();
         if (fragments != null) {
             FragmentTransaction ft = fragmentManager.beginTransaction();
