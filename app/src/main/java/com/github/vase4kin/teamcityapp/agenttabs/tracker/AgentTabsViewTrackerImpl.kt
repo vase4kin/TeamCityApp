@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agenttabs.tracker;
+package com.github.vase4kin.teamcityapp.agenttabs.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
+import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
  * Tracker firebase impl
  */
-public class AgentTabsViewTrackerImpl extends BaseFirebaseTracker implements AgentTabsViewTracker {
-
-    public AgentTabsViewTrackerImpl(FirebaseAnalytics firebaseAnalytics) {
-        super(firebaseAnalytics);
-    }
+class AgentTabsViewTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), AgentTabsViewTracker {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void trackView() {
-        firebaseAnalytics.logEvent(SCREEN_NAME, null);
+    override fun trackView() {
+        firebaseAnalytics.logEvent(AgentTabsViewTracker.SCREEN_NAME, null)
     }
 }
