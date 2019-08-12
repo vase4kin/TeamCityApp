@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -207,16 +207,16 @@ class HomePresenterImpl @Inject constructor(
         val currentFilter = filterProvider.runningBuildsFilter
         if (currentFilter === Filter.RUNNING_FAVORITES) {
             dataManager.loadFavoriteRunningBuildsCount(object : OnLoadingListener<Int> {
-                override fun onSuccess(data: Int?) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal, data!!)
+                override fun onSuccess(data: Int) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal, data)
                 }
 
                 override fun onFail(errorMessage: String) {}
             })
         } else if (currentFilter === Filter.RUNNING_ALL) {
             dataManager.loadRunningBuildsCount(object : OnLoadingListener<Int> {
-                override fun onSuccess(data: Int?) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal, data!!)
+                override fun onSuccess(data: Int) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal, data)
                 }
 
                 override fun onFail(errorMessage: String) {}
@@ -231,8 +231,8 @@ class HomePresenterImpl @Inject constructor(
         val currentFilter = filterProvider.queuedBuildsFilter
         if (currentFilter === Filter.QUEUE_FAVORITES) {
             dataManager.loadFavoriteBuildQueueCount(object : OnLoadingListener<Int> {
-                override fun onSuccess(data: Int?) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal, data!!)
+                override fun onSuccess(data: Int) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal, data)
                 }
 
                 override fun onFail(errorMessage: String) {
@@ -241,8 +241,8 @@ class HomePresenterImpl @Inject constructor(
             })
         } else if (currentFilter === Filter.QUEUE_ALL) {
             dataManager.loadBuildQueueCount(object : OnLoadingListener<Int> {
-                override fun onSuccess(data: Int?) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal, data!!)
+                override fun onSuccess(data: Int) {
+                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal, data)
                 }
 
                 override fun onFail(errorMessage: String) {
