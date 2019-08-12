@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -128,11 +128,11 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     @Override
     public void initViews() {
         super.initViews();
-        mFloatingActionButton.setImageDrawable(new IconDrawable(mActivity, MaterialIcons.md_directions_run).color(Color.WHITE));
+        mFloatingActionButton.setImageDrawable(new IconDrawable(activity, MaterialIcons.md_directions_run).color(Color.WHITE));
         int offScreenPageLimit = mViewPager.getAdapter().getCount();
         mViewPager.setOffscreenPageLimit(offScreenPageLimit);
-        overviewTabTitle = mActivity.getString(R.string.tab_overview);
-        artifactsTabTitle = mActivity.getString(R.string.tab_artifacts);
+        overviewTabTitle = activity.getString(R.string.tab_overview);
+        artifactsTabTitle = activity.getString(R.string.tab_artifacts);
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -378,7 +378,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showTextCopiedSnackBar() {
-        new Handler(mActivity.getMainLooper()).postDelayed(new Runnable() {
+        new Handler(activity.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 showSnackBarWithText(R.string.build_element_copy_text);
@@ -427,7 +427,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * @return confirm dialog builder
      */
     private MaterialDialog.Builder createConfirmDialogBuilder(@StringRes int content, @StringRes int positiveText) {
-        return new MaterialDialog.Builder(mActivity)
+        return new MaterialDialog.Builder(activity)
                 .content(content)
                 .positiveText(positiveText)
                 .onPositive(new MaterialDialog.SingleButtonCallback() {
@@ -446,7 +446,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * @return progress dialog
      */
     private MaterialDialog createProgressDialogWithContent(@StringRes int content) {
-        MaterialDialog progressDialog = new MaterialDialog.Builder(mActivity)
+        MaterialDialog progressDialog = new MaterialDialog.Builder(activity)
                 .content(content)
                 .progress(true, 0)
                 .autoDismiss(false)
@@ -483,35 +483,35 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     private void setColorsByBuildType() {
         if (mBuildDetails.isQueued()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_tool_bar_color);
+            mStatusBarUtils.changeStatusBarColor(activity, R.color.queued_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             mTabLayout.setTabTextColors(
-                    mActivity.getResources().getColor(R.color.tab_queued_unselected_color),
-                    mActivity.getResources().getColor(R.color.md_white_1000));
+                    activity.getResources().getColor(R.color.tab_queued_unselected_color),
+                    activity.getResources().getColor(R.color.md_white_1000));
         } else if (mBuildDetails.isRunning()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.running_tool_bar_color);
+            mStatusBarUtils.changeStatusBarColor(activity, R.color.running_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.running_tool_bar_color);
             mTabLayout.setTabTextColors(
-                    mActivity.getResources().getColor(R.color.tab_running_unselected_color),
-                    mActivity.getResources().getColor(R.color.md_white_1000));
+                    activity.getResources().getColor(R.color.tab_running_unselected_color),
+                    activity.getResources().getColor(R.color.md_white_1000));
         } else if (mBuildDetails.isFailed()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.failed_tool_bar_color);
+            mStatusBarUtils.changeStatusBarColor(activity, R.color.failed_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.failed_tool_bar_color);
             mTabLayout.setTabTextColors(
-                    mActivity.getResources().getColor(R.color.tab_failed_unselected_color),
-                    mActivity.getResources().getColor(R.color.md_white_1000));
+                    activity.getResources().getColor(R.color.tab_failed_unselected_color),
+                    activity.getResources().getColor(R.color.md_white_1000));
         } else if (mBuildDetails.isSuccess()) {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.success_tool_bar_color);
+            mStatusBarUtils.changeStatusBarColor(activity, R.color.success_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.success_tool_bar_color);
             mTabLayout.setTabTextColors(
-                    mActivity.getResources().getColor(R.color.tab_success_unselected_color),
-                    mActivity.getResources().getColor(R.color.md_white_1000));
+                    activity.getResources().getColor(R.color.tab_success_unselected_color),
+                    activity.getResources().getColor(R.color.md_white_1000));
         } else {
-            mStatusBarUtils.changeStatusBarColor(mActivity, R.color.queued_tool_bar_color);
+            mStatusBarUtils.changeStatusBarColor(activity, R.color.queued_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             mTabLayout.setTabTextColors(
-                    mActivity.getResources().getColor(R.color.tab_queued_unselected_color),
-                    mActivity.getResources().getColor(R.color.md_white_1000));
+                    activity.getResources().getColor(R.color.tab_queued_unselected_color),
+                    activity.getResources().getColor(R.color.md_white_1000));
         }
     }
 
@@ -521,18 +521,18 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * @param color - Color to set
      */
     private void setToolBarAndTabLayoutColor(@ColorRes int color) {
-        ActionBar actionBar = mActivity.getSupportActionBar();
+        ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setBackgroundDrawable(new ColorDrawable(mActivity.getResources().getColor(color)));
+            actionBar.setBackgroundDrawable(new ColorDrawable(activity.getResources().getColor(color)));
         }
-        mTabLayout.setBackgroundColor(mActivity.getResources().getColor(color));
+        mTabLayout.setBackgroundColor(activity.getResources().getColor(color));
     }
 
     /**
      * Set toolbar title
      */
     private void setTitle() {
-        ActionBar actionBar = mActivity.getSupportActionBar();
+        ActionBar actionBar = activity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle("#" + mBuildDetails.getNumber());
             actionBar.setSubtitle(mBuildDetails.getBuildTypeName());
