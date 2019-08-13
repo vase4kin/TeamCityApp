@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.artifact.api.File;
@@ -54,7 +53,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * {@inheritDoc}
      */
     @Override
-    public void setOnArtifactPresenterListener(OnArtifactPresenterListener listener) {
+    public void setOnArtifactPresenterListener(@NonNull OnArtifactPresenterListener listener) {
         this.mListener = listener;
     }
 
@@ -113,7 +112,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * {@inheritDoc}
      */
     @Override
-    public void showFullBottomSheet(File artifactFile) {
+    public void showFullBottomSheet(@NonNull File artifactFile) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(),
                 new String[]{artifactFile.getContent().getHref(), artifactFile.getChildren().getHref()},
@@ -125,7 +124,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * {@inheritDoc}
      */
     @Override
-    public void showFolderBottomSheet(File artifactFile) {
+    public void showFolderBottomSheet(@NonNull File artifactFile) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(), artifactFile.getChildren().getHref(), MenuItemsFactory.TYPE_ARTIFACT_FOLDER);
         bottomSheetDialogFragment.show(((AppCompatActivity) mActivity).getSupportFragmentManager(), TAG_BOTTOM_SHEET);
@@ -135,7 +134,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
      * {@inheritDoc}
      */
     @Override
-    public void showBrowserBottomSheet(File artifactFile) {
+    public void showBrowserBottomSheet(@NonNull File artifactFile) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
                 artifactFile.getName(),
                 new String[]{artifactFile.getContent().getHref(), artifactFile.getHref()},
@@ -184,12 +183,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
                 .content(R.string.permissions_dialog_content)
                 .widgetColor(Color.GRAY)
                 .positiveText(R.string.dialog_ok_title)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        onPermissionsDialogListener.onAllow();
-                    }
-                })
+                .onPositive((dialog, which) -> onPermissionsDialogListener.onAllow())
                 .show();
     }
 
@@ -203,12 +197,7 @@ public class ArtifactViewImpl extends BaseListViewImpl<ArtifactDataModel, Artifa
                 .content(R.string.permissions_install_packages_dialog_content)
                 .widgetColor(Color.GRAY)
                 .positiveText(R.string.dialog_ok_title)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        onPermissionsDialogListener.onAllow();
-                    }
-                })
+                .onPositive((dialog, which) -> onPermissionsDialogListener.onAllow())
                 .show();
     }
 }
