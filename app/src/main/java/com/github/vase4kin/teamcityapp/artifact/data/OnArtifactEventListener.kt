@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.data;
+package com.github.vase4kin.teamcityapp.artifact.data
 
-public interface OnArtifactEventListener {
+interface OnArtifactEventListener {
 
     /**
      * Download artifact file
@@ -24,19 +24,19 @@ public interface OnArtifactEventListener {
      * @param fileName - File name
      * @param href     - File href
      */
-    void onDownloadArtifactEvent(String fileName, String href);
+    fun onDownloadArtifactEvent(fileName: String, href: String)
 
     /**
      * Open artifact file
      *
      * @param href - File href
      */
-    void onOpenArtifactEvent(String href);
+    fun onOpenArtifactEvent(href: String)
 
     /**
      * Open artifact with browser
      *
      * @param href - File href
      */
-    void onStartBrowserEvent(String href);
+    fun onStartBrowserEvent(href: String)
 }
