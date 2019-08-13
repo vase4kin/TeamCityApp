@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -65,8 +65,6 @@ public class RunBuildPresenterImplTest {
     @Captor
     private ArgumentCaptor<OnLoadingListener<List<Agent>>> mAgentsLoadingListenerCaptor;
     @Mock
-    private Agent mAgent;
-    @Mock
     private RunBuildView mView;
     @Mock
     private RunBuildInteractor mInteractor;
@@ -78,6 +76,7 @@ public class RunBuildPresenterImplTest {
     private BranchesComponentView mBranchesComponentView;
     @Mock
     private BranchesInteractor mBranchesInteractor;
+    private Agent mAgent = new Agent("agentName");
 
     private RunBuildPresenterImpl mPresenter;
 
@@ -94,7 +93,6 @@ public class RunBuildPresenterImplTest {
 
     @Test
     public void testOnCreate() throws Exception {
-        when(mAgent.getName()).thenReturn("agentName");
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mBranchesInteractor).loadBranches(mBranchLoadingListenerCaptor.capture());
