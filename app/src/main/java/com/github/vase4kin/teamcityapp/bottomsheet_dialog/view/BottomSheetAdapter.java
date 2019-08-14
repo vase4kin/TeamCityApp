@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
 
-import android.view.View;
+import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter;
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder;
@@ -44,65 +44,30 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
      * {@inheritDoc}
      */
     @Override
-    public void onBindViewHolder(BaseViewHolder<BottomSheetDataModel> holder, int position) {
+    public void onBindViewHolder(@NonNull BaseViewHolder<BottomSheetDataModel> holder, int position) {
         super.onBindViewHolder(holder, position);
         final String fileName = dataModel.getFileName(position);
         final String description = dataModel.getDescription(position);
         if (dataModel.hasCopyAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onCopyActionClick(description);
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onCopyActionClick(description));
         }
         if (dataModel.hasBranchAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onShowBuildsActionClick(description);
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onShowBuildsActionClick(description));
         }
         if (dataModel.hasBuildTypeAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onShowBuildTypeActionClick();
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onShowBuildTypeActionClick());
         }
         if (dataModel.hasProjectAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onShowProjectActionClick();
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onShowProjectActionClick());
         }
         if (dataModel.hasArtifactDownloadAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onArtifactDownloadActionClick(fileName, description);
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onArtifactDownloadActionClick(fileName, description));
         }
         if (dataModel.hasArtifactOpenAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onArtifactOpenActionClick(description);
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onArtifactOpenActionClick(description));
         }
         if (dataModel.hasArtifactOpenInBrowserAction(position)) {
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onArtifactBrowserOpenActionClick(description);
-                }
-            });
+            holder.itemView.setOnClickListener(view -> listener.onArtifactBrowserOpenActionClick(description));
         }
     }
 
