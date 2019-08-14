@@ -157,8 +157,9 @@ class OverviewInteractorImpl(private val repository: Repository,
      *
      * @param event [OnOverviewRefreshDataEvent]
      */
+    @Suppress("unused")
     @Subscribe
-    fun onEvent(event: OnOverviewRefreshDataEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: OnOverviewRefreshDataEvent) {
         listener?.onDataRefreshEvent()
     }
 
@@ -177,8 +178,9 @@ class OverviewInteractorImpl(private val repository: Repository,
      *
      * @param event [NavigateToBuildListEvent]
      */
+    @Suppress("unused")
     @Subscribe
-    fun onEvent(ignored: NavigateToBuildListEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") ignored: NavigateToBuildListEvent) {
         listener?.onNavigateToBuildListEvent()
     }
 
@@ -187,8 +189,9 @@ class OverviewInteractorImpl(private val repository: Repository,
      *
      * @param event [NavigateToProjectEvent]
      */
+    @Suppress("unused")
     @Subscribe
-    fun onEvent(ignored: NavigateToProjectEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") ignored: NavigateToProjectEvent) {
         listener?.onNavigateToProjectEvent()
     }
 }
