@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,17 +33,17 @@ public class BaseTabsPresenterImpl<
         DT extends BaseTabsDataManager,
         TR extends ViewTracker> implements BaseTabsPresenter, OnTextTabChangeEventListener {
 
-    protected T mView;
-    protected TR mTracker;
-    protected DT mInteractor;
+    protected T view;
+    protected TR tracker;
+    protected DT interactor;
 
     @Inject
-    public BaseTabsPresenterImpl(@NonNull T mView,
+    public BaseTabsPresenterImpl(@NonNull T view,
                                  @NonNull TR tracker,
                                  @NonNull DT interactor) {
-        this.mView = mView;
-        this.mTracker = tracker;
-        this.mInteractor = interactor;
+        this.view = view;
+        this.tracker = tracker;
+        this.interactor = interactor;
     }
 
     /**
@@ -51,7 +51,7 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onViewsCreated() {
-        mView.initViews();
+        view.initViews();
     }
 
     /**
@@ -59,7 +59,7 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onViewsDestroyed() {
-        mView.unBindViews();
+        view.unBindViews();
     }
 
     /**
@@ -67,9 +67,9 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onResume() {
-        mInteractor.registerEventBus();
-        mInteractor.setListener(this);
-        mTracker.trackView();
+        interactor.registerEventBus();
+        interactor.setListener(this);
+        tracker.trackView();
     }
 
     /**
@@ -77,8 +77,8 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onPause() {
-        mInteractor.unregisterEventBus();
-        mInteractor.setListener(null);
+        interactor.unregisterEventBus();
+        interactor.setListener(null);
     }
 
     /**
@@ -86,6 +86,6 @@ public class BaseTabsPresenterImpl<
      */
     @Override
     public void onUpdateTabTitle(int tabPosition, String newTitle) {
-        mView.updateTabTitle(tabPosition, newTitle);
+        view.updateTabTitle(tabPosition, newTitle);
     }
 }
