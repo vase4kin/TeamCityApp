@@ -164,7 +164,7 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      * @param event [StopBuildEvent]
      */
     @Subscribe
-    fun onEvent(event: StopBuildEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: StopBuildEvent) {
         listener?.onCancelBuildActionTriggered()
     }
 
@@ -174,7 +174,7 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      * @param event [ShareBuildEvent]
      */
     @Subscribe
-    fun onEvent(event: ShareBuildEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: ShareBuildEvent) {
         listener?.onShareBuildActionTriggered()
     }
 
@@ -184,7 +184,7 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      * @param event [com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent]
      */
     @Subscribe
-    fun onEvent(event: RestartBuildEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: RestartBuildEvent) {
         listener?.onRestartBuildActionTriggered()
     }
 
@@ -194,7 +194,7 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      * @param event [com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent]
      */
     @Subscribe
-    fun onEvent(event: TextCopiedEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: TextCopiedEvent) {
         listener?.onTextCopiedActionTriggered()
     }
 
@@ -204,7 +204,7 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      * @param event [com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent]
      */
     @Subscribe
-    fun onEvent(event: ArtifactErrorDownloadingEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: ArtifactErrorDownloadingEvent) {
         listener?.onErrorDownloadingArtifactActionTriggered()
     }
 
@@ -223,8 +223,9 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      *
      * @param event [StartBuildsListActivityEvent]
      */
+    @Suppress("unused")
     @Subscribe
-    fun onEvent(event: StartBuildsListActivityEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: StartBuildsListActivityEvent) {
         listener?.onStartBuildListActivityEventTriggered()
     }
 
@@ -233,8 +234,9 @@ class BuildDetailsInteractorImpl(eventBus: EventBus,
      *
      * @param event [StartProjectActivityEvent]
      */
+    @Suppress("unused")
     @Subscribe
-    fun onEvent(event: StartProjectActivityEvent) {
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: StartProjectActivityEvent) {
         listener?.onStartProjectActivityEventTriggered()
     }
 }
