@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,50 +14,50 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.data;
+package com.github.vase4kin.teamcityapp.buildlist.data
 
-import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.mugen.MugenCallbacks;
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.mugen.MugenCallbacks
 
 /**
  * On build item click listener
  */
-public interface OnBuildListPresenterListener extends MugenCallbacks {
+interface OnBuildListPresenterListener : MugenCallbacks {
 
     /**
      * Handle click event on build item in adapter
      *
      * @param build - Build
      */
-    void onBuildClick(Build build);
+    fun onBuildClick(build: Build)
 
     /**
      * On run build fab button click
      */
-    void onRunBuildFabClick();
+    fun onRunBuildFabClick()
 
     /**
      * Show queued build snack bar
      */
-    void onShowQueuedBuildSnackBarClick();
+    fun onShowQueuedBuildSnackBarClick()
 
     /**
      * Show favorites
      */
-    void onNavigateToFavorites();
+    fun onNavigateToFavorites()
 
     /**
      * On filter builds option menu click
      */
-    void onFilterBuildsOptionMenuClick();
+    fun onFilterBuildsOptionMenuClick()
 
     /**
      * On add to favorites build click
      */
-    void onAddToFavoritesOptionMenuClick();
+    fun onAddToFavoritesOptionMenuClick()
 
     /**
      * On reset filters action click
      */
-    void onResetFiltersSnackBarActionClick();
+    fun onResetFiltersSnackBarActionClick()
 }
