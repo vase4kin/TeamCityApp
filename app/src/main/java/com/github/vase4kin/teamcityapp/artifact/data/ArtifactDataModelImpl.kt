@@ -40,9 +40,8 @@ class ArtifactDataModelImpl(private val files: List<File>) : ArtifactDataModel {
     /**
      * {@inheritDoc}
      */
-    override fun getItemCount(): Int {
-        return files.size
-    }
+    override val itemCount: Int
+        get() = files.size
 
     /**
      * {@inheritDoc}

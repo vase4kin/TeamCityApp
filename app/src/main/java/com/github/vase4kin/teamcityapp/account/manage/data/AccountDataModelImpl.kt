@@ -68,7 +68,6 @@ class AccountDataModelImpl(private val accounts: MutableList<UserAccount>) : Acc
     /**
      * {@inheritDoc}
      */
-    override fun getItemCount(): Int {
-        return accounts.size
-    }
+    override val itemCount: Int
+        get() = accounts.size
 }

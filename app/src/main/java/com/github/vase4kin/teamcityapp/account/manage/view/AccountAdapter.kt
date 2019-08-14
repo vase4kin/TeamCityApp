@@ -34,7 +34,7 @@ class AccountAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<AccountData
 
     override fun onBindViewHolder(holder: BaseViewHolder<AccountDataModel>, position: Int) {
         super.onBindViewHolder(holder, position)
-        val userAccount = mDataModel.get(position)
+        val userAccount = dataModel.get(position)
         (holder as AccountViewHolder).mContainer.setOnClickListener { listener!!.onAccountClick(userAccount) }
         holder.mContainer.setOnLongClickListener {
             listener!!.onAccountClick(userAccount)
