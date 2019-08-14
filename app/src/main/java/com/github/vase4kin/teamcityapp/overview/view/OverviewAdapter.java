@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,9 +46,9 @@ public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
     @Override
     public void onBindViewHolder(BaseViewHolder<OverviewDataModel> holder, int position) {
         super.onBindViewHolder(holder, position);
-        final String header = mDataModel.getHeaderName(position);
-        final String description = mDataModel.getDescription(position);
-        if (mDataModel.isBranchCard(position)) {
+        final String header = dataModel.getHeaderName(position);
+        final String description = dataModel.getDescription(position);
+        if (dataModel.isBranchCard(position)) {
             ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -62,7 +62,7 @@ public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
                     return true;
                 }
             });
-        } else if (mDataModel.isBuildTypeCard(position)) {
+        } else if (dataModel.isBuildTypeCard(position)) {
             ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -76,7 +76,7 @@ public class OverviewAdapter extends BaseAdapter<OverviewDataModel> {
                     return true;
                 }
             });
-        } else if (mDataModel.isProjectCard(position)) {
+        } else if (dataModel.isProjectCard(position)) {
             ((OverviewViewHolder) holder).mFrameLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

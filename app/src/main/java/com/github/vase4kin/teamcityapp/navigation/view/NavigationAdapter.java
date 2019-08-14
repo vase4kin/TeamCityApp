@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
             ((NavigationViewHolder) holder).mContainer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mOnClickListener.onClick(mDataModel.getNavigationItem(adapterPosition));
+                    mOnClickListener.onClick(dataModel.getNavigationItem(adapterPosition));
                 }
             });
         }
@@ -82,7 +82,7 @@ public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
 
     @Override
     public int getItemViewType(int position) {
-        if (mDataModel.isRateTheApp(position)) {
+        if (dataModel.isRateTheApp(position)) {
             return NavigationView.TYPE_RATE_THE_APP;
         } else {
             return super.getItemViewType(position);
@@ -90,7 +90,7 @@ public class NavigationAdapter extends BaseAdapter<NavigationDataModel> {
     }
 
     public void removeRateTheApp() {
-        mDataModel.removeItemByIndex(RateTheApp.POSITION);
+        dataModel.removeItemByIndex(RateTheApp.POSITION);
         notifyDataSetChanged();
     }
 }
