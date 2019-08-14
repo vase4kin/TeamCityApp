@@ -282,6 +282,8 @@ public class ArtifactPresenterImplTest {
         int requestCode = 12;
         String[] permissions = new String[]{"123"};
         int[] grantResults = new int[]{12, 123};
+        mPresenter.setFileName("");
+        mPresenter.setFileHref("");
         mPresenter.onRequestPermissionsResult(requestCode, permissions, grantResults);
         verify(mPermissionManager).onRequestPermissionsResult(eq(requestCode), eq(permissions), eq(grantResults), mOnPermissionsResultListenerArgumentCaptor.capture());
         OnPermissionsResultListener listener = mOnPermissionsResultListenerArgumentCaptor.getValue();
