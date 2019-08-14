@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,9 +46,9 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
     @Override
     public void onBindViewHolder(BaseViewHolder<BottomSheetDataModel> holder, int position) {
         super.onBindViewHolder(holder, position);
-        final String fileName = mDataModel.getFileName(position);
-        final String description = mDataModel.getDescription(position);
-        if (mDataModel.hasCopyAction(position)) {
+        final String fileName = dataModel.getFileName(position);
+        final String description = dataModel.getDescription(position);
+        if (dataModel.hasCopyAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -56,7 +56,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-        if (mDataModel.hasBranchAction(position)) {
+        if (dataModel.hasBranchAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -64,7 +64,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-        if (mDataModel.hasBuildTypeAction(position)) {
+        if (dataModel.hasBuildTypeAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -72,7 +72,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-        if (mDataModel.hasProjectAction(position)) {
+        if (dataModel.hasProjectAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -80,7 +80,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-        if (mDataModel.hasArtifactDownloadAction(position)) {
+        if (dataModel.hasArtifactDownloadAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -88,7 +88,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-        if (mDataModel.hasArtifactOpenAction(position)) {
+        if (dataModel.hasArtifactOpenAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -96,7 +96,7 @@ public class BottomSheetAdapter extends BaseAdapter<BottomSheetDataModel> {
                 }
             });
         }
-        if (mDataModel.hasArtifactOpenInBrowserAction(position)) {
+        if (dataModel.hasArtifactOpenInBrowserAction(position)) {
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

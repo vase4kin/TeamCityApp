@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.base.list.view;
-
-import android.view.ViewGroup;
+package com.github.vase4kin.teamcityapp.base.list.presenter
 
 /**
- * Interface for view holder factories
- *
- * @param <T> - Base data model
+ * Base presenter for all lists
  */
-public interface ViewHolderFactory<T extends BaseDataModel> {
+interface BaseListPresenter {
 
     /**
-     * Create view holder
+     * Handle onViews created
      */
-    BaseViewHolder<T> createViewHolder(ViewGroup parent);
+    fun onViewsCreated()
+
+    /**
+     * Handle on resume
+     */
+    fun onResume()
+
+    /**
+     * Handle on views destroyed
+     */
+    fun onViewsDestroyed()
 }

@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.agents.data
+package com.github.vase4kin.teamcityapp.base.list.view
 
-import com.github.vase4kin.teamcityapp.agents.api.Agent
+import android.view.LayoutInflater
+import android.view.ViewGroup
+
+import com.github.vase4kin.teamcityapp.R
 
 /**
- * Impl of [AgentDataModel]
- */
-class AgentDataModelImpl(private val agents: List<Agent>) : AgentDataModel {
+ * Base load more view holder
+ *
+ * @param <BM> - Base data model
+</BM> */
+class LoadMoreViewHolder<BM : BaseDataModel>(parent: ViewGroup) : BaseViewHolder<BM>(LayoutInflater.from(parent.context).inflate(R.layout.item_load_more, parent, false)) {
 
     /**
      * {@inheritDoc}
      */
-    override fun getName(position: Int): String {
-        return agents[position].name
+    override fun bind(dataModel: BM, position: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    override val itemCount: Int
-        get() = agents.size
 }
