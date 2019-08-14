@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,29 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view;
+package com.github.vase4kin.teamcityapp.bottomsheet_dialog.view
 
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel;
+import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetDataModel
 
 /**
  * View for bottom sheet
  */
-public interface BottomSheetView {
+interface BottomSheetView {
 
     /**
      * Init views
      */
-    void initViews(OnBottomSheetClickListener listener, BottomSheetDataModel dataModel, String title);
+    fun initViews(listener: OnBottomSheetClickListener, dataModel: BottomSheetDataModel, title: String)
 
     /**
      * Unbind views
      */
-    void unbindViews();
+    fun unbindViews()
 
     /**
      * Close bottom sheet
      */
-    void close();
+    fun close()
 
     /**
      * Click listener
@@ -47,24 +47,24 @@ public interface BottomSheetView {
          *
          * @param text - text to copy
          */
-        void onCopyActionClick(String text);
+        fun onCopyActionClick(text: String)
 
         /**
          * On show builds built on this branch click
          *
          * @param branch - branch name
          */
-        void onShowBuildsActionClick(String branch);
+        fun onShowBuildsActionClick(branch: String)
 
         /**
          * On show build type click
          */
-        void onShowBuildTypeActionClick();
+        fun onShowBuildTypeActionClick()
 
         /**
          * On show project click
          */
-        void onShowProjectActionClick();
+        fun onShowProjectActionClick()
 
         /**
          * On artifact download click
@@ -72,20 +72,20 @@ public interface BottomSheetView {
          * @param fileName - file name
          * @param href     - href
          */
-        void onArtifactDownloadActionClick(String fileName, String href);
+        fun onArtifactDownloadActionClick(fileName: String, href: String)
 
         /**
          * On artifact open click
          *
          * @param href - file href
          */
-        void onArtifactOpenActionClick(String href);
+        fun onArtifactOpenActionClick(href: String)
 
         /**
          * On artifact open in browser click
          *
          * @param href - file href
          */
-        void onArtifactBrowserOpenActionClick(String href);
+        fun onArtifactBrowserOpenActionClick(href: String)
     }
 }
