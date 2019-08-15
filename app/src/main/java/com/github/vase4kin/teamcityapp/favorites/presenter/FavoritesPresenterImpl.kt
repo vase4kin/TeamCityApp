@@ -59,7 +59,7 @@ class FavoritesPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun createModel(data: List<NavigationItem>): NavigationDataModel {
-        return NavigationDataModelImpl(data)
+        return NavigationDataModelImpl(data.toMutableList())
     }
 
     /**
