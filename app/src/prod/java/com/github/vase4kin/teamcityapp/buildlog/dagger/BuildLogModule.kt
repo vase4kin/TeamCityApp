@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
+import android.app.Activity
+import android.os.Bundle
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
@@ -41,7 +43,7 @@ class BuildLogModule {
 
     @Provides
     fun providesBuildLogValueExtractor(fragment: BuildLogFragment): BuildLogValueExtractor {
-        return BuildLogValueExtractorImpl(fragment.arguments!!)
+        return BuildLogValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
     @Provides
@@ -52,6 +54,6 @@ class BuildLogModule {
 
     @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
-        return BuildLogRouterImpl(fragment.activity)
+        return BuildLogRouterImpl(fragment.activity as Activity)
     }
 }
