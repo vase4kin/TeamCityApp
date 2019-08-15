@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.home.data
 
-import android.content.Context
 import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -32,8 +31,7 @@ import org.greenrobot.eventbus.Subscribe
 /**
  * Impl of [HomeDataManager]
  */
-class HomeDataManagerImpl(private val context: Context,
-                          repository: Repository,
+class HomeDataManagerImpl(repository: Repository,
                           sharedUserStorage: SharedUserStorage,
                           private val rxCache: RxCache,
                           private val eventBus: EventBus) : DrawerDataManagerImpl(repository, sharedUserStorage, eventBus), HomeDataManager {
@@ -47,9 +45,14 @@ class HomeDataManagerImpl(private val context: Context,
     /**
      * {@inheritDoc}
      */
-    override fun getActiveUser(): UserAccount {
-        return sharedUserStorage.activeUser
-    }
+    override val activeUser: UserAccount
+        get() = sharedUserStorage.activeUser
+
+    /**
+     * {@inheritDoc}
+     */
+    override val favoritesCount: Int
+        get() = sharedUserStorage.favoriteBuildTypeIds.size
 
     /**
      * {@inheritDoc}
@@ -106,13 +109,6 @@ class HomeDataManagerImpl(private val context: Context,
      */
     override fun loadFavoriteBuildQueueCount(loadingListener: OnLoadingListener<Int>) {
         queuedBuildsDataManager.loadFavoritesCount(loadingListener)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun getFavoritesCount(): Int {
-        return sharedUserStorage.favoriteBuildTypeIds.size
     }
 
     /**
