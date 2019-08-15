@@ -42,7 +42,7 @@ class ChangesPresenterImpl @Inject constructor(
 ) : BaseListPresenterImpl<ChangesDataModel, Changes.Change, ChangesView, ChangesDataManager, ViewTracker, ChangesValueExtractor>(view, dataManager, tracker, valueExtractor) {
 
     @VisibleForTesting
-    internal var isLoadMoreLoading = false
+    var isLoadMoreLoading = false
 
     /**
      * {@inheritDoc}
