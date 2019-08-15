@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -49,7 +50,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      * {@inheritDoc}
      */
     @Override
-    public void setLoadMoreListener(MugenCallbacks loadMoreCallbacks) {
+    public void setLoadMoreListener(@NonNull MugenCallbacks loadMoreCallbacks) {
         this.mLoadMoreCallbacks = loadMoreCallbacks;
     }
 
@@ -87,7 +88,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      * {@inheritDoc}
      */
     @Override
-    public void addMoreBuilds(ChangesDataModel dataModel) {
+    public void addMoreBuilds(@NonNull ChangesDataModel dataModel) {
         mAdapter.addMoreBuilds(dataModel);
         mAdapter.notifyDataSetChanged();
     }
@@ -101,12 +102,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
                 mRecyclerView,
                 R.string.load_more_retry_snack_bar_text,
                 Snackbar.LENGTH_LONG)
-                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mLoadMoreCallbacks.onLoadMore();
-                    }
-                });
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, v -> mLoadMoreCallbacks.onLoadMore());
         snackBar.show();
     }
 
@@ -114,7 +110,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      * {@inheritDoc}
      */
     @Override
-    public void onClick(Changes.Change change) {
+    public void onClick(@NonNull Changes.Change change) {
         String content = change.getUsername() + " on " + change.getDate();
         MaterialDialog.Builder builder = new MaterialDialog.Builder(mActivity)
                 .title(change.getComment())
