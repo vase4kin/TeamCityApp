@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsServiceConnection;
@@ -35,15 +36,15 @@ public class ChromeCustomTabsImpl implements ChromeCustomTabs {
 
     private static final String CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome";
 
-    private CustomTabsClient mClient;
-    private CustomTabsSession mCustomTabsSession;
-    private CustomTabsServiceConnection mCustomTabsServiceConnection;
+    private CustomTabsClient client;
+    private CustomTabsSession customTabsSession;
+    private CustomTabsServiceConnection customTabsServiceConnection;
     private CustomTabsIntent customTabsIntent;
 
-    private Activity mActivity;
+    private Activity activity;
 
-    public ChromeCustomTabsImpl(Activity mActivity) {
-        this.mActivity = mActivity;
+    public ChromeCustomTabsImpl(Activity activity) {
+        this.activity = activity;
     }
 
     /**
@@ -54,28 +55,28 @@ public class ChromeCustomTabsImpl implements ChromeCustomTabs {
         /*
             Setup Chrome Custom Tabs
          */
-        mCustomTabsServiceConnection = new CustomTabsServiceConnection() {
+        customTabsServiceConnection = new CustomTabsServiceConnection() {
             @Override
             public void onCustomTabsServiceConnected(ComponentName componentName, CustomTabsClient customTabsClient) {
 
                 //Pre-warming
-                mClient = customTabsClient;
-                mClient.warmup(0L);
+                client = customTabsClient;
+                client.warmup(0L);
                 //Initialize a session as soon as possible.
-                mCustomTabsSession = mClient.newSession(null);
+                customTabsSession = client.newSession(null);
 
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                mClient = null;
+                client = null;
             }
         };
 
-        CustomTabsClient.bindCustomTabsService(mActivity, CUSTOM_TAB_PACKAGE_NAME, mCustomTabsServiceConnection);
+        CustomTabsClient.bindCustomTabsService(activity, CUSTOM_TAB_PACKAGE_NAME, customTabsServiceConnection);
 
-        customTabsIntent = new CustomTabsIntent.Builder(mCustomTabsSession)
-                .setToolbarColor(ContextCompat.getColor(mActivity, R.color.colorPrimary))
+        customTabsIntent = new CustomTabsIntent.Builder(customTabsSession)
+                .setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary))
                 .setShowTitle(true)
                 .build();
         /*
@@ -88,17 +89,17 @@ public class ChromeCustomTabsImpl implements ChromeCustomTabs {
      */
     @Override
     public void unbindCustomsTabs() {
-        if (null == mCustomTabsServiceConnection) return;
-        mActivity.unbindService(mCustomTabsServiceConnection);
-        mClient = null;
-        mCustomTabsSession = null;
+        if (null == customTabsServiceConnection) return;
+        activity.unbindService(customTabsServiceConnection);
+        client = null;
+        customTabsSession = null;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void launchUrl(String url) {
-        customTabsIntent.launchUrl(mActivity, Uri.parse(url));
+    public void launchUrl(@NonNull String url) {
+        customTabsIntent.launchUrl(activity, Uri.parse(url));
     }
 }
