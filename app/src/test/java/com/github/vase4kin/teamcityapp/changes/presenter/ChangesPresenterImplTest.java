@@ -95,19 +95,19 @@ public class ChangesPresenterImplTest {
         onLoadMoreListener.onLoadMore();
         verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnChangesLoadingListener.capture());
-        assertThat(mPresenter.getIsLoadMoreLoading(), is(true));
+        assertThat(mPresenter.isLoadMoreLoading(), is(true));
 
         OnLoadingListener<List<Changes.Change>> onChangesLoadingListener = mOnChangesLoadingListener.getValue();
         List<Changes.Change> changes = Collections.emptyList();
         onChangesLoadingListener.onSuccess(changes);
         verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(ChangesDataModelImpl.class));
-        assertThat(mPresenter.getIsLoadMoreLoading(), is(false));
+        assertThat(mPresenter.isLoadMoreLoading(), is(false));
 
         onChangesLoadingListener.onFail("error");
         verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
-        assertThat(mPresenter.getIsLoadMoreLoading(), is(false));
+        assertThat(mPresenter.isLoadMoreLoading(), is(false));
     }
 
     @Test
