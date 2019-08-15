@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.data;
+package com.github.vase4kin.teamcityapp.navigation.data
 
-import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel
+import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem
 
 /**
  * Data model to manage navigation data
  */
-public interface NavigationDataModel extends BaseDataModel {
+interface NavigationDataModel : BaseDataModel {
 
     /**
      * Get project/buildType title
@@ -30,25 +30,25 @@ public interface NavigationDataModel extends BaseDataModel {
      * @param position - Adapter position
      * @return project/buildType title
      */
-    String getName(int position);
+    fun getName(position: Int): String
 
     /**
      * Get project/buildType description
      * @param position - Adapter position
      * @return project/buildType description
      */
-    String getDescription(int position);
+    fun getDescription(position: Int): String
 
     /**
      * @param position - Adapter position
      * @return true if description exists
      */
-    boolean hasDescription(int position);
+    fun hasDescription(position: Int): Boolean
 
     /**
      * Is project
      */
-    boolean isProject(int position);
+    fun isProject(position: Int): Boolean
 
     /**
      * Get the whole navigation item
@@ -56,7 +56,7 @@ public interface NavigationDataModel extends BaseDataModel {
      * @param position - Adapter position
      * @return navigation item
      */
-    NavigationItem getNavigationItem(int position);
+    fun getNavigationItem(position: Int): NavigationItem
 
     /**
      * Get project name
@@ -64,7 +64,7 @@ public interface NavigationDataModel extends BaseDataModel {
      * @param position - Adapter position
      * @return project name
      */
-    String getProjectName(int position);
+    fun getProjectName(position: Int): String
 
     /**
      * Get build type id
@@ -72,16 +72,16 @@ public interface NavigationDataModel extends BaseDataModel {
      * @param position - Adapter position
      * @return project name
      */
-    String getProjectId(int position);
+    fun getProjectId(position: Int): String
 
     /**
      * There should be a comment
      */
-    boolean isRateTheApp(int position);
+    fun isRateTheApp(position: Int): Boolean
 
     /**
      * There should be a comment
      */
-    void removeItemByIndex(int position);
+    fun removeItemByIndex(position: Int)
 
 }

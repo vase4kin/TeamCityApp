@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,37 +14,40 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.navigation.view;
+package com.github.vase4kin.teamcityapp.navigation.view
 
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView;
-import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel;
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
+import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
 
 /**
  * View to manager Navigation screen
  */
-public interface NavigationView extends BaseListView<NavigationDataModel> {
-
-    /**
-     * Rate the app view holder type
-     */
-    int TYPE_RATE_THE_APP = 2;
+interface NavigationView : BaseListView<NavigationDataModel> {
 
     /**
      * Set adapter click listener
      *
      * @param clickListener - Listener to receive click callbacks
      */
-    void setNavigationAdapterClickListener(OnNavigationItemClickListener clickListener);
+    fun setNavigationAdapterClickListener(clickListener: OnNavigationItemClickListener)
 
     /**
      * Set toolbar title
      *
      * @param title - Title to set
      */
-    void setTitle(String title);
+    fun setTitle(title: String)
 
     /**
      * Hide rate the app item
      */
-    void hideTheRateApp();
+    fun hideTheRateApp()
+
+    companion object {
+
+        /**
+         * Rate the app view holder type
+         */
+        const val TYPE_RATE_THE_APP = 2
+    }
 }
