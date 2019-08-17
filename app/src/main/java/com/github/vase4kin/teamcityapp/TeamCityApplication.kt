@@ -45,8 +45,10 @@ class TeamCityApplication : Application(), HasActivityInjector {
     @Inject
     lateinit var activityInjector: DispatchingAndroidInjector<Activity>
 
-    private var restApiInjector: RestApiComponent? = null
-    private var appInjector: AppComponent? = null
+    lateinit var restApiInjector: RestApiComponent
+        private set
+    lateinit var appInjector: AppComponent
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -68,13 +70,13 @@ class TeamCityApplication : Application(), HasActivityInjector {
         appInjector = DaggerAppComponent.builder()
                 .appModule(AppModule(this))
                 .build()
-        appInjector?.inject(this)
+        appInjector.inject(this)
         //Get default url
-        val baseUrl = appInjector!!.sharedUserStorage().activeUser.teamcityUrl
+        val baseUrl = appInjector.sharedUserStorage().activeUser.teamcityUrl
         // Rest api init
         if (!TextUtils.isEmpty(baseUrl)) {
             buildRestApiInjectorWithBaseUrl(baseUrl)
-            restApiInjector?.inject(this)
+            restApiInjector.inject(this)
         }
     }
 
@@ -86,14 +88,7 @@ class TeamCityApplication : Application(), HasActivityInjector {
                 .restApiModule(RestApiModule(baseUrl))
                 .appComponent(appInjector)
                 .build()
-        restApiInjector?.inject(this)
-    }
-
-    /**
-     * @return instance of RestApiInjector
-     */
-    fun getRestApiInjector(): RestApiComponent? {
-        return restApiInjector
+        restApiInjector.inject(this)
     }
 
     /**
@@ -102,14 +97,7 @@ class TeamCityApplication : Application(), HasActivityInjector {
     @VisibleForTesting
     fun setRestApiInjector(restApiComponent: RestApiComponent) {
         this.restApiInjector = restApiComponent
-        this.restApiInjector?.inject(this)
-    }
-
-    /**
-     * @return instance of AppInjector
-     */
-    fun getAppInjector(): AppComponent? {
-        return appInjector
+        this.restApiInjector.inject(this)
     }
 
     /**
@@ -118,10 +106,10 @@ class TeamCityApplication : Application(), HasActivityInjector {
     @VisibleForTesting
     fun setAppInjector(appComponent: AppComponent) {
         this.appInjector = appComponent
-        this.appInjector?.inject(this)
+        this.appInjector.inject(this)
     }
 
-    override fun activityInjector(): AndroidInjector<Activity>? {
+    override fun activityInjector(): AndroidInjector<Activity> {
         return activityInjector
     }
 }
