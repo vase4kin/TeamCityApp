@@ -16,18 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.overview.presenter
 
-import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView
-
 import javax.inject.Inject
 
 /**
@@ -191,7 +188,7 @@ class OverviewPresenterImpl @Inject internal constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onBranchCardClick(branch: String) {
+    override fun onBranchCardClick(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") branch: String) {
         view.showBranchCardBottomSheetDialog(branch)
     }
 
@@ -250,7 +247,7 @@ class OverviewPresenterImpl @Inject internal constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onSuccess(buildDetails: BuildDetails) {
+    override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") buildDetails: BuildDetails) {
         view.hideCards()
         view.hideSkeletonView()
         view.hideRefreshingProgress()
@@ -289,13 +286,13 @@ class OverviewPresenterImpl @Inject internal constructor(
             }
         }
         // Estimated start time
-        if (buildDetails.isQueued && !TextUtils.isEmpty(buildDetails.estimatedStartTime)) {
-            val estimatedStartTime = buildDetails.estimatedStartTime
+        val estimatedStartTime = buildDetails.estimatedStartTime
+        if (buildDetails.isQueued && !estimatedStartTime.isNullOrEmpty()) {
             view.addEstimatedTimeToStartCard(estimatedStartTime)
         }
         // Branch
-        if (!TextUtils.isEmpty(buildDetails.branchName)) {
-            val branchName = buildDetails.branchName
+        val branchName = buildDetails.branchName
+        if (!branchName.isNullOrEmpty()) {
             view.addBranchCard(branchName)
         }
         // Agent
