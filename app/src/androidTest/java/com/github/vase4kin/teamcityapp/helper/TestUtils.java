@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,9 @@
 package com.github.vase4kin.teamcityapp.helper;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -35,7 +33,6 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl.PREF_NAME;
 import static org.hamcrest.core.Is.is;
 
 /**
@@ -106,15 +103,12 @@ public class TestUtils {
      * @return
      */
     public static ViewAssertion hasItemsCount(final int count) {
-        return new ViewAssertion() {
-            @Override
-            public void check(View view, NoMatchingViewException e) {
-                if (!(view instanceof RecyclerView)) {
-                    throw e;
-                }
-                RecyclerView rv = (RecyclerView) view;
-                assertThat(rv.getAdapter().getItemCount(), is(count));
+        return (view, e) -> {
+            if (!(view instanceof RecyclerView)) {
+                throw e;
             }
+            RecyclerView rv = (RecyclerView) view;
+            assertThat(rv.getAdapter().getItemCount(), is(count));
         };
     }
 
@@ -137,6 +131,6 @@ public class TestUtils {
 
     public static void enableOnboarding() {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-        context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit();
+        context.getSharedPreferences(OnboardingManagerImpl.PREF_NAME, Context.MODE_PRIVATE).edit().clear().commit();
     }
 }
