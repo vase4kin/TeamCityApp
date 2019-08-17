@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,67 +14,64 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.runbuild.view;
-
-
-import java.util.List;
+package com.github.vase4kin.teamcityapp.runbuild.view
 
 /**
  * Interface to handle view interactions with branches view component
  */
-public interface BranchesComponentView {
+interface BranchesComponentView {
+
+    /**
+     * @return Current selected branch
+     */
+    val branchName: String
 
     /**
      * Init views
      */
-    void initViews();
+    fun initViews()
 
     /**
      * Unbind views
      */
-    void unbindViews();
+    fun unbindViews()
 
     /**
      * Hide branches loading progress
      */
-    void hideBranchesLoadingProgress();
+    fun hideBranchesLoadingProgress()
 
     /**
      * Setup autocomplete
      *
      * @param branches - List of branches
      */
-    void setupAutoComplete(List<String> branches);
+    fun setupAutoComplete(branches: List<String>)
 
     /**
      * Setup autocomplete for single branch
      *
      * @param branches - List containing single branch
      */
-    void setupAutoCompleteForSingleBranch(List<String> branches);
+    fun setupAutoCompleteForSingleBranch(branches: List<String>)
 
     /**
      * Show no branches available
      */
-    void showNoBranchesAvailable();
+    fun showNoBranchesAvailable()
 
     /**
      * Show no branches available to filter
      */
-    void showNoBranchesAvailableToFilter();
+    fun showNoBranchesAvailableToFilter()
 
     /**
      * Show branches auto complete
      */
-    void showBranchesAutoComplete();
-
-    /**
-     * @return Current selected branch
-     */
-    String getBranchName();
+    fun showBranchesAutoComplete()
 
     /**
      * Set autocomplete field for filter
      */
-    void setAutocompleteHintForFilter();
+    fun setAutocompleteHintForFilter()
 }
