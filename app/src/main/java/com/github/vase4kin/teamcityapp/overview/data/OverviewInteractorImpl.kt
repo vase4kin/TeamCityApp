@@ -148,9 +148,8 @@ class OverviewInteractorImpl(private val repository: Repository,
     /**
      * {@inheritDoc}
      */
-    override fun getBuildDetails(): BuildDetails {
-        return valueExtractor.buildDetails
-    }
+    override val buildDetails: BuildDetails
+        get() = valueExtractor.buildDetails
 
     /***
      * Handle receiving post events from [EventBus]
