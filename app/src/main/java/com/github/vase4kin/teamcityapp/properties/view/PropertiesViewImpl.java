@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel;
  */
 public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, PropertiesAdapter> implements PropertiesView {
 
-    private Listener mListener;
+    private Listener listener;
 
     public PropertiesViewImpl(View view,
                               Activity activity,
@@ -48,7 +48,7 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, Pr
     @Override
     public void showData(PropertiesDataModel dataModel) {
         mAdapter.setDataModel(dataModel);
-        mAdapter.setOnCopyActionClickListener(mListener);
+        mAdapter.setListener(listener);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
@@ -66,7 +66,7 @@ public class PropertiesViewImpl extends BaseListViewImpl<PropertiesDataModel, Pr
      */
     @Override
     public void setListener(Listener listener) {
-        this.mListener = listener;
+        this.listener = listener;
     }
 
     @Override
