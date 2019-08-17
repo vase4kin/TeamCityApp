@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.view;
+package com.github.vase4kin.teamcityapp.tests.view
 
 /**
- * On action mode enabled listener
+ * On failed test click listener
  */
-public interface OnActionModeListener {
-
+interface OnTestOccurrenceClickListener {
     /**
-     * On action mode create
+     * On failed test click
+     *
+     * @param url - Test details url
      */
-    void onCreate();
-
-    /**
-     * On action mode destroy
-     */
-    void onDestroy();
+    fun onFailedTestClick(url: String)
 }

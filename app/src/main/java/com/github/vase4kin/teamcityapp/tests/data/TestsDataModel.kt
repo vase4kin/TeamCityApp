@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.data;
+package com.github.vase4kin.teamcityapp.tests.data
 
-import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore;
-import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel;
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
+import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore
+import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel
+import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 
 /**
  * Data model to manage tests data
  */
-public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.TestOccurrence>, ModelLoadMore<TestsDataModel> {
+interface TestsDataModel : BaseDataModel, Iterable<TestOccurrences.TestOccurrence>, ModelLoadMore<TestsDataModel> {
 
     /**
      * @param position - Adapter position
      * @return boolean
      */
-    boolean isFailed(int position);
+    fun isFailed(position: Int): Boolean
 
     /**
      * Get tests title
@@ -37,7 +37,7 @@ public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.
      * @param position - Adapter position
      * @return String
      */
-    String getName(int position);
+    fun getName(position: Int): String
 
     /**
      * Get test icon
@@ -45,7 +45,7 @@ public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.
      * @param position - Adapter position
      * @return String
      */
-    String getStatusIcon(int position);
+    fun getStatusIcon(position: Int): String
 
     /**
      * Get test details url
@@ -53,7 +53,7 @@ public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.
      * @param position - Adapter position
      * @return String
      */
-    String getHref(int position);
+    fun getHref(position: Int): String
 
     /**
      * Get test status
@@ -61,5 +61,5 @@ public interface TestsDataModel extends BaseDataModel, Iterable<TestOccurrences.
      * @param position - Adapter position
      * @return String
      */
-    String getStatus(int position);
+    fun getStatus(position: Int): String
 }
