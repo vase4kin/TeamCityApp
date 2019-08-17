@@ -54,7 +54,7 @@ class NavigationDataManagerImpl(
      * {@inheritDoc}
      */
     override fun showRateTheApp(): Boolean {
-        return !isRated && remoteService.isNotChurn
+        return !isRated && remoteService.isNotChurn()
     }
 
     /**
