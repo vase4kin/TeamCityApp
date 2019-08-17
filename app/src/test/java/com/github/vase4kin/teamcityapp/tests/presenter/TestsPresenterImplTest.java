@@ -131,19 +131,19 @@ public class TestsPresenterImplTest {
         onLoadMoreListener.onLoadMore();
         verify(mView).addLoadMore();
         verify(mDataManager).loadMore(mOnLoadingListenerArgumentCaptor.capture());
-        assertThat(mPresenter.getIsLoadMoreLoading(), is(true));
+        assertThat(mPresenter.isLoadMoreLoading(), is(true));
 
         OnLoadingListener<List<TestOccurrences.TestOccurrence>> listOnLoadingListener = mOnLoadingListenerArgumentCaptor.getValue();
         List<TestOccurrences.TestOccurrence> tests = Collections.emptyList();
         listOnLoadingListener.onSuccess(tests);
         verify(mView).removeLoadMore();
         verify(mView).addMoreBuilds(any(TestsDataModelImpl.class));
-        assertThat(mPresenter.getIsLoadMoreLoading(), is(false));
+        assertThat(mPresenter.isLoadMoreLoading(), is(false));
 
         listOnLoadingListener.onFail("error");
         verify(mView, times(2)).removeLoadMore();
         verify(mView).showRetryLoadMoreSnackBar();
-        assertThat(mPresenter.getIsLoadMoreLoading(), is(false));
+        assertThat(mPresenter.isLoadMoreLoading(), is(false));
     }
 
     @Test

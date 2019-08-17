@@ -46,7 +46,7 @@ class TestsPresenterImpl @Inject constructor(
 ) : BaseListPresenterImpl<TestsDataModel, TestOccurrences.TestOccurrence, TestsView, TestsDataManager, ViewTracker, TestsValueExtractor>(view, dataManager, tracker, valueExtractor), TestsPresenter, OnTestsPresenterListener {
 
     @VisibleForTesting
-    internal var isLoadMoreLoading = false
+    var isLoadMoreLoading = false
 
     /**
      * {@inheritDoc}
