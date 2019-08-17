@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -86,11 +86,23 @@ class OverviewPresenterImpl @Inject internal constructor(
     override fun onResume() {
         val buildDetails = interactor.buildDetails
         if (buildDetails.isFinished && !onboardingManager.isRestartBuildPromptShown) {
-            view.showRestartBuildPrompt { onboardingManager.saveRestartBuildPromptShown() }
+            view.showRestartBuildPrompt(object : OnboardingManager.OnPromptShownListener {
+                override fun onPromptShown() {
+                    onboardingManager.saveRestartBuildPromptShown()
+                }
+            })
         } else if (buildDetails.isRunning && !onboardingManager.isStopBuildPromptShown) {
-            view.showStopBuildPrompt { onboardingManager.saveStopBuildPromptShown() }
+            view.showStopBuildPrompt(object : OnboardingManager.OnPromptShownListener {
+                override fun onPromptShown() {
+                    onboardingManager.saveStopBuildPromptShown()
+                }
+            })
         } else if (buildDetails.isQueued && !onboardingManager.isRemoveBuildFromQueuePromptShown) {
-            view.showRemoveBuildFromQueuePrompt { onboardingManager.saveRemoveBuildFromQueuePromptShown() }
+            view.showRemoveBuildFromQueuePrompt(object : OnboardingManager.OnPromptShownListener {
+                override fun onPromptShown() {
+                    onboardingManager.saveRemoveBuildFromQueuePromptShown()
+                }
+            })
         }
     }
 
