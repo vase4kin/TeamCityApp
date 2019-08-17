@@ -71,7 +71,11 @@ class HomePresenterImpl @Inject constructor(
 
         // Show navigation drawer prompt
         if (!onboardingManager.isNavigationDrawerPromptShown) {
-            view.showNavigationDrawerPrompt(OnboardingManager.OnPromptShownListener { onboardingManager.saveNavigationDrawerPromptShown() })
+            view.showNavigationDrawerPrompt(object : OnboardingManager.OnPromptShownListener {
+                override fun onPromptShown() {
+                    onboardingManager.saveNavigationDrawerPromptShown()
+                }
+            })
         }
 
         dataManager.subscribeToEventBusEvents()
@@ -154,7 +158,11 @@ class HomePresenterImpl @Inject constructor(
      */
     private fun showFavoritesPrompt() {
         if (!onboardingManager.isAddFavPromptShown) {
-            view.showAddFavPrompt(OnboardingManager.OnPromptShownListener { onboardingManager.saveAddFavPromptShown() })
+            view.showAddFavPrompt(object : OnboardingManager.OnPromptShownListener {
+                override fun onPromptShown() {
+                    onboardingManager.saveAddFavPromptShown()
+                }
+            })
         }
     }
 
@@ -163,7 +171,11 @@ class HomePresenterImpl @Inject constructor(
      */
     private fun showFilterPrompt() {
         if (!onboardingManager.isTabsFilterPromptShown) {
-            view.showTabsFilterPrompt(OnboardingManager.OnPromptShownListener { onboardingManager.saveTabsFilterPromptShown() })
+            view.showTabsFilterPrompt(object : OnboardingManager.OnPromptShownListener {
+                override fun onPromptShown() {
+                    onboardingManager.saveTabsFilterPromptShown()
+                }
+            })
         }
     }
 
