@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,62 +14,62 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.overview.view;
+package com.github.vase4kin.teamcityapp.overview.view
 
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
+import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 
-import tr.xip.errorview.ErrorView;
+import tr.xip.errorview.ErrorView
 
-public interface OverviewView {
+interface OverviewView {
 
     /**
-     * Init views and set listener {@link ViewListener}
+     * Init views and set listener [ViewListener]
      *
      * @param listener - listener to receive UI updates
      */
-    void initViews(ViewListener listener);
+    fun initViews(listener: ViewListener)
 
     /**
      * Show skeleton view
      */
-    void showSkeletonView();
+    fun showSkeletonView()
 
     /**
      * Hide skeleton view
      */
-    void hideSkeletonView();
+    fun hideSkeletonView()
 
     /**
      * Show refreshing progress
      */
-    void showRefreshingProgress();
+    fun showRefreshingProgress()
 
     /**
      * Hide refreshing progress
      */
-    void hideRefreshingProgress();
+    fun hideRefreshingProgress()
 
     /**
      * Show error view with error message
      */
-    void showErrorView();
+    fun showErrorView()
 
     /**
      * Hide error view
      */
-    void hideErrorView();
+    fun hideErrorView()
 
     /**
      * Unbind views
      */
-    void unbindViews();
+    fun unbindViews()
 
     /**
      * Add wait reason card
@@ -77,7 +77,7 @@ public interface OverviewView {
      * @param icon       - icon to setup with
      * @param waitReason - text with setup with
      */
-    void addWaitReasonStatusCard(String icon, String waitReason);
+    fun addWaitReasonStatusCard(icon: String, waitReason: String)
 
     /**
      * Add result status card
@@ -85,7 +85,7 @@ public interface OverviewView {
      * @param icon   - icon to setup with
      * @param result - text with setup with
      */
-    void addResultStatusCard(String icon, String result);
+    fun addResultStatusCard(icon: String, result: String)
 
     /**
      * Add cancelled by card
@@ -93,127 +93,131 @@ public interface OverviewView {
      * @param icon     - icon to setup with
      * @param userName - text with setup with
      */
-    void addCancelledByCard(String icon, String userName);
+    fun addCancelledByCard(icon: String, userName: String)
 
     /**
      * Add cancellation time card
      *
      * @param cancellationTime - text with setup with
      */
-    void addCancellationTimeCard(String cancellationTime);
+    fun addCancellationTimeCard(cancellationTime: String)
 
     /**
      * Add time card
      *
      * @param time - text with setup with
      */
-    void addTimeCard(String time);
+    fun addTimeCard(time: String)
 
     /**
      * Add queued time card
      *
      * @param time - text with setup with
      */
-    void addQueuedTimeCard(String time);
+    fun addQueuedTimeCard(time: String)
 
     /**
      * Add estimated time to start card
      *
      * @param time - text with setup with
      */
-    void addEstimatedTimeToStartCard(String time);
+    fun addEstimatedTimeToStartCard(time: String)
 
     /**
      * Add branch card
      *
      * @param branchName - branch name with setup with
      */
-    void addBranchCard(String branchName);
+    fun addBranchCard(branchName: String)
 
     /**
      * Add agent card
      *
      * @param agentName - agent name with setup with
      */
-    void addAgentCard(String agentName);
+    fun addAgentCard(agentName: String)
 
     /**
      * Add triggered by card
      *
      * @param triggeredBy - trigger name with setup with
      */
-    void addTriggeredByCard(String triggeredBy);
+    fun addTriggeredByCard(triggeredBy: String)
 
     /**
      * Add triggered by unknown card
      */
-    void addTriggeredByUnknownTriggerTypeCard();
+    fun addTriggeredByUnknownTriggerTypeCard()
 
     /**
      * Add card showing that build is personal
      *
      * @param userName - user who triggered personal build
      */
-    void addPersonalCard(String userName);
+    fun addPersonalCard(userName: String)
 
     /**
      * Add restarted by card
      *
      * @param restartedBy - restarted with setup with
      */
-    void addRestartedByCard(String restartedBy);
+    fun addRestartedByCard(restartedBy: String)
 
     /**
      * Add card showing build's build type
      *
      * @param buildTypeName - build's build type name
      */
-    void addBuildTypeNameCard(String buildTypeName);
+    fun addBuildTypeNameCard(buildTypeName: String)
 
     /**
      * Add card showing build's project
      *
      * @param buildTypeProjectName - build's project name
      */
-    void addBuildTypeProjectNameCard(String buildTypeProjectName);
+    fun addBuildTypeProjectNameCard(buildTypeProjectName: String)
 
     /**
      * Show build details cards
      */
-    void showCards();
+    fun showCards()
 
     /**
      * Hide build details cards
      */
-    void hideCards();
+    fun hideCards()
 
     /**
      * {@inheritDoc}
-     * <p>
-     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     *
+     *
+     * See [Fragment.onCreateOptionsMenu] )}
      */
-    void createStopBuildOptionsMenu(Menu menu, MenuInflater inflater);
+    fun createStopBuildOptionsMenu(menu: Menu, inflater: MenuInflater)
 
     /**
      * {@inheritDoc}
-     * <p>
-     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     *
+     *
+     * See [Fragment.onCreateOptionsMenu] )}
      */
-    void createRemoveBuildFromQueueOptionsMenu(Menu menu, MenuInflater inflater);
+    fun createRemoveBuildFromQueueOptionsMenu(menu: Menu, inflater: MenuInflater)
 
     /**
      * {@inheritDoc}
-     * <p>
-     * See {@link Fragment#onCreateOptionsMenu(Menu, MenuInflater)} )}
+     *
+     *
+     * See [Fragment.onCreateOptionsMenu] )}
      */
-    void createDefaultOptionsMenu(Menu menu, MenuInflater inflater);
+    fun createDefaultOptionsMenu(menu: Menu, inflater: MenuInflater)
 
     /**
      * {@inheritDoc}
-     * <p>
-     * See {@link Fragment#onOptionsItemSelected(MenuItem)}
+     *
+     *
+     * See [Fragment.onOptionsItemSelected]
      */
-    boolean onOptionsItemSelected(MenuItem item);
+    fun onOptionsItemSelected(item: MenuItem): Boolean
 
     /**
      * Show bottom sheet dialog for default card
@@ -221,97 +225,97 @@ public interface OverviewView {
      * @param header      - header of the card
      * @param description - description of the card
      */
-    void showDefaultCardBottomSheetDialog(String header, String description);
+    fun showDefaultCardBottomSheetDialog(header: String, description: String)
 
     /**
      * Show bottom sheet dialog for branch card
      *
      * @param description - description of the card
      */
-    void showBranchCardBottomSheetDialog(String description);
+    fun showBranchCardBottomSheetDialog(description: String)
 
     /**
      * Show bottom sheet dialog for build type card
      *
      * @param description - description of the card
      */
-    void showBuildTypeCardBottomSheetDialog(String description);
+    fun showBuildTypeCardBottomSheetDialog(description: String)
 
     /**
      * Show bottom sheet dialog for project card
      *
      * @param description - description of the card
      */
-    void showProjectCardBottomSheetDialog(String description);
+    fun showProjectCardBottomSheetDialog(description: String)
 
     /**
      * Show stop build onboarding prompt
      *
      * @param listener - Listener to know when prompt is shown
      */
-    void showStopBuildPrompt(OnboardingManager.OnPromptShownListener listener);
+    fun showStopBuildPrompt(listener: OnboardingManager.OnPromptShownListener)
 
     /**
      * Show restart build onboarding prompt
      *
      * @param listener - Listener to know when prompt is shown
      */
-    void showRestartBuildPrompt(OnboardingManager.OnPromptShownListener listener);
+    fun showRestartBuildPrompt(listener: OnboardingManager.OnPromptShownListener)
 
     /**
      * Show remove build from queue onboarding prompt
      *
      * @param listener - Listener to know when prompt is shown
      */
-    void showRemoveBuildFromQueuePrompt(OnboardingManager.OnPromptShownListener listener);
+    fun showRemoveBuildFromQueuePrompt(listener: OnboardingManager.OnPromptShownListener)
 
     /**
      * Listener to handle interactions between view and presenter
      */
-    interface ViewListener extends ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
+    interface ViewListener : ErrorView.RetryListener, SwipeRefreshLayout.OnRefreshListener {
         /**
          * On stop build context menu clicked
          */
-        void onCancelBuildContextMenuClick();
+        fun onCancelBuildContextMenuClick()
 
         /**
          * On menu share button click
          */
-        void onShareButtonClick();
+        fun onShareButtonClick()
 
         /**
          * On menu restart build button click
          */
-        void onRestartBuildButtonClick();
+        fun onRestartBuildButtonClick()
 
         /**
          * On card click
          */
-        void onCardClick(String header, String value);
+        fun onCardClick(header: String, value: String)
 
         /**
          * On branch card click
          */
-        void onBranchCardClick(String value);
+        fun onBranchCardClick(value: String)
 
         /**
          * On build type card click
          */
-        void onBuildTypeCardClick(String value);
+        fun onBuildTypeCardClick(value: String)
 
         /**
          * On project card click
          */
-        void onProjectCardClick(String value);
+        fun onProjectCardClick(value: String)
 
         /**
          * On bottom sheet show
          */
-        void onBottomSheetShow();
+        fun onBottomSheetShow()
 
         /**
          * On bottom sheet dismiss
          */
-        void onBottomSheetDismiss();
+        fun onBottomSheetDismiss()
     }
 }

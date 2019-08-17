@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.ActionMenuView;
@@ -101,7 +102,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void initViews(ViewListener listener) {
+    public void initViews(@NonNull ViewListener listener) {
         this.mListener = listener;
         mUnbinder = ButterKnife.bind(this, mView);
         mErrorView.setImageTint(Color.LTGRAY);
@@ -198,7 +199,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addWaitReasonStatusCard(String icon, String waitReason) {
+    public void addWaitReasonStatusCard(@NonNull String icon, @NonNull String waitReason) {
         addCard(R.string.build_wait_reason_section_text, icon, waitReason);
     }
 
@@ -206,7 +207,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addResultStatusCard(String icon, String result) {
+    public void addResultStatusCard(@NonNull String icon, @NonNull String result) {
         addCard(R.string.build_result_section_text, icon, result);
     }
 
@@ -214,7 +215,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addCancelledByCard(String icon, String userName) {
+    public void addCancelledByCard(@NonNull String icon, @NonNull String userName) {
         addCard(R.string.build_canceled_by_text, icon, userName);
     }
 
@@ -222,7 +223,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addCancellationTimeCard(String time) {
+    public void addCancellationTimeCard(@NonNull String time) {
         addCard(R.string.build_cancellation_time_text, ICON_TIME, time);
     }
 
@@ -230,7 +231,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addTimeCard(String time) {
+    public void addTimeCard(@NonNull String time) {
         addCard(R.string.build_time_section_text, ICON_TIME, time);
     }
 
@@ -238,7 +239,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addQueuedTimeCard(String time) {
+    public void addQueuedTimeCard(@NonNull String time) {
         addCard(R.string.build_queued_time_section_text, ICON_TIME, time);
     }
 
@@ -246,7 +247,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addEstimatedTimeToStartCard(String time) {
+    public void addEstimatedTimeToStartCard(@NonNull String time) {
         addCard(R.string.build_time_to_start_section_text, ICON_TIME, time);
     }
 
@@ -254,7 +255,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addBranchCard(String branchName) {
+    public void addBranchCard(@NonNull String branchName) {
         addCard(R.string.build_branch_section_text, ICON_BRANCH, branchName);
     }
 
@@ -262,7 +263,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addAgentCard(String agentName) {
+    public void addAgentCard(@NonNull String agentName) {
         addCard(R.string.build_agent_section_text, ICON_AGENT, agentName);
     }
 
@@ -270,7 +271,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addTriggeredByCard(String triggeredBy) {
+    public void addTriggeredByCard(@NonNull String triggeredBy) {
         addCard(R.string.build_triggered_by_section_text, ICON_TRIGGER_BY, triggeredBy);
     }
 
@@ -278,7 +279,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addRestartedByCard(String restartedBy) {
+    public void addRestartedByCard(@NonNull String restartedBy) {
         addCard(R.string.build_restarted_by_section_text, ICON_TRIGGER_BY, restartedBy);
     }
 
@@ -295,7 +296,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addBuildTypeNameCard(String buildTypeName) {
+    public void addBuildTypeNameCard(@NonNull String buildTypeName) {
         addCard(R.string.build_type_by_section_text, ICON_BUILD_TYPE, buildTypeName);
     }
 
@@ -303,7 +304,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addBuildTypeProjectNameCard(String buildTypeProjectName) {
+    public void addBuildTypeProjectNameCard(@NonNull String buildTypeProjectName) {
         addCard(R.string.build_project_by_section_text, ICON_PROJECT, buildTypeProjectName);
     }
 
@@ -311,7 +312,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void addPersonalCard(String userName) {
+    public void addPersonalCard(@NonNull String userName) {
         addCard(R.string.build_personal_text, ICON_TRIGGER_BY, userName);
     }
 
@@ -330,7 +331,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void createStopBuildOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void createStopBuildOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_stop_build_tabs_activity, menu);
     }
 
@@ -338,7 +339,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void createRemoveBuildFromQueueOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void createRemoveBuildFromQueueOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_remove_from_queue_build_tabs_activity, menu);
     }
 
@@ -346,7 +347,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void createDefaultOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void createDefaultOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_share_build_tabs_activity, menu);
     }
 
@@ -354,7 +355,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         mActivity.invalidateOptionsMenu();
         switch (item.getItemId()) {
             case R.id.cancel_build:
@@ -375,7 +376,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showDefaultCardBottomSheetDialog(String header, final String description) {
+    public void showDefaultCardBottomSheetDialog(@NonNull String header, @NonNull final String description) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(header, description, MenuItemsFactory.TYPE_DEFAULT);
         bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
@@ -384,7 +385,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showBranchCardBottomSheetDialog(String description) {
+    public void showBranchCardBottomSheetDialog(@NonNull String description) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(mActivity.getString(R.string.build_branch_section_text), description, MenuItemsFactory.TYPE_BRANCH);
         bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
@@ -393,7 +394,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showBuildTypeCardBottomSheetDialog(String description) {
+    public void showBuildTypeCardBottomSheetDialog(@NonNull String description) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(mActivity.getString(R.string.build_type_by_section_text), description, MenuItemsFactory.TYPE_BUILD_TYPE);
         bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
@@ -402,7 +403,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showProjectCardBottomSheetDialog(String description) {
+    public void showProjectCardBottomSheetDialog(@NonNull String description) {
         BottomSheetDialogFragment bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(mActivity.getString(R.string.build_project_by_section_text), description, MenuItemsFactory.TYPE_PROJECT);
         bottomSheetDialogFragment.show(mActivity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
@@ -411,7 +412,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showStopBuildPrompt(OnboardingManager.OnPromptShownListener listener) {
+    public void showStopBuildPrompt(@NonNull OnboardingManager.OnPromptShownListener listener) {
         showPrompt(R.string.text_onboarding_stop_build, listener);
     }
 
@@ -419,7 +420,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showRestartBuildPrompt(OnboardingManager.OnPromptShownListener listener) {
+    public void showRestartBuildPrompt(@NonNull OnboardingManager.OnPromptShownListener listener) {
         showPrompt(R.string.text_onboarding_restart_build, listener);
     }
 
@@ -427,7 +428,7 @@ public class OverviewViewImpl implements OverviewView {
      * {@inheritDoc}
      */
     @Override
-    public void showRemoveBuildFromQueuePrompt(OnboardingManager.OnPromptShownListener listener) {
+    public void showRemoveBuildFromQueuePrompt(@NonNull OnboardingManager.OnPromptShownListener listener) {
         showPrompt(R.string.text_onboarding_remove_build_from_queue, listener);
     }
 
