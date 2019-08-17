@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.account.create.presenter
 
-import android.text.TextUtils
-
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener
@@ -25,7 +23,6 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView
-
 import javax.inject.Inject
 
 /**
@@ -65,15 +62,15 @@ class CreateAccountPresenterImpl @Inject constructor(
      */
     override fun validateUserData(url: String, userName: String, password: String, isSslDisabled: Boolean) {
         view.hideError()
-        if (TextUtils.isEmpty(url)) {
+        if (url.isEmpty()) {
             view.showServerUrlCanNotBeEmptyError()
             return
         }
-        if (TextUtils.isEmpty(userName)) {
+        if (userName.isEmpty()) {
             view.showUserNameCanNotBeEmptyError()
             return
         }
-        if (TextUtils.isEmpty(password)) {
+        if (password.isEmpty()) {
             view.showPasswordCanNotBeEmptyError()
             return
         }
@@ -115,7 +112,7 @@ class CreateAccountPresenterImpl @Inject constructor(
      */
     override fun validateGuestUserData(url: String, isSslDisabled: Boolean) {
         view.hideError()
-        if (TextUtils.isEmpty(url)) {
+        if (url.isEmpty()) {
             view.showServerUrlCanNotBeEmptyError()
             return
         }
