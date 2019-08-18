@@ -56,6 +56,13 @@ class FirebaseOverviewTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFi
     /**
      * {@inheritDoc}
      */
+    override fun trackUserOpenBrowser() {
+        firebaseAnalytics.logEvent(OverviewTracker.EVENT_OPEN_BROWSER_BUILD, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun trackUserWantsToSeeBuildListFilteredByBranch() {
         firebaseAnalytics.logEvent(OverviewTracker.EVENT_SHOW_BUILDS_FILTERED_BY_BRANCH, null)
     }

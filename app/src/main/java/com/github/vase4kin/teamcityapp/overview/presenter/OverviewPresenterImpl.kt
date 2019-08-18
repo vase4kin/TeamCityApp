@@ -191,7 +191,7 @@ class OverviewPresenterImpl @Inject internal constructor(
      */
     override fun onOpenBrowser() {
         interactor.postOpenBrowserEvent()
-        // TODO: Track
+        tracker.trackUserOpenBrowser()
     }
 
     /**

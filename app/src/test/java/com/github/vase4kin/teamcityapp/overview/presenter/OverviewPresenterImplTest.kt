@@ -34,7 +34,10 @@ import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.MockitoAnnotations
 
 private const val HREF = "href"
@@ -135,6 +138,13 @@ class OverviewPresenterImplTest {
         presenter.onRestartBuildButtonClick()
         verify(interactor).postRestartBuildEvent()
         verify(tracker).trackUserRestartedBuild()
+    }
+
+    @Test
+    fun testOnBrowseBuildButtonClick() {
+        presenter.onOpenBrowser()
+        verify(interactor).postOpenBrowserEvent()
+        verify(tracker).trackUserOpenBrowser()
     }
 
     @Test
