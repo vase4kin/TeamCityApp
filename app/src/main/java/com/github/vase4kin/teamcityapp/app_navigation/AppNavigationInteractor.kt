@@ -28,8 +28,8 @@ interface AppNavigationInteractor {
 }
 
 class AppNavigationInteractorImpl constructor(
-        private val fragmentManager: FragmentManager,
-        private val fragmentFactory: FragmentFactory
+    private val fragmentManager: FragmentManager,
+    private val fragmentFactory: FragmentFactory
 ) : AppNavigationInteractor, FragNavController.RootFragmentListener {
 
     override val numberOfRootFragments: Int = fragmentFactory.getSize()

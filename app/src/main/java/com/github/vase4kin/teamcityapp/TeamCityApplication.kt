@@ -53,25 +53,25 @@ class TeamCityApplication : Application(), HasActivityInjector {
     override fun onCreate() {
         super.onCreate()
 
-        //#=============== Fabric ================#//
+        // #=============== Fabric ================#//
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, Crashlytics())
         }
 
-        //#=============== Iconify ================#//
+        // #=============== Iconify ================#//
         Iconify
                 .with(MaterialModule())
                 .with(MaterialCommunityModule())
                 .with(FontAwesomeModule())
 
-        //#=============== Dagger ================#//
+        // #=============== Dagger ================#//
         // app injector init
         // net injector init
         appInjector = DaggerAppComponent.builder()
                 .appModule(AppModule(this))
                 .build()
         appInjector.inject(this)
-        //Get default url
+        // Get default url
         val baseUrl = appInjector.sharedUserStorage().activeUser.teamcityUrl
         // Rest api init
         if (!TextUtils.isEmpty(baseUrl)) {

@@ -30,5 +30,4 @@ class LoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : CreateAccountTrac
     override fun trackView() {
         firebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null)
     }
-
 }

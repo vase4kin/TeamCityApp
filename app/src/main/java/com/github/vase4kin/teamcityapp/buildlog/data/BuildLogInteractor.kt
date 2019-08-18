@@ -42,5 +42,4 @@ interface BuildLogInteractor {
      * @param isShown - status
      */
     fun setAuthDialogStatus(isShown: Boolean)
-
 }

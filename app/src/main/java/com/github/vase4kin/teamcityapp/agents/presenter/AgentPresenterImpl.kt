@@ -26,17 +26,16 @@ import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsViewModelImpl
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-
 import javax.inject.Inject
 
 /**
  * Handles logic of [com.github.vase4kin.teamcityapp.agents.view.AgentListFragment]
  */
 class AgentPresenterImpl @Inject constructor(
-        view: BaseListView<*>,
-        dataManager: AgentsDataManager,
-        tracker: ViewTracker,
-        valueExtractor: AgentsValueExtractor
+    view: BaseListView<*>,
+    dataManager: AgentsDataManager,
+    tracker: ViewTracker,
+    valueExtractor: AgentsValueExtractor
 ) : BaseListPresenterImpl<AgentDataModel, Agent, BaseListView<*>, AgentsDataManager, ViewTracker, AgentsValueExtractor>(view, dataManager, tracker, valueExtractor) {
 
     override fun initViews() {

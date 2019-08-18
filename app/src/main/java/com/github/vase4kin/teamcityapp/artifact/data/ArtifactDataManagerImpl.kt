@@ -38,8 +38,8 @@ private const val LOCATOR = "browseArchives:true"
  * Impl of [ArtifactDataManager]
  */
 class ArtifactDataManagerImpl(
-        private val repository: Repository,
-        private val eventBus: EventBus
+    private val repository: Repository,
+    private val eventBus: EventBus
 ) : BaseListRxDataManagerImpl<Files, File>(), ArtifactDataManager {
 
     private var listener: OnArtifactEventListener? = null
@@ -47,9 +47,11 @@ class ArtifactDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun load(url: String,
-                      loadingListener: OnLoadingListener<List<File>>,
-                      update: Boolean) {
+    override fun load(
+        url: String,
+        loadingListener: OnLoadingListener<List<File>>,
+        update: Boolean
+    ) {
         load(repository.listArtifacts(url, LOCATOR, update), loadingListener)
     }
 

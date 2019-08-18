@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.tracker
 
-
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 
 /**

@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.drawer.utils
 import android.app.Activity
 import android.content.Intent
 import android.os.Handler
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut
 

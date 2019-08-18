@@ -28,5 +28,4 @@ class FloatButtonChangeVisibilityEventTest {
     fun getVisibility() {
         assertThat(View.VISIBLE, `is`(equalTo(FloatButtonChangeVisibilityEvent(View.VISIBLE).visibility)))
     }
-
 }

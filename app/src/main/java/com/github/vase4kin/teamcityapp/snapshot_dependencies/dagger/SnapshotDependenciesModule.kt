@@ -38,7 +38,6 @@ import com.github.vase4kin.teamcityapp.snapshot_dependencies.tracker.SnapshotDep
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
-
 import dagger.Module
 import dagger.Provides
 
@@ -71,8 +70,10 @@ class SnapshotDependenciesModule {
     }
 
     @Provides
-    fun providesBuildListView(fragment: SnapshotDependenciesFragment,
-                              adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>): RunningBuildListView {
+    fun providesBuildListView(
+        fragment: SnapshotDependenciesFragment,
+        adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>
+    ): RunningBuildListView {
         // Add text
         return object : RunningBuildsListViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_builds, adapter, FilterProvider()) {
             override fun recyclerViewId(): Int {

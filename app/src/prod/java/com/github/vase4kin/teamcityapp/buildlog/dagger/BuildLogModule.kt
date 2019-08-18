@@ -29,7 +29,6 @@ import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-
 import dagger.Module
 import dagger.Provides
 
@@ -47,8 +46,10 @@ class BuildLogModule {
     }
 
     @Provides
-    fun providesUrlProvider(buildLogValueExtractor: BuildLogValueExtractor,
-                            sharedUserStorage: SharedUserStorage): BuildLogUrlProvider {
+    fun providesUrlProvider(
+        buildLogValueExtractor: BuildLogValueExtractor,
+        sharedUserStorage: SharedUserStorage
+    ): BuildLogUrlProvider {
         return BuildLogUrlProviderImpl(buildLogValueExtractor, sharedUserStorage.activeUser)
     }
 

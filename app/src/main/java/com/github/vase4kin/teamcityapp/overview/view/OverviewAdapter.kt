@@ -61,5 +61,4 @@ class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDa
             }
         }
     }
-
 }

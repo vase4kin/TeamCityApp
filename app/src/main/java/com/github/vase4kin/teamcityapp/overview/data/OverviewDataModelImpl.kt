@@ -17,15 +17,15 @@
 package com.github.vase4kin.teamcityapp.overview.data
 
 import android.content.Context
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
 
 /**
  * Impl of [OverviewDataModel]
  */
-class OverviewDataModelImpl(private val elements: List<BuildElement>,
-                            private val context: Context
+class OverviewDataModelImpl(
+    private val elements: List<BuildElement>,
+    private val context: Context
 ) : OverviewDataModel {
 
     /**

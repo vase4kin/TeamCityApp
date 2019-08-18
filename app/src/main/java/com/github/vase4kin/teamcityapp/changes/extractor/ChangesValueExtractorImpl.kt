@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.changes.extractor
 
 import android.os.Bundle
-
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl
 

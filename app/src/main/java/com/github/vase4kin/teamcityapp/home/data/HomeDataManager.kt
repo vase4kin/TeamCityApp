@@ -90,12 +90,12 @@ interface HomeDataManager : DrawerDataManager {
     fun loadFavoriteBuildQueueCount(loadingListener: OnLoadingListener<Int>)
 
     /**
-     * Post @{[RunningBuildsFilterChangedEvent]}
+     * Post @{[RunningBuildsFilterChangedEvent] }
      */
     fun postRunningBuildsFilterChangedEvent()
 
     /**
-     * Post @{[BuildQueueFilterChangedEvent]}
+     * Post @{[BuildQueueFilterChangedEvent] }
      */
     fun postBuildQueueFilterChangedEvent()
 

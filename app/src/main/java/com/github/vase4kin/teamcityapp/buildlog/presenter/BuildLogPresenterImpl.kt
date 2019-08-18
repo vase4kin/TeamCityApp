@@ -21,17 +21,17 @@ import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
 import com.github.vase4kin.teamcityapp.buildlog.view.OnBuildLogLoadListener
-
 import javax.inject.Inject
 
 /**
  * Impl of [BuildLogPresenter]
  */
 class BuildLogPresenterImpl @Inject constructor(
-        private val view: BuildLogView,
-        private val buildLogUrlProvider: BuildLogUrlProvider,
-        private val interactor: BuildLogInteractor,
-        private val router: BuildLogRouter) : BuildLogPresenter, OnBuildLogLoadListener {
+    private val view: BuildLogView,
+    private val buildLogUrlProvider: BuildLogUrlProvider,
+    private val interactor: BuildLogInteractor,
+    private val router: BuildLogRouter
+) : BuildLogPresenter, OnBuildLogLoadListener {
 
     /**
      * {@inheritDoc}

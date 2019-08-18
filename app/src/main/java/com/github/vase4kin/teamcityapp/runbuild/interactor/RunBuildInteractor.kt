@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,27 +37,29 @@ interface RunBuildInteractor {
     /**
      * Queue new build
      *
-     * @param branchName      - with branch name
-     * @param agent           - agent run with
-     * @param isPersonal      - personal build
-     * @param queueToTheTop   - queue build to the top
-     * @param cleanAllFiles   - clean all files in the checkout directory
-     * @param properties      - properties to use for new build
+     * @param branchName - with branch name
+     * @param agent - agent run with
+     * @param isPersonal - personal build
+     * @param queueToTheTop - queue build to the top
+     * @param cleanAllFiles - clean all files in the checkout directory
+     * @param properties - properties to use for new build
      * @param loadingListener - listener to receive callbacks
      */
-    fun queueBuild(branchName: String,
-                   agent: Agent?,
-                   isPersonal: Boolean,
-                   queueToTheTop: Boolean,
-                   cleanAllFiles: Boolean,
-                   properties: Properties,
-                   loadingListener: LoadingListenerWithForbiddenSupport<String>)
+    fun queueBuild(
+        branchName: String,
+        agent: Agent?,
+        isPersonal: Boolean,
+        queueToTheTop: Boolean,
+        cleanAllFiles: Boolean,
+        properties: Properties,
+        loadingListener: LoadingListenerWithForbiddenSupport<String>
+    )
 
     /**
      * Queue new build with parameters
      *
-     * @param branchName      - with branch name
-     * @param properties      - properties to use for new build
+     * @param branchName - with branch name
+     * @param properties - properties to use for new build
      * @param loadingListener - listener to receive callbacks
      */
     fun queueBuild(branchName: String?, properties: Properties?, loadingListener: LoadingListenerWithForbiddenSupport<String>)
@@ -73,5 +75,4 @@ interface RunBuildInteractor {
      * @param loadingListener - listener to receive load callbacks
      */
     fun loadAgents(loadingListener: OnLoadingListener<List<Agent>>)
-
 }

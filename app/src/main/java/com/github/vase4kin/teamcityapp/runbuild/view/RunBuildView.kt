@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -115,7 +115,7 @@ interface RunBuildView {
     /**
      * Add parameter view
      *
-     * @param name  - Parameter name
+     * @param name - Parameter name
      * @param value - Parameter value
      */
     fun addParameterView(name: String, value: String)
@@ -133,13 +133,15 @@ interface RunBuildView {
         /**
          * On build queue
          *
-         * @param isPersonal    - Is personal flag
+         * @param isPersonal - Is personal flag
          * @param queueToTheTop - Queue to the top
          * @param cleanAllFiles - Clean all files in the checkout directory
          */
-        fun onBuildQueue(isPersonal: Boolean,
-                         queueToTheTop: Boolean,
-                         cleanAllFiles: Boolean)
+        fun onBuildQueue(
+            isPersonal: Boolean,
+            queueToTheTop: Boolean,
+            cleanAllFiles: Boolean
+        )
 
         /**
          * On agent selected in the dialog list
@@ -161,7 +163,7 @@ interface RunBuildView {
         /**
          * On parameter added
          *
-         * @param name  - parameter name
+         * @param name - parameter name
          * @param value - parameter value
          */
         fun onParameterAdded(name: String, value: String)

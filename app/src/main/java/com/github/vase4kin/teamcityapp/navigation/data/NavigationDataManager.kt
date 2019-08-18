@@ -29,8 +29,8 @@ interface NavigationDataManager : BaseListRxDataManager<NavigationNode, Navigati
     /**
      * Load navigation items
      *
-     * @param id             - Navigation node id
-     * @param update          - Force data update
+     * @param id - Navigation node id
+     * @param update - Force data update
      * @param loadingListener - Listener to receive server callbacks
      */
     fun load(id: String, update: Boolean, loadingListener: OnLoadingListener<List<NavigationItem>>)

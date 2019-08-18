@@ -29,15 +29,15 @@ import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDepen
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesValueExtractor
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.SnapshotDependenciesRouter
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.tracker.SnapshotDependenciesTracker
-
 import javax.inject.Inject
 
 class SnapshotDependenciesPresenterImpl @Inject constructor(
-        view: RunningBuildListView,
-        dataManager: SnapshotDependenciesInteractor,
-        tracker: SnapshotDependenciesTracker,
-        valueExtractor: SnapshotDependenciesValueExtractor,
-        private val router: SnapshotDependenciesRouter) : BaseListPresenterImpl<BuildListDataModel, BuildDetails, RunningBuildListView, BuildListDataManager, SnapshotDependenciesTracker, SnapshotDependenciesValueExtractor>(view, dataManager, tracker, valueExtractor), OnBuildListPresenterListener {
+    view: RunningBuildListView,
+    dataManager: SnapshotDependenciesInteractor,
+    tracker: SnapshotDependenciesTracker,
+    valueExtractor: SnapshotDependenciesValueExtractor,
+    private val router: SnapshotDependenciesRouter
+) : BaseListPresenterImpl<BuildListDataModel, BuildDetails, RunningBuildListView, BuildListDataManager, SnapshotDependenciesTracker, SnapshotDependenciesValueExtractor>(view, dataManager, tracker, valueExtractor), OnBuildListPresenterListener {
 
     /**
      * {@inheritDoc}
@@ -78,49 +78,42 @@ class SnapshotDependenciesPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onRunBuildFabClick() {
-
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onShowQueuedBuildSnackBarClick() {
-
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onNavigateToFavorites() {
-
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onFilterBuildsOptionMenuClick() {
-
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onAddToFavoritesOptionMenuClick() {
-
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onResetFiltersSnackBarActionClick() {
-
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onLoadMore() {
-
     }
 
     /**

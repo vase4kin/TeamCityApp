@@ -31,7 +31,7 @@ class StatusBarUtils @Inject constructor() {
      * Changing the status bar color
      *
      * @param activity - Activity
-     * @param color    - Color to set
+     * @param color - Color to set
      */
     @SuppressLint("InlinedApi")
     fun changeStatusBarColor(activity: Activity, @ColorRes color: Int) {

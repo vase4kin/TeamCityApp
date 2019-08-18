@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ interface ChangesDataManager : BaseListRxDataManager<Changes, Changes.Change> {
     /**
      * Load tab title with number of changes
      *
-     * @param url             - Url to load
+     * @param url - Url to load
      * @param loadingListener - Listener to receive server callbacks
      */
     fun loadTabTitle(url: String, loadingListener: OnLoadingListener<Int>)
@@ -36,20 +36,24 @@ interface ChangesDataManager : BaseListRxDataManager<Changes, Changes.Change> {
     /**
      * {@inheritDoc}
      */
-    fun load(url: String,
-             loadingListener: OnLoadingListener<List<Changes.Change>>,
-             update: Boolean)
+    fun load(
+        url: String,
+        loadingListener: OnLoadingListener<List<Changes.Change>>,
+        update: Boolean
+    )
 
     /**
      * Load limited number of changes (10)
      *
-     * @param url    - Url to load
+     * @param url - Url to load
      * @param update - force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    fun loadLimited(url: String,
-                    loadingListener: OnLoadingListener<List<Changes.Change>>,
-                    update: Boolean)
+    fun loadLimited(
+        url: String,
+        loadingListener: OnLoadingListener<List<Changes.Change>>,
+        update: Boolean
+    )
 
     /**
      * Load more changes

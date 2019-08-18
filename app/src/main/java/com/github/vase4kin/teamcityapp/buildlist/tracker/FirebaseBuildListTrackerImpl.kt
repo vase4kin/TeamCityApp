@@ -23,8 +23,9 @@ import com.google.firebase.analytics.FirebaseAnalytics
  * Tracker firebase impl of [BuildListTracker]
  */
 open class FirebaseBuildListTrackerImpl(
-        firebaseAnalytics: FirebaseAnalytics,
-        private val screenName: String) : BaseFirebaseTracker(firebaseAnalytics), BuildListTracker {
+    firebaseAnalytics: FirebaseAnalytics,
+    private val screenName: String
+) : BaseFirebaseTracker(firebaseAnalytics), BuildListTracker {
 
     /**
      * {@inheritDoc}

@@ -94,5 +94,4 @@ class BottomSheetPresenterImplTest {
         verify(interactor).postNavigateToProjectEvent()
         verify(view).close()
     }
-
 }

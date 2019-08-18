@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,15 +49,17 @@ interface TeamCityService {
      * List agents
      *
      * @param includeDisconnected - determine what agents to return
-     * @param fields              - additional TC fields
-     * @param locator             - TC locator
+     * @param fields - additional TC fields
+     * @param locator - TC locator
      * @return [Single] with [Agents]
      */
     @Headers(APPLICATION_JSON)
     @GET("app/rest/agents")
-    fun listAgents(@Query("includeDisconnected") includeDisconnected: Boolean?,
-                   @Query("fields") fields: String?,
-                   @Query("locator") locator: String?): Single<Agents>
+    fun listAgents(
+        @Query("includeDisconnected") includeDisconnected: Boolean?,
+        @Query("fields") fields: String?,
+        @Query("locator") locator: String?
+    ): Single<Agents>
 
     /**
      * List build types by Id
@@ -98,8 +100,10 @@ interface TeamCityService {
      */
     @Headers(APPLICATION_JSON)
     @GET("app/rest/buildTypes/id:{id}/builds")
-    fun listBuilds(@Path("id") id: String,
-                   @Query("locator") locator: String): Single<Builds>
+    fun listBuilds(
+        @Path("id") id: String,
+        @Query("locator") locator: String
+    ): Single<Builds>
 
     /**
      * List running builds
@@ -110,8 +114,10 @@ interface TeamCityService {
      */
     @Headers(APPLICATION_JSON)
     @GET("app/rest/builds")
-    fun listRunningBuilds(@Query("locator") locator: String,
-                          @Query("fields") fields: String?): Single<Builds>
+    fun listRunningBuilds(
+        @Query("locator") locator: String,
+        @Query("fields") fields: String?
+    ): Single<Builds>
 
     /**
      * List queued builds
@@ -122,8 +128,10 @@ interface TeamCityService {
      */
     @Headers(APPLICATION_JSON)
     @GET("app/rest/buildQueue")
-    fun listQueueBuilds(@Query("locator") locator: String?,
-                        @Query("fields") fields: String?): Single<Builds>
+    fun listQueueBuilds(
+        @Query("locator") locator: String?,
+        @Query("fields") fields: String?
+    ): Single<Builds>
 
     /**
      * List builds by locator
@@ -154,8 +162,10 @@ interface TeamCityService {
      */
     @Headers(APPLICATION_JSON)
     @GET
-    fun listArtifacts(@Url url: String,
-                      @Query("locator") locator: String): Single<Files>
+    fun listArtifacts(
+        @Url url: String,
+        @Query("locator") locator: String
+    ): Single<Files>
 
     /**
      * Download artifact file by url

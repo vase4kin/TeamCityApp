@@ -29,8 +29,8 @@ import io.reactivex.schedulers.Schedulers
  * Impl of [BranchesInteractor]
  */
 class BranchesInteractorImpl(
-        private val repository: Repository,
-        private val buildTypeId: String
+    private val repository: Repository,
+    private val buildTypeId: String
 ) : BranchesInteractor {
     /**
      * To handle rx subscriptions
@@ -62,5 +62,4 @@ class BranchesInteractorImpl(
     override fun unsubscribe() {
         subscriptions.clear()
     }
-
 }

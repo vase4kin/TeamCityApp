@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,6 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-
 import io.reactivex.Single
 import okhttp3.ResponseBody
 
@@ -39,20 +38,22 @@ interface Repository {
      * List agents (cache's supported)
      *
      * @param includeDisconnected - determine what agents to return
-     * @param fields              - additional TC fields
-     * @param locator             - TC locator
-     * @param update              - update cache
+     * @param fields - additional TC fields
+     * @param locator - TC locator
+     * @param update - update cache
      * @return [Single] with [Agents]
      */
-    fun listAgents(includeDisconnected: Boolean?,
-                   fields: String?,
-                   locator: String?,
-                   update: Boolean): Single<Agents>
+    fun listAgents(
+        includeDisconnected: Boolean?,
+        fields: String?,
+        locator: String?,
+        update: Boolean
+    ): Single<Agents>
 
     /**
      * List build types by url (cache's supported)
      *
-     * @param id    - Id of build type
+     * @param id - Id of build type
      * @param update - Update cache
      * @return @return [Single] with [NavigationNode]
      */
@@ -61,7 +62,7 @@ interface Repository {
     /**
      * Get build type (cache's supported)
      *
-     * @param id     - BuildType id
+     * @param id - BuildType id
      * @param update - Update cache
      * @return [Single] with [Builds]
      */
@@ -71,7 +72,7 @@ interface Repository {
      * Get single build details (cache's supported)
      *
      * @param url - Build url
-     * @param update  - Update cache
+     * @param update - Update cache
      * @return [Single] with [Build]
      */
     fun build(url: String, update: Boolean): Single<Build>
@@ -79,9 +80,9 @@ interface Repository {
     /**
      * List builds (cache's supported)
      *
-     * @param id      - BuildType id
+     * @param id - BuildType id
      * @param locator - TC locator
-     * @param update  - Update cache
+     * @param update - Update cache
      * @return [Single] with [Builds]
      */
     fun listBuilds(id: String, locator: String, update: Boolean): Single<Builds>
@@ -90,8 +91,8 @@ interface Repository {
      * List running builds (cache's supported)
      *
      * @param locator - TC build locator
-     * @param fields  - Additional TC fields
-     * @param update  - Update cache
+     * @param fields - Additional TC fields
+     * @param update - Update cache
      * @return [Single] with [Builds]
      */
     fun listRunningBuilds(locator: String, fields: String?, update: Boolean): Single<Builds>
@@ -101,7 +102,7 @@ interface Repository {
      *
      * @param locator - TC build locator
      * @param fields - Additional TC fields
-     * @param update  - Update cache
+     * @param update - Update cache
      * @return [Single] with [Builds]
      */
     fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds>
@@ -109,7 +110,7 @@ interface Repository {
     /**
      * List snapshot dependencies builds (cache's supported)
      *
-     * @param id     - Build id
+     * @param id - Build id
      * @param update - Update cache
      * @return [Single] with [Builds]
      */
@@ -126,9 +127,9 @@ interface Repository {
     /**
      * List build artifacts (cache's supported)
      *
-     * @param url     - Artifacts url
+     * @param url - Artifacts url
      * @param locator - TC locator
-     * @param update  - Update cache
+     * @param update - Update cache
      * @return [Single] with [Files]
      */
     fun listArtifacts(url: String, locator: String, update: Boolean): Single<Files>

@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.account.create.helper
 
 import android.net.Uri
 import android.text.TextUtils
-
 import javax.inject.Inject
 
 /**

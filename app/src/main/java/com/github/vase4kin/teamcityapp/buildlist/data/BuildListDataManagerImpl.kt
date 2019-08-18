@@ -36,8 +36,8 @@ import io.reactivex.schedulers.Schedulers
  * Impl of [BuildListDataManager]
  */
 open class BuildListDataManagerImpl(
-        protected val repository: Repository,
-        private val sharedUserStorage: SharedUserStorage
+    protected val repository: Repository,
+    private val sharedUserStorage: SharedUserStorage
 ) : BaseListRxDataManagerImpl<Builds, Build>(), BuildListDataManager {
 
     /**
@@ -48,19 +48,23 @@ open class BuildListDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun load(id: String,
-                      loadingListener: OnLoadingListener<List<BuildDetails>>,
-                      update: Boolean) {
+    override fun load(
+        id: String,
+        loadingListener: OnLoadingListener<List<BuildDetails>>,
+        update: Boolean
+    ) {
         loadBuilds(repository.listBuilds(id, BuildListFilter.DEFAULT_FILTER_LOCATOR, update), loadingListener)
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun load(id: String,
-                      filter: BuildListFilter,
-                      loadingListener: OnLoadingListener<List<BuildDetails>>,
-                      update: Boolean) {
+    override fun load(
+        id: String,
+        filter: BuildListFilter,
+        loadingListener: OnLoadingListener<List<BuildDetails>>,
+        update: Boolean
+    ) {
         loadBuilds(repository.listBuilds(id, filter.toLocator(), update), loadingListener)
     }
 
@@ -100,8 +104,10 @@ open class BuildListDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    private fun loadBuilds(call: Single<Builds>,
-                           loadingListener: OnLoadingListener<List<BuildDetails>>) {
+    private fun loadBuilds(
+        call: Single<Builds>,
+        loadingListener: OnLoadingListener<List<BuildDetails>>
+    ) {
         val buildDetailsList = getBuildDetailsObservable(call)
                 // putting them all to the sorted list
                 // where queued builds go first
@@ -115,8 +121,10 @@ open class BuildListDataManagerImpl(
         loadBuildDetailsList(buildDetailsList, loadingListener)
     }
 
-    protected fun loadBuildDetailsList(call: Single<List<BuildDetails>>,
-                                       loadingListener: OnLoadingListener<List<BuildDetails>>) {
+    protected fun loadBuildDetailsList(
+        call: Single<List<BuildDetails>>,
+        loadingListener: OnLoadingListener<List<BuildDetails>>
+    ) {
         subscriptions.clear()
         call
                 .subscribeOn(Schedulers.io())
@@ -131,8 +139,10 @@ open class BuildListDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    protected fun loadNotSortedBuilds(call: Single<Builds>,
-                                      loadingListener: OnLoadingListener<List<BuildDetails>>) {
+    protected fun loadNotSortedBuilds(
+        call: Single<Builds>,
+        loadingListener: OnLoadingListener<List<BuildDetails>>
+    ) {
         val buildDetailsList = getBuildDetailsObservable(call).toList()
         loadBuildDetailsList(buildDetailsList, loadingListener)
     }
@@ -176,7 +186,7 @@ open class BuildListDataManagerImpl(
     /**
      * Load build count
      *
-     * @param call            - Retrofit call
+     * @param call - Retrofit call
      * @param loadingListener - Listener to receive server callbacks
      */
     fun loadCount(call: Single<Int>, loadingListener: OnLoadingListener<Int>) {

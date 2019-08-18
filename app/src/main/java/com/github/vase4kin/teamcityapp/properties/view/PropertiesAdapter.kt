@@ -38,5 +38,4 @@ class PropertiesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<Properti
             true
         }
     }
-
 }

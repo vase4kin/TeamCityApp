@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDownloadEvent
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenEvent
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenInBrowserEvent
@@ -27,16 +26,17 @@ import com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListEvent
 import com.github.vase4kin.teamcityapp.overview.data.NavigateToBuildListFilteredByBranchEvent
 import com.github.vase4kin.teamcityapp.overview.data.NavigateToProjectEvent
 import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent
-
 import org.greenrobot.eventbus.EventBus
 
 /**
  * Impl of [BottomSheetInteractor]
  */
-class BottomSheetInteractorImpl(private val title: String,
-                                private val model: BottomSheetDataModel,
-                                private val context: Context,
-                                private val eventBus: EventBus) : BottomSheetInteractor {
+class BottomSheetInteractorImpl(
+    private val title: String,
+    private val model: BottomSheetDataModel,
+    private val context: Context,
+    private val eventBus: EventBus
+) : BottomSheetInteractor {
 
     /**
      * {@inheritDoc}
