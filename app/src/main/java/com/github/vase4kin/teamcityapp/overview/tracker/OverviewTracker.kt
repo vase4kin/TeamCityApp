@@ -39,6 +39,11 @@ interface OverviewTracker : ViewTracker {
     fun trackUserRestartedBuild()
 
     /**
+     * Track that open browser button is clicked
+     */
+    fun trackUserOpenBrowser()
+
+    /**
      * Track that user wants to see build list filtered by specific branch name
      */
     fun trackUserWantsToSeeBuildListFilteredByBranch()
@@ -69,6 +74,11 @@ interface OverviewTracker : ViewTracker {
          * Restart build option menu is clicked event
          */
         const val EVENT_RESTART_BUILD = "restart_build"
+
+        /**
+         * Open browser build option menu is clicked event
+         */
+        const val EVENT_OPEN_BROWSER_BUILD = "open_browser_build"
 
         /**
          * Show builds filtered by branch action is clicked
