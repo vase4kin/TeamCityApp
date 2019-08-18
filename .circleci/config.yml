@@ -90,7 +90,7 @@ jobs:
           name: Install Crcmod
           command: |
             sudo apt-get install gcc python-dev python-setuptools
-            sudo pip uninstall crcmod
+            echo y | sudo pip uninstall crcmod
             sudo pip install --no-cache-dir -U crcmod
       - run:
           name: Install Gcloud
