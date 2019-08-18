@@ -21,11 +21,13 @@ import androidx.fragment.app.Fragment
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.MockitoAnnotations
+import org.mockito.runners.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class PermissionManagerImplTest {
 
     @Mock
@@ -38,7 +40,6 @@ class PermissionManagerImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         manager = PermissionManagerImpl(fragment)
     }
 

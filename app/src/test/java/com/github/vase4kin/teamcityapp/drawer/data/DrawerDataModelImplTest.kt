@@ -14,35 +14,47 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.extractor
+package com.github.vase4kin.teamcityapp.drawer.data
 
-import android.os.Bundle
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
+import org.powermock.api.mockito.PowerMockito.`when`
 
 @RunWith(MockitoJUnitRunner::class)
-class ArtifactValueExtractorImplTest {
+class DrawerDataModelImplTest {
 
     @Mock
-    private lateinit var bundle: Bundle
-
-    private lateinit var valueExtractor: ArtifactValueExtractorImpl
+    private lateinit var user: UserAccount
+    private lateinit var dataModel: DrawerDataModelImpl
 
     @Before
     fun setUp() {
-        valueExtractor = ArtifactValueExtractorImpl(bundle)
+        val users = listOf(user)
+        dataModel = DrawerDataModelImpl(users)
     }
 
     @Test
-    fun testGetUrl() {
-        `when`(bundle.getString(BundleExtractorValues.URL)).thenReturn("url")
-        assertThat(valueExtractor.url, `is`("url"))
+    fun testGetName() {
+        `when`(user.userName).thenReturn("name")
+        assertThat(dataModel.getName(0), `is`(equalTo("name")))
+    }
+
+    @Test
+    fun testGetTeamCityUrl() {
+        `when`(user.teamcityUrl).thenReturn("url")
+        assertThat(dataModel.getTeamCityUrl(0), `is`(equalTo("url")))
+    }
+
+    @Test
+    fun testIsEmpty() {
+        dataModel = DrawerDataModelImpl(emptyList())
+        assertThat(dataModel.isEmpty, `is`(equalTo(true)))
     }
 }

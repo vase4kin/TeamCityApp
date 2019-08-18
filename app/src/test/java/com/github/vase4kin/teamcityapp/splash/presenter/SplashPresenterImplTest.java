@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,13 +43,13 @@ public class SplashPresenterImplTest {
     private SplashPresenterImpl mPresenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         mPresenter = new SplashPresenterImpl(mRouter, mDataManager, mViewModel);
     }
 
     @Test
-    public void testHandleOnCreateIfThereAreAccounts() throws Exception {
+    public void testHandleOnCreateIfThereAreAccounts() {
         when(mDataManager.hasUserAccounts()).thenReturn(true);
         mPresenter.onCreate();
         verify(mDataManager).hasUserAccounts();
@@ -59,7 +59,7 @@ public class SplashPresenterImplTest {
     }
 
     @Test
-    public void testHandleOnCreateIfThereAreNoAccounts() throws Exception {
+    public void testHandleOnCreateIfThereAreNoAccounts() {
         when(mDataManager.hasUserAccounts()).thenReturn(false);
         mPresenter.onCreate();
         verify(mDataManager).hasUserAccounts();

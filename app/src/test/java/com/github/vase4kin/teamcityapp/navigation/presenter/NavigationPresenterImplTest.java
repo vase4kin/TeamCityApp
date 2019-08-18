@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ public class NavigationPresenterImplTest {
     }
 
     @Test
-    public void testLoadData() throws Exception {
+    public void testLoadData() {
         when(mValueExtractor.getId()).thenReturn("url");
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getId();
@@ -84,7 +84,7 @@ public class NavigationPresenterImplTest {
     }
 
     @Test
-    public void testInitViews() throws Exception {
+    public void testInitViews() {
         when(mValueExtractor.getName()).thenReturn("name");
         mPresenter.initViews();
         verify(mView).setTitle(eq("name"));
@@ -92,13 +92,13 @@ public class NavigationPresenterImplTest {
     }
 
     @Test
-    public void testCreateModel() throws Exception {
+    public void testCreateModel() {
         List<NavigationItem> items = Collections.emptyList();
         assertThat(mPresenter.createModel(items).getItemCount(), is(0));
     }
 
     @Test
-    public void testOnClickIfBuildType() throws Exception {
+    public void testOnClickIfBuildType() {
         when(mBuildType.getName()).thenReturn("name");
         when(mBuildType.getId()).thenReturn("id");
         mPresenter.onClick(mBuildType);
@@ -107,7 +107,7 @@ public class NavigationPresenterImplTest {
     }
 
     @Test
-    public void testOnClickIfNotBuildType() throws Exception {
+    public void testOnClickIfNotBuildType() {
         when(mNavigationItem.getName()).thenReturn("name");
         when(mNavigationItem.getId()).thenReturn("id");
         mPresenter.onClick(mNavigationItem);
