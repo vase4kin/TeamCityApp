@@ -21,9 +21,11 @@ import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.MockitoAnnotations
+import org.junit.runner.RunWith
+import org.mockito.runners.MockitoJUnitRunner
 import java.util.*
 
+@RunWith(MockitoJUnitRunner::class)
 class AgentDataModelImplTest {
 
     private val agent = Agent("name")
@@ -31,7 +33,6 @@ class AgentDataModelImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         val agents = ArrayList<Agent>()
         agents.add(agent)
         dataModel = AgentDataModelImpl(agents)
