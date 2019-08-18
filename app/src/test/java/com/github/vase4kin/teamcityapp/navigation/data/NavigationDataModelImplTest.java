@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,19 +47,19 @@ public class NavigationDataModelImplTest {
     }
 
     @Test
-    public void testGetName() throws Exception {
+    public void testGetName() {
         when(mNavigationItem.getName()).thenReturn("name");
         assertThat(mDataModel.getName(0), is("name"));
     }
 
     @Test
-    public void testGetDescription() throws Exception {
+    public void testGetDescription() {
         when(mNavigationItem.getDescription()).thenReturn("desc");
         assertThat(mDataModel.getDescription(0), is("desc"));
     }
 
     @Test
-    public void testIsProject() throws Exception {
+    public void testIsProject() {
         List<NavigationItem> items = new ArrayList<>();
         items.add(new Project());
         mDataModel = new NavigationDataModelImpl(items);
@@ -67,12 +67,12 @@ public class NavigationDataModelImplTest {
     }
 
     @Test
-    public void testGetNavigationItem() throws Exception {
+    public void testGetNavigationItem() {
         assertThat(mDataModel.getNavigationItem(0), is(mNavigationItem));
     }
 
     @Test
-    public void testGetItemCount() throws Exception {
+    public void testGetItemCount() {
         assertThat(mDataModel.getItemCount(), is(1));
     }
 }

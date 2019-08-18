@@ -26,11 +26,13 @@ import org.greenrobot.eventbus.EventBus
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.MockitoAnnotations
+import org.mockito.runners.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class BuildDetailsInteractorImplTest {
 
     @Mock
@@ -47,7 +49,6 @@ class BuildDetailsInteractorImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         interactor = BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
     }
 

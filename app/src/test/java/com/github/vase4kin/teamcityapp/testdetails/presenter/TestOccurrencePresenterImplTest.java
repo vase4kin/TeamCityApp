@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,14 +73,14 @@ public class TestOccurrencePresenterImplTest {
     private TestDetailsPresenterImpl mPresenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
         mPresenter = new TestDetailsPresenterImpl(mViewModel, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test
-    public void testOnViewPreparedAndOnRetryIfUrlIsNotNull() throws Exception {
+    public void testOnViewPreparedAndOnRetryIfUrlIsNotNull() {
         when(mValueExtractor.getTestUrl()).thenReturn("url");
         mPresenter.onCreate();
         verify(mViewModel).initViews(eq(mPresenter));
@@ -113,14 +113,14 @@ public class TestOccurrencePresenterImplTest {
     }
 
     @Test
-    public void testOnResume() throws Exception {
+    public void testOnResume() {
         mPresenter.onResume();
         verify(mTracker).trackView();
         verifyNoMoreInteractions(mViewModel, mDataManager, mTracker);
     }
 
     @Test
-    public void testOnDestroyViews() throws Exception {
+    public void testOnDestroyViews() {
         mPresenter.onDestroy();
         verify(mViewModel).unBindViews();
         verify(mDataManager).unsubscribe();

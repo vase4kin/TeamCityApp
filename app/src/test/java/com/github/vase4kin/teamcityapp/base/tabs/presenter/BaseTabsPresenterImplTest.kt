@@ -21,12 +21,14 @@ import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Matchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.MockitoAnnotations
+import org.mockito.runners.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class BaseTabsPresenterImplTest {
 
     @Mock
@@ -42,7 +44,6 @@ class BaseTabsPresenterImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         presenter = BaseTabsPresenterImpl(viewModel, tracker, dataManager)
     }
 

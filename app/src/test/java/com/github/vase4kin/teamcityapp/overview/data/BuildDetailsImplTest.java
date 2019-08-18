@@ -84,96 +84,96 @@ public class BuildDetailsImplTest {
     private BuildDetails mBuildDetails;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         mBuildDetails = new BuildDetailsImpl(mBuild);
     }
 
     @Test
-    public void testGetHref() throws Exception {
+    public void testGetHref() {
         when(mBuild.getHref()).thenReturn("href");
         assertThat(mBuildDetails.getHref(), is(equalTo("href")));
     }
 
     @Test
-    public void testGetWebUrl() throws Exception {
+    public void testGetWebUrl() {
         when(mBuild.getWebUrl()).thenReturn("webUrl");
         assertThat(mBuildDetails.getWebUrl(), is(equalTo("webUrl")));
     }
 
     @Test
-    public void testGetChangesHref() throws Exception {
+    public void testGetChangesHref() {
         when(mBuild.getChanges()).thenReturn(mChanges);
         when(mChanges.getHref()).thenReturn("href");
         assertThat(mBuildDetails.getChangesHref(), is(equalTo("href")));
     }
 
     @Test
-    public void testGetStatusTextIfBuildIsNotQueued() throws Exception {
+    public void testGetStatusTextIfBuildIsNotQueued() {
         when(mBuild.getStatusText()).thenReturn("status");
         when(mBuild.getState()).thenReturn("state");
         assertThat(mBuildDetails.getStatusText(), is(equalTo("status")));
     }
 
     @Test
-    public void testGetStatusTextIfBuildIsQueuedButDoesNotHaveWaitReason() throws Exception {
+    public void testGetStatusTextIfBuildIsQueuedButDoesNotHaveWaitReason() {
         when(mBuild.getState()).thenReturn(STATE_QUEUED);
         assertThat(mBuildDetails.getStatusText(), is(equalTo(TEXT_QUEUED_BUILD)));
     }
 
     @Test
-    public void testGetStatusTextIfBuildIsQueuedButHasWaitReason() throws Exception {
+    public void testGetStatusTextIfBuildIsQueuedButHasWaitReason() {
         when(mBuild.getState()).thenReturn(STATE_QUEUED);
         when(mBuild.getWaitReason()).thenReturn("waitReason");
         assertThat(mBuildDetails.getStatusText(), is(equalTo("waitReason")));
     }
 
     @Test
-    public void testGetStatusIcon() throws Exception {
+    public void testGetStatusIcon() {
         when(mBuild.getState()).thenReturn("");
         when(mBuild.getStatus()).thenReturn("");
         assertThat(mBuildDetails.getStatusIcon(), is(equalTo(IconUtils.ICON_SUCCESS)));
     }
 
     @Test
-    public void testIsRunning() throws Exception {
+    public void testIsRunning() {
         when(mBuild.getState()).thenReturn(STATE_RUNNING);
         assertThat(mBuildDetails.isRunning(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsQueued() throws Exception {
+    public void testIsQueued() {
         when(mBuild.getState()).thenReturn(STATE_QUEUED);
         assertThat(mBuildDetails.isQueued(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsSuccess() throws Exception {
+    public void testIsSuccess() {
         when(mBuild.getStatus()).thenReturn(STATUS_SUCCESS);
         assertThat(mBuildDetails.isSuccess(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsFailed() throws Exception {
+    public void testIsFailed() {
         when(mBuild.getStatus()).thenReturn(STATUS_FAILURE);
         assertThat(mBuildDetails.isFailed(), is(equalTo(true)));
     }
 
     @Test
-    public void testHasCancellationInfo() throws Exception {
+    public void testHasCancellationInfo() {
         when(mBuild.getCanceledInfo()).thenReturn(mCanceledInfo);
         assertThat(mBuildDetails.hasCancellationInfo(), is(equalTo(true)));
     }
 
     @Test
-    public void testHasUserInfoWhoCancelledBuild() throws Exception {
+    public void testHasUserInfoWhoCancelledBuild() {
         when(mBuild.getCanceledInfo()).thenReturn(mCanceledInfo);
         when(mCanceledInfo.getUser()).thenReturn(mUser);
         assertThat(mBuildDetails.hasUserInfoWhoCancelledBuild(), is(equalTo(true)));
     }
 
     @Test
-    public void testGetUserNameWhoCancelledBuild() throws Exception {
+    public void testGetUserNameWhoCancelledBuild() {
         when(mBuild.getCanceledInfo()).thenReturn(mCanceledInfo);
         when(mCanceledInfo.getUser()).thenReturn(mUser);
         when(mUser.getName()).thenReturn("user");
@@ -181,105 +181,105 @@ public class BuildDetailsImplTest {
     }
 
     @Test
-    public void testGetCancellationTime() throws Exception {
+    public void testGetCancellationTime() {
         when(mBuild.getCanceledInfo()).thenReturn(mCanceledInfo);
         when(mCanceledInfo.getTimestamp()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getCancellationTime(), is(equalTo(TIME_FORMATTED)));
     }
 
     @Test
-    public void testGetStartDate() throws Exception {
+    public void testGetStartDate() {
         when(mBuild.getStartDate()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getStartDate(), is(equalTo(TIME_FORMATTED)));
     }
 
     @Test
-    public void testGetStartDateFormattedAsHeader() throws Exception {
+    public void testGetStartDateFormattedAsHeader() {
         when(mBuild.getStartDate()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getStartDateFormattedAsHeader(), is(equalTo("21 June")));
     }
 
     @Test
-    public void testGetQueuedDate() throws Exception {
+    public void testGetQueuedDate() {
         when(mBuild.getQueuedDate()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getQueuedDate(), is(equalTo(TIME_FORMATTED)));
     }
 
     @Test
-    public void testGetFinishTime() throws Exception {
+    public void testGetFinishTime() {
         when(mBuild.getStartDate()).thenReturn(TIME_STAMP);
         when(mBuild.getFinishDate()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getFinishTime(), is(equalTo("21 Jun 16 23:30 - 23:30 (0s)")));
     }
 
     @Test
-    public void testGetEstimatedStartTime() throws Exception {
+    public void testGetEstimatedStartTime() {
         when(mBuild.getStartEstimate()).thenReturn(TIME_STAMP);
         assertThat(mBuildDetails.getEstimatedStartTime(), is(equalTo(TIME_FORMATTED)));
     }
 
     @Test
-    public void testGetBranchName() throws Exception {
+    public void testGetBranchName() {
         when(mBuild.getBranchName()).thenReturn("branch");
         assertThat(mBuildDetails.getBranchName(), is(equalTo("branch")));
     }
 
     @Test
-    public void testHasAgentInfo() throws Exception {
+    public void testHasAgentInfo() {
         when(mBuild.getAgent()).thenReturn(mAgent);
         assertThat(mBuildDetails.hasAgentInfo(), is(equalTo(true)));
     }
 
     @Test
-    public void testGetAgentName() throws Exception {
+    public void testGetAgentName() {
         when(mBuild.getAgent()).thenReturn(mAgent);
         assertThat(mBuildDetails.getAgentName(), is(equalTo("name")));
     }
 
     @Test
-    public void testIsTriggeredByVcs() throws Exception {
+    public void testIsTriggeredByVcs() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isVcs()).thenReturn(true);
         assertThat(mBuildDetails.isTriggeredByVcs(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsTriggeredByUser() throws Exception {
+    public void testIsTriggeredByUser() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isUser()).thenReturn(true);
         assertThat(mBuildDetails.isTriggeredByUser(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsRestarted() throws Exception {
+    public void testIsRestarted() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isRestarted()).thenReturn(true);
         assertThat(mBuildDetails.isRestarted(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsTriggeredByBuildType() throws Exception {
+    public void testIsTriggeredByBuildType() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isBuildType()).thenReturn(true);
         assertThat(mBuildDetails.isTriggeredByBuildType(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsTriggeredByUnknown() throws Exception {
+    public void testIsTriggeredByUnknown() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isUnknown()).thenReturn(true);
         assertThat(mBuildDetails.isTriggeredByUnknown(), is(equalTo(true)));
     }
 
     @Test
-    public void tetsGetTriggeredDetails() throws Exception {
+    public void tetsGetTriggeredDetails() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.getDetails()).thenReturn("details");
         assertThat(mBuildDetails.getTriggeredDetails(), is(equalTo("details")));
     }
 
     @Test
-    public void testGetUserNameOfUserWhoTriggeredBuild() throws Exception {
+    public void testGetUserNameOfUserWhoTriggeredBuild() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.getUser()).thenReturn(mUser);
         when(mUser.getName()).thenReturn("name");
@@ -287,14 +287,14 @@ public class BuildDetailsImplTest {
     }
 
     @Test
-    public void testGetNameOfTriggeredBuildTypeIfBuildTypeIsDeleted() throws Exception {
+    public void testGetNameOfTriggeredBuildTypeIfBuildTypeIsDeleted() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.getBuildType()).thenReturn(null);
         assertThat(mBuildDetails.getNameOfTriggeredBuildType(), is(equalTo(BuildDetailsImpl.TEXT_DELETED_CONFIGURATION)));
     }
 
     @Test
-    public void testGetNameOfTriggeredBuildType() throws Exception {
+    public void testGetNameOfTriggeredBuildType() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.getBuildType()).thenReturn(mBuildType);
         when(mBuildType.getProjectName()).thenReturn("pn");
@@ -303,19 +303,19 @@ public class BuildDetailsImplTest {
     }
 
     @Test
-    public void testGetBuildTypeId() throws Exception {
+    public void testGetBuildTypeId() {
         when(mBuild.getBuildTypeId()).thenReturn("id");
         assertThat(mBuildDetails.getBuildTypeId(), is(equalTo("id")));
     }
 
     @Test
-    public void testHasBuildTypeInfo() throws Exception {
+    public void testHasBuildTypeInfo() {
         when(mBuild.getBuildType()).thenReturn(null);
         assertThat(mBuildDetails.hasBuildTypeInfo(), is(equalTo(false)));
     }
 
     @Test
-    public void testGetBuildTypeFullName() throws Exception {
+    public void testGetBuildTypeFullName() {
         when(mBuild.getBuildType()).thenReturn(mBuildType);
         when(mBuildType.getProjectName()).thenReturn("project");
         when(mBuildType.getName()).thenReturn("name");
@@ -323,53 +323,53 @@ public class BuildDetailsImplTest {
     }
 
     @Test
-    public void testGetBuildTypeName() throws Exception {
+    public void testGetBuildTypeName() {
         when(mBuild.getBuildType()).thenReturn(mBuildType);
         when(mBuildType.getName()).thenReturn("name");
         assertThat(mBuildDetails.getBuildTypeName(), is(equalTo("name")));
     }
 
     @Test
-    public void testGetProjectName() throws Exception {
+    public void testGetProjectName() {
         when(mBuild.getBuildType()).thenReturn(mBuildType);
         when(mBuildType.getProjectName()).thenReturn("project");
         assertThat(mBuildDetails.getProjectName(), is(equalTo("project")));
     }
 
     @Test
-    public void testGetProjectId() throws Exception {
+    public void testGetProjectId() {
         when(mBuild.getBuildType()).thenReturn(mBuildType);
         when(mBuildType.getProjectId()).thenReturn("id");
         assertThat(mBuildDetails.getProjectId(), is(equalTo("id")));
     }
 
     @Test
-    public void testGetBuildId() throws Exception {
+    public void testGetBuildId() {
         when(mBuild.getId()).thenReturn("id");
         assertThat(mBuildDetails.getId(), is(equalTo("id")));
     }
 
     @Test
-    public void testGetProperties() throws Exception {
+    public void testGetProperties() {
         when(mBuild.getProperties()).thenReturn(mProperties);
         assertThat(mBuildDetails.getProperties(), is(equalTo(mProperties)));
     }
 
     @Test
-    public void testIsTriggeredByUserIfTriggeredIsNull() throws Exception {
+    public void testIsTriggeredByUserIfTriggeredIsNull() {
         when(mBuild.getTriggered()).thenReturn(null);
         assertThat(mBuildDetails.isTriggeredByUser("user"), is(equalTo(false)));
     }
 
     @Test
-    public void testIsTriggeredByUserIfTriggeredByNotUser() throws Exception {
+    public void testIsTriggeredByUserIfTriggeredByNotUser() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isUser()).thenReturn(false);
         assertThat(mBuildDetails.isTriggeredByUser("user"), is(equalTo(false)));
     }
 
     @Test
-    public void testIsTriggeredByUserIfUserIsNull() throws Exception {
+    public void testIsTriggeredByUserIfUserIsNull() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isUser()).thenReturn(true);
         when(mTriggered.getUser()).thenReturn(null);
@@ -377,7 +377,7 @@ public class BuildDetailsImplTest {
     }
 
     @Test
-    public void testIsTriggeredByUserIfUserIsNotNull() throws Exception {
+    public void testIsTriggeredByUserIfUserIsNotNull() {
         when(mBuild.getTriggered()).thenReturn(mTriggered);
         when(mTriggered.isUser()).thenReturn(true);
         when(mTriggered.getUser()).thenReturn(new User("user", null));
@@ -385,72 +385,72 @@ public class BuildDetailsImplTest {
     }
 
     @Test
-    public void testHasTests() throws Exception {
+    public void testHasTests() {
         when(mBuild.getTestOccurrences()).thenReturn(mTestOccurrences);
         assertThat(mBuildDetails.hasTests(), is(equalTo(true)));
     }
 
     @Test
-    public void testGetTestsHref() throws Exception {
+    public void testGetTestsHref() {
         when(mBuild.getTestOccurrences()).thenReturn(mTestOccurrences);
         when(mTestOccurrences.getHref()).thenReturn("href");
         assertThat(mBuildDetails.getTestsHref(), is(equalTo("href")));
     }
 
     @Test
-    public void testGetPassedTestsCount() throws Exception {
+    public void testGetPassedTestsCount() {
         when(mBuild.getTestOccurrences()).thenReturn(mTestOccurrences);
         when(mTestOccurrences.getPassed()).thenReturn(3);
         assertThat(mBuildDetails.getPassedTestCount(), is(equalTo(3)));
     }
 
     @Test
-    public void testGetFailedTestsCount() throws Exception {
+    public void testGetFailedTestsCount() {
         when(mBuild.getTestOccurrences()).thenReturn(mTestOccurrences);
         when(mTestOccurrences.getFailed()).thenReturn(4);
         assertThat(mBuildDetails.getFailedTestCount(), is(equalTo(4)));
     }
 
     @Test
-    public void testGetIgnoredTestsCount() throws Exception {
+    public void testGetIgnoredTestsCount() {
         when(mBuild.getTestOccurrences()).thenReturn(mTestOccurrences);
         when(mTestOccurrences.getIgnored()).thenReturn(5);
         assertThat(mBuildDetails.getIgnoredTestCount(), is(equalTo(5)));
     }
 
     @Test
-    public void testGetArtifactsHref() throws Exception {
+    public void testGetArtifactsHref() {
         when(mBuild.getArtifacts()).thenReturn(mArtifacts);
         when(mArtifacts.getHref()).thenReturn("href");
         assertThat(mBuildDetails.getArtifactsHref(), is(equalTo("href")));
     }
 
     @Test
-    public void testGetNumber() throws Exception {
+    public void testGetNumber() {
         when(mBuild.getNumber()).thenReturn("Number");
         assertThat(mBuildDetails.getNumber(), is(equalTo("Number")));
     }
 
     @Test
-    public void testGetNumberIfNumberIsNull() throws Exception {
+    public void testGetNumberIfNumberIsNull() {
         when(mBuild.getNumber()).thenReturn(null);
         assertThat(mBuildDetails.getNumber(), is(equalTo(TEXT_NO_NUMBER)));
     }
 
     @Test
-    public void testIsPersonal() throws Exception {
+    public void testIsPersonal() {
         when(mBuild.isPersonal()).thenReturn(true);
         assertThat(mBuildDetails.isPersonal(), is(equalTo(true)));
     }
 
     @Test
-    public void testIsPinned() throws Exception {
+    public void testIsPinned() {
         when(mBuild.isPinned()).thenReturn(true);
         assertThat(mBuildDetails.isPinned(), is(equalTo(true)));
     }
 
     @Test
-    public void testToBuild() throws Exception {
+    public void testToBuild() {
         assertThat(mBuildDetails.toBuild(), is(equalTo(mBuild)));
     }
 

@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.extractor
+package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model
 
-import android.os.Bundle
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import org.hamcrest.core.Is.`is`
+import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -27,22 +25,33 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
 
+private const val URL = "/app/rest/builds/id:993171/artifacts/content/stdlib-docs.zip"
+private const val FILE_NAME = "stdlib-docs.zip"
+
 @RunWith(MockitoJUnitRunner::class)
-class ArtifactValueExtractorImplTest {
+class BottomSheetDataModelImplTest {
 
     @Mock
-    private lateinit var bundle: Bundle
+    private lateinit var item: BottomSheetItem
 
-    private lateinit var valueExtractor: ArtifactValueExtractorImpl
+    private lateinit var dataModel: BottomSheetDataModelImpl
 
     @Before
     fun setUp() {
-        valueExtractor = ArtifactValueExtractorImpl(bundle)
+        `when`(item.title).thenReturn("title")
+        dataModel = BottomSheetDataModelImpl(listOf(item))
     }
 
     @Test
-    fun testGetUrl() {
-        `when`(bundle.getString(BundleExtractorValues.URL)).thenReturn("url")
-        assertThat(valueExtractor.url, `is`("url"))
+    fun testGetFileName() {
+        `when`(item.description).thenReturn(URL)
+        assertThat(dataModel.getFileName(0), `is`(FILE_NAME))
+    }
+
+    @Test
+    fun testGetFileNameIfUrlIsNotCorrect() {
+        val url = "url"
+        `when`(item.description).thenReturn(url)
+        assertThat(dataModel.getFileName(0), `is`(url))
     }
 }

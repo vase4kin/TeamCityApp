@@ -49,42 +49,42 @@ public class TestsDataModelImplTest {
     }
 
     @Test
-    public void testIsFailed() throws Exception {
+    public void testIsFailed() {
         when(mTest.isFailed()).thenReturn(true);
         assertThat(mDataModel.isFailed(0), is(equalTo(true)));
     }
 
     @Test
-    public void testGetName() throws Exception {
+    public void testGetName() {
         when(mTest.getName()).thenReturn("name");
         assertThat(mDataModel.getName(0), is(equalTo("name")));
     }
 
     @Test
-    public void testGetStatusIcon() throws Exception {
+    public void testGetStatusIcon() {
         when(mTest.getStatus()).thenReturn("FAILURE");
         assertThat(mDataModel.getStatusIcon(0), is(equalTo(IconUtils.ICON_FAILURE)));
     }
 
     @Test
-    public void testGetHref() throws Exception {
+    public void testGetHref() {
         when(mTest.getHref()).thenReturn("href");
         assertThat(mDataModel.getHref(0), is(equalTo("href")));
     }
 
     @Test
-    public void testGetStatus() throws Exception {
+    public void testGetStatus() {
         when(mTest.getStatus()).thenReturn("status");
         assertThat(mDataModel.getStatus(0), is(equalTo("status")));
     }
 
     @Test
-    public void testGetItemCount() throws Exception {
+    public void testGetItemCount() {
         assertThat(mDataModel.getItemCount(), is(equalTo(1)));
     }
 
     @Test
-    public void testAddTestDataModel() throws Exception {
+    public void testAddTestDataModel() {
         TestOccurrences.TestOccurrence testOccurrence = new TestOccurrences.TestOccurrence();
         mDataModel.addMoreBuilds(new TestsDataModelImpl(Collections.singletonList(testOccurrence)));
         assertThat(mDataModel.getItemCount(), is(equalTo(2)));

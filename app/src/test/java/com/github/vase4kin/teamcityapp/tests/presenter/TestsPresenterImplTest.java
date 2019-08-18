@@ -104,7 +104,7 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testLoadData() throws Exception {
+    public void testLoadData() {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getUrl();
@@ -113,13 +113,13 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testCreateModel() throws Exception {
+    public void testCreateModel() {
         when(mTestOccurrence.getName()).thenReturn("name");
         assertThat(mPresenter.createModel(Collections.singletonList(mTestOccurrence)).getName(0), is(equalTo("name")));
     }
 
     @Test
-    public void testInitViews() throws Exception {
+    public void testInitViews() {
         when(mDataManager.canLoadMore()).thenReturn(false);
         mPresenter.initViews();
         verify(mView).setOnLoadMoreListener(mOnLoadMoreListenerArgumentCaptor.capture());
@@ -147,7 +147,7 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testOnViewsCreated() throws Exception {
+    public void testOnViewsCreated() {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.onViewsCreated();
         verify(mValueExtractor, times(2)).getUrl();
@@ -162,21 +162,21 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testOnCreateOptionsMenu() throws Exception {
+    public void testOnCreateOptionsMenu() {
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
         verify(mView).onCreateOptionsMenu(eq(mMenu), eq(mMenuInflater));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mMenu, mMenuInflater);
     }
 
     @Test
-    public void testOnPrepareOptionsMenu() throws Exception {
+    public void testOnPrepareOptionsMenu() {
         mPresenter.onPrepareOptionsMenu(mMenu);
         verify(mView).onPrepareOptionsMenu(eq(mMenu));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter, mMenu);
     }
 
     @Test
-    public void testOnOptionsItemSelected() throws Exception {
+    public void testOnOptionsItemSelected() {
         when(mView.onOptionsItemSelected(eq(mMenuItem))).thenReturn(true);
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(equalTo(true)));
         verify(mView).showRefreshAnimation();
@@ -188,7 +188,7 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testLoadFailedTests() throws Exception {
+    public void testLoadFailedTests() {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadFailedTests();
         verify(mValueExtractor).getUrl();
@@ -197,7 +197,7 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testLoadSuccessTests() throws Exception {
+    public void testLoadSuccessTests() {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadSuccessTests();
         verify(mValueExtractor).getUrl();
@@ -206,7 +206,7 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testLoadIgnoredTests() throws Exception {
+    public void testLoadIgnoredTests() {
         when(mValueExtractor.getUrl()).thenReturn("url");
         mPresenter.loadIgnoredTests();
         verify(mValueExtractor).getUrl();
@@ -215,7 +215,7 @@ public class TestsPresenterImplTest {
     }
 
     @Test
-    public void testOnFailedTestClick() throws Exception {
+    public void testOnFailedTestClick() {
         mPresenter.onFailedTestClick("url");
         verify(mRouter).openFailedTest(eq("url"));
         verifyNoMoreInteractions(mView, mDataManager, mTracker, mValueExtractor, mRouter);

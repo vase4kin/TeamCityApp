@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,13 +66,13 @@ public class PropertiesPresenterImplTest {
     private PropertiesPresenterImpl mPresenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         mPresenter = new PropertiesPresenterImpl(mView, mDataManager, mTracker, mValueExtractor);
     }
 
     @Test
-    public void testLoadData() throws Exception {
+    public void testLoadData() {
         when(mValueExtractor.getBuildDetails()).thenReturn(mBuildDetails);
         mPresenter.loadData(mLoadingListener, false);
         verify(mValueExtractor).getBuildDetails();
@@ -81,7 +81,7 @@ public class PropertiesPresenterImplTest {
     }
 
     @Test
-    public void testCreateModel() throws Exception {
+    public void testCreateModel() {
         when(mProperty.getName()).thenReturn("name");
         assertThat(mPresenter.createModel(Collections.singletonList(mProperty)).getName(0), is(equalTo("name")));
     }

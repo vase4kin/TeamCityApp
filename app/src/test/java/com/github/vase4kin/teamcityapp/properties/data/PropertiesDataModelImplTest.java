@@ -47,31 +47,31 @@ public class PropertiesDataModelImplTest {
     }
 
     @Test
-    public void testGetName() throws Exception {
+    public void testGetName() {
         when(mProperty.getName()).thenReturn("name");
         assertThat(mDataModel.getName(0), is(equalTo("name")));
     }
 
     @Test
-    public void testGetValueIfEmpty() throws Exception {
+    public void testGetValueIfEmpty() {
         when(mProperty.getValue()).thenReturn("");
         assertThat(mDataModel.getValue(0), is(equalTo(PropertiesDataModelImpl.Companion.getEMPTY())));
     }
 
     @Test
-    public void testGetValueIfNotEmpty() throws Exception {
+    public void testGetValueIfNotEmpty() {
         when(mProperty.getValue()).thenReturn("value");
         assertThat(mDataModel.getValue(0), is(equalTo("value")));
     }
 
     @Test
-    public void testIsEmpty() throws Exception {
+    public void testIsEmpty() {
         when(mProperty.getValue()).thenReturn(PropertiesDataModelImpl.Companion.getEMPTY());
         assertThat(mDataModel.isEmpty(0), is(equalTo(true)));
     }
 
     @Test
-    public void testGetItemCount() throws Exception {
+    public void testGetItemCount() {
         assertThat(mDataModel.getItemCount(), is(1));
     }
 }
