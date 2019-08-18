@@ -1,11 +1,11 @@
 <!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -280,10 +280,11 @@
     <string name="text_remove_build_from_queue">You are about to remove the build from queue. Are you sure?</string>
     <string name="text_stop_the_build_2">You are about to stop the build ran not by you. Are you sure?</string>
     <string name="text_remove_build_from_queue_2">You are about to remove the build from queue triggered not by you. Are you sure?</string>
-    <string name="text_menu_remove_build_from_queue">Remove build from queue</string>
-    <string name="text_menu_stop_build">Stop build</string>
-    <string name="text_menu_share_build">Share build</string>
-    <string name="text_menu_restart_build">Restart build</string>
+    <string name="text_menu_remove_build_from_queue">Remove from queue</string>
+    <string name="text_menu_stop_build">Stop</string>
+    <string name="text_menu_share_build">Share</string>
+    <string name="text_menu_open_browser">Open in browser</string>
+    <string name="text_menu_restart_build">Restart</string>
     <string name="text_share_build">Share build details</string>
     <string name="text_re_add_build">Re-add build to the queue</string>
 

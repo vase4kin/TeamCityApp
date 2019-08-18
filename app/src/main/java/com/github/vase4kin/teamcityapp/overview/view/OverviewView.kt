@@ -286,6 +286,11 @@ interface OverviewView {
         fun onRestartBuildButtonClick()
 
         /**
+         * Open browser
+         */
+        fun onOpenBrowser()
+
+        /**
          * On card click
          */
         fun onCardClick(header: String, value: String)

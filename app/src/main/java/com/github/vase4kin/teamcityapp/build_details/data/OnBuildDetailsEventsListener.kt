@@ -47,6 +47,11 @@ interface OnBuildDetailsEventsListener {
     fun onRestartBuildActionTriggered()
 
     /**
+     * When open browser build action is triggered
+     */
+    fun onOpenBrowserActionTriggered()
+
+    /**
      * When text copied action is triggered
      */
     fun onTextCopiedActionTriggered()
