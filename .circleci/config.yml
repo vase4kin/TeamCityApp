@@ -10,7 +10,7 @@ references:
     attach_workspace:
       at: *workspace_root
   general_cache_key: &general_cache_key
-      key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
+    key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 jobs:
   build:
     <<: *container_config
@@ -21,8 +21,8 @@ jobs:
       - run:
           name: Download sdk
           command: |
-           echo y | sdkmanager "tools" "platform-tools" "build-tools;28.0.3" "extras;android;m2repository" "platforms;android-28" "emulator" --verbose
-           sdkmanager --update --verbose
+            echo y | sdkmanager "tools" "platform-tools" "build-tools;28.0.3" "extras;android;m2repository" "platforms;android-28" "emulator" --verbose
+            sdkmanager --update --verbose
       - run:
           name: Download dependencies
           command: ./gradlew dependencies
@@ -90,31 +90,30 @@ jobs:
           name: Install Crcmod
           command: |
             sudo apt-get install gcc python-dev python-setuptools
+            sudo easy_install -U pip
             echo y | sudo pip uninstall crcmod
-            sudo pip install --no-cache-dir -U crcmod
+            sudo pip install -U crcmod
       - run:
           name: Install Gcloud
           command: |
-            echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
-            sudo apt-get install apt-transport-https ca-certificates
-            curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key --keyring /usr/share/keyrings/cloud.google.gpg add -
-            sudo apt-get update && sudo apt-get install google-cloud-sdk
+            curl -L "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-166.0.0-linux-x86_64.tar.gz" | tar xz
+            CLOUDSDK_CORE_DISABLE_PROMPTS=1 ./google-cloud-sdk/install.sh
       - run:
           name: Log in to Google Cloud Platform
           shell: /bin/bash -euo pipefail
           command: |
             echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/client-secret.json
-            gcloud config set project $PROJECT_ID
-            gcloud --quiet components update
-            gcloud --quiet components install beta
-            gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
+            ./google-cloud-sdk/bin/gcloud config set project $PROJECT_ID
+            ./google-cloud-sdk/bin/gcloud --quiet components update
+            ./google-cloud-sdk/bin/gcloud --quiet components install beta
+            ./google-cloud-sdk/bin/gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
       - run:
           name: Run UI tests
           no_output_timeout: 15m
           shell: /bin/bash -euo pipefail
           command: |
-            gcloud firebase test android models list
-            (gcloud firebase test android run --type instrumentation \
+            ./google-cloud-sdk/bin/gcloud firebase test android models list
+            (./google-cloud-sdk/bin/gcloud firebase test android run --type instrumentation \
               --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
               --device model=blueline,version=28,locale=en,orientation=portrait \
@@ -128,8 +127,8 @@ jobs:
             echo "Downloading from: ${RESULTS_BUCKET}"
             mkdir -p $TEST_LAB_ARTIFACTS_DIRECTORY
             chmod +x $TEST_LAB_ARTIFACTS_DIRECTORY
-            gsutil -m cp -n -R -Z "$RESULTS_BUCKET*" $TEST_LAB_ARTIFACTS_DIRECTORY
-            
+            ./google-cloud-sdk/bin/gsutil -m cp -n -R -Z "$RESULTS_BUCKET*" $TEST_LAB_ARTIFACTS_DIRECTORY
+
             exit ${EXIT_CODE:-0}
       - run:
           name: Copy UI tests coverage artifact
