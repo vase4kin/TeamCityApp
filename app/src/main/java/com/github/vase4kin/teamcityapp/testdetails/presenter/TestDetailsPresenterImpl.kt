@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.presenter
 
-import android.text.TextUtils
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager
 import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor
@@ -82,7 +81,7 @@ class TestDetailsPresenterImpl @Inject constructor(
             override fun onSuccess(data: TestOccurrences.TestOccurrence) {
                 view.hideProgress()
                 val testDetails = data.details
-                if (TextUtils.isEmpty(testDetails)) {
+                if (testDetails.isEmpty()) {
                     view.showEmptyData()
                 } else {
                     view.showTestDetails(testDetails)
