@@ -64,6 +64,7 @@ class BuildDetailsPresenterImpl @Inject constructor(
         interactor.unsubsribe()
         runBuildInteractor.unsubscribe()
         buildInteractor.unsubscribe()
+        router.unbindCustomsTabs()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -131,6 +132,14 @@ class BuildDetailsPresenterImpl @Inject constructor(
      */
     override fun onRestartBuildActionTriggered() {
         view.showYouAreAboutToRestartBuildDialog()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onOpenBrowserActionTriggered() {
+        val buildWebUrl = interactor.getWebUrl()
+        router.openUrlInBrowser(buildWebUrl)
     }
 
     /**

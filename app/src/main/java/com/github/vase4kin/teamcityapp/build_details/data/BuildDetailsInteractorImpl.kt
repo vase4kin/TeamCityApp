@@ -23,7 +23,16 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManagerImpl
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.overview.data.*
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
+import com.github.vase4kin.teamcityapp.overview.data.FloatButtonChangeVisibilityEvent
+import com.github.vase4kin.teamcityapp.overview.data.OpenBrowserEvent
+import com.github.vase4kin.teamcityapp.overview.data.RestartBuildEvent
+import com.github.vase4kin.teamcityapp.overview.data.ShareBuildEvent
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityEvent
+import com.github.vase4kin.teamcityapp.overview.data.StartBuildsListActivityFilteredByBranchEvent
+import com.github.vase4kin.teamcityapp.overview.data.StartProjectActivityEvent
+import com.github.vase4kin.teamcityapp.overview.data.StopBuildEvent
+import com.github.vase4kin.teamcityapp.overview.data.TextCopiedEvent
 import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -187,6 +196,16 @@ class BuildDetailsInteractorImpl(
     @Subscribe
     fun onEvent(@Suppress("UNUSED_PARAMETER") event: RestartBuildEvent) {
         listener?.onRestartBuildActionTriggered()
+    }
+
+    /***
+     * Handle receiving post events from [EventBus]
+     *
+     * @param event [com.github.vase4kin.teamcityapp.overview.data.OpenBrowserEvent]
+     */
+    @Subscribe
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: OpenBrowserEvent) {
+        listener?.onOpenBrowserActionTriggered()
     }
 
     /***

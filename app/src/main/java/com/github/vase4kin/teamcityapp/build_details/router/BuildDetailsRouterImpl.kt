@@ -23,12 +23,20 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 
 /**
  * Impl of [BuildDetailsRouter]
  */
-class BuildDetailsRouterImpl(private val activity: Activity) : BuildDetailsRouter {
+class BuildDetailsRouterImpl(
+    private val activity: Activity,
+    private val chromeCustomTabs: ChromeCustomTabs
+) : BuildDetailsRouter {
+
+    init {
+        chromeCustomTabs.initCustomsTabs()
+    }
 
     /**
      * {@inheritDoc}
@@ -60,5 +68,19 @@ class BuildDetailsRouterImpl(private val activity: Activity) : BuildDetailsRoute
      */
     override fun startProjectActivity(name: String, id: String) {
         NavigationActivity.start(name, id, activity)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun openUrlInBrowser(url: String) {
+        chromeCustomTabs.launchUrl(url)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun unbindCustomsTabs() {
+        chromeCustomTabs.unbindCustomsTabs()
     }
 }
