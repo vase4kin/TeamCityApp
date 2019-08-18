@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.build_details.router
 
 import android.app.Activity
 import android.content.Intent
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build

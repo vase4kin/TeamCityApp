@@ -32,7 +32,7 @@ import io.reactivex.schedulers.Schedulers
  * Impl of [BaseListRxDataManagerImpl] for [com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl]
  */
 class AccountsDataManagerImpl(
-        private val sharedUserStorage: SharedUserStorage
+    private val sharedUserStorage: SharedUserStorage
 ) : BaseListRxDataManagerImpl<SharedUserStorage, UserAccount>(), AccountsDataManager {
 
     /**

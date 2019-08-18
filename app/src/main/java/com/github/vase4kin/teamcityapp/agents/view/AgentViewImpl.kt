@@ -26,11 +26,13 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 /**
  * View managing for [AgentListFragment]
  */
-class AgentViewImpl(private val includeDisconnected: Boolean,
-                    view: View,
-                    activity: Activity,
-                    @StringRes emptyMessage: Int,
-                    adapter: AgentsAdapter) : BaseListViewImpl<AgentDataModel, AgentsAdapter>(view, activity, emptyMessage, adapter) {
+class AgentViewImpl(
+    private val includeDisconnected: Boolean,
+    view: View,
+    activity: Activity,
+    @StringRes emptyMessage: Int,
+    adapter: AgentsAdapter
+) : BaseListViewImpl<AgentDataModel, AgentsAdapter>(view, activity, emptyMessage, adapter) {
 
     /**
      * {@inheritDoc}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'org.jmailen.kotlinter'
 apply from: 'jacoco.gradle'
 apply from: 'spoon.gradle'
 apply from: 'pmd.gradle'
@@ -79,11 +80,11 @@ android {
     android.variantFilter { variant ->
         if(variant.buildType.name.equals('release')
                 && variant.getFlavors().get(0).name.equals('mock')) {
-            variant.setIgnore(true);
+            variant.setIgnore(true)
         }
         if (variant.buildType.name.equals('showcase')
                 && variant.getFlavors().get(0).name.equals('mock')) {
-            variant.setIgnore(true);
+            variant.setIgnore(true)
         }
     }
 
@@ -119,6 +120,16 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinter {
+        ignoreFailures = false
+        indentSize = 4
+        continuationIndentSize = 4
+        reporters = ["html"]
+        experimentalRules = false
+        disabledRules = []
+        fileBatchSize = 30
     }
 }
 

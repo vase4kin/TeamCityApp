@@ -33,8 +33,8 @@ import org.greenrobot.eventbus.EventBus
  * Impl of [ChangesDataManager]
  */
 class ChangesDataManagerImpl(
-        private val repository: Repository,
-        private val eventBus: EventBus
+    private val repository: Repository,
+    private val eventBus: EventBus
 ) : BaseListRxDataManagerImpl<Changes, Changes.Change>(), ChangesDataManager {
 
     private var loadMoreUrl: String? = null
@@ -42,8 +42,10 @@ class ChangesDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun loadTabTitle(url: String,
-                              loadingListener: OnLoadingListener<Int>) {
+    override fun loadTabTitle(
+        url: String,
+        loadingListener: OnLoadingListener<Int>
+    ) {
         repository.listChanges(url + ",count:" + Integer.MAX_VALUE + "&fields=count", true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -57,18 +59,22 @@ class ChangesDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun loadLimited(url: String,
-                             loadingListener: OnLoadingListener<List<Changes.Change>>,
-                             update: Boolean) {
+    override fun loadLimited(
+        url: String,
+        loadingListener: OnLoadingListener<List<Changes.Change>>,
+        update: Boolean
+    ) {
         load("$url,count:10", loadingListener, update)
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun load(url: String,
-                      loadingListener: OnLoadingListener<List<Changes.Change>>,
-                      update: Boolean) {
+    override fun load(
+        url: String,
+        loadingListener: OnLoadingListener<List<Changes.Change>>,
+        update: Boolean
+    ) {
         repository.listChanges(url, update)
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable {

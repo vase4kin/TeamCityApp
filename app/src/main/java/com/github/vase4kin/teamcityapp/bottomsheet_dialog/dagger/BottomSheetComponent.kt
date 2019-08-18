@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger
 
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
-
 import dagger.Component
 
 /**

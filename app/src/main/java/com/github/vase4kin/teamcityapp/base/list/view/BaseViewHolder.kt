@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.base.list.view
 
 import android.view.View
-
 import androidx.recyclerview.widget.RecyclerView
 
 /**
@@ -31,7 +30,7 @@ abstract class BaseViewHolder<BM : BaseDataModel>(itemView: View) : RecyclerView
      * Bind data
      *
      * @param dataModel - Data model
-     * @param position  - item position
+     * @param position - item position
      */
     abstract fun bind(dataModel: BM, position: Int)
 }

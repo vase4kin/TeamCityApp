@@ -204,7 +204,6 @@ class OverviewPresenterCardLogicTest {
         verify(buildDetails).hasAgentInfo()
         verify(buildDetails, never()).agentName
         verify(view, never()).addAgentCard(anyString())
-
     }
 
     @Test
@@ -342,5 +341,4 @@ class OverviewPresenterCardLogicTest {
         private const val TIME = "time"
         private const val TRIGGERED_DETAILS = "triggered_details"
     }
-
 }

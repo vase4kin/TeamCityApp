@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.agents.view
 
 import android.view.ViewGroup
-
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory

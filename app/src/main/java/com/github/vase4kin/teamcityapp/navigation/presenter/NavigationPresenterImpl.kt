@@ -29,18 +29,18 @@ import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView
 import com.github.vase4kin.teamcityapp.navigation.view.OnNavigationItemClickListener
-
 import javax.inject.Inject
 
 /**
  * Present to handle logic of [com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity]
  */
 class NavigationPresenterImpl @Inject constructor(
-        view: NavigationView,
-        dataManager: NavigationDataManager,
-        tracker: NavigationTracker,
-        valueExtractor: NavigationValueExtractor,
-        private val router: NavigationRouter) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, NavigationView, NavigationDataManager, NavigationTracker, NavigationValueExtractor>(view, dataManager, tracker, valueExtractor), OnNavigationItemClickListener {
+    view: NavigationView,
+    dataManager: NavigationDataManager,
+    tracker: NavigationTracker,
+    valueExtractor: NavigationValueExtractor,
+    private val router: NavigationRouter
+) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, NavigationView, NavigationDataManager, NavigationTracker, NavigationValueExtractor>(view, dataManager, tracker, valueExtractor), OnNavigationItemClickListener {
 
     /**
      * {@inheritDoc}

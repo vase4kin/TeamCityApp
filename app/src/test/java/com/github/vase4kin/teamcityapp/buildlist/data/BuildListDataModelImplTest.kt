@@ -158,5 +158,4 @@ class BuildListDataModelImplTest {
         assertThat(dataModel.isLoadMore(0), `is`(false))
         assertThat(dataModel.itemCount, `is`(1))
     }
-
 }

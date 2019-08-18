@@ -17,16 +17,15 @@
 package com.github.vase4kin.teamcityapp.drawer.view
 
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.vase4kin.teamcityapp.R
 
 /**
  * Custom animation drawer view impl
  */
 class CustomAnimationDrawerViewImpl(
-        activity: AppCompatActivity,
-        drawerSelection: Int,
-        isBackArrowEnabled: Boolean
+    activity: AppCompatActivity,
+    drawerSelection: Int,
+    isBackArrowEnabled: Boolean
 ) : DrawerViewImpl(activity, drawerSelection, isBackArrowEnabled) {
 
     /**

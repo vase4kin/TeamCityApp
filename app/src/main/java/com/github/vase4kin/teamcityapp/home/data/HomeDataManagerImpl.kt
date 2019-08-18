@@ -31,11 +31,12 @@ import org.greenrobot.eventbus.Subscribe
 /**
  * Impl of [HomeDataManager]
  */
-class HomeDataManagerImpl(repository: Repository,
-                          sharedUserStorage: SharedUserStorage,
-                          private val rxCache: RxCache,
-                          private val eventBus: EventBus) : DrawerDataManagerImpl(repository, sharedUserStorage, eventBus), HomeDataManager {
-
+class HomeDataManagerImpl(
+    repository: Repository,
+    sharedUserStorage: SharedUserStorage,
+    private val rxCache: RxCache,
+    private val eventBus: EventBus
+) : DrawerDataManagerImpl(repository, sharedUserStorage, eventBus), HomeDataManager {
 
     private val runningBuildsDataManager = RunningBuildsDataManagerImpl(repository, sharedUserStorage)
     private val queuedBuildsDataManager = BuildQueueDataManagerImpl(repository, sharedUserStorage)

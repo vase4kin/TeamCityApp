@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.remote
 
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-
 import io.fabric.sdk.android.Fabric
 
 class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : RemoteService {

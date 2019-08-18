@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.drawer.router
 
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity

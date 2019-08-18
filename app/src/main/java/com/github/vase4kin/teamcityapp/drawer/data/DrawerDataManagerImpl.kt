@@ -22,15 +22,16 @@ import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
-
 import org.greenrobot.eventbus.EventBus
 
 /**
  * Impl of [DrawerDataManager]
  */
-open class DrawerDataManagerImpl(repository: Repository,
-                                 protected val sharedUserStorage: SharedUserStorage,
-                                 eventBus: EventBus) : DrawerDataManager {
+open class DrawerDataManagerImpl(
+    repository: Repository,
+    protected val sharedUserStorage: SharedUserStorage,
+    eventBus: EventBus
+) : DrawerDataManager {
     private val agentsDataManager: AgentsDataManager
 
     init {

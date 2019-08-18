@@ -345,5 +345,4 @@ class ArtifactPresenterImplTest {
         verify(dataManager).downloadArtifact(eq("url"), eq("name.apk"), any())
         verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
     }
-
 }

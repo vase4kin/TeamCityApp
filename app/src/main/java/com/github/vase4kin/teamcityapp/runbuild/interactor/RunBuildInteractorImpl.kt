@@ -32,8 +32,8 @@ import retrofit2.HttpException
  * Impl of [RunBuildInteractor]
  */
 class RunBuildInteractorImpl(
-        private val repository: Repository,
-        private val buildTypeId: String
+    private val repository: Repository,
+    private val buildTypeId: String
 ) : RunBuildInteractor {
     /**
      * To handle rx subscriptions
@@ -43,13 +43,15 @@ class RunBuildInteractorImpl(
     /**
      * {@inheritDoc}
      */
-    override fun queueBuild(branchName: String,
-                            agent: Agent?,
-                            isPersonal: Boolean,
-                            queueToTheTop: Boolean,
-                            cleanAllFiles: Boolean,
-                            properties: Properties,
-                            loadingListener: LoadingListenerWithForbiddenSupport<String>) {
+    override fun queueBuild(
+        branchName: String,
+        agent: Agent?,
+        isPersonal: Boolean,
+        queueToTheTop: Boolean,
+        cleanAllFiles: Boolean,
+        properties: Properties,
+        loadingListener: LoadingListenerWithForbiddenSupport<String>
+    ) {
         val build = Build()
         build.branchName = branchName
         build.buildTypeId = buildTypeId
@@ -79,7 +81,7 @@ class RunBuildInteractorImpl(
     /**
      * Queue build
      *
-     * @param build           - Build to queue
+     * @param build - Build to queue
      * @param loadingListener - listener to receive callbacks on UI
      */
     private fun queueBuild(build: Build, loadingListener: LoadingListenerWithForbiddenSupport<String>) {

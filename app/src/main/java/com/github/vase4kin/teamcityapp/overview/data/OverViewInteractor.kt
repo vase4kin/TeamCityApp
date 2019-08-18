@@ -42,13 +42,15 @@ interface OverViewInteractor : BaseListRxDataManager<Build, BuildElement> {
     /**
      * Load build details
      *
-     * @param url             - Build url
-     * @param update          - Force cache update
+     * @param url - Build url
+     * @param update - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    fun load(url: String,
-             loadingListener: OnLoadingListener<BuildDetails>,
-             update: Boolean)
+    fun load(
+        url: String,
+        loadingListener: OnLoadingListener<BuildDetails>,
+        update: Boolean
+    )
 
     /**
      * Post [StopBuildEvent]
@@ -126,5 +128,4 @@ interface OverViewInteractor : BaseListRxDataManager<Build, BuildElement> {
          */
         fun onNavigateToProjectEvent()
     }
-
 }

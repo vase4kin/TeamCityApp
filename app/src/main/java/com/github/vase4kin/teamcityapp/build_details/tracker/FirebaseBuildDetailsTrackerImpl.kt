@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.build_details.tracker
 
 import android.os.Bundle
-
 import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
 import com.google.firebase.analytics.FirebaseAnalytics
 
@@ -25,7 +24,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
  * Tracker firebase impl
  */
 class FirebaseBuildDetailsTrackerImpl(
-        firebaseAnalytics: FirebaseAnalytics
+    firebaseAnalytics: FirebaseAnalytics
 ) : BaseFirebaseTracker(firebaseAnalytics), BuildDetailsTracker {
 
     /**

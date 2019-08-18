@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.navigation.data
 
 import android.content.Context
 import android.content.SharedPreferences
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
@@ -30,8 +29,9 @@ import com.github.vase4kin.teamcityapp.remote.RemoteService
  * Impl of [NavigationDataManager]
  */
 class NavigationDataManagerImpl(
-        private val mRepository: Repository,
-        context: Context, private val remoteService: RemoteService
+    private val mRepository: Repository,
+    context: Context,
+    private val remoteService: RemoteService
 ) : BaseListRxDataManagerImpl<NavigationNode, NavigationItem>(), NavigationDataManager {
 
     private val sharedPreferences: SharedPreferences

@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items
 
 import android.content.Context
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem
 import com.joanzapata.iconify.IconDrawable

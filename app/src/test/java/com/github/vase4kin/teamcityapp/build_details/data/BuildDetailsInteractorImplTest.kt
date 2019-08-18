@@ -112,5 +112,4 @@ class BuildDetailsInteractorImplTest {
     fun onEvent6() {
         interactor.onEvent(StartBuildsListActivityFilteredByBranchEvent(""))
     }
-
 }

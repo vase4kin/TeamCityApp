@@ -143,5 +143,4 @@ class FilterBuildsPresenterImplTest {
         presenter.onOtherFiltersSelected()
         verify(view).showSwitchForPinnedFilter()
     }
-
 }

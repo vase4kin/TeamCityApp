@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,108 +38,136 @@ interface CacheProviders {
      * Cache build types for one day
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
-    fun listBuildTypes(navigationNodeSingle: Single<NavigationNode>,
-                       buildTypeUrl: DynamicKey,
-                       evictDynamicKey: EvictDynamicKey): Single<NavigationNode>
+    fun listBuildTypes(
+        navigationNodeSingle: Single<NavigationNode>,
+        buildTypeUrl: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<NavigationNode>
 
     /**
      * Cache build type for 1 day
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
-    fun buildType(buildTypeSingle: Single<BuildType>,
-                  buildTypeId: DynamicKey,
-                  evictDynamicKey: EvictDynamicKey): Single<BuildType>
+    fun buildType(
+        buildTypeSingle: Single<BuildType>,
+        buildTypeId: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<BuildType>
 
     /**
      * Cache branches for one minute
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
-    fun listBranches(branchesSingle: Single<Branches>,
-                     buildTypeId: DynamicKey): Single<Branches>
+    fun listBranches(
+        branchesSingle: Single<Branches>,
+        buildTypeId: DynamicKey
+    ): Single<Branches>
 
     /**
      * Cache changes list for three minute
      */
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
-    fun listChanges(changesSingle: Single<Changes>,
-                    changesUrl: DynamicKey,
-                    evictDynamicKey: EvictDynamicKey): Single<Changes>
+    fun listChanges(
+        changesSingle: Single<Changes>,
+        changesUrl: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Changes>
 
     /**
      * Cache single change for one hour
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
-    fun change(changeSingle: Single<Changes.Change>,
-               changeUrl: DynamicKey): Single<Changes.Change>
+    fun change(
+        changeSingle: Single<Changes.Change>,
+        changeUrl: DynamicKey
+    ): Single<Changes.Change>
 
     /**
      * Cache test list for three minute
      */
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
-    fun listTestOccurrences(occurrencesSingle: Single<TestOccurrences>,
-                            testsUrl: DynamicKey,
-                            evictDynamicKey: EvictDynamicKey): Single<TestOccurrences>
+    fun listTestOccurrences(
+        occurrencesSingle: Single<TestOccurrences>,
+        testsUrl: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<TestOccurrences>
 
     /**
      * Cache single test for one hour
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
-    fun testOccurrence(testOccurrenceSingle: Single<TestOccurrences.TestOccurrence>,
-                       testUrl: DynamicKey): Single<TestOccurrences.TestOccurrence>
+    fun testOccurrence(
+        testOccurrenceSingle: Single<TestOccurrences.TestOccurrence>,
+        testUrl: DynamicKey
+    ): Single<TestOccurrences.TestOccurrence>
 
     /**
      * Cache artifacts for one hour
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
-    fun listArtifacts(filesSingle: Single<Files>,
-                      artifactsUrl: DynamicKey,
-                      evictDynamicKey: EvictDynamicKey): Single<Files>
+    fun listArtifacts(
+        filesSingle: Single<Files>,
+        artifactsUrl: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Files>
 
     /**
      * Cache build list for 1 minutes
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
-    fun listBuilds(buildsSingle: Single<Builds>,
-                   buildsInfo: DynamicKeyGroup,
-                   evictDynamicKeyGroup: EvictDynamicKeyGroup): Single<Builds>
+    fun listBuilds(
+        buildsSingle: Single<Builds>,
+        buildsInfo: DynamicKeyGroup,
+        evictDynamicKeyGroup: EvictDynamicKeyGroup
+    ): Single<Builds>
 
     /**
      * Cache build for 1 hour (we cache only builds which have finished state)
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
-    fun build(buildSingle: Single<Build>,
-              buildUrl: DynamicKey,
-              evictDynamicKey: EvictDynamicKey): Single<Build>
+    fun build(
+        buildSingle: Single<Build>,
+        buildUrl: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Build>
 
     /**
      * Cache running build list for 1 minutes
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
-    fun listRunningBuilds(buildSingle: Single<Builds>,
-                          locatorPlusFields: DynamicKey,
-                          evictDynamicKey: EvictDynamicKey): Single<Builds>
+    fun listRunningBuilds(
+        buildSingle: Single<Builds>,
+        locatorPlusFields: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Builds>
 
     /**
      * Cache queued build list for 1 minutes
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
-    fun listQueuedBuilds(buildSingle: Single<Builds>,
-                         fields: DynamicKey,
-                         evictDynamicKey: EvictDynamicKey): Single<Builds>
+    fun listQueuedBuilds(
+        buildSingle: Single<Builds>,
+        fields: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Builds>
 
     /**
      * Cache snapshot dependencies build list for 1 minutes
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
-    fun listSnapshotBuilds(buildSingle: Single<Builds>,
-                           fields: DynamicKey,
-                           evictDynamicKey: EvictDynamicKey): Single<Builds>
+    fun listSnapshotBuilds(
+        buildSingle: Single<Builds>,
+        fields: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Builds>
 
     /**
      * Cache agent list for 3 minutes
      */
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
-    fun listAgents(agentsSingle: Single<Agents>,
-                   includeDisconnectedPlusFields: DynamicKey,
-                   evictDynamicKey: EvictDynamicKey): Single<Agents>
+    fun listAgents(
+        agentsSingle: Single<Agents>,
+        includeDisconnectedPlusFields: DynamicKey,
+        evictDynamicKey: EvictDynamicKey
+    ): Single<Agents>
 }

@@ -49,8 +49,10 @@ import dagger.multibindings.IntoMap
 class FavoritesFragmentModule {
 
     @Provides
-    fun providesNavigationView(fragment: FavoritesFragment,
-                               adapter: SimpleSectionedRecyclerViewAdapter<NavigationAdapter>): FavoritesView {
+    fun providesNavigationView(
+        fragment: FavoritesFragment,
+        adapter: SimpleSectionedRecyclerViewAdapter<NavigationAdapter>
+    ): FavoritesView {
         return FavoritesViewImpl(fragment.view!!, fragment.activity, R.string.empty_list_message_favorites, adapter)
     }
 
@@ -96,8 +98,9 @@ class FavoritesFragmentModule {
 
     @Provides
     fun providesSimpleSectionedRecyclerViewAdapter(
-            context: Context,
-            adapter: NavigationAdapter): SimpleSectionedRecyclerViewAdapter<NavigationAdapter> {
+        context: Context,
+        adapter: NavigationAdapter
+    ): SimpleSectionedRecyclerViewAdapter<NavigationAdapter> {
         return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 
@@ -112,5 +115,4 @@ class FavoritesFragmentModule {
     fun providesFavoritesTracker(firebaseAnalytics: FirebaseAnalytics): FavoritesTracker {
         return FavoritesTrackerImpl(firebaseAnalytics)
     }
-
 }

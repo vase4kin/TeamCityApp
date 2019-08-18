@@ -29,25 +29,24 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView
-
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-
 import javax.inject.Inject
 
 /**
  * Presenter to handle [com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment]
  */
 class QueueBuildsListPresenterImpl @Inject constructor(
-        view: RunningBuildListView,
-        dataManager: RunningBuildsDataManager,
-        tracker: BuildListTracker,
-        router: BuildListRouter,
-        valueExtractor: BaseValueExtractor,
-        buildInteractor: BuildInteractor,
-        onboardingManager: OnboardingManager,
-        private val filterProvider: FilterProvider,
-        private val eventBus: EventBus) : BuildListPresenterImpl<RunningBuildListView, RunningBuildsDataManager>(view, dataManager, tracker, valueExtractor, router, buildInteractor, onboardingManager) {
+    view: RunningBuildListView,
+    dataManager: RunningBuildsDataManager,
+    tracker: BuildListTracker,
+    router: BuildListRouter,
+    valueExtractor: BaseValueExtractor,
+    buildInteractor: BuildInteractor,
+    onboardingManager: OnboardingManager,
+    private val filterProvider: FilterProvider,
+    private val eventBus: EventBus
+) : BuildListPresenterImpl<RunningBuildListView, RunningBuildsDataManager>(view, dataManager, tracker, valueExtractor, router, buildInteractor, onboardingManager) {
 
     /**
      * {@inheritDoc}

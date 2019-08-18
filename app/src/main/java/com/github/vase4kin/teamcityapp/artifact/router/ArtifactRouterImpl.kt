@@ -20,22 +20,22 @@ import android.content.Intent
 import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
-
 import com.github.vase4kin.teamcityapp.BuildConfig
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-
 import java.io.File
 
 /**
  * Impl of [ArtifactRouter]
  */
-class ArtifactRouterImpl(private val sharedUserStorage: SharedUserStorage,
-                         private val activity: AppCompatActivity,
-                         private val chromeCustomTabs: ChromeCustomTabs) : ArtifactRouter {
+class ArtifactRouterImpl(
+    private val sharedUserStorage: SharedUserStorage,
+    private val activity: AppCompatActivity,
+    private val chromeCustomTabs: ChromeCustomTabs
+) : ArtifactRouter {
 
     init {
         chromeCustomTabs.initCustomsTabs()
@@ -59,14 +59,13 @@ class ArtifactRouterImpl(private val sharedUserStorage: SharedUserStorage,
         intent.setDataAndType(data, type)
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
-        //User couldn't have app with type intent
+        // User couldn't have app with type intent
         try {
             activity.startActivity(intent)
         } catch (e: android.content.ActivityNotFoundException) {
             intent.setDataAndType(data, ALL_FILES_TYPE)
             activity.startActivity(intent)
         }
-
     }
 
     /**

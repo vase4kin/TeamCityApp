@@ -31,10 +31,10 @@ import javax.inject.Inject
  * Impl of [OverviewPresenter]
  */
 class OverviewPresenterImpl @Inject internal constructor(
-        private val view: OverviewView,
-        private val interactor: OverViewInteractor,
-        private val tracker: OverviewTracker,
-        private val onboardingManager: OnboardingManager
+    private val view: OverviewView,
+    private val interactor: OverViewInteractor,
+    private val tracker: OverviewTracker,
+    private val onboardingManager: OnboardingManager
 ) : OverviewPresenter, OverviewView.ViewListener, OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<BuildDetails> {
 
     /**

@@ -24,7 +24,7 @@ import android.view.MenuItem
  * Custom selection callback listener
  */
 class CustomSelectionActionModeCallBackImpl(
-        private val onActionModeListener: OnActionModeListener
+    private val onActionModeListener: OnActionModeListener
 ) : ActionMode.Callback {
 
     /**

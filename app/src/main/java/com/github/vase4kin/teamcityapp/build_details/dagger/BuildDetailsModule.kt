@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,9 +45,11 @@ import org.greenrobot.eventbus.EventBus
 class BuildDetailsModule {
 
     @Provides
-    fun providesBuildTabsView(activity: BuildDetailsActivity,
-                              statusBarUtils: StatusBarUtils,
-                              valueExtractor: BaseValueExtractor): BuildDetailsView {
+    fun providesBuildTabsView(
+        activity: BuildDetailsActivity,
+        statusBarUtils: StatusBarUtils,
+        valueExtractor: BaseValueExtractor
+    ): BuildDetailsView {
         return BuildDetailsViewImpl(activity.findViewById<View>(android.R.id.content), activity, statusBarUtils, valueExtractor)
     }
 
@@ -62,10 +64,12 @@ class BuildDetailsModule {
     }
 
     @Provides
-    fun providesBaseTabsDataManager(eventBus: EventBus,
-                                    valueExtractor: BaseValueExtractor,
-                                    sharedUserStorage: SharedUserStorage,
-                                    repository: Repository): BuildDetailsInteractor {
+    fun providesBaseTabsDataManager(
+        eventBus: EventBus,
+        valueExtractor: BaseValueExtractor,
+        sharedUserStorage: SharedUserStorage,
+        repository: Repository
+    ): BuildDetailsInteractor {
         return BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
     }
 
@@ -75,8 +79,10 @@ class BuildDetailsModule {
     }
 
     @Provides
-    fun providesRunBuildInteractor(repository: Repository,
-                                   valueExtractor: BaseValueExtractor): RunBuildInteractor {
+    fun providesRunBuildInteractor(
+        repository: Repository,
+        valueExtractor: BaseValueExtractor
+    ): RunBuildInteractor {
         return RunBuildInteractorImpl(repository, valueExtractor.buildDetails.buildTypeId)
     }
 

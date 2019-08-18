@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-
 import io.reactivex.Single
 import io.rx_cache2.DynamicKey
 import io.rx_cache2.DynamicKeyGroup
@@ -39,18 +38,21 @@ import okhttp3.ResponseBody
 /**
  * Impl of [Repository]
  */
-class RepositoryImpl(private val teamCityService: TeamCityService,
-                     private val cacheProviders: CacheProviders,
-                     private val urlFormatter: UrlFormatter
+class RepositoryImpl(
+    private val teamCityService: TeamCityService,
+    private val cacheProviders: CacheProviders,
+    private val urlFormatter: UrlFormatter
 ) : Repository {
 
     /**
      * {@inheritDoc}
      */
-    override fun listAgents(includeDisconnected: Boolean?,
-                            fields: String?,
-                            locator: String?,
-                            update: Boolean): Single<Agents> {
+    override fun listAgents(
+        includeDisconnected: Boolean?,
+        fields: String?,
+        locator: String?,
+        update: Boolean
+    ): Single<Agents> {
         val dynamicKey = String.format("includeDisconnected:%s,fields:%s,locator:%s",
                 includeDisconnected ?: "empty",
                 fields ?: "empty",

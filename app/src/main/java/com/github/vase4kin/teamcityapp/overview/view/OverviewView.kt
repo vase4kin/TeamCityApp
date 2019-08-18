@@ -19,12 +19,9 @@ package com.github.vase4kin.teamcityapp.overview.view
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
-
 import tr.xip.errorview.ErrorView
 
 interface OverviewView {
@@ -74,7 +71,7 @@ interface OverviewView {
     /**
      * Add wait reason card
      *
-     * @param icon       - icon to setup with
+     * @param icon - icon to setup with
      * @param waitReason - text with setup with
      */
     fun addWaitReasonStatusCard(icon: String, waitReason: String)
@@ -82,7 +79,7 @@ interface OverviewView {
     /**
      * Add result status card
      *
-     * @param icon   - icon to setup with
+     * @param icon - icon to setup with
      * @param result - text with setup with
      */
     fun addResultStatusCard(icon: String, result: String)
@@ -90,7 +87,7 @@ interface OverviewView {
     /**
      * Add cancelled by card
      *
-     * @param icon     - icon to setup with
+     * @param icon - icon to setup with
      * @param userName - text with setup with
      */
     fun addCancelledByCard(icon: String, userName: String)
@@ -222,7 +219,7 @@ interface OverviewView {
     /**
      * Show bottom sheet dialog for default card
      *
-     * @param header      - header of the card
+     * @param header - header of the card
      * @param description - description of the card
      */
     fun showDefaultCardBottomSheetDialog(header: String, description: String)

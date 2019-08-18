@@ -22,5 +22,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 
 interface SnapshotDependenciesTracker : BuildListTracker
 
-class SnapshotDependenciesTrackerImpl(firebaseAnalytics: FirebaseAnalytics
+class SnapshotDependenciesTrackerImpl(
+    firebaseAnalytics: FirebaseAnalytics
 ) : FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_SNAPSHOT_DEPENDECIES), SnapshotDependenciesTracker

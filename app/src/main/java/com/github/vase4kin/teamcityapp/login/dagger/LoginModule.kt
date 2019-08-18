@@ -45,11 +45,13 @@ class LoginModule {
     }
 
     @Provides
-    fun providesCreateAccountDataManager(context: Context,
-                                         @Named(CLIENT_BASE) baseOkHttpClient: OkHttpClient,
-                                         @Named(CLIENT_BASE_UNSAFE) unsafeBaseOkHttpClient: OkHttpClient,
-                                         sharedUserStorage: SharedUserStorage,
-                                         urlFormatter: UrlFormatter): CreateAccountDataManager {
+    fun providesCreateAccountDataManager(
+        context: Context,
+        @Named(CLIENT_BASE) baseOkHttpClient: OkHttpClient,
+        @Named(CLIENT_BASE_UNSAFE) unsafeBaseOkHttpClient: OkHttpClient,
+        sharedUserStorage: SharedUserStorage,
+        urlFormatter: UrlFormatter
+    ): CreateAccountDataManager {
         return CreateAccountDataManagerImpl(
                 context, baseOkHttpClient, unsafeBaseOkHttpClient, sharedUserStorage, urlFormatter)
     }

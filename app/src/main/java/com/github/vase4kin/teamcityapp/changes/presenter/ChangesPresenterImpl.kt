@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.changes.presenter
 
 import androidx.annotation.VisibleForTesting
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
@@ -28,17 +27,16 @@ import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModelImpl
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor
 import com.github.vase4kin.teamcityapp.changes.view.ChangesView
 import com.mugen.MugenCallbacks
-
 import javax.inject.Inject
 
 /**
  * Presenter manages logic of [com.github.vase4kin.teamcityapp.changes.view.ChangesFragment]
  */
 class ChangesPresenterImpl @Inject constructor(
-        view: ChangesView,
-        dataManager: ChangesDataManager,
-        tracker: ViewTracker,
-        valueExtractor: ChangesValueExtractor
+    view: ChangesView,
+    dataManager: ChangesDataManager,
+    tracker: ViewTracker,
+    valueExtractor: ChangesValueExtractor
 ) : BaseListPresenterImpl<ChangesDataModel, Changes.Change, ChangesView, ChangesDataManager, ViewTracker, ChangesValueExtractor>(view, dataManager, tracker, valueExtractor) {
 
     @VisibleForTesting

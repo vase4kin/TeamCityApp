@@ -24,8 +24,8 @@ import javax.inject.Inject
  * Impl of [BottomSheetPresenter]
  */
 class BottomSheetPresenterImpl @Inject constructor(
-        private val view: BottomSheetView,
-        private val interactor: BottomSheetInteractor
+    private val view: BottomSheetView,
+    private val interactor: BottomSheetInteractor
 ) : BottomSheetPresenter, BottomSheetView.OnBottomSheetClickListener {
 
     /**

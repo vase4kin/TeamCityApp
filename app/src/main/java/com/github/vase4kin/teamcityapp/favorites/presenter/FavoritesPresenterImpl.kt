@@ -27,18 +27,18 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModelImpl
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter
-
 import javax.inject.Inject
 
 /**
  * Presenter to manage logic of favorites list
  */
 class FavoritesPresenterImpl @Inject constructor(
-        view: FavoritesView,
-        interactor: FavoritesInteractor,
-        tracker: FavoritesTracker,
-        valueExtractor: NavigationValueExtractor,
-        private val router: NavigationRouter) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, FavoritesView, FavoritesInteractor, FavoritesTracker, NavigationValueExtractor>(view, interactor, tracker, valueExtractor), FavoritesView.ViewListener {
+    view: FavoritesView,
+    interactor: FavoritesInteractor,
+    tracker: FavoritesTracker,
+    valueExtractor: NavigationValueExtractor,
+    private val router: NavigationRouter
+) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, FavoritesView, FavoritesInteractor, FavoritesTracker, NavigationValueExtractor>(view, interactor, tracker, valueExtractor), FavoritesView.ViewListener {
 
     /**
      * {@inheritDoc}

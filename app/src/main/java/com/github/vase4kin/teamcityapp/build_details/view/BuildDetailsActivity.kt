@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,7 +54,6 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
     override fun onResume() {
         super.onResume()
         presenter.onResume()
-
     }
 
     override fun onPause() {
@@ -88,8 +87,8 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
         /**
          * Open [this] activity
          *
-         * @param activity      - Activity
-         * @param build         - Build to be passed
+         * @param activity - Activity
+         * @param build - Build to be passed
          * @param buildTypeName - Build type name
          */
         fun start(activity: Activity, build: Build, buildTypeName: String?) {

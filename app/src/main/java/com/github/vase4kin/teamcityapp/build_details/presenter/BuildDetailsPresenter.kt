@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.build_details.presenter
 
 import android.os.Bundle
-
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenter
 
 /**

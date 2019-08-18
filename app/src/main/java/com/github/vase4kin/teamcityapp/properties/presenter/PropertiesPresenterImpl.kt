@@ -25,17 +25,16 @@ import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModelImpl
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractor
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesView
-
 import javax.inject.Inject
 
 /**
  * Presenter handles logic of [com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment]
  */
 class PropertiesPresenterImpl @Inject constructor(
-        view: PropertiesView,
-        dataManager: PropertiesDataManager,
-        tracker: ViewTracker,
-        valueExtractor: PropertiesValueExtractor
+    view: PropertiesView,
+    dataManager: PropertiesDataManager,
+    tracker: ViewTracker,
+    valueExtractor: PropertiesValueExtractor
 ) : BaseListPresenterImpl<PropertiesDataModel, Properties.Property, PropertiesView, PropertiesDataManager, ViewTracker, PropertiesValueExtractor>(view, dataManager, tracker, valueExtractor), PropertiesView.Listener {
 
     override fun initViews() {
@@ -63,5 +62,4 @@ class PropertiesPresenterImpl @Inject constructor(
     override fun onCardClick(header: String, value: String) {
         view.showCopyValueBottomSheet(header, value)
     }
-
 }

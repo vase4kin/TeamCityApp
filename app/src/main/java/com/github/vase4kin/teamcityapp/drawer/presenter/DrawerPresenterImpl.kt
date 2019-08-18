@@ -24,17 +24,18 @@ import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
-
 import javax.inject.Inject
 
 /**
  * Impl of [DrawerPresenter]
  */
 open class DrawerPresenterImpl<V : DrawerView, DM : DrawerDataManager, DR : DrawerRouter, DT : DrawerTracker>
-@Inject constructor(protected var view: V,
-                    protected var dataManager: DM,
-                    private val router: DR,
-                    protected var tracker: DT) : DrawerPresenter, OnDrawerPresenterListener {
+@Inject constructor(
+    protected var view: V,
+    protected var dataManager: DM,
+    private val router: DR,
+    protected var tracker: DT
+) : DrawerPresenter, OnDrawerPresenterListener {
 
     /**
      * {@inheritDoc}
@@ -112,7 +113,6 @@ open class DrawerPresenterImpl<V : DrawerView, DM : DrawerDataManager, DR : Draw
             }
 
             override fun onFail(errorMessage: String) {
-
             }
         })
     }

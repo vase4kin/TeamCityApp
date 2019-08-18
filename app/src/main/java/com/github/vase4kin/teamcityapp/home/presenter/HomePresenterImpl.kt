@@ -36,14 +36,14 @@ import javax.inject.Inject
  * Impl of [HomePresenter]
  */
 class HomePresenterImpl @Inject constructor(
-        view: HomeView,
-        dataManager: HomeDataManager,
-        tracker: HomeTracker,
-        router: HomeRouter,
-        private val interactor: BuildLogInteractor,
-        private val onboardingManager: OnboardingManager,
-        private val bottomNavigationView: BottomNavigationView,
-        private val filterProvider: FilterProvider
+    view: HomeView,
+    dataManager: HomeDataManager,
+    tracker: HomeTracker,
+    router: HomeRouter,
+    private val interactor: BuildLogInteractor,
+    private val onboardingManager: OnboardingManager,
+    private val bottomNavigationView: BottomNavigationView,
+    private val filterProvider: FilterProvider
 ) : DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker>(view, dataManager, router, tracker), HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener, HomeDataManager.Listener {
 
     private var baseUrl: String? = null
@@ -248,7 +248,6 @@ class HomePresenterImpl @Inject constructor(
                 }
 
                 override fun onFail(errorMessage: String) {
-
                 }
             })
         } else if (currentFilter === Filter.QUEUE_ALL) {
@@ -258,7 +257,6 @@ class HomePresenterImpl @Inject constructor(
                 }
 
                 override fun onFail(errorMessage: String) {
-
                 }
             })
         }

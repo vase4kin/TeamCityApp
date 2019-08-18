@@ -47,11 +47,13 @@ class CreateAccountModule {
     }
 
     @Provides
-    fun providesCreateAccountDataManager(context: Context,
-                                         @Named(CLIENT_BASE) okHttpClient: OkHttpClient,
-                                         @Named(CLIENT_BASE_UNSAFE) unsafeOkHttpClient: OkHttpClient,
-                                         sharedUserStorage: SharedUserStorage,
-                                         urlFormatter: UrlFormatter): CreateAccountDataManager {
+    fun providesCreateAccountDataManager(
+        context: Context,
+        @Named(CLIENT_BASE) okHttpClient: OkHttpClient,
+        @Named(CLIENT_BASE_UNSAFE) unsafeOkHttpClient: OkHttpClient,
+        sharedUserStorage: SharedUserStorage,
+        urlFormatter: UrlFormatter
+    ): CreateAccountDataManager {
         return CreateAccountDataManagerImpl(context, okHttpClient, unsafeOkHttpClient, sharedUserStorage, urlFormatter)
     }
 

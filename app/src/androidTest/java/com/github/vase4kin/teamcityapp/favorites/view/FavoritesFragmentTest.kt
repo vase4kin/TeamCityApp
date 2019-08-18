@@ -158,7 +158,7 @@ class FavoritesFragmentTest {
 
     @Test
     fun testUserCanAddBuildTypeToFavorites() {
-        //prepare mocks
+        // prepare mocks
         `when`(teamCityService.buildType(Mocks.buildTypeMock().id)).thenReturn(Single.just(Mocks.buildTypeMock()))
 
         // launch activity
@@ -192,7 +192,7 @@ class FavoritesFragmentTest {
 
     @Test
     fun testFavoritesListRefreshesOnResume() {
-        //prepare mocks
+        // prepare mocks
         storage.addBuildTypeToFavorites(Mocks.buildTypeMock().id)
         `when`(teamCityService.buildType(Mocks.buildTypeMock().id)).thenReturn(Single.just(Mocks.buildTypeMock()))
 

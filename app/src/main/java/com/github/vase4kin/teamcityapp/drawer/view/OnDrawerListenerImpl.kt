@@ -17,14 +17,13 @@
 package com.github.vase4kin.teamcityapp.drawer.view
 
 import android.view.View
-
 import com.mikepenz.materialdrawer.Drawer
 
 /**
  * Drawer listener
  */
 class OnDrawerListenerImpl internal constructor(
-        private val listener: OnDrawerPresenterListener
+    private val listener: OnDrawerPresenterListener
 ) : Drawer.OnDrawerListener {
 
     /**

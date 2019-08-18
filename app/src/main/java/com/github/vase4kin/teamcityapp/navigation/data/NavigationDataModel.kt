@@ -83,5 +83,4 @@ interface NavigationDataModel : BaseDataModel {
      * There should be a comment
      */
     fun removeItemByIndex(position: Int)
-
 }

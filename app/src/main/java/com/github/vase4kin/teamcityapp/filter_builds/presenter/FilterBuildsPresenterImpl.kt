@@ -23,18 +23,17 @@ import com.github.vase4kin.teamcityapp.filter_builds.tracker.FilterBuildsTracker
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor
 import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView
-
 import javax.inject.Inject
 
 /**
  * Impl of [FilterBuildsPresenter]
  */
 class FilterBuildsPresenterImpl @Inject constructor(
-        private val view: FilterBuildsView,
-        private val router: FilterBuildsRouter,
-        private val branchesInteractor: BranchesInteractor,
-        private val branchesComponentView: BranchesComponentView,
-        private val tracker: FilterBuildsTracker
+    private val view: FilterBuildsView,
+    private val router: FilterBuildsRouter,
+    private val branchesInteractor: BranchesInteractor,
+    private val branchesComponentView: BranchesComponentView,
+    private val tracker: FilterBuildsTracker
 ) : FilterBuildsPresenter, FilterBuildsView.ViewListener {
 
     /**

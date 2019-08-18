@@ -22,8 +22,10 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 /**
  * Impl of [BuildLogInteractor]
  */
-class BuildLogInteractorImpl(private val userAccount: UserAccount,
-                             private val sharedPreferences: SharedPreferences) : BuildLogInteractor {
+class BuildLogInteractorImpl(
+    private val userAccount: UserAccount,
+    private val sharedPreferences: SharedPreferences
+) : BuildLogInteractor {
 
     /**
      * {@inheritDoc}

@@ -229,5 +229,4 @@ class RunBuildPresenterImplTest {
         private val PROPERTY_NAME = "name"
         private val PROPERTY_VALUE = "value"
     }
-
 }

@@ -31,9 +31,11 @@ import org.greenrobot.eventbus.EventBus
 class BaseDrawerModule {
 
     @Provides
-    fun providesDrawerDataManager(repository: Repository,
-                                  sharedUserStorage: SharedUserStorage,
-                                  eventBus: EventBus): DrawerDataManager {
+    fun providesDrawerDataManager(
+        repository: Repository,
+        sharedUserStorage: SharedUserStorage,
+        eventBus: EventBus
+    ): DrawerDataManager {
         return DrawerDataManagerImpl(repository, sharedUserStorage, eventBus)
     }
 

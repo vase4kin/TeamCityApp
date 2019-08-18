@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.base.list.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-
 import com.github.vase4kin.teamcityapp.R
 
 /**
@@ -32,6 +31,6 @@ class LoadMoreViewHolder<BM : BaseDataModel>(parent: ViewGroup) : BaseViewHolder
      * {@inheritDoc}
      */
     override fun bind(dataModel: BM, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 }
