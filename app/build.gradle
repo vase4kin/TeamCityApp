@@ -128,7 +128,7 @@ android {
         continuationIndentSize = 4
         reporters = ["html"]
         experimentalRules = false
-        disabledRules = []
+        disabledRules = ["no-wildcard-imports", "import-ordering"]
         fileBatchSize = 30
     }
 }
