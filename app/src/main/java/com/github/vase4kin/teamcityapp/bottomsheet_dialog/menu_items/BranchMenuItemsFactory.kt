@@ -25,14 +25,22 @@ import com.joanzapata.iconify.fonts.MaterialIcons
 /**
  * Impl of [MenuItemsFactory] for branch menu
  */
-class BranchMenuItemsFactory(context: Context, descriptions: List<String>) : DefaultMenuItemsFactory(context, descriptions) {
+class BranchMenuItemsFactory(context: Context, descriptions: List<String>) :
+    DefaultMenuItemsFactory(context, descriptions) {
 
     /**
      * {@inheritDoc}
      */
     override fun createMenuItems(): List<BottomSheetItem> {
         val list = super.createMenuItems().toMutableList()
-        list.add(BottomSheetItem(BottomSheetItem.TYPE_BRANCH, getString(R.string.build_element_show_all_builds_built_branch), description, IconDrawable(context, MaterialIcons.md_list)))
+        list.add(
+            BottomSheetItem(
+                BottomSheetItem.TYPE_BRANCH,
+                getString(R.string.build_element_show_all_builds_built_branch),
+                description,
+                IconDrawable(context, MaterialIcons.md_list)
+            )
+        )
         return list
     }
 }

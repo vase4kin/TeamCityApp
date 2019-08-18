@@ -26,15 +26,30 @@ import java.util.*
 /**
  * Impl of [MenuItemsFactory] for branch menu
  */
-class ArtifactFullMenuItemsFactory(context: Context, descriptions: List<String>) : BaseMenuItemsFactory(context, descriptions) {
+class ArtifactFullMenuItemsFactory(context: Context, descriptions: List<String>) :
+    BaseMenuItemsFactory(context, descriptions) {
 
     /**
      * {@inheritDoc}
      */
     override fun createMenuItems(): List<BottomSheetItem> {
         val list = ArrayList<BottomSheetItem>()
-        list.add(BottomSheetItem(BottomSheetItem.TYPE_ARTIFACT_DOWNLOAD, getString(R.string.artifact_download), getDescription(0), IconDrawable(context, MaterialIcons.md_file_download)))
-        list.add(BottomSheetItem(BottomSheetItem.TYPE_ARTIFACT_OPEN, getString(R.string.artifact_open), getDescription(1), IconDrawable(context, MaterialIcons.md_open_in_new)))
+        list.add(
+            BottomSheetItem(
+                BottomSheetItem.TYPE_ARTIFACT_DOWNLOAD,
+                getString(R.string.artifact_download),
+                getDescription(0),
+                IconDrawable(context, MaterialIcons.md_file_download)
+            )
+        )
+        list.add(
+            BottomSheetItem(
+                BottomSheetItem.TYPE_ARTIFACT_OPEN,
+                getString(R.string.artifact_open),
+                getDescription(1),
+                IconDrawable(context, MaterialIcons.md_open_in_new)
+            )
+        )
         return list
     }
 }

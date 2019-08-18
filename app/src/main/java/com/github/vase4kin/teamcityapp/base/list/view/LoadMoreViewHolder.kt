@@ -25,7 +25,8 @@ import com.github.vase4kin.teamcityapp.R
  *
  * @param <BM> - Base data model
 </BM> */
-class LoadMoreViewHolder<BM : BaseDataModel>(parent: ViewGroup) : BaseViewHolder<BM>(LayoutInflater.from(parent.context).inflate(R.layout.item_load_more, parent, false)) {
+class LoadMoreViewHolder<BM : BaseDataModel>(parent: ViewGroup) :
+    BaseViewHolder<BM>(LayoutInflater.from(parent.context).inflate(R.layout.item_load_more, parent, false)) {
 
     /**
      * {@inheritDoc}

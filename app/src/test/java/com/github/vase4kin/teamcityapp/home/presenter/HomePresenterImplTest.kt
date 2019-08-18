@@ -62,7 +62,16 @@ class HomePresenterImplTest {
 
     @Before
     fun setUp() {
-        presenter = HomePresenterImpl(view, dataManager, tracker, router, interactor, onboardingManager, bottomNavigationView, filterProvider)
+        presenter = HomePresenterImpl(
+            view,
+            dataManager,
+            tracker,
+            router,
+            interactor,
+            onboardingManager,
+            bottomNavigationView,
+            filterProvider
+        )
     }
 
     @Test

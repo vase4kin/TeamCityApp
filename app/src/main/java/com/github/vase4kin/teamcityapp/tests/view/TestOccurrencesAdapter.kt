@@ -24,7 +24,8 @@ import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel
 /**
  * Tests adapter
  */
-class TestOccurrencesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<TestsDataModel>>) : BaseLoadMoreAdapter<TestsDataModel>(viewHolderFactories) {
+class TestOccurrencesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<TestsDataModel>>) :
+    BaseLoadMoreAdapter<TestsDataModel>(viewHolderFactories) {
 
     var onClickListener: OnTestOccurrenceClickListener? = null
 

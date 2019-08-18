@@ -35,7 +35,12 @@ class NavigationFragmentModule {
 
     @Provides
     fun providesNavigationView(fragment: NavigationListFragment, adapter: NavigationAdapter): NavigationView {
-        return NavigationViewImpl(fragment.view, fragment.activity as Activity, R.string.empty_list_message_projects_or_build_types, adapter)
+        return NavigationViewImpl(
+            fragment.view,
+            fragment.activity as Activity,
+            R.string.empty_list_message_projects_or_build_types,
+            adapter
+        )
     }
 
     @Provides

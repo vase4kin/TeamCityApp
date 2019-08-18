@@ -34,8 +34,8 @@ class GuestUserAuthInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val urlWithGuestSupport = chain.request().url()
-                .newBuilder()
-                .addQueryParameter(QUERY_PARAM, QUERY_VALUE).build()
+            .newBuilder()
+            .addQueryParameter(QUERY_PARAM, QUERY_VALUE).build()
         val requestWithGuestSupport = chain.request().newBuilder().url(urlWithGuestSupport).build()
         return chain.proceed(requestWithGuestSupport)
     }

@@ -58,11 +58,12 @@ class TestsModule {
         fragment: TestOccurrencesFragment
     ): TestsView {
         return TestsViewImpl(
-                fragment.view,
-                fragment.activity,
-                testsValueExtractor,
-                R.string.empty_passed_tests,
-                adapter)
+            fragment.view,
+            fragment.activity,
+            testsValueExtractor,
+            R.string.empty_passed_tests,
+            adapter
+        )
     }
 
     @Provides

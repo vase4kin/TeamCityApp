@@ -46,7 +46,12 @@ class AccountsViewImpl(
     activity: Activity,
     @StringRes emptyMessage: Int,
     adapter: SimpleSectionedRecyclerViewAdapter<AccountAdapter>
-) : BaseListViewImpl<AccountDataModel, SimpleSectionedRecyclerViewAdapter<AccountAdapter>>(view, activity, emptyMessage, adapter), AccountsView {
+) : BaseListViewImpl<AccountDataModel, SimpleSectionedRecyclerViewAdapter<AccountAdapter>>(
+    view,
+    activity,
+    emptyMessage,
+    adapter
+), AccountsView {
 
     @BindView(R.id.floating_action_button)
     lateinit var floatingActionButton: FloatingActionButton
@@ -91,24 +96,24 @@ class AccountsViewImpl(
      */
     override fun showRemoveAccountDialog(account: UserAccount, isLastAccount: Boolean) {
         MaterialDialog.Builder(mActivity)
-                .content(R.string.dialog_remove_not_active_account_positive_content_text)
-                .positiveText(R.string.dialog_remove_active_account_positive_button_text)
-                .callback(object : MaterialDialog.ButtonCallback() {
-                    override fun onPositive(dialog: MaterialDialog?) {
-                        if (isLastAccount) {
-                            listener.onLastAccountRemoved(account)
-                            return
-                        }
-                        if (account.isActive) {
-                            listener.onActiveAccountRemoved(account)
-                        } else {
-                            listener.onNotActiveAccountRemoved(account)
-                        }
+            .content(R.string.dialog_remove_not_active_account_positive_content_text)
+            .positiveText(R.string.dialog_remove_active_account_positive_button_text)
+            .callback(object : MaterialDialog.ButtonCallback() {
+                override fun onPositive(dialog: MaterialDialog?) {
+                    if (isLastAccount) {
+                        listener.onLastAccountRemoved(account)
+                        return
                     }
-                })
-                .negativeText(R.string.dialog_remove_active_account_positive_negative_text)
-                .build()
-                .show()
+                    if (account.isActive) {
+                        listener.onActiveAccountRemoved(account)
+                    } else {
+                        listener.onNotActiveAccountRemoved(account)
+                    }
+                }
+            })
+            .negativeText(R.string.dialog_remove_active_account_positive_negative_text)
+            .build()
+            .show()
     }
 
     /**

@@ -143,7 +143,12 @@ class CreateAccountPresenterImplTest {
         verify(view).hideError()
         verify(view).showProgressDialog()
         verify(dataModel).hasGuestAccountWithUrl("url")
-        verify(dataManager).authGuestUser(capture(customOnLoadingListenerArgumentCaptor), eq("url"), eq(false), eq(false))
+        verify(dataManager).authGuestUser(
+            capture(customOnLoadingListenerArgumentCaptor),
+            eq("url"),
+            eq(false),
+            eq(false)
+        )
 
         val listener = customOnLoadingListenerArgumentCaptor.value
         listener.onSuccess("url")
@@ -168,11 +173,24 @@ class CreateAccountPresenterImplTest {
         verify(view).hideError()
         verify(view).showProgressDialog()
         verify(dataModel).hasAccountWithUrl("url", "userName")
-        verify(dataManager).authUser(customOnLoadingListenerArgumentCaptor.capture(), eq("url"), eq("userName"), eq("password"), eq(false), eq(false))
+        verify(dataManager).authUser(
+            customOnLoadingListenerArgumentCaptor.capture(),
+            eq("url"),
+            eq("userName"),
+            eq("password"),
+            eq(false),
+            eq(false)
+        )
 
         val customOnLoadingListener = customOnLoadingListenerArgumentCaptor.value
         customOnLoadingListener.onSuccess("url")
-        verify(dataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), eq(false), onLoadingListenerArgumentCaptor.capture())
+        verify(dataManager).saveNewUserAccount(
+            eq("url"),
+            eq("userName"),
+            eq("password"),
+            eq(false),
+            onLoadingListenerArgumentCaptor.capture()
+        )
 
         val loadingListener = onLoadingListenerArgumentCaptor.value
         loadingListener.onSuccess("url")

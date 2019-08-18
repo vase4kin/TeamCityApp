@@ -24,7 +24,8 @@ import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel
 /**
  * Properties adapter
  */
-class PropertiesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<PropertiesDataModel>>) : BaseAdapter<PropertiesDataModel>(viewHolderFactories) {
+class PropertiesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<PropertiesDataModel>>) :
+    BaseAdapter<PropertiesDataModel>(viewHolderFactories) {
 
     var listener: PropertiesView.Listener? = null
 

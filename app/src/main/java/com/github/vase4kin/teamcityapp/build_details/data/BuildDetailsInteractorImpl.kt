@@ -110,23 +110,23 @@ class BuildDetailsInteractorImpl(
     override fun cancelBuild(loadingListener: LoadingListenerWithForbiddenSupport<Build>, isReAddToTheQueue: Boolean) {
         subscriptions.clear()
         repository.cancelBuild(valueExtractor.buildDetails.href, BuildCancelRequest(isReAddToTheQueue))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { e ->
-                            if (e is HttpException) {
-                                if (e.code() == CODE_FORBIDDEN) {
-                                    loadingListener.onForbiddenError()
-                                } else {
-                                    loadingListener.onFail(e.message ?: "")
-                                }
-                            } else {
-                                loadingListener.onFail(e.message ?: "")
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { e ->
+                    if (e is HttpException) {
+                        if (e.code() == CODE_FORBIDDEN) {
+                            loadingListener.onForbiddenError()
+                        } else {
+                            loadingListener.onFail(e.message ?: "")
                         }
-                )
-                .addTo(subscriptions)
+                    } else {
+                        loadingListener.onFail(e.message ?: "")
+                    }
+                }
+            )
+            .addTo(subscriptions)
     }
 
     /**

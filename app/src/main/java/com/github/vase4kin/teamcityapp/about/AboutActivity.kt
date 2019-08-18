@@ -45,10 +45,10 @@ class AboutActivity : DaggerAppCompatActivity() {
 
         // Commit fragment to container
         supportFragmentManager
-                .beginTransaction()
-                .add(R.id.about_library_container, AboutFragment())
-                .addToBackStack(null)
-                .commit()
+            .beginTransaction()
+            .add(R.id.about_library_container, AboutFragment())
+            .addToBackStack(null)
+            .commit()
     }
 
     override fun onDestroy() {
@@ -67,7 +67,7 @@ class AboutActivity : DaggerAppCompatActivity() {
          */
         fun start(activity: Activity) {
             val launchIntent = Intent(activity, AboutActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             DrawerActivityStartUtils.startActivity(launchIntent, activity)
         }
     }

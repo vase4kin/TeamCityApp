@@ -25,7 +25,8 @@ import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListen
 /**
  * Adapter for builds
  */
-class BuildListAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<BuildListDataModel>>) : BaseLoadMoreAdapter<BuildListDataModel>(viewHolderFactories) {
+class BuildListAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<BuildListDataModel>>) :
+    BaseLoadMoreAdapter<BuildListDataModel>(viewHolderFactories) {
 
     private var onBuildListPresenterListener: OnBuildListPresenterListener? = null
 
@@ -42,7 +43,13 @@ class BuildListAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<BuildList
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is BuildViewHolder) {
-            holder.mContainer.setOnClickListener { onBuildListPresenterListener?.onBuildClick(dataModel.getBuild(position)) }
+            holder.mContainer.setOnClickListener {
+                onBuildListPresenterListener?.onBuildClick(
+                    dataModel.getBuild(
+                        position
+                    )
+                )
+            }
         }
     }
 }

@@ -54,9 +54,9 @@ class RunningBuildsDataManagerImpl(
      */
     override fun load(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         val runningBuilds = getBuildDetailsObservable(repository.listRunningBuilds(filter.toLocator(), null, update))
-                .toSortedList { buildDetails, buildDetails2 ->
-                    buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
-                }
+            .toSortedList { buildDetails, buildDetails2 ->
+                buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
+            }
         loadBuildDetailsList(runningBuilds, loadingListener)
     }
 
@@ -65,12 +65,12 @@ class RunningBuildsDataManagerImpl(
      */
     override fun loadFavorites(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
-                .flatMap { buildTypeId ->
-                    val locator = filter.toLocator() + ",${buildTypeIdLocator(buildTypeId)}"
-                    getBuildDetailsObservable(repository.listRunningBuilds(locator, null, update))
-                }.toSortedList { buildDetails, buildDetails2 ->
-                    buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
-                }
+            .flatMap { buildTypeId ->
+                val locator = filter.toLocator() + ",${buildTypeIdLocator(buildTypeId)}"
+                getBuildDetailsObservable(repository.listRunningBuilds(locator, null, update))
+            }.toSortedList { buildDetails, buildDetails2 ->
+                buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
+            }
         loadBuildDetailsList(runningBuildsByBuildTypeIds, loadingListener)
     }
 
@@ -79,7 +79,7 @@ class RunningBuildsDataManagerImpl(
      */
     override fun loadCount(loadingListener: OnLoadingListener<Int>) {
         val runningBuildsCount = repository.listRunningBuilds(filter.toLocator(), "count", false)
-                .map { it.count }
+            .map { it.count }
         loadCount(runningBuildsCount, loadingListener)
     }
 
@@ -88,11 +88,11 @@ class RunningBuildsDataManagerImpl(
      */
     override fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>) {
         val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
-                .flatMapSingle { buildTypeId ->
-                    val locator = filter.toLocator() + ",${buildTypeIdLocator(buildTypeId)}"
-                    repository.listRunningBuilds(locator, "count", false)
-                            .map { it.count }
-                }.toList().map { it.sum() }
+            .flatMapSingle { buildTypeId ->
+                val locator = filter.toLocator() + ",${buildTypeIdLocator(buildTypeId)}"
+                repository.listRunningBuilds(locator, "count", false)
+                    .map { it.count }
+            }.toList().map { it.sum() }
         loadCount(runningBuildsByBuildTypeIds, loadingListener)
     }
 }

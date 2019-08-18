@@ -29,7 +29,13 @@ import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel
 /**
  * Overview single item view holder
  */
-class OverviewViewHolder(parent: ViewGroup) : BaseViewHolder<OverviewDataModel>(LayoutInflater.from(parent.context).inflate(R.layout.item_card_element_list, parent, false)) {
+class OverviewViewHolder(parent: ViewGroup) : BaseViewHolder<OverviewDataModel>(
+    LayoutInflater.from(parent.context).inflate(
+        R.layout.item_card_element_list,
+        parent,
+        false
+    )
+) {
     @BindView(R.id.container)
     lateinit var frameLayout: FrameLayout
     @BindView(R.id.itemIcon)

@@ -25,14 +25,22 @@ import com.joanzapata.iconify.fonts.MaterialCommunityIcons
 /**
  * Impl of [MenuItemsFactory] for project menu
  */
-class ProjectMenuItemsFactory(context: Context, descriptions: List<String>) : DefaultMenuItemsFactory(context, descriptions) {
+class ProjectMenuItemsFactory(context: Context, descriptions: List<String>) :
+    DefaultMenuItemsFactory(context, descriptions) {
 
     /**
      * {@inheritDoc}
      */
     override fun createMenuItems(): List<BottomSheetItem> {
         val list = super.createMenuItems().toMutableList()
-        list.add(BottomSheetItem(BottomSheetItem.TYPE_PROJECT, getString(R.string.build_element_open_project), description, IconDrawable(context, MaterialCommunityIcons.mdi_open_in_app)))
+        list.add(
+            BottomSheetItem(
+                BottomSheetItem.TYPE_PROJECT,
+                getString(R.string.build_element_open_project),
+                description,
+                IconDrawable(context, MaterialCommunityIcons.mdi_open_in_app)
+            )
+        )
         return list
     }
 }

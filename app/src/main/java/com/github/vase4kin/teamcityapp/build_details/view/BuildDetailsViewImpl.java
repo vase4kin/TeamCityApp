@@ -94,7 +94,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * TODO: Move logic to presenter
      */
     @Override
@@ -122,7 +122,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * TODO: Move logic to presenter
      */
     @Override

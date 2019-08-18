@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Tracker firebase impl
  */
-class AgentTabsViewTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), AgentTabsViewTracker {
+class AgentTabsViewTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics),
+    AgentTabsViewTracker {
 
     /**
      * {@inheritDoc}

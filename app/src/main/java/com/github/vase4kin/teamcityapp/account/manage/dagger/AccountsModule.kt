@@ -50,7 +50,12 @@ class AccountsModule {
         activity: AccountListActivity,
         adapter: SimpleSectionedRecyclerViewAdapter<AccountAdapter>
     ): AccountsView {
-        return AccountsViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_accounts, adapter)
+        return AccountsViewImpl(
+            activity.findViewById(android.R.id.content),
+            activity,
+            R.string.empty_list_message_accounts,
+            adapter
+        )
     }
 
     @Provides

@@ -41,7 +41,12 @@ class ArtifactPresenterImpl @Inject constructor(
     valueExtractor: ArtifactValueExtractor,
     private val router: ArtifactRouter,
     private val permissionManager: PermissionManager
-) : BaseListPresenterImpl<ArtifactDataModel, File, ArtifactView, ArtifactDataManager, ViewTracker, ArtifactValueExtractor>(view, dataManager, tracker, valueExtractor), ArtifactPresenter, OnArtifactPresenterListener, OnArtifactEventListener {
+) : BaseListPresenterImpl<ArtifactDataModel, File, ArtifactView, ArtifactDataManager, ViewTracker, ArtifactValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+), ArtifactPresenter, OnArtifactPresenterListener, OnArtifactEventListener {
 
     @VisibleForTesting
     var fileName: String? = null
@@ -169,19 +174,19 @@ class ArtifactPresenterImpl @Inject constructor(
             } else {
                 view.showProgressDialog()
                 dataManager.downloadArtifact(
-                        href,
-                        fileName,
-                        object : OnLoadingListener<java.io.File> {
-                            override fun onSuccess(data: java.io.File) {
-                                view.dismissProgressDialog()
-                                router.startFileActivity(data)
-                            }
+                    href,
+                    fileName,
+                    object : OnLoadingListener<java.io.File> {
+                        override fun onSuccess(data: java.io.File) {
+                            view.dismissProgressDialog()
+                            router.startFileActivity(data)
+                        }
 
-                            override fun onFail(errorMessage: String) {
-                                view.dismissProgressDialog()
-                                showRetryDownloadArtifactSnackBar()
-                            }
-                        })
+                        override fun onFail(errorMessage: String) {
+                            view.dismissProgressDialog()
+                            showRetryDownloadArtifactSnackBar()
+                        }
+                    })
             }
         }
     }
@@ -205,14 +210,18 @@ class ArtifactPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults, object : OnPermissionsResultListener {
-            override fun onGranted() {
-                downloadArtifactFile()
-            }
+        permissionManager.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults,
+            object : OnPermissionsResultListener {
+                override fun onGranted() {
+                    downloadArtifactFile()
+                }
 
-            override fun onDenied() {
-                view.showPermissionsDeniedDialog()
-            }
-        })
+                override fun onDenied() {
+                    view.showPermissionsDeniedDialog()
+                }
+            })
     }
 }

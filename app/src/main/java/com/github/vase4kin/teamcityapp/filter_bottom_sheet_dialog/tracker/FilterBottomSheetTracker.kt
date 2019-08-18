@@ -37,7 +37,7 @@ class FilterBottomSheetTrackerImpl @Inject constructor(
 ) : FilterBottomSheetTracker {
     override fun trackFilterSelected(filter: Filter) {
         firebaseAnalytics.logEvent(
-                FilterBottomSheetTracker.EVENT_FILTER_SELECTED,
-                Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
+            FilterBottomSheetTracker.EVENT_FILTER_SELECTED,
+            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
     }
 }

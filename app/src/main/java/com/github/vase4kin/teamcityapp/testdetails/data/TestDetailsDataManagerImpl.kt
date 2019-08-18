@@ -39,13 +39,13 @@ class TestDetailsDataManagerImpl @Inject constructor(private val repository: Rep
     override fun loadData(loadingListener: OnLoadingListener<TestOccurrences.TestOccurrence>, url: String) {
         subscriptions.clear()
         repository.testOccurrence(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**

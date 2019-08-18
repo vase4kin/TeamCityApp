@@ -35,7 +35,12 @@ class BuildDetailsDrawerPresenterImpl @Inject constructor(
     private val valueExtractor: BaseValueExtractor,
     router: DrawerRouter,
     tracker: DrawerTracker
-) : DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>(mViewModel, dataManager, router, tracker) {
+) : DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>(
+    mViewModel,
+    dataManager,
+    router,
+    tracker
+) {
 
     /**
      * {@inheritDoc}

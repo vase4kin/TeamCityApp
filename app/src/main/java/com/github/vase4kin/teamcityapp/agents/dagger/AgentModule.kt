@@ -47,13 +47,18 @@ class AgentModule {
     }
 
     @Provides
-    fun providesBaseListView(fragment: AgentListFragment, agentsValueExtractor: AgentsValueExtractor, adapter: AgentsAdapter): BaseListView<*> {
+    fun providesBaseListView(
+        fragment: AgentListFragment,
+        agentsValueExtractor: AgentsValueExtractor,
+        adapter: AgentsAdapter
+    ): BaseListView<*> {
         return AgentViewImpl(
-                agentsValueExtractor.includeDisconnected(),
-                fragment.view!!,
-                fragment.activity as Activity,
-                R.string.empty_list_message_agents,
-                adapter)
+            agentsValueExtractor.includeDisconnected(),
+            fragment.view!!,
+            fragment.activity as Activity,
+            R.string.empty_list_message_agents,
+            adapter
+        )
     }
 
     @Provides

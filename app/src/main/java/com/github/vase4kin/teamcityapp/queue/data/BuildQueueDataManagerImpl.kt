@@ -37,9 +37,9 @@ class BuildQueueDataManagerImpl(
      */
     override fun load(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         val runningBuilds = getBuildDetailsObservable(repository.listQueueBuilds(null, null, update))
-                .toSortedList { buildDetails, buildDetails2 ->
-                    buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
-                }
+            .toSortedList { buildDetails, buildDetails2 ->
+                buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
+            }
         loadBuildDetailsList(runningBuilds, loadingListener)
     }
 
@@ -48,12 +48,12 @@ class BuildQueueDataManagerImpl(
      */
     override fun loadFavorites(loadingListener: OnLoadingListener<List<BuildDetails>>, update: Boolean) {
         val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
-                .flatMap { buildTypeId ->
-                    val locator = buildTypeIdLocator(buildTypeId)
-                    getBuildDetailsObservable(repository.listQueueBuilds(locator, null, update))
-                }.toSortedList { buildDetails, buildDetails2 ->
-                    buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
-                }
+            .flatMap { buildTypeId ->
+                val locator = buildTypeIdLocator(buildTypeId)
+                getBuildDetailsObservable(repository.listQueueBuilds(locator, null, update))
+            }.toSortedList { buildDetails, buildDetails2 ->
+                buildDetails.buildTypeId.compareTo(buildDetails2.buildTypeId, ignoreCase = true)
+            }
         loadBuildDetailsList(runningBuildsByBuildTypeIds, loadingListener)
     }
 
@@ -69,11 +69,11 @@ class BuildQueueDataManagerImpl(
      */
     override fun loadFavoritesCount(loadingListener: OnLoadingListener<Int>) {
         val runningBuildsByBuildTypeIds = Observable.fromIterable(storage.favoriteBuildTypeIds)
-                .flatMapSingle { buildTypeId ->
-                    val locator = buildTypeIdLocator(buildTypeId)
-                    repository.listQueueBuilds(locator, "count", false)
-                            .map { it.count }
-                }.toList().map { it.sum() }
+            .flatMapSingle { buildTypeId ->
+                val locator = buildTypeIdLocator(buildTypeId)
+                repository.listQueueBuilds(locator, "count", false)
+                    .map { it.count }
+            }.toList().map { it.sum() }
         loadCount(runningBuildsByBuildTypeIds, loadingListener)
     }
 }

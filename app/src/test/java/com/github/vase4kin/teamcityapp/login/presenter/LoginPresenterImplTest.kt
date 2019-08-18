@@ -84,13 +84,26 @@ class LoginPresenterImplTest {
         presenter.onUserLoginButtonClick("url", "userName", "password", false)
         verify(view).hideError()
         verify(view).showProgressDialog()
-        verify(dataManager).authUser(capture(argumentCaptor), eq("url"), eq("userName"), eq("password"), eq(false), eq(true))
+        verify(dataManager).authUser(
+            capture(argumentCaptor),
+            eq("url"),
+            eq("userName"),
+            eq("password"),
+            eq(false),
+            eq(true)
+        )
 
         val customOnLoadingListener = argumentCaptor.value
         customOnLoadingListener.onSuccess("url")
 
         verify(view).dismissProgressDialog()
-        verify(dataManager).saveNewUserAccount(eq("url"), eq("userName"), eq("password"), eq(false), capture(onLoadingListenerArgumentCaptor))
+        verify(dataManager).saveNewUserAccount(
+            eq("url"),
+            eq("userName"),
+            eq("password"),
+            eq(false),
+            capture(onLoadingListenerArgumentCaptor)
+        )
 
         val onLoadingListener = onLoadingListenerArgumentCaptor.value
         onLoadingListener.onSuccess("url")

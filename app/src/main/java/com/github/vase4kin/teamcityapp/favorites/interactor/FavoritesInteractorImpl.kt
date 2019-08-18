@@ -42,17 +42,17 @@ class FavoritesInteractorImpl(
     override fun loadFavorites(loadingListener: OnLoadingListener<List<NavigationItem>>, update: Boolean) {
         val ids = storage.favoriteBuildTypeIds
         val favoritesObservable = Observable.fromIterable(ids)
-                .flatMapSingle { id ->
-                    repository.buildType(id, update)
-                            .onErrorResumeNext { Single.just(EMPTY_BUILDTYPE) }
-                }
-                .filter { it != EMPTY_BUILDTYPE }
-                .toSortedList { buildType1, buildType2 ->
-                    buildType1.projectId.compareTo(buildType2.projectId, ignoreCase = true)
-                }
-                .flatMapObservable { Observable.fromIterable(it).cast(NavigationItem::class.java) }
-                .toList()
-                .map { NavigationItemsList(it) }
+            .flatMapSingle { id ->
+                repository.buildType(id, update)
+                    .onErrorResumeNext { Single.just(EMPTY_BUILDTYPE) }
+            }
+            .filter { it != EMPTY_BUILDTYPE }
+            .toSortedList { buildType1, buildType2 ->
+                buildType1.projectId.compareTo(buildType2.projectId, ignoreCase = true)
+            }
+            .flatMapObservable { Observable.fromIterable(it).cast(NavigationItem::class.java) }
+            .toList()
+            .map { NavigationItemsList(it) }
         load(favoritesObservable, loadingListener)
     }
 

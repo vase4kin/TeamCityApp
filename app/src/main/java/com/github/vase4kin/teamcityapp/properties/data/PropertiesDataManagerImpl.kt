@@ -42,13 +42,13 @@ class PropertiesDataManagerImpl : BaseListRxDataManagerImpl<Properties, Properti
             return
         }
         Observable.just(properties)
-                .flatMap { Observable.fromIterable(it.objects) }
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                ).addTo(subscriptions)
+            .flatMap { Observable.fromIterable(it.objects) }
+            .toList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            ).addTo(subscriptions)
     }
 }

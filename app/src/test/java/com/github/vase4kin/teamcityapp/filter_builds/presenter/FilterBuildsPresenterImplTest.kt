@@ -129,7 +129,10 @@ class FilterBuildsPresenterImplTest {
         verify(tracker).trackUserFilteredBuilds()
         verify(router).closeOnSuccess(capture(buildListFilterCaptor))
         val capturedFilter = buildListFilterCaptor.value
-        assertThat(capturedFilter.toLocator(), `is`(equalTo("canceled:true,branch:name:branch,personal:true,pinned:true,count:10")))
+        assertThat(
+            capturedFilter.toLocator(),
+            `is`(equalTo("canceled:true,branch:name:branch,personal:true,pinned:true,count:10"))
+        )
     }
 
     @Test

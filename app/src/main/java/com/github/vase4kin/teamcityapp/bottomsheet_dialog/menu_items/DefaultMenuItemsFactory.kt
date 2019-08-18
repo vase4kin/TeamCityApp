@@ -26,14 +26,22 @@ import java.util.*
 /**
  * Impl of [MenuItemsFactory] for default menu
  */
-open class DefaultMenuItemsFactory(context: Context, descriptions: List<String>) : BaseMenuItemsFactory(context, descriptions) {
+open class DefaultMenuItemsFactory(context: Context, descriptions: List<String>) :
+    BaseMenuItemsFactory(context, descriptions) {
 
     /**
      * {@inheritDoc}
      */
     override fun createMenuItems(): List<BottomSheetItem> {
         val list = ArrayList<BottomSheetItem>()
-        list.add(BottomSheetItem(BottomSheetItem.TYPE_COPY, getString(R.string.build_element_copy), description, IconDrawable(context, MaterialIcons.md_content_copy)))
+        list.add(
+            BottomSheetItem(
+                BottomSheetItem.TYPE_COPY,
+                getString(R.string.build_element_copy),
+                description,
+                IconDrawable(context, MaterialIcons.md_content_copy)
+            )
+        )
         return list
     }
 }

@@ -56,7 +56,13 @@ class RunningBuildsFragmentModule {
         adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>,
         filterProvider: FilterProvider
     ): RunningBuildListView {
-        return RunningBuildsListViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_running_builds, adapter, filterProvider)
+        return RunningBuildsListViewImpl(
+            fragment.view,
+            fragment.activity,
+            R.string.empty_list_message_running_builds,
+            adapter,
+            filterProvider
+        )
     }
 
     @Provides

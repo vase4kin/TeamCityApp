@@ -38,8 +38,8 @@ class TeamCityAuthenticator(private val userAccount: UserAccount) : okhttp3.Auth
         // Use user credentials
         val credential = Credentials.basic(userAccount.userName, userAccount.passwordAsString)
         return response.request().newBuilder()
-                .header(AUTHORIZATION, credential)
-                .build()
+            .header(AUTHORIZATION, credential)
+            .build()
     }
 
     /**
