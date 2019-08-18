@@ -23,7 +23,6 @@ import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker;
 import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,7 +35,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore("FIX TESTS")
 @RunWith(PowerMockRunner.class)
 public class OverviewPresenterCardLogicTest {
 
@@ -47,287 +45,305 @@ public class OverviewPresenterCardLogicTest {
     private static final String TRIGGERED_DETAILS = "triggered_details";
 
     @Mock
-    private OverviewViewImpl mView;
+    private OverviewViewImpl view;
 
     @Mock
-    private OverViewInteractor mInteractor;
+    private OverViewInteractor interactor;
 
     @Mock
-    private OverviewTracker mTracker;
+    private OverviewTracker tracker;
 
     @Mock
-    private BuildDetails mBuildDetails;
+    private BuildDetails buildDetails;
 
     @Mock
-    private OnboardingManager mOnboardingManager;
+    private OnboardingManager onboardingManager;
 
-    private OverviewPresenterImpl mPresenter;
+    private OverviewPresenterImpl presenter;
 
     @Before
     public void setUp() {
-        mPresenter = new OverviewPresenterImpl(mView, mInteractor, mTracker, mOnboardingManager);
-        when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
+        presenter = new OverviewPresenterImpl(view, interactor, tracker, onboardingManager);
+        when(interactor.getBuildDetails()).thenReturn(buildDetails);
+        when(buildDetails.getStatusText()).thenReturn(STATUS_TEXT);
+        when(buildDetails.getStatusIcon()).thenReturn(STATUS_ICON);
     }
 
     @Test
     public void testOnSuccessViewInteractions() {
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mView).hideCards();
-        verify(mView).hideSkeletonView();
-        verify(mView).hideRefreshingProgress();
-        verify(mView).showCards();
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(view).hideCards();
+        verify(view).hideSkeletonView();
+        verify(view).hideRefreshingProgress();
+        verify(view).showCards();
     }
 
     @Test
     public void testAddWaitReasonCardIfBuildIsQueued() {
-        when(mBuildDetails.isQueued()).thenReturn(true);
-        when(mBuildDetails.getStatusText()).thenReturn(STATUS_TEXT);
-        when(mBuildDetails.getStatusIcon()).thenReturn(STATUS_ICON);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails, times(3)).isQueued();
-        verify(mView).addWaitReasonStatusCard(eq(STATUS_ICON), eq(STATUS_TEXT));
-        verify(mView, never()).addResultStatusCard(anyString(), anyString());
+        when(buildDetails.isQueued()).thenReturn(true);
+        when(buildDetails.getQueuedDate()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails, times(3)).isQueued();
+        verify(view).addWaitReasonStatusCard(eq(STATUS_ICON), eq(STATUS_TEXT));
+        verify(view, never()).addResultStatusCard(anyString(), anyString());
     }
 
     @Test
     public void testAddResultStatusCardIfBuildIsNotQueued() {
-        when(mBuildDetails.isQueued()).thenReturn(false);
-        when(mBuildDetails.getStatusText()).thenReturn(STATUS_TEXT);
-        when(mBuildDetails.getStatusIcon()).thenReturn(STATUS_ICON);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails, times(3)).isQueued();
-        verify(mView).addResultStatusCard(eq(STATUS_ICON), eq(STATUS_TEXT));
-        verify(mView, never()).addWaitReasonStatusCard(anyString(), anyString());
+        when(buildDetails.isQueued()).thenReturn(false);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails, times(3)).isQueued();
+        verify(view).addResultStatusCard(eq(STATUS_ICON), eq(STATUS_TEXT));
+        verify(view, never()).addWaitReasonStatusCard(anyString(), anyString());
     }
 
     @Test
     public void testNoCancellationCardsAddedIfCancellationInfoIsNotProvided() {
-        when(mBuildDetails.hasCancellationInfo()).thenReturn(false);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).hasCancellationInfo();
-        verify(mView, never()).addCancelledByCard(anyString(), anyString());
-        verify(mView, never()).addCancellationTimeCard(anyString());
+        when(buildDetails.hasCancellationInfo()).thenReturn(false);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).hasCancellationInfo();
+        verify(view, never()).addCancelledByCard(anyString(), anyString());
+        verify(view, never()).addCancellationTimeCard(anyString());
     }
 
     @Test
     public void testAddCancellationCardsIfCancellationInfoIsProvided() {
-        when(mBuildDetails.getStatusIcon()).thenReturn(STATUS_ICON);
-        when(mBuildDetails.hasCancellationInfo()).thenReturn(true);
-        when(mBuildDetails.hasUserInfoWhoCancelledBuild()).thenReturn(true);
-        when(mBuildDetails.getUserNameWhoCancelledBuild()).thenReturn(USER);
-        when(mBuildDetails.getCancellationTime()).thenReturn(TIME);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).hasCancellationInfo();
-        verify(mBuildDetails).hasUserInfoWhoCancelledBuild();
-        verify(mBuildDetails).getUserNameWhoCancelledBuild();
-        verify(mView).addCancelledByCard(eq(STATUS_ICON), eq(USER));
-        verify(mBuildDetails).getCancellationTime();
-        verify(mView).addCancellationTimeCard(TIME);
+        when(buildDetails.getStatusIcon()).thenReturn(STATUS_ICON);
+        when(buildDetails.hasCancellationInfo()).thenReturn(true);
+        when(buildDetails.hasUserInfoWhoCancelledBuild()).thenReturn(true);
+        when(buildDetails.getUserNameWhoCancelledBuild()).thenReturn(USER);
+        when(buildDetails.getCancellationTime()).thenReturn(TIME);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).hasCancellationInfo();
+        verify(buildDetails).hasUserInfoWhoCancelledBuild();
+        verify(buildDetails).getUserNameWhoCancelledBuild();
+        verify(view).addCancelledByCard(eq(STATUS_ICON), eq(USER));
+        verify(buildDetails).getCancellationTime();
+        verify(view).addCancellationTimeCard(TIME);
     }
 
     @Test
     public void testAddTimeCardIfBuildIsRunning() {
-        when(mBuildDetails.isRunning()).thenReturn(true);
-        when(mBuildDetails.getStartDate()).thenReturn(TIME);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isRunning();
-        verify(mBuildDetails).getStartDate();
-        verify(mView).addTimeCard(eq(TIME));
+        when(buildDetails.isRunning()).thenReturn(true);
+        when(buildDetails.getStartDate()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isRunning();
+        verify(buildDetails).getStartDate();
+        verify(view).addTimeCard(eq(TIME));
     }
 
     @Test
     public void testAddTimeCardIfBuildIsQueued() {
-        when(mBuildDetails.isRunning()).thenReturn(false);
-        when(mBuildDetails.isQueued()).thenReturn(true);
-        when(mBuildDetails.getQueuedDate()).thenReturn(TIME);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isRunning();
-        verify(mBuildDetails, times(3)).isQueued();
-        verify(mBuildDetails).getQueuedDate();
-        verify(mView).addQueuedTimeCard(eq(TIME));
+        when(buildDetails.isRunning()).thenReturn(false);
+        when(buildDetails.isQueued()).thenReturn(true);
+        when(buildDetails.getQueuedDate()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isRunning();
+        verify(buildDetails, times(3)).isQueued();
+        verify(buildDetails).getQueuedDate();
+        verify(view).addQueuedTimeCard(eq(TIME));
     }
 
     @Test
     public void testAddTimeCardIfBuildIsCompleted() {
-        when(mBuildDetails.isRunning()).thenReturn(false);
-        when(mBuildDetails.isQueued()).thenReturn(false);
-        when(mBuildDetails.getFinishTime()).thenReturn(TIME);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isRunning();
-        verify(mBuildDetails, times(3)).isQueued();
-        verify(mBuildDetails).getFinishTime();
-        verify(mView).addTimeCard(eq(TIME));
+        when(buildDetails.isRunning()).thenReturn(false);
+        when(buildDetails.isQueued()).thenReturn(false);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isRunning();
+        verify(buildDetails, times(3)).isQueued();
+        verify(buildDetails).getFinishTime();
+        verify(view).addTimeCard(eq(TIME));
     }
 
     @Test
     public void testAddEstimatedTimeCardIfBuildIsNotQueued() {
-        when(mBuildDetails.isQueued()).thenReturn(false);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails, never()).getEstimatedStartTime();
-        verify(mView, never()).addEstimatedTimeToStartCard(anyString());
+        when(buildDetails.isQueued()).thenReturn(false);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).getEstimatedStartTime();
+        verify(view, never()).addEstimatedTimeToStartCard(anyString());
     }
 
     @Test
     public void testAddEstimatedTimeCardIfBuildDoesNotHaveEstimatedTime() {
-        when(mBuildDetails.isQueued()).thenReturn(true);
-        when(mBuildDetails.getEstimatedStartTime()).thenReturn("");
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).getEstimatedStartTime();
-        verify(mView, never()).addEstimatedTimeToStartCard(anyString());
+        when(buildDetails.isQueued()).thenReturn(true);
+        when(buildDetails.getEstimatedStartTime()).thenReturn("");
+        when(buildDetails.getQueuedDate()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).getEstimatedStartTime();
+        verify(view, never()).addEstimatedTimeToStartCard(anyString());
     }
 
     @Test
     public void testAddEstimatedTimeCardIfBuildHasEstimatedTime() {
-        when(mBuildDetails.isQueued()).thenReturn(true);
-        when(mBuildDetails.getEstimatedStartTime()).thenReturn(TIME);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails, times(2)).getEstimatedStartTime();
-        verify(mView).addEstimatedTimeToStartCard(TIME);
+        when(buildDetails.isQueued()).thenReturn(true);
+        when(buildDetails.getEstimatedStartTime()).thenReturn(TIME);
+        when(buildDetails.getQueuedDate()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).getEstimatedStartTime();
+        verify(view).addEstimatedTimeToStartCard(TIME);
     }
 
     @Test
     public void testAddBranchCardIfBuildDoesNotHaveBranchName() {
-        when(mBuildDetails.getBranchName()).thenReturn("");
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).getBranchName();
-        verify(mView, never()).addBranchCard(anyString());
+        when(buildDetails.getBranchName()).thenReturn("");
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).getBranchName();
+        verify(view, never()).addBranchCard(anyString());
     }
 
     @Test
     public void testAddBranchCardIfBuildHasBranchName() {
-        when(mBuildDetails.getBranchName()).thenReturn("branch");
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails, times(2)).getBranchName();
-        verify(mView).addBranchCard("branch");
+        when(buildDetails.getBranchName()).thenReturn("branch");
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).getBranchName();
+        verify(view).addBranchCard("branch");
     }
 
     @Test
     public void testAddAgentCardIfBuildDoesNotHaveAgentInfo() {
-        when(mBuildDetails.hasAgentInfo()).thenReturn(false);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).hasAgentInfo();
-        verify(mBuildDetails, never()).getAgentName();
-        verify(mView, never()).addAgentCard(anyString());
+        when(buildDetails.hasAgentInfo()).thenReturn(false);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).hasAgentInfo();
+        verify(buildDetails, never()).getAgentName();
+        verify(view, never()).addAgentCard(anyString());
 
     }
 
     @Test
     public void testAddAgentCardIfBuildHasAgentInfo() {
-        when(mBuildDetails.hasAgentInfo()).thenReturn(true);
-        when(mBuildDetails.getAgentName()).thenReturn("agent");
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).hasAgentInfo();
-        verify(mBuildDetails).getAgentName();
-        verify(mView).addAgentCard("agent");
+        when(buildDetails.hasAgentInfo()).thenReturn(true);
+        when(buildDetails.getAgentName()).thenReturn("agent");
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).hasAgentInfo();
+        verify(buildDetails).getAgentName();
+        verify(view).addAgentCard("agent");
     }
 
     @Test
     public void testAddTriggeredByCardIfBuildWasTriggeredByVcs() {
-        when(mBuildDetails.isTriggeredByVcs()).thenReturn(true);
-        when(mBuildDetails.getTriggeredDetails()).thenReturn(TRIGGERED_DETAILS);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isTriggeredByVcs();
-        verify(mBuildDetails).getTriggeredDetails();
-        verify(mView).addTriggeredByCard(eq(TRIGGERED_DETAILS));
+        when(buildDetails.isTriggeredByVcs()).thenReturn(true);
+        when(buildDetails.getTriggeredDetails()).thenReturn(TRIGGERED_DETAILS);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isTriggeredByVcs();
+        verify(buildDetails).getTriggeredDetails();
+        verify(view).addTriggeredByCard(eq(TRIGGERED_DETAILS));
     }
 
     @Test
     public void testAddTriggeredByCardIfBuildWasTriggeredByUnknown() {
-        when(mBuildDetails.isTriggeredByVcs()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUnknown()).thenReturn(true);
-        when(mBuildDetails.getTriggeredDetails()).thenReturn(TRIGGERED_DETAILS);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isTriggeredByVcs();
-        verify(mBuildDetails).isTriggeredByUnknown();
-        verify(mBuildDetails).getTriggeredDetails();
-        verify(mView).addTriggeredByCard(eq(TRIGGERED_DETAILS));
+        when(buildDetails.isTriggeredByVcs()).thenReturn(false);
+        when(buildDetails.isTriggeredByUnknown()).thenReturn(true);
+        when(buildDetails.getTriggeredDetails()).thenReturn(TRIGGERED_DETAILS);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isTriggeredByVcs();
+        verify(buildDetails).isTriggeredByUnknown();
+        verify(buildDetails).getTriggeredDetails();
+        verify(view).addTriggeredByCard(eq(TRIGGERED_DETAILS));
     }
 
     @Test
     public void testAddTriggeredByCardIfBuildWasTriggeredByUser() {
-        when(mBuildDetails.isTriggeredByVcs()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUnknown()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUser()).thenReturn(true);
-        when(mBuildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isTriggeredByVcs();
-        verify(mBuildDetails).isTriggeredByUnknown();
-        verify(mBuildDetails).isTriggeredByUser();
-        verify(mBuildDetails).getUserNameOfUserWhoTriggeredBuild();
-        verify(mView).addTriggeredByCard(eq(USER));
+        when(buildDetails.isTriggeredByVcs()).thenReturn(false);
+        when(buildDetails.isTriggeredByUnknown()).thenReturn(false);
+        when(buildDetails.isTriggeredByUser()).thenReturn(true);
+        when(buildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isTriggeredByVcs();
+        verify(buildDetails).isTriggeredByUnknown();
+        verify(buildDetails).isTriggeredByUser();
+        verify(buildDetails).getUserNameOfUserWhoTriggeredBuild();
+        verify(view).addTriggeredByCard(eq(USER));
     }
 
     @Test
     public void testAddTriggeredByCardIfBuildWasRestarted() {
-        when(mBuildDetails.isTriggeredByVcs()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUnknown()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUser()).thenReturn(false);
-        when(mBuildDetails.isRestarted()).thenReturn(true);
-        when(mBuildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isTriggeredByVcs();
-        verify(mBuildDetails).isTriggeredByUnknown();
-        verify(mBuildDetails).isTriggeredByUser();
-        verify(mBuildDetails).isRestarted();
-        verify(mBuildDetails).getUserNameOfUserWhoTriggeredBuild();
-        verify(mView).addRestartedByCard(eq(USER));
+        when(buildDetails.isTriggeredByVcs()).thenReturn(false);
+        when(buildDetails.isTriggeredByUnknown()).thenReturn(false);
+        when(buildDetails.isTriggeredByUser()).thenReturn(false);
+        when(buildDetails.isRestarted()).thenReturn(true);
+        when(buildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isTriggeredByVcs();
+        verify(buildDetails).isTriggeredByUnknown();
+        verify(buildDetails).isTriggeredByUser();
+        verify(buildDetails).isRestarted();
+        verify(buildDetails).getUserNameOfUserWhoTriggeredBuild();
+        verify(view).addRestartedByCard(eq(USER));
     }
 
     @Test
     public void testAddTriggeredByCardIfBuildWasTriggeredByBuildType() {
-        when(mBuildDetails.isTriggeredByVcs()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUnknown()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUser()).thenReturn(false);
-        when(mBuildDetails.isRestarted()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByBuildType()).thenReturn(true);
-        when(mBuildDetails.getNameOfTriggeredBuildType()).thenReturn("buildType");
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isTriggeredByVcs();
-        verify(mBuildDetails).isTriggeredByUnknown();
-        verify(mBuildDetails).isTriggeredByUser();
-        verify(mBuildDetails).isRestarted();
-        verify(mBuildDetails).isTriggeredByBuildType();
-        verify(mBuildDetails).getNameOfTriggeredBuildType();
-        verify(mView).addTriggeredByCard(eq("buildType"));
+        when(buildDetails.isTriggeredByVcs()).thenReturn(false);
+        when(buildDetails.isTriggeredByUnknown()).thenReturn(false);
+        when(buildDetails.isTriggeredByUser()).thenReturn(false);
+        when(buildDetails.isRestarted()).thenReturn(false);
+        when(buildDetails.isTriggeredByBuildType()).thenReturn(true);
+        when(buildDetails.getNameOfTriggeredBuildType()).thenReturn("buildType");
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isTriggeredByVcs();
+        verify(buildDetails).isTriggeredByUnknown();
+        verify(buildDetails).isTriggeredByUser();
+        verify(buildDetails).isRestarted();
+        verify(buildDetails).isTriggeredByBuildType();
+        verify(buildDetails).getNameOfTriggeredBuildType();
+        verify(view).addTriggeredByCard(eq("buildType"));
     }
 
     @Test
     public void testAddTriggeredByCardIfBuildWasTriggeredByUnknownTrigger() {
-        when(mBuildDetails.isTriggeredByVcs()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUnknown()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByUser()).thenReturn(false);
-        when(mBuildDetails.isRestarted()).thenReturn(false);
-        when(mBuildDetails.isTriggeredByBuildType()).thenReturn(false);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isTriggeredByVcs();
-        verify(mBuildDetails).isTriggeredByUnknown();
-        verify(mBuildDetails).isTriggeredByUser();
-        verify(mBuildDetails).isRestarted();
-        verify(mBuildDetails).isTriggeredByBuildType();
-        verify(mView).addTriggeredByUnknownTriggerTypeCard();
+        when(buildDetails.isTriggeredByVcs()).thenReturn(false);
+        when(buildDetails.isTriggeredByUnknown()).thenReturn(false);
+        when(buildDetails.isTriggeredByUser()).thenReturn(false);
+        when(buildDetails.isRestarted()).thenReturn(false);
+        when(buildDetails.isTriggeredByBuildType()).thenReturn(false);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isTriggeredByVcs();
+        verify(buildDetails).isTriggeredByUnknown();
+        verify(buildDetails).isTriggeredByUser();
+        verify(buildDetails).isRestarted();
+        verify(buildDetails).isTriggeredByBuildType();
+        verify(view).addTriggeredByUnknownTriggerTypeCard();
     }
 
     @Test
     public void testAddPersonalCardIfBuildWasTriggeredByUser() {
-        when(mBuildDetails.isPersonal()).thenReturn(true);
-        when(mBuildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).isPersonal();
-        verify(mBuildDetails).getUserNameOfUserWhoTriggeredBuild();
-        verify(mView).addPersonalCard(eq(USER));
+        when(buildDetails.isPersonal()).thenReturn(true);
+        when(buildDetails.getUserNameOfUserWhoTriggeredBuild()).thenReturn(USER);
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).isPersonal();
+        verify(buildDetails).getUserNameOfUserWhoTriggeredBuild();
+        verify(view).addPersonalCard(eq(USER));
     }
 
     @Test
     public void testAddBuildTypeAndProjectCard() {
-        when(mBuildDetails.hasBuildTypeInfo()).thenReturn(true);
-        when(mBuildDetails.getBuildTypeName()).thenReturn("bt_name");
-        when(mBuildDetails.getProjectName()).thenReturn("p_name");
-        mPresenter.onSuccess(mBuildDetails);
-        verify(mBuildDetails).hasBuildTypeInfo();
-        verify(mBuildDetails).getBuildTypeName();
-        verify(mView).addBuildTypeNameCard(eq("bt_name"));
-        verify(mBuildDetails).getProjectName();
-        verify(mView).addBuildTypeProjectNameCard(eq("p_name"));
+        when(buildDetails.hasBuildTypeInfo()).thenReturn(true);
+        when(buildDetails.getBuildTypeName()).thenReturn("bt_name");
+        when(buildDetails.getProjectName()).thenReturn("p_name");
+        when(buildDetails.getFinishTime()).thenReturn(TIME);
+        presenter.onSuccess(buildDetails);
+        verify(buildDetails).hasBuildTypeInfo();
+        verify(buildDetails).getBuildTypeName();
+        verify(view).addBuildTypeNameCard(eq("bt_name"));
+        verify(buildDetails).getProjectName();
+        verify(view).addBuildTypeProjectNameCard(eq("p_name"));
     }
 
 }
