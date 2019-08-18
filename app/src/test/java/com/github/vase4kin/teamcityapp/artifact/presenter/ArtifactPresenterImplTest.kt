@@ -279,7 +279,12 @@ class ArtifactPresenterImplTest {
         presenter.fileName = ""
         presenter.fileHref = ""
         presenter.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        verify(permissionManager).onRequestPermissionsResult(eq(requestCode), eq(permissions), eq(grantResults), capture(onPermissionsResultListenerArgumentCaptor))
+        verify(permissionManager).onRequestPermissionsResult(
+            eq(requestCode),
+            eq(permissions),
+            eq(grantResults),
+            capture(onPermissionsResultListenerArgumentCaptor)
+        )
         val listener = onPermissionsResultListenerArgumentCaptor.value
         listener.onDenied()
         verify(view).showPermissionsDeniedDialog()

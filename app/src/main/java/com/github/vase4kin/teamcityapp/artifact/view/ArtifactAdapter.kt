@@ -30,7 +30,8 @@ class ArtifactAdapter
  *
  * @param viewHolderFactories - view holder factories from DI
  */
-(viewHolderFactories: Map<Int, ViewHolderFactory<ArtifactDataModel>>) : BaseAdapter<ArtifactDataModel>(viewHolderFactories) {
+    (viewHolderFactories: Map<Int, ViewHolderFactory<ArtifactDataModel>>) :
+    BaseAdapter<ArtifactDataModel>(viewHolderFactories) {
 
     private var onClickListener: OnArtifactPresenterListener? = null
 

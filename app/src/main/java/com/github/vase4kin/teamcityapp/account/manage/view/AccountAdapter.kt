@@ -24,7 +24,8 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 /**
  * Adapter to handle data for [AccountListActivity]
  */
-class AccountAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<AccountDataModel>>) : BaseAdapter<AccountDataModel>(viewHolderFactories) {
+class AccountAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<AccountDataModel>>) :
+    BaseAdapter<AccountDataModel>(viewHolderFactories) {
 
     private var listener: AccountsView.ViewListener? = null
 

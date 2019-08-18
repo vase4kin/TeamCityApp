@@ -42,13 +42,13 @@ class BuildInteractorImpl(
     override fun loadBuild(href: String, loadingListener: OnLoadingListener<Build>) {
         subscriptions.clear()
         mTeamCityService.build(href)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     override fun unsubscribe() {

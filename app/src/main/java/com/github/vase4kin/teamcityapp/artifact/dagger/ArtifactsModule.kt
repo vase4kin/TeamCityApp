@@ -56,7 +56,11 @@ class ArtifactsModule {
 
     @Provides
     fun providesArtifactRouter(fragment: ArtifactListFragment, sharedUserStorage: SharedUserStorage): ArtifactRouter {
-        return ArtifactRouterImpl(sharedUserStorage, fragment.requireActivity() as AppCompatActivity, ChromeCustomTabsImpl(fragment.requireActivity()))
+        return ArtifactRouterImpl(
+            sharedUserStorage,
+            fragment.requireActivity() as AppCompatActivity,
+            ChromeCustomTabsImpl(fragment.requireActivity())
+        )
     }
 
     @Provides

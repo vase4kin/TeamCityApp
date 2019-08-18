@@ -38,7 +38,10 @@ class BuildListAdapterModule {
     }
 
     @Provides
-    fun providesSimpleSectionedRecyclerViewAdapter(context: Context, adapter: BuildListAdapter): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
+    fun providesSimpleSectionedRecyclerViewAdapter(
+        context: Context,
+        adapter: BuildListAdapter
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
         return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 

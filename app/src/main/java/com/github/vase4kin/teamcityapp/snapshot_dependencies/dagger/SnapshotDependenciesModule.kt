@@ -65,7 +65,10 @@ class SnapshotDependenciesModule {
     }
 
     @Provides
-    fun providesBuildListDataManager(repository: Repository, storage: SharedUserStorage): SnapshotDependenciesInteractor {
+    fun providesBuildListDataManager(
+        repository: Repository,
+        storage: SharedUserStorage
+    ): SnapshotDependenciesInteractor {
         return SnapshotDependenciesInteractorImpl(repository, storage)
     }
 
@@ -75,7 +78,13 @@ class SnapshotDependenciesModule {
         adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>
     ): RunningBuildListView {
         // Add text
-        return object : RunningBuildsListViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_builds, adapter, FilterProvider()) {
+        return object : RunningBuildsListViewImpl(
+            fragment.view,
+            fragment.activity,
+            R.string.empty_list_message_builds,
+            adapter,
+            FilterProvider()
+        ) {
             override fun recyclerViewId(): Int {
                 return R.id.snapshot_recycler_view
             }

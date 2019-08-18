@@ -24,7 +24,8 @@ import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel
 /**
  * Adapter to handle build elements
  */
-class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDataModel>>) : BaseAdapter<OverviewDataModel>(viewHolderFactories) {
+class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDataModel>>) :
+    BaseAdapter<OverviewDataModel>(viewHolderFactories) {
 
     var viewListener: OverviewView.ViewListener? = null
 
@@ -42,7 +43,11 @@ class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDa
                 true
             }
         } else if (dataModel.isBuildTypeCard(position)) {
-            (holder as OverviewViewHolder).frameLayout.setOnClickListener { viewListener?.onBuildTypeCardClick(description) }
+            (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+                viewListener?.onBuildTypeCardClick(
+                    description
+                )
+            }
             holder.frameLayout.setOnLongClickListener {
                 viewListener?.onBuildTypeCardClick(description)
                 true
@@ -54,7 +59,12 @@ class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDa
                 true
             }
         } else {
-            (holder as OverviewViewHolder).frameLayout.setOnClickListener { viewListener?.onCardClick(header, description) }
+            (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+                viewListener?.onCardClick(
+                    header,
+                    description
+                )
+            }
             holder.frameLayout.setOnLongClickListener {
                 viewListener?.onCardClick(header, description)
                 true

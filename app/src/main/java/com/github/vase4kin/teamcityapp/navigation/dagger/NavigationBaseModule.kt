@@ -40,7 +40,11 @@ import dagger.multibindings.IntoMap
 class NavigationBaseModule {
 
     @Provides
-    internal fun providesNavigationDataManager(repository: Repository, context: Context, remoteService: RemoteService): NavigationDataManager {
+    internal fun providesNavigationDataManager(
+        repository: Repository,
+        context: Context,
+        remoteService: RemoteService
+    ): NavigationDataManager {
         return NavigationDataManagerImpl(repository, context, remoteService)
     }
 

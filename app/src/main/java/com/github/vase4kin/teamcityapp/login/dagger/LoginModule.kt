@@ -53,7 +53,8 @@ class LoginModule {
         urlFormatter: UrlFormatter
     ): CreateAccountDataManager {
         return CreateAccountDataManagerImpl(
-                context, baseOkHttpClient, unsafeBaseOkHttpClient, sharedUserStorage, urlFormatter)
+            context, baseOkHttpClient, unsafeBaseOkHttpClient, sharedUserStorage, urlFormatter
+        )
     }
 
     @Provides

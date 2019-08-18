@@ -50,7 +50,12 @@ class BuildDetailsModule {
         statusBarUtils: StatusBarUtils,
         valueExtractor: BaseValueExtractor
     ): BuildDetailsView {
-        return BuildDetailsViewImpl(activity.findViewById<View>(android.R.id.content), activity, statusBarUtils, valueExtractor)
+        return BuildDetailsViewImpl(
+            activity.findViewById<View>(android.R.id.content),
+            activity,
+            statusBarUtils,
+            valueExtractor
+        )
     }
 
     @Provides

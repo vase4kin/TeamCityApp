@@ -61,20 +61,21 @@ class ArtifactDataManagerImpl(
     override fun downloadArtifact(url: String, name: String, loadingListener: OnLoadingListener<java.io.File>) {
         subscriptions.clear()
         repository.downloadFile(url)
-                .subscribeOn(Schedulers.io())
-                .map { response ->
-                    val downloadedFile = java.io.File(
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name)
-                    val sink = Okio.buffer(Okio.sink(downloadedFile))
-                    sink.writeAll(response.source())
-                    sink.close()
-                    downloadedFile
-                }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                ).addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .map { response ->
+                val downloadedFile = java.io.File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name
+                )
+                val sink = Okio.buffer(Okio.sink(downloadedFile))
+                sink.writeAll(response.source())
+                sink.close()
+                downloadedFile
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            ).addTo(subscriptions)
     }
 
     /**

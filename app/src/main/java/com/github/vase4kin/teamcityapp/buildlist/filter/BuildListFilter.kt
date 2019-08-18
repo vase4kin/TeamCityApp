@@ -61,6 +61,7 @@ interface BuildListFilter : Serializable {
         /**
          * Default build list filter
          */
-        const val DEFAULT_FILTER_LOCATOR = "state:any,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10"
+        const val DEFAULT_FILTER_LOCATOR =
+            "state:any,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10"
     }
 }

@@ -36,7 +36,12 @@ class AgentPresenterImpl @Inject constructor(
     dataManager: AgentsDataManager,
     tracker: ViewTracker,
     valueExtractor: AgentsValueExtractor
-) : BaseListPresenterImpl<AgentDataModel, Agent, BaseListView<*>, AgentsDataManager, ViewTracker, AgentsValueExtractor>(view, dataManager, tracker, valueExtractor) {
+) : BaseListPresenterImpl<AgentDataModel, Agent, BaseListView<*>, AgentsDataManager, ViewTracker, AgentsValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+) {
 
     override fun initViews() {
         super.initViews()
@@ -55,7 +60,8 @@ class AgentPresenterImpl @Inject constructor(
      */
     public override fun onSuccessCallBack(data: List<Agent>) {
         super.onSuccessCallBack(data)
-        val type = if (valueExtractor.includeDisconnected()) AgentTabsViewModelImpl.DISCONNECTED_TAB else AgentTabsViewModelImpl.CONNECTED_TAB
+        val type =
+            if (valueExtractor.includeDisconnected()) AgentTabsViewModelImpl.DISCONNECTED_TAB else AgentTabsViewModelImpl.CONNECTED_TAB
         dataManager.postUpdateTabTitleEvent(data.size, type)
     }
 

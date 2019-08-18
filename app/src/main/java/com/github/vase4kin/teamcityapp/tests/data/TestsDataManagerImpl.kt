@@ -65,18 +65,18 @@ class TestsDataManagerImpl(
         update: Boolean
     ) {
         repository.listTestOccurrences(url, update)
-                .subscribeOn(Schedulers.io())
-                .flatMapObservable {
-                    mLoadMoreUrl = it.nextHref
-                    Observable.fromIterable(it.objects)
-                }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .flatMapObservable {
+                mLoadMoreUrl = it.nextHref
+                Observable.fromIterable(it.objects)
+            }
+            .toList()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**
@@ -116,13 +116,13 @@ class TestsDataManagerImpl(
      */
     override fun loadTestDetails(url: String, loadingListener: OnLoadingListener<Int>) {
         repository.listTestOccurrences(url + ",count:" + Integer.MAX_VALUE + "&fields=count", true)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.count) },
-                        onError = { loadingListener.onSuccess(0) }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it.count) },
+                onError = { loadingListener.onSuccess(0) }
+            )
+            .addTo(subscriptions)
     }
 
     /**

@@ -41,13 +41,13 @@ open class BaseListRxDataManagerImpl<T : Collectible<D>, D> : BaseListRxDataMana
     override fun load(call: Single<T>, loadingListener: OnLoadingListener<List<D>>) {
         subscriptions.clear()
         call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.objects) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it.objects) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**

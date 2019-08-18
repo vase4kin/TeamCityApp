@@ -38,7 +38,12 @@ class FavoritesPresenterImpl @Inject constructor(
     tracker: FavoritesTracker,
     valueExtractor: NavigationValueExtractor,
     private val router: NavigationRouter
-) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, FavoritesView, FavoritesInteractor, FavoritesTracker, NavigationValueExtractor>(view, interactor, tracker, valueExtractor), FavoritesView.ViewListener {
+) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, FavoritesView, FavoritesInteractor, FavoritesTracker, NavigationValueExtractor>(
+    view,
+    interactor,
+    tracker,
+    valueExtractor
+), FavoritesView.ViewListener {
 
     /**
      * {@inheritDoc}

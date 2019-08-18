@@ -81,21 +81,26 @@ class CreateAccountPresenterImpl @Inject constructor(
         } else {
             dataManager.authUser(object : CustomOnLoadingListener<String> {
                 override fun onSuccess(url: String) {
-                    dataManager.saveNewUserAccount(url, userName, password, isSslDisabled, object : OnLoadingListener<String> {
-                        override fun onSuccess(serverUrl: String) {
-                            dataManager.initTeamCityService(serverUrl)
-                            tracker.trackUserLoginSuccess(!isSslDisabled)
-                            view.dismissProgressDialog()
-                            view.finish()
-                            router.startRootProjectActivityWhenNewAccountIsCreated()
-                        }
+                    dataManager.saveNewUserAccount(
+                        url,
+                        userName,
+                        password,
+                        isSslDisabled,
+                        object : OnLoadingListener<String> {
+                            override fun onSuccess(serverUrl: String) {
+                                dataManager.initTeamCityService(serverUrl)
+                                tracker.trackUserLoginSuccess(!isSslDisabled)
+                                view.dismissProgressDialog()
+                                view.finish()
+                                router.startRootProjectActivityWhenNewAccountIsCreated()
+                            }
 
-                        override fun onFail(errorMessage: String) {
-                            view.showCouldNotSaveUserError()
-                            view.dismissProgressDialog()
-                            tracker.trackUserDataSaveFailed()
-                        }
-                    })
+                            override fun onFail(errorMessage: String) {
+                                view.showCouldNotSaveUserError()
+                                view.dismissProgressDialog()
+                                tracker.trackUserDataSaveFailed()
+                            }
+                        })
                 }
 
                 override fun onFail(code: Int, errorMessage: String) {

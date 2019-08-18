@@ -63,7 +63,17 @@ class RunningBuildsListPresenterImplTest {
 
     @Before
     fun setUp() {
-        mPresenter = RunningBuildsListPresenterImpl(view, dataManager, tracker, router, valueExtractor, interactor, onboardingManager, filterProvider, eventBus)
+        mPresenter = RunningBuildsListPresenterImpl(
+            view,
+            dataManager,
+            tracker,
+            router,
+            valueExtractor,
+            interactor,
+            onboardingManager,
+            filterProvider,
+            eventBus
+        )
     }
 
     @Test

@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Impl of [RunBuildTracker]
  */
-class RunBuildTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), RunBuildTracker {
+class RunBuildTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics),
+    RunBuildTracker {
 
     /**
      * {@inheritDoc}

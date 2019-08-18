@@ -138,7 +138,15 @@ class RunBuildPresenterImplTest {
         presenter.onBuildQueue(true, true, true)
         verify(branchesComponentView).branchName
         verify(view).showQueuingBuildProgress()
-        verify(interactor).queueBuild(eq("branch"), eq(agent), eq(true), eq(true), eq(true), capture(propertiesArgumentCaptor), capture(queueLoadingListenerCaptor))
+        verify(interactor).queueBuild(
+            eq("branch"),
+            eq(agent),
+            eq(true),
+            eq(true),
+            eq(true),
+            capture(propertiesArgumentCaptor),
+            capture(queueLoadingListenerCaptor)
+        )
         val capturedProperties = propertiesArgumentCaptor.value
         assertThat(capturedProperties.objects.size, `is`(equalTo(1)))
         val capturedProperty = capturedProperties.objects[0]

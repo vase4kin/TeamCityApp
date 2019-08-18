@@ -34,7 +34,12 @@ class NavigationModule {
 
     @Provides
     internal fun providesNavigationView(activity: NavigationActivity, adapter: NavigationAdapter): NavigationView {
-        return NavigationViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_projects_or_build_types, adapter)
+        return NavigationViewImpl(
+            activity.findViewById(android.R.id.content),
+            activity,
+            R.string.empty_list_message_projects_or_build_types,
+            adapter
+        )
     }
 
     @Provides

@@ -24,4 +24,5 @@ interface SnapshotDependenciesTracker : BuildListTracker
 
 class SnapshotDependenciesTrackerImpl(
     firebaseAnalytics: FirebaseAnalytics
-) : FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_SNAPSHOT_DEPENDECIES), SnapshotDependenciesTracker
+) : FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_SNAPSHOT_DEPENDECIES),
+    SnapshotDependenciesTracker

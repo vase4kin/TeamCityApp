@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Tracker fabric impl of [LoginTracker]
  */
-class LoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : CreateAccountTrackerImpl(firebaseAnalytics), LoginTracker {
+class LoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : CreateAccountTrackerImpl(firebaseAnalytics),
+    LoginTracker {
 
     /**
      * {@inheritDoc}

@@ -56,7 +56,12 @@ class BuildListModule {
         activity: BuildListActivity,
         adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>
     ): BuildListView {
-        return BuildListViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_builds, adapter)
+        return BuildListViewImpl(
+            activity.findViewById(android.R.id.content),
+            activity,
+            R.string.empty_list_message_builds,
+            adapter
+        )
     }
 
     @Provides

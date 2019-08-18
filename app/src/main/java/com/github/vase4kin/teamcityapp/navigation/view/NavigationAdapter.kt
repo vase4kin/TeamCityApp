@@ -47,7 +47,9 @@ class NavigationAdapter(
             holder.mContainer.setOnClickListener { onClickListener?.onClick(dataModel.getNavigationItem(position)) }
         }
         if (holder is RateTheAppViewHolder) {
-            holder.setListeners({ onClickListener?.onRateCancelButtonClick() }, { onClickListener?.onRateNowButtonClick() })
+            holder.setListeners(
+                { onClickListener?.onRateCancelButtonClick() },
+                { onClickListener?.onRateNowButtonClick() })
         }
     }
 

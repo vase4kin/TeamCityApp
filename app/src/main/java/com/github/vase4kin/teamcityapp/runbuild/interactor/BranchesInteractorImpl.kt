@@ -42,18 +42,18 @@ class BranchesInteractorImpl(
      */
     override fun loadBranches(loadingListener: OnLoadingListener<List<String>>) {
         repository.listBranches(buildTypeId)
-                .subscribeOn(Schedulers.io())
-                .flatMapObservable {
-                    Observable.fromIterable(it.branches)
-                }
-                .map { it.name }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .flatMapObservable {
+                Observable.fromIterable(it.branches)
+            }
+            .map { it.name }
+            .toList()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**

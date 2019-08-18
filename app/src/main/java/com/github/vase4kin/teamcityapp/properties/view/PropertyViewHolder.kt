@@ -39,7 +39,13 @@ class PropertyViewHolder
  *
  * @param parent group view
  */
-(parent: ViewGroup) : BaseViewHolder<PropertiesDataModel>(LayoutInflater.from(parent.context).inflate(R.layout.item_simple_element_list, parent, false)) {
+    (parent: ViewGroup) : BaseViewHolder<PropertiesDataModel>(
+    LayoutInflater.from(parent.context).inflate(
+        R.layout.item_simple_element_list,
+        parent,
+        false
+    )
+) {
     @BindColor(R.color.abc_primary_text_material_light)
     @JvmField
     var emptyColor: Int = 0

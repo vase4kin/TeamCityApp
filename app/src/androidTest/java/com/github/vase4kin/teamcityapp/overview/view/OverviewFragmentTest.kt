@@ -81,11 +81,15 @@ class OverviewFragmentTest {
     @Rule
     @JvmField
     val daggerMockRule = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-            .addComponentDependency(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
-            .set { restApiComponent ->
-                val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-                app.setRestApiInjector(restApiComponent)
-            }
+        .addComponentDependency(
+            AppComponent::class.java,
+            AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
+        )
+        .set { restApiComponent ->
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            app.setRestApiInjector(restApiComponent)
+        }
 
     @Rule
     @JvmField
@@ -99,7 +103,8 @@ class OverviewFragmentTest {
 
     private val storage: SharedUserStorage
         get() {
-            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
             return app.appInjector.sharedUserStorage()
         }
 
@@ -143,24 +148,69 @@ class OverviewFragmentTest {
         // List has item with header
         onView(withId(R.id.overview_recycler_view)).check(hasItemsCount(7))
         // Checking Result
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.itemHeader)).check(matches(withText("Result")))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.itemTitle)).check(matches(withText("Success")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.itemHeader)).check(
+            matches(
+                withText("Result")
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                0,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("Success")))
         // Checking Time
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText("Time")))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("21 Jun 16 23:00 - 23:30 (30m:)")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(
+            matches(
+                withText("Time")
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                1,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("21 Jun 16 23:00 - 23:30 (30m:)")))
         // Checking Branch
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(matches(withText("Branch")))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemTitle)).check(matches(withText("refs/heads/master")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(
+            matches(
+                withText("Branch")
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                2,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("refs/heads/master")))
         // Checking Agent
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.itemHeader)).check(matches(withText("Agent")))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.itemTitle)).check(matches(withText("agent-love")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.itemHeader)).check(
+            matches(
+                withText("Agent")
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                3,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("agent-love")))
 
         // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking Triggered by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText("Triggered by")))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText("code-lover")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText("Triggered by")
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("code-lover")))
     }
 
     @Test
@@ -212,7 +262,7 @@ class OverviewFragmentTest {
 
         // Checking toast message
         onView(withText(R.string.build_element_copy_text))
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
     }
 
     @Test
@@ -236,8 +286,17 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking Canceled by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText(R.string.build_canceled_by_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("User name")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_canceled_by_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                1,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("User name")))
     }
 
     @Test
@@ -261,8 +320,17 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking Canceled by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText(R.string.build_canceled_by_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("user.name")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_canceled_by_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                1,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("user.name")))
     }
 
     @Test
@@ -286,8 +354,17 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking time stamp
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(matches(withText(R.string.build_cancellation_time_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemTitle)).check(matches(withText("23 Dec 16 15:11")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_cancellation_time_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                2,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("23 Dec 16 15:11")))
     }
 
     @Test
@@ -314,8 +391,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(NAME)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_triggered_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(NAME)))
     }
 
     @Test
@@ -342,8 +428,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(USER_NAME)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_triggered_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(USER_NAME)))
     }
 
     @Test
@@ -370,8 +465,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_restarted_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(NAME)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_restarted_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(NAME)))
     }
 
     @Test
@@ -398,8 +502,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_restarted_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(USER_NAME)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_restarted_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(USER_NAME)))
     }
 
     @Test
@@ -426,8 +539,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(R.string.triggered_deleted_configuration_text)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_triggered_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(R.string.triggered_deleted_configuration_text)))
     }
 
     @Test
@@ -454,8 +576,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_restarted_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(R.string.triggered_deleted_user_text)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_restarted_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(R.string.triggered_deleted_user_text)))
     }
 
     @Test
@@ -482,8 +613,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(matches(withText(R.string.build_triggered_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemTitle)).check(matches(withText(R.string.triggered_deleted_user_text)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_triggered_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                4,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(R.string.triggered_deleted_user_text)))
     }
 
     @Test
@@ -513,8 +653,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(5))
 
         // Checking Personal of
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(matches(withText(R.string.build_personal_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemTitle)).check(matches(withText(USER_NAME)))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_personal_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                5,
+                R.id.itemTitle
+            )
+        ).check(matches(withText(USER_NAME)))
     }
 
     @Test
@@ -545,7 +694,10 @@ class OverviewFragmentTest {
         intended(hasComponent(BuildListActivity::class.java.name))
 
         // Check buid list filter is applied
-        verify(teamCityService).listBuilds(eq("Checkstyle_IdeaInspectionsPullRequest"), eq("state:any,canceled:any,failedToStart:any,branch:name:refs/heads/master,personal:false,pinned:false,count:10"))
+        verify(teamCityService).listBuilds(
+            eq("Checkstyle_IdeaInspectionsPullRequest"),
+            eq("state:any,canceled:any,failedToStart:any,branch:name:refs/heads/master,personal:false,pinned:false,count:10")
+        )
     }
 
     @Test
@@ -570,8 +722,17 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(6))
 
         // Checking configuration  details
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(matches(withText(R.string.build_type_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemTitle)).check(matches(withText("build type name")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_type_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                5,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("build type name")))
 
         // Click on that card
         onView(withRecyclerView(R.id.overview_recycler_view).atPosition(5)).perform(click())
@@ -579,15 +740,24 @@ class OverviewFragmentTest {
         // Clicking on show build type
         onView(withText(R.string.build_element_open_build_type)).perform(click())
 
-        intended(allOf(
+        intended(
+            allOf(
                 hasComponent(BuildListActivity::class.java.name),
-                hasExtras(allOf(
+                hasExtras(
+                    allOf(
                         hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo<Any>(null)),
                         hasEntry(equalTo(BundleExtractorValues.ID), equalTo("Checkstyle_IdeaInspectionsPullRequest")),
-                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))))))
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))
+                    )
+                )
+            )
+        )
 
         // Check buid list filter is applied
-        verify(teamCityService).listBuilds(eq("Checkstyle_IdeaInspectionsPullRequest"), eq("state:any,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10"))
+        verify(teamCityService).listBuilds(
+            eq("Checkstyle_IdeaInspectionsPullRequest"),
+            eq("state:any,branch:default:any,personal:any,pinned:any,canceled:any,failedToStart:any,count:10")
+        )
     }
 
     @Test
@@ -613,8 +783,17 @@ class OverviewFragmentTest {
         onView(withId(android.R.id.content)).perform(swipeUp())
 
         // Checking configuration  details
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).check(matches(withText(R.string.build_project_by_section_text)))
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemTitle)).check(matches(withText("project name")))
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).check(
+            matches(
+                withText(R.string.build_project_by_section_text)
+            )
+        )
+        onView(
+            withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
+                6,
+                R.id.itemTitle
+            )
+        ).check(matches(withText("project name")))
 
         // Click on that card
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).perform(click())
@@ -622,11 +801,17 @@ class OverviewFragmentTest {
         // Clicking on show project
         onView(withText(R.string.build_element_open_project)).perform(click())
 
-        intended(allOf(
+        intended(
+            allOf(
                 hasComponent(NavigationActivity::class.java.name),
-                hasExtras(allOf(
+                hasExtras(
+                    allOf(
                         hasEntry(equalTo(BundleExtractorValues.ID), equalTo("projectId")),
-                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("project name"))))))
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("project name"))
+                    )
+                )
+            )
+        )
 
         // Check buid list filter is applied
         verify(teamCityService).listBuildTypes(eq("projectId"))

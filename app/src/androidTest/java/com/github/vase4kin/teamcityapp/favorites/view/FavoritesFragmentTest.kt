@@ -56,10 +56,15 @@ class FavoritesFragmentTest {
 
     @Rule
     @JvmField
-    val restComponentDaggerRule: DaggerMockRule<RestApiComponent> = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-            .addComponentDependency(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
+    val restComponentDaggerRule: DaggerMockRule<RestApiComponent> =
+        DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
+            .addComponentDependency(
+                AppComponent::class.java,
+                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
+            )
             .set { restApiComponent ->
-                val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+                val app =
+                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
                 app.setRestApiInjector(restApiComponent)
             }
 
@@ -72,7 +77,8 @@ class FavoritesFragmentTest {
 
     private val storage: SharedUserStorage
         get() {
-            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
             return app.appInjector.sharedUserStorage()
         }
 
@@ -117,7 +123,8 @@ class FavoritesFragmentTest {
         clickOnFavoritesTab()
 
         // Check empty list
-        onView(withId(R.id.favorites_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)))
+        onView(withId(R.id.favorites_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_favorites)))
     }
 
     @Test
@@ -132,7 +139,8 @@ class FavoritesFragmentTest {
         checkFavoritesTabBadgeCount("0")
 
         // Check the list is empty
-        onView(withId(R.id.favorites_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)))
+        onView(withId(R.id.favorites_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_favorites)))
     }
 
     @Test
@@ -166,7 +174,7 @@ class FavoritesFragmentTest {
 
         // Open build type
         onView(withText("build type"))
-                .perform(click())
+            .perform(click())
 
         // Click on add to favorites
         onView(withId(R.id.add_to_favorites)).perform(click())
@@ -184,10 +192,10 @@ class FavoritesFragmentTest {
         onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2))
         // Checking header 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
-                .check(matches(withText("Secret project")))
+            .check(matches(withText("Secret project")))
         // Checking adapter item 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
-                .check(matches(withText("build type")))
+            .check(matches(withText("build type")))
     }
 
     @Test
@@ -209,14 +217,14 @@ class FavoritesFragmentTest {
         onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2))
         // Checking header 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
-                .check(matches(withText("Secret project")))
+            .check(matches(withText("Secret project")))
         // Checking adapter item 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
-                .check(matches(withText("build type")))
+            .check(matches(withText("build type")))
 
         // Click on item 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
-                .perform(click())
+            .perform(click())
 
         // Click on add to favorites
         onView(withId(R.id.add_to_favorites)).perform(click())
@@ -230,19 +238,34 @@ class FavoritesFragmentTest {
         checkFavoritesTabBadgeCount("0")
 
         // Check the list is empty
-        onView(withId(R.id.favorites_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorites)))
+        onView(withId(R.id.favorites_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_favorites)))
     }
 
     private fun clickOnFavoritesTab() {
-        onView(withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.favorites_drawer_item))))
-                .perform(click())
+        onView(
+            withChild(
+                allOf(
+                    withId(R.id.bottom_navigation_small_item_title),
+                    withText(R.string.favorites_drawer_item)
+                )
+            )
+        )
+            .perform(click())
     }
 
     private fun checkFavoritesTabBadgeCount(count: String) {
-        onView(allOf(
+        onView(
+            allOf(
                 withChild(allOf(withId(R.id.bottom_navigation_notification), withText(count))),
-                withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.favorites_drawer_item))))
+                withChild(
+                    allOf(
+                        withId(R.id.bottom_navigation_small_item_title),
+                        withText(R.string.favorites_drawer_item)
+                    )
+                )
+            )
         )
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
     }
 }

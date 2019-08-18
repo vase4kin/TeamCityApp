@@ -68,12 +68,18 @@ class HomeModule {
     fun providesFragmentFactory(): FragmentFactory = FragmentFactoryImpl()
 
     @Provides
-    fun providesAppNavigationInteractor(activity: HomeActivity, fragmentFactory: FragmentFactory): AppNavigationInteractor {
+    fun providesAppNavigationInteractor(
+        activity: HomeActivity,
+        fragmentFactory: FragmentFactory
+    ): AppNavigationInteractor {
         return AppNavigationInteractorImpl(activity.supportFragmentManager, fragmentFactory)
     }
 
     @Provides
-    fun providesBottomNavigationView(appNavigationInteractor: AppNavigationInteractor, activity: HomeActivity): BottomNavigationView {
+    fun providesBottomNavigationView(
+        appNavigationInteractor: AppNavigationInteractor,
+        activity: HomeActivity
+    ): BottomNavigationView {
         return BottomNavigationViewImpl(appNavigationInteractor, activity)
     }
 

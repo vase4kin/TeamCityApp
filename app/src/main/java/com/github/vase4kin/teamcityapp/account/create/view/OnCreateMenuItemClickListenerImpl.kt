@@ -35,14 +35,16 @@ class OnCreateMenuItemClickListenerImpl(
         if (item.itemId == R.id.action_create) {
             if (guestUserSwitch.isChecked) {
                 onValidateListener.validateGuestUserData(
-                        serverUrl.text.toString().trim(),
-                        disableSslSwitch.isChecked)
+                    serverUrl.text.toString().trim(),
+                    disableSslSwitch.isChecked
+                )
             } else {
                 onValidateListener.validateUserData(
-                        serverUrl.text.toString().trim(),
-                        userName.text.toString().trim(),
-                        password.text.toString().trim(),
-                        disableSslSwitch.isChecked)
+                    serverUrl.text.toString().trim(),
+                    userName.text.toString().trim(),
+                    password.text.toString().trim(),
+                    disableSslSwitch.isChecked
+                )
             }
             return true
         }

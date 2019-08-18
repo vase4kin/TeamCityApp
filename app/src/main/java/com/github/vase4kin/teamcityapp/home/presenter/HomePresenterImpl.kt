@@ -44,7 +44,9 @@ class HomePresenterImpl @Inject constructor(
     private val onboardingManager: OnboardingManager,
     private val bottomNavigationView: BottomNavigationView,
     private val filterProvider: FilterProvider
-) : DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker>(view, dataManager, router, tracker), HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener, HomeDataManager.Listener {
+) : DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker>(view, dataManager, router, tracker),
+    HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener,
+    HomeDataManager.Listener {
 
     private var baseUrl: String? = null
 

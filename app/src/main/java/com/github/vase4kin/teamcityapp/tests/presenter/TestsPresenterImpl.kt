@@ -43,7 +43,12 @@ class TestsPresenterImpl @Inject constructor(
     tracker: ViewTracker,
     valueExtractor: TestsValueExtractor,
     private val router: TestsRouter
-) : BaseListPresenterImpl<TestsDataModel, TestOccurrences.TestOccurrence, TestsView, TestsDataManager, ViewTracker, TestsValueExtractor>(view, dataManager, tracker, valueExtractor), TestsPresenter, OnTestsPresenterListener {
+) : BaseListPresenterImpl<TestsDataModel, TestOccurrences.TestOccurrence, TestsView, TestsDataManager, ViewTracker, TestsValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+), TestsPresenter, OnTestsPresenterListener {
 
     @VisibleForTesting
     var isLoadMoreLoading = false
@@ -51,7 +56,10 @@ class TestsPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun loadData(loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>, update: Boolean) {
+    public override fun loadData(
+        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        update: Boolean
+    ) {
         dataManager.loadFailedTests(valueExtractor.url, loadingListener, update)
     }
 

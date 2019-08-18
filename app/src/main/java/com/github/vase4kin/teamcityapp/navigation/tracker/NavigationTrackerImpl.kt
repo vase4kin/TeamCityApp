@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Navigation tracking class firebase impl
  */
-class NavigationTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), NavigationTracker {
+class NavigationTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics),
+    NavigationTracker {
 
     /**
      * {@inheritDoc}

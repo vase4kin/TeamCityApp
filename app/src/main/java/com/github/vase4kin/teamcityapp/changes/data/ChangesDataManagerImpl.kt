@@ -47,13 +47,13 @@ class ChangesDataManagerImpl(
         loadingListener: OnLoadingListener<Int>
     ) {
         repository.listChanges(url + ",count:" + Integer.MAX_VALUE + "&fields=count", true)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.count) },
-                        onError = { loadingListener.onSuccess(0) }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it.count) },
+                onError = { loadingListener.onSuccess(0) }
+            )
+            .addTo(subscriptions)
     }
 
     /**
@@ -76,22 +76,22 @@ class ChangesDataManagerImpl(
         update: Boolean
     ) {
         repository.listChanges(url, update)
-                .subscribeOn(Schedulers.io())
-                .flatMapObservable {
-                    if (it.count == 0) {
-                        Observable.fromIterable(emptyList())
-                    } else {
-                        loadMoreUrl = it.nextHref
-                        Observable.fromIterable(it.objects)
-                    }
+            .subscribeOn(Schedulers.io())
+            .flatMapObservable {
+                if (it.count == 0) {
+                    Observable.fromIterable(emptyList())
+                } else {
+                    loadMoreUrl = it.nextHref
+                    Observable.fromIterable(it.objects)
                 }
-                .flatMapSingle { repository.change(it.href) }
-                .toList()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                ).addTo(subscriptions)
+            }
+            .flatMapSingle { repository.change(it.href) }
+            .toList()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            ).addTo(subscriptions)
     }
 
     /**
