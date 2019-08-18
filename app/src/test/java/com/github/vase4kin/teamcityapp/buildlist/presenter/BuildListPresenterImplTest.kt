@@ -84,7 +84,8 @@ class BuildListPresenterImplTest {
 
     @Before
     fun setUp() {
-        presenter = BuildListPresenterImpl(view, dataManager, tracker, valueExtractor, router, interactor, onboardingManager)
+        presenter =
+            BuildListPresenterImpl(view, dataManager, tracker, valueExtractor, router, interactor, onboardingManager)
     }
 
     @Test

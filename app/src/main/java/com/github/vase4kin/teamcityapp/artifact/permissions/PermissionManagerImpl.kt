@@ -35,8 +35,10 @@ class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager 
      * {@inheritDoc}
      */
     override val isWriteStoragePermissionsGranted: Boolean
-        get() = ActivityCompat.checkSelfPermission(fragment.requireContext(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+        get() = ActivityCompat.checkSelfPermission(
+            fragment.requireContext(),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
 
     /**
      * {@inheritDoc}
@@ -52,8 +54,10 @@ class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager 
      * {@inheritDoc}
      */
     override fun requestWriteStoragePermissions() {
-        fragment.requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE)
+        fragment.requestPermissions(
+            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+        )
     }
 
     /**

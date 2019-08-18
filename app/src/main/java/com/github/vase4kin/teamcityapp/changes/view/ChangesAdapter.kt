@@ -24,7 +24,8 @@ import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel
 /**
  * Changes adapter
  */
-class ChangesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<ChangesDataModel>>) : BaseLoadMoreAdapter<ChangesDataModel>(viewHolderFactories) {
+class ChangesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<ChangesDataModel>>) :
+    BaseLoadMoreAdapter<ChangesDataModel>(viewHolderFactories) {
 
     var onChangeClickListener: OnChangeClickListener? = null
 

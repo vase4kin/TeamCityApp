@@ -93,7 +93,7 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
          */
         fun start(activity: Activity, build: Build, buildTypeName: String?) {
             val intent = Intent(activity, BuildDetailsActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             val b = Bundle()
             b.putSerializable(BundleExtractorValues.BUILD, build)
             b.putString(BundleExtractorValues.NAME, buildTypeName)

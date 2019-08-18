@@ -32,8 +32,9 @@ class BuildLogUrlProviderImpl(
      */
     override fun provideUrl(): String {
         val serverUrl = String.format(
-                BUILD_URL,
-                userAccount.teamcityUrl, valueExtractor.buildId)
+            BUILD_URL,
+            userAccount.teamcityUrl, valueExtractor.buildId
+        )
         return if (userAccount.isGuestUser)
             "$serverUrl&guest=1"
         else

@@ -40,14 +40,14 @@ class AccountsDataManagerImpl(
      */
     override fun load(call: Single<SharedUserStorage>, loadingListener: OnLoadingListener<List<UserAccount>>) {
         Observable.fromIterable(sharedUserStorage.objects)
-                .toList()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .toList()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**

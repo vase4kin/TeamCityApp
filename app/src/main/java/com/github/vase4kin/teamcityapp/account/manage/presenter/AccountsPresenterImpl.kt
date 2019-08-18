@@ -39,7 +39,12 @@ class AccountsPresenterImpl @Inject constructor(
     tracker: ManageAccountsTracker,
     valueExtractor: BaseValueExtractor,
     private val router: AccountListRouter
-) : BaseListPresenterImpl<AccountDataModel, UserAccount, AccountsView, AccountsDataManager, ManageAccountsTracker, BaseValueExtractor>(view, dataManager, tracker, valueExtractor), AccountsView.ViewListener {
+) : BaseListPresenterImpl<AccountDataModel, UserAccount, AccountsView, AccountsDataManager, ManageAccountsTracker, BaseValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+), AccountsView.ViewListener {
 
     /**
      * {@inheritDoc}

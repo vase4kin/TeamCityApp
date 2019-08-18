@@ -63,10 +63,15 @@ class RunningBuildsFragmentTest {
 
     @Rule
     @JvmField
-    var daggerMockRule: DaggerMockRule<RestApiComponent> = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-            .addComponentDependency(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
+    var daggerMockRule: DaggerMockRule<RestApiComponent> =
+        DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
+            .addComponentDependency(
+                AppComponent::class.java,
+                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
+            )
             .set { restApiComponent ->
-                val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+                val app =
+                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
                 app.setRestApiInjector(restApiComponent)
             }
 
@@ -79,7 +84,8 @@ class RunningBuildsFragmentTest {
 
     private val storage: SharedUserStorage
         get() {
-            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
             return app.appInjector.sharedUserStorage()
         }
 
@@ -126,20 +132,20 @@ class RunningBuildsFragmentTest {
         val buildTypeLocator1 = locator + ",${buildTypeIdLocator(buildTypeId1)}"
         val buildTypeLocator2 = locator + ",${buildTypeIdLocator(buildTypeId2)}"
         `when`(teamCityService.listRunningBuilds(buildTypeLocator1, null))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
         `when`(teamCityService.listRunningBuilds(buildTypeLocator1, "count"))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
         `when`(teamCityService.listRunningBuilds(buildTypeLocator2, null))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
         `when`(teamCityService.listRunningBuilds(buildTypeLocator2, "count"))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
 
         // ALL (one build by all)
         val builds = listOf<Build>(Mocks.runningBuild())
         `when`(teamCityService.listRunningBuilds(locator, null))
-                .thenReturn(Single.just(Builds(builds.size, builds)))
+            .thenReturn(Single.just(Builds(builds.size, builds)))
         `when`(teamCityService.listRunningBuilds(locator, "count"))
-                .thenReturn(Single.just(Builds(builds.size, builds)))
+            .thenReturn(Single.just(Builds(builds.size, builds)))
 
         activityRule.launchActivity(null)
 
@@ -151,9 +157,22 @@ class RunningBuildsFragmentTest {
         // Checking header
         onView(withId(R.id.section_text)).check(matches(withText("project name - build type name")))
         // Checking adapter item
-        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(matches(withText("Running tests")))
-        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.itemSubTitle)).check(matches(withText("refs/heads/master")))
-        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(matches(withText("#2458")))
+        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(
+            matches(
+                withText("Running tests")
+            )
+        )
+        onView(
+            withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(
+                1,
+                R.id.itemSubTitle
+            )
+        ).check(matches(withText("refs/heads/master")))
+        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(
+            matches(
+                withText("#2458")
+            )
+        )
     }
 
     @Test
@@ -166,22 +185,33 @@ class RunningBuildsFragmentTest {
 
         // Click on header header
         onView(withId(R.id.section_text))
-                .check(matches(withText("project name - build type name")))
-                .perform(click())
+            .check(matches(withText("project name - build type name")))
+            .perform(click())
 
         // Check activity been opned
-        intended(allOf(
+        intended(
+            allOf(
                 hasComponent(BuildListActivity::class.java.name),
-                hasExtras(allOf(
+                hasExtras(
+                    allOf(
                         hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo<Any>(null)),
                         hasEntry(equalTo(BundleExtractorValues.ID), equalTo("Checkstyle_IdeaInspectionsPullRequest")),
-                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))))))
+                        hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))
+                    )
+                )
+            )
+        )
     }
 
     @Test
     fun testUserCanSeeFailureMessageIfSmthHappendsOnRunningBuildsLoading() {
         storage.addBuildTypeToFavorites("id")
-        `when`(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.error(RuntimeException("smth bad happend!")))
+        `when`(
+            teamCityService.listRunningBuilds(
+                anyString(),
+                anyString()
+            )
+        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
 
         activityRule.launchActivity(null)
 
@@ -197,7 +227,14 @@ class RunningBuildsFragmentTest {
 
     @Test
     fun testUserCanSeeEmptyDataMessageIfRunningBuildListIsEmpty() {
-        `when`(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(Single.just(Builds(0, emptyList())))
+        `when`(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(
+            Single.just(
+                Builds(
+                    0,
+                    emptyList()
+                )
+            )
+        )
 
         activityRule.launchActivity(null)
 
@@ -205,27 +242,43 @@ class RunningBuildsFragmentTest {
         clickOnRunningbuildsTab()
 
         // Check empty view
-        onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_running_builds)))
+        onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_favorite_running_builds)))
 
         // filter builds to show all
         onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
         onView(withText(R.string.text_show_running)).perform(click())
 
         checkRunningTabBadgeCount("0")
-        onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_running_builds)))
+        onView(withId(R.id.running_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_running_builds)))
     }
 
     private fun clickOnRunningbuildsTab() {
-        onView(withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.running_builds_drawer_item))))
-                .perform(click())
+        onView(
+            withChild(
+                allOf(
+                    withId(R.id.bottom_navigation_small_item_title),
+                    withText(R.string.running_builds_drawer_item)
+                )
+            )
+        )
+            .perform(click())
     }
 
     private fun checkRunningTabBadgeCount(count: String) {
-        onView(allOf(
+        onView(
+            allOf(
                 withChild(allOf(withId(R.id.bottom_navigation_notification), withText(count))),
-                withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.running_builds_drawer_item))))
+                withChild(
+                    allOf(
+                        withId(R.id.bottom_navigation_small_item_title),
+                        withText(R.string.running_builds_drawer_item)
+                    )
+                )
+            )
         )
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
     }
 
     private fun buildTypeIdLocator(buildTypeId: String): String = "buildType:$buildTypeId"

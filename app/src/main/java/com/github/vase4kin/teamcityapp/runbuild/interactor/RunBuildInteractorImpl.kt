@@ -70,7 +70,11 @@ class RunBuildInteractorImpl(
     /**
      * {@inheritDoc}
      */
-    override fun queueBuild(branchName: String?, properties: Properties?, loadingListener: LoadingListenerWithForbiddenSupport<String>) {
+    override fun queueBuild(
+        branchName: String?,
+        properties: Properties?,
+        loadingListener: LoadingListenerWithForbiddenSupport<String>
+    ) {
         val build = Build()
         build.buildTypeId = buildTypeId
         build.branchName = branchName
@@ -86,23 +90,23 @@ class RunBuildInteractorImpl(
      */
     private fun queueBuild(build: Build, loadingListener: LoadingListenerWithForbiddenSupport<String>) {
         repository.queueBuild(build)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.href) },
-                        onError = { e ->
-                            if (e is HttpException) {
-                                if (e.code() == CODE_FORBIDDEN) {
-                                    loadingListener.onForbiddenError()
-                                } else {
-                                    loadingListener.onFail(e.message ?: "")
-                                }
-                            } else {
-                                loadingListener.onFail(e.message ?: "")
-                            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it.href) },
+                onError = { e ->
+                    if (e is HttpException) {
+                        if (e.code() == CODE_FORBIDDEN) {
+                            loadingListener.onForbiddenError()
+                        } else {
+                            loadingListener.onFail(e.message ?: "")
                         }
-                )
-                .addTo(subscriptions)
+                    } else {
+                        loadingListener.onFail(e.message ?: "")
+                    }
+                }
+            )
+            .addTo(subscriptions)
     }
 
     /**
@@ -117,22 +121,22 @@ class RunBuildInteractorImpl(
      */
     override fun loadAgents(loadingListener: OnLoadingListener<List<Agent>>) {
         repository.buildType(buildTypeId, false)
-                .subscribeOn(Schedulers.io())
-                .flatMap { buildType ->
-                    val isCompatibleAgentsSupported = buildType.compatibleAgents != null
-                    if (isCompatibleAgentsSupported) {
-                        // TODO: No hardcode
-                        val locator = String.format("compatible:(buildType:(id:%s))", buildTypeId)
-                        repository.listAgents(null, null, locator, false)
-                    } else {
-                        repository.listAgents(false, null, null, false)
-                    }
+            .subscribeOn(Schedulers.io())
+            .flatMap { buildType ->
+                val isCompatibleAgentsSupported = buildType.compatibleAgents != null
+                if (isCompatibleAgentsSupported) {
+                    // TODO: No hardcode
+                    val locator = String.format("compatible:(buildType:(id:%s))", buildTypeId)
+                    repository.listAgents(null, null, locator, false)
+                } else {
+                    repository.listAgents(false, null, null, false)
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.objects) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            }
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it.objects) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 }

@@ -40,7 +40,12 @@ class NavigationPresenterImpl @Inject constructor(
     tracker: NavigationTracker,
     valueExtractor: NavigationValueExtractor,
     private val router: NavigationRouter
-) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, NavigationView, NavigationDataManager, NavigationTracker, NavigationValueExtractor>(view, dataManager, tracker, valueExtractor), OnNavigationItemClickListener {
+) : BaseListPresenterImpl<NavigationDataModel, NavigationItem, NavigationView, NavigationDataManager, NavigationTracker, NavigationValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+), OnNavigationItemClickListener {
 
     /**
      * {@inheritDoc}

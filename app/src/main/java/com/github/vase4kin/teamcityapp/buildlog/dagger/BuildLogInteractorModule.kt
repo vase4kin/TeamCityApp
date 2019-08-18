@@ -30,8 +30,9 @@ class BuildLogInteractorModule {
     @Provides
     fun providesBuildLogInteractor(context: Context, sharedUserStorage: SharedUserStorage): BuildLogInteractor {
         return BuildLogInteractorImpl(
-                sharedUserStorage.activeUser,
-                context.getSharedPreferences(BuildLogInteractorImpl.PREF_NAME, Context.MODE_PRIVATE))
+            sharedUserStorage.activeUser,
+            context.getSharedPreferences(BuildLogInteractorImpl.PREF_NAME, Context.MODE_PRIVATE)
+        )
     }
 
     @Provides

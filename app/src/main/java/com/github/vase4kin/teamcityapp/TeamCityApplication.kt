@@ -60,16 +60,16 @@ class TeamCityApplication : Application(), HasActivityInjector {
 
         // #=============== Iconify ================#//
         Iconify
-                .with(MaterialModule())
-                .with(MaterialCommunityModule())
-                .with(FontAwesomeModule())
+            .with(MaterialModule())
+            .with(MaterialCommunityModule())
+            .with(FontAwesomeModule())
 
         // #=============== Dagger ================#//
         // app injector init
         // net injector init
         appInjector = DaggerAppComponent.builder()
-                .appModule(AppModule(this))
-                .build()
+            .appModule(AppModule(this))
+            .build()
         appInjector.inject(this)
         // Get default url
         val baseUrl = appInjector.sharedUserStorage().activeUser.teamcityUrl
@@ -85,9 +85,9 @@ class TeamCityApplication : Application(), HasActivityInjector {
      */
     fun buildRestApiInjectorWithBaseUrl(baseUrl: String) {
         restApiInjector = DaggerRestApiComponent.builder()
-                .restApiModule(RestApiModule(baseUrl))
-                .appComponent(appInjector)
-                .build()
+            .restApiModule(RestApiModule(baseUrl))
+            .appComponent(appInjector)
+            .build()
         restApiInjector.inject(this)
     }
 

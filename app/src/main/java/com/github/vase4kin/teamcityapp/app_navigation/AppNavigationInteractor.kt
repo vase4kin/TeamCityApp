@@ -37,8 +37,8 @@ class AppNavigationInteractorImpl constructor(
     override fun getRootFragment(index: Int): Fragment = fragmentFactory.createFragment(index)
 
     private val defaultTransition = FragNavTransactionOptions.newBuilder()
-            .allowStateLoss(true)
-            .build()
+        .allowStateLoss(true)
+        .build()
 
     private lateinit var fragNavController: FragNavController
 

@@ -43,7 +43,8 @@ class BuildDetailsPresenterImpl @Inject constructor(
     private val router: BuildDetailsRouter,
     private val runBuildInteractor: RunBuildInteractor,
     private val buildInteractor: BuildInteractor
-) : BaseTabsPresenterImpl<BuildDetailsView, BuildDetailsInteractor, BuildDetailsTracker>(view, tracker, dataManager), BuildDetailsPresenter, OnBuildDetailsEventsListener, OnBuildDetailsViewListener {
+) : BaseTabsPresenterImpl<BuildDetailsView, BuildDetailsInteractor, BuildDetailsTracker>(view, tracker, dataManager),
+    BuildDetailsPresenter, OnBuildDetailsEventsListener, OnBuildDetailsViewListener {
 
     /**
      * Queued build href

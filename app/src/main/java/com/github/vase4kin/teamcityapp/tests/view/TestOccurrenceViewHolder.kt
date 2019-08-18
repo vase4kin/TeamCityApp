@@ -30,7 +30,13 @@ import com.joanzapata.iconify.widget.IconTextView
 /**
  * Test single item view holder
  */
-class TestOccurrenceViewHolder(parent: ViewGroup) : BaseViewHolder<TestsDataModel>(LayoutInflater.from(parent.context).inflate(R.layout.item_test_occurence_list, parent, false)) {
+class TestOccurrenceViewHolder(parent: ViewGroup) : BaseViewHolder<TestsDataModel>(
+    LayoutInflater.from(parent.context).inflate(
+        R.layout.item_test_occurence_list,
+        parent,
+        false
+    )
+) {
     @BindView(R.id.container)
     lateinit var container: FrameLayout
     @BindView(R.id.itemTitle)

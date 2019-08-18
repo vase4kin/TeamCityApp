@@ -53,14 +53,17 @@ class RepositoryImpl(
         locator: String?,
         update: Boolean
     ): Single<Agents> {
-        val dynamicKey = String.format("includeDisconnected:%s,fields:%s,locator:%s",
-                includeDisconnected ?: "empty",
-                fields ?: "empty",
-                locator ?: "empty")
+        val dynamicKey = String.format(
+            "includeDisconnected:%s,fields:%s,locator:%s",
+            includeDisconnected ?: "empty",
+            fields ?: "empty",
+            locator ?: "empty"
+        )
         return cacheProviders.listAgents(
-                teamCityService.listAgents(includeDisconnected, fields, locator),
-                DynamicKey(dynamicKey),
-                EvictDynamicKey(update))
+            teamCityService.listAgents(includeDisconnected, fields, locator),
+            DynamicKey(dynamicKey),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -68,9 +71,10 @@ class RepositoryImpl(
      */
     override fun listBuildTypes(id: String, update: Boolean): Single<NavigationNode> {
         return cacheProviders.listBuildTypes(
-                teamCityService.listBuildTypes(id),
-                DynamicKey(id),
-                EvictDynamicKey(update))
+            teamCityService.listBuildTypes(id),
+            DynamicKey(id),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -78,9 +82,10 @@ class RepositoryImpl(
      */
     override fun buildType(id: String, update: Boolean): Single<BuildType> {
         return cacheProviders.buildType(
-                teamCityService.buildType(id),
-                DynamicKey(id),
-                EvictDynamicKey(update))
+            teamCityService.buildType(id),
+            DynamicKey(id),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -88,9 +93,10 @@ class RepositoryImpl(
      */
     override fun build(url: String, update: Boolean): Single<Build> {
         return cacheProviders.build(
-                teamCityService.build(urlFormatter.formatBasicUrl(url)),
-                DynamicKey(url),
-                EvictDynamicKey(update))
+            teamCityService.build(urlFormatter.formatBasicUrl(url)),
+            DynamicKey(url),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -98,9 +104,10 @@ class RepositoryImpl(
      */
     override fun listBuilds(id: String, locator: String, update: Boolean): Single<Builds> {
         return cacheProviders.listBuilds(
-                teamCityService.listBuilds(id, locator),
-                DynamicKeyGroup(locator, id),
-                EvictDynamicKeyGroup(update))
+            teamCityService.listBuilds(id, locator),
+            DynamicKeyGroup(locator, id),
+            EvictDynamicKeyGroup(update)
+        )
     }
 
     /**
@@ -108,9 +115,10 @@ class RepositoryImpl(
      */
     override fun listRunningBuilds(locator: String, fields: String?, update: Boolean): Single<Builds> {
         return cacheProviders.listRunningBuilds(
-                teamCityService.listRunningBuilds(locator, fields),
-                DynamicKey(locator + fields),
-                EvictDynamicKey(update))
+            teamCityService.listRunningBuilds(locator, fields),
+            DynamicKey(locator + fields),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -118,9 +126,10 @@ class RepositoryImpl(
      */
     override fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds> {
         return cacheProviders.listQueuedBuilds(
-                teamCityService.listQueueBuilds(locator, fields),
-                DynamicKey(locator + fields),
-                EvictDynamicKey(update))
+            teamCityService.listQueueBuilds(locator, fields),
+            DynamicKey(locator + fields),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -129,9 +138,10 @@ class RepositoryImpl(
     override fun listSnapshotBuilds(id: String, update: Boolean): Single<Builds> {
         val locator = String.format("snapshotDependency:(to:(id:%s),includeInitial:true),defaultFilter:false", id)
         return cacheProviders.listSnapshotBuilds(
-                teamCityService.listBuilds(locator),
-                DynamicKey(id),
-                EvictDynamicKey(update))
+            teamCityService.listBuilds(locator),
+            DynamicKey(id),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -146,9 +156,10 @@ class RepositoryImpl(
      */
     override fun listArtifacts(url: String, locator: String, update: Boolean): Single<Files> {
         return cacheProviders.listArtifacts(
-                teamCityService.listArtifacts(urlFormatter.formatBasicUrl(url), locator),
-                DynamicKey(url),
-                EvictDynamicKey(update))
+            teamCityService.listArtifacts(urlFormatter.formatBasicUrl(url), locator),
+            DynamicKey(url),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -163,9 +174,10 @@ class RepositoryImpl(
      */
     override fun listTestOccurrences(url: String, update: Boolean): Single<TestOccurrences> {
         return cacheProviders.listTestOccurrences(
-                teamCityService.listTestOccurrences(urlFormatter.formatBasicUrl(url)),
-                DynamicKey(url),
-                EvictDynamicKey(update))
+            teamCityService.listTestOccurrences(urlFormatter.formatBasicUrl(url)),
+            DynamicKey(url),
+            EvictDynamicKey(update)
+        )
     }
 
     /**
@@ -173,8 +185,9 @@ class RepositoryImpl(
      */
     override fun testOccurrence(url: String): Single<TestOccurrences.TestOccurrence> {
         return cacheProviders.testOccurrence(
-                teamCityService.testOccurrence(urlFormatter.formatBasicUrl(url)),
-                DynamicKey(url))
+            teamCityService.testOccurrence(urlFormatter.formatBasicUrl(url)),
+            DynamicKey(url)
+        )
     }
 
     /**
@@ -182,9 +195,10 @@ class RepositoryImpl(
      */
     override fun listChanges(url: String, update: Boolean): Single<Changes> {
         return cacheProviders.listChanges(
-                teamCityService.listChanges(urlFormatter.formatBasicUrl(url)),
-                DynamicKey(url),
-                EvictDynamicKey(update))
+            teamCityService.listChanges(urlFormatter.formatBasicUrl(url)),
+            DynamicKey(url),
+            EvictDynamicKey(update)
+        )
     }
 
     /**

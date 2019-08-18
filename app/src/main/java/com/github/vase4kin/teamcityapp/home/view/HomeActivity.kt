@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -100,24 +100,30 @@ class HomeActivity : DaggerAppCompatActivity() {
 
         fun startWhenNavigateToRootFromDrawer(activity: Activity) {
             val launchIntent = Intent(activity, HomeActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
             DrawerActivityStartUtils.startActivity(launchIntent, activity)
         }
 
         fun startWithTabSelected(activity: Activity, navigationItem: AppNavigationItem) {
             val launchIntent = Intent(activity, HomeActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            or Intent.FLAG_ACTIVITY_SINGLE_TOP).apply {
-                        putExtra(ARG_TAB, navigationItem.ordinal)
-                    }
+                .addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                ).apply {
+                    putExtra(ARG_TAB, navigationItem.ordinal)
+                }
             activity.startActivity(launchIntent)
         }
 
         fun startWhenSwitchingAccountsFromDrawer(activity: Activity) {
             val launchIntent = Intent(activity, HomeActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
             launchIntent.putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
             DrawerActivityStartUtils.startActivity(launchIntent, activity)
         }

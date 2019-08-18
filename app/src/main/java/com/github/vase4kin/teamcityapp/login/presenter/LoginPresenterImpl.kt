@@ -136,23 +136,28 @@ class LoginPresenterImpl @Inject constructor(
         dataManager.authUser(object : CustomOnLoadingListener<String> {
             override fun onSuccess(serverUrl: String) {
                 view.dismissProgressDialog()
-                dataManager.saveNewUserAccount(serverUrl, userName, password, isSslDisabled, object : OnLoadingListener<String> {
-                    override fun onSuccess(serverUrl: String) {
-                        dataManager.initTeamCityService(serverUrl)
-                        router.openProjectsRootPageForFirstStart()
-                        tracker.trackUserLoginSuccess(!isSslDisabled)
-                        view.close()
-                        clearLoginInfo()
-                    }
+                dataManager.saveNewUserAccount(
+                    serverUrl,
+                    userName,
+                    password,
+                    isSslDisabled,
+                    object : OnLoadingListener<String> {
+                        override fun onSuccess(serverUrl: String) {
+                            dataManager.initTeamCityService(serverUrl)
+                            router.openProjectsRootPageForFirstStart()
+                            tracker.trackUserLoginSuccess(!isSslDisabled)
+                            view.close()
+                            clearLoginInfo()
+                        }
 
-                    override fun onFail(errorMessage: String) {
-                        view.dismissProgressDialog()
-                        view.showCouldNotSaveUserError()
-                        tracker.trackUserDataSaveFailed()
-                        view.hideKeyboard()
-                        clearLoginInfo()
-                    }
-                })
+                        override fun onFail(errorMessage: String) {
+                            view.dismissProgressDialog()
+                            view.showCouldNotSaveUserError()
+                            tracker.trackUserDataSaveFailed()
+                            view.hideKeyboard()
+                            clearLoginInfo()
+                        }
+                    })
             }
 
             override fun onFail(statusCode: Int, errorMessage: String) {

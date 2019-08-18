@@ -35,7 +35,8 @@ class OverviewPresenterImpl @Inject internal constructor(
     private val interactor: OverViewInteractor,
     private val tracker: OverviewTracker,
     private val onboardingManager: OnboardingManager
-) : OverviewPresenter, OverviewView.ViewListener, OverViewInteractor.OnOverviewEventsListener, OnLoadingListener<BuildDetails> {
+) : OverviewPresenter, OverviewView.ViewListener, OverViewInteractor.OnOverviewEventsListener,
+    OnLoadingListener<BuildDetails> {
 
     /**
      * {@inheritDoc}

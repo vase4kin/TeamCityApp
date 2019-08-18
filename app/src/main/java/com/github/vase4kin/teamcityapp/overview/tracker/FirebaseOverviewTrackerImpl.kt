@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Impl of [OverviewTracker]
  */
-class FirebaseOverviewTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), OverviewTracker {
+class FirebaseOverviewTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics),
+    OverviewTracker {
 
     /**
      * {@inheritDoc}

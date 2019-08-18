@@ -37,7 +37,12 @@ class ChangesPresenterImpl @Inject constructor(
     dataManager: ChangesDataManager,
     tracker: ViewTracker,
     valueExtractor: ChangesValueExtractor
-) : BaseListPresenterImpl<ChangesDataModel, Changes.Change, ChangesView, ChangesDataManager, ViewTracker, ChangesValueExtractor>(view, dataManager, tracker, valueExtractor) {
+) : BaseListPresenterImpl<ChangesDataModel, Changes.Change, ChangesView, ChangesDataManager, ViewTracker, ChangesValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+) {
 
     @VisibleForTesting
     var isLoadMoreLoading = false

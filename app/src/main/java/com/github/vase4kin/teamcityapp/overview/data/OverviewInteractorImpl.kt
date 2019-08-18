@@ -65,13 +65,13 @@ class OverviewInteractorImpl(
     ) {
         subscriptions.clear()
         repository.build(url, update)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(BuildDetailsImpl(it)) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(BuildDetailsImpl(it)) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**
@@ -121,8 +121,9 @@ class OverviewInteractorImpl(
      */
     override fun postFABVisibleEvent() {
         Handler(Looper.getMainLooper()).postDelayed(
-                { eventBus.post(FloatButtonChangeVisibilityEvent(View.VISIBLE)) },
-                DELAY.toLong())
+            { eventBus.post(FloatButtonChangeVisibilityEvent(View.VISIBLE)) },
+            DELAY.toLong()
+        )
     }
 
     /**

@@ -37,7 +37,12 @@ class SnapshotDependenciesPresenterImpl @Inject constructor(
     tracker: SnapshotDependenciesTracker,
     valueExtractor: SnapshotDependenciesValueExtractor,
     private val router: SnapshotDependenciesRouter
-) : BaseListPresenterImpl<BuildListDataModel, BuildDetails, RunningBuildListView, BuildListDataManager, SnapshotDependenciesTracker, SnapshotDependenciesValueExtractor>(view, dataManager, tracker, valueExtractor), OnBuildListPresenterListener {
+) : BaseListPresenterImpl<BuildListDataModel, BuildDetails, RunningBuildListView, BuildListDataManager, SnapshotDependenciesTracker, SnapshotDependenciesValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+), OnBuildListPresenterListener {
 
     /**
      * {@inheritDoc}

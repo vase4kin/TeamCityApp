@@ -76,7 +76,9 @@ class BottomNavigationViewImpl(
         fab.setOnClickListener {
             when (val currentItem = bottomNavigation.currentItem) {
                 AppNavigationItem.FAVORITES.ordinal -> listener.onFavoritesFabClicked()
-                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal -> listener.onFilterTabsClicked(currentItem)
+                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal -> listener.onFilterTabsClicked(
+                    currentItem
+                )
             }
         }
     }

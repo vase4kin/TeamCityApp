@@ -57,10 +57,15 @@ class BuildQueueFragmentTest {
 
     @Rule
     @JvmField
-    var daggerRule: DaggerMockRule<RestApiComponent> = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-            .addComponentDependency(AppComponent::class.java, AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication))
+    var daggerRule: DaggerMockRule<RestApiComponent> =
+        DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
+            .addComponentDependency(
+                AppComponent::class.java,
+                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
+            )
             .set { restApiComponent ->
-                val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+                val app =
+                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
                 app.setRestApiInjector(restApiComponent)
             }
 
@@ -73,7 +78,8 @@ class BuildQueueFragmentTest {
 
     private val storage: SharedUserStorage
         get() {
-            val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
             return app.appInjector.sharedUserStorage()
         }
 
@@ -102,20 +108,20 @@ class BuildQueueFragmentTest {
         val buildsByBuildTypeId1 = listOf<Build>(Mocks.queuedBuild1())
         val buildsByBuildTypeId2 = listOf<Build>(Mocks.queuedBuild3())
         `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId1), null))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
         `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId1), "count"))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
         `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId2), null))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
         `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId2), "count"))
-                .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
 
         // ALL
         val builds = listOf<Build>(Mocks.queuedBuild1(), Mocks.queuedBuild2(), Mocks.queuedBuild3())
         `when`(teamCityService.listQueueBuilds(null, null))
-                .thenReturn(Single.just(Builds(builds.size, builds)))
+            .thenReturn(Single.just(Builds(builds.size, builds)))
         `when`(teamCityService.listQueueBuilds(null, "count"))
-                .thenReturn(Single.just(Builds(builds.size, builds)))
+            .thenReturn(Single.just(Builds(builds.size, builds)))
 
         activityRule.launchActivity(null)
 
@@ -129,20 +135,20 @@ class BuildQueueFragmentTest {
         onView(withId(R.id.build_queue_recycler_view)).check(hasItemsCount(4))
         // Checking header 1
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(0, R.id.section_text))
-                .check(matches(withText("project name - build type name")))
+            .check(matches(withText("project name - build type name")))
         // Checking adapter item 1
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(1, R.id.itemTitle))
-                .check(matches(withText("Queued build")))
+            .check(matches(withText("Queued build")))
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(1, R.id.itemSubTitle))
-                .check(matches(withText("refs/heads/master")))
+            .check(matches(withText("refs/heads/master")))
         // Checking header 2
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(2, R.id.section_text))
-                .check(matches(withText("Project name one two - Another configuration")))
+            .check(matches(withText("Project name one two - Another configuration")))
         // Checking adapter item 3
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(3, R.id.itemTitle))
-                .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
+            .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(3, R.id.itemSubTitle))
-                .check(matches(withText("refs/heads/dev0feature")))
+            .check(matches(withText("refs/heads/dev0feature")))
 
         // filter builds to show all
         onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
@@ -160,25 +166,25 @@ class BuildQueueFragmentTest {
         onView(withId(R.id.build_queue_recycler_view)).check(hasItemsCount(5))
         // Checking header 1
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(0, R.id.section_text))
-                .check(matches(withText("project name - build type name")))
+            .check(matches(withText("project name - build type name")))
         // Checking adapter item 1
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(1, R.id.itemTitle))
-                .check(matches(withText("Queued build")))
+            .check(matches(withText("Queued build")))
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(1, R.id.itemSubTitle))
-                .check(matches(withText("refs/heads/master")))
+            .check(matches(withText("refs/heads/master")))
         // Checking adapter item 2
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(2, R.id.itemTitle))
-                .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
+            .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(2, R.id.itemSubTitle))
-                .check(matches(withText("refs/heads/dev")))
+            .check(matches(withText("refs/heads/dev")))
         // Checking header 2
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(3, R.id.section_text))
-                .check(matches(withText("Project name one two - Another configuration")))
+            .check(matches(withText("Project name one two - Another configuration")))
         // Checking adapter item 3
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(4, R.id.itemTitle))
-                .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
+            .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
         onView(withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(4, R.id.itemSubTitle))
-                .check(matches(withText("refs/heads/dev0feature")))
+            .check(matches(withText("refs/heads/dev0feature")))
     }
 
     @Test
@@ -194,7 +200,12 @@ class BuildQueueFragmentTest {
     @Test
     fun testUserCanSeeFailureMessageForFavoritesQueueBuilds() {
         // Prepare data
-        `when`(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.error(RuntimeException("smth bad happend!")))
+        `when`(
+            teamCityService.listQueueBuilds(
+                anyString(),
+                anyString()
+            )
+        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
         storage.addBuildTypeToFavorites("id1")
 
         activityRule.launchActivity(null)
@@ -218,7 +229,12 @@ class BuildQueueFragmentTest {
     @Test
     fun testUserCanSeeFailureMessageForAllQueueBuilds() {
         // Prepare data
-        `when`(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.error(RuntimeException("smth bad happend!")))
+        `when`(
+            teamCityService.listQueueBuilds(
+                anyString(),
+                anyString()
+            )
+        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
         storage.addBuildTypeToFavorites("id1")
 
         activityRule.launchActivity(null)
@@ -233,7 +249,14 @@ class BuildQueueFragmentTest {
 
     @Test
     fun testUserCanSeeEmptyDataMessageIfBuildQueueIsEmpty() {
-        `when`(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(Single.just(Builds(0, emptyList())))
+        `when`(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(
+            Single.just(
+                Builds(
+                    0,
+                    emptyList()
+                )
+            )
+        )
 
         activityRule.launchActivity(null)
 
@@ -241,27 +264,43 @@ class BuildQueueFragmentTest {
         clickOnBuildQueueTab()
 
         checkBuildQueueTabBadgeCount("0")
-        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_favorite_build_queue)))
+        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_favorite_build_queue)))
 
         // filter builds to show all
         onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
         onView(withText(R.string.text_show_queued)).perform(click())
 
         checkBuildQueueTabBadgeCount("0")
-        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed())).check(matches(withText(R.string.empty_list_message_build_queue)))
+        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_build_queue)))
     }
 
     private fun clickOnBuildQueueTab() {
-        onView(withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.build_queue_drawer_item))))
-                .perform(click())
+        onView(
+            withChild(
+                allOf(
+                    withId(R.id.bottom_navigation_small_item_title),
+                    withText(R.string.build_queue_drawer_item)
+                )
+            )
+        )
+            .perform(click())
     }
 
     private fun checkBuildQueueTabBadgeCount(count: String) {
-        onView(allOf(
+        onView(
+            allOf(
                 withChild(allOf(withId(R.id.bottom_navigation_notification), withText(count))),
-                withChild(allOf(withId(R.id.bottom_navigation_small_item_title), withText(R.string.build_queue_drawer_item))))
+                withChild(
+                    allOf(
+                        withId(R.id.bottom_navigation_small_item_title),
+                        withText(R.string.build_queue_drawer_item)
+                    )
+                )
+            )
         )
-                .check(matches(isDisplayed()))
+            .check(matches(isDisplayed()))
     }
 
     private fun buildTypeIdLocator(buildTypeId: String): String = "buildType:$buildTypeId"

@@ -47,12 +47,18 @@ class BuildLogUrlProviderImplTest {
     @Test
     fun testProvideUrlForGuestAccount() {
         `when`(userAccount.isGuestUser).thenReturn(true)
-        assertThat(buildLogUrlProvider.provideUrl(), `is`(equalTo("http://fake-url.com/viewLog.html?buildId=1234&tab=buildLog&guest=1")))
+        assertThat(
+            buildLogUrlProvider.provideUrl(),
+            `is`(equalTo("http://fake-url.com/viewLog.html?buildId=1234&tab=buildLog&guest=1"))
+        )
     }
 
     @Test
     fun testProvideUrlForUserAccount() {
         `when`(userAccount.isGuestUser).thenReturn(false)
-        assertThat(buildLogUrlProvider.provideUrl(), `is`(equalTo("http://fake-url.com/viewLog.html?buildId=1234&tab=buildLog")))
+        assertThat(
+            buildLogUrlProvider.provideUrl(),
+            `is`(equalTo("http://fake-url.com/viewLog.html?buildId=1234&tab=buildLog"))
+        )
     }
 }

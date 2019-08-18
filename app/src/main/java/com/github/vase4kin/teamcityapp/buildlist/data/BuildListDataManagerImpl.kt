@@ -109,15 +109,15 @@ open class BuildListDataManagerImpl(
         loadingListener: OnLoadingListener<List<BuildDetails>>
     ) {
         val buildDetailsList = getBuildDetailsObservable(call)
-                // putting them all to the sorted list
-                // where queued builds go first
-                .toSortedList { build, build2 ->
-                    when {
-                        build.isQueued == build2.isQueued -> 0
-                        build.isQueued -> -1
-                        else -> 1
-                    }
+            // putting them all to the sorted list
+            // where queued builds go first
+            .toSortedList { build, build2 ->
+                when {
+                    build.isQueued == build2.isQueued -> 0
+                    build.isQueued -> -1
+                    else -> 1
                 }
+            }
         loadBuildDetailsList(buildDetailsList, loadingListener)
     }
 
@@ -127,13 +127,13 @@ open class BuildListDataManagerImpl(
     ) {
         subscriptions.clear()
         call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onFail(it.message ?: "") }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onFail(it.message ?: "") }
+            )
+            .addTo(subscriptions)
     }
 
     /**
@@ -149,38 +149,39 @@ open class BuildListDataManagerImpl(
 
     protected fun getBuildDetailsObservable(call: Single<Builds>): Observable<BuildDetails> {
         return call
-                // converting all received builds to observables
-                .flatMapObservable { builds ->
-                    if (builds.count == 0) {
-                        Observable.fromIterable(emptyList<Build>())
-                    } else {
-                        loadMoreUrl = builds.nextHref
-                        Observable.fromIterable(builds.objects)
-                    }
+            // converting all received builds to observables
+            .flatMapObservable { builds ->
+                if (builds.count == 0) {
+                    Observable.fromIterable(emptyList<Build>())
+                } else {
+                    loadMoreUrl = builds.nextHref
+                    Observable.fromIterable(builds.objects)
                 }
-                // returning new updated build observables for each stored build already
-                .flatMapSingle { serverBuild ->
-                    // Make sure cache is updated
-                    val serverBuildDetails = BuildDetailsImpl(serverBuild)
-                    // If server build's running update cache immediately
-                    if (serverBuildDetails.isRunning) {
-                        repository.build(serverBuild.href, true)
-                    } else {
-                        // Call cache
-                        repository.build(serverBuild.href, false)
-                                .flatMap { cachedBuild ->
-                                    val cacheBuildDetails = BuildDetailsImpl(cachedBuild)
-                                    // Compare if server side and cache are updated
-                                    // If cache's not updated -> update it
-                                    repository.build(
-                                            cachedBuild.href,
-                                            // Don't update cache if server and cache builds are finished
-                                            serverBuildDetails.isFinished != cacheBuildDetails.isFinished)
-                                }
-                    }
+            }
+            // returning new updated build observables for each stored build already
+            .flatMapSingle { serverBuild ->
+                // Make sure cache is updated
+                val serverBuildDetails = BuildDetailsImpl(serverBuild)
+                // If server build's running update cache immediately
+                if (serverBuildDetails.isRunning) {
+                    repository.build(serverBuild.href, true)
+                } else {
+                    // Call cache
+                    repository.build(serverBuild.href, false)
+                        .flatMap { cachedBuild ->
+                            val cacheBuildDetails = BuildDetailsImpl(cachedBuild)
+                            // Compare if server side and cache are updated
+                            // If cache's not updated -> update it
+                            repository.build(
+                                cachedBuild.href,
+                                // Don't update cache if server and cache builds are finished
+                                serverBuildDetails.isFinished != cacheBuildDetails.isFinished
+                            )
+                        }
                 }
-                .map { BuildDetailsImpl(it) }
-                .cast(BuildDetails::class.java)
+            }
+            .map { BuildDetailsImpl(it) }
+            .cast(BuildDetails::class.java)
     }
 
     /**
@@ -192,13 +193,13 @@ open class BuildListDataManagerImpl(
     fun loadCount(call: Single<Int>, loadingListener: OnLoadingListener<Int>) {
         subscriptions.clear()
         call
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it) },
-                        onError = { loadingListener.onSuccess(0) }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it) },
+                onError = { loadingListener.onSuccess(0) }
+            )
+            .addTo(subscriptions)
     }
 
     /**

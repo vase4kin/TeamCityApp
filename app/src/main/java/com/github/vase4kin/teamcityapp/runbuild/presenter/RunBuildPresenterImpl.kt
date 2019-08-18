@@ -101,13 +101,13 @@ class RunBuildPresenterImpl @Inject constructor(
                 }
                 // Setting dialog list
                 Observable.fromIterable(agents)
-                        .map { it.name }
-                        .toList()
-                        .subscribeOn(Schedulers.trampoline())
-                        .subscribeBy(
-                                onSuccess = { mView.setAgentListDialogWithAgentsList(it) }
-                        )
-                        .addTo(subscriptions)
+                    .map { it.name }
+                    .toList()
+                    .subscribeOn(Schedulers.trampoline())
+                    .subscribeBy(
+                        onSuccess = { mView.setAgentListDialogWithAgentsList(it) }
+                    )
+                    .addTo(subscriptions)
                 mAgents = agents
                 mView.hideLoadingAgentsProgress()
                 mView.showSelectedAgentView()
@@ -151,36 +151,36 @@ class RunBuildPresenterImpl @Inject constructor(
         val branchName = mBranchesComponentView.branchName
         mView.showQueuingBuildProgress()
         mInteractor.queueBuild(
-                branchName,
-                mSelectedAgent,
-                isPersonal,
-                queueToTheTop,
-                cleanAllFiles,
-                Properties(mProperties),
-                object : LoadingListenerWithForbiddenSupport<String> {
+            branchName,
+            mSelectedAgent,
+            isPersonal,
+            queueToTheTop,
+            cleanAllFiles,
+            Properties(mProperties),
+            object : LoadingListenerWithForbiddenSupport<String> {
 
-                    override fun onSuccess(data: String) {
-                        mView.hideQueuingBuildProgress()
-                        if (mProperties.isEmpty()) {
-                            mTracker.trackUserRunBuildSuccess()
-                        } else {
-                            mTracker.trackUserRunBuildWithCustomParamsSuccess()
-                        }
-                        mRouter.closeOnSuccess(data)
+                override fun onSuccess(data: String) {
+                    mView.hideQueuingBuildProgress()
+                    if (mProperties.isEmpty()) {
+                        mTracker.trackUserRunBuildSuccess()
+                    } else {
+                        mTracker.trackUserRunBuildWithCustomParamsSuccess()
                     }
+                    mRouter.closeOnSuccess(data)
+                }
 
-                    override fun onFail(errorMessage: String) {
-                        mView.hideQueuingBuildProgress()
-                        mView.showErrorSnackbar()
-                        mTracker.trackUserRunBuildFailed()
-                    }
+                override fun onFail(errorMessage: String) {
+                    mView.hideQueuingBuildProgress()
+                    mView.showErrorSnackbar()
+                    mTracker.trackUserRunBuildFailed()
+                }
 
-                    override fun onForbiddenError() {
-                        mView.hideQueuingBuildProgress()
-                        mView.showForbiddenErrorSnackbar()
-                        mTracker.trackUserRunBuildFailedForbidden()
-                    }
-                })
+                override fun onForbiddenError() {
+                    mView.hideQueuingBuildProgress()
+                    mView.showForbiddenErrorSnackbar()
+                    mTracker.trackUserRunBuildFailedForbidden()
+                }
+            })
     }
 
     /**

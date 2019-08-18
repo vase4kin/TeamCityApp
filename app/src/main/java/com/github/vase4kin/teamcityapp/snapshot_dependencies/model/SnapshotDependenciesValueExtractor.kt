@@ -22,4 +22,5 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImp
 
 interface SnapshotDependenciesValueExtractor : BaseValueExtractor
 
-class SnapshotDependenciesValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle), SnapshotDependenciesValueExtractor
+class SnapshotDependenciesValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle),
+    SnapshotDependenciesValueExtractor

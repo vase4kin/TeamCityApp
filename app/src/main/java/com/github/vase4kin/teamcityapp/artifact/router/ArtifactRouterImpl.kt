@@ -54,8 +54,10 @@ class ArtifactRouterImpl(
         }
 
         val intent = Intent(Intent.ACTION_VIEW)
-        val data = FileProvider.getUriForFile(activity,
-                BuildConfig.APPLICATION_ID + ".provider", file)
+        val data = FileProvider.getUriForFile(
+            activity,
+            BuildConfig.APPLICATION_ID + ".provider", file
+        )
         intent.setDataAndType(data, type)
         intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
@@ -73,7 +75,10 @@ class ArtifactRouterImpl(
      */
     override fun openArtifactFile(buildDetails: BuildDetails, href: String) {
         val fragmentTransaction = activity.supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.artifact_fragment_list, ArtifactListFragment.newInstance(buildDetails.toBuild(), href))
+        fragmentTransaction.add(
+            R.id.artifact_fragment_list,
+            ArtifactListFragment.newInstance(buildDetails.toBuild(), href)
+        )
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.commit()
     }
@@ -90,11 +95,13 @@ class ArtifactRouterImpl(
      */
     override fun startBrowser(buildDetails: BuildDetails, href: String) {
         val pathToFile = href.split("/metadata/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
-        val url = String.format(FILE_URL_PATTERN,
-                sharedUserStorage.activeUser.teamcityUrl,
-                buildDetails.buildTypeId,
-                buildDetails.id,
-                pathToFile)
+        val url = String.format(
+            FILE_URL_PATTERN,
+            sharedUserStorage.activeUser.teamcityUrl,
+            buildDetails.buildTypeId,
+            buildDetails.id,
+            pathToFile
+        )
         chromeCustomTabs.launchUrl(url)
     }
 

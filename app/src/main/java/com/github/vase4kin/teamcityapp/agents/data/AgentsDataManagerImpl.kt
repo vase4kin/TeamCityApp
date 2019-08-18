@@ -53,13 +53,13 @@ class AgentsDataManagerImpl(
     override fun loadCount(loadingListener: OnLoadingListener<Int>) {
         subscriptions.clear()
         repository.listAgents(null, "count", null, false)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onSuccess = { loadingListener.onSuccess(it.count) },
-                        onError = { loadingListener.onSuccess(0) }
-                )
-                .addTo(subscriptions)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = { loadingListener.onSuccess(it.count) },
+                onError = { loadingListener.onSuccess(0) }
+            )
+            .addTo(subscriptions)
     }
 
     /**

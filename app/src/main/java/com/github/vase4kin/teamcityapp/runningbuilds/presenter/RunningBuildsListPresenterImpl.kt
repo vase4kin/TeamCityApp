@@ -46,7 +46,15 @@ class RunningBuildsListPresenterImpl @Inject constructor(
     onboardingManager: OnboardingManager,
     private val filterProvider: FilterProvider,
     private val eventBus: EventBus
-) : BuildListPresenterImpl<RunningBuildListView, RunningBuildsDataManager>(view, dataManager, tracker, valueExtractor, router, buildInteractor, onboardingManager) {
+) : BuildListPresenterImpl<RunningBuildListView, RunningBuildsDataManager>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor,
+    router,
+    buildInteractor,
+    onboardingManager
+) {
 
     /**
      * {@inheritDoc}

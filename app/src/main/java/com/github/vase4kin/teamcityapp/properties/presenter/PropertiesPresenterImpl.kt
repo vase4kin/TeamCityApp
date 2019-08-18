@@ -35,7 +35,12 @@ class PropertiesPresenterImpl @Inject constructor(
     dataManager: PropertiesDataManager,
     tracker: ViewTracker,
     valueExtractor: PropertiesValueExtractor
-) : BaseListPresenterImpl<PropertiesDataModel, Properties.Property, PropertiesView, PropertiesDataManager, ViewTracker, PropertiesValueExtractor>(view, dataManager, tracker, valueExtractor), PropertiesView.Listener {
+) : BaseListPresenterImpl<PropertiesDataModel, Properties.Property, PropertiesView, PropertiesDataManager, ViewTracker, PropertiesValueExtractor>(
+    view,
+    dataManager,
+    tracker,
+    valueExtractor
+), PropertiesView.Listener {
 
     override fun initViews() {
         view.setListener(this)
