@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.extractor
+package com.github.vase4kin.teamcityapp.changes.extractor
 
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -28,16 +28,15 @@ import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class ArtifactValueExtractorImplTest {
+class ChangesValueExtractorImplTest {
 
     @Mock
     private lateinit var bundle: Bundle
-
-    private lateinit var valueExtractor: ArtifactValueExtractorImpl
+    private lateinit var valueExtractor: ChangesValueExtractorImpl
 
     @Before
     fun setUp() {
-        valueExtractor = ArtifactValueExtractorImpl(bundle)
+        valueExtractor = ChangesValueExtractorImpl(bundle)
     }
 
     @Test

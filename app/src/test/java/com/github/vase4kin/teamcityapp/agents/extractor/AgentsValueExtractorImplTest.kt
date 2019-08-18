@@ -22,10 +22,12 @@ import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
+import org.mockito.runners.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class AgentsValueExtractorImplTest {
 
     @Mock
@@ -35,7 +37,6 @@ class AgentsValueExtractorImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         `when`(bundle.getBoolean(BundleExtractorValues.AGENT_TYPE)).thenReturn(true)
         valueExtractor = AgentsValueExtractorImpl(bundle)
     }

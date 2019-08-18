@@ -31,7 +31,6 @@ import org.junit.runner.RunWith
 import org.mockito.Matchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
 import org.powermock.modules.junit4.PowerMockRunner
 import java.util.*
 
@@ -57,7 +56,6 @@ class AgentPresenterImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         presenter = AgentPresenterImpl(view, dataManager, tracker, valueExtractor)
     }
 

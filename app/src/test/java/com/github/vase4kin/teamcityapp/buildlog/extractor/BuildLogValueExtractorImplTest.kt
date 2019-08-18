@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.extractor
+package com.github.vase4kin.teamcityapp.buildlog.extractor
 
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -28,21 +28,20 @@ import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class ArtifactValueExtractorImplTest {
+class BuildLogValueExtractorImplTest {
 
     @Mock
     private lateinit var bundle: Bundle
-
-    private lateinit var valueExtractor: ArtifactValueExtractorImpl
+    private lateinit var valueExtractor: BuildLogValueExtractorImpl
 
     @Before
     fun setUp() {
-        valueExtractor = ArtifactValueExtractorImpl(bundle)
+        valueExtractor = BuildLogValueExtractorImpl(bundle)
     }
 
     @Test
-    fun testGetUrl() {
-        `when`(bundle.getString(BundleExtractorValues.URL)).thenReturn("url")
-        assertThat(valueExtractor.url, `is`("url"))
+    fun testGetBuildId() {
+        `when`(bundle.getString(BundleExtractorValues.BUILD_ID)).thenReturn("id")
+        assertThat(valueExtractor.buildId, `is`("id"))
     }
 }

@@ -21,11 +21,13 @@ import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import org.mockito.MockitoAnnotations
+import org.mockito.runners.MockitoJUnitRunner
 import java.util.*
 
+@RunWith(MockitoJUnitRunner::class)
 class ArtifactDataModelTest {
 
     @Mock
@@ -35,7 +37,6 @@ class ArtifactDataModelTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         `when`(file.size).thenReturn(1L)
         val files = ArrayList<File>()
         files.add(file)

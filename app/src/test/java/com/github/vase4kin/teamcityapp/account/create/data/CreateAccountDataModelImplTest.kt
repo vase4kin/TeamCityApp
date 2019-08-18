@@ -24,7 +24,6 @@ import org.mockito.Matchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.MockitoAnnotations
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
@@ -38,7 +37,6 @@ class CreateAccountDataModelImplTest {
     @Before
     @Throws(Exception::class)
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         dataModel = CreateAccountDataModelImpl(sharedUserStorage)
     }
 

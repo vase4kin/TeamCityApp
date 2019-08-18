@@ -34,14 +34,16 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Matchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
+import org.mockito.runners.MockitoJUnitRunner
 import java.util.*
 
+@RunWith(MockitoJUnitRunner::class)
 class ArtifactPresenterImplTest {
 
     @Captor
@@ -93,7 +95,6 @@ class ArtifactPresenterImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
         presenter = ArtifactPresenterImpl(view, dataManager, tracker, valueExtractor, router, permissionManager)
     }
 

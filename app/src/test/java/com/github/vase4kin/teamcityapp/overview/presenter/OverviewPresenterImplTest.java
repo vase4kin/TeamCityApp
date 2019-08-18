@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,12 +90,12 @@ public class OverviewPresenterImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(mView, mInteractor, mTracker, mBuildDetails, mOnboardingManager);
     }
 
     @Test
-    public void testOnCreateOptionsMenuIfBuildIsRunning() throws Exception {
+    public void testOnCreateOptionsMenuIfBuildIsRunning() {
         when(mBuildDetails.isRunning()).thenReturn(true);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
         verify(mInteractor).getBuildDetails();
@@ -104,7 +104,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnCreateOptionsMenuIfBuildIsQueued() throws Exception {
+    public void testOnCreateOptionsMenuIfBuildIsQueued() {
         when(mBuildDetails.isRunning()).thenReturn(false);
         when(mBuildDetails.isQueued()).thenReturn(true);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
@@ -115,7 +115,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnCreateOptionsMenuIfBuildIsFinished() throws Exception {
+    public void testOnCreateOptionsMenuIfBuildIsFinished() {
         when(mBuildDetails.isRunning()).thenReturn(false);
         when(mBuildDetails.isQueued()).thenReturn(false);
         mPresenter.onCreateOptionsMenu(mMenu, mMenuInflater);
@@ -126,52 +126,52 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnPrepareOptionsMenu() throws Exception {
+    public void testOnPrepareOptionsMenu() {
         mPresenter.onPrepareOptionsMenu(mMenu);
     }
 
     @Test
-    public void testOnOptionsItemSelected() throws Exception {
+    public void testOnOptionsItemSelected() {
         when(mView.onOptionsItemSelected(mMenuItem)).thenReturn(true);
         assertThat(mPresenter.onOptionsItemSelected(mMenuItem), is(true));
         verify(mView).onOptionsItemSelected(eq(mMenuItem));
     }
 
     @Test
-    public void testOnCancelBuildContextMenuClick() throws Exception {
+    public void testOnCancelBuildContextMenuClick() {
         mPresenter.onCancelBuildContextMenuClick();
         verify(mInteractor).postStopBuildEvent();
         verify(mTracker).trackUserClickedCancelBuildOption();
     }
 
     @Test
-    public void testOnShareButtonClick() throws Exception {
+    public void testOnShareButtonClick() {
         mPresenter.onShareButtonClick();
         verify(mInteractor).postShareBuildInfoEvent();
         verify(mTracker).trackUserSharedBuild();
     }
 
     @Test
-    public void testOnRestartBuildButtonClick() throws Exception {
+    public void testOnRestartBuildButtonClick() {
         mPresenter.onRestartBuildButtonClick();
         verify(mInteractor).postRestartBuildEvent();
         verify(mTracker).trackUserRestartedBuild();
     }
 
     @Test
-    public void testOnStart() throws Exception {
+    public void testOnStart() {
         mPresenter.onStart();
         verify(mInteractor).subscribeToEventBusEvents();
     }
 
     @Test
-    public void testOnStop() throws Exception {
+    public void testOnStop() {
         mPresenter.onStop();
         verify(mInteractor).unsubsribeFromEventBusEvents();
     }
 
     @Test
-    public void testOnCreate() throws Exception {
+    public void testOnCreate() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isRunning()).thenReturn(false);
         when(mBuildDetails.getHref()).thenReturn(HREF);
@@ -186,7 +186,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnCreateIfBuildIsRunning() throws Exception {
+    public void testOnCreateIfBuildIsRunning() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isRunning()).thenReturn(true);
         when(mBuildDetails.getHref()).thenReturn(HREF);
@@ -201,14 +201,14 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnDestroy() throws Exception {
+    public void testOnDestroy() {
         mPresenter.onDestroy();
         verify(mView).unbindViews();
         verify(mInteractor).unsubscribe();
     }
 
     @Test
-    public void testOnDataRefreshEvent() throws Exception {
+    public void testOnDataRefreshEvent() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.getHref()).thenReturn(HREF);
         mPresenter.onDataRefreshEvent();
@@ -220,7 +220,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnRefresh() throws Exception {
+    public void testOnRefresh() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.getHref()).thenReturn(HREF);
         mPresenter.onRefresh();
@@ -231,7 +231,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnRetry() throws Exception {
+    public void testOnRetry() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.getHref()).thenReturn(HREF);
         mPresenter.onRetry();
@@ -243,7 +243,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnFail() throws Exception {
+    public void testOnFail() {
         mPresenter.onFail("error");
         verify(mView).hideCards();
         verify(mView).hideSkeletonView();
@@ -252,52 +252,52 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testOnBranchCardClick() throws Exception {
+    public void testOnBranchCardClick() {
         mPresenter.onBranchCardClick("br");
         verify(mView).showBranchCardBottomSheetDialog(eq("br"));
     }
 
     @Test
-    public void testOnShowBuildsActionClick() throws Exception {
+    public void testOnShowBuildsActionClick() {
         mPresenter.onNavigateToBuildListEvent("branch");
         verify(mInteractor).postStartBuildListActivityFilteredByBranchEvent(eq("branch"));
         verify(mTracker).trackUserWantsToSeeBuildListFilteredByBranch();
     }
 
     @Test
-    public void testOnCardClick() throws Exception {
+    public void testOnCardClick() {
         mPresenter.onCardClick("head", "descr");
         verify(mView).showDefaultCardBottomSheetDialog(eq("head"), eq("descr"));
     }
 
     @Test
-    public void testOnNavigateToBuildListEvent() throws Exception {
+    public void testOnNavigateToBuildListEvent() {
         mPresenter.onNavigateToBuildListEvent();
         verify(mInteractor).postStartBuildListActivityEvent();
         verify(mTracker).trackUserOpensBuildType();
     }
 
     @Test
-    public void testOnNavigateToProjectEvent() throws Exception {
+    public void testOnNavigateToProjectEvent() {
         mPresenter.onNavigateToProjectEvent();
         verify(mInteractor).postStartProjectActivityEvent();
         verify(mTracker).trackUserOpensProject();
     }
 
     @Test
-    public void testOnBottomSheetDismiss() throws Exception {
+    public void testOnBottomSheetDismiss() {
         mPresenter.onBottomSheetDismiss();
         verify(mInteractor).postFABVisibleEvent();
     }
 
     @Test
-    public void testOnBottomSheetShow() throws Exception {
+    public void testOnBottomSheetShow() {
         mPresenter.onBottomSheetShow();
         verify(mInteractor).postFABGoneEvent();
     }
 
     @Test
-    public void testRestartBuildPromptIsShownIfItIsShown() throws Exception {
+    public void testRestartBuildPromptIsShownIfItIsShown() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isFinished()).thenReturn(true);
         when(mBuildDetails.isRunning()).thenReturn(false);
@@ -314,7 +314,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testRestartBuildPromptIsShownIfItIsNotShown() throws Exception {
+    public void testRestartBuildPromptIsShownIfItIsNotShown() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isFinished()).thenReturn(true);
         when(mBuildDetails.isRunning()).thenReturn(false);
@@ -333,7 +333,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testStopBuildPromptIsShownIfItIsShown() throws Exception {
+    public void testStopBuildPromptIsShownIfItIsShown() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isFinished()).thenReturn(false);
         when(mBuildDetails.isRunning()).thenReturn(true);
@@ -350,7 +350,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testStopBuildPromptIsShownIfItIsNotShown() throws Exception {
+    public void testStopBuildPromptIsShownIfItIsNotShown() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isFinished()).thenReturn(false);
         when(mBuildDetails.isRunning()).thenReturn(true);
@@ -370,7 +370,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testRemoveBuildPromptIsShownIfItIsShown() throws Exception {
+    public void testRemoveBuildPromptIsShownIfItIsShown() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isFinished()).thenReturn(false);
         when(mBuildDetails.isRunning()).thenReturn(false);
@@ -387,7 +387,7 @@ public class OverviewPresenterImplTest {
     }
 
     @Test
-    public void testRemoveBuildPromptIsShownIfItIsNotShown() throws Exception {
+    public void testRemoveBuildPromptIsShownIfItIsNotShown() {
         when(mInteractor.getBuildDetails()).thenReturn(mBuildDetails);
         when(mBuildDetails.isFinished()).thenReturn(false);
         when(mBuildDetails.isRunning()).thenReturn(false);

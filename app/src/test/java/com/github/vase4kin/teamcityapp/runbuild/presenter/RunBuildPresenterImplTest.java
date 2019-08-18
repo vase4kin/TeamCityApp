@@ -81,18 +81,18 @@ public class RunBuildPresenterImplTest {
     private RunBuildPresenterImpl mPresenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         mPresenter = new RunBuildPresenterImpl(mView, mInteractor, mRouter, mTracker, mBranchesComponentView, mBranchesInteractor);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(mView, mInteractor, mRouter, mTracker);
     }
 
     @Test
-    public void testOnCreate() throws Exception {
+    public void testOnCreate() {
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
         verify(mBranchesInteractor).loadBranches(mBranchLoadingListenerCaptor.capture());
@@ -133,7 +133,7 @@ public class RunBuildPresenterImplTest {
     }
 
     @Test
-    public void testOnDestroy() throws Exception {
+    public void testOnDestroy() {
         mPresenter.onDestroy();
         verify(mInteractor).unsubscribe();
         verify(mBranchesInteractor).unsubscribe();
@@ -141,7 +141,7 @@ public class RunBuildPresenterImplTest {
     }
 
     @Test
-    public void testOnBuildQueue() throws Exception {
+    public void testOnBuildQueue() {
         mPresenter.setMSelectedAgent(mAgent);
         mPresenter.getMProperties().add(new Properties.Property(PROPERTY_NAME, PROPERTY_VALUE));
         when(mBranchesComponentView.getBranchName()).thenReturn("branch");
@@ -175,45 +175,45 @@ public class RunBuildPresenterImplTest {
     }
 
     @Test
-    public void testOnClick() throws Exception {
+    public void testOnClick() {
         mPresenter.onClick();
         verify(mRouter).closeOnCancel();
     }
 
     @Test
-    public void testOnBackPressed() throws Exception {
+    public void testOnBackPressed() {
         mPresenter.onBackPressed();
         verify(mRouter).closeOnBackButtonPressed();
     }
 
     @Test
-    public void testOnResume() throws Exception {
+    public void testOnResume() {
         mPresenter.onResume();
         verify(mTracker).trackView();
     }
 
     @Test
-    public void testOnAgentSelectedIfAgentsAreEmpty() throws Exception {
+    public void testOnAgentSelectedIfAgentsAreEmpty() {
         mPresenter.setMAgents(Collections.<Agent>emptyList());
         mPresenter.onAgentSelected(0);
     }
 
     @Test
-    public void testOnAgentSelectedIfAgentsAreNotEmpty() throws Exception {
+    public void testOnAgentSelectedIfAgentsAreNotEmpty() {
         mPresenter.setMAgents(Collections.singletonList(mAgent));
         mPresenter.onAgentSelected(0);
         assertThat(mPresenter.getMSelectedAgent(), is(equalTo(mAgent)));
     }
 
     @Test
-    public void testOnAddParameterButtonClick() throws Exception {
+    public void testOnAddParameterButtonClick() {
         mPresenter.onAddParameterButtonClick();
         verify(mView).showAddParameterDialog();
         verify(mTracker).trackUserClicksOnAddNewBuildParamButton();
     }
 
     @Test
-    public void testOnClearAllParametersButtonClick() throws Exception {
+    public void testOnClearAllParametersButtonClick() {
         mPresenter.onClearAllParametersButtonClick();
         assertThat(mPresenter.getMProperties().size(), is(equalTo(0)));
         verify(mView).disableClearAllParametersButton();
@@ -223,7 +223,7 @@ public class RunBuildPresenterImplTest {
     }
 
     @Test
-    public void testOnParameterAdded() throws Exception {
+    public void testOnParameterAdded() {
         mPresenter.onParameterAdded(PROPERTY_NAME, PROPERTY_VALUE);
         assertThat(mPresenter.getMProperties().size(), is(equalTo(1)));
         assertThat(mPresenter.getMProperties().get(0).getName(), is(equalTo(PROPERTY_NAME)));

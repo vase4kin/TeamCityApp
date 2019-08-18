@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,7 +71,7 @@ public class LoginPresenterImplTest {
     private LoginPresenterImpl mPresenter;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         PowerMockito.mockStatic(TextUtils.class);
         when(TextUtils.isEmpty(anyString())).then(new Answer<Boolean>() {
@@ -85,30 +85,30 @@ public class LoginPresenterImplTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         verifyNoMoreInteractions(mView, mDataManager, mRouter, mTracker);
     }
 
     @Test
-    public void testHandleOnCreate() throws Exception {
+    public void testHandleOnCreate() {
         mPresenter.onCreate();
         verify(mView).initViews(eq(mPresenter));
     }
 
     @Test
-    public void testHandleOnDestroy() throws Exception {
+    public void testHandleOnDestroy() {
         mPresenter.onDestroy();
         verify(mView).unbindViews();
     }
 
     @Test
-    public void testHandleOnResume() throws Exception {
+    public void testHandleOnResume() {
         mPresenter.onResume();
         verify(mTracker).trackView();
     }
 
     @Test
-    public void testOnUserLoginButtonClick() throws Exception {
+    public void testOnUserLoginButtonClick() {
         mPresenter.onUserLoginButtonClick("url", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
@@ -142,28 +142,28 @@ public class LoginPresenterImplTest {
     }
 
     @Test
-    public void testOnUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
+    public void testOnUserLoginButtonClickIfServerUrlIsNotProvided() {
         mPresenter.onUserLoginButtonClick("", "userName", "password", false);
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
     }
 
     @Test
-    public void testOnUserLoginButtonClickIfUserNameIsNotProvided() throws Exception {
+    public void testOnUserLoginButtonClickIfUserNameIsNotProvided() {
         mPresenter.onUserLoginButtonClick("url", "", "password", false);
         verify(mView).hideError();
         verify(mView).showUserNameCanNotBeEmptyError();
     }
 
     @Test
-    public void testOnUserLoginButtonClickIfPasswordIsNotProvided() throws Exception {
+    public void testOnUserLoginButtonClickIfPasswordIsNotProvided() {
         mPresenter.onUserLoginButtonClick("url", "userName", "", false);
         verify(mView).hideError();
         verify(mView).showPasswordCanNotBeEmptyError();
     }
 
     @Test
-    public void testOnGuestUserLoginButtonClick() throws Exception {
+    public void testOnGuestUserLoginButtonClick() {
         mPresenter.onGuestUserLoginButtonClick("url", false);
         verify(mView).hideError();
         verify(mView).showProgressDialog();
@@ -195,14 +195,14 @@ public class LoginPresenterImplTest {
     }
 
     @Test
-    public void testOnGuestUserLoginButtonClickIfServerUrlIsNotProvided() throws Exception {
+    public void testOnGuestUserLoginButtonClickIfServerUrlIsNotProvided() {
         mPresenter.onGuestUserLoginButtonClick("", false);
         verify(mView).hideError();
         verify(mView).showServerUrlCanNotBeEmptyError();
     }
 
     @Test
-    public void testOnDisableSslSwitchClick() throws Exception {
+    public void testOnDisableSslSwitchClick() {
         mPresenter.onDisableSslSwitchClick();
         verify(mView).showDisableSslWarningDialog();
     }
