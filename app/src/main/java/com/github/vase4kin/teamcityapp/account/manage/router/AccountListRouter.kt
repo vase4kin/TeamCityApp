@@ -46,5 +46,4 @@ class AccountListRouterImpl(private val activity: Activity) : AccountListRouter 
     override fun openLogin() {
         LoginActivity.startWithClearStack(activity)
     }
-
 }

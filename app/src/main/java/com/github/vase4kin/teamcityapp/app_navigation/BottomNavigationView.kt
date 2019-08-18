@@ -50,8 +50,8 @@ interface BottomNavigationView {
 }
 
 class BottomNavigationViewImpl(
-        private val interactor: AppNavigationInteractor,
-        private val activity: HomeActivity
+    private val interactor: AppNavigationInteractor,
+    private val activity: HomeActivity
 ) : BottomNavigationView {
 
     private lateinit var fab: FloatingActionButton

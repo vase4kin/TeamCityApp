@@ -22,7 +22,7 @@ interface OnArtifactEventListener {
      * Download artifact file
      *
      * @param fileName - File name
-     * @param href     - File href
+     * @param href - File href
      */
     fun onDownloadArtifactEvent(fileName: String, href: String)
 

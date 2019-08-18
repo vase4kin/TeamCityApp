@@ -36,9 +36,11 @@ import org.greenrobot.eventbus.EventBus
 class OverviewModule {
 
     @Provides
-    fun providesOverViewDataManager(repository: Repository,
-                                    eventBus: EventBus,
-                                    valueExtractor: OverviewValueExtractor): OverViewInteractor {
+    fun providesOverViewDataManager(
+        repository: Repository,
+        eventBus: EventBus,
+        valueExtractor: OverviewValueExtractor
+    ): OverViewInteractor {
         return OverviewInteractorImpl(repository, eventBus, valueExtractor)
     }
 

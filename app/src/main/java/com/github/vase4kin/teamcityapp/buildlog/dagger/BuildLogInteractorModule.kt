@@ -17,12 +17,10 @@
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
 import android.content.Context
-
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-
 import dagger.Module
 import dagger.Provides
 

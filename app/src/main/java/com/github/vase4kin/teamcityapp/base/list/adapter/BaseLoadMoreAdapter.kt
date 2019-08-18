@@ -26,7 +26,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
  * @param <DM> - Data model type
 </DM> */
 abstract class BaseLoadMoreAdapter<DM>(
-        viewHolderFactories: Map<Int, ViewHolderFactory<DM>>
+    viewHolderFactories: Map<Int, ViewHolderFactory<DM>>
 ) : BaseAdapter<DM>(viewHolderFactories), ViewLoadMore<DM> where DM : BaseDataModel, DM : ModelLoadMore<DM> {
 
     /**

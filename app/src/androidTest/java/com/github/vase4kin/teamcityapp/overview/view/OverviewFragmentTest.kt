@@ -155,7 +155,7 @@ class OverviewFragmentTest {
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.itemHeader)).check(matches(withText("Agent")))
         onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.itemTitle)).check(matches(withText("agent-love")))
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking Triggered by
@@ -181,7 +181,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Checking error
+        // Checking error
         onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
     }
 
@@ -310,7 +310,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -338,7 +338,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -366,7 +366,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -394,7 +394,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -422,7 +422,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -450,7 +450,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -478,7 +478,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
@@ -509,7 +509,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(5))
 
         // Checking Personal of
@@ -566,7 +566,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(6))
 
         // Checking configuration  details
@@ -608,7 +608,7 @@ class OverviewFragmentTest {
         // Start activity
         activityRule.launchActivity(intent)
 
-        //Scrolling to last item to make it visible
+        // Scrolling to last item to make it visible
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(6))
         onView(withId(android.R.id.content)).perform(swipeUp())
 

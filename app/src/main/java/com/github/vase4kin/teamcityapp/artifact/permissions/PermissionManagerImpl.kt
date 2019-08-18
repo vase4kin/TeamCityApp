@@ -70,10 +70,12 @@ class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager 
     /**
      * {@inheritDoc}
      */
-    override fun onRequestPermissionsResult(requestCode: Int,
-                                            permissions: Array<String>,
-                                            grantResults: IntArray,
-                                            onPermissionsResultListener: OnPermissionsResultListener) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray,
+        onPermissionsResultListener: OnPermissionsResultListener
+    ) {
         if (requestCode == PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 onPermissionsResultListener.onGranted()

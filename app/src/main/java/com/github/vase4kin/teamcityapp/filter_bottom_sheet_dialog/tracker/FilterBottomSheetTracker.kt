@@ -33,7 +33,7 @@ interface FilterBottomSheetTracker {
 }
 
 class FilterBottomSheetTrackerImpl @Inject constructor(
-        private val firebaseAnalytics: FirebaseAnalytics
+    private val firebaseAnalytics: FirebaseAnalytics
 ) : FilterBottomSheetTracker {
     override fun trackFilterSelected(filter: Filter) {
         firebaseAnalytics.logEvent(

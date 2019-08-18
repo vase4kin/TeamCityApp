@@ -32,7 +32,7 @@ interface CreateAccountDataModel {
     /**
      * Check if local storage has the account with the same data
      *
-     * @param url      - TeamCity server url
+     * @param url - TeamCity server url
      * @param userName - User name
      * @return boolean if account exists or not
      */

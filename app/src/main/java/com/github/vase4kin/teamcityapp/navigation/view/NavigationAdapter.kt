@@ -26,7 +26,7 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
  * Navigation items adapter
  */
 class NavigationAdapter(
-        viewHolderFactories: Map<Int, ViewHolderFactory<NavigationDataModel>>
+    viewHolderFactories: Map<Int, ViewHolderFactory<NavigationDataModel>>
 ) : BaseAdapter<NavigationDataModel>(viewHolderFactories) {
 
     private var onClickListener: OnNavigationItemClickListener? = null

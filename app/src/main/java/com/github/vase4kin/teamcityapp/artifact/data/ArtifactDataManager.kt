@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,15 +29,17 @@ interface ArtifactDataManager : BaseListRxDataManager<Files, File> {
     /**
      * {@inheritDoc}
      */
-    fun load(url: String,
-             loadingListener: OnLoadingListener<List<File>>,
-             update: Boolean)
+    fun load(
+        url: String,
+        loadingListener: OnLoadingListener<List<File>>,
+        update: Boolean
+    )
 
     /**
      * Download artifact
      *
-     * @param url             - Artifact url
-     * @param name            - Artifact name
+     * @param url - Artifact url
+     * @param name - Artifact name
      * @param loadingListener - Listener to receive server callbacks
      */
     fun downloadArtifact(url: String, name: String, loadingListener: OnLoadingListener<java.io.File>)

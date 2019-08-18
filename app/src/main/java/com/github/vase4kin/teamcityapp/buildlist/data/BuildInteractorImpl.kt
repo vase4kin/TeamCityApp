@@ -29,7 +29,7 @@ import io.reactivex.schedulers.Schedulers
  * Impl of [BuildInteractor]
  */
 class BuildInteractorImpl(
-        private val mTeamCityService: TeamCityService
+    private val mTeamCityService: TeamCityService
 ) : BuildInteractor {
     /**
      * Load build subscription to manage load builds rx operations

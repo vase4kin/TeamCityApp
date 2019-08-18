@@ -30,7 +30,7 @@ import com.joanzapata.iconify.widget.IconTextView
  * Agent view holder
  */
 class AgentViewHolder(
-        parent: ViewGroup
+    parent: ViewGroup
 ) : BaseViewHolder<AgentDataModel>(LayoutInflater.from(parent.context).inflate(R.layout.item_with_title_list, parent, false)) {
 
     @BindView(R.id.itemTitle)

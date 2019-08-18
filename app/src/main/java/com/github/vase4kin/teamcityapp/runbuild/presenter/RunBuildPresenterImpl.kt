@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,12 +39,12 @@ import javax.inject.Inject
  * Impl of [RunBuildPresenter]
  */
 class RunBuildPresenterImpl @Inject constructor(
-        private val mView: RunBuildView,
-        private val mInteractor: RunBuildInteractor,
-        private val mRouter: RunBuildRouter,
-        private val mTracker: RunBuildTracker,
-        private val mBranchesComponentView: BranchesComponentView,
-        private val mBranchesInteractor: BranchesInteractor
+    private val mView: RunBuildView,
+    private val mInteractor: RunBuildInteractor,
+    private val mRouter: RunBuildRouter,
+    private val mTracker: RunBuildTracker,
+    private val mBranchesComponentView: BranchesComponentView,
+    private val mBranchesInteractor: BranchesInteractor
 ) : RunBuildPresenter, RunBuildView.ViewListener {
 
     /**
@@ -143,9 +143,11 @@ class RunBuildPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onBuildQueue(isPersonal: Boolean,
-                              queueToTheTop: Boolean,
-                              cleanAllFiles: Boolean) {
+    override fun onBuildQueue(
+        isPersonal: Boolean,
+        queueToTheTop: Boolean,
+        cleanAllFiles: Boolean
+    ) {
         val branchName = mBranchesComponentView.branchName
         mView.showQueuingBuildProgress()
         mInteractor.queueBuild(

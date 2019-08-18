@@ -24,5 +24,5 @@ import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
  * Agents adapter
  */
 class AgentsAdapter(
-        viewHolderFactories: Map<Int, ViewHolderFactory<AgentDataModel>>
+    viewHolderFactories: Map<Int, ViewHolderFactory<AgentDataModel>>
 ) : BaseAdapter<AgentDataModel>(viewHolderFactories)

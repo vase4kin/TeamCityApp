@@ -34,11 +34,12 @@ import javax.inject.Inject
  * Presenter impl for managing [com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity]
  */
 class AccountsPresenterImpl @Inject constructor(
-        view: AccountsView,
-        dataManager: AccountsDataManager,
-        tracker: ManageAccountsTracker,
-        valueExtractor: BaseValueExtractor,
-        private val router: AccountListRouter) : BaseListPresenterImpl<AccountDataModel, UserAccount, AccountsView, AccountsDataManager, ManageAccountsTracker, BaseValueExtractor>(view, dataManager, tracker, valueExtractor), AccountsView.ViewListener {
+    view: AccountsView,
+    dataManager: AccountsDataManager,
+    tracker: ManageAccountsTracker,
+    valueExtractor: BaseValueExtractor,
+    private val router: AccountListRouter
+) : BaseListPresenterImpl<AccountDataModel, UserAccount, AccountsView, AccountsDataManager, ManageAccountsTracker, BaseValueExtractor>(view, dataManager, tracker, valueExtractor), AccountsView.ViewListener {
 
     /**
      * {@inheritDoc}

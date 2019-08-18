@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.artifact.presenter
 
 import androidx.annotation.VisibleForTesting
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager
@@ -33,15 +32,15 @@ import com.github.vase4kin.teamcityapp.artifact.view.OnArtifactPresenterListener
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-
 import javax.inject.Inject
 
-class ArtifactPresenterImpl @Inject constructor(view: ArtifactView,
-                                                dataManager: ArtifactDataManager,
-                                                tracker: ViewTracker,
-                                                valueExtractor: ArtifactValueExtractor,
-                                                private val router: ArtifactRouter,
-                                                private val permissionManager: PermissionManager
+class ArtifactPresenterImpl @Inject constructor(
+    view: ArtifactView,
+    dataManager: ArtifactDataManager,
+    tracker: ViewTracker,
+    valueExtractor: ArtifactValueExtractor,
+    private val router: ArtifactRouter,
+    private val permissionManager: PermissionManager
 ) : BaseListPresenterImpl<ArtifactDataModel, File, ArtifactView, ArtifactDataManager, ViewTracker, ArtifactValueExtractor>(view, dataManager, tracker, valueExtractor), ArtifactPresenter, OnArtifactPresenterListener, OnArtifactEventListener {
 
     @VisibleForTesting

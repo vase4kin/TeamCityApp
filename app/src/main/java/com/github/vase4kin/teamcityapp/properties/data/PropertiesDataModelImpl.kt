@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.properties.data
 
 import androidx.annotation.VisibleForTesting
-
 import com.github.vase4kin.teamcityapp.properties.api.Properties
 
 /**

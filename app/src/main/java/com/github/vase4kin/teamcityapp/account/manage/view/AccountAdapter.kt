@@ -41,5 +41,4 @@ class AccountAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<AccountData
             true
         }
     }
-
 }

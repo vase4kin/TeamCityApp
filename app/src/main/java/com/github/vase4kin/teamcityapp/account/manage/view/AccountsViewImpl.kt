@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,10 +41,12 @@ import com.joanzapata.iconify.fonts.MaterialIcons
  *
  * TODO: move all logic to presenter!
  */
-class AccountsViewImpl(view: View,
-                       activity: Activity,
-                       @StringRes emptyMessage: Int,
-                       adapter: SimpleSectionedRecyclerViewAdapter<AccountAdapter>) : BaseListViewImpl<AccountDataModel, SimpleSectionedRecyclerViewAdapter<AccountAdapter>>(view, activity, emptyMessage, adapter), AccountsView {
+class AccountsViewImpl(
+    view: View,
+    activity: Activity,
+    @StringRes emptyMessage: Int,
+    adapter: SimpleSectionedRecyclerViewAdapter<AccountAdapter>
+) : BaseListViewImpl<AccountDataModel, SimpleSectionedRecyclerViewAdapter<AccountAdapter>>(view, activity, emptyMessage, adapter), AccountsView {
 
     @BindView(R.id.floating_action_button)
     lateinit var floatingActionButton: FloatingActionButton
@@ -68,7 +70,7 @@ class AccountsViewImpl(view: View,
      */
     override fun initViews(listener: BaseListView.ViewListener) {
         super.initViews(listener)
-        //Setting float button icon
+        // Setting float button icon
         floatingActionButton.setImageDrawable(IconDrawable(mActivity, MaterialIcons.md_add).color(Color.WHITE))
     }
 

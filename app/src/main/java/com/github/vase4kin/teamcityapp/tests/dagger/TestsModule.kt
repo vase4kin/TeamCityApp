@@ -52,9 +52,11 @@ class TestsModule {
     }
 
     @Provides
-    internal fun providesTestsView(testsValueExtractor: TestsValueExtractor,
-                                   adapter: SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter>,
-                                   fragment: TestOccurrencesFragment): TestsView {
+    internal fun providesTestsView(
+        testsValueExtractor: TestsValueExtractor,
+        adapter: SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter>,
+        fragment: TestOccurrencesFragment
+    ): TestsView {
         return TestsViewImpl(
                 fragment.view,
                 fragment.activity,
@@ -79,8 +81,10 @@ class TestsModule {
     }
 
     @Provides
-    internal fun providesSimpleSectionedRecyclerViewAdapter(context: Context,
-                                                            adapter: TestOccurrencesAdapter): SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> {
+    internal fun providesSimpleSectionedRecyclerViewAdapter(
+        context: Context,
+        adapter: TestOccurrencesAdapter
+    ): SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> {
         return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 

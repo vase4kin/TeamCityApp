@@ -38,11 +38,11 @@ import javax.inject.Inject
  * Impl of [TestsPresenter]
  */
 class TestsPresenterImpl @Inject constructor(
-        view: TestsView,
-        dataManager: TestsDataManager,
-        tracker: ViewTracker,
-        valueExtractor: TestsValueExtractor,
-        private val router: TestsRouter
+    view: TestsView,
+    dataManager: TestsDataManager,
+    tracker: ViewTracker,
+    valueExtractor: TestsValueExtractor,
+    private val router: TestsRouter
 ) : BaseListPresenterImpl<TestsDataModel, TestOccurrences.TestOccurrence, TestsView, TestsDataManager, ViewTracker, TestsValueExtractor>(view, dataManager, tracker, valueExtractor), TestsPresenter, OnTestsPresenterListener {
 
     @VisibleForTesting

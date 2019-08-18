@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.build_details.presenter
 
 import android.os.Bundle
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tabs.presenter.BaseTabsPresenterImpl
 import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsInteractor
@@ -32,19 +31,18 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
-
 import javax.inject.Inject
 
 /**
  * Impl of [BuildDetailsPresenter]
  */
 class BuildDetailsPresenterImpl @Inject constructor(
-        view: BuildDetailsView,
-        tracker: BuildDetailsTracker,
-        dataManager: BuildDetailsInteractor,
-        private val router: BuildDetailsRouter,
-        private val runBuildInteractor: RunBuildInteractor,
-        private val buildInteractor: BuildInteractor
+    view: BuildDetailsView,
+    tracker: BuildDetailsTracker,
+    dataManager: BuildDetailsInteractor,
+    private val router: BuildDetailsRouter,
+    private val runBuildInteractor: RunBuildInteractor,
+    private val buildInteractor: BuildInteractor
 ) : BaseTabsPresenterImpl<BuildDetailsView, BuildDetailsInteractor, BuildDetailsTracker>(view, tracker, dataManager), BuildDetailsPresenter, OnBuildDetailsEventsListener, OnBuildDetailsViewListener {
 
     /**
@@ -335,5 +333,4 @@ class BuildDetailsPresenterImpl @Inject constructor(
             view.hideRemovingBuildFromQueueProgressDialog()
         }
     }
-
 }

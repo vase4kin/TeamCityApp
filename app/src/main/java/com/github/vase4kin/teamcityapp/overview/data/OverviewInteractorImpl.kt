@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.overview.data
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
@@ -30,7 +29,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -42,9 +40,10 @@ private const val DELAY = 500
 /**
  * Impl of [OverViewInteractor]
  */
-class OverviewInteractorImpl(private val repository: Repository,
-                             private val eventBus: EventBus,
-                             private val valueExtractor: OverviewValueExtractor
+class OverviewInteractorImpl(
+    private val repository: Repository,
+    private val eventBus: EventBus,
+    private val valueExtractor: OverviewValueExtractor
 ) : BaseListRxDataManagerImpl<Build, BuildElement>(), OverViewInteractor {
 
     private var listener: OverViewInteractor.OnOverviewEventsListener? = null
@@ -59,9 +58,11 @@ class OverviewInteractorImpl(private val repository: Repository,
     /**
      * {@inheritDoc}
      */
-    override fun load(url: String,
-                      loadingListener: OnLoadingListener<BuildDetails>,
-                      update: Boolean) {
+    override fun load(
+        url: String,
+        loadingListener: OnLoadingListener<BuildDetails>,
+        update: Boolean
+    ) {
         subscriptions.clear()
         repository.build(url, update)
                 .subscribeOn(Schedulers.io())

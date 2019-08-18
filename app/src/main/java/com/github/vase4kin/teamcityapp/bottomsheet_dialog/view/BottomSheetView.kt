@@ -70,7 +70,7 @@ interface BottomSheetView {
          * On artifact download click
          *
          * @param fileName - file name
-         * @param href     - href
+         * @param href - href
          */
         fun onArtifactDownloadActionClick(fileName: String, href: String)
 

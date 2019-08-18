@@ -46,11 +46,13 @@ class HomeModule {
     }
 
     @Provides
-    fun providesRootDataManager(context: Context,
-                                repository: Repository,
-                                sharedUserStorage: SharedUserStorage,
-                                rxCache: RxCache,
-                                eventBus: EventBus): HomeDataManager {
+    fun providesRootDataManager(
+        context: Context,
+        repository: Repository,
+        sharedUserStorage: SharedUserStorage,
+        rxCache: RxCache,
+        eventBus: EventBus
+    ): HomeDataManager {
         return HomeDataManagerImpl(repository, sharedUserStorage, rxCache, eventBus)
     }
 
@@ -78,5 +80,4 @@ class HomeModule {
     @HomeActivityScope
     @Provides
     fun provideFilterProvider(): FilterProvider = FilterProvider()
-
 }

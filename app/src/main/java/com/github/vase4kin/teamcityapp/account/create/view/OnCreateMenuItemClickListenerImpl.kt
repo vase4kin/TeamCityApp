@@ -19,18 +19,17 @@ package com.github.vase4kin.teamcityapp.account.create.view
 import android.view.MenuItem
 import android.widget.Switch
 import android.widget.TextView
-
 import androidx.appcompat.widget.Toolbar
-
 import com.github.vase4kin.teamcityapp.R
 
 class OnCreateMenuItemClickListenerImpl(
-        private val onValidateListener: OnValidateListener,
-        private val serverUrl: TextView,
-        private val userName: TextView,
-        private val password: TextView,
-        private val guestUserSwitch: Switch,
-        private val disableSslSwitch: Switch) : Toolbar.OnMenuItemClickListener {
+    private val onValidateListener: OnValidateListener,
+    private val serverUrl: TextView,
+    private val userName: TextView,
+    private val password: TextView,
+    private val guestUserSwitch: Switch,
+    private val disableSslSwitch: Switch
+) : Toolbar.OnMenuItemClickListener {
 
     override fun onMenuItemClick(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_create) {

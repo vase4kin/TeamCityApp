@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,23 +26,24 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-
 import org.greenrobot.eventbus.EventBus
 
 /**
  * Impl of [AgentsDataManager]
  */
 class AgentsDataManagerImpl(
-        private val repository: Repository,
-        private val eventBus: EventBus
+    private val repository: Repository,
+    private val eventBus: EventBus
 ) : BaseListRxDataManagerImpl<Agents, Agent>(), AgentsDataManager {
 
     /**
      * {@inheritDoc}
      */
-    override fun load(includeDisconnected: Boolean?,
-                      loadingListener: OnLoadingListener<List<Agent>>,
-                      update: Boolean) {
+    override fun load(
+        includeDisconnected: Boolean?,
+        loadingListener: OnLoadingListener<List<Agent>>,
+        update: Boolean
+    ) {
         load(repository.listAgents(includeDisconnected, null, null, update), loadingListener)
     }
 

@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.navigation.router
 
 import android.app.Activity
-
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity

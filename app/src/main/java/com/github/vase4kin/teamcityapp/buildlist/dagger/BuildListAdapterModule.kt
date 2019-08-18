@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.buildlist.dagger
 
 import android.content.Context
-
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
@@ -25,7 +24,6 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildsViewHolderFactory
 import com.github.vase4kin.teamcityapp.buildlist.view.LoadMoreViewHolderFactory
-
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey

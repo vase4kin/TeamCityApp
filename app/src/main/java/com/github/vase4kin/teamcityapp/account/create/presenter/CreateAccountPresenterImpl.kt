@@ -29,11 +29,11 @@ import javax.inject.Inject
  * Impl of [CreateAccountPresenter]
  */
 class CreateAccountPresenterImpl @Inject constructor(
-        private val view: CreateAccountView,
-        private val dataManager: CreateAccountDataManager,
-        private val dataModel: CreateAccountDataModel,
-        private val router: CreateAccountRouter,
-        private val tracker: CreateAccountTracker
+    private val view: CreateAccountView,
+    private val dataManager: CreateAccountDataManager,
+    private val dataModel: CreateAccountDataModel,
+    private val router: CreateAccountRouter,
+    private val tracker: CreateAccountTracker
 ) : CreateAccountPresenter, CreateAccountView.ViewListener {
 
     /**

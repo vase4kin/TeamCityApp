@@ -29,11 +29,13 @@ import javax.inject.Inject
 /**
  * Drawer presenter impl special for [BuildDetailsActivity]
  */
-class BuildDetailsDrawerPresenterImpl @Inject constructor(mViewModel: DrawerView,
-                                                          dataManager: DrawerDataManager,
-                                                          private val valueExtractor: BaseValueExtractor,
-                                                          router: DrawerRouter,
-                                                          tracker: DrawerTracker) : DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>(mViewModel, dataManager, router, tracker) {
+class BuildDetailsDrawerPresenterImpl @Inject constructor(
+    mViewModel: DrawerView,
+    dataManager: DrawerDataManager,
+    private val valueExtractor: BaseValueExtractor,
+    router: DrawerRouter,
+    tracker: DrawerTracker
+) : DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>(mViewModel, dataManager, router, tracker) {
 
     /**
      * {@inheritDoc}

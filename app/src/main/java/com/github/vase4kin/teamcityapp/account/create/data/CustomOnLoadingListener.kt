@@ -31,7 +31,7 @@ interface CustomOnLoadingListener<T> {
     /**
      * On fail callback
      *
-     * @param statusCode   - Error status code
+     * @param statusCode - Error status code
      * @param errorMessage - Error message
      */
     fun onFail(statusCode: Int, errorMessage: String)

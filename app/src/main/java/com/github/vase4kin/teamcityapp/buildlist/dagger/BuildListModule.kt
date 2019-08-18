@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListViewImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
-
 import dagger.Module
 import dagger.Provides
 
@@ -45,14 +44,18 @@ import dagger.Provides
 class BuildListModule {
 
     @Provides
-    fun providesBuildListDataManager(repository: Repository,
-                                     storage: SharedUserStorage): BuildListDataManager {
+    fun providesBuildListDataManager(
+        repository: Repository,
+        storage: SharedUserStorage
+    ): BuildListDataManager {
         return BuildListDataManagerImpl(repository, storage)
     }
 
     @Provides
-    fun providesBuildListView(activity: BuildListActivity,
-                              adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>): BuildListView {
+    fun providesBuildListView(
+        activity: BuildListActivity,
+        adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>
+    ): BuildListView {
         return BuildListViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_builds, adapter)
     }
 

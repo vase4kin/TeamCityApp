@@ -73,5 +73,4 @@ class PermissionManagerImplTest {
         manager.onRequestPermissionsResult(requestCode, permissions, grantResults, onPermissionsResultListener)
         verify(onPermissionsResultListener).onGranted()
     }
-
 }

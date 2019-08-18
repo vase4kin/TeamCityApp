@@ -39,10 +39,11 @@ import retrofit2.HttpException
 /**
  * Impl of [BuildDetailsInteractor]
  */
-class BuildDetailsInteractorImpl(eventBus: EventBus,
-                                 private val valueExtractor: BaseValueExtractor,
-                                 private val sharedUserStorage: SharedUserStorage,
-                                 private val repository: Repository
+class BuildDetailsInteractorImpl(
+    eventBus: EventBus,
+    private val valueExtractor: BaseValueExtractor,
+    private val sharedUserStorage: SharedUserStorage,
+    private val repository: Repository
 ) : BaseTabsDataManagerImpl(eventBus), BuildDetailsInteractor {
 
     private var listener: OnBuildDetailsEventsListener? = null

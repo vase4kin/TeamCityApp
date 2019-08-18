@@ -27,14 +27,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-
 import org.greenrobot.eventbus.EventBus
 
 /**
  * Impl of [TestsDataManager]
  */
-class TestsDataManagerImpl(private val repository: Repository,
-                           private val eventBus: EventBus
+class TestsDataManagerImpl(
+    private val repository: Repository,
+    private val eventBus: EventBus
 ) : BaseListRxDataManagerImpl<TestOccurrences, TestOccurrences.TestOccurrence>(), TestsDataManager {
 
     private var mLoadMoreUrl: String? = null
@@ -43,9 +43,11 @@ class TestsDataManagerImpl(private val repository: Repository,
     /**
      * {@inheritDoc}
      */
-    override fun load(url: String,
-                      loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
-                      update: Boolean) {
+    override fun load(
+        url: String,
+        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        update: Boolean
+    ) {
         mLoadingListener = loadingListener
         loadTests(url, loadingListener, update)
     }
@@ -53,13 +55,15 @@ class TestsDataManagerImpl(private val repository: Repository,
     /**
      * Load test
      *
-     * @param url             - Tests url
-     * @param update          - Force cache update
+     * @param url - Tests url
+     * @param update - Force cache update
      * @param loadingListener - Listener to receive server callbacks
      */
-    private fun loadTests(url: String,
-                          loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
-                          update: Boolean) {
+    private fun loadTests(
+        url: String,
+        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        update: Boolean
+    ) {
         repository.listTestOccurrences(url, update)
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable {
@@ -78,9 +82,11 @@ class TestsDataManagerImpl(private val repository: Repository,
     /**
      * {@inheritDoc}
      */
-    override fun loadFailedTests(url: String,
-                                 loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
-                                 update: Boolean) {
+    override fun loadFailedTests(
+        url: String,
+        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        update: Boolean
+    ) {
         load("$url,status:FAILURE,count:10", loadingListener, update)
     }
 

@@ -70,5 +70,4 @@ class BuildDetailsPresenterImplTest {
         presenter.onHide()
         verify(view).hideRunBuildFloatActionButton()
     }
-
 }

@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.onboarding
 
 import android.content.Context
 import android.content.SharedPreferences
-
 import androidx.annotation.VisibleForTesting
 
 /**

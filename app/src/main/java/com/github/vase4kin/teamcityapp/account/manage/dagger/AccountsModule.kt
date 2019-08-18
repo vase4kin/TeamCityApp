@@ -46,8 +46,10 @@ class AccountsModule {
     }
 
     @Provides
-    fun providesAccountsView(activity: AccountListActivity,
-                             adapter: SimpleSectionedRecyclerViewAdapter<AccountAdapter>): AccountsView {
+    fun providesAccountsView(
+        activity: AccountListActivity,
+        adapter: SimpleSectionedRecyclerViewAdapter<AccountAdapter>
+    ): AccountsView {
         return AccountsViewImpl(activity.findViewById(android.R.id.content), activity, R.string.empty_list_message_accounts, adapter)
     }
 
@@ -62,8 +64,10 @@ class AccountsModule {
     }
 
     @Provides
-    fun providesSimpleSectionedRecyclerViewAdapter(context: Context,
-                                                   adapter: AccountAdapter): SimpleSectionedRecyclerViewAdapter<AccountAdapter> {
+    fun providesSimpleSectionedRecyclerViewAdapter(
+        context: Context,
+        adapter: AccountAdapter
+    ): SimpleSectionedRecyclerViewAdapter<AccountAdapter> {
         return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 

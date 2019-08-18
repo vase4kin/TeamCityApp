@@ -29,10 +29,10 @@ import javax.inject.Inject
  * Impl of [com.github.vase4kin.teamcityapp.tests.presenter.TestsPresenter]
  */
 class TestDetailsPresenterImpl @Inject constructor(
-        private val view: TestDetailsView,
-        private val dataManager: TestDetailsDataManager,
-        private val tracker: TestDetailsTracker,
-        private val valueExtractor: TestDetailsValueExtractor
+    private val view: TestDetailsView,
+    private val dataManager: TestDetailsDataManager,
+    private val tracker: TestDetailsTracker,
+    private val valueExtractor: TestDetailsValueExtractor
 ) : TestDetailsPresenter, ErrorView.RetryListener {
 
     /**

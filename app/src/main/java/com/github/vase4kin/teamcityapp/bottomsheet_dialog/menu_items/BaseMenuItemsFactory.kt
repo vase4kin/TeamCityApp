@@ -17,17 +17,16 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items
 
 import android.content.Context
-
 import androidx.annotation.StringRes
-
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem
 
 /**
  * Impl of [MenuItemsFactory]
  */
 abstract class BaseMenuItemsFactory constructor(
-        val context: Context,
-        private val descriptions: List<String>) : MenuItemsFactory {
+    val context: Context,
+    private val descriptions: List<String>
+) : MenuItemsFactory {
 
     val description: String
         get() = descriptions[0]
@@ -41,5 +40,4 @@ abstract class BaseMenuItemsFactory constructor(
     fun getDescription(position: Int): String {
         return descriptions[position]
     }
-
 }

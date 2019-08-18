@@ -50,7 +50,6 @@ class AboutFragment : MaterialAboutFragment() {
                             val intent = Intent(Intent.ACTION_VIEW)
                             intent.data = Uri.parse(getString(R.string.about_app_url_found_issue))
                             activity!!.startActivity(intent)
-
                         }
                         .build())
 
@@ -92,5 +91,4 @@ class AboutFragment : MaterialAboutFragment() {
     override fun getTheme(): Int {
         return R.style.AppTheme_MaterialAboutActivity_Fragment
     }
-
 }

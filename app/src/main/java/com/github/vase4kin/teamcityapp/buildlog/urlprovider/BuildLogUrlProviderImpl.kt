@@ -23,8 +23,8 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount
  * Impl of [BuildLogUrlProvider]
  */
 class BuildLogUrlProviderImpl(
-        private val valueExtractor: BuildLogValueExtractor,
-        private val userAccount: UserAccount
+    private val valueExtractor: BuildLogValueExtractor,
+    private val userAccount: UserAccount
 ) : BuildLogUrlProvider {
 
     /**

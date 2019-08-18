@@ -17,12 +17,11 @@
 package com.github.vase4kin.teamcityapp.account.create.tracker
 
 import android.os.Bundle
-
 import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
 import com.google.firebase.analytics.FirebaseAnalytics
 
 open class CreateAccountTrackerImpl(
-        firebaseAnalytics: FirebaseAnalytics
+    firebaseAnalytics: FirebaseAnalytics
 ) : BaseFirebaseTracker(firebaseAnalytics), CreateAccountTracker {
 
     /**

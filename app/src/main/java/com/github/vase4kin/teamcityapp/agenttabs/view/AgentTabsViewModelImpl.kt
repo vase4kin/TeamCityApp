@@ -17,9 +17,7 @@
 package com.github.vase4kin.teamcityapp.agenttabs.view
 
 import android.view.View
-
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl
