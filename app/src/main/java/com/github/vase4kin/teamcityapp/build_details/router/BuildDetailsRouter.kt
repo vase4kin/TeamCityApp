@@ -53,4 +53,14 @@ interface BuildDetailsRouter {
      * Start project activity
      */
     fun startProjectActivity(name: String, id: String)
+
+    /**
+     * Open url in browser
+     */
+    fun openUrlInBrowser(url: String)
+
+    /**
+     * Unbind customs chrome tabs
+     */
+    fun unbindCustomsTabs()
 }

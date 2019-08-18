@@ -68,6 +68,11 @@ interface OverViewInteractor : BaseListRxDataManager<Build, BuildElement> {
     fun postRestartBuildEvent()
 
     /**
+     * Post [OpenBrowserEvent]
+     */
+    fun postOpenBrowserEvent()
+
+    /**
      * Subscribe to event bus events
      */
     fun subscribeToEventBusEvents()

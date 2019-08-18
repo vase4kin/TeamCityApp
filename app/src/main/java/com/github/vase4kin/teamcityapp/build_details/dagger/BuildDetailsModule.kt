@@ -32,6 +32,7 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsView
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewImpl
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractorImpl
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -80,7 +81,7 @@ class BuildDetailsModule {
 
     @Provides
     fun providesBuildTabsRouter(activity: BuildDetailsActivity): BuildDetailsRouter {
-        return BuildDetailsRouterImpl(activity)
+        return BuildDetailsRouterImpl(activity, ChromeCustomTabsImpl(activity))
     }
 
     @Provides

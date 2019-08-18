@@ -189,6 +189,14 @@ class OverviewPresenterImpl @Inject internal constructor(
     /**
      * {@inheritDoc}
      */
+    override fun onOpenBrowser() {
+        interactor.postOpenBrowserEvent()
+        // TODO: Track
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun onBranchCardClick(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") branch: String) {
         view.showBranchCardBottomSheetDialog(branch)
     }

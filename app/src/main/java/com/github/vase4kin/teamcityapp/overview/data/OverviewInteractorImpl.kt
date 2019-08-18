@@ -98,6 +98,13 @@ class OverviewInteractorImpl(
     /**
      * {@inheritDoc}
      */
+    override fun postOpenBrowserEvent() {
+        eventBus.post(OpenBrowserEvent())
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun subscribeToEventBusEvents() {
         eventBus.register(this)
     }
