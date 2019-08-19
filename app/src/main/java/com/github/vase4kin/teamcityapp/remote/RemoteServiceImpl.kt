@@ -20,11 +20,33 @@ import com.crashlytics.android.Crashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.fabric.sdk.android.Fabric
 
+private const val CACHE = 43200L
+
 class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : RemoteService {
+
+    init {
+        fetch()
+    }
 
     override fun isNotChurn(): Boolean {
         fetch()
         return remoteConfig.getBoolean(RemoteService.PARAMETER_NOT_CHURN)
+    }
+
+    override fun showTryItOut(onSuccess: (showTryItOut: Boolean) -> Unit,
+                              onStart: () -> Unit,
+                              onFinish: () -> Unit) {
+        onStart()
+        remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val showTryItOut = remoteConfig.getBoolean(RemoteService.PARAMETER_SHOW_TRY_IT_OUT)
+                onFinish()
+                onSuccess(showTryItOut)
+            } else {
+                onFinish()
+                // TODO: Log exception
+            }
+        }
     }
 
     private fun fetch() {
@@ -42,10 +64,5 @@ class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : Remote
                 }
             }
         }
-    }
-
-    companion object {
-
-        private const val CACHE = 43200L
     }
 }

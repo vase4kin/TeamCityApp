@@ -24,6 +24,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -83,6 +84,9 @@ public class LoginViewImpl implements LoginView {
 
     @BindView(R.id.give_it_a_try)
     TextView tryItOutTextView;
+
+    @BindView(R.id.progress)
+    ProgressBar progressBar;
 
     private Unbinder mUnbinder;
 
@@ -352,6 +356,9 @@ public class LoginViewImpl implements LoginView {
                 .show();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void showNotSecureConnectionDialog(final boolean isGuest) {
         new MaterialDialog.Builder(mActivity)
@@ -382,6 +389,30 @@ public class LoginViewImpl implements LoginView {
                 .autoDismiss(false)
                 .cancelable(false)
                 .show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showTryItOutLoading() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void hideTryItOutLoading() {
+        progressBar.setVisibility(View.GONE);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void showTryItOut() {
+        tryItOutTextView.setVisibility(View.VISIBLE);
     }
 
     /**
