@@ -90,6 +90,11 @@ interface LoginView {
     fun showUnauthorizedInfoDialog()
 
     /**
+     * Show try it out dialog
+     */
+    fun showTryItOutDialog()
+
+    /**
      * Show warning dialog about disabling ssl
      */
     fun showDisableSslWarningDialog()
@@ -128,5 +133,9 @@ interface LoginView {
         fun onAcceptNotSecureConnectionClick(isGuest: Boolean)
 
         fun onCancelNotSecureConnectionClick()
+
+        fun onTryItOutTextClick()
+
+        fun onTryItOutActionClick()
     }
 }
