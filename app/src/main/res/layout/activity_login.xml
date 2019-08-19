@@ -16,6 +16,7 @@
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?colorPrimary"
@@ -143,8 +144,8 @@
             android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/login_screen_margin"
             android:layout_marginLeft="@dimen/login_screen_margin"
+            android:layout_marginTop="@dimen/login_screen_margin"
             android:layout_marginRight="@dimen/login_screen_margin"
             android:layout_marginBottom="@dimen/login_screen_margin"
             android:text="@string/text_login_button"
@@ -154,6 +155,7 @@
             android:id="@+id/give_it_a_try"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginLeft="@dimen/login_screen_margin"
             android:layout_marginRight="@dimen/login_screen_margin"
             android:layout_marginBottom="@dimen/login_screen_margin"
@@ -163,7 +165,20 @@
             android:gravity="center"
             android:text="@string/text_try_it_out"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
-            android:textSize="16sp" />
+            android:textSize="16sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="@dimen/login_screen_margin"
+            android:layout_marginRight="@dimen/login_screen_margin"
+            android:layout_marginBottom="@dimen/login_screen_margin"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </LinearLayout>
 

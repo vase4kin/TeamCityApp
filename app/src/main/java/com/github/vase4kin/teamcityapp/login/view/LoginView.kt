@@ -105,6 +105,21 @@ interface LoginView {
     fun showNotSecureConnectionDialog(isGuest: Boolean)
 
     /**
+     * Show loading
+     */
+    fun showTryItOutLoading()
+
+    /**
+     * Hide loading
+     */
+    fun hideTryItOutLoading()
+
+    /**
+     * Show try it out text
+     */
+    fun showTryItOut()
+
+    /**
      * Receiving callback from [LoginViewImpl] to [com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl]
      */
     interface ViewListener {
