@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,12 +18,10 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -33,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.google.android.material.textfield.TextInputLayout;
@@ -84,6 +81,9 @@ public class LoginViewImpl implements LoginView {
     @BindView(R.id.btn_login)
     Button mLoginButton;
 
+    @BindView(R.id.give_it_a_try)
+    TextView tryItOutTextView;
+
     private Unbinder mUnbinder;
 
     private Activity mActivity;
@@ -116,31 +116,25 @@ public class LoginViewImpl implements LoginView {
         mProgressDialog.setCancelable(false);
         mProgressDialog.setCanceledOnTouchOutside(false);
 
-        mPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    listener.onUserLoginButtonClick(
-                            mServerUrl.getText().toString().trim(),
-                            mUserName.getText().toString().trim(),
-                            mPassword.getText().toString().trim(),
-                            disableSslSwitch.isChecked());
-                    return true;
-                }
-                return false;
+        mPassword.setOnEditorActionListener((textView, actionId, keyEvent) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                listener.onUserLoginButtonClick(
+                        mServerUrl.getText().toString().trim(),
+                        mUserName.getText().toString().trim(),
+                        mPassword.getText().toString().trim(),
+                        disableSslSwitch.isChecked());
+                return true;
             }
+            return false;
         });
 
-        mGuestUserSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
-                mUserNameWrapperLayout.setVisibility(b ? View.GONE : View.VISIBLE);
-                mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
-                mPasswordWrapperLayout.setVisibility(b ? View.GONE : View.VISIBLE);
-                setupViewsRegardingUserType(b, listener);
-                hideKeyboard();
-            }
+        mGuestUserSwitch.setOnCheckedChangeListener((compoundButton, b) -> {
+            mUserName.setVisibility(b ? View.GONE : View.VISIBLE);
+            mUserNameWrapperLayout.setVisibility(b ? View.GONE : View.VISIBLE);
+            mPassword.setVisibility(b ? View.GONE : View.VISIBLE);
+            mPasswordWrapperLayout.setVisibility(b ? View.GONE : View.VISIBLE);
+            setupViewsRegardingUserType(b, listener);
+            hideKeyboard();
         });
 
         setupViewsRegardingUserType(false, listener);
@@ -148,14 +142,13 @@ public class LoginViewImpl implements LoginView {
         //Set text selection to the end
         mServerUrl.setSelection(mServerUrl.getText().length());
 
-        disableSslSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    listener.onDisableSslSwitchClick();
-                }
+        disableSslSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                listener.onDisableSslSwitchClick();
             }
         });
+
+        tryItOutTextView.setOnClickListener(v -> listener.onTryItOutTextClick());
     }
 
     /**
@@ -169,39 +162,26 @@ public class LoginViewImpl implements LoginView {
         if (isGuestUser) {
             // guest user
             mServerUrl.setImeOptions(EditorInfo.IME_ACTION_DONE);
-            mServerUrl.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        listener.onGuestUserLoginButtonClick(
-                                v.getText().toString().trim(), disableSslSwitch.isChecked());
-                        return true;
-                    }
-                    return false;
-                }
-            });
-            mLoginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            mServerUrl.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     listener.onGuestUserLoginButtonClick(
-                            mServerUrl.getText().toString().trim(),
-                            disableSslSwitch.isChecked());
+                            v.getText().toString().trim(), disableSslSwitch.isChecked());
+                    return true;
                 }
+                return false;
             });
+            mLoginButton.setOnClickListener(v -> listener.onGuestUserLoginButtonClick(
+                    mServerUrl.getText().toString().trim(),
+                    disableSslSwitch.isChecked()));
         } else {
             // not guest user
             mServerUrl.setImeOptions(EditorInfo.IME_ACTION_NEXT);
             mServerUrl.setOnEditorActionListener(null);
-            mLoginButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onUserLoginButtonClick(
-                            mServerUrl.getText().toString().trim(),
-                            mUserName.getText().toString().trim(),
-                            mPassword.getText().toString().trim(),
-                            disableSslSwitch.isChecked());
-                }
-            });
+            mLoginButton.setOnClickListener(v -> listener.onUserLoginButtonClick(
+                    mServerUrl.getText().toString().trim(),
+                    mUserName.getText().toString().trim(),
+                    mPassword.getText().toString().trim(),
+                    disableSslSwitch.isChecked()));
         }
     }
 
@@ -242,7 +222,7 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void showError(String errorMessage) {
+    public void showError(@NonNull String errorMessage) {
         mServerUrlWrapperLayout.setError(errorMessage);
     }
 
@@ -317,6 +297,34 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
+    public void showTryItOutDialog() {
+        new MaterialDialog.Builder(mActivity)
+                .titleColor(mWhiteColor)
+                .title(R.string.info_try_it_out_title)
+                .content(R.string.info_try_it_out_dialog_content)
+                .widgetColor(mWhiteColor)
+                .contentColor(mWhiteColor)
+                .backgroundColor(mPrimaryColor)
+                .positiveColor(mOrangeColor)
+                .positiveText(R.string.dialog_try_it_out_title)
+                .linkColor(mOrangeColor)
+                .negativeColor(mOrangeColor)
+                .negativeText(R.string.warning_ssl_dialog_negative)
+                .onPositive((dialog, which) -> {
+                    listener.onTryItOutActionClick();
+                    dialog.dismiss();
+                })
+                .onNegative((dialog, which) -> dialog.dismiss())
+                .canceledOnTouchOutside(false)
+                .autoDismiss(false)
+                .cancelable(false)
+                .show();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void showDisableSslWarningDialog() {
         new MaterialDialog.Builder(mActivity)
                 .titleColor(mWhiteColor)
@@ -330,19 +338,13 @@ public class LoginViewImpl implements LoginView {
                 .negativeColor(mOrangeColor)
                 .negativeText(R.string.warning_ssl_dialog_negative)
                 .linkColor(mOrangeColor)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        disableSslSwitch.setChecked(true);
-                        dialog.dismiss();
-                    }
+                .onPositive((dialog, which) -> {
+                    disableSslSwitch.setChecked(true);
+                    dialog.dismiss();
                 })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        disableSslSwitch.setChecked(false);
-                        dialog.dismiss();
-                    }
+                .onNegative((dialog, which) -> {
+                    disableSslSwitch.setChecked(false);
+                    dialog.dismiss();
                 })
                 .canceledOnTouchOutside(false)
                 .autoDismiss(false)
@@ -364,23 +366,17 @@ public class LoginViewImpl implements LoginView {
                 .negativeColor(mOrangeColor)
                 .negativeText(R.string.warning_ssl_dialog_negative)
                 .linkColor(mOrangeColor)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (listener != null) {
-                            listener.onAcceptNotSecureConnectionClick(isGuest);
-                        }
-                        dialog.dismiss();
+                .onPositive((dialog, which) -> {
+                    if (listener != null) {
+                        listener.onAcceptNotSecureConnectionClick(isGuest);
                     }
+                    dialog.dismiss();
                 })
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        if (listener != null) {
-                            listener.onCancelNotSecureConnectionClick();
-                        }
-                        dialog.dismiss();
+                .onNegative((dialog, which) -> {
+                    if (listener != null) {
+                        listener.onCancelNotSecureConnectionClick();
                     }
+                    dialog.dismiss();
                 })
                 .canceledOnTouchOutside(false)
                 .autoDismiss(false)
