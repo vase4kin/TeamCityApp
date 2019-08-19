@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.login.view.LoginView
 import javax.inject.Inject
 
 private const val UNAUTHORIZED_STATUS_CODE = 401
+private const val URL = "https://teamcity.jetbrains.com"
 
 /**
  * Impl for [LoginPresenter]
@@ -123,6 +124,20 @@ class LoginPresenterImpl @Inject constructor(
      */
     override fun onCancelNotSecureConnectionClick() {
         clearLoginInfo()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onTryItOutTextClick() {
+        view.showTryItOutDialog()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onTryItOutActionClick() {
+        authGuestUser(URL, false)
     }
 
     private fun authUser(
