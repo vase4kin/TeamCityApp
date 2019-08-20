@@ -32,11 +32,11 @@ private const val URL = "https://teamcity.jetbrains.com"
  * Impl for [LoginPresenter]
  */
 class LoginPresenterImpl @Inject constructor(
-        private val view: LoginView,
-        private val dataManager: CreateAccountDataManager,
-        private val router: LoginRouter,
-        private val tracker: LoginTracker,
-        private val remoteService: RemoteService
+    private val view: LoginView,
+    private val dataManager: CreateAccountDataManager,
+    private val router: LoginRouter,
+    private val tracker: LoginTracker,
+    private val remoteService: RemoteService
 ) : LoginPresenter, LoginView.ViewListener {
 
     private var loginInfo: LoginInfo? = null
@@ -80,10 +80,10 @@ class LoginPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onUserLoginButtonClick(
-            serverUrl: String,
-            userName: String,
-            password: String,
-            isSslDisabled: Boolean
+        serverUrl: String,
+        userName: String,
+        password: String,
+        isSslDisabled: Boolean
     ) {
         view.hideError()
         if (serverUrl.isEmpty()) {
@@ -156,38 +156,38 @@ class LoginPresenterImpl @Inject constructor(
     }
 
     private fun authUser(
-            serverUrl: String,
-            userName: String,
-            password: String,
-            isSslDisabled: Boolean,
-            checkSecureConnection: Boolean = false
+        serverUrl: String,
+        userName: String,
+        password: String,
+        isSslDisabled: Boolean,
+        checkSecureConnection: Boolean = false
     ) {
         view.showProgressDialog()
         dataManager.authUser(object : CustomOnLoadingListener<String> {
             override fun onSuccess(serverUrl: String) {
                 view.dismissProgressDialog()
                 dataManager.saveNewUserAccount(
-                        serverUrl,
-                        userName,
-                        password,
-                        isSslDisabled,
-                        object : OnLoadingListener<String> {
-                            override fun onSuccess(serverUrl: String) {
-                                dataManager.initTeamCityService(serverUrl)
-                                router.openProjectsRootPageForFirstStart()
-                                tracker.trackUserLoginSuccess(!isSslDisabled)
-                                view.close()
-                                clearLoginInfo()
-                            }
+                    serverUrl,
+                    userName,
+                    password,
+                    isSslDisabled,
+                    object : OnLoadingListener<String> {
+                        override fun onSuccess(serverUrl: String) {
+                            dataManager.initTeamCityService(serverUrl)
+                            router.openProjectsRootPageForFirstStart()
+                            tracker.trackUserLoginSuccess(!isSslDisabled)
+                            view.close()
+                            clearLoginInfo()
+                        }
 
-                            override fun onFail(errorMessage: String) {
-                                view.dismissProgressDialog()
-                                view.showCouldNotSaveUserError()
-                                tracker.trackUserDataSaveFailed()
-                                view.hideKeyboard()
-                                clearLoginInfo()
-                            }
-                        })
+                        override fun onFail(errorMessage: String) {
+                            view.dismissProgressDialog()
+                            view.showCouldNotSaveUserError()
+                            tracker.trackUserDataSaveFailed()
+                            view.hideKeyboard()
+                            clearLoginInfo()
+                        }
+                    })
             }
 
             override fun onFail(statusCode: Int, errorMessage: String) {
@@ -242,8 +242,8 @@ class LoginPresenterImpl @Inject constructor(
 }
 
 private data class LoginInfo(
-        val serverUrl: String,
-        val userName: String = "",
-        val password: String = "",
-        val isSslDisabled: Boolean
+    val serverUrl: String,
+    val userName: String = "",
+    val password: String = "",
+    val isSslDisabled: Boolean
 )
