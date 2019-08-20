@@ -58,7 +58,8 @@ class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : Remote
                 onFetchSuccess()
             } else {
                 onFetchFailed()
-                // TODO: Log exception
+                val exception = task.exception
+                logException(exception)
             }
         }
     }
@@ -73,10 +74,14 @@ class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : Remote
                 remoteConfig.activateFetched()
             } else {
                 val exception = task.exception
-                if (exception != null && Fabric.isInitialized()) {
-                    Crashlytics.logException(task.exception)
-                }
+                logException(exception)
             }
+        }
+    }
+
+    private fun logException(exception: Exception?) {
+        if (exception != null && Fabric.isInitialized()) {
+            Crashlytics.logException(exception)
         }
     }
 }
