@@ -20,9 +20,11 @@ interface RemoteService {
 
     fun isNotChurn(): Boolean
 
-    fun showTryItOut(onSuccess: (showTryItOut: Boolean) -> Unit,
-                     onStart: () -> Unit,
-                     onFinish: () -> Unit)
+    fun showTryItOut(
+        onSuccess: (showTryItOut: Boolean) -> Unit,
+        onStart: () -> Unit,
+        onFinish: () -> Unit
+    )
 
     companion object {
         const val PARAMETER_NOT_CHURN = "param_not_churn"
