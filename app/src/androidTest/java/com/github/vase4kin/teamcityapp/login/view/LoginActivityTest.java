@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
@@ -27,8 +26,10 @@ import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
+import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-
+import it.cosenonjaviste.daggermock.DaggerMockRule;
+import okhttp3.*;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -38,43 +39,21 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import java.io.IOException;
 
 import javax.inject.Named;
-
-import it.cosenonjaviste.daggermock.DaggerMockRule;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
-import okhttp3.Request;
-import okhttp3.Response;
+import java.io.IOException;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.clearText;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
-import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
-import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.action.ViewActions.*;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
-import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
-import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
-import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE;
+import static androidx.test.espresso.matcher.ViewMatchers.*;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.*;
 import static com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -90,12 +69,9 @@ public class LoginActivityTest {
 
     @Rule
     public DaggerMockRule<AppComponent> mDaggerRule = new DaggerMockRule<>(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<AppComponent>() {
-                @Override
-                public void setComponent(AppComponent appComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setAppInjector(appComponent);
-                }
+            .set(appComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setAppInjector(appComponent);
             });
 
     @Rule
@@ -128,7 +104,6 @@ public class LoginActivityTest {
         app.getAppInjector().sharedUserStorage().clearAll();
         when(okHttpClient.newCall(Matchers.any(Request.class))).thenReturn(mCall);
         when(unsafeOkHttpClient.newCall(Matchers.any(Request.class))).thenReturn(mCall);
-        mActivityRule.launchActivity(null);
     }
 
     /**
@@ -138,20 +113,19 @@ public class LoginActivityTest {
     public void testUserCanCreateGuestUserAccountWithCorrectUrl() throws Throwable {
         final String urlWithPath = "https://teamcity.com/server";
         String savedUrl = urlWithPath.concat("/");
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(urlWithPath).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .message(MESSAGE_EMPTY)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(urlWithPath).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .message(MESSAGE_EMPTY)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.teamcity_url)).perform(typeText(urlWithPath.replace("https://", "")), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -175,20 +149,19 @@ public class LoginActivityTest {
     public void testUserCanCreateGuestUserAccountWithCorrectUrlIgnoringSsl() {
         final String urlWithPath = "https://teamcity.com/server";
         String savedUrl = urlWithPath.concat("/");
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(urlWithPath).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .message(MESSAGE_EMPTY)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(urlWithPath).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .message(MESSAGE_EMPTY)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.teamcity_url)).perform(typeText(urlWithPath.replace("https://", "")), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -213,20 +186,19 @@ public class LoginActivityTest {
      */
     @Test
     public void testUserCanCreateAccountWithCorrectUrlByImeButton() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .message(MESSAGE_EMPTY)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .message(MESSAGE_EMPTY)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), pressImeActionButton());
@@ -247,20 +219,19 @@ public class LoginActivityTest {
     @Test
     public void testUserCanCreateAccountWithCorrectUrlWhichContainsPathByImeButton() throws Throwable {
 
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .message(MESSAGE_EMPTY)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .message(MESSAGE_EMPTY)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), pressImeActionButton());
@@ -281,19 +252,18 @@ public class LoginActivityTest {
     @Ignore
     @Test
     public void testUserCanCreateUserAccountWithCorrectUrlAndCredentials() throws Throwable {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton());
@@ -314,20 +284,19 @@ public class LoginActivityTest {
      */
     @Test
     public void testUserIsNotifiedIfServerReturnsBadResponse() throws IOException {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(404)
-                                .message("Client Error")
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(404)
+                            .message("Client Error")
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -340,20 +309,19 @@ public class LoginActivityTest {
      */
     @Test
     public void testUserIsNotifiedIfServerReturns401Request() throws IOException {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(URL).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .code(401)
-                                .message("Unauthorized")
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(URL).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .code(401)
+                            .message("Unauthorized")
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -369,20 +337,19 @@ public class LoginActivityTest {
     public void testUserCanCreateGuestUserAccountWithNotSecureUrl() {
         final String urlWithPath = "http://teamcity.com/server";
         String savedUrl = urlWithPath.concat("/");
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                mCallbackArgumentCaptor.getValue().onResponse(
-                        mCall,
-                        new Response.Builder()
-                                .request(new Request.Builder().url(urlWithPath).build())
-                                .protocol(Protocol.HTTP_1_0)
-                                .message(MESSAGE_EMPTY)
-                                .code(200)
-                                .build());
-                return null;
-            }
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(urlWithPath).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .message(MESSAGE_EMPTY)
+                            .code(200)
+                            .build());
+            return null;
         }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        mActivityRule.launchActivity(null);
 
         onView(withId(R.id.teamcity_url)).perform(clearText(), typeText(urlWithPath), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
@@ -407,5 +374,63 @@ public class LoginActivityTest {
     @Test
     public void testUserCanNotCreateAccountIfDataWasNotSaved() throws Throwable {
         // You know what to do
+    }
+
+    @Test
+    public void testUserCannotSeeTryItOutIfItIsNotEnabled() {
+        setTryItOutValue(false);
+
+        mActivityRule.launchActivity(null);
+
+        onView(withId(R.id.give_it_a_try)).check(matches(not(isDisplayed())));
+
+    }
+
+    @Test
+    public void testUserCanSeeTryItOutIfItIsEnabled() {
+        final String urlWithPath = "https://test.com/test";
+        String savedUrl = urlWithPath.concat("/");
+        doAnswer(invocation -> {
+            mCallbackArgumentCaptor.getValue().onResponse(
+                    mCall,
+                    new Response.Builder()
+                            .request(new Request.Builder().url(urlWithPath).build())
+                            .protocol(Protocol.HTTP_1_0)
+                            .message(MESSAGE_EMPTY)
+                            .code(200)
+                            .build());
+            return null;
+        }).when(mCall).enqueue(mCallbackArgumentCaptor.capture());
+
+        setTryItOutValue(true);
+        setTryItOutValueUrl(urlWithPath);
+
+        mActivityRule.launchActivity(null);
+
+        onView(withId(R.id.give_it_a_try)).check(matches(isDisplayed())).perform(click());
+
+        onView(withText(R.string.text_try_it_out_button)).perform(click());
+
+        intended(allOf(
+                hasComponent(HomeActivity.class.getName()),
+                hasExtras(hasEntry(equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED), equalTo(true)))));
+
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        SharedUserStorage storageUtils = app.getRestApiInjector().sharedUserStorage();
+        assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), is(true));
+        assertThat(storageUtils.getActiveUser().getTeamcityUrl(), is(savedUrl));
+        assertThat(storageUtils.getActiveUser().isSslDisabled(), is(false));
+    }
+
+    private void setTryItOutValue(Boolean value) {
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        RemoteServiceImpl remoteService = (RemoteServiceImpl) app.getAppInjector().remoteService();
+        remoteService.setShowTryItOut(value);
+    }
+
+    private void setTryItOutValueUrl(String value) {
+        TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+        RemoteServiceImpl remoteService = (RemoteServiceImpl) app.getAppInjector().remoteService();
+        remoteService.setShowTryItOutUrl(value);
     }
 }
