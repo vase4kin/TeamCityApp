@@ -21,25 +21,17 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
-import android.widget.Switch;
-import android.widget.TextView;
-
+import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.vase4kin.teamcityapp.R;
-import com.google.android.material.textfield.TextInputLayout;
-
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.vase4kin.teamcityapp.R;
+import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginViewImpl implements LoginView {
 
@@ -301,11 +293,12 @@ public class LoginViewImpl implements LoginView {
      * {@inheritDoc}
      */
     @Override
-    public void showTryItOutDialog() {
+    public void showTryItOutDialog(@NonNull String url) {
+        String content = mActivity.getString(R.string.info_try_it_out_dialog_content, url);
         new MaterialDialog.Builder(mActivity)
                 .titleColor(mWhiteColor)
                 .title(R.string.info_try_it_out_title)
-                .content(R.string.info_try_it_out_dialog_content)
+                .content(content)
                 .widgetColor(mWhiteColor)
                 .contentColor(mWhiteColor)
                 .backgroundColor(mPrimaryColor)
@@ -315,7 +308,9 @@ public class LoginViewImpl implements LoginView {
                 .negativeColor(mOrangeColor)
                 .negativeText(R.string.warning_ssl_dialog_negative)
                 .onPositive((dialog, which) -> {
-                    listener.onTryItOutActionClick();
+                    if (listener != null) {
+                        listener.onTryItOutActionClick();
+                    }
                     dialog.dismiss();
                 })
                 .onNegative((dialog, which) -> dialog.dismiss())
