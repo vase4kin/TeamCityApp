@@ -33,9 +33,11 @@ class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : Remote
         return remoteConfig.getBoolean(RemoteService.PARAMETER_NOT_CHURN)
     }
 
-    override fun showTryItOut(onSuccess: (showTryItOut: Boolean) -> Unit,
-                              onStart: () -> Unit,
-                              onFinish: () -> Unit) {
+    override fun showTryItOut(
+        onSuccess: (showTryItOut: Boolean) -> Unit,
+        onStart: () -> Unit,
+        onFinish: () -> Unit
+    ) {
         onStart()
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
