@@ -32,10 +32,17 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.runners.MockitoJUnitRunner
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.doNothing
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
+import org.powermock.api.mockito.PowerMockito
+import org.powermock.core.classloader.annotations.PrepareForTest
+import org.powermock.modules.junit4.PowerMockRunner
 
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(PowerMockRunner::class)
+@PrepareForTest(LoginPresenterImpl::class)
 class LoginPresenterImplTest {
 
     @Captor
@@ -56,7 +63,7 @@ class LoginPresenterImplTest {
 
     @Before
     fun setUp() {
-        presenter = LoginPresenterImpl(view, dataManager, router, tracker, remoteService)
+        presenter = PowerMockito.spy(LoginPresenterImpl(view, dataManager, router, tracker, remoteService))
     }
 
     @After
@@ -66,8 +73,10 @@ class LoginPresenterImplTest {
 
     @Test
     fun testHandleOnCreate() {
+        doNothing().`when`(presenter).showTryItOut()
         presenter.onCreate()
         verify(view).initViews(eq(presenter))
+        verify(presenter).showTryItOut()
     }
 
     @Test
@@ -193,5 +202,24 @@ class LoginPresenterImplTest {
     fun testOnDisableSslSwitchClick() {
         presenter.onDisableSslSwitchClick()
         verify(view).showDisableSslWarningDialog()
+    }
+
+    @Test
+    fun onTryItOutTextClick() {
+        val url = "url"
+        `when`(remoteService.getTryItOutUrl()).thenReturn(url)
+        presenter.onTryItOutTextClick()
+        verify(remoteService).getTryItOutUrl()
+        verify(view).showTryItOutDialog(url)
+    }
+
+    @Test
+    fun onTryItOutActionClick() {
+        val url = "url"
+        `when`(remoteService.getTryItOutUrl()).thenReturn(url)
+        doNothing().`when`(presenter).authGuestUser(url, false)
+        presenter.onTryItOutActionClick()
+        verify(remoteService).getTryItOutUrl()
+        verify(presenter).authGuestUser(url, false)
     }
 }
