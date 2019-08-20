@@ -25,6 +25,7 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.text.HtmlCompat;
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -295,10 +296,11 @@ public class LoginViewImpl implements LoginView {
     @Override
     public void showTryItOutDialog(@NonNull String url) {
         String content = mActivity.getString(R.string.info_try_it_out_dialog_content, url);
+        CharSequence formattedContent = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_COMPACT);
         new MaterialDialog.Builder(mActivity)
                 .titleColor(mWhiteColor)
                 .title(R.string.info_try_it_out_title)
-                .content(content)
+                .content(formattedContent)
                 .widgetColor(mWhiteColor)
                 .contentColor(mWhiteColor)
                 .backgroundColor(mPrimaryColor)
