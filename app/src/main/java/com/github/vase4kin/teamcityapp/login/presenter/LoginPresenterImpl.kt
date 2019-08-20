@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.login.presenter
 
+import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
@@ -48,7 +49,8 @@ class LoginPresenterImpl @Inject constructor(
         showTryItOut()
     }
 
-    private fun showTryItOut() {
+    @VisibleForTesting
+    internal fun showTryItOut() {
         remoteService.showTryItOut(onStart = {
             view.showTryItOutLoading()
         }, onFinish = {
@@ -205,7 +207,8 @@ class LoginPresenterImpl @Inject constructor(
         }, serverUrl, userName, password, isSslDisabled, checkSecureConnection)
     }
 
-    private fun authGuestUser(serverUrl: String, isSslDisabled: Boolean, checkSecureConnection: Boolean = false) {
+    @VisibleForTesting
+    internal fun authGuestUser(serverUrl: String, isSslDisabled: Boolean, checkSecureConnection: Boolean = false) {
         view.showProgressDialog()
         dataManager.authGuestUser(object : CustomOnLoadingListener<String> {
             override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
