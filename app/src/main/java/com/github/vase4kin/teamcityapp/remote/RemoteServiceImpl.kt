@@ -39,13 +39,25 @@ class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : Remote
         onFinish: () -> Unit
     ) {
         onStart()
+        getData(onFetchSuccess = {
+            val showTryItOut = remoteConfig.getBoolean(RemoteService.PARAMETER_SHOW_TRY_IT_OUT)
+            onFinish()
+            onSuccess(showTryItOut)
+        }, onFetchFailed = {
+            onFinish()
+        })
+    }
+
+    override fun getTryItOutUrl(): String {
+        return remoteConfig.getString(RemoteService.PARAMETER_URL_SHOW_TRY_IT_OUT)
+    }
+
+    private fun getData(onFetchSuccess: () -> Unit, onFetchFailed: () -> Unit) {
         remoteConfig.fetchAndActivate().addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                val showTryItOut = remoteConfig.getBoolean(RemoteService.PARAMETER_SHOW_TRY_IT_OUT)
-                onFinish()
-                onSuccess(showTryItOut)
+                onFetchSuccess()
             } else {
-                onFinish()
+                onFetchFailed()
                 // TODO: Log exception
             }
         }

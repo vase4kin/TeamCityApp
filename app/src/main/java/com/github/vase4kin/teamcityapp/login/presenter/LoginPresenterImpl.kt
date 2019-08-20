@@ -26,7 +26,6 @@ import com.github.vase4kin.teamcityapp.remote.RemoteService
 import javax.inject.Inject
 
 private const val UNAUTHORIZED_STATUS_CODE = 401
-private const val URL = "https://teamcity.jetbrains.com"
 
 /**
  * Impl for [LoginPresenter]
@@ -145,14 +144,16 @@ class LoginPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onTryItOutTextClick() {
-        view.showTryItOutDialog()
+        val url = remoteService.getTryItOutUrl()
+        view.showTryItOutDialog(url)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun onTryItOutActionClick() {
-        authGuestUser(URL, false)
+        val url = remoteService.getTryItOutUrl()
+        authGuestUser(url, false)
     }
 
     private fun authUser(
@@ -164,7 +165,7 @@ class LoginPresenterImpl @Inject constructor(
     ) {
         view.showProgressDialog()
         dataManager.authUser(object : CustomOnLoadingListener<String> {
-            override fun onSuccess(serverUrl: String) {
+            override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
                 view.dismissProgressDialog()
                 dataManager.saveNewUserAccount(
                     serverUrl,
@@ -172,7 +173,7 @@ class LoginPresenterImpl @Inject constructor(
                     password,
                     isSslDisabled,
                     object : OnLoadingListener<String> {
-                        override fun onSuccess(serverUrl: String) {
+                        override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
                             dataManager.initTeamCityService(serverUrl)
                             router.openProjectsRootPageForFirstStart()
                             tracker.trackUserLoginSuccess(!isSslDisabled)
@@ -207,7 +208,7 @@ class LoginPresenterImpl @Inject constructor(
     private fun authGuestUser(serverUrl: String, isSslDisabled: Boolean, checkSecureConnection: Boolean = false) {
         view.showProgressDialog()
         dataManager.authGuestUser(object : CustomOnLoadingListener<String> {
-            override fun onSuccess(serverUrl: String) {
+            override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
                 view.dismissProgressDialog()
                 dataManager.saveGuestUserAccount(serverUrl, isSslDisabled)
                 dataManager.initTeamCityService(serverUrl)
