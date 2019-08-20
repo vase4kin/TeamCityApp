@@ -23,4 +23,8 @@
         <key>param_show_try_it_out</key>
         <value>false</value>
     </entry>
+    <entry>
+        <key>param_url_try_it_out</key>
+        <value>https://teamcity.jetbrains.com</value>
+    </entry>
 </defaultsMap>

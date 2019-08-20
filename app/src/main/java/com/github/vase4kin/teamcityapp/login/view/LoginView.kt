@@ -92,7 +92,7 @@ interface LoginView {
     /**
      * Show try it out dialog
      */
-    fun showTryItOutDialog()
+    fun showTryItOutDialog(url: String)
 
     /**
      * Show warning dialog about disabling ssl
