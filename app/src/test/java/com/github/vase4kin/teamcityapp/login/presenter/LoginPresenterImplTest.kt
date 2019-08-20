@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView
+import com.github.vase4kin.teamcityapp.remote.RemoteService
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.After
@@ -49,16 +50,18 @@ class LoginPresenterImplTest {
     private lateinit var router: LoginRouter
     @Mock
     private lateinit var tracker: LoginTracker
+    @Mock
+    private lateinit var remoteService: RemoteService
     private lateinit var presenter: LoginPresenterImpl
 
     @Before
     fun setUp() {
-        presenter = LoginPresenterImpl(view, dataManager, router, tracker)
+        presenter = LoginPresenterImpl(view, dataManager, router, tracker, remoteService)
     }
 
     @After
     fun tearDown() {
-        verifyNoMoreInteractions(view, dataManager, router, tracker)
+        verifyNoMoreInteractions(view, dataManager, router, tracker, remoteService)
     }
 
     @Test

@@ -46,6 +46,10 @@ class LoginPresenterImpl @Inject constructor(
      */
     override fun onCreate() {
         view.initViews(this)
+        showTryItOut()
+    }
+
+    private fun showTryItOut() {
         remoteService.showTryItOut(onStart = {
             view.showTryItOutLoading()
         }, onFinish = {
