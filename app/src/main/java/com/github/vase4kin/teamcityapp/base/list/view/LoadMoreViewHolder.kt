@@ -32,6 +32,5 @@ class LoadMoreViewHolder<BM : BaseDataModel>(parent: ViewGroup) :
      * {@inheritDoc}
      */
     override fun bind(dataModel: BM, position: Int) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 }
