@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,19 +19,13 @@ package com.github.vase4kin.teamcityapp.buildlist.presenter;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener;
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor;
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl;
 import com.github.vase4kin.teamcityapp.buildlist.api.Build;
-import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor;
-import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager;
-import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel;
-import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModelImpl;
-import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener;
+import com.github.vase4kin.teamcityapp.buildlist.data.*;
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter;
 import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter;
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker;
@@ -39,10 +33,9 @@ import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView;
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails;
 
+import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
-
-import javax.inject.Inject;
 
 public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildListDataManager> extends BaseListPresenterImpl<
         BuildListDataModel,
@@ -147,7 +140,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
      * {@inheritDoc}
      */
     @Override
-    public void onBuildClick(Build build) {
+    public void onBuildClick(@NonNull Build build) {
         if (valueExtractor.isBundleNullOrEmpty()) {
             mRouter.openBuildPage(build, null);
         } else {
@@ -245,7 +238,7 @@ public class BuildListPresenterImpl<V extends BuildListView, DM extends BuildLis
             }
 
             @Override
-            public void onFail(String errorMessage) {
+            public void onFail(@NonNull String errorMessage) {
                 view.removeLoadMore();
                 view.showRetryLoadMoreSnackBar();
                 mIsLoadMoreLoading = false;

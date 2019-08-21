@@ -58,6 +58,6 @@ abstract class BaseLoadMoreAdapter<DM>(
      * {@inheritDoc}
      */
     override fun addMoreBuilds(dataModel: DM) {
-        dataModel.addMoreBuilds(dataModel)
+        this.dataModel.addMoreBuilds(dataModel)
     }
 }

@@ -20,7 +20,7 @@ import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
-import java.util.*
+import java.util.UUID
 
 /**
  * Impl of [BuildListDataModel]
@@ -101,9 +101,11 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
      * {@inheritDoc}
      */
     override fun addMoreBuilds(dataModel: BuildListDataModel) {
-        for (build in dataModel) {
-            buildDetailsList.add(build)
+        val moreBuilds = mutableListOf<BuildDetails>()
+        dataModel.iterator().forEach {
+            moreBuilds.add(it)
         }
+        buildDetailsList.addAll(moreBuilds)
     }
 
     /**
