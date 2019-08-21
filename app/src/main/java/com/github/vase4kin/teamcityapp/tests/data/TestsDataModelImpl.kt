@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.tests.data
 import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.github.vase4kin.teamcityapp.utils.IconUtils
-import java.util.*
+import java.util.UUID
 
 /**
  * Impl of [TestsDataModel]
@@ -96,9 +96,11 @@ class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccu
     }
 
     override fun addMoreBuilds(dataModel: TestsDataModel) {
-        for (testOccurrence in dataModel) {
-            tests.add(testOccurrence)
+        val moreTests = mutableListOf<TestOccurrences.TestOccurrence>()
+        dataModel.iterator().forEach {
+            moreTests.add(it)
         }
+        tests.addAll(moreTests)
     }
 
     companion object {

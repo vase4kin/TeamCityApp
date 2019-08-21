@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.changes.data
 
 import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.changes.api.Changes
-import java.util.*
+import java.util.UUID
 
 /**
  * Impl of [ChangesDataModel]
@@ -99,9 +99,11 @@ class ChangesDataModelImpl(private val changes: MutableList<Changes.Change>) : C
      * {@inheritDoc}
      */
     override fun addMoreBuilds(dataModel: ChangesDataModel) {
-        for (change in dataModel) {
-            changes.add(change)
+        val moreChanges = mutableListOf<Changes.Change>()
+        dataModel.iterator().forEach {
+            moreChanges.add(it)
         }
+        changes.addAll(moreChanges)
     }
 
     /**
