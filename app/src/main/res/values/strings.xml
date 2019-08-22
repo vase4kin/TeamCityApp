@@ -201,11 +201,16 @@
     <string name="about_app_url_source_code">https://github.com/vase4kin/TeamCityApp</string>
     <string name="about_app_text_libraries">Libraries</string>
     <string name="about_app_text_contacts">Contacts</string>
+    <string name="about_app_text_dev">Dev details</string>
+    <string name="about_app_text_app">App details</string>
+    <string name="about_app_text_server_info">Server info</string>
     <string name="about_app_text_web">Website</string>
+    <string name="about_app_text_server_url">Server url</string>
     <string name="about_app_url_web">https://teamcity.app</string>
     <string name="about_app_text_email">Email</string>
     <string name="about_app_email">contact@teamcity.app</string>
     <string name="about_app_email_title">Questions about TeamCityApp</string>
+    <string name="about_app_loading">Loading..</string>
 
     <!--Build log-->
     <string name="text_login_again">In order to view build log please login</string>

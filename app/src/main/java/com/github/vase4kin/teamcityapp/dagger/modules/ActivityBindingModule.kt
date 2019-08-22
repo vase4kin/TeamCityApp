@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.dagger.modules
 
 import com.github.vase4kin.teamcityapp.about.AboutActivity
+import com.github.vase4kin.teamcityapp.about.AboutFragment
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
 import com.github.vase4kin.teamcityapp.about.dagger.AboutActivityScope
 import com.github.vase4kin.teamcityapp.about.dagger.AboutDrawerModule
@@ -54,7 +55,12 @@ import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityBindingModule
 import com.github.vase4kin.teamcityapp.home.dagger.HomeActivityScope
 import com.github.vase4kin.teamcityapp.home.dagger.HomeModule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.navigation.dagger.*
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationActivityScope
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationBaseModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationDrawerModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentScope
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationModule
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
@@ -84,6 +90,10 @@ abstract class ActivityBindingModule {
     @AboutActivityScope
     @ContributesAndroidInjector(modules = [AboutLibrariesDrawerModule::class])
     abstract fun aboutLibrariesActivity(): AboutLibrariesActivity
+
+    @AboutActivityScope
+    @ContributesAndroidInjector
+    abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope
     @ContributesAndroidInjector(modules = [TestDetailsModule::class])
