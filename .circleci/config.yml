@@ -52,7 +52,7 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Run checks
-          command: ./gradlew lintMockDebug pmd findbugs lintKotlin
+          command: ./gradlew lintMockDebug pmd lintKotlin
       - run:
           name: Copy checks reports
           command: |
@@ -60,8 +60,6 @@ jobs:
             mv app/build/reports/lint-report/ app/build/circleci/artifacts/reports/lint/
             mkdir -p app/build/circleci/artifacts/reports/pmd/
             mv app/build/reports/pmd/ app/build/circleci/artifacts/reports/pmd/
-            mkdir -p app/build/circleci/artifacts/reports/findbugs/
-            mv app/build/reports/findbugs/ app/build/circleci/artifacts/reports/findbugs/
       - store_artifacts:
           path: app/build/circleci/artifacts/reports
           destination: reports
