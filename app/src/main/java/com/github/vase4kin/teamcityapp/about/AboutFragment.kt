@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.about
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.view.View
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.danielstone.materialaboutlibrary.MaterialAboutFragment
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem
@@ -26,20 +28,68 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList
 import com.github.vase4kin.teamcityapp.BuildConfig
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.api.Repository
 import com.joanzapata.iconify.IconDrawable
 import com.joanzapata.iconify.fonts.MaterialCommunityIcons
 import com.joanzapata.iconify.fonts.MaterialIcons
+import dagger.android.support.AndroidSupportInjection
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class AboutFragment : MaterialAboutFragment() {
 
+    private val iconSize = 24
+
+    @Inject
+    lateinit var repository: Repository
+
+    private val subscriptions: CompositeDisposable = CompositeDisposable()
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        AndroidSupportInjection.inject(this)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        repository.serverInfo().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = {
+                    updateServerInfoCard(it.version, it.webUrl)
+                },
+                onError = {
+                    removeServerCard()
+                }
+            )
+            .addTo(subscriptions)
+    }
+
+    override fun onDestroyView() {
+        subscriptions.clear()
+        super.onDestroyView()
+    }
+
     override fun getMaterialAboutList(context: Context): MaterialAboutList {
-        val iconSize = 24
+        val activity = requireActivity()
+
+        val loadingDataString = activity.getString(R.string.about_app_loading)
+        val serverInfoCard = createServerInfoCard(loadingDataString, loadingDataString)
+
         val appCardBuilder = MaterialAboutCard.Builder()
+        appCardBuilder.title(R.string.about_app_text_app)
         appCardBuilder.addItem(
             MaterialAboutActionItem.Builder()
                 .text(getString(R.string.version))
                 .icon(
-                    IconDrawable(context, MaterialIcons.md_info_outline).colorRes(R.color.sub_text_color).sizeDp(
+                    IconDrawable(
+                        context,
+                        MaterialIcons.md_info_outline
+                    ).colorRes(R.color.sub_text_color).sizeDp(
                         iconSize
                     )
                 )
@@ -69,11 +119,12 @@ class AboutFragment : MaterialAboutFragment() {
                 .setOnClickAction {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(getString(R.string.about_app_url_found_issue))
-                    activity!!.startActivity(intent)
+                    activity.startActivity(intent)
                 }
                 .build())
 
         val miscCardBuilder = MaterialAboutCard.Builder()
+        miscCardBuilder.title(R.string.about_app_text_dev)
         miscCardBuilder
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_source_code)
@@ -86,7 +137,7 @@ class AboutFragment : MaterialAboutFragment() {
                 .setOnClickAction {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(getString(R.string.about_app_url_source_code))
-                    activity!!.startActivity(intent)
+                    activity.startActivity(intent)
                 }
                 .build())
             .addItem(MaterialAboutActionItem.Builder()
@@ -97,7 +148,7 @@ class AboutFragment : MaterialAboutFragment() {
                         MaterialCommunityIcons.mdi_github_circle
                     ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
                 )
-                .setOnClickAction { AboutLibrariesActivity.start(activity!!) }
+                .setOnClickAction { AboutLibrariesActivity.start(activity) }
                 .build())
 
         val authorCardBuilder = MaterialAboutCard.Builder()
@@ -106,20 +157,26 @@ class AboutFragment : MaterialAboutFragment() {
             .text(R.string.about_app_text_web)
             .subText(R.string.about_app_url_web)
             .icon(
-                IconDrawable(context, MaterialCommunityIcons.mdi_web).colorRes(R.color.sub_text_color).sizeDp(
+                IconDrawable(
+                    context,
+                    MaterialCommunityIcons.mdi_web
+                ).colorRes(R.color.sub_text_color).sizeDp(
                     iconSize
                 )
             )
             .setOnClickAction {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(getString(R.string.about_app_url_web))
-                activity!!.startActivity(intent)
+                activity.startActivity(intent)
             }
             .build())
             .addItem(
                 ConvenienceBuilder.createEmailItem(
                     context,
-                    IconDrawable(context, MaterialIcons.md_email).colorRes(R.color.sub_text_color).sizeDp(iconSize),
+                    IconDrawable(
+                        context,
+                        MaterialIcons.md_email
+                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
                     getText(R.string.about_app_text_email),
                     true,
                     getString(R.string.about_app_email),
@@ -127,10 +184,69 @@ class AboutFragment : MaterialAboutFragment() {
                 )
             )
 
-        return MaterialAboutList(appCardBuilder.build(), miscCardBuilder.build(), authorCardBuilder.build())
+        return MaterialAboutList(
+            serverInfoCard,
+            appCardBuilder.build(),
+            miscCardBuilder.build(),
+            authorCardBuilder.build()
+        )
     }
 
     override fun getTheme(): Int {
         return R.style.AppTheme_MaterialAboutActivity_Fragment
+    }
+
+    private fun updateServerInfoCard(
+        version: String,
+        serverUrl: String
+    ) {
+        list.cards.removeAt(0)
+        list.cards.add(0, createServerInfoCard(version, serverUrl))
+        refreshMaterialAboutList()
+    }
+
+    private fun removeServerCard() {
+        list.cards.removeAt(0)
+        refreshMaterialAboutList()
+    }
+
+    private fun createServerInfoCard(
+        version: String,
+        serverUrl: String
+    ): MaterialAboutCard {
+        val activity = requireActivity()
+        val serverInfo = MaterialAboutCard.Builder()
+        serverInfo.title(R.string.about_app_text_server_info)
+        serverInfo.addItem(
+            MaterialAboutActionItem.Builder()
+                .text(getString(R.string.version))
+                .icon(
+                    IconDrawable(
+                        context,
+                        MaterialIcons.md_info_outline
+                    ).colorRes(R.color.sub_text_color).sizeDp(
+                        iconSize
+                    )
+                )
+                .subText(version)
+                .build()
+        )
+        val serverUrlItem = MaterialAboutActionItem.Builder()
+            .text(R.string.about_app_text_server_url)
+            .subText(serverUrl)
+            .icon(
+                IconDrawable(
+                    context,
+                    MaterialCommunityIcons.mdi_web
+                ).colorRes(R.color.sub_text_color).sizeDp(
+                    iconSize
+                )
+            ).setOnClickAction {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(serverUrl)
+                activity.startActivity(intent)
+            }
+        serverInfo.addItem(serverUrlItem.build())
+        return serverInfo.build()
     }
 }

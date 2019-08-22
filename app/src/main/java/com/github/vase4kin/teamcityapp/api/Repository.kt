@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api
 
+import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
@@ -199,4 +200,9 @@ interface Repository {
      * @return [Single] with [Build]
      */
     fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build>
+
+    /**
+     * Server info
+     */
+    fun serverInfo(): Single<ServerInfo>
 }
