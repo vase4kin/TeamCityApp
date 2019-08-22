@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api
 
+import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
@@ -227,5 +228,12 @@ class RepositoryImpl(
      */
     override fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build> {
         return teamCityService.cancelBuild(urlFormatter.formatBasicUrl(url), buildCancelRequest)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun serverInfo(): Single<ServerInfo> {
+        return cacheProviders.serverInfo(teamCityService.serverInfo())
     }
 }

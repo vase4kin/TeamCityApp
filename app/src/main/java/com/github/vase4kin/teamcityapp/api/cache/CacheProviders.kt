@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api.cache
 
+import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
@@ -26,7 +27,11 @@ import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
-import io.rx_cache2.*
+import io.rx_cache2.DynamicKey
+import io.rx_cache2.DynamicKeyGroup
+import io.rx_cache2.EvictDynamicKey
+import io.rx_cache2.EvictDynamicKeyGroup
+import io.rx_cache2.LifeCache
 import java.util.concurrent.TimeUnit
 
 /**
@@ -170,4 +175,7 @@ interface CacheProviders {
         includeDisconnectedPlusFields: DynamicKey,
         evictDynamicKey: EvictDynamicKey
     ): Single<Agents>
+
+    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
+    fun serverInfo(serverInfo: Single<ServerInfo>): Single<ServerInfo>
 }

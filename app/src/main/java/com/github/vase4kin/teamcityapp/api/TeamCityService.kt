@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.api
 
+import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
@@ -28,7 +29,13 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import okhttp3.ResponseBody
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
+import retrofit2.http.Url
 
 /**
  * Authorization header
@@ -246,4 +253,11 @@ interface TeamCityService {
     @Headers(APPLICATION_JSON)
     @POST
     fun cancelBuild(@Url url: String, @Body buildCancelRequest: BuildCancelRequest): Single<Build>
+
+    /**
+     * Server info
+     */
+    @Headers(APPLICATION_JSON)
+    @GET("app/rest/server")
+    fun serverInfo(): Single<ServerInfo>
 }
