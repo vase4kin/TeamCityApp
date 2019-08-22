@@ -27,12 +27,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import io.rx_cache2.internal.RxCache
 
 /**
  * Impl of [BaseListRxDataManagerImpl] for [com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl]
  */
 class AccountsDataManagerImpl(
-    private val sharedUserStorage: SharedUserStorage
+    private val sharedUserStorage: SharedUserStorage,
+    private val rxCache: RxCache
 ) : BaseListRxDataManagerImpl<SharedUserStorage, UserAccount>(), AccountsDataManager {
 
     /**
@@ -53,7 +55,7 @@ class AccountsDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun isLastAcccount(): Boolean {
+    override fun isLastAccount(): Boolean {
         return sharedUserStorage.userAccounts.size == 1
     }
 
@@ -70,6 +72,13 @@ class AccountsDataManagerImpl(
     override fun makeAnotherAccountActive() {
         sharedUserStorage.setOtherUserActive()
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun evictAllCache() {
+        rxCache.evictAll().subscribe()
+    }
 }
 
 interface AccountsDataManager : BaseListRxDataManager<SharedUserStorage, UserAccount> {
@@ -78,5 +87,7 @@ interface AccountsDataManager : BaseListRxDataManager<SharedUserStorage, UserAcc
 
     fun makeAnotherAccountActive()
 
-    fun isLastAcccount(): Boolean
+    fun isLastAccount(): Boolean
+
+    fun evictAllCache()
 }

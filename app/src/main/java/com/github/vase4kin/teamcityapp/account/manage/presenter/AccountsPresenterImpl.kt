@@ -84,6 +84,7 @@ class AccountsPresenterImpl @Inject constructor(
         tracker.trackAccountRemove()
         view.removeAccount(account)
         dataManager.removeAccount(account)
+        dataManager.evictAllCache()
         router.openLogin()
     }
 
@@ -99,6 +100,6 @@ class AccountsPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onAccountClick(account: UserAccount) {
-        view.showRemoveAccountDialog(account, dataManager.isLastAcccount())
+        view.showRemoveAccountDialog(account, dataManager.isLastAccount())
     }
 }
