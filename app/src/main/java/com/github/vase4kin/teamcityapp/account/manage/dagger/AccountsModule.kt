@@ -25,7 +25,11 @@ import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter
 import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouterImpl
 import com.github.vase4kin.teamcityapp.account.manage.tracker.FirebaseManageAccountsTrackerImpl
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
-import com.github.vase4kin.teamcityapp.account.manage.view.*
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountViewHolderFactory
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountsViewImpl
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
@@ -36,13 +40,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import io.rx_cache2.internal.RxCache
 
 @Module
 class AccountsModule {
 
     @Provides
-    fun providesBaseListRxDataManager(sharedUserStorage: SharedUserStorage): AccountsDataManager {
-        return AccountsDataManagerImpl(sharedUserStorage)
+    fun providesBaseListRxDataManager(sharedUserStorage: SharedUserStorage, rxCache: RxCache): AccountsDataManager {
+        return AccountsDataManagerImpl(sharedUserStorage, rxCache)
     }
 
     @Provides
