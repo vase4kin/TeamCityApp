@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,6 +18,8 @@ package com.github.vase4kin.teamcityapp.dagger.modules;
 
 import androidx.annotation.Nullable;
 
+import com.github.vase4kin.teamcityapp.BuildConfig;
+import com.github.vase4kin.teamcityapp.about.ServerInfo;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.agents.api.Agents;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -31,6 +33,8 @@ import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch;
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -216,5 +220,11 @@ public class FakeTeamCityServiceImpl implements TeamCityService {
     @Override
     public Single<Build> cancelBuild(@Url String url, @Body BuildCancelRequest buildCancelRequest) {
         return Single.just(Mocks.failedBuild());
+    }
+
+    @NotNull
+    @Override
+    public Single<ServerInfo> serverInfo() {
+        return Single.just(new ServerInfo(BuildConfig.VERSION_NAME, Mocks.URL));
     }
 }
