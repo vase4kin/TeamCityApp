@@ -152,5 +152,7 @@ interface LoginView {
         fun onTryItOutTextClick()
 
         fun onTryItOutActionClick()
+
+        fun onDeclineTryItOutActionClick()
     }
 }

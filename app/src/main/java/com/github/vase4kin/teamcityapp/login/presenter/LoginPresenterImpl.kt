@@ -147,6 +147,7 @@ class LoginPresenterImpl @Inject constructor(
      */
     override fun onTryItOutTextClick() {
         val url = remoteService.getTryItOutUrl()
+        tracker.trackUserClicksOnTryItOut()
         view.showTryItOutDialog(url)
     }
 
@@ -154,8 +155,16 @@ class LoginPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onTryItOutActionClick() {
+        tracker.trackUserTriesTryItOut()
         val url = remoteService.getTryItOutUrl()
         authGuestUser(url, false)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onDeclineTryItOutActionClick() {
+        tracker.trackUserDeclinesTryingTryItOut()
     }
 
     private fun authUser(

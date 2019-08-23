@@ -21,18 +21,26 @@ import android.content.Context;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.text.HtmlCompat;
+
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.github.vase4kin.teamcityapp.R;
+import com.google.android.material.textfield.TextInputLayout;
+
 import butterknife.BindColor;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.github.vase4kin.teamcityapp.R;
-import com.google.android.material.textfield.TextInputLayout;
 
 public class LoginViewImpl implements LoginView {
 
@@ -315,7 +323,12 @@ public class LoginViewImpl implements LoginView {
                     }
                     dialog.dismiss();
                 })
-                .onNegative((dialog, which) -> dialog.dismiss())
+                .onNegative((dialog, which) -> {
+                    if (listener != null) {
+                        listener.onDeclineTryItOutActionClick();
+                    }
+                    dialog.dismiss();
+                })
                 .canceledOnTouchOutside(false)
                 .autoDismiss(false)
                 .cancelable(false)

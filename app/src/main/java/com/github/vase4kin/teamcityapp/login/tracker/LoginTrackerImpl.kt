@@ -22,7 +22,8 @@ import com.google.firebase.analytics.FirebaseAnalytics
 /**
  * Tracker fabric impl of [LoginTracker]
  */
-class LoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : CreateAccountTrackerImpl(firebaseAnalytics),
+class LoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) :
+    CreateAccountTrackerImpl(firebaseAnalytics),
     LoginTracker {
 
     /**
@@ -30,5 +31,26 @@ class LoginTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : CreateAccountTrac
      */
     override fun trackView() {
         firebaseAnalytics.logEvent(LoginTracker.SCREEN_NAME, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserClicksOnTryItOut() {
+        firebaseAnalytics.logEvent(LoginTracker.EVENT_USER_CLICKS_ON_TRY_IT_OUT, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserTriesTryItOut() {
+        firebaseAnalytics.logEvent(LoginTracker.EVENT_USER_TRIES_TRY_IT_OUT, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserDeclinesTryingTryItOut() {
+        firebaseAnalytics.logEvent(LoginTracker.EVENT_USER_DECLINES_TRY_IT_OUT, null)
     }
 }
