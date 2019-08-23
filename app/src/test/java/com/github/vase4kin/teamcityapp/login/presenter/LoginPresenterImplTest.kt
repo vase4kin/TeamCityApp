@@ -211,6 +211,7 @@ class LoginPresenterImplTest {
         presenter.onTryItOutTextClick()
         verify(remoteService).getTryItOutUrl()
         verify(view).showTryItOutDialog(url)
+        verify(tracker).trackUserClicksOnTryItOut()
     }
 
     @Test
@@ -220,6 +221,13 @@ class LoginPresenterImplTest {
         doNothing().`when`(presenter).authGuestUser(url, false)
         presenter.onTryItOutActionClick()
         verify(remoteService).getTryItOutUrl()
+        verify(tracker).trackUserTriesTryItOut()
         verify(presenter).authGuestUser(url, false)
+    }
+
+    @Test
+    fun onDeclineTryItOutActionClick() {
+        presenter.onDeclineTryItOutActionClick()
+        verify(tracker).trackUserDeclinesTryingTryItOut()
     }
 }
