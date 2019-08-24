@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.login.view;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues;
@@ -28,8 +29,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import it.cosenonjaviste.daggermock.DaggerMockRule;
-import okhttp3.*;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -40,20 +40,42 @@ import org.mockito.Captor;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 
-import javax.inject.Named;
 import java.io.IOException;
 
+import javax.inject.Named;
+
+import it.cosenonjaviste.daggermock.DaggerMockRule;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import okhttp3.Request;
+import okhttp3.Response;
+
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.*;
+import static androidx.test.espresso.action.ViewActions.clearText;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
-import static androidx.test.espresso.matcher.ViewMatchers.*;
-import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.*;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE;
+import static com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE;
 import static com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -384,6 +406,19 @@ public class LoginActivityTest {
 
         onView(withId(R.id.give_it_a_try)).check(matches(not(isDisplayed())));
 
+    }
+
+    @Test
+    public void testUserCanSeeDeclinesItOutIfItIsEnabled() {
+        final String urlWithPath = "https://test.com/test";
+        setTryItOutValue(true);
+        setTryItOutValueUrl(urlWithPath);
+
+        mActivityRule.launchActivity(null);
+
+        onView(withId(R.id.give_it_a_try)).check(matches(isDisplayed())).perform(click());
+        onView(withText(R.string.warning_ssl_dialog_negative)).perform(click());
+        assertNoUnverifiedIntents();
     }
 
     @Test
