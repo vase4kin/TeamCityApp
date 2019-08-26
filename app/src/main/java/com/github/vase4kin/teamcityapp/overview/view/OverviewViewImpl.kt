@@ -279,8 +279,8 @@ class OverviewViewImpl(
      * Add card
      *
      * @param header - Header
-     * @param icon   - Icon
-     * @param text   - Text
+     * @param icon - Icon
+     * @param text - Text
      */
     private fun addCard(@StringRes header: Int, icon: String, text: String) {
         elements.add(BuildElement(icon, text, activity.getString(header)))
@@ -406,7 +406,7 @@ class OverviewViewImpl(
      * Show prompt
      *
      * @param secondaryText - secondary text
-     * @param listener      - listener to receive callback when prompt is shown
+     * @param listener - listener to receive callback when prompt is shown
      */
     private fun showPrompt(
         @StringRes secondaryText: Int,

@@ -66,7 +66,7 @@ abstract class BaseListPresenterImpl<T : BaseDataModel, S : Jsonable, VM : BaseL
      * Use this one to load data with DataManager
      *
      * @param loadingListener - Receive server callbacks
-     * @param update          - Force cache update (if it's supported)
+     * @param update - Force cache update (if it's supported)
      */
     protected abstract fun loadData(loadingListener: OnLoadingListener<List<S>>, update: Boolean)
 
