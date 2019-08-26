@@ -25,7 +25,7 @@ interface OnTextTabChangeEventListener {
      * Update tab with new title
      *
      * @param tabPosition - Tab position
-     * @param newTitle    - New tab title
+     * @param newTitle - New tab title
      */
     fun onUpdateTabTitle(tabPosition: Int, newTitle: String)
 }

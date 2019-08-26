@@ -42,7 +42,7 @@ interface BaseTabsViewModel {
      * Update tab title by tab position
      *
      * @param tabPosition - Tab position
-     * @param newTitle    - New title
+     * @param newTitle - New title
      */
     fun updateTabTitle(tabPosition: Int, newTitle: String)
 }
