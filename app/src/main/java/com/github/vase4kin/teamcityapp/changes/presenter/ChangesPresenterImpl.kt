@@ -95,7 +95,7 @@ class ChangesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun createModel(data: List<Changes.Change>): ChangesDataModel {
+    public override fun createModel(data: List<Changes.Change>): ChangesDataModel {
         return ChangesDataModelImpl(data.toMutableList())
     }
 

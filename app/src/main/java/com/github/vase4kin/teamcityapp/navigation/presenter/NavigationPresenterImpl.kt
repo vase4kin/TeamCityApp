@@ -69,7 +69,7 @@ class NavigationPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun createModel(data: List<NavigationItem>): NavigationDataModel {
+    public override fun createModel(data: List<NavigationItem>): NavigationDataModel {
         val navigationItems = data.toMutableList()
         if (navigationItems.isNotEmpty() && dataManager.showRateTheApp()) {
             tracker.trackUserSawRateTheApp()
