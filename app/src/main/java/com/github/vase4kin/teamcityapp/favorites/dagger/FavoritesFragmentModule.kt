@@ -53,7 +53,12 @@ class FavoritesFragmentModule {
         fragment: FavoritesFragment,
         adapter: SimpleSectionedRecyclerViewAdapter<NavigationAdapter>
     ): FavoritesView {
-        return FavoritesViewImpl(fragment.view!!, fragment.activity, R.string.empty_list_message_favorites, adapter)
+        return FavoritesViewImpl(
+            fragment.view!!,
+            fragment.activity,
+            R.string.empty_list_message_favorites,
+            adapter
+        )
     }
 
     @Provides
@@ -64,35 +69,31 @@ class FavoritesFragmentModule {
     @Provides
     fun providesNavigationValueExtractor(): NavigationValueExtractor {
         return object : NavigationValueExtractor {
-            override fun getName(): String {
-                return ""
-            }
-
-            override fun getId(): String? {
-                return null
-            }
-
-            override fun getBuildDetails(): BuildDetails? {
-                return null
-            }
-
-            override fun getBuildListFilter(): BuildListFilter? {
-                return null
-            }
-
-            override fun isBundleNullOrEmpty(): Boolean {
-                return false
-            }
+            override val id: String
+                get() = ""
+            override val name: String
+                get() = ""
+            override val buildDetails: BuildDetails
+                get() = BuildDetails.STUB
+            override val buildListFilter: BuildListFilter?
+                get() = null
+            override val isBundleNullOrEmpty: Boolean
+                get() = true
         }
     }
 
     @Provides
-    fun providesFavoritesInteractor(repository: Repository, storage: SharedUserStorage): FavoritesInteractor {
+    fun providesFavoritesInteractor(
+        repository: Repository,
+        storage: SharedUserStorage
+    ): FavoritesInteractor {
         return FavoritesInteractorImpl(repository, storage)
     }
 
     @Provides
-    fun providesNavigationAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<NavigationDataModel>>): NavigationAdapter {
+    fun providesNavigationAdapter(
+        viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<NavigationDataModel>>
+    ): NavigationAdapter {
         return NavigationAdapter(viewHolderFactories)
     }
 

@@ -63,8 +63,8 @@ class SnapshotDependenciesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun createModel(data: MutableList<BuildDetails>): BuildListDataModel {
-        return BuildListDataModelImpl(data)
+    override fun createModel(data: List<BuildDetails>): BuildListDataModel {
+        return BuildListDataModelImpl(data.toMutableList())
     }
 
     /**

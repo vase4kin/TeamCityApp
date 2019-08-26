@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImp
 /**
  * Impl of [BuildLogValueExtractor]
  */
-class BuildLogValueExtractorImpl(mBundle: Bundle) : BaseValueExtractorImpl(mBundle), BuildLogValueExtractor {
+class BuildLogValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle), BuildLogValueExtractor {
 
     /**
      * {@inheritDoc}

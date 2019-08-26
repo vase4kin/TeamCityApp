@@ -51,8 +51,8 @@ class ArtifactAdapter
         super.onBindViewHolder(holder, position)
         val artifactFile = dataModel.getFile(position)
         // Find the way how to make it through DI
-        (holder as ArtifactViewHolder).mContainer.setOnClickListener { onClickListener?.onClick(artifactFile) }
-        holder.mContainer.setOnLongClickListener {
+        (holder as ArtifactViewHolder).container.setOnClickListener { onClickListener?.onClick(artifactFile) }
+        holder.container.setOnLongClickListener {
             onClickListener?.onLongClick(artifactFile)
             true
         }

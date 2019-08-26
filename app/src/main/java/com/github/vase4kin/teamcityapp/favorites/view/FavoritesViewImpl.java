@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,7 +49,7 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
      * {@inheritDoc}
      */
     @Override
-    public void setViewListener(FavoritesView.ViewListener listener) {
+    public void setViewListener(@NonNull FavoritesView.ViewListener listener) {
         this.listener = listener;
     }
 
@@ -57,8 +57,8 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
      * {@inheritDoc}
      */
     @Override
-    public void showData(final NavigationDataModel dataModel) {
-        NavigationAdapter baseAdapter = mAdapter.getBaseAdapter();
+    public void showData(@NonNull final NavigationDataModel dataModel) {
+        NavigationAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.setDataModel(dataModel);
         baseAdapter.setOnClickListener(new OnNavigationItemClickListener() {
             @Override
@@ -92,17 +92,17 @@ public class FavoritesViewImpl extends BaseListViewImpl<NavigationDataModel, Sim
                     sections.add(new SimpleSectionedRecyclerViewAdapter.Section(i, projectName));
                 }
             }
-            mAdapter.setListener(position -> {
+            getAdapter().setListener(position -> {
                 final String projectName = dataModel.getProjectName(position);
                 final String projectId = dataModel.getProjectId(position);
-                NavigationActivity.Companion.start(projectName, projectId, mActivity);
+                NavigationActivity.Companion.start(projectName, projectId, getActivity());
             });
         }
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-        mAdapter.setSections(sections.toArray(userStates));
+        getAdapter().setSections(sections.toArray(userStates));
 
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getRecyclerView().setAdapter(getAdapter());
+        getRecyclerView().getAdapter().notifyDataSetChanged();
     }
 
     /**

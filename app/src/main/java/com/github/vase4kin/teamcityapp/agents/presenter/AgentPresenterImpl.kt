@@ -32,11 +32,11 @@ import javax.inject.Inject
  * Handles logic of [com.github.vase4kin.teamcityapp.agents.view.AgentListFragment]
  */
 class AgentPresenterImpl @Inject constructor(
-    view: BaseListView<*>,
+    view: BaseListView<AgentDataModel>,
     dataManager: AgentsDataManager,
     tracker: ViewTracker,
     valueExtractor: AgentsValueExtractor
-) : BaseListPresenterImpl<AgentDataModel, Agent, BaseListView<*>, AgentsDataManager, ViewTracker, AgentsValueExtractor>(
+) : BaseListPresenterImpl<AgentDataModel, Agent, BaseListView<AgentDataModel>, AgentsDataManager, ViewTracker, AgentsValueExtractor>(
     view,
     dataManager,
     tracker,

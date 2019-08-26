@@ -58,12 +58,12 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      * {@inheritDoc}
      */
     @Override
-    public void showData(ChangesDataModel dataModel) {
-        Mugen.with(mRecyclerView, mLoadMoreCallbacks).start();
-        mAdapter.setOnChangeClickListener(this);
-        mAdapter.setDataModel(dataModel);
-        mRecyclerView.setAdapter(mAdapter);
-        mAdapter.notifyDataSetChanged();
+    public void showData(@NonNull ChangesDataModel dataModel) {
+        Mugen.with(getRecyclerView(), mLoadMoreCallbacks).start();
+        getAdapter().setOnChangeClickListener(this);
+        getAdapter().setDataModel(dataModel);
+        getRecyclerView().setAdapter(getAdapter());
+        getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -71,8 +71,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      */
     @Override
     public void addLoadMore() {
-        mAdapter.addLoadMore();
-        mAdapter.notifyDataSetChanged();
+        getAdapter().addLoadMore();
+        getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -80,8 +80,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      */
     @Override
     public void removeLoadMore() {
-        mAdapter.removeLoadMore();
-        mAdapter.notifyDataSetChanged();
+        getAdapter().removeLoadMore();
+        getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -89,8 +89,8 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
      */
     @Override
     public void addMoreBuilds(@NonNull ChangesDataModel dataModel) {
-        mAdapter.addMoreBuilds(dataModel);
-        mAdapter.notifyDataSetChanged();
+        getAdapter().addMoreBuilds(dataModel);
+        getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -99,7 +99,7 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
     @Override
     public void showRetryLoadMoreSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.load_more_retry_snack_bar_text,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, v -> mLoadMoreCallbacks.onLoadMore());
@@ -112,12 +112,12 @@ public class ChangesViewImpl extends BaseListViewImpl<ChangesDataModel, ChangesA
     @Override
     public void onClick(@NonNull Changes.Change change) {
         String content = change.getUsername() + " on " + change.getDate();
-        MaterialDialog.Builder builder = new MaterialDialog.Builder(mActivity)
+        MaterialDialog.Builder builder = new MaterialDialog.Builder(getActivity())
                 .title(change.getComment())
                 .content(content)
                 .positiveText(R.string.dialog_ok_title);
         if (change.getFiles().getFiles().isEmpty()) {
-            builder.items(new String[]{mActivity.getString(R.string.empty_list_files)});
+            builder.items(new String[]{getActivity().getString(R.string.empty_list_files)});
         } else {
             builder.items(change.getFiles().getFiles());
         }

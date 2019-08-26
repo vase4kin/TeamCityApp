@@ -40,15 +40,16 @@ class BuildQueueViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun getTitle(): String = mActivity.getString(R.string.build_queue_drawer_item)
+    override fun getTitle(): String = activity.getString(R.string.build_queue_drawer_item)
 
     /**
      * {@inheritDoc}
      */
-    override fun getEmptyMessage(): Int = when (filterProvider.queuedBuildsFilter) {
-        Filter.QUEUE_FAVORITES -> R.string.empty_list_message_favorite_build_queue
-        else -> R.string.empty_list_message_build_queue
-    }
+    override val emptyMessage: Int
+        get() = when (filterProvider.queuedBuildsFilter) {
+            Filter.QUEUE_FAVORITES -> R.string.empty_list_message_favorite_build_queue
+            else -> R.string.empty_list_message_build_queue
+        }
 
     /**
      * {@inheritDoc}
