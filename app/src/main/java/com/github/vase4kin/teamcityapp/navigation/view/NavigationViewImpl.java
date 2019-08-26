@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.navigation.view;
 import android.app.Activity;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -53,8 +54,8 @@ public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel, Na
      * {@inheritDoc}
      */
     @Override
-    public void setTitle(String title) {
-        ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
+    public void setTitle(@NonNull String title) {
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
         }
@@ -62,18 +63,18 @@ public class NavigationViewImpl extends BaseListViewImpl<NavigationDataModel, Na
 
     @Override
     public void hideTheRateApp() {
-        mAdapter.removeRateTheApp();
+        getAdapter().removeRateTheApp();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void showData(NavigationDataModel dataModel) {
-        mAdapter.setDataModel(dataModel);
-        mAdapter.setOnClickListener(mOnNavigationItemClickListener);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+    public void showData(@NonNull NavigationDataModel dataModel) {
+        getAdapter().setDataModel(dataModel);
+        getAdapter().setOnClickListener(mOnNavigationItemClickListener);
+        getRecyclerView().setAdapter(getAdapter());
+        getRecyclerView().getAdapter().notifyDataSetChanged();
     }
 
     /**

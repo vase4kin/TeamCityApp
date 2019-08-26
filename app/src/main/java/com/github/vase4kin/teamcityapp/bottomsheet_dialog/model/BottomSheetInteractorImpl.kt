@@ -32,7 +32,7 @@ import org.greenrobot.eventbus.EventBus
  * Impl of [BottomSheetInteractor]
  */
 class BottomSheetInteractorImpl(
-    private val title: String,
+    override val title: String,
     private val model: BottomSheetDataModel,
     private val context: Context,
     private val eventBus: EventBus
@@ -41,16 +41,8 @@ class BottomSheetInteractorImpl(
     /**
      * {@inheritDoc}
      */
-    override fun getBottomSheetDataModel(): BottomSheetDataModel {
-        return model
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun getTitle(): String {
-        return title
-    }
+    override val bottomSheetDataModel: BottomSheetDataModel
+        get() = model
 
     /**
      * {@inheritDoc}

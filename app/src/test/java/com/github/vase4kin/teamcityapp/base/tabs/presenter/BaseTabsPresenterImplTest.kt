@@ -74,7 +74,6 @@ class BaseTabsPresenterImplTest {
     fun testHandleOnPause() {
         presenter.onPause()
         verify(dataManager).unregisterEventBus()
-        verify(dataManager).setListener(null)
         verifyNoMoreInteractions(viewModel, tracker, dataManager)
     }
 }

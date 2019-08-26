@@ -29,7 +29,11 @@ import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManager
 import com.github.vase4kin.teamcityapp.artifact.permissions.PermissionManagerImpl
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouter
 import com.github.vase4kin.teamcityapp.artifact.router.ArtifactRouterImpl
-import com.github.vase4kin.teamcityapp.artifact.view.*
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactAdapter
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewHolderFactory
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewImpl
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
@@ -51,7 +55,7 @@ class ArtifactsModule {
 
     @Provides
     fun providesArtifactView(fragment: ArtifactListFragment, adapter: ArtifactAdapter): ArtifactView {
-        return ArtifactViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_artifacts, adapter)
+        return ArtifactViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_artifacts, adapter)
     }
 
     @Provides

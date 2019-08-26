@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,12 +90,12 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
     @Override
     public void showData(TestsDataModel dataModel) {
         mTestsDataModel = dataModel;
-        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        TestOccurrencesAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.setDataModel(dataModel);
         baseAdapter.setOnClickListener(mListener);
         initSections();
         initSectionAdapter();
-        Mugen.with(mRecyclerView, mLoadMoreCallbacks).start();
+        Mugen.with(getRecyclerView(), mLoadMoreCallbacks).start();
     }
 
     /**
@@ -103,8 +103,8 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     private void initSectionAdapter() {
         setSections();
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getRecyclerView().setAdapter(getAdapter());
+        getRecyclerView().getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -112,7 +112,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     private void setSections() {
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[mSections.size()];
-        mAdapter.setSections(mSections.toArray(userStates));
+        getAdapter().setSections(mSections.toArray(userStates));
     }
 
     /**
@@ -157,7 +157,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     @Override
     public void invalidateOptionsMenu() {
-        mActivity.invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
     }
 
     /**
@@ -201,7 +201,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mActivity.invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
         switch (item.getItemId()) {
             case R.id.show_ignored:
                 mListener.loadIgnoredTests();
@@ -233,7 +233,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     @Override
     public void addLoadMore() {
-        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        TestOccurrencesAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.addLoadMore();
         baseAdapter.notifyDataSetChanged();
     }
@@ -243,7 +243,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     @Override
     public void removeLoadMore() {
-        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        TestOccurrencesAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.removeLoadMore();
         baseAdapter.notifyDataSetChanged();
     }
@@ -253,7 +253,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
      */
     @Override
     public void addMoreBuilds(TestsDataModel dataModel) {
-        TestOccurrencesAdapter baseAdapter = mAdapter.getBaseAdapter();
+        TestOccurrencesAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.addMoreBuilds(dataModel);
         baseAdapter.notifyDataSetChanged();
     }
@@ -264,7 +264,7 @@ public class TestsViewImpl extends BaseListViewImpl<TestsDataModel, SimpleSectio
     @Override
     public void showRetryLoadMoreSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.load_more_retry_snack_bar_text,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {

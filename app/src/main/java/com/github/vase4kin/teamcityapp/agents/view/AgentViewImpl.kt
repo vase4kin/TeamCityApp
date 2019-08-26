@@ -38,9 +38,9 @@ class AgentViewImpl(
      * {@inheritDoc}
      */
     override fun showData(dataModel: AgentDataModel) {
-        mAdapter.setDataModel(dataModel)
-        mRecyclerView.adapter = mAdapter
-        mRecyclerView.adapter!!.notifyDataSetChanged()
+        adapter.dataModel = dataModel
+        recyclerView.adapter = adapter
+        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     /**

@@ -50,7 +50,10 @@ class NavigationPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun loadData(loadingListener: OnLoadingListener<List<NavigationItem>>, update: Boolean) {
+    public override fun loadData(
+        loadingListener: OnLoadingListener<List<NavigationItem>>,
+        update: Boolean
+    ) {
         dataManager.load(valueExtractor.id, update, loadingListener)
     }
 
@@ -66,12 +69,13 @@ class NavigationPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: MutableList<NavigationItem>): NavigationDataModel {
-        if (data.isNotEmpty() && dataManager.showRateTheApp()) {
+    override fun createModel(data: List<NavigationItem>): NavigationDataModel {
+        val navigationItems = data.toMutableList()
+        if (navigationItems.isNotEmpty() && dataManager.showRateTheApp()) {
             tracker.trackUserSawRateTheApp()
-            data.add(RateTheApp.POSITION, RateTheApp())
+            navigationItems.add(RateTheApp.POSITION, RateTheApp())
         }
-        return NavigationDataModelImpl(data)
+        return NavigationDataModelImpl(navigationItems)
     }
 
     /**

@@ -85,15 +85,18 @@ class ChangesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun loadData(loadingListener: OnLoadingListener<List<Changes.Change>>, update: Boolean) {
+    public override fun loadData(
+        loadingListener: OnLoadingListener<List<Changes.Change>>,
+        update: Boolean
+    ) {
         dataManager.loadLimited(valueExtractor.url, loadingListener, update)
     }
 
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: MutableList<Changes.Change>): ChangesDataModel {
-        return ChangesDataModelImpl(data)
+    override fun createModel(data: List<Changes.Change>): ChangesDataModel {
+        return ChangesDataModelImpl(data.toMutableList())
     }
 
     /**

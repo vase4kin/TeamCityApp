@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.agents.presenter
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
+import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
@@ -30,9 +31,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Matchers.eq
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.powermock.modules.junit4.PowerMockRunner
-import java.util.*
+import java.util.ArrayList
 
 @RunWith(PowerMockRunner::class)
 class AgentPresenterImplTest {
@@ -44,7 +47,7 @@ class AgentPresenterImplTest {
     @Mock
     private lateinit var bundle: Bundle
     @Mock
-    private lateinit var view: BaseListView<*>
+    private lateinit var view: BaseListView<AgentDataModel>
     @Mock
     private lateinit var dataManager: AgentsDataManager
     @Mock
