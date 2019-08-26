@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,7 +87,7 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
      * {@inheritDoc}
      */
     @Override
-    public void setupAutoComplete(final List<String> branches) {
+    public void setupAutoComplete(@NonNull final List<String> branches) {
         BranchArrayAdapter adapter = new BranchArrayAdapter(mActivity, android.R.layout.simple_dropdown_item_1line, branches);
         mBranchAutocomplete.setAdapter(adapter);
         mBranchAutocomplete.setOnItemClickListener((parent, view, position, id) -> hideKeyboard());
@@ -104,7 +104,7 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
      * {@inheritDoc}
      */
     @Override
-    public void setupAutoCompleteForSingleBranch(List<String> branches) {
+    public void setupAutoCompleteForSingleBranch(@NonNull List<String> branches) {
         mBranchAutocomplete.setAdapter(new ArrayAdapter<>(mActivity, android.R.layout.simple_dropdown_item_1line, branches));
         mBranchAutocomplete.setText(branches.get(0), false);
         mBranchAutocomplete.setEnabled(false);
@@ -147,6 +147,7 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
     /**
      * {@inheritDoc}
      */
+    @NonNull
     @Override
     public String getBranchName() {
         return mBranchAutocomplete.getText().toString();
@@ -172,7 +173,7 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
         /**
          * Branch filter
          */
-        private BranchFilter mFilter;
+        private BranchFilter filter;
 
         /**
          * Constructor
@@ -193,10 +194,10 @@ public class BranchesComponentViewImpl implements BranchesComponentView {
         @NonNull
         @Override
         public Filter getFilter() {
-            if (mFilter == null) {
-                mFilter = new BranchFilter();
+            if (filter == null) {
+                filter = new BranchFilter();
             }
-            return mFilter;
+            return filter;
         }
 
         /**

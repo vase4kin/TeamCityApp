@@ -44,7 +44,7 @@ class NavigationAdapter(
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is NavigationViewHolder) {
-            holder.mContainer.setOnClickListener { onClickListener?.onClick(dataModel.getNavigationItem(position)) }
+            holder.container.setOnClickListener { onClickListener?.onClick(dataModel.getNavigationItem(position)) }
         }
         if (holder is RateTheAppViewHolder) {
             holder.setListeners(
