@@ -21,10 +21,4 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 /**
  * Navigation bundle value extractor
  */
-interface NavigationValueExtractor : BaseValueExtractor {
-
-    /**
-     * @return Title of project/buildType
-     */
-    override fun getName(): String
-}
+interface NavigationValueExtractor : BaseValueExtractor

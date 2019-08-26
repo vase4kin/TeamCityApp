@@ -42,7 +42,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
@@ -143,7 +146,7 @@ class BuildListPresenterImplTest {
     @Test
     fun testOnShowQueuedBuildSnackBarClick() {
         `when`(valueExtractor.name).thenReturn("name")
-        presenter.mQueuedBuildHref = "href"
+        presenter.queuedBuildHref = "href"
         presenter.onShowQueuedBuildSnackBarClick()
         verify(tracker).trackUserWantsToSeeQueuedBuildDetails()
         verify(view).showBuildLoadingProgress()
@@ -161,7 +164,7 @@ class BuildListPresenterImplTest {
     @Test
     fun testOnLoadMore() {
         presenter.onLoadMore()
-        assertThat(presenter.mIsLoadMoreLoading, `is`(true))
+        assertThat(presenter.isLoadMoreLoading, `is`(true))
         verify(view).addLoadMore()
         verify(dataManager).loadMore(capture(onLoadingListenerArgumentCaptor))
         val loadingListener = onLoadingListenerArgumentCaptor.value
@@ -169,12 +172,12 @@ class BuildListPresenterImplTest {
         loadingListener.onSuccess(emptyList())
         verify(view).removeLoadMore()
         verify(view).addMoreBuilds(any())
-        assertThat(presenter.mIsLoadMoreLoading, `is`(false))
+        assertThat(presenter.isLoadMoreLoading, `is`(false))
 
         loadingListener.onFail("error")
         verify(view, times(2)).removeLoadMore()
         verify(view).showRetryLoadMoreSnackBar()
-        assertThat(presenter.mIsLoadMoreLoading, `is`(false))
+        assertThat(presenter.isLoadMoreLoading, `is`(false))
     }
 
     @Test
@@ -187,7 +190,7 @@ class BuildListPresenterImplTest {
     fun testOnActivityResultIfResultIsOk() {
         `when`(valueExtractor.id).thenReturn("id")
         presenter.onRunBuildActivityResult("href")
-        assertThat(presenter.mQueuedBuildHref, `is`(equalTo("href")))
+        assertThat(presenter.queuedBuildHref, `is`(equalTo("href")))
         verify(view).showBuildQueuedSuccessSnackBar()
         verify(view).showRefreshAnimation()
         verify(view).hideErrorView()
@@ -230,7 +233,7 @@ class BuildListPresenterImplTest {
 
     @Test
     fun testIsLoading() {
-        presenter.mIsLoadMoreLoading = true
+        presenter.isLoadMoreLoading = true
         assertThat(presenter.isLoading, `is`(equalTo(true)))
     }
 
@@ -242,7 +245,7 @@ class BuildListPresenterImplTest {
 
     @Test
     fun testOnSuccessCallBack() {
-        presenter.onSuccessCallBack(mutableListOf())
+        presenter.onSuccessCallBack(listOf())
         verify(view).showRunBuildFloatActionButton()
     }
 
