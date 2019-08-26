@@ -76,7 +76,7 @@ class AccountsViewImpl(
     override fun initViews(listener: BaseListView.ViewListener) {
         super.initViews(listener)
         // Setting float button icon
-        floatingActionButton.setImageDrawable(IconDrawable(mActivity, MaterialIcons.md_add).color(Color.WHITE))
+        floatingActionButton.setImageDrawable(IconDrawable(activity, MaterialIcons.md_add).color(Color.WHITE))
     }
 
     /**
@@ -85,17 +85,17 @@ class AccountsViewImpl(
     override fun showData(dataModel: AccountDataModel) {
         this.dataModel = dataModel
         dataModel.sort()
-        val baseAdapter = mAdapter.baseAdapter
-        baseAdapter.setDataModel(dataModel)
+        val baseAdapter = adapter.baseAdapter
+        baseAdapter.dataModel = dataModel
         baseAdapter.setListener(listener)
-        mRecyclerView.adapter = mAdapter
+        recyclerView.adapter = adapter
     }
 
     /**
      * {@inheritDoc}
      */
     override fun showRemoveAccountDialog(account: UserAccount, isLastAccount: Boolean) {
-        MaterialDialog.Builder(mActivity)
+        MaterialDialog.Builder(activity)
             .content(R.string.dialog_remove_not_active_account_positive_content_text)
             .positiveText(R.string.dialog_remove_active_account_positive_button_text)
             .callback(object : MaterialDialog.ButtonCallback() {
@@ -121,7 +121,7 @@ class AccountsViewImpl(
      */
     override fun removeAccount(userAccount: UserAccount) {
         dataModel.remove(userAccount)
-        mRecyclerView.adapter?.notifyDataSetChanged()
+        recyclerView.adapter?.notifyDataSetChanged()
     }
 
     /**
@@ -131,8 +131,8 @@ class AccountsViewImpl(
      * TODO: move to the router
      */
     private fun showCreateNewAccountDialog() {
-        mActivity.startActivity(Intent(mActivity, CreateAccountActivity::class.java))
-        mActivity.overridePendingTransition(R.anim.slide_in_bottom, R.anim.hold)
+        activity.startActivity(Intent(activity, CreateAccountActivity::class.java))
+        activity.overridePendingTransition(R.anim.slide_in_bottom, R.anim.hold)
     }
 
     /**

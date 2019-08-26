@@ -21,8 +21,16 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-import com.github.vase4kin.teamcityapp.properties.data.*
-import com.github.vase4kin.teamcityapp.properties.view.*
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManager
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataManagerImpl
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractor
+import com.github.vase4kin.teamcityapp.properties.data.PropertiesValueExtractorImpl
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesAdapter
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesView
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewHolderFactory
+import com.github.vase4kin.teamcityapp.properties.view.PropertiesViewImpl
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
@@ -43,7 +51,7 @@ class PropertiesModule {
 
     @Provides
     fun providesPropertiesView(fragment: PropertiesFragment, adapter: PropertiesAdapter): PropertiesView {
-        return PropertiesViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_parameters, adapter)
+        return PropertiesViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_parameters, adapter)
     }
 
     @Provides

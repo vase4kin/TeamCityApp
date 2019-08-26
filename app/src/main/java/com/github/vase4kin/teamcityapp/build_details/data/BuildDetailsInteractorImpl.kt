@@ -70,7 +70,7 @@ class BuildDetailsInteractorImpl(
      * {@inheritDoc}
      */
     override fun postRefreshOverViewDataEvent() {
-        mEventBus.post(OnOverviewRefreshDataEvent())
+        eventBus.post(OnOverviewRefreshDataEvent())
     }
 
     /**

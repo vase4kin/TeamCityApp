@@ -51,7 +51,7 @@ class AgentModule {
         fragment: AgentListFragment,
         agentsValueExtractor: AgentsValueExtractor,
         adapter: AgentsAdapter
-    ): BaseListView<*> {
+    ): BaseListView<AgentDataModel> {
         return AgentViewImpl(
             agentsValueExtractor.includeDisconnected(),
             fragment.view!!,

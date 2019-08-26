@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -88,7 +88,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
         super.initViews(listener);
         mFloatingActionButton.setVisibility(View.GONE);
         mFloatingActionButton.setOnClickListener(v -> mOnBuildListPresenterListener.onRunBuildFabClick());
-        mProgressDialog = new MaterialDialog.Builder(mActivity)
+        mProgressDialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.text_opening_build)
                 .progress(true, 0)
                 .autoDismiss(false)
@@ -102,7 +102,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void setTitle(@NonNull String title) {
-        ActionBar actionBar = ((AppCompatActivity) mActivity).getSupportActionBar();
+        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
         }
@@ -129,7 +129,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void addLoadMore() {
-        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        BuildListAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.addLoadMore();
         baseAdapter.notifyDataSetChanged();
     }
@@ -139,7 +139,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void removeLoadMore() {
-        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        BuildListAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.removeLoadMore();
         baseAdapter.notifyDataSetChanged();
     }
@@ -150,7 +150,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showRetryLoadMoreSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.load_more_retry_snack_bar_text,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, v -> mOnBuildListPresenterListener.onLoadMore());
@@ -162,11 +162,11 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public void addMoreBuilds(BuildListDataModel dataModel) {
-        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        BuildListAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.addMoreBuilds(dataModel);
         reInitSections(mDataModel);
         setSections(mSections);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getRecyclerView().getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -176,11 +176,11 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     public void showData(BuildListDataModel dataModel) {
         this.mDataModel = dataModel;
         mSections = initSections(dataModel);
-        BuildListAdapter baseAdapter = mAdapter.getBaseAdapter();
+        BuildListAdapter baseAdapter = getAdapter().getBaseAdapter();
         baseAdapter.setDataModel(dataModel);
         baseAdapter.setOnBuildListPresenterListener(mOnBuildListPresenterListener);
         initSectionAdapter();
-        Mugen.with(mRecyclerView, mOnBuildListPresenterListener).start();
+        Mugen.with(getRecyclerView(), mOnBuildListPresenterListener).start();
     }
 
     /**
@@ -197,7 +197,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showBuildQueuedSuccessSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.text_build_is_run,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.text_show_build, v -> mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick());
@@ -210,7 +210,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showBuildFilterAppliedSnackBar() {
         mFiltersAppliedSnackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.text_filters_applied,
                 Snackbar.LENGTH_INDEFINITE)
                 .setAction(R.string.text_snackbar_button_reset_filters, v -> mOnBuildListPresenterListener.onResetFiltersSnackBarActionClick());
@@ -223,7 +223,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showOpeningBuildErrorSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.error_opening_build,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.download_artifact_retry_snack_bar_retry_button, v -> mOnBuildListPresenterListener.onShowQueuedBuildSnackBarClick());
@@ -236,7 +236,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showAddToFavoritesSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.text_add_to_favorites,
                 Snackbar.LENGTH_LONG)
                 .setAction(R.string.text_view_favorites, v -> mOnBuildListPresenterListener.onNavigateToFavorites());
@@ -249,7 +249,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showRemoveFavoritesSnackBar() {
         Snackbar snackBar = Snackbar.make(
-                mRecyclerView,
+                getRecyclerView(),
                 R.string.text_remove_from_favorites,
                 Snackbar.LENGTH_LONG);
         snackBar.show();
@@ -277,7 +277,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showFilterBuildsPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
-        new MaterialTapTargetPrompt.Builder(mActivity)
+        new MaterialTapTargetPrompt.Builder(getActivity())
                 .setTarget(R.id.filter_builds)
                 .setPrimaryText(R.string.title_onboarding_filter_builds)
                 .setSecondaryText(R.string.text_onboarding_filter_builds)
@@ -300,7 +300,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showRunBuildPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
-        new MaterialTapTargetPrompt.Builder(mActivity)
+        new MaterialTapTargetPrompt.Builder(getActivity())
                 .setTarget(mFloatingActionButton)
                 .setPrimaryText(R.string.title_onboarding_run_build)
                 .setSecondaryText(R.string.text_onboarding_run_build)
@@ -308,8 +308,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
                 .setBackgroundColour(color)
                 .setCaptureTouchEventOutsidePrompt(true)
                 .setPromptFocal(new RectanglePromptFocal().setCornerRadius(
-                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius),
-                        mActivity.getResources().getDimension(R.dimen.default_prompt_fab_radius)))
+                        getActivity().getResources().getDimension(R.dimen.default_prompt_fab_radius),
+                        getActivity().getResources().getDimension(R.dimen.default_prompt_fab_radius)))
                 .setPromptStateChangeListener((prompt, state) -> {
                     if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
                         listener.onPromptShown();
@@ -324,7 +324,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
     @Override
     public void showFavPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         int color = getToolbarColor();
-        new MaterialTapTargetPrompt.Builder(mActivity)
+        new MaterialTapTargetPrompt.Builder(getActivity())
                 .setTarget(R.id.add_to_favorites)
                 .setPrimaryText(R.string.title_onboarding_add_fav)
                 .setSecondaryText(R.string.text_onboarding_add_fav)
@@ -346,7 +346,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @ColorInt
     private int getToolbarColor() {
-        return ((ColorDrawable) mActivity.findViewById(R.id.toolbar).getBackground()).getColor();
+        return ((ColorDrawable) getActivity().findViewById(R.id.toolbar).getBackground()).getColor();
     }
 
     /**
@@ -370,7 +370,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        mActivity.invalidateOptionsMenu();
+        getActivity().invalidateOptionsMenu();
         switch (item.getItemId()) {
             case R.id.filter_builds:
                 mOnBuildListPresenterListener.onFilterBuildsOptionMenuClick();
@@ -388,7 +388,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     @Override
     public boolean isBuildListOpen() {
-        return mActivity instanceof BuildListActivity;
+        return getActivity() instanceof BuildListActivity;
     }
 
     /**
@@ -408,8 +408,8 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     private void initSectionAdapter() {
         setSections(mSections);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.getAdapter().notifyDataSetChanged();
+        getRecyclerView().setAdapter(getAdapter());
+        getRecyclerView().getAdapter().notifyDataSetChanged();
     }
 
     /**
@@ -419,7 +419,7 @@ public class BuildListViewImpl extends BaseListViewImpl<BuildListDataModel, Simp
      */
     private void setSections(List<SimpleSectionedRecyclerViewAdapter.Section> sections) {
         SimpleSectionedRecyclerViewAdapter.Section[] userStates = new SimpleSectionedRecyclerViewAdapter.Section[sections.size()];
-        mAdapter.setSections(sections.toArray(userStates));
+        getAdapter().setSections(sections.toArray(userStates));
     }
 
     /**
