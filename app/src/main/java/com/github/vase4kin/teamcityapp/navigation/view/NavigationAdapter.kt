@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.navigation.view
 
+import android.view.View
 import com.github.vase4kin.teamcityapp.base.list.adapter.BaseAdapter
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
@@ -44,12 +45,20 @@ class NavigationAdapter(
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is NavigationViewHolder) {
-            holder.container.setOnClickListener { onClickListener?.onClick(dataModel.getNavigationItem(position)) }
+            holder.container.setOnClickListener {
+                onClickListener?.onClick(
+                    dataModel.getNavigationItem(
+                        position
+                    )
+                )
+            }
         }
         if (holder is RateTheAppViewHolder) {
-            holder.setListeners(
-                { onClickListener?.onRateCancelButtonClick() },
-                { onClickListener?.onRateNowButtonClick() })
+            holder.setListeners(View.OnClickListener {
+                onClickListener?.onRateCancelButtonClick()
+            }, View.OnClickListener {
+                onClickListener?.onRateNowButtonClick()
+            })
         }
     }
 
