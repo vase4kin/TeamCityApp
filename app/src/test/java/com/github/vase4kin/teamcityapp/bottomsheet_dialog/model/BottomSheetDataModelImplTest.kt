@@ -16,13 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model
 
+import android.graphics.drawable.Drawable
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
 
 private const val URL = "/app/rest/builds/id:993171/artifacts/content/stdlib-docs.zip"
@@ -32,26 +32,35 @@ private const val FILE_NAME = "stdlib-docs.zip"
 class BottomSheetDataModelImplTest {
 
     @Mock
-    private lateinit var item: BottomSheetItem
-
-    private lateinit var dataModel: BottomSheetDataModelImpl
+    private lateinit var drawable: Drawable
+    private lateinit var dataModel: BottomSheetDataModel
 
     @Before
     fun setUp() {
-        `when`(item.title).thenReturn("title")
-        dataModel = BottomSheetDataModelImpl(listOf(item))
     }
 
     @Test
     fun testGetFileName() {
-        `when`(item.description).thenReturn(URL)
+        val item = BottomSheetItem(
+            type = 0,
+            title = "title",
+            description = URL,
+            icon = drawable
+        )
+        dataModel = BottomSheetDataModelImpl(listOf(item))
         assertThat(dataModel.getFileName(0), `is`(FILE_NAME))
     }
 
     @Test
     fun testGetFileNameIfUrlIsNotCorrect() {
         val url = "url"
-        `when`(item.description).thenReturn(url)
+        val item = BottomSheetItem(
+            type = 0,
+            title = "title",
+            description = url,
+            icon = drawable
+        )
+        dataModel = BottomSheetDataModelImpl(listOf(item))
         assertThat(dataModel.getFileName(0), `is`(url))
     }
 }

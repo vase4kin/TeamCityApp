@@ -34,13 +34,10 @@ class BaseValueExtractorImplTest {
 
     @Mock
     private lateinit var build: Build
-
     @Mock
     private lateinit var bundle: Bundle
-
     @Mock
     private lateinit var filter: BuildListFilter
-
     private lateinit var valueExtractor: BaseValueExtractorImpl
 
     @Before
@@ -74,7 +71,8 @@ class BaseValueExtractorImplTest {
 
     @Test
     fun testIsBundleNull() {
-        valueExtractor = BaseValueExtractorImpl(Bundle.EMPTY)
+        `when`(bundle.isEmpty).thenReturn(true)
+        val valueExtractor: BaseValueExtractor = BaseValueExtractorImpl(bundle)
         assertThat(valueExtractor.isBundleNullOrEmpty, `is`(true))
     }
 }
