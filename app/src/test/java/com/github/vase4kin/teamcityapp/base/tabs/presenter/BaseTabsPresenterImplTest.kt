@@ -19,10 +19,10 @@ package com.github.vase4kin.teamcityapp.base.tabs.presenter
 import com.github.vase4kin.teamcityapp.base.tabs.data.BaseTabsDataManager
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModel
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers.eq
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
