@@ -60,5 +60,5 @@ open class BaseValueExtractorImpl(protected val bundle: Bundle) : BaseValueExtra
      * {@inheritDoc}
      */
     override val isBundleNullOrEmpty: Boolean
-        get() = bundle == Bundle.EMPTY
+        get() = bundle.isEmpty
 }
