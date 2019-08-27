@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
-import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl
+import com.github.vase4kin.teamcityapp.overview.view.OverviewView
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
 import org.hamcrest.MatcherAssert.assertThat
@@ -53,7 +53,7 @@ class OverviewPresenterImplTest {
     @Mock
     private lateinit var menuInflater: MenuInflater
     @Mock
-    private lateinit var view: OverviewViewImpl
+    private lateinit var view: OverviewView
     @Mock
     private lateinit var interactor: OverViewInteractor
     @Mock

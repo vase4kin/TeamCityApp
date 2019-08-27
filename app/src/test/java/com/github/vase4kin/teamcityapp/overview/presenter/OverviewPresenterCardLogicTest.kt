@@ -20,21 +20,24 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
-import com.github.vase4kin.teamcityapp.overview.view.OverviewViewImpl
+import com.github.vase4kin.teamcityapp.overview.view.OverviewView
+import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
-import org.mockito.Matchers.eq
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.never
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
 class OverviewPresenterCardLogicTest {
 
     @Mock
-    private lateinit var view: OverviewViewImpl
+    private lateinit var view: OverviewView
 
     @Mock
     private lateinit var interactor: OverViewInteractor
