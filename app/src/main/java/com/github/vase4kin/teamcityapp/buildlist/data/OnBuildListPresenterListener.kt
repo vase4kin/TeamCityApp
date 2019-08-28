@@ -60,4 +60,36 @@ interface OnBuildListPresenterListener : MugenCallbacks {
      * On reset filters action click
      */
     fun onResetFiltersSnackBarActionClick()
+
+    companion object {
+        val EMPTY = object : OnBuildListPresenterListener {
+            override fun onBuildClick(build: Build) {
+            }
+
+            override fun onRunBuildFabClick() {
+            }
+
+            override fun onShowQueuedBuildSnackBarClick() {
+            }
+
+            override fun onNavigateToFavorites() {
+            }
+
+            override fun onFilterBuildsOptionMenuClick() {
+            }
+
+            override fun onAddToFavoritesOptionMenuClick() {
+            }
+
+            override fun onResetFiltersSnackBarActionClick() {
+            }
+
+            override fun onLoadMore() {
+            }
+
+            override fun isLoading(): Boolean = false
+
+            override fun hasLoadedAllItems(): Boolean = false
+        }
+    }
 }

@@ -55,7 +55,7 @@ class FavoritesFragmentModule {
     ): FavoritesView {
         return FavoritesViewImpl(
             fragment.view!!,
-            fragment.activity,
+            fragment.requireActivity(),
             R.string.empty_list_message_favorites,
             adapter
         )
