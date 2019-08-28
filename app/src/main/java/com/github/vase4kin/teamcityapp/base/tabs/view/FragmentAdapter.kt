@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.base.tabs.view
 
+import android.content.Context
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
@@ -24,7 +26,7 @@ import java.util.ArrayList
 /**
  * Simple implementation of FragmentPagerAdapter
  */
-class FragmentAdapter(fm: FragmentManager) :
+class FragmentAdapter(fm: FragmentManager, private val context: Context) :
     FragmentPagerAdapter(fm) {
 
     private val fragmentContainers = ArrayList<FragmentContainer>()
@@ -34,15 +36,15 @@ class FragmentAdapter(fm: FragmentManager) :
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return fragmentContainers[position].getName()
+        return fragmentContainers[position].name
     }
 
     override fun getCount(): Int {
         return fragmentContainers.size
     }
 
-    fun add(name: Int, fragment: Fragment) {
-        fragmentContainers.add(FragmentContainer(name, fragment))
+    fun add(@StringRes nameRes: Int, fragment: Fragment) {
+        fragmentContainers.add(FragmentContainer(context.getString(nameRes), fragment))
     }
 
     fun getFragmentContainers(): List<FragmentContainer> {
@@ -52,10 +54,5 @@ class FragmentAdapter(fm: FragmentManager) :
     /**
      * Container for fragment
      */
-    class FragmentContainer(private val name: Int, val fragment: Fragment) {
-
-        fun getName(): String {
-            return fragment.getString(name)
-        }
-    }
+    class FragmentContainer(val name: String, val fragment: Fragment)
 }
