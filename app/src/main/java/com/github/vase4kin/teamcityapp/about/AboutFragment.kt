@@ -19,8 +19,6 @@ package com.github.vase4kin.teamcityapp.about
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import android.view.View
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.danielstone.materialaboutlibrary.MaterialAboutFragment
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem
@@ -54,19 +52,9 @@ class AboutFragment : MaterialAboutFragment() {
         AndroidSupportInjection.inject(this)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        repository.serverInfo().subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onSuccess = {
-                    updateServerInfoCard(it.version, it.webUrl)
-                },
-                onError = {
-                    removeServerCard()
-                }
-            )
-            .addTo(subscriptions)
+    override fun onResume() {
+        super.onResume()
+        loadServerInfo()
     }
 
     override fun onDestroyView() {
@@ -194,6 +182,20 @@ class AboutFragment : MaterialAboutFragment() {
 
     override fun getTheme(): Int {
         return R.style.AppTheme_MaterialAboutActivity_Fragment
+    }
+
+    private fun loadServerInfo() {
+        repository.serverInfo().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onSuccess = {
+                    updateServerInfoCard(it.version, it.webUrl)
+                },
+                onError = {
+                    removeServerCard()
+                }
+            )
+            .addTo(subscriptions)
     }
 
     private fun updateServerInfoCard(
