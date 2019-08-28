@@ -14,61 +14,64 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.drawer.view;
+package com.github.vase4kin.teamcityapp.drawer.view
 
-import androidx.annotation.ColorRes;
+import androidx.annotation.ColorRes
 
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel;
+import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel
 
 /**
  * View interactions for drawer
  */
-public interface DrawerView {
+interface DrawerView {
 
     /**
-     * Drawer item ids
+     * Is model empty
      */
-    int NO_SELECTION = -1;
-    int HOME = 0;
-    int AGENTS = 1;
-    int PROFILES_MANAGING = 2;
-    int ABOUT = 3;
+    val isModelEmpty: Boolean
 
     /**
      * Init views
      *
      * @param listener - Listener to receive view callbacks
      */
-    void initViews(OnDrawerPresenterListener listener);
+    fun initViews(listener: OnDrawerPresenterListener)
 
     /**
      * Show drawer data
      *
      * @param dataModel - Drawer data
      */
-    void showData(DrawerDataModel dataModel);
+    fun showData(dataModel: DrawerDataModel)
 
     /**
      * On back button pressed
      */
-    void backButtonPressed();
+    fun backButtonPressed()
 
     /**
      * Update agents badge
      *
      * @param count - Number to update
      */
-    void updateAgentsBadge(int count);
+    fun updateAgentsBadge(count: Int)
 
     /**
      * Set default color for drawer
      *
      * @param color - Color to make default
      */
-    void setDefaultColors(@ColorRes int color);
+    fun setDefaultColors(@ColorRes color: Int)
 
-    /**
-     * Is model empty
-     */
-    boolean isModelEmpty();
+    companion object {
+
+        /**
+         * Drawer item ids
+         */
+        const val NO_SELECTION = -1
+        const val HOME = 0
+        const val AGENTS = 1
+        const val PROFILES_MANAGING = 2
+        const val ABOUT = 3
+    }
 }

@@ -37,7 +37,7 @@ class BuildLogModule {
 
     @Provides
     fun providesBuildLogViewModel(fragment: BuildLogFragment, client: BuildLogWebViewClient): BuildLogView {
-        return BuildLogViewImpl(fragment.view, client)
+        return BuildLogViewImpl(fragment.view!!, client)
     }
 
     @Provides
