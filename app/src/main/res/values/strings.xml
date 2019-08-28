@@ -182,9 +182,9 @@
     <string name="header_text_not_active_account">Not active</string>
 
     <!--Tests-->
-    <string name="text_passed">Passed (%s)</string>
-    <string name="text_failed">Failed (%s)</string>
-    <string name="text_ignored">Ignored (%s)</string>
+    <string name="text_passed">Passed (%d)</string>
+    <string name="text_failed">Failed (%d)</string>
+    <string name="text_ignored">Ignored (%d)</string>
 
     <!--Test details-->
     <string name="text_empty_test_details">No test details</string>

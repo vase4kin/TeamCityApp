@@ -40,7 +40,8 @@ class BuildQueueViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun getTitle(): String = activity.getString(R.string.build_queue_drawer_item)
+    override val title: String
+        get() = activity.getString(R.string.build_queue_drawer_item)
 
     /**
      * {@inheritDoc}

@@ -35,10 +35,10 @@ class NavigationAdapter(
     /**
      * Set [OnNavigationItemClickListener]
      *
-     * @param mOnClickListener - listener to set
+     * @param onClickListener - listener to set
      */
-    fun setOnClickListener(mOnClickListener: OnNavigationItemClickListener) {
-        this.onClickListener = mOnClickListener
+    fun setOnClickListener(onClickListener: OnNavigationItemClickListener) {
+        this.onClickListener = onClickListener
     }
 
     override fun onBindViewHolder(holder: BaseViewHolder<NavigationDataModel>, position: Int) {

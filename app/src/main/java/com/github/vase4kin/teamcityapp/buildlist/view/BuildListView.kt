@@ -37,9 +37,9 @@ interface BuildListView : BaseListView<BuildListDataModel>, ViewLoadMore<BuildLi
     val isBuildListOpen: Boolean
 
     /**
-     * @param mOnBuildListPresenterListener - Listener to handle view callbacks
+     * @param onBuildListPresenterListener - Listener to handle view callbacks
      */
-    fun setOnBuildListPresenterListener(mOnBuildListPresenterListener: OnBuildListPresenterListener)
+    fun setOnBuildListPresenterListener(onBuildListPresenterListener: OnBuildListPresenterListener)
 
     /**
      * Show retry load more snack bar
