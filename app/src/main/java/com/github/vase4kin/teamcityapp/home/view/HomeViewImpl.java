@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,8 +63,8 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
     @Override
     public void initViews(OnDrawerPresenterListener listener) {
         super.initViews(listener);
-        snackBarAnchor = activity.findViewById(R.id.snackbar_anchor);
-        fab = activity.findViewById(R.id.home_floating_action_button);
+        snackBarAnchor = getActivity().findViewById(R.id.snackbar_anchor);
+        fab = getActivity().findViewById(R.id.home_floating_action_button);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
      */
     @Override
     public void setDrawerSelection(int selection) {
-        drawerResult.setSelection(selection, false);
+        getDrawerResult().setSelection(selection, false);
     }
 
     /**
@@ -112,7 +112,7 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
      */
     @Override
     public void showFilterBottomSheet(@NotNull Filter filter) {
-        FilterBottomSheetDialogFragment.Companion.createBottomSheetDialog(filter.getCode()).show(activity.getSupportFragmentManager(), TAG_BOTTOM_SHEET);
+        FilterBottomSheetDialogFragment.Companion.createBottomSheetDialog(filter.getCode()).show(getActivity().getSupportFragmentManager(), TAG_BOTTOM_SHEET);
     }
 
     /**
@@ -133,8 +133,8 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
     @Override
     public void showNavigationDrawerPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
         // Creating prompt
-        int color = ContextCompat.getColor(activity, mDefaultColor);
-        final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(activity)
+        int color = ContextCompat.getColor(getActivity(), getDefaultColor());
+        final MaterialTapTargetPrompt.Builder navigationDrawerPrompt = new MaterialTapTargetPrompt.Builder(getActivity())
                 .setPrimaryText(R.string.title_onboarding_navigation_drawer)
                 .setSecondaryText(R.string.text_onboarding_navigation_drawer)
                 .setAnimationInterpolator(new FastOutSlowInInterpolator())
@@ -145,7 +145,7 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
                 .setPromptStateChangeListener((prompt, state) -> listener.onPromptShown());
         // Show prompt
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            navigationDrawerPrompt.setTarget(toolbar.getChildAt(1));
+            navigationDrawerPrompt.setTarget(getToolbar().getChildAt(1));
             navigationDrawerPrompt.show();
         }, TIME_PROMPT_DELAY);
     }
@@ -155,8 +155,8 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
      */
     @Override
     public void showAddFavPrompt(@NonNull final OnboardingManager.OnPromptShownListener listener) {
-        int color = ContextCompat.getColor(activity, mDefaultColor);
-        new MaterialTapTargetPrompt.Builder(activity)
+        int color = ContextCompat.getColor(getActivity(), getDefaultColor());
+        new MaterialTapTargetPrompt.Builder(getActivity())
                 .setTarget(fab)
                 .setPrimaryText(R.string.title_onboarding_add_fav)
                 .setSecondaryText(R.string.text_onboarding_add_fav)
@@ -172,8 +172,8 @@ public class HomeViewImpl extends DrawerViewImpl implements HomeView {
 
     @Override
     public void showTabsFilterPrompt(@NotNull OnboardingManager.OnPromptShownListener listener) {
-        int color = ContextCompat.getColor(activity, mDefaultColor);
-        new MaterialTapTargetPrompt.Builder(activity)
+        int color = ContextCompat.getColor(getActivity(), getDefaultColor());
+        new MaterialTapTargetPrompt.Builder(getActivity())
                 .setTarget(fab)
                 .setPrimaryText(R.string.title_onboarding_filter)
                 .setSecondaryText(R.string.text_onboarding_filter)
