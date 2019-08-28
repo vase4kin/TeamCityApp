@@ -43,7 +43,7 @@ abstract class BaseTabsViewModelImpl(
         unbinder = ButterKnife.bind(this, view)
         // Make sure there're no fragments saved in fragment manager (in case the view was reloaded)
         removeAllFragmentsFromFragmentManager()
-        adapter = FragmentAdapter(activity.supportFragmentManager)
+        adapter = FragmentAdapter(activity.supportFragmentManager, activity)
         addFragments(adapter)
         tabLayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -84,7 +84,7 @@ abstract class BaseTabsViewModelImpl(
     override fun updateTabTitle(tabPosition: Int, newTitle: String) {
         val updatedTabTitle = String.format(
             "%s (%s)",
-            adapter.getFragmentContainers()[tabPosition].getName(),
+            adapter.getFragmentContainers()[tabPosition].name,
             newTitle
         )
         val tab = tabLayout.getTabAt(tabPosition)
