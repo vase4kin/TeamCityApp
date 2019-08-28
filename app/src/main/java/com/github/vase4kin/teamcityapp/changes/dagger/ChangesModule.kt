@@ -27,7 +27,12 @@ import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManagerImpl
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractor
 import com.github.vase4kin.teamcityapp.changes.extractor.ChangesValueExtractorImpl
-import com.github.vase4kin.teamcityapp.changes.view.*
+import com.github.vase4kin.teamcityapp.changes.view.ChangesAdapter
+import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
+import com.github.vase4kin.teamcityapp.changes.view.ChangesView
+import com.github.vase4kin.teamcityapp.changes.view.ChangesViewHolderFactory
+import com.github.vase4kin.teamcityapp.changes.view.ChangesViewImpl
+import com.github.vase4kin.teamcityapp.changes.view.LoadMoreViewHolderFactory
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
@@ -44,7 +49,7 @@ class ChangesModule {
 
     @Provides
     fun providesChangesView(fragment: ChangesFragment, changesAdapter: ChangesAdapter): ChangesView {
-        return ChangesViewImpl(fragment.view, fragment.activity, R.string.empty_list_message_changes, changesAdapter)
+        return ChangesViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter)
     }
 
     @Provides

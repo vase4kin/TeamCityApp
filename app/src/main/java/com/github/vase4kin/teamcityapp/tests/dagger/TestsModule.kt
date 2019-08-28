@@ -31,7 +31,12 @@ import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractor
 import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractorImpl
 import com.github.vase4kin.teamcityapp.tests.router.TestsRouter
 import com.github.vase4kin.teamcityapp.tests.router.TestsRouterImpl
-import com.github.vase4kin.teamcityapp.tests.view.*
+import com.github.vase4kin.teamcityapp.tests.view.LoadMoreViewHolderFactory
+import com.github.vase4kin.teamcityapp.tests.view.TestOccurrenceViewHolderFactory
+import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesAdapter
+import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
+import com.github.vase4kin.teamcityapp.tests.view.TestsView
+import com.github.vase4kin.teamcityapp.tests.view.TestsViewImpl
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
@@ -58,8 +63,8 @@ class TestsModule {
         fragment: TestOccurrencesFragment
     ): TestsView {
         return TestsViewImpl(
-            fragment.view,
-            fragment.activity,
+            fragment.view!!,
+            fragment.requireActivity(),
             testsValueExtractor,
             R.string.empty_passed_tests,
             adapter
