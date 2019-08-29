@@ -267,10 +267,10 @@ open class DrawerViewImpl(
                 false
             }
             .withOnDrawerNavigationListener {
-                //this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
-                //if the back arrow is shown. close the activity
+                // this method is only called if the Arrow icon is shown. The hamburger is automatically managed by the MaterialDrawer
+                // if the back arrow is shown. close the activity
                 backButtonPressed()
-                //return true if we have consumed the event
+                // return true if we have consumed the event
                 true
             }
             .withOnDrawerListener(OnDrawerListenerImpl(onDrawerPresenterListener!!))
@@ -294,7 +294,7 @@ open class DrawerViewImpl(
      * {@inheritDoc}
      */
     override fun backButtonPressed() {
-        //handle the back press :D close the drawer first and if the drawer is closed close the activity
+        // handle the back press :D close the drawer first and if the drawer is closed close the activity
         if (!isDrawerWasClosed) {
             activity.finish()
             if (!activity.isTaskRoot) {
