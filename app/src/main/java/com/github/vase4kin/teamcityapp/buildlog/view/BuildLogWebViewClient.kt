@@ -44,8 +44,8 @@ class BuildLogWebViewClient : WebViewClient() {
     /**
      * {@inheritDoc}
      */
-    fun setListener(mListener: OnBuildLogViewListener?) {
-        this.listener = mListener
+    fun setListener(listener: OnBuildLogViewListener?) {
+        this.listener = listener
     }
 
     /**
@@ -59,7 +59,7 @@ class BuildLogWebViewClient : WebViewClient() {
     /**
      * {@inheritDoc}
      */
-    override fun onPageFinished(view: WebView, url: String) {
+    override fun onPageFinished(view: WebView?, url: String?) {
         val listener = this.listener ?: return
         listener.evaluateScript(SCRIPT)
 
@@ -73,7 +73,7 @@ class BuildLogWebViewClient : WebViewClient() {
     /**
      * {@inheritDoc}
      */
-    override fun onPageStarted(view: WebView, url: String, favicon: Bitmap) {
+    override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
         val listener = this.listener ?: return
         listener.showProgressWheel()
         listener.hideWebView()
@@ -84,9 +84,9 @@ class BuildLogWebViewClient : WebViewClient() {
      * {@inheritDoc}
      */
     override fun onReceivedError(
-        view: WebView,
-        request: WebResourceRequest,
-        error: WebResourceError
+        view: WebView?,
+        request: WebResourceRequest?,
+        error: WebResourceError?
     ) {
         val listener = this.listener ?: return
         listener.hideProgressWheel()
@@ -98,9 +98,9 @@ class BuildLogWebViewClient : WebViewClient() {
      * {@inheritDoc}
      */
     override fun onReceivedHttpError(
-        view: WebView,
-        request: WebResourceRequest,
-        errorResponse: WebResourceResponse
+        view: WebView?,
+        request: WebResourceRequest?,
+        errorResponse: WebResourceResponse?
     ) {
         val listener = this.listener ?: return
         listener.hideProgressWheel()
