@@ -46,15 +46,20 @@ open class BaseValueExtractorImpl(protected val bundle: Bundle) : BaseValueExtra
      */
     override val buildDetails: BuildDetails
         get() {
-            val build = bundle.getSerializable(BundleExtractorValues.BUILD) as Build
-            return BuildDetailsImpl(build)
+            val build =
+                bundle.getSerializable(BundleExtractorValues.BUILD) ?: return BuildDetails.STUB
+            return BuildDetailsImpl(build as Build)
         }
 
     /**
      * {@inheritDoc}
      */
     override val buildListFilter: BuildListFilter?
-        get() = bundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER) as BuildListFilter
+        get() {
+            val buildListFilter =
+                bundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER) ?: return null
+            return buildListFilter as BuildListFilter
+        }
 
     /**
      * {@inheritDoc}
