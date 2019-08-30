@@ -29,14 +29,14 @@ interface BuildDetailsPresenter : BaseTabsPresenter {
      *
      * @param outState - Bundle with state to save
      */
-    fun onSaveInstanceState(outState: Bundle)
+    fun onSaveInstanceState(outState: Bundle?)
 
     /**
      * On restore activity state
      *
      * @param savedInstanceState - Bundle with saved state
      */
-    fun onRestoreInstanceState(savedInstanceState: Bundle)
+    fun onRestoreInstanceState(savedInstanceState: Bundle?)
 
     companion object {
 
