@@ -67,14 +67,14 @@ class BuildDetailsPresenterImpl @Inject constructor(
         router.unbindCustomsTabs()
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
+    override fun onSaveInstanceState(outState: Bundle?) {
         view.onSave(outState)
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         view.onRestore(savedInstanceState)
     }
 

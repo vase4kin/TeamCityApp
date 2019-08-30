@@ -29,14 +29,14 @@ interface BuildDetailsView : BaseTabsViewModel {
      *
      * @param bundle - Bundle with state to save
      */
-    fun onSave(bundle: Bundle)
+    fun onSave(bundle: Bundle?)
 
     /**
      * On restore activity state
      *
      * @param bundle - Bundle with saved state
      */
-    fun onRestore(bundle: Bundle)
+    fun onRestore(bundle: Bundle?)
 
     /**
      * Show run build float action button

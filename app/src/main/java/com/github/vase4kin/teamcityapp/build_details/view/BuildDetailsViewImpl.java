@@ -24,11 +24,11 @@ import android.view.View;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment;
@@ -61,35 +61,34 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     private static final String TAB_TITLE = "tabTitle";
 
     @BindView(R.id.floating_action_button)
-    FloatingActionButton mFloatingActionButton;
+    FloatingActionButton floatingActionButton;
     @BindView(R.id.container)
-    View mContainer;
+    View container;
 
-    private BuildDetails mBuildDetails;
+    private BuildDetails buildDetails;
 
     private String overviewTabTitle;
-    private String artifactsTabTitle;
-    private String mTabTitle;
+    private String tabTitle;
 
-    private StatusBarUtils mStatusBarUtils;
-    private OnBuildDetailsViewListener mOnBuildDetailsViewListener;
-    private MaterialDialog mStoppingBuildProgressDialog;
-    private MaterialDialog mRemovingBuildFromQueueProgressDialog;
-    private MaterialDialog mRestartingBuildProgressDialog;
-    private MaterialDialog mOpeningBuildProgressDialog;
-    private MaterialDialog mYouAreAboutToStopBuildDialog;
-    private MaterialDialog mYouAreAboutToRestartBuildDialog;
-    private MaterialDialog mYouAreAboutToStopNotYoursBuildDialog;
-    private MaterialDialog mYouAreAboutToRemoveBuildFromQueueDialog;
-    private MaterialDialog mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog;
+    private StatusBarUtils statusBarUtils;
+    private OnBuildDetailsViewListener onBuildDetailsViewListener;
+    private MaterialDialog stoppingBuildProgressDialog;
+    private MaterialDialog removingBuildFromQueueProgressDialog;
+    private MaterialDialog restartingBuildProgressDialog;
+    private MaterialDialog openingBuildProgressDialog;
+    private MaterialDialog youAreAboutToStopBuildDialog;
+    private MaterialDialog youAreAboutToRestartBuildDialog;
+    private MaterialDialog youAreAboutToStopNotYoursBuildDialog;
+    private MaterialDialog youAreAboutToRemoveBuildFromQueueDialog;
+    private MaterialDialog youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog;
 
     public BuildDetailsViewImpl(View mView,
                                 AppCompatActivity mActivity,
                                 StatusBarUtils statusBarUtils,
                                 BaseValueExtractor valueExtractor) {
         super(mView, mActivity);
-        this.mStatusBarUtils = statusBarUtils;
-        this.mBuildDetails = valueExtractor.getBuildDetails();
+        this.statusBarUtils = statusBarUtils;
+        this.buildDetails = valueExtractor.getBuildDetails();
     }
 
     /**
@@ -99,24 +98,24 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void addFragments(FragmentAdapter fragmentAdapter) {
-        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.Companion.newInstance(mBuildDetails.toBuild()));
-        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.Companion.newInstance(mBuildDetails.getChangesHref()));
-        if (mBuildDetails.hasTests()) {
+        fragmentAdapter.add(R.string.tab_overview, OverviewFragment.Companion.newInstance(buildDetails.toBuild()));
+        fragmentAdapter.add(R.string.tab_changes, ChangesFragment.Companion.newInstance(buildDetails.getChangesHref()));
+        if (buildDetails.hasTests()) {
             fragmentAdapter.add(R.string.tab_tests, TestOccurrencesFragment.Companion.newInstance(
-                    mBuildDetails.getTestsHref(),
-                    mBuildDetails.getPassedTestCount(),
-                    mBuildDetails.getFailedTestCount(),
-                    mBuildDetails.getIgnoredTestCount()));
+                    buildDetails.getTestsHref(),
+                    buildDetails.getPassedTestCount(),
+                    buildDetails.getFailedTestCount(),
+                    buildDetails.getIgnoredTestCount()));
         }
-        if (!mBuildDetails.isQueued()) {
-            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.Companion.newInstance(mBuildDetails.getId()));
+        if (!buildDetails.isQueued()) {
+            fragmentAdapter.add(R.string.tab_build_log, BuildLogFragment.Companion.newInstance(buildDetails.getId()));
         }
-        fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.Companion.newInstance(mBuildDetails.toBuild()));
-        if (!mBuildDetails.isQueued() && !mBuildDetails.isRunning()) {
-            fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.Companion.newInstance(mBuildDetails.toBuild(), mBuildDetails.getArtifactsHref()));
+        fragmentAdapter.add(R.string.tab_parameters, PropertiesFragment.Companion.newInstance(buildDetails.toBuild()));
+        if (!buildDetails.isQueued() && !buildDetails.isRunning()) {
+            fragmentAdapter.add(R.string.tab_artifacts, ArtifactListFragment.Companion.newInstance(buildDetails.toBuild(), buildDetails.getArtifactsHref()));
         }
-        if (mBuildDetails.hasSnapshotDependencies()) {
-            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.Companion.newInstance(mBuildDetails.getId()));
+        if (buildDetails.hasSnapshotDependencies()) {
+            fragmentAdapter.add(R.string.tab_snapshot_dependencies, SnapshotDependenciesFragment.Companion.newInstance(buildDetails.getId()));
         }
     }
 
@@ -128,17 +127,16 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     @Override
     public void initViews() {
         super.initViews();
-        mFloatingActionButton.setImageDrawable(new IconDrawable(getActivity(), MaterialIcons.md_directions_run).color(Color.WHITE));
+        floatingActionButton.setImageDrawable(new IconDrawable(getActivity(), MaterialIcons.md_directions_run).color(Color.WHITE));
         int offScreenPageLimit = getViewPager().getAdapter().getCount();
         getViewPager().setOffscreenPageLimit(offScreenPageLimit);
         overviewTabTitle = getActivity().getString(R.string.tab_overview);
-        artifactsTabTitle = getActivity().getString(R.string.tab_artifacts);
         getTabLayout().setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 getViewPager().setCurrentItem(tab.getPosition());
-                mTabTitle = tab.getText().toString();
-                if (mTabTitle.equals(overviewTabTitle)) {
+                tabTitle = tab.getText().toString();
+                if (tabTitle.equals(overviewTabTitle)) {
                     showRunBuildFloatActionButton();
                 } else {
                     hideRunBuildFloatActionButton();
@@ -156,21 +154,16 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
         setTitle();
         setColorsByBuildType();
 
-        mStoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build);
-        mRemovingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
-        mRestartingBuildProgressDialog = createProgressDialogWithContent(R.string.text_restarting_build);
-        mOpeningBuildProgressDialog = createProgressDialogWithContent(R.string.text_opening_build);
-        mYouAreAboutToStopBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build, R.string.text_stop_button);
-        mYouAreAboutToStopNotYoursBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build_2, R.string.text_stop_button);
-        mYouAreAboutToRemoveBuildFromQueueDialog = createConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
-        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
-        mYouAreAboutToRestartBuildDialog = createConfirmDialogBuilder(R.string.text_restart_the_build, R.string.text_restart_button)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mOnBuildDetailsViewListener.onConfirmRestartBuild();
-                    }
-                })
+        stoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build);
+        removingBuildFromQueueProgressDialog = createProgressDialogWithContent(R.string.text_removing_build_from_queue);
+        restartingBuildProgressDialog = createProgressDialogWithContent(R.string.text_restarting_build);
+        openingBuildProgressDialog = createProgressDialogWithContent(R.string.text_opening_build);
+        youAreAboutToStopBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build, R.string.text_stop_button);
+        youAreAboutToStopNotYoursBuildDialog = createConfirmDialogWithReAddCheckbox(R.string.text_stop_the_build_2, R.string.text_stop_button);
+        youAreAboutToRemoveBuildFromQueueDialog = createConfirmDialog(R.string.text_remove_build_from_queue, R.string.text_remove_from_queue_button);
+        youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog = createConfirmDialog(R.string.text_remove_build_from_queue_2, R.string.text_remove_from_queue_button);
+        youAreAboutToRestartBuildDialog = createConfirmDialogBuilder(R.string.text_restart_the_build, R.string.text_restart_button)
+                .onPositive((dialog, which) -> onBuildDetailsViewListener.onConfirmRestartBuild())
                 .build();
     }
 
@@ -178,8 +171,8 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * {@inheritDoc}
      */
     @Override
-    public void setOnBuildTabsViewListener(OnBuildDetailsViewListener onBuildDetailsViewListener) {
-        this.mOnBuildDetailsViewListener = onBuildDetailsViewListener;
+    public void setOnBuildTabsViewListener(@NonNull OnBuildDetailsViewListener onBuildDetailsViewListener) {
+        this.onBuildDetailsViewListener = onBuildDetailsViewListener;
     }
 
     /**
@@ -187,7 +180,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showYouAreAboutToRestartBuildDialog() {
-        mYouAreAboutToRestartBuildDialog.show();
+        youAreAboutToRestartBuildDialog.show();
     }
 
     /**
@@ -195,7 +188,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showYouAreAboutToStopBuildDialog() {
-        mYouAreAboutToStopBuildDialog.show();
+        youAreAboutToStopBuildDialog.show();
     }
 
     /**
@@ -203,7 +196,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showYouAreAboutToStopNotYoursBuildDialog() {
-        mYouAreAboutToStopNotYoursBuildDialog.show();
+        youAreAboutToStopNotYoursBuildDialog.show();
     }
 
     /**
@@ -211,7 +204,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showYouAreAboutToRemoveBuildFromQueueDialog() {
-        mYouAreAboutToRemoveBuildFromQueueDialog.show();
+        youAreAboutToRemoveBuildFromQueueDialog.show();
     }
 
     /**
@@ -219,7 +212,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showYouAreAboutToRemoveBuildFromQueueTriggeredNotByYouDialog() {
-        mYouAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.show();
+        youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.show();
     }
 
     /**
@@ -227,7 +220,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showRestartingBuildProgressDialog() {
-        mRestartingBuildProgressDialog.show();
+        restartingBuildProgressDialog.show();
     }
 
     /**
@@ -235,7 +228,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void hideRestartingBuildProgressDialog() {
-        mRestartingBuildProgressDialog.dismiss();
+        restartingBuildProgressDialog.dismiss();
     }
 
     /**
@@ -243,7 +236,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showStoppingBuildProgressDialog() {
-        mStoppingBuildProgressDialog.show();
+        stoppingBuildProgressDialog.show();
     }
 
     /**
@@ -251,17 +244,17 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void hideStoppingBuildProgressDialog() {
-        mStoppingBuildProgressDialog.dismiss();
+        stoppingBuildProgressDialog.dismiss();
     }
 
     @Override
     public void showRemovingBuildFromQueueProgressDialog() {
-        mRemovingBuildFromQueueProgressDialog.show();
+        removingBuildFromQueueProgressDialog.show();
     }
 
     @Override
     public void hideRemovingBuildFromQueueProgressDialog() {
-        mRemovingBuildFromQueueProgressDialog.dismiss();
+        removingBuildFromQueueProgressDialog.dismiss();
     }
 
     /**
@@ -310,12 +303,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     @Override
     public void showBuildRestartSuccessSnackBar() {
         createSnackBarWithText(R.string.text_build_is_restarted)
-                .setAction(R.string.text_show_build, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mOnBuildDetailsViewListener.onShowQueuedBuild();
-                    }
-                }).show();
+                .setAction(R.string.text_show_build, view -> onBuildDetailsViewListener.onShowQueuedBuild()).show();
     }
 
     /**
@@ -347,7 +335,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void showBuildLoadingProgress() {
-        mOpeningBuildProgressDialog.show();
+        openingBuildProgressDialog.show();
     }
 
     /**
@@ -355,7 +343,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      */
     @Override
     public void hideBuildLoadingProgress() {
-        mOpeningBuildProgressDialog.dismiss();
+        openingBuildProgressDialog.dismiss();
     }
 
     /**
@@ -364,12 +352,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     @Override
     public void showOpeningBuildErrorSnackBar() {
         createSnackBarWithText(R.string.error_opening_build)
-                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mOnBuildDetailsViewListener.onShowQueuedBuild();
-                    }
-                }).show();
+                .setAction(R.string.download_artifact_retry_snack_bar_retry_button, view -> onBuildDetailsViewListener.onShowQueuedBuild()).show();
     }
 
 
@@ -430,12 +413,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
         return new MaterialDialog.Builder(getActivity())
                 .content(content)
                 .positiveText(positiveText)
-                .onPositive(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        mOnBuildDetailsViewListener.onConfirmCancelingBuild(dialog.isPromptCheckBoxChecked());
-                    }
-                })
+                .onPositive((dialog, which) -> onBuildDetailsViewListener.onConfirmCancelingBuild(dialog.isPromptCheckBoxChecked()))
                 .negativeText(R.string.text_cancel_button);
     }
 
@@ -471,43 +449,42 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * @param text - Text message resource id
      */
     private Snackbar createSnackBarWithText(@StringRes int text) {
-        Snackbar snackBar = Snackbar.make(
-                mContainer,
+        return Snackbar.make(
+                container,
                 text,
                 Snackbar.LENGTH_LONG);
-        return snackBar;
     }
 
     /**
      * Setting proper color for different build types
      */
     private void setColorsByBuildType() {
-        if (mBuildDetails.isQueued()) {
-            mStatusBarUtils.changeStatusBarColor(getActivity(), R.color.queued_tool_bar_color);
+        if (buildDetails.isQueued()) {
+            statusBarUtils.changeStatusBarColor(getActivity(), R.color.queued_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             getTabLayout().setTabTextColors(
                     getActivity().getResources().getColor(R.color.tab_queued_unselected_color),
                     getActivity().getResources().getColor(R.color.md_white_1000));
-        } else if (mBuildDetails.isRunning()) {
-            mStatusBarUtils.changeStatusBarColor(getActivity(), R.color.running_tool_bar_color);
+        } else if (buildDetails.isRunning()) {
+            statusBarUtils.changeStatusBarColor(getActivity(), R.color.running_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.running_tool_bar_color);
             getTabLayout().setTabTextColors(
                     getActivity().getResources().getColor(R.color.tab_running_unselected_color),
                     getActivity().getResources().getColor(R.color.md_white_1000));
-        } else if (mBuildDetails.isFailed()) {
-            mStatusBarUtils.changeStatusBarColor(getActivity(), R.color.failed_tool_bar_color);
+        } else if (buildDetails.isFailed()) {
+            statusBarUtils.changeStatusBarColor(getActivity(), R.color.failed_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.failed_tool_bar_color);
             getTabLayout().setTabTextColors(
                     getActivity().getResources().getColor(R.color.tab_failed_unselected_color),
                     getActivity().getResources().getColor(R.color.md_white_1000));
-        } else if (mBuildDetails.isSuccess()) {
-            mStatusBarUtils.changeStatusBarColor(getActivity(), R.color.success_tool_bar_color);
+        } else if (buildDetails.isSuccess()) {
+            statusBarUtils.changeStatusBarColor(getActivity(), R.color.success_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.success_tool_bar_color);
             getTabLayout().setTabTextColors(
                     getActivity().getResources().getColor(R.color.tab_success_unselected_color),
                     getActivity().getResources().getColor(R.color.md_white_1000));
         } else {
-            mStatusBarUtils.changeStatusBarColor(getActivity(), R.color.queued_tool_bar_color);
+            statusBarUtils.changeStatusBarColor(getActivity(), R.color.queued_tool_bar_color);
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color);
             getTabLayout().setTabTextColors(
                     getActivity().getResources().getColor(R.color.tab_queued_unselected_color),
@@ -534,8 +511,8 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     private void setTitle() {
         ActionBar actionBar = getActivity().getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("#" + mBuildDetails.getNumber());
-            actionBar.setSubtitle(mBuildDetails.getBuildTypeName());
+            actionBar.setTitle("#" + buildDetails.getNumber());
+            actionBar.setSubtitle(buildDetails.getBuildTypeName());
         }
     }
 
@@ -543,17 +520,19 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
      * {@inheritDoc}
      */
     @Override
-    public void onSave(Bundle bundle) {
-        bundle.putString(TAB_TITLE, mTabTitle);
+    public void onSave(@Nullable Bundle bundle) {
+        if (bundle != null) {
+            bundle.putString(TAB_TITLE, tabTitle);
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onRestore(Bundle bundle) {
+    public void onRestore(@Nullable Bundle bundle) {
         if (bundle != null) {
-            mTabTitle = bundle.getString(TAB_TITLE);
+            tabTitle = bundle.getString(TAB_TITLE);
         }
     }
 
@@ -564,7 +543,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     public void showRunBuildFloatActionButton() {
         // <!---------------------------------------!>
         // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // mFloatingActionButton.show();
+        // floatingActionButton.show();
         // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
         // <!---------------------------------------!>
     }
@@ -576,7 +555,7 @@ public class BuildDetailsViewImpl extends BaseTabsViewModelImpl implements Build
     public void hideRunBuildFloatActionButton() {
         // <!---------------------------------------!>
         // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
-        // mFloatingActionButton.hide();
+        // floatingActionButton.hide();
         // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
         // <!---------------------------------------!>
     }
