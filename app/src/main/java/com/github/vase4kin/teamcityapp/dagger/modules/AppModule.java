@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -50,9 +51,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -121,10 +120,12 @@ public class AppModule {
     protected OkHttpClient providesUnsafeBaseHttpClient(@Named(CLIENT_BASE) OkHttpClient baseOkHttpClient) {
         final TrustManager[] trustAllCerts = new TrustManager[]{
                 new X509TrustManager() {
+                    @SuppressLint("TrustAllX509TrustManager")
                     @Override
                     public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                     }
 
+                    @SuppressLint("TrustAllX509TrustManager")
                     @Override
                     public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
                     }
@@ -144,12 +145,7 @@ public class AppModule {
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
             return baseOkHttpClient.newBuilder()
                     .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
-                    .hostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            return true;
-                        }
-                    })
+                    .hostnameVerifier((hostname, session) -> true)
                     .build();
         } catch (Exception e) {
             return baseOkHttpClient;
