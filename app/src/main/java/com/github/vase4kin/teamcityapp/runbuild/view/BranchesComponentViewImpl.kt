@@ -148,13 +148,15 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
     /**
      * Constructor
      *
-     * @param context  The current context.
+     * @param context The current context.
      * @param resource The resource ID for a layout file containing a TextView to use when
      * instantiating views.
-     * @param objects  The objects to represent in the ListView.
+     * @param objects The objects to represent in the ListView.
      */
     internal constructor(
-        context: Context, resource: Int, objects: List<String>
+        context: Context,
+        resource: Int,
+        objects: List<String>
     ) : ArrayAdapter<String>(context, resource, objects) {
 
         /**
