@@ -378,7 +378,7 @@ class BuildDetailsViewImpl(
     /**
      * Create cancel/remove build from queue confirm dialog
      *
-     * @param content      - Resource id content message
+     * @param content - Resource id content message
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
@@ -390,7 +390,7 @@ class BuildDetailsViewImpl(
     /**
      * Create stopping build confirm dialog with re-add build to queue checkbox
      *
-     * @param content      - Resource id content message
+     * @param content - Resource id content message
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
@@ -403,7 +403,7 @@ class BuildDetailsViewImpl(
     /**
      * Create cancel build confirm dialog builder
      *
-     * @param content      - Resource id content message
+     * @param content - Resource id content message
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog builder
      */
