@@ -44,7 +44,7 @@ import java.util.ArrayList
 /**
  * Fake TC REST impl
  */
-class FakeTeamCityServiceImpl : TeamCityService {
+open class FakeTeamCityServiceImpl : TeamCityService {
 
     override fun listAgents(
         @Query("includeDisconnected") includeDisconnected: Boolean?,
