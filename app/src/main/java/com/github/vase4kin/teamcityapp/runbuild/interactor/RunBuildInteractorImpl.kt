@@ -61,7 +61,7 @@ class RunBuildInteractorImpl(
         if (agent != null) {
             build.agent = agent
         }
-        if (!properties.objects.isEmpty()) {
+        if (properties.objects.isNotEmpty()) {
             build.properties = properties
         }
         queueBuild(build, loadingListener)
