@@ -31,7 +31,7 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl
 import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.TIMEOUT_TEXT_COPIED_SNACKBAR
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.Companion.TIMEOUT_TEXT_COPIED_SNACKBAR
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
