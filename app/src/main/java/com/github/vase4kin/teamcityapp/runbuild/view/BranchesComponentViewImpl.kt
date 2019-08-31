@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.runbuild.view
 
 import android.content.Context
-import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -189,9 +188,9 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
             /**
              * {@inheritDoc}
              */
-            override fun performFiltering(constraint: CharSequence): FilterResults {
+            override fun performFiltering(constraint: CharSequence?): FilterResults {
                 val results = FilterResults()
-                if (TextUtils.isEmpty(constraint)) {
+                if (constraint.isNullOrEmpty()) {
                     results.values = branches
                     results.count = branches.size
                 } else {
@@ -210,7 +209,7 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
             /**
              * {@inheritDoc}
              */
-            override fun publishResults(constraint: CharSequence, results: FilterResults) {
+            override fun publishResults(constraint: CharSequence?, results: FilterResults) {
                 if (results.count > 0) {
                     clear()
                     addAll(results.values as List<String>)
