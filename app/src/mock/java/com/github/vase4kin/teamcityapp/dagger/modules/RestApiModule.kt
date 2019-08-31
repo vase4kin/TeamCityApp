@@ -31,7 +31,7 @@ import javax.inject.Named
  * Mocked rest api module
  */
 @Module
-class RestApiModule(@Suppress("UNUSED_PARAMETER") baseUrl: String) {
+open class RestApiModule(@Suppress("UNUSED_PARAMETER") baseUrl: String) {
 
     /**
      * @return [FakeTeamCityServiceImpl]
