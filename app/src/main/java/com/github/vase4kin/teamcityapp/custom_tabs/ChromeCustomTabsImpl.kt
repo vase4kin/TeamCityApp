@@ -52,10 +52,10 @@ class ChromeCustomTabsImpl(private val activity: Activity) : ChromeCustomTabs {
                 customTabsClient: CustomTabsClient
             ) {
 
-                //Pre-warming
+                // Pre-warming
                 client = customTabsClient
                 customTabsClient.warmup(0L)
-                //Initialize a session as soon as possible.
+                // Initialize a session as soon as possible.
                 customTabsSession = customTabsClient.newSession(null)
             }
 

@@ -104,7 +104,7 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
 
         setupViewsRegardingUserType(false, listener)
 
-        //Set text selection to the end
+        // Set text selection to the end
         serverUrl.setSelection(serverUrl.text.length)
 
         disableSslSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -118,7 +118,7 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      * Setup views regarding user type
      *
      * @param isGuestUser - Is guest user enabled
-     * @param listener    - listener
+     * @param listener - listener
      */
     private fun setupViewsRegardingUserType(isGuestUser: Boolean, listener: OnValidateListener) {
         if (isGuestUser) {
