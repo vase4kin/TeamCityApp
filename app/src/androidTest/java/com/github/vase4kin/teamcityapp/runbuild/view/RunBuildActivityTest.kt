@@ -140,7 +140,7 @@ class RunBuildActivityTest {
         // Starting the build
         onView(withId(R.id.fab_queue_build)).perform(click())
         // Checking triggered build
-        verify(teamCityService).queueBuild(buildCaptor.capture())
+        verify(teamCityService).queueBuild(capture(buildCaptor))
         val capturedBuild = buildCaptor.value
         assertThat(capturedBuild.branchName, `is`("master"))
         assertThat(capturedBuild.agent, `is`(nullValue()))
