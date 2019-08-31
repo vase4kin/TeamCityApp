@@ -39,14 +39,14 @@ open class RestApiModule(@Suppress("UNUSED_PARAMETER") baseUrl: String) {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @UserScope
-    fun provideTeamCityService(@Suppress("UNUSED_PARAMETER") @Named(CLIENT_AUTH) okHttpClient: OkHttpClient): TeamCityService {
+    open fun provideTeamCityService(@Suppress("UNUSED_PARAMETER") @Named(CLIENT_AUTH) okHttpClient: OkHttpClient): TeamCityService {
         return FakeTeamCityServiceImpl()
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @UserScope
-    fun provideRepository(
+    open fun provideRepository(
         teamCityService: TeamCityService,
         @Suppress("UNUSED_PARAMETER") cacheProviders: CacheProviders
     ): Repository {
