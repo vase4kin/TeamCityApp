@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.crypto;
+package com.github.vase4kin.teamcityapp.crypto
 
 /**
  * Crypto manager
  */
-public interface CryptoManager {
+interface CryptoManager {
 
     /**
      * Encrypt password
@@ -27,7 +27,7 @@ public interface CryptoManager {
      * @param password to encrypt
      * @return Encrypted password in byte array
      */
-    byte[] encrypt(String password);
+    fun encrypt(password: String): ByteArray
 
     /**
      * Decrypt password
@@ -35,7 +35,7 @@ public interface CryptoManager {
      * @param password to encrypt
      * @return Decrypted password in byte array
      */
-    byte[] decrypt(byte[] password);
+    fun decrypt(password: ByteArray): ByteArray
 
     /**
      * Is encryption/decryption failed
@@ -43,5 +43,5 @@ public interface CryptoManager {
      * @param result - encryption/decryption result
      * @return true if encryption/decryption is failed
      */
-    boolean isFailed(byte[] result);
+    fun isFailed(result: ByteArray): Boolean
 }
