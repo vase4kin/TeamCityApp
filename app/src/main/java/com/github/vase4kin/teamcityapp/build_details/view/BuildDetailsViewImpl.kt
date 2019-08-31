@@ -66,8 +66,8 @@ class BuildDetailsViewImpl(
     private val buildDetails: BuildDetails = valueExtractor.buildDetails
     private var onBuildDetailsViewListener: OnBuildDetailsViewListener? = null
 
+    private var tabTitle: String? = null
     private lateinit var overviewTabTitle: String
-    private lateinit var tabTitle: String
     private lateinit var stoppingBuildProgressDialog: MaterialDialog
     private lateinit var removingBuildFromQueueProgressDialog: MaterialDialog
     private lateinit var restartingBuildProgressDialog: MaterialDialog
