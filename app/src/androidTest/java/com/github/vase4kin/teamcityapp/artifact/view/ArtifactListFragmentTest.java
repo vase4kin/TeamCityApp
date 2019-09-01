@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -153,7 +153,7 @@ public class ArtifactListFragmentTest {
     }
 
     @Test
-    public void testUserCanSeeArtifactsEmptyMessageIfArtifactsAreEmpty() throws Exception {
+    public void testUserCanSeeArtifactsEmptyMessageIfArtifactsAreEmpty() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(new Files(Collections.<File>emptyList())));
@@ -182,7 +182,7 @@ public class ArtifactListFragmentTest {
     }
 
     @Test
-    public void testUserCanSeeArtifactsErrorMessageIfSmthBadHappens() throws Exception {
+    public void testUserCanSeeArtifactsErrorMessageIfSmthBadHappens() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         when(mTeamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.<Files>error(new RuntimeException("Fake error happened!")));
@@ -352,7 +352,7 @@ public class ArtifactListFragmentTest {
 
     @Ignore
     @Test
-    public void testUserCanDownloadArtifact() throws Exception {
+    public void testUserCanDownloadArtifact() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
         when(mTeamCityService.downloadFile(anyString())).thenReturn(Single.just(ResponseBody.create(null, "text")));
@@ -394,7 +394,7 @@ public class ArtifactListFragmentTest {
 
     @Ignore("Test opens chrome and gets stuck")
     @Test
-    public void testUserCanOpenHtmlFileInBrowser() throws Exception {
+    public void testUserCanOpenHtmlFileInBrowser() {
         // Prepare mocks
         when(mTeamCityService.build(anyString())).thenReturn(Single.just(mBuild));
 
