@@ -32,7 +32,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
-import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.junit.Before

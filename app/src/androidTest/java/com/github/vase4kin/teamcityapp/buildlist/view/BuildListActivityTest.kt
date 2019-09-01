@@ -52,8 +52,8 @@ import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
-import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.overview.view.eq
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
