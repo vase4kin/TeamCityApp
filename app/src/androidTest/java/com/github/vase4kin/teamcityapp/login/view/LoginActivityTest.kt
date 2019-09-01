@@ -43,7 +43,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL
+import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl
