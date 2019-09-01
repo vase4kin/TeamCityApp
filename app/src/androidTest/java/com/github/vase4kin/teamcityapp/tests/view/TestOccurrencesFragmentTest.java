@@ -95,7 +95,7 @@ public class TestOccurrencesFragmentTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.INSTANCE.disableOnboarding();
+        TestUtils.disableOnboarding();
     }
 
     @Before
@@ -132,7 +132,7 @@ public class TestOccurrencesFragmentTest {
         // Check failed tests
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("Failed (2)")));
-        onView(withId(R.id.tests_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
+        onView(withId(R.id.tests_recycler_view)).check(TestUtils.hasItemsCount(3));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Test 1")));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
@@ -237,7 +237,7 @@ public class TestOccurrencesFragmentTest {
         // Check passed tests
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("Passed (10)")));
-        onView(withId(R.id.tests_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
+        onView(withId(R.id.tests_recycler_view)).check(TestUtils.hasItemsCount(3));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Test 5")));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
@@ -314,7 +314,7 @@ public class TestOccurrencesFragmentTest {
         // Check ignored tests
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("Ignored (4)")));
-        onView(withId(R.id.tests_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
+        onView(withId(R.id.tests_recycler_view)).check(TestUtils.hasItemsCount(3));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Test 4")));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))

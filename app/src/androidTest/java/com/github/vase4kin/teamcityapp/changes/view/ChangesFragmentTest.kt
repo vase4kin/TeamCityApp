@@ -42,7 +42,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.junit.Before

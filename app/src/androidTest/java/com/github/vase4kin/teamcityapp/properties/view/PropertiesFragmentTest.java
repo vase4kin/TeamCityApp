@@ -91,7 +91,7 @@ public class PropertiesFragmentTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.INSTANCE.disableOnboarding();
+        TestUtils.disableOnboarding();
     }
 
     @Before
@@ -126,7 +126,7 @@ public class PropertiesFragmentTest {
                 .perform(click());
 
         // Check properties
-        onView(withId(R.id.properties_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
+        onView(withId(R.id.properties_recycler_view)).check(TestUtils.hasItemsCount(2));
         onView(withRecyclerView(R.id.properties_recycler_view).atPositionOnView(0, R.id.itemHeader)).check(matches(withText("sdk")));
         onView(withRecyclerView(R.id.properties_recycler_view).atPositionOnView(0, R.id.itemTitle)).check(matches(withText("24")));
         onView(withRecyclerView(R.id.properties_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText("userName")));

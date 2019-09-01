@@ -91,7 +91,7 @@ public class BuildActionsTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.INSTANCE.disableOnboarding();
+        TestUtils.disableOnboarding();
     }
 
     @Before
