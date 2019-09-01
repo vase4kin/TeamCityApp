@@ -156,7 +156,7 @@ class Mocks {
          * @param properties - properties to set
          * @return success build with [Properties]
          */
-        fun successBuild(properties: Properties): Build {
+        fun successBuild(properties: Properties?): Build {
             val build = createNotFailedBuildMock(
                 "/guestAuth/app/rest/builds/id:783912",
                 "2459",
