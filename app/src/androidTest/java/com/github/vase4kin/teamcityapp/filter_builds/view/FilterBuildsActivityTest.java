@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -103,7 +103,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithDefaultFilter() throws Exception {
+    public void testUserCanFilterBuildsWithDefaultFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -122,7 +122,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsByPinned() throws Exception {
+    public void testUserCanFilterBuildsByPinned() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -144,7 +144,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsByPersonal() throws Exception {
+    public void testUserCanFilterBuildsByPersonal() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -166,7 +166,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsByBranch() throws Exception {
+    public void testUserCanFilterBuildsByBranch() {
         // Prepare mocks
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));
@@ -200,7 +200,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testPinnedSwitchIsGoneWhenQueuedFilterIsChosen() throws Exception {
+    public void testPinnedSwitchIsGoneWhenQueuedFilterIsChosen() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -228,7 +228,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithSuccessFilter() throws Exception {
+    public void testUserCanFilterBuildsWithSuccessFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -253,7 +253,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithFailedFilter() throws Exception {
+    public void testUserCanFilterBuildsWithFailedFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -278,7 +278,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithFailedServerErrorFilter() throws Exception {
+    public void testUserCanFilterBuildsWithFailedServerErrorFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -303,7 +303,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithCancelledFilter() throws Exception {
+    public void testUserCanFilterBuildsWithCancelledFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -328,7 +328,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithFailedToStartFilter() throws Exception {
+    public void testUserCanFilterBuildsWithFailedToStartFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -353,7 +353,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithRunningFilter() throws Exception {
+    public void testUserCanFilterBuildsWithRunningFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
@@ -378,7 +378,7 @@ public class FilterBuildsActivityTest {
     }
 
     @Test
-    public void testUserCanFilterBuildsWithQueuedFilter() throws Exception {
+    public void testUserCanFilterBuildsWithQueuedFilter() {
         mActivityRule.launchActivity(null);
 
         // Open build type
