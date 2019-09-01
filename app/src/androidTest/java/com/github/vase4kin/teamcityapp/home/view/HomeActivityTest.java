@@ -79,7 +79,7 @@ public class HomeActivityTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.INSTANCE.disableOnboarding();
+        TestUtils.disableOnboarding();
     }
 
     @Before
@@ -106,10 +106,10 @@ public class HomeActivityTest {
         mActivityRule.launchActivity(null);
 
         // Checking toolbar title
-        TestUtils.INSTANCE.matchToolbarTitle("Projects");
+        TestUtils.matchToolbarTitle("Projects");
 
         // Checking projects data
-        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
@@ -120,9 +120,9 @@ public class HomeActivityTest {
         onView(withText("Project"))
                 .perform(click());
         // Check toolbar
-        TestUtils.INSTANCE.matchToolbarTitle("Project");
+        TestUtils.matchToolbarTitle("Project");
         // Check Project data
-        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("New project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
