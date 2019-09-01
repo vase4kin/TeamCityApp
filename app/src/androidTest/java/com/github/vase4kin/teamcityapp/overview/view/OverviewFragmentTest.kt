@@ -30,7 +30,9 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.azimolabs.conditionwatcher.ConditionWatcher
@@ -43,7 +45,9 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered
-import com.github.vase4kin.teamcityapp.buildlist.api.Triggered.*
+import com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_BUILD_TYPE
+import com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_RESTARTED
+import com.github.vase4kin.teamcityapp.buildlist.api.Triggered.TRIGGER_TYPE_USER
 import com.github.vase4kin.teamcityapp.buildlist.api.User
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
@@ -53,9 +57,11 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
-import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.*
+import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarSubTitle
+import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single

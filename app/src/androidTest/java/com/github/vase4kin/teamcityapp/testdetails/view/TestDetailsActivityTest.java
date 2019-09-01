@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 
 import org.junit.Rule;
@@ -49,7 +50,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -93,7 +93,7 @@ public class TestDetailsActivityTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        matchToolbarTitle("Details");
+        TestUtils.INSTANCE.matchToolbarTitle("Details");
 
         // check details
         onView(withId(R.id.test_occurrence_details)).check(matches(allOf(withText("Test details"), isDisplayed())));
@@ -115,7 +115,7 @@ public class TestDetailsActivityTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        matchToolbarTitle("Details");
+        TestUtils.INSTANCE.matchToolbarTitle("Details");
 
         // check no data message
         onView(withId(R.id.empty)).check(matches(allOf(withText(R.string.text_empty_test_details), isDisplayed())));
@@ -136,7 +136,7 @@ public class TestDetailsActivityTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        matchToolbarTitle("Details");
+        TestUtils.INSTANCE.matchToolbarTitle("Details");
 
         // check details error
         onView(withText("Errror!")).check(matches(isDisplayed()));
