@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,7 +55,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -83,7 +82,7 @@ public class SnapshotDependenciesFragmentTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.disableOnboarding();
+        TestUtils.INSTANCE.disableOnboarding();
     }
 
     @Before
@@ -145,7 +144,7 @@ public class SnapshotDependenciesFragmentTest {
         verify(mTeamCityService).listBuilds(eq("buildId"));
 
         // List has item with header
-        onView(withId(R.id.snapshot_recycler_view)).check(hasItemsCount(5));
+        onView(withId(R.id.snapshot_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(5));
         // Checking header 1
         onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("project name - build type name")));

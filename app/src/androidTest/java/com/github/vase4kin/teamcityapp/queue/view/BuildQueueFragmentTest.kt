@@ -19,7 +19,10 @@ package com.github.vase4kin.teamcityapp.queue.view
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withChild
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -34,7 +37,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
-import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle

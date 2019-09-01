@@ -20,8 +20,10 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
+
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.TeamCityService;
@@ -36,8 +38,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
 import com.github.vase4kin.teamcityapp.helper.TestUtils;
-import io.reactivex.Single;
-import it.cosenonjaviste.daggermock.DaggerMockRule;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -45,12 +46,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 
+import io.reactivex.Single;
+import it.cosenonjaviste.daggermock.DaggerMockRule;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.openContextualActionModeOverflowMenu;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.Intents.intending;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.*;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -84,7 +91,7 @@ public class BuildActionsTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.disableOnboarding();
+        TestUtils.INSTANCE.disableOnboarding();
     }
 
     @Before
