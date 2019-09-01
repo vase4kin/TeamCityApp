@@ -76,10 +76,11 @@ class SnapshotDependenciesFragmentTest {
 
     @JvmField
     @Rule
-    val activityRule: CustomIntentsTestRule<BuildDetailsActivity> = CustomIntentsTestRule(BuildDetailsActivity::class.java)
+    val activityRule: CustomIntentsTestRule<BuildDetailsActivity> =
+        CustomIntentsTestRule(BuildDetailsActivity::class.java)
 
     @Spy
-    private val teamCityService = FakeTeamCityServiceImpl()
+    private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
     companion object {
         @JvmStatic
@@ -147,7 +148,7 @@ class SnapshotDependenciesFragmentTest {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        verify<TeamCityService>(teamCityService).listBuilds(eq("buildId"))
+        verify(teamCityService).listBuilds(eq("buildId"))
 
         // List has item with header
         onView(withId(R.id.snapshot_recycler_view)).check(TestUtils.hasItemsCount(5))
