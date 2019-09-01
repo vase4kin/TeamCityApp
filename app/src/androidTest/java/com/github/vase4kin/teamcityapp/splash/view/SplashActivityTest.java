@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.dagger.components.AppComponent;
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks;
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule;
+import com.github.vase4kin.teamcityapp.helper.TestUtils;
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity;
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity;
 
@@ -43,7 +44,6 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.toPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 import static org.hamcrest.core.AllOf.allOf;
 
 /**
@@ -116,7 +116,7 @@ public class SplashActivityTest {
         mActivityRule.launchActivity(null);
 
         // Check that root projects activity is opened
-        matchToolbarTitle("Projects");
+        TestUtils.INSTANCE.matchToolbarTitle("Projects");
     }
 
     /**

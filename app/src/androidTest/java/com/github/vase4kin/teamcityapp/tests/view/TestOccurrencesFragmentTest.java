@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,7 +63,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Matchers.anyString;
@@ -96,7 +95,7 @@ public class TestOccurrencesFragmentTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.disableOnboarding();
+        TestUtils.INSTANCE.disableOnboarding();
     }
 
     @Before
@@ -133,7 +132,7 @@ public class TestOccurrencesFragmentTest {
         // Check failed tests
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("Failed (2)")));
-        onView(withId(R.id.tests_recycler_view)).check(hasItemsCount(3));
+        onView(withId(R.id.tests_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Test 1")));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
@@ -238,7 +237,7 @@ public class TestOccurrencesFragmentTest {
         // Check passed tests
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("Passed (10)")));
-        onView(withId(R.id.tests_recycler_view)).check(hasItemsCount(3));
+        onView(withId(R.id.tests_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Test 5")));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
@@ -315,7 +314,7 @@ public class TestOccurrencesFragmentTest {
         // Check ignored tests
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("Ignored (4)")));
-        onView(withId(R.id.tests_recycler_view)).check(hasItemsCount(3));
+        onView(withId(R.id.tests_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
                 .check(matches(withText("Test 4")));
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))

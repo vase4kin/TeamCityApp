@@ -42,7 +42,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
-import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
