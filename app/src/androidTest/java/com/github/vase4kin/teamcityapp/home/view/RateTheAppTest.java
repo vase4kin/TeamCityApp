@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,8 +66,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.AllOf.allOf;
@@ -81,14 +79,11 @@ import static org.mockito.Mockito.when;
 public class RateTheAppTest {
 
     @Rule
-    public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
+    public DaggerMockRule<RestApiComponent> daggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
@@ -102,7 +97,7 @@ public class RateTheAppTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.disableOnboarding();
+        TestUtils.INSTANCE.disableOnboarding();
     }
 
     @Before
@@ -131,7 +126,7 @@ public class RateTheAppTest {
         mActivityRule.launchActivity(null);
 
         // Checking data
-        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(3));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(3));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
@@ -169,7 +164,7 @@ public class RateTheAppTest {
         assertThat(getSharedPreferences().getBoolean("rated", false), is(equalTo(true)));
 
         // Checking data
-        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
@@ -183,7 +178,7 @@ public class RateTheAppTest {
                 .perform(click());
 
         // Check Project data
-        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("New project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
@@ -246,7 +241,7 @@ public class RateTheAppTest {
         assertThat(getSharedPreferences().getBoolean("rated", false), is(equalTo(true)));
 
         // Checking data
-        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
@@ -261,7 +256,7 @@ public class RateTheAppTest {
         // no crash
         // user can see buildtype
         // Check toolbar
-        matchToolbarTitle("build type");
+        TestUtils.INSTANCE.matchToolbarTitle("build type");
     }
 
     @Test

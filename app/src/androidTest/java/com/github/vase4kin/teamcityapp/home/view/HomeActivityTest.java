@@ -54,8 +54,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -68,12 +66,9 @@ public class HomeActivityTest {
     @Rule
     public DaggerMockRule<RestApiComponent> mDaggerRule = new DaggerMockRule<>(RestApiComponent.class, new RestApiModule(Mocks.URL))
             .addComponentDependency(AppComponent.class, new AppModule((TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext()))
-            .set(new DaggerMockRule.ComponentSetter<RestApiComponent>() {
-                @Override
-                public void setComponent(RestApiComponent restApiComponent) {
-                    TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
-                    app.setRestApiInjector(restApiComponent);
-                }
+            .set(restApiComponent -> {
+                TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
+                app.setRestApiInjector(restApiComponent);
             });
 
     @Rule
@@ -84,7 +79,7 @@ public class HomeActivityTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.disableOnboarding();
+        TestUtils.INSTANCE.disableOnboarding();
     }
 
     @Before
@@ -111,10 +106,10 @@ public class HomeActivityTest {
         mActivityRule.launchActivity(null);
 
         // Checking toolbar title
-        matchToolbarTitle("Projects");
+        TestUtils.INSTANCE.matchToolbarTitle("Projects");
 
         // Checking projects data
-        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("Project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))
@@ -125,9 +120,9 @@ public class HomeActivityTest {
         onView(withText("Project"))
                 .perform(click());
         // Check toolbar
-        matchToolbarTitle("Project");
+        TestUtils.INSTANCE.matchToolbarTitle("Project");
         // Check Project data
-        onView(withId(R.id.navigation_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.navigation_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
                 .check(matches(withText("New project")));
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemSubTitle))

@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView;
-import static com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -92,7 +91,7 @@ public class PropertiesFragmentTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.disableOnboarding();
+        TestUtils.INSTANCE.disableOnboarding();
     }
 
     @Before
@@ -127,7 +126,7 @@ public class PropertiesFragmentTest {
                 .perform(click());
 
         // Check properties
-        onView(withId(R.id.properties_recycler_view)).check(hasItemsCount(2));
+        onView(withId(R.id.properties_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(2));
         onView(withRecyclerView(R.id.properties_recycler_view).atPositionOnView(0, R.id.itemHeader)).check(matches(withText("sdk")));
         onView(withRecyclerView(R.id.properties_recycler_view).atPositionOnView(0, R.id.itemTitle)).check(matches(withText("24")));
         onView(withRecyclerView(R.id.properties_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(matches(withText("userName")));

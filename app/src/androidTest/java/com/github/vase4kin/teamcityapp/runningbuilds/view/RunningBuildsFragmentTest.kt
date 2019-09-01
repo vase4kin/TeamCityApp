@@ -23,7 +23,10 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withChild
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -42,7 +45,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
-import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.withRecyclerView
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.matchToolbarTitle
@@ -52,7 +55,11 @@ import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.AllOf.allOf
-import org.junit.*
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Ignore
+import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
