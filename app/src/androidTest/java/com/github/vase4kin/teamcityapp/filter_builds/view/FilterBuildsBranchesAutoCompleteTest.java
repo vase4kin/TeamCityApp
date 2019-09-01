@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -97,7 +97,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
     }
 
     @Test
-    public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() throws Exception {
+    public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() {
         // Prepare intent
         Intent intent = new Intent();
         intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID);
@@ -110,7 +110,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
     }
 
     @Test
-    public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasEmptyBranchesList() throws Exception {
+    public void testUserCanNoBranchesAvailableForFilterIfBuildTypeHasEmptyBranchesList() {
         // Prepare mocks
         when(mTeamCityService.listBranches(anyString())).thenReturn(Single.just(new Branches(new ArrayList<Branch>())));
         // Prepare intent
@@ -125,7 +125,7 @@ public class FilterBuildsBranchesAutoCompleteTest {
     }
 
     @Test
-    public void testUserCanSeeMultipleBranchesIfBuildTypeHasMultipleAvailable() throws Exception {
+    public void testUserCanSeeMultipleBranchesIfBuildTypeHasMultipleAvailable() {
         // Prepare mocks
         List<Branch> branches = new ArrayList<>();
         branches.add(new Branch("dev1"));

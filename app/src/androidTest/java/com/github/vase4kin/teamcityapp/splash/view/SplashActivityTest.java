@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ public class SplashActivityTest {
      */
     @Ignore
     @Test
-    public void testUserNavigatesToRootProjectsActivityIgnored() throws Exception {
+    public void testUserNavigatesToRootProjectsActivityIgnored() {
         // Prepate data
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
@@ -92,7 +92,7 @@ public class SplashActivityTest {
      */
     @Ignore
     @Test
-    public void testUserNavigatesToLoginActivityIgnored() throws Exception {
+    public void testUserNavigatesToLoginActivityIgnored() {
         // Launch activity
         mActivityRule.launchActivity(null);
 
@@ -107,7 +107,7 @@ public class SplashActivityTest {
      */
     @Ignore
     @Test
-    public void testUserNavigatesToRootProjectsActivity() throws Exception {
+    public void testUserNavigatesToRootProjectsActivity() {
         // Prepate data
         TeamCityApplication app = (TeamCityApplication) InstrumentationRegistry.getInstrumentation().getTargetContext().getApplicationContext();
         app.getAppInjector().sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false);
@@ -123,7 +123,7 @@ public class SplashActivityTest {
      * Workaround test to test that login activity is opened
      */
     @Test
-    public void testUserNavigatesToLoginActivity() throws Exception {
+    public void testUserNavigatesToLoginActivity() {
         // Launch activity
         mActivityRule.launchActivity(null);
 
