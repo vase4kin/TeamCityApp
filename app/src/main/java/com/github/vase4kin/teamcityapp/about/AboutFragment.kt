@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.about
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -62,154 +63,29 @@ class AboutFragment : MaterialAboutFragment() {
         super.onDestroyView()
     }
 
-    override fun getMaterialAboutList(context: Context): MaterialAboutList {
-        val activity = requireActivity()
+    override fun getMaterialAboutList(context: Context): MaterialAboutList = MaterialAboutList()
 
-        val loadingDataString = activity.getString(R.string.about_app_loading)
-        val serverInfoCard = createServerInfoCard(loadingDataString, loadingDataString)
-
-        val appCardBuilder = MaterialAboutCard.Builder()
-        appCardBuilder.title(R.string.about_app_text_app)
-        appCardBuilder.addItem(
-            MaterialAboutActionItem.Builder()
-                .text(getString(R.string.version))
-                .icon(
-                    IconDrawable(
-                        context,
-                        MaterialIcons.md_info_outline
-                    ).colorRes(R.color.sub_text_color).sizeDp(
-                        iconSize
-                    )
-                )
-                .subText(BuildConfig.VERSION_NAME)
-                .build()
-        )
-            .addItem(
-                ConvenienceBuilder.createRateActionItem(
-                    context,
-                    IconDrawable(
-                        context,
-                        MaterialIcons.md_star_border
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
-                    getString(R.string.about_app_text_rate_app),
-                    null
-                )
-            )
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_found_issue)
-                .subText(R.string.about_app_subtext_found_issue)
-                .icon(
-                    IconDrawable(
-                        context,
-                        MaterialIcons.md_question_answer
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
-                )
-                .setOnClickAction {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(getString(R.string.about_app_url_found_issue))
-                    activity.startActivity(intent)
-                }
-                .build())
-
-        val miscCardBuilder = MaterialAboutCard.Builder()
-        miscCardBuilder.title(R.string.about_app_text_dev)
-        miscCardBuilder
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_source_code)
-                .icon(
-                    IconDrawable(
-                        context,
-                        MaterialCommunityIcons.mdi_github_circle
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
-                )
-                .setOnClickAction {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(getString(R.string.about_app_url_source_code))
-                    activity.startActivity(intent)
-                }
-                .build())
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_libraries)
-                .icon(
-                    IconDrawable(
-                        context,
-                        MaterialCommunityIcons.mdi_github_circle
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
-                )
-                .setOnClickAction { AboutLibrariesActivity.start(activity) }
-                .build())
-
-        val authorCardBuilder = MaterialAboutCard.Builder()
-        authorCardBuilder.title(R.string.about_app_text_contacts)
-        authorCardBuilder.addItem(MaterialAboutActionItem.Builder()
-            .text(R.string.about_app_text_web)
-            .subText(R.string.about_app_url_web)
-            .icon(
-                IconDrawable(
-                    context,
-                    MaterialCommunityIcons.mdi_web
-                ).colorRes(R.color.sub_text_color).sizeDp(
-                    iconSize
-                )
-            )
-            .setOnClickAction {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(getString(R.string.about_app_url_web))
-                activity.startActivity(intent)
-            }
-            .build())
-            .addItem(
-                ConvenienceBuilder.createEmailItem(
-                    context,
-                    IconDrawable(
-                        context,
-                        MaterialIcons.md_email
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
-                    getText(R.string.about_app_text_email),
-                    true,
-                    getString(R.string.about_app_email),
-                    getString(R.string.about_app_email_title)
-                )
-            )
-
-        return MaterialAboutList(
-            serverInfoCard,
-            appCardBuilder.build(),
-            miscCardBuilder.build(),
-            authorCardBuilder.build()
-        )
-    }
-
-    override fun getTheme(): Int {
-        return R.style.AppTheme_MaterialAboutActivity_Fragment
-    }
+    override fun getTheme(): Int = R.style.AppTheme_MaterialAboutActivity_Fragment
 
     private fun loadServerInfo() {
         repository.serverInfo().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = {
-                    updateServerInfoCard(it.version, it.webUrl)
+                    val serverInfo = createServerInfoCard(it.version, it.webUrl)
+                    val materialAboutList = createMaterialAboutList(requireActivity(), serverInfo)
+                    list.cards.clear()
+                    list.cards.addAll(materialAboutList.cards)
+                    refreshMaterialAboutList()
                 },
                 onError = {
-                    removeServerCard()
+                    val materialAboutList = createMaterialAboutList(requireActivity())
+                    list.cards.clear()
+                    list.cards.addAll(materialAboutList.cards)
+                    refreshMaterialAboutList()
                 }
             )
             .addTo(subscriptions)
-    }
-
-    private fun updateServerInfoCard(
-        version: String,
-        serverUrl: String
-    ) {
-        list.cards.removeAt(0)
-        list.cards.add(0, createServerInfoCard(version, serverUrl))
-        refreshMaterialAboutList()
-    }
-
-    private fun removeServerCard() {
-        list.cards.removeAt(0)
-        refreshMaterialAboutList()
     }
 
     private fun createServerInfoCard(
@@ -250,5 +126,128 @@ class AboutFragment : MaterialAboutFragment() {
             }
         serverInfo.addItem(serverUrlItem.build())
         return serverInfo.build()
+    }
+
+    private fun createMaterialAboutList(
+        activity: Activity,
+        serverCard: MaterialAboutCard? = null
+    ): MaterialAboutList {
+        val appCardBuilder = MaterialAboutCard.Builder()
+        appCardBuilder.title(R.string.about_app_text_app)
+        appCardBuilder.addItem(
+            MaterialAboutActionItem.Builder()
+                .text(getString(R.string.version))
+                .icon(
+                    IconDrawable(
+                        activity,
+                        MaterialIcons.md_info_outline
+                    ).colorRes(R.color.sub_text_color).sizeDp(
+                        iconSize
+                    )
+                )
+                .subText(BuildConfig.VERSION_NAME)
+                .build()
+        )
+            .addItem(
+                ConvenienceBuilder.createRateActionItem(
+                    activity,
+                    IconDrawable(
+                        activity,
+                        MaterialIcons.md_star_border
+                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
+                    getString(R.string.about_app_text_rate_app),
+                    null
+                )
+            )
+            .addItem(MaterialAboutActionItem.Builder()
+                .text(R.string.about_app_text_found_issue)
+                .subText(R.string.about_app_subtext_found_issue)
+                .icon(
+                    IconDrawable(
+                        activity,
+                        MaterialIcons.md_question_answer
+                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
+                )
+                .setOnClickAction {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(getString(R.string.about_app_url_found_issue))
+                    activity.startActivity(intent)
+                }
+                .build())
+
+        val miscCardBuilder = MaterialAboutCard.Builder()
+        miscCardBuilder.title(R.string.about_app_text_dev)
+        miscCardBuilder
+            .addItem(MaterialAboutActionItem.Builder()
+                .text(R.string.about_app_text_source_code)
+                .icon(
+                    IconDrawable(
+                        activity,
+                        MaterialCommunityIcons.mdi_github_circle
+                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
+                )
+                .setOnClickAction {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(getString(R.string.about_app_url_source_code))
+                    activity.startActivity(intent)
+                }
+                .build())
+            .addItem(MaterialAboutActionItem.Builder()
+                .text(R.string.about_app_text_libraries)
+                .icon(
+                    IconDrawable(
+                        activity,
+                        MaterialCommunityIcons.mdi_github_circle
+                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
+                )
+                .setOnClickAction { AboutLibrariesActivity.start(activity) }
+                .build())
+
+        val authorCardBuilder = MaterialAboutCard.Builder()
+        authorCardBuilder.title(R.string.about_app_text_contacts)
+        authorCardBuilder.addItem(MaterialAboutActionItem.Builder()
+            .text(R.string.about_app_text_web)
+            .subText(R.string.about_app_url_web)
+            .icon(
+                IconDrawable(
+                    activity,
+                    MaterialCommunityIcons.mdi_web
+                ).colorRes(R.color.sub_text_color).sizeDp(
+                    iconSize
+                )
+            )
+            .setOnClickAction {
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = Uri.parse(getString(R.string.about_app_url_web))
+                activity.startActivity(intent)
+            }
+            .build())
+            .addItem(
+                ConvenienceBuilder.createEmailItem(
+                    activity,
+                    IconDrawable(
+                        activity,
+                        MaterialIcons.md_email
+                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
+                    getText(R.string.about_app_text_email),
+                    true,
+                    getString(R.string.about_app_email),
+                    getString(R.string.about_app_email_title)
+                )
+            )
+        return if (serverCard == null) {
+            MaterialAboutList(
+                appCardBuilder.build(),
+                miscCardBuilder.build(),
+                authorCardBuilder.build()
+            )
+        } else {
+            MaterialAboutList(
+                serverCard,
+                appCardBuilder.build(),
+                miscCardBuilder.build(),
+                authorCardBuilder.build()
+            )
+        }
     }
 }

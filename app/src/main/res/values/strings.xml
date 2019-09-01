@@ -210,7 +210,6 @@
     <string name="about_app_text_email">Email</string>
     <string name="about_app_email">contact@teamcity.app</string>
     <string name="about_app_email_title">Questions about TeamCityApp</string>
-    <string name="about_app_loading">Loading..</string>
 
     <!--Build log-->
     <string name="text_login_again">In order to view build log please login</string>
