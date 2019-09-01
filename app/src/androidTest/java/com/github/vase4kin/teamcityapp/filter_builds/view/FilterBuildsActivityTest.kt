@@ -41,6 +41,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.eq
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
@@ -56,7 +57,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
-import org.mockito.Matchers.eq
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 import org.mockito.Spy
