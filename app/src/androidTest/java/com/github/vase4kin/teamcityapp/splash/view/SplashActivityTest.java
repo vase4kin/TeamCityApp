@@ -116,7 +116,7 @@ public class SplashActivityTest {
         mActivityRule.launchActivity(null);
 
         // Check that root projects activity is opened
-        TestUtils.INSTANCE.matchToolbarTitle("Projects");
+        TestUtils.matchToolbarTitle("Projects");
     }
 
     /**

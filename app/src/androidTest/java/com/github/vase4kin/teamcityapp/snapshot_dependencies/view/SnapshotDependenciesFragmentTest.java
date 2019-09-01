@@ -82,7 +82,7 @@ public class SnapshotDependenciesFragmentTest {
 
     @BeforeClass
     public static void disableOnboarding() {
-        TestUtils.INSTANCE.disableOnboarding();
+        TestUtils.disableOnboarding();
     }
 
     @Before
@@ -144,7 +144,7 @@ public class SnapshotDependenciesFragmentTest {
         verify(mTeamCityService).listBuilds(eq("buildId"));
 
         // List has item with header
-        onView(withId(R.id.snapshot_recycler_view)).check(TestUtils.INSTANCE.hasItemsCount(5));
+        onView(withId(R.id.snapshot_recycler_view)).check(TestUtils.hasItemsCount(5));
         // Checking header 1
         onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(0, R.id.section_text))
                 .check(matches(withText("project name - build type name")));

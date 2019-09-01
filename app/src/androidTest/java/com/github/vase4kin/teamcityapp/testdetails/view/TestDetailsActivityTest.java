@@ -93,7 +93,7 @@ public class TestDetailsActivityTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        TestUtils.INSTANCE.matchToolbarTitle("Details");
+        TestUtils.matchToolbarTitle("Details");
 
         // check details
         onView(withId(R.id.test_occurrence_details)).check(matches(allOf(withText("Test details"), isDisplayed())));
@@ -115,7 +115,7 @@ public class TestDetailsActivityTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        TestUtils.INSTANCE.matchToolbarTitle("Details");
+        TestUtils.matchToolbarTitle("Details");
 
         // check no data message
         onView(withId(R.id.empty)).check(matches(allOf(withText(R.string.text_empty_test_details), isDisplayed())));
@@ -136,7 +136,7 @@ public class TestDetailsActivityTest {
         mActivityRule.launchActivity(intent);
 
         // Checking toolbar title
-        TestUtils.INSTANCE.matchToolbarTitle("Details");
+        TestUtils.matchToolbarTitle("Details");
 
         // check details error
         onView(withText("Errror!")).check(matches(isDisplayed()));

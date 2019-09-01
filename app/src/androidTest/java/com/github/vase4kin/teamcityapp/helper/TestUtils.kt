@@ -33,99 +33,108 @@ import org.hamcrest.core.Is.`is`
 /**
  * Useful test utils
  */
-object TestUtils {
+class TestUtils {
+    companion object {
+        /**
+         * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
+         *
+         * @param title
+         * @return
+         */
+        @JvmStatic
+        fun matchToolbarTitle(
+            title: CharSequence
+        ) {
+            onView(isAssignableFrom(Toolbar::class.java))
+                .check(matches(withToolbarTitle(`is`(title))))
+        }
 
-    /**
-     * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
-     *
-     * @param title
-     * @return
-     */
-    fun matchToolbarTitle(
-        title: CharSequence
-    ) {
-        onView(isAssignableFrom(Toolbar::class.java))
-            .check(matches(withToolbarTitle(`is`(title))))
-    }
+        @JvmStatic
+        fun matchToolbarSubTitle(
+            title: CharSequence
+        ) {
+            onView(isAssignableFrom(Toolbar::class.java))
+                .check(matches(withToolbarSubTitle(`is`(title))))
+        }
 
-    fun matchToolbarSubTitle(
-        title: CharSequence
-    ) {
-        onView(isAssignableFrom(Toolbar::class.java))
-            .check(matches(withToolbarSubTitle(`is`(title))))
-    }
+        /**
+         * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
+         *
+         * @param textMatcher
+         * @return
+         */
+        private fun withToolbarTitle(
+            textMatcher: Matcher<CharSequence>
+        ): Matcher<Any> {
+            return object : BoundedMatcher<Any, Toolbar>(Toolbar::class.java) {
+                public override fun matchesSafely(toolbar: Toolbar): Boolean {
+                    return textMatcher.matches(toolbar.title)
+                }
 
-    /**
-     * http://blog.sqisland.com/2015/05/espresso-match-toolbar-title.html
-     *
-     * @param textMatcher
-     * @return
-     */
-    private fun withToolbarTitle(
-        textMatcher: Matcher<CharSequence>
-    ): Matcher<Any> {
-        return object : BoundedMatcher<Any, Toolbar>(Toolbar::class.java) {
-            public override fun matchesSafely(toolbar: Toolbar): Boolean {
-                return textMatcher.matches(toolbar.title)
-            }
-
-            override fun describeTo(description: org.hamcrest.Description) {
-                description.appendText("with toolbar title: ")
-                textMatcher.describeTo(description)
+                override fun describeTo(description: org.hamcrest.Description) {
+                    description.appendText("with toolbar title: ")
+                    textMatcher.describeTo(description)
+                }
             }
         }
-    }
 
-    private fun withToolbarSubTitle(
-        textMatcher: Matcher<CharSequence>
-    ): Matcher<Any> {
-        return object : BoundedMatcher<Any, Toolbar>(Toolbar::class.java) {
-            public override fun matchesSafely(toolbar: Toolbar): Boolean {
-                return textMatcher.matches(toolbar.subtitle)
-            }
+        private fun withToolbarSubTitle(
+            textMatcher: Matcher<CharSequence>
+        ): Matcher<Any> {
+            return object : BoundedMatcher<Any, Toolbar>(Toolbar::class.java) {
+                public override fun matchesSafely(toolbar: Toolbar): Boolean {
+                    return textMatcher.matches(toolbar.subtitle)
+                }
 
-            override fun describeTo(description: org.hamcrest.Description) {
-                description.appendText("with toolbar subtitle: ")
-                textMatcher.describeTo(description)
+                override fun describeTo(description: org.hamcrest.Description) {
+                    description.appendText("with toolbar subtitle: ")
+                    textMatcher.describeTo(description)
+                }
             }
         }
-    }
 
-    /**
-     * https://gist.github.com/chemouna/00b10369eb1d5b00401b
-     *
-     * @param count
-     * @return
-     */
-    fun hasItemsCount(count: Int): ViewAssertion {
-        return ViewAssertion { view, noViewFoundException ->
-            if (view !is RecyclerView) {
-                throw noViewFoundException
+        /**
+         * https://gist.github.com/chemouna/00b10369eb1d5b00401b
+         *
+         * @param count
+         * @return
+         */
+        @JvmStatic
+        fun hasItemsCount(count: Int): ViewAssertion {
+            return ViewAssertion { view, noViewFoundException ->
+                if (view !is RecyclerView) {
+                    throw noViewFoundException
+                }
+                assertThat(view.adapter?.itemCount ?: 0, `is`(count))
             }
-            assertThat(view.adapter?.itemCount ?: 0, `is`(count))
         }
-    }
 
-    /**
-     * Helper method to disable all onboarding
-     */
-    fun disableOnboarding() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        val onboardingManager = OnboardingManagerImpl(context)
-        onboardingManager.saveNavigationDrawerPromptShown()
-        onboardingManager.saveFilterBuildsPromptShown()
-        onboardingManager.saveRunBuildPromptShown()
-        onboardingManager.saveRemoveBuildFromQueuePromptShown()
-        onboardingManager.saveStopBuildPromptShown()
-        onboardingManager.saveRestartBuildPromptShown()
-        onboardingManager.saveAddFavPromptShown()
-        onboardingManager.saveFavPromptShown()
-        onboardingManager.saveTabsFilterPromptShown()
-    }
+        /**
+         * Helper method to disable all onboarding
+         */
+        @JvmStatic
+        fun disableOnboarding() {
+            val context =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+            val onboardingManager = OnboardingManagerImpl(context)
+            onboardingManager.saveNavigationDrawerPromptShown()
+            onboardingManager.saveFilterBuildsPromptShown()
+            onboardingManager.saveRunBuildPromptShown()
+            onboardingManager.saveRemoveBuildFromQueuePromptShown()
+            onboardingManager.saveStopBuildPromptShown()
+            onboardingManager.saveRestartBuildPromptShown()
+            onboardingManager.saveAddFavPromptShown()
+            onboardingManager.saveFavPromptShown()
+            onboardingManager.saveTabsFilterPromptShown()
+        }
 
-    fun enableOnboarding() {
-        val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
-        context.getSharedPreferences(OnboardingManagerImpl.PREF_NAME, Context.MODE_PRIVATE).edit()
-            .clear().commit()
+        @JvmStatic
+        fun enableOnboarding() {
+            val context =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+            context.getSharedPreferences(OnboardingManagerImpl.PREF_NAME, Context.MODE_PRIVATE)
+                .edit()
+                .clear().commit()
+        }
     }
 }
