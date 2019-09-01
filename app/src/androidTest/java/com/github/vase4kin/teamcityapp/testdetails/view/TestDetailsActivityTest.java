@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -78,7 +78,7 @@ public class TestDetailsActivityTest {
     private TestOccurrences.TestOccurrence mTest;
 
     @Test
-    public void testUserSeesTestDetails() throws Exception {
+    public void testUserSeesTestDetails() {
         // Prepare mocks
         when(mTest.getDetails()).thenReturn("Test details");
         when(mTeamCityService.testOccurrence(anyString())).thenReturn(Single.just(mTest));
@@ -100,7 +100,7 @@ public class TestDetailsActivityTest {
     }
 
     @Test
-    public void testUserSeesNoDataIfTestDetailsAreNotProvided() throws Exception {
+    public void testUserSeesNoDataIfTestDetailsAreNotProvided() {
         // Prepare mocks
         when(mTest.getDetails()).thenReturn("");
         when(mTeamCityService.testOccurrence(anyString())).thenReturn(Single.just(mTest));
@@ -122,7 +122,7 @@ public class TestDetailsActivityTest {
     }
 
     @Test
-    public void testUserSeesErrorMessageIfDetailsIsNotLoaded() throws Exception {
+    public void testUserSeesErrorMessageIfDetailsIsNotLoaded() {
         // Prepare mocks
         when(mTeamCityService.testOccurrence(anyString())).thenReturn(Single.<TestOccurrences.TestOccurrence>error(new RuntimeException("Errror!")));
 

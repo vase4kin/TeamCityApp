@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,13 +34,13 @@ public class EditTextNoAutofillTest {
     private EditTextNoAutofill editTextNoAutofill;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         editTextNoAutofill = new EditTextNoAutofill(InstrumentationRegistry.getInstrumentation().getTargetContext());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Test
-    public void testGetAutofillType() throws Exception {
+    public void testGetAutofillType() {
         assertThat(editTextNoAutofill.getAutofillType(), is(equalTo(View.AUTOFILL_TYPE_NONE)));
     }
 

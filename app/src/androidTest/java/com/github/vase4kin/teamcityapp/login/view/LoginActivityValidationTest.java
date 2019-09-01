@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ public class LoginActivityValidationTest {
     }
 
     @Test
-    public void testUserCanNotCreateAccountWithEmptyUrl() throws Exception {
+    public void testUserCanNotCreateAccountWithEmptyUrl() {
         onView(withId(R.id.teamcity_url)).perform(clearText(), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.btn_login)).perform(click());
@@ -78,7 +78,7 @@ public class LoginActivityValidationTest {
     }
 
     @Test
-    public void testUserCanNotCreateAccountWithIncorrectProvidedUrl() throws Exception {
+    public void testUserCanNotCreateAccountWithIncorrectProvidedUrl() {
         onView(withId(R.id.teamcity_url)).perform(clearText(), typeText("google.com"), closeSoftKeyboard());
         onView(withId(R.id.guest_user_switch)).perform(click());
         onView(withId(R.id.btn_login)).perform(click());
@@ -98,20 +98,20 @@ public class LoginActivityValidationTest {
     }
 
     @Test
-    public void testUserCanNotCreateAccountWithEmptyUserName() throws Exception {
+    public void testUserCanNotCreateAccountWithEmptyUserName() {
         onView(withId(R.id.btn_login)).perform(scrollTo(), click());
         onView(withText(R.string.server_user_name_cannot_be_empty)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testUserCanNotCreateAccountWithEmptyPasswordName() throws Exception {
+    public void testUserCanNotCreateAccountWithEmptyPasswordName() {
         onView(withId(R.id.user_name)).perform(typeText("user"), closeSoftKeyboard());
         onView(withId(R.id.btn_login)).perform(scrollTo(), click());
         onView(withText(R.string.server_password_cannot_be_empty)).check(matches(isDisplayed()));
     }
 
     @Test
-    public void testUserWillNotSeeUserAndPasswordFieldsWhenGuestAccountIsOn() throws Exception {
+    public void testUserWillNotSeeUserAndPasswordFieldsWhenGuestAccountIsOn() {
         onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton());
         onView(withId(R.id.password)).perform(typeText("pass"), closeSoftKeyboard());
         // Enabling guest mode
