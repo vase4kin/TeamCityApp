@@ -106,15 +106,15 @@ class CreateAccountActivityTest {
     @Captor
     lateinit var callbackArgumentCaptor: ArgumentCaptor<Callback>
 
-    @Named(CLIENT_BASE)
+    @field:Named(CLIENT_BASE)
     @Mock
     lateinit var clientBase: OkHttpClient
 
-    @Named(CLIENT_BASE_UNSAFE)
+    @field:Named(CLIENT_BASE_UNSAFE)
     @Mock
     lateinit var unsafeOkHttpClient: OkHttpClient
 
-    @Named(CLIENT_AUTH)
+    @field:Named(CLIENT_AUTH)
     @Mock
     lateinit var clientAuth: OkHttpClient
 
