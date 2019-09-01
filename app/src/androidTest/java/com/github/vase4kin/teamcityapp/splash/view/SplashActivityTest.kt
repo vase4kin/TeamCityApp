@@ -50,7 +50,7 @@ class SplashActivityTest {
 
     @JvmField
     @Rule
-    val daggerRule = DaggerMockRule(
+    val daggerRule: DaggerMockRule<AppComponent> = DaggerMockRule(
         AppComponent::class.java,
         AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
     )
@@ -62,7 +62,7 @@ class SplashActivityTest {
 
     @JvmField
     @Rule
-    val activityRule = CustomIntentsTestRule(SplashActivity::class.java)
+    val activityRule: CustomIntentsTestRule<SplashActivity> = CustomIntentsTestRule(SplashActivity::class.java)
 
     @Before
     fun setUp() {
