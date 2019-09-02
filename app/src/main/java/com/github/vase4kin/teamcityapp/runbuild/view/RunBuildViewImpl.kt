@@ -144,6 +144,7 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
                         val errorMessage =
                             view.resources.getString(R.string.text_error_parameter_name)
                         parameterNameWrapper.error = errorMessage
+                        return@onPositive
                     }
                     listener.onParameterAdded(
                         parameterNameEditText.text.toString(),
