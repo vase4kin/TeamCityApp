@@ -89,14 +89,18 @@ class BuildDetailsViewImpl(
             R.string.tab_overview,
             OverviewFragment.newInstance(buildDetails.toBuild())
         )
-        fragmentAdapter.add(
-            R.string.tab_changes,
-            ChangesFragment.newInstance(buildDetails.changesHref)
-        )
-        if (buildDetails.hasTests()) {
+        val changesHref = buildDetails.changesHref
+        if (changesHref != null) {
+            fragmentAdapter.add(
+                R.string.tab_changes,
+                ChangesFragment.newInstance(changesHref)
+            )
+        }
+        val testsHref = buildDetails.testsHref
+        if (testsHref != null) {
             fragmentAdapter.add(
                 R.string.tab_tests, TestOccurrencesFragment.newInstance(
-                    buildDetails.testsHref,
+                    testsHref,
                     buildDetails.passedTestCount,
                     buildDetails.failedTestCount,
                     buildDetails.ignoredTestCount
@@ -113,11 +117,14 @@ class BuildDetailsViewImpl(
             R.string.tab_parameters,
             PropertiesFragment.newInstance(buildDetails.toBuild())
         )
-        if (!buildDetails.isQueued && !buildDetails.isRunning) {
-            fragmentAdapter.add(
-                R.string.tab_artifacts,
-                ArtifactListFragment.newInstance(buildDetails.toBuild(), buildDetails.artifactsHref)
-            )
+        val artifactsHref = buildDetails.artifactsHref
+        if (artifactsHref != null) {
+            if (!buildDetails.isQueued && !buildDetails.isRunning) {
+                fragmentAdapter.add(
+                    R.string.tab_artifacts,
+                    ArtifactListFragment.newInstance(buildDetails.toBuild(), artifactsHref)
+                )
+            }
         }
         if (buildDetails.hasSnapshotDependencies()) {
             fragmentAdapter.add(

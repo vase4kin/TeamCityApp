@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,9 @@
  */
 
 package com.github.vase4kin.teamcityapp.buildlist.api;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
@@ -62,6 +65,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
     @SerializedName("snapshot-dependencies")
     private Builds snapshotBuilds;
 
+    @Nullable
     public String getNumber() {
         return number;
     }
@@ -70,14 +74,17 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return state;
     }
 
+    @Nullable
     public String getBranchName() {
         return branchName;
     }
 
+    @Nullable
     public String getQueuedDate() {
         return queuedDate;
     }
 
+    @NonNull
     public String getStartDate() {
         return startDate;
     }
@@ -86,6 +93,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return status;
     }
 
+    @Nullable
     public TestOccurrences getTestOccurrences() {
         return testOccurrences;
     }
@@ -94,50 +102,62 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return artifacts;
     }
 
+    @Nullable
     public BuildType getBuildType() {
         return buildType;
     }
 
+    @Nullable
     public Properties getProperties() {
         return properties;
     }
 
+    @Nullable
     public Changes getChanges() {
         return changes;
     }
 
+    @NonNull
     public String getBuildTypeId() {
         return buildTypeId;
     }
 
+    @NonNull
     public String getStatusText() {
         return statusText;
     }
 
+    @NonNull
     public String getFinishDate() {
         return finishDate;
     }
 
+    @Nullable
     public Triggered getTriggered() {
         return triggered;
     }
 
+    @Nullable
     public Agent getAgent() {
         return agent;
     }
 
+    @Nullable
     public String getWaitReason() {
         return waitReason;
     }
 
+    @Nullable
     public String getStartEstimate() {
         return startEstimate;
     }
 
+    @Nullable
     public CanceledInfo getCanceledInfo() {
         return canceledInfo;
     }
 
+    @NonNull
     public String getWebUrl() {
         return webUrl;
     }
@@ -255,6 +275,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         this.snapshotBuilds = snapshotBuilds;
     }
 
+    @Nullable
     public Builds getSnapshotBuilds() {
         return snapshotBuilds;
     }
