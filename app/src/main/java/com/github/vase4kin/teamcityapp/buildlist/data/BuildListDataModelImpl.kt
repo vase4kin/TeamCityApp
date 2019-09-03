@@ -140,7 +140,7 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
      * {@inheritDoc}
      */
     override fun getBuildTypeName(position: Int): String {
-        return buildDetailsList[position].buildTypeName
+        return buildDetailsList[position].buildTypeName ?: ""
     }
 
     /**

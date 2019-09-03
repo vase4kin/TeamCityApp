@@ -273,11 +273,15 @@ class OverviewPresenterImpl @Inject internal constructor(
             // Cancelled by user
             if (buildDetails.hasUserInfoWhoCancelledBuild()) {
                 val userName = buildDetails.userNameWhoCancelledBuild
-                view.addCancelledByCard(statusIcon, userName)
+                if (userName != null) {
+                    view.addCancelledByCard(statusIcon, userName)
+                }
             }
             // Cancellation time
             val cancellationTime = buildDetails.cancellationTime
-            view.addCancellationTimeCard(cancellationTime)
+            if (cancellationTime != null) {
+                view.addCancellationTimeCard(cancellationTime)
+            }
         }
         // Time
         when {
@@ -305,31 +309,41 @@ class OverviewPresenterImpl @Inject internal constructor(
             view.addBranchCard(branchName)
         }
         // Agent
-        if (buildDetails.hasAgentInfo()) {
-            val agentName = buildDetails.agentName
+        val agentName = buildDetails.agentName
+        if (buildDetails.hasAgentInfo() && agentName != null) {
             view.addAgentCard(agentName)
         }
         // Triggered by
         when {
             buildDetails.isTriggeredByVcs -> {
                 val vcsName = buildDetails.triggeredDetails
-                view.addTriggeredByCard(vcsName)
+                if (vcsName != null) {
+                    view.addTriggeredByCard(vcsName)
+                }
             }
             buildDetails.isTriggeredByUnknown -> {
                 val unknownConfigurationInfo = buildDetails.triggeredDetails
-                view.addTriggeredByCard(unknownConfigurationInfo)
+                if (unknownConfigurationInfo != null) {
+                    view.addTriggeredByCard(unknownConfigurationInfo)
+                }
             }
             buildDetails.isTriggeredByUser -> {
                 val triggeredUserNameInfo = buildDetails.userNameOfUserWhoTriggeredBuild
-                view.addTriggeredByCard(triggeredUserNameInfo)
+                if (triggeredUserNameInfo != null) {
+                    view.addTriggeredByCard(triggeredUserNameInfo)
+                }
             }
             buildDetails.isRestarted -> {
                 val restartedUserInfo = buildDetails.userNameOfUserWhoTriggeredBuild
-                view.addRestartedByCard(restartedUserInfo)
+                if (restartedUserInfo != null) {
+                    view.addRestartedByCard(restartedUserInfo)
+                }
             }
             buildDetails.isTriggeredByBuildType -> {
                 val buildTypeName = buildDetails.nameOfTriggeredBuildType
-                view.addTriggeredByCard(buildTypeName)
+                if (buildTypeName != null) {
+                    view.addTriggeredByCard(buildTypeName)
+                }
             }
             else -> view.addTriggeredByUnknownTriggerTypeCard()
         }
@@ -337,15 +351,21 @@ class OverviewPresenterImpl @Inject internal constructor(
         // Is personal build
         if (buildDetails.isPersonal) {
             val userWhoTriggeredBuild = buildDetails.userNameOfUserWhoTriggeredBuild
-            view.addPersonalCard(userWhoTriggeredBuild)
+            if (userWhoTriggeredBuild != null) {
+                view.addPersonalCard(userWhoTriggeredBuild)
+            }
         }
 
         // has build type info
         if (buildDetails.hasBuildTypeInfo()) {
             val buildTypeName = buildDetails.buildTypeName
-            view.addBuildTypeNameCard(buildTypeName)
+            if (buildTypeName != null) {
+                view.addBuildTypeNameCard(buildTypeName)
+            }
             val projectName = buildDetails.projectName
-            view.addBuildTypeProjectNameCard(projectName)
+            if (projectName != null) {
+                view.addBuildTypeProjectNameCard(projectName)
+            }
         }
 
         // Show all added cards
