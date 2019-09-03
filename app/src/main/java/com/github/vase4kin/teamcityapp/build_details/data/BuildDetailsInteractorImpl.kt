@@ -92,8 +92,9 @@ class BuildDetailsInteractorImpl(
      */
     override fun getBuildTypeName(): String {
         val buildDetails = valueExtractor.buildDetails
-        return if (buildDetails.hasBuildTypeInfo() && buildDetails.buildTypeName != null) {
-            buildDetails.buildTypeName
+        val buildTypeName = buildDetails.buildTypeName
+        return if (buildDetails.hasBuildTypeInfo() && buildTypeName != null) {
+            buildTypeName
         } else {
             valueExtractor.name
         }
@@ -103,22 +104,28 @@ class BuildDetailsInteractorImpl(
      * {@inheritDoc}
      */
     override fun getProjectId(): String {
-        return valueExtractor.buildDetails.projectId
+        return valueExtractor.buildDetails.projectId ?: ""
     }
 
     /**
      * {@inheritDoc}
      */
     override fun getProjectName(): String {
-        return valueExtractor.buildDetails.projectName
+        return valueExtractor.buildDetails.projectName ?: ""
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun cancelBuild(loadingListener: LoadingListenerWithForbiddenSupport<Build>, isReAddToTheQueue: Boolean) {
+    override fun cancelBuild(
+        loadingListener: LoadingListenerWithForbiddenSupport<Build>,
+        isReAddToTheQueue: Boolean
+    ) {
         subscriptions.clear()
-        repository.cancelBuild(valueExtractor.buildDetails.href, BuildCancelRequest(isReAddToTheQueue))
+        repository.cancelBuild(
+            valueExtractor.buildDetails.href,
+            BuildCancelRequest(isReAddToTheQueue)
+        )
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(

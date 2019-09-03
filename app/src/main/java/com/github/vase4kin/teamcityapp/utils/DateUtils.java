@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.utils;
 
+import androidx.annotation.Nullable;
+
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.format.PeriodFormatter;
@@ -54,7 +56,7 @@ public class DateUtils {
      * @param startDate
      * @return
      */
-    public static DateUtils initWithDate(String startDate) {
+    public static DateUtils initWithDate(@Nullable String startDate) {
         Date parsedStartDate = parseDate(startDate);
         return new DateUtils(parsedStartDate);
     }
