@@ -24,9 +24,12 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Triggered
 import com.github.vase4kin.teamcityapp.buildlist.api.User
 import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
-import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.*
-import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.TEXT_NO_NUMBER
-import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.TEXT_QUEUED_BUILD
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.Companion.STATE_QUEUED
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.Companion.STATE_RUNNING
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.Companion.STATUS_FAILURE
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.Companion.STATUS_SUCCESS
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.Companion.TEXT_NO_NUMBER
+import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.Companion.TEXT_QUEUED_BUILD
 import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.github.vase4kin.teamcityapp.utils.IconUtils
