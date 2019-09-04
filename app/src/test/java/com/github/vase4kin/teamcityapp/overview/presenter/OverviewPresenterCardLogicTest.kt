@@ -205,7 +205,7 @@ class OverviewPresenterCardLogicTest {
         `when`(buildDetails.finishTime).thenReturn(TIME)
         presenter.onSuccess(buildDetails)
         verify(buildDetails).hasAgentInfo()
-        verify(buildDetails, never()).agentName
+        verify(buildDetails).agentName
         verify(view, never()).addAgentCard(anyString())
     }
 
