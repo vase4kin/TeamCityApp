@@ -32,7 +32,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
@@ -174,7 +177,7 @@ class CreateAccountPresenterImplTest {
         verify(view).showProgressDialog()
         verify(dataModel).hasAccountWithUrl("url", "userName")
         verify(dataManager).authUser(
-            customOnLoadingListenerArgumentCaptor.capture(),
+            capture(customOnLoadingListenerArgumentCaptor),
             eq("url"),
             eq("userName"),
             eq("password"),
@@ -189,7 +192,7 @@ class CreateAccountPresenterImplTest {
             eq("userName"),
             eq("password"),
             eq(false),
-            onLoadingListenerArgumentCaptor.capture()
+            capture(onLoadingListenerArgumentCaptor)
         )
 
         val loadingListener = onLoadingListenerArgumentCaptor.value
