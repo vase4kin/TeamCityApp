@@ -194,8 +194,8 @@ class RestartBuildTest {
         verify(teamCityService).queueBuild(capture(buildArgumentCaptor))
         val capturedBuild = buildArgumentCaptor.value
         assertThat(capturedBuild.branchName, `is`(equalTo(BRANCH_NAME)))
-        assertThat(capturedBuild.properties.objects.size, `is`(equalTo(1)))
-        val capturedProperty = capturedBuild.properties.objects[0]
+        assertThat(capturedBuild.properties!!.objects.size, `is`(equalTo(1)))
+        val capturedProperty = capturedBuild.properties!!.objects[0]
         assertThat(capturedProperty.name, `is`(equalTo(PROPERTY_NAME)))
         assertThat(capturedProperty.value, `is`(equalTo(PROPERTY_VALUE)))
 
