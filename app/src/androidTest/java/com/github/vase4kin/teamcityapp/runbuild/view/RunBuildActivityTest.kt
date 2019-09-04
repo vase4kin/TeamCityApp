@@ -287,8 +287,8 @@ class RunBuildActivityTest {
         // Checking triggered build
         verify(teamCityService).queueBuild(capture(buildCaptor))
         val capturedBuild = buildCaptor.value
-        assertThat(capturedBuild.properties.objects.size, `is`(equalTo(1)))
-        val capturedProperty = capturedBuild.properties.objects[0]
+        assertThat(capturedBuild.properties!!.objects.size, `is`(equalTo(1)))
+        val capturedProperty = capturedBuild.properties!!.objects[0]
         assertThat(capturedProperty.name, `is`(equalTo(PARAMETER_NAME)))
         assertThat(capturedProperty.value, `is`(equalTo(PARAMETER_VALUE)))
         // Checking activity is finishing
