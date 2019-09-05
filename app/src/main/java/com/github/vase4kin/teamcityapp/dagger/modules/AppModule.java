@@ -63,6 +63,9 @@ import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * Todo: Convert to Kotlin
+ */
 @Module
 public class AppModule {
 
