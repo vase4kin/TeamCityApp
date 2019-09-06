@@ -23,6 +23,7 @@ jobs:
           command: |
             echo y | sdkmanager "tools" "platform-tools" "build-tools;29.0.2" "extras;android;m2repository" "platforms;android-29" "emulator" --verbose
             sdkmanager --update --verbose
+            yes | sdkmanager --licenses
       - run:
           name: Download dependencies
           command: ./gradlew dependencies
