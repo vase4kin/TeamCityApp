@@ -99,6 +99,6 @@ class BottomSheetInteractorImpl(
     override fun copyTextToClipBoard(textToCopy: String) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip = ClipData.newPlainText("", textToCopy)
-        clipboard.primaryClip = clip
+        clipboard.setPrimaryClip(clip)
     }
 }
