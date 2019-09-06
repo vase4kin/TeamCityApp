@@ -17,13 +17,12 @@
 package com.github.vase4kin.teamcityapp.app_navigation
 
 import androidx.fragment.app.Fragment
+import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment
-
-private const val FRAGMENTS_SIZE = 4
 
 interface FragmentFactory {
     fun createFragment(index: Int): Fragment
@@ -41,9 +40,10 @@ class FragmentFactoryImpl : FragmentFactory {
             AppNavigationItem.FAVORITES.ordinal -> return FavoritesFragment()
             AppNavigationItem.RUNNING_BUILDS.ordinal -> return RunningBuildsFragment()
             AppNavigationItem.BUILD_QUEUE.ordinal -> return BuildQueueFragment()
+            AppNavigationItem.AGENTS.ordinal -> return AgentListFragment.newInstance(false)
         }
         throw IllegalStateException("Wrong index")
     }
 
-    override fun getSize(): Int = FRAGMENTS_SIZE
+    override fun getSize(): Int = AppNavigationItem.values().size
 }
