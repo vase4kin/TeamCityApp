@@ -65,10 +65,5 @@ interface OnDrawerPresenterListener {
     /**
      * {@inheritDoc}
      */
-    fun startAgentActivity()
-
-    /**
-     * {@inheritDoc}
-     */
     fun startAboutActivity()
 }

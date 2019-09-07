@@ -16,17 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.drawer.view
 
-import android.graphics.Color
-
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
-import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.joanzapata.iconify.IconDrawable
@@ -35,14 +31,12 @@ import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
 import com.mikepenz.materialdrawer.DrawerBuilder
-import com.mikepenz.materialdrawer.holder.BadgeStyle
 import com.mikepenz.materialdrawer.holder.StringHolder
 import com.mikepenz.materialdrawer.model.DividerDrawerItem
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem
 import com.mikepenz.materialdrawer.model.ProfileSettingDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IProfile
-
 import java.util.ArrayList
 
 /**
@@ -211,7 +205,6 @@ open class DrawerViewImpl(
      * Init drawer
      */
     private fun initDrawer() {
-        val badgeStyle = BadgeStyle().withTextColor(Color.WHITE).withColorRes(defaultColor)
         drawerResult = DrawerBuilder()
             .withActivity(activity)
             .withToolbar(toolbar)
@@ -222,16 +215,6 @@ open class DrawerViewImpl(
                     .withIcon(IconDrawable(activity, MaterialIcons.md_home).colorRes(defaultColor))
                     .withSelectedTextColorRes(defaultColor)
                     .withIdentifier(DrawerView.HOME.toLong()),
-                PrimaryDrawerItem()
-                    .withName(R.string.agents_drawer_item)
-                    .withIcon(
-                        IconDrawable(activity, MaterialIcons.md_directions_railway).colorRes(
-                            defaultColor
-                        )
-                    )
-                    .withSelectedTextColorRes(defaultColor)
-                    .withBadgeStyle(badgeStyle)
-                    .withIdentifier(DrawerView.AGENTS.toLong()),
                 DividerDrawerItem(),
                 PrimaryDrawerItem()
                     .withName("About")
@@ -247,12 +230,6 @@ open class DrawerViewImpl(
                             val isHomeActivity = activity is HomeActivity
                             if (!isHomeActivity) {
                                 onDrawerPresenterListener?.startHomeActivity()
-                            }
-                        }
-                        DrawerView.AGENTS -> {
-                            val isAgentsActivity = activity is AgentTabsActivity
-                            if (!isAgentsActivity) {
-                                onDrawerPresenterListener?.startAgentActivity()
                             }
                         }
                         DrawerView.ABOUT -> {

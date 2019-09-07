@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.drawer.router
 import androidx.appcompat.app.AppCompatActivity
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
-import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 
 /**
@@ -46,13 +45,6 @@ open class DrawerRouterImpl(protected var activity: AppCompatActivity) : DrawerR
      */
     override fun startAccountListActivity() {
         AccountListActivity.start(activity)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun startAgentActivity() {
-        AgentTabsActivity.start(activity)
     }
 
     /**
