@@ -76,7 +76,7 @@ class BottomNavigationViewImpl(
         fab.setOnClickListener {
             when (val currentItem = bottomNavigation.currentItem) {
                 AppNavigationItem.FAVORITES.ordinal -> listener.onFavoritesFabClicked()
-                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal -> listener.onFilterTabsClicked(
+                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal, AppNavigationItem.AGENTS.ordinal -> listener.onFilterTabsClicked(
                     currentItem
                 )
             }
@@ -88,15 +88,22 @@ class BottomNavigationViewImpl(
 
         // Add bottom nav items
         for (itemApp: AppNavigationItem in AppNavigationItem.values()) {
-            val bottomNavItem = AHBottomNavigationItem(itemApp.title, itemApp.icon, R.color.colorWhite)
+            val bottomNavItem =
+                AHBottomNavigationItem(itemApp.title, itemApp.icon, R.color.colorWhite)
             bottomNavigation.addItem(bottomNavItem)
         }
 
         // Set bottom nav settings
         bottomNavigation.defaultBackgroundColor = ContextCompat.getColor(activity, R.color.primary)
         bottomNavigation.accentColor = ContextCompat.getColor(activity, R.color.colorWhite)
-        bottomNavigation.inactiveColor = ContextCompat.getColor(activity, R.color.colorWhiteWithOpacity)
-        bottomNavigation.setNotificationBackgroundColor(ContextCompat.getColor(activity, R.color.accent))
+        bottomNavigation.inactiveColor =
+            ContextCompat.getColor(activity, R.color.colorWhiteWithOpacity)
+        bottomNavigation.setNotificationBackgroundColor(
+            ContextCompat.getColor(
+                activity,
+                R.color.accent
+            )
+        )
         bottomNavigation.isBehaviorTranslationEnabled = false
 
         bottomNavigation.setOnTabSelectedListener { position, wasSelected ->

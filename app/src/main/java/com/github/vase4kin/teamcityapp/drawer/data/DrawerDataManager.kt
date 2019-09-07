@@ -51,6 +51,13 @@ interface DrawerDataManager {
     fun loadConnectedAgentsCount(loadingListener: OnLoadingListener<Int>)
 
     /**
+     * Load the number of connected agents
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    fun loadAgentsCount(loadingListener: OnLoadingListener<Int>, includeDisconnected: Boolean)
+
+    /**
      * Unsubscribe
      */
     fun unsubscribe()
