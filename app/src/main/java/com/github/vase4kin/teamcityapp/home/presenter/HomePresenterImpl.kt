@@ -224,7 +224,6 @@ class HomePresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun loadNotificationsCount() {
-        super.loadNotificationsCount()
         loadRunningBuildsCount()
         loadQueueBuildsCount()
         loadFavoritesCount()

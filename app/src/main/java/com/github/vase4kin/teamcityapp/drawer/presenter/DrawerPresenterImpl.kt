@@ -87,7 +87,6 @@ open class DrawerPresenterImpl<V : DrawerView, DM : DrawerDataManager, DR : Draw
      * Load all required counts
      */
     protected open fun loadNotificationsCount() {
-        loadAgentsCount()
     }
 
     /**
@@ -100,20 +99,6 @@ open class DrawerPresenterImpl<V : DrawerView, DM : DrawerDataManager, DR : Draw
             }
 
             override fun onFail(errorMessage: String) {}
-        })
-    }
-
-    /**
-     * Load agents count
-     */
-    private fun loadAgentsCount() {
-        dataManager.loadConnectedAgentsCount(object : OnLoadingListener<Int> {
-            override fun onSuccess(data: Int) {
-                view.updateAgentsBadge(data)
-            }
-
-            override fun onFail(errorMessage: String) {
-            }
         })
     }
 
@@ -143,13 +128,6 @@ open class DrawerPresenterImpl<V : DrawerView, DM : DrawerDataManager, DR : Draw
      */
     override fun startAccountListActivity() {
         router.startAccountListActivity()
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun startAgentActivity() {
-        router.startAgentActivity()
     }
 
     /**

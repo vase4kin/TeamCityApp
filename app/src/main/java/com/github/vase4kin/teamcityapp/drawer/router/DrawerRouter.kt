@@ -39,11 +39,6 @@ interface DrawerRouter {
     fun startAccountListActivity()
 
     /**
-     * Start [com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity]
-     */
-    fun startAgentActivity()
-
-    /**
      * Start [AboutLibrariesActivity]
      */
     fun startAboutActivity()
