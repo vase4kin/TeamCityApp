@@ -359,7 +359,7 @@ class HomePresenterImpl @Inject constructor(
         }
         if (filter.isAgents) {
             loadAgentsCount()
-            // TODO: post filters have been changed
+            dataManager.postAgentsFilterChangedEvent()
         }
         view.showFilterAppliedSnackBar()
     }

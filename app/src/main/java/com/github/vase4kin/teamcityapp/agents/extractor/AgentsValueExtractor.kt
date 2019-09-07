@@ -21,10 +21,4 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 /**
  * Bundle value extractor
  */
-interface AgentsValueExtractor : BaseValueExtractor {
-
-    /**
-     * @return if agents type is disconnected or connected
-     */
-    fun includeDisconnected(): Boolean
-}
+interface AgentsValueExtractor : BaseValueExtractor

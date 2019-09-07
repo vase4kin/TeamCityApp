@@ -22,16 +22,18 @@ import androidx.annotation.StringRes
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 
 /**
  * View managing for [AgentListFragment]
  */
 class AgentViewImpl(
-    private val includeDisconnected: Boolean,
     view: View,
     activity: Activity,
     @StringRes emptyMessage: Int,
-    adapter: AgentsAdapter
+    adapter: AgentsAdapter,
+    private val filterProvider: FilterProvider
 ) : BaseListViewImpl<AgentDataModel, AgentsAdapter>(view, activity, emptyMessage, adapter) {
 
     /**
@@ -54,7 +56,7 @@ class AgentViewImpl(
      * {@inheritDoc}
      */
     override fun recyclerViewId(): Int {
-        return if (includeDisconnected)
+        return if (filterProvider.agentsFilter == Filter.AGENTS_DISCONNECTED)
             R.id.disconnected_agents_recycler_view
         else
             R.id.connected_agents_recycler_view

@@ -32,6 +32,7 @@ import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
@@ -49,15 +50,15 @@ class AgentModule {
     @Provides
     fun providesBaseListView(
         fragment: AgentListFragment,
-        agentsValueExtractor: AgentsValueExtractor,
-        adapter: AgentsAdapter
+        adapter: AgentsAdapter,
+        filterProvider: FilterProvider
     ): BaseListView<AgentDataModel> {
         return AgentViewImpl(
-            agentsValueExtractor.includeDisconnected(),
             fragment.view!!,
             fragment.activity as Activity,
             R.string.empty_list_message_agents,
-            adapter
+            adapter,
+            filterProvider
         )
     }
 
