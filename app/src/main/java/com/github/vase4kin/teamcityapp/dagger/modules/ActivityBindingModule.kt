@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabActivityScope
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabDrawerModule
-import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabFragmentsBindingModule
 import com.github.vase4kin.teamcityapp.agenttabs.dagger.AgentsTabsModule
 import com.github.vase4kin.teamcityapp.agenttabs.view.AgentTabsActivity
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityScope
@@ -80,7 +79,7 @@ abstract class ActivityBindingModule {
     abstract fun favoritesFragment(): FavoritesFragment
 
     @AgentsTabActivityScope
-    @ContributesAndroidInjector(modules = [AgentsTabsModule::class, AgentsTabDrawerModule::class, AgentsTabFragmentsBindingModule::class])
+    @ContributesAndroidInjector(modules = [AgentsTabsModule::class, AgentsTabDrawerModule::class])
     abstract fun agentTabsActivity(): AgentTabsActivity
 
     @AboutActivityScope

@@ -135,6 +135,13 @@ class HomeDataManagerImpl(
         eventBus.post(HomeDataManager.BuildQueueFilterChangedEvent())
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    override fun postAgentsFilterChangedEvent() {
+        eventBus.post(HomeDataManager.AgentsFilterChangedEvent())
+    }
+
     /***
      * Handle receiving post events from [EventBus]
      *
