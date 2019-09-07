@@ -99,6 +99,11 @@ interface HomeDataManager : DrawerDataManager {
      */
     fun postBuildQueueFilterChangedEvent()
 
+    /**
+     * Post @{[AgentsFilterChangedEvent] }
+     */
+    fun postAgentsFilterChangedEvent()
+
     interface Listener {
         fun onFilterApplied(filter: Filter)
     }
@@ -106,4 +111,6 @@ interface HomeDataManager : DrawerDataManager {
     class RunningBuildsFilterChangedEvent
 
     class BuildQueueFilterChangedEvent
+
+    class AgentsFilterChangedEvent
 }

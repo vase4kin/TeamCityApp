@@ -17,18 +17,9 @@
 package com.github.vase4kin.teamcityapp.agents.extractor
 
 import android.os.Bundle
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl
 
 /**
  * Impl of [AgentsValueExtractor]
  */
-class AgentsValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle), AgentsValueExtractor {
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun includeDisconnected(): Boolean {
-        return bundle.getBoolean(BundleExtractorValues.AGENT_TYPE)
-    }
-}
+class AgentsValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle), AgentsValueExtractor
