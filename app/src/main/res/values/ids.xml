@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,8 +23,7 @@
     <item type="id" name="artifact_fragment_list" />
     <item type="id" name="artifact_recycler_view" />
     <item type="id" name="account_recycler_view" />
-    <item type="id" name="connected_agents_recycler_view" />
-    <item type="id" name="disconnected_agents_recycler_view" />
+    <item type="id" name="agents_recycler_view" />
     <item type="id" name="build_recycler_view" />
     <item type="id" name="changes_recycler_view" />
     <item type="id" name="navigation_recycler_view" />
@@ -38,5 +37,6 @@
     <item type="id" name="favorites_empty_title_view" />
     <item type="id" name="running_empty_title_view" />
     <item type="id" name="queued_empty_title_view" />
+    <item type="id" name="agents_empty_title_view" />
     <item type="id" name="toolbar" />
 </resources>

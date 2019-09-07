@@ -56,10 +56,14 @@ class AgentViewImpl(
      * {@inheritDoc}
      */
     override fun recyclerViewId(): Int {
-        return if (filterProvider.agentsFilter == Filter.AGENTS_DISCONNECTED)
-            R.id.disconnected_agents_recycler_view
-        else
-            R.id.connected_agents_recycler_view
+        return R.id.agents_recycler_view
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun emptyTitleId(): Int {
+        return R.id.agents_empty_title_view
     }
 
     /**
