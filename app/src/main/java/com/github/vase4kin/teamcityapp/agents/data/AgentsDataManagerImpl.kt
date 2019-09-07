@@ -50,9 +50,9 @@ class AgentsDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun loadCount(loadingListener: OnLoadingListener<Int>) {
+    override fun loadCount(loadingListener: OnLoadingListener<Int>, includeDisconnected: Boolean?) {
         subscriptions.clear()
-        repository.listAgents(null, "count", null, false)
+        repository.listAgents(includeDisconnected, "count", null, false)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(

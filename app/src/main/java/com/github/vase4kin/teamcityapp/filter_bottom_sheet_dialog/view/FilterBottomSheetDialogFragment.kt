@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,12 +56,15 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
             Filter.RUNNING_ALL, Filter.QUEUE_ALL -> R.string.text_show_favorites
             Filter.QUEUE_FAVORITES -> R.string.text_show_queued
             Filter.RUNNING_FAVORITES -> R.string.text_show_running
+            Filter.AGENTS_CONNECTED -> R.string.text_show_disconnected
+            Filter.AGENTS_DISCONNECTED -> R.string.text_show_connected
         }
         val descriptionTextView = view.findViewById<TextView>(R.id.text)
         descriptionTextView.setText(description)
         val title = when {
             filter.isRunning -> R.string.title_filter_running_builds
             filter.isQueued -> R.string.title_filter_queued_builds
+            filter.isAgents -> R.string.title_filter_agents
             else -> R.string.text_filters
         }
         val titleTextView = view.findViewById<TextView>(R.id.main_title)
@@ -77,6 +80,12 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
                 filter.isQueued -> {
                     val oppositeFilter = filter.opposite()
                     filterProvider.queuedBuildsFilter = oppositeFilter
+                    eventBus.post(FilterAppliedEvent(oppositeFilter))
+                    bottomSheetTracker.trackFilterSelected(oppositeFilter)
+                }
+                filter.isAgents -> {
+                    val oppositeFilter = filter.opposite()
+                    filterProvider.agentsFilter = oppositeFilter
                     eventBus.post(FilterAppliedEvent(oppositeFilter))
                     bottomSheetTracker.trackFilterSelected(oppositeFilter)
                 }

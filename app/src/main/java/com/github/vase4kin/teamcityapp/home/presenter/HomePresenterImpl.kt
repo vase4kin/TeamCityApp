@@ -44,7 +44,12 @@ class HomePresenterImpl @Inject constructor(
     private val onboardingManager: OnboardingManager,
     private val bottomNavigationView: BottomNavigationView,
     private val filterProvider: FilterProvider
-) : DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker>(view, dataManager, router, tracker),
+) : DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker>(
+    view,
+    dataManager,
+    router,
+    tracker
+),
     HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener,
     HomeDataManager.Listener {
 
@@ -143,6 +148,9 @@ class HomePresenterImpl @Inject constructor(
         } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal || position == AppNavigationItem.BUILD_QUEUE.ordinal) {
             showFilterPrompt()
             bottomNavigationView.showFilterFab()
+        } else if (position == AppNavigationItem.AGENTS.ordinal) {
+            // TODO: show agents filter prompt
+            bottomNavigationView.showFilterFab()
         } else {
             bottomNavigationView.hideFab()
         }
@@ -193,14 +201,22 @@ class HomePresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onFilterTabsClicked(position: Int) {
-        if (position == AppNavigationItem.RUNNING_BUILDS.ordinal) {
-            val filter = filterProvider.runningBuildsFilter
-            view.showFilterBottomSheet(filter)
-            tracker.trackUserClicksOnRunningBuildsFilterFab()
-        } else if (position == AppNavigationItem.BUILD_QUEUE.ordinal) {
-            val filter = filterProvider.queuedBuildsFilter
-            view.showFilterBottomSheet(filter)
-            tracker.trackUserClicksOnBuildsQueueFilterFab()
+        when (position) {
+            AppNavigationItem.RUNNING_BUILDS.ordinal -> {
+                val filter = filterProvider.runningBuildsFilter
+                view.showFilterBottomSheet(filter)
+                tracker.trackUserClicksOnRunningBuildsFilterFab()
+            }
+            AppNavigationItem.BUILD_QUEUE.ordinal -> {
+                val filter = filterProvider.queuedBuildsFilter
+                view.showFilterBottomSheet(filter)
+                tracker.trackUserClicksOnBuildsQueueFilterFab()
+            }
+            AppNavigationItem.AGENTS.ordinal -> {
+                val filter = filterProvider.agentsFilter
+                view.showFilterBottomSheet(filter)
+                // TODO: track
+            }
         }
     }
 
@@ -212,6 +228,7 @@ class HomePresenterImpl @Inject constructor(
         loadRunningBuildsCount()
         loadQueueBuildsCount()
         loadFavoritesCount()
+        loadAgentsCount()
     }
 
     /**
@@ -222,7 +239,10 @@ class HomePresenterImpl @Inject constructor(
         if (currentFilter === Filter.RUNNING_FAVORITES) {
             dataManager.loadFavoriteRunningBuildsCount(object : OnLoadingListener<Int> {
                 override fun onSuccess(data: Int) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal, data)
+                    bottomNavigationView.updateNotifications(
+                        AppNavigationItem.RUNNING_BUILDS.ordinal,
+                        data
+                    )
                 }
 
                 override fun onFail(errorMessage: String) {}
@@ -230,7 +250,10 @@ class HomePresenterImpl @Inject constructor(
         } else if (currentFilter === Filter.RUNNING_ALL) {
             dataManager.loadRunningBuildsCount(object : OnLoadingListener<Int> {
                 override fun onSuccess(data: Int) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.RUNNING_BUILDS.ordinal, data)
+                    bottomNavigationView.updateNotifications(
+                        AppNavigationItem.RUNNING_BUILDS.ordinal,
+                        data
+                    )
                 }
 
                 override fun onFail(errorMessage: String) {}
@@ -246,7 +269,10 @@ class HomePresenterImpl @Inject constructor(
         if (currentFilter === Filter.QUEUE_FAVORITES) {
             dataManager.loadFavoriteBuildQueueCount(object : OnLoadingListener<Int> {
                 override fun onSuccess(data: Int) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal, data)
+                    bottomNavigationView.updateNotifications(
+                        AppNavigationItem.BUILD_QUEUE.ordinal,
+                        data
+                    )
                 }
 
                 override fun onFail(errorMessage: String) {
@@ -255,7 +281,10 @@ class HomePresenterImpl @Inject constructor(
         } else if (currentFilter === Filter.QUEUE_ALL) {
             dataManager.loadBuildQueueCount(object : OnLoadingListener<Int> {
                 override fun onSuccess(data: Int) {
-                    bottomNavigationView.updateNotifications(AppNavigationItem.BUILD_QUEUE.ordinal, data)
+                    bottomNavigationView.updateNotifications(
+                        AppNavigationItem.BUILD_QUEUE.ordinal,
+                        data
+                    )
                 }
 
                 override fun onFail(errorMessage: String) {
@@ -265,11 +294,44 @@ class HomePresenterImpl @Inject constructor(
     }
 
     /**
+     * Load running builds count
+     */
+    private fun loadAgentsCount() {
+        val currentFilter = filterProvider.agentsFilter
+        if (currentFilter === Filter.AGENTS_CONNECTED) {
+            dataManager.loadAgentsCount(object : OnLoadingListener<Int> {
+                override fun onSuccess(data: Int) {
+                    bottomNavigationView.updateNotifications(
+                        AppNavigationItem.AGENTS.ordinal,
+                        data
+                    )
+                }
+
+                override fun onFail(errorMessage: String) {}
+            }, false)
+        } else if (currentFilter === Filter.AGENTS_DISCONNECTED) {
+            dataManager.loadAgentsCount(object : OnLoadingListener<Int> {
+                override fun onSuccess(data: Int) {
+                    bottomNavigationView.updateNotifications(
+                        AppNavigationItem.AGENTS.ordinal,
+                        data
+                    )
+                }
+
+                override fun onFail(errorMessage: String) {}
+            }, true)
+        }
+    }
+
+    /**
      * Load favorites count
      */
     private fun loadFavoritesCount() {
         val favoritesCount = dataManager.favoritesCount
-        bottomNavigationView.updateNotifications(AppNavigationItem.FAVORITES.ordinal, favoritesCount)
+        bottomNavigationView.updateNotifications(
+            AppNavigationItem.FAVORITES.ordinal,
+            favoritesCount
+        )
     }
 
     /**
@@ -294,6 +356,10 @@ class HomePresenterImpl @Inject constructor(
         if (filter.isQueued) {
             loadQueueBuildsCount()
             dataManager.postBuildQueueFilterChangedEvent()
+        }
+        if (filter.isAgents) {
+            loadAgentsCount()
+            // TODO: post filters have been changed
         }
         view.showFilterAppliedSnackBar()
     }

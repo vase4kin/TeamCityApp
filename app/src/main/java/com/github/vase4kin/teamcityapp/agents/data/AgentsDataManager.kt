@@ -40,7 +40,7 @@ interface AgentsDataManager : BaseListRxDataManager<Agents, Agent> {
      *
      * @param loadingListener - Listener to handle loading server callbacks
      */
-    fun loadCount(loadingListener: OnLoadingListener<Int>)
+    fun loadCount(loadingListener: OnLoadingListener<Int>, includeDisconnected: Boolean? = false)
 
     /**
      * Post update tab tile event
