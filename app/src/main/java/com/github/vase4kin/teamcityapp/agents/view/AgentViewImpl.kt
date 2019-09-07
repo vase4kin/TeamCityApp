@@ -61,4 +61,14 @@ class AgentViewImpl(
         else
             R.id.connected_agents_recycler_view
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override val emptyMessage: Int
+        get() = if (filterProvider.agentsFilter === Filter.AGENTS_CONNECTED) {
+            R.string.empty_list_message_agents
+        } else {
+            R.string.empty_list_message_agents_disconnected
+        }
 }
