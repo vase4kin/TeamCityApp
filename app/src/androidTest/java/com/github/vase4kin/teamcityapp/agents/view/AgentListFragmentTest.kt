@@ -170,7 +170,6 @@ class AgentListFragmentTest {
         // Click on build queue tab
         clickOnAgentsTab()
 
-
         val toolbarTitle = context.getString(R.string.agents_drawer_item)
         matchToolbarTitle(toolbarTitle)
     }
