@@ -40,7 +40,7 @@ class FragmentFactoryImpl : FragmentFactory {
             AppNavigationItem.FAVORITES.ordinal -> return FavoritesFragment()
             AppNavigationItem.RUNNING_BUILDS.ordinal -> return RunningBuildsFragment()
             AppNavigationItem.BUILD_QUEUE.ordinal -> return BuildQueueFragment()
-            AppNavigationItem.AGENTS.ordinal -> return AgentListFragment.newInstance(false)
+            AppNavigationItem.AGENTS.ordinal -> return AgentListFragment()
         }
         throw IllegalStateException("Wrong index")
     }
