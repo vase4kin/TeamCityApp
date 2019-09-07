@@ -348,9 +348,12 @@
     <!--Filter bottom sheet-->
     <string name="title_filter_running_builds">Filter running builds</string>
     <string name="title_filter_queued_builds">Filter queued builds</string>
+    <string name="title_filter_agents">Filter agents</string>
     <string name="text_show_favorites">Show only favorite ones</string>
     <string name="text_show_queued">Show all queued builds</string>
     <string name="text_show_running">Show all running builds</string>
+    <string name="text_show_connected">Show connected agents</string>
+    <string name="text_show_disconnected">Show disconnected agents</string>
 
 
 </resources>

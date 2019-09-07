@@ -70,6 +70,16 @@ open class DrawerDataManagerImpl(
     /**
      * {@inheritDoc}
      */
+    override fun loadAgentsCount(
+        loadingListener: OnLoadingListener<Int>,
+        includeDisconnected: Boolean
+    ) {
+        agentsDataManager.loadCount(loadingListener, includeDisconnected)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun unsubscribe() {
         agentsDataManager.unsubscribe()
     }
