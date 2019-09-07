@@ -86,11 +86,6 @@ class DrawerPresenterImplTest {
         verify(view).showData(any())
         loadingListener.onFail("error")
         verify(view).isModelEmpty
-        verify(dataManager).loadConnectedAgentsCount(capture(integerLoadingListenerCaptor))
-        val agentsListener = integerLoadingListenerCaptor.allValues[0]
-        agentsListener.onSuccess(67)
-        verify(view).updateAgentsBadge(eq(67))
-        agentsListener.onFail("error")
         verifyNoMoreInteractions(view, dataManager, router)
     }
 
@@ -119,7 +114,6 @@ class DrawerPresenterImplTest {
     @Test
     fun testOnDrawerSlide() {
         presenter.onDrawerSlide()
-        verify(dataManager).loadConnectedAgentsCount(any())
         verifyNoMoreInteractions(view, dataManager, router)
     }
 
@@ -134,13 +128,6 @@ class DrawerPresenterImplTest {
     fun testStartAccountListActivity() {
         presenter.startAccountListActivity()
         verify(router).startAccountListActivity()
-        verifyNoMoreInteractions(view, dataManager, router)
-    }
-
-    @Test
-    fun testStartAgentActivity() {
-        presenter.startAgentActivity()
-        verify(router).startAgentActivity()
         verifyNoMoreInteractions(view, dataManager, router)
     }
 }

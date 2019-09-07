@@ -24,15 +24,14 @@ import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
+import org.greenrobot.eventbus.EventBus
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers.eq
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.powermock.modules.junit4.PowerMockRunner
 import java.util.ArrayList
@@ -54,42 +53,16 @@ class AgentPresenterImplTest {
     private lateinit var valueExtractor: AgentsValueExtractor
     @Mock
     private lateinit var tracker: ViewTracker
+    @Mock
+    private lateinit var eventBus: EventBus
     private val agent = Agent("name")
+    private val filterProvider = FilterProvider()
     private lateinit var presenter: AgentPresenterImpl
 
     @Before
     fun setUp() {
-        presenter = AgentPresenterImpl(view, dataManager, tracker, valueExtractor)
-    }
-
-    @Test
-    fun testLoadData() {
-        `when`(valueExtractor.includeDisconnected()).thenReturn(true)
-        presenter.loadData(loadingListener, false)
-        verify(valueExtractor).includeDisconnected()
-        verify(dataManager).load(true, loadingListener, false)
-        verifyNoMoreInteractions(view, dataManager, bundle, tracker, valueExtractor)
-    }
-
-    @Test
-    fun testAddingNumberOfAgentsOnSuccessCallBackIfAgentsTypeIsDisconnected() {
-        `when`(data.size).thenReturn(34)
-        `when`(valueExtractor.includeDisconnected()).thenReturn(true)
-
-        presenter.onSuccessCallBack(data)
-        verify(valueExtractor).includeDisconnected()
-        verify(dataManager).postUpdateTabTitleEvent(eq(34), eq(1))
-    }
-
-    @Test
-    fun testAddingNumberOfAgentsOnSuccessCallBackIfAgentsTypeIsConnected() {
-        `when`(data.size).thenReturn(34)
-        `when`(valueExtractor.includeDisconnected()).thenReturn(false)
-
-        presenter.onSuccessCallBack(data)
-        verify(valueExtractor).includeDisconnected()
-        verify(valueExtractor).includeDisconnected()
-        verify(dataManager).postUpdateTabTitleEvent(eq(34), eq(0))
+        presenter =
+            AgentPresenterImpl(view, dataManager, tracker, valueExtractor, filterProvider, eventBus)
     }
 
     @Test
