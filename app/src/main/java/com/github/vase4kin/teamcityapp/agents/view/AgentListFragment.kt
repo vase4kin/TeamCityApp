@@ -23,7 +23,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.presenter.AgentPresenterImpl
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
@@ -62,16 +61,5 @@ class AgentListFragment : Fragment() {
     override fun onDestroyView() {
         presenter.onViewsDestroyed()
         super.onDestroyView()
-    }
-
-    companion object {
-
-        fun newInstance(includeDisconnected: Boolean): Fragment {
-            val fragment = AgentListFragment()
-            val args = Bundle()
-            args.putBoolean(BundleExtractorValues.AGENT_TYPE, includeDisconnected)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }
