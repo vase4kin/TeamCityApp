@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,11 +52,6 @@
         <activity
             android:name=".buildlist.view.BuildListActivity"
             android:label="@string/title_activity_build_list"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
-            android:name=".agenttabs.view.AgentTabsActivity"
-            android:label="@string/title_activity_agent_tabs"
-            android:launchMode="singleTop"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".build_details.view.BuildDetailsActivity"
