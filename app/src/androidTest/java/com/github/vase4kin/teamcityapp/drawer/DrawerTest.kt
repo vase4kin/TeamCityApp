@@ -152,39 +152,6 @@ class DrawerTest {
     }
 
     @Test
-    fun testUserCanNavigateToAgentsScreen() {
-        // Opening drawer
-        clickOnBurgerButton()
-
-        // Check agents is opened
-        onView(
-            allOf(
-                withId(R.id.material_drawer_name),
-                withText(R.string.agents_drawer_item),
-                isDisplayed()
-            )
-        )
-            .perform(click())
-
-        // Checking toolbar title
-        matchToolbarTitle("Agents")
-
-        // Opening drawer
-        onView(withId(R.id.material_drawer_layout))
-            .perform(open())
-
-        // Check about is selected
-        onView(
-            allOf(
-                withId(R.id.material_drawer_name),
-                withText(R.string.agents_drawer_item),
-                isDisplayed()
-            )
-        )
-            .check(matches(isSelected()))
-    }
-
-    @Test
     fun testUserCanNavigateToAboutScreen() {
         // Opening drawer
         clickOnBurgerButton()
