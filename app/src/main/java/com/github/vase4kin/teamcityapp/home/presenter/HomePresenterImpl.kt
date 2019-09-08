@@ -351,15 +351,17 @@ class HomePresenterImpl @Inject constructor(
         if (filter.isRunning) {
             loadRunningBuildsCount()
             dataManager.postRunningBuildsFilterChangedEvent()
+            view.showFilterAppliedSnackBar()
         }
         if (filter.isQueued) {
             loadQueueBuildsCount()
             dataManager.postBuildQueueFilterChangedEvent()
+            view.showFilterAppliedSnackBar()
         }
         if (filter.isAgents) {
             loadAgentsCount()
             dataManager.postAgentsFilterChangedEvent()
+            view.showAgentsFilterAppliedSnackBar()
         }
-        view.showFilterAppliedSnackBar()
     }
 }
