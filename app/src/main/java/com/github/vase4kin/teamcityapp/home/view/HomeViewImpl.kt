@@ -117,6 +117,18 @@ class HomeViewImpl(
     /**
      * {@inheritDoc}
      */
+    override fun showAgentsFilterAppliedSnackBar() {
+        this.snackbar = Snackbar.make(
+            snackBarAnchor,
+            R.string.text_agents_filters_applied,
+            Snackbar.LENGTH_LONG
+        )
+        snackbar?.show()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener) {
         // Creating prompt
         val color = ContextCompat.getColor(activity, defaultColor)

@@ -146,7 +146,7 @@ class AgentListFragmentTest {
         onView(withText(R.string.text_show_disconnected)).perform(click())
 
         // check snack bar text
-        onView(withText(R.string.text_filters_applied)).check(matches(isDisplayed()))
+        onView(withText(R.string.text_agents_filters_applied)).check(matches(isDisplayed()))
 
         // Check badge
         checkAgentsTabBadgeCount("1")
