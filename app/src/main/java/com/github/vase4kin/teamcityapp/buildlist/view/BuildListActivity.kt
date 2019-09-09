@@ -26,15 +26,11 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
+import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
@@ -44,30 +40,23 @@ import javax.inject.Inject
 class BuildListActivity : DaggerAppCompatActivity() {
 
     @Inject
-    lateinit var drawerPresenter: DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>
-    @Inject
     lateinit var presenter: BuildListPresenterImpl<BuildListView, BuildListDataManager>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_build_list)
-        drawerPresenter.onCreate()
+        initToolbar()
         presenter.onViewsCreated()
     }
 
     public override fun onDestroy() {
         presenter.onViewsDestroyed()
-        drawerPresenter.onDestroy()
         super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
         presenter.onResume()
-    }
-
-    override fun onBackPressed() {
-        drawerPresenter.onBackButtonPressed()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -107,7 +96,6 @@ class BuildListActivity : DaggerAppCompatActivity() {
             bundle.putSerializable(BundleExtractorValues.BUILD_LIST_FILTER, filter)
             intent.putExtras(bundle)
             activity.startActivity(intent)
-            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 }
