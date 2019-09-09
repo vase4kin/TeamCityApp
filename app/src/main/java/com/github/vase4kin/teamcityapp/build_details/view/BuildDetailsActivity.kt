@@ -21,9 +21,9 @@ import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsDrawerPresenterImpl
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenterImpl
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
@@ -34,20 +34,17 @@ import javax.inject.Inject
 class BuildDetailsActivity : DaggerAppCompatActivity() {
 
     @Inject
-    lateinit var drawerPresenter: BuildDetailsDrawerPresenterImpl
-    @Inject
     lateinit var presenter: BuildDetailsPresenterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_build)
-        drawerPresenter.onCreate()
+        initToolbar()
         presenter.onViewsCreated()
     }
 
     override fun onDestroy() {
         presenter.onViewsDestroyed()
-        drawerPresenter.onDestroy()
         super.onDestroy()
     }
 
@@ -69,10 +66,6 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         presenter.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onBackPressed() {
-        drawerPresenter.onBackButtonPressed()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -99,7 +92,6 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
             b.putString(BundleExtractorValues.NAME, buildTypeName)
             intent.putExtras(b)
             activity.startActivity(intent)
-            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
 
         fun startNotAsNewTask(activity: Activity, build: Build, buildTypeName: String?) {
@@ -109,7 +101,6 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
             b.putString(BundleExtractorValues.NAME, buildTypeName)
             intent.putExtras(b)
             activity.startActivity(intent)
-            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 }
