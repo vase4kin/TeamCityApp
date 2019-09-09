@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,12 +21,8 @@ import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.navigation.presenter.NavigationPresenterImpl
+import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
@@ -36,30 +32,23 @@ import javax.inject.Inject
 class NavigationActivity : DaggerAppCompatActivity() {
 
     @Inject
-    lateinit var drawerPresenter: DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>
-    @Inject
     lateinit var presenter: NavigationPresenterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation_list)
-        drawerPresenter.onCreate()
+        initToolbar()
         presenter.onViewsCreated()
     }
 
     override fun onDestroy() {
         presenter.onViewsDestroyed()
-        drawerPresenter.onDestroy()
         super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
         presenter.onResume()
-    }
-
-    override fun onBackPressed() {
-        drawerPresenter.onBackButtonPressed()
     }
 
     companion object {
@@ -71,7 +60,6 @@ class NavigationActivity : DaggerAppCompatActivity() {
             bundle.putString(BundleExtractorValues.ID, id)
             intent.putExtras(bundle)
             activity.startActivity(intent)
-            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 }
