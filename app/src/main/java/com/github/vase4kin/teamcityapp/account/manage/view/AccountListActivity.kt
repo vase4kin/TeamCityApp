@@ -21,12 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
+import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
@@ -36,30 +31,23 @@ import javax.inject.Inject
 class AccountListActivity : DaggerAppCompatActivity() {
 
     @Inject
-    lateinit var drawerPresenter: DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>
-    @Inject
     lateinit var presenter: AccountsPresenterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_account_list)
-        drawerPresenter.onCreate()
+        initToolbar()
         presenter.onViewsCreated()
     }
 
     override fun onDestroy() {
         presenter.onViewsDestroyed()
-        drawerPresenter.onDestroy()
         super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
         presenter.onResume()
-    }
-
-    override fun onBackPressed() {
-        drawerPresenter.onBackButtonPressed()
     }
 
     companion object {
@@ -72,7 +60,7 @@ class AccountListActivity : DaggerAppCompatActivity() {
         fun start(activity: Activity) {
             val launchIntent = Intent(activity, AccountListActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            DrawerActivityStartUtils.startActivity(launchIntent, activity)
+            activity.startActivity(launchIntent)
         }
     }
 }
