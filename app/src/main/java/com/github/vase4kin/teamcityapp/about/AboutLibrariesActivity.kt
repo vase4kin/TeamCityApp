@@ -19,30 +19,21 @@ package com.github.vase4kin.teamcityapp.about
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
+import com.github.vase4kin.teamcityapp.utils.initToolbar
 import com.mikepenz.aboutlibraries.LibsBuilder
-import dagger.android.support.DaggerAppCompatActivity
-import javax.inject.Inject
 
 /**
  * About libraries screen activity
  */
-class AboutLibrariesActivity : DaggerAppCompatActivity() {
-
-    @Inject
-    internal lateinit var drawerPresenter: DrawerPresenterImpl<DrawerView, DrawerDataManager, DrawerRouter, DrawerTracker>
+class AboutLibrariesActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
 
-        drawerPresenter.onCreate()
+        initToolbar()
 
         // About library fragment
         val aboutLibrary = LibsBuilder()
@@ -52,17 +43,7 @@ class AboutLibrariesActivity : DaggerAppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .add(R.id.about_library_container, aboutLibrary)
-            .addToBackStack(null)
             .commit()
-    }
-
-    override fun onDestroy() {
-        drawerPresenter.onDestroy()
-        super.onDestroy()
-    }
-
-    override fun onBackPressed() {
-        drawerPresenter.onBackButtonPressed()
     }
 
     companion object {
@@ -73,7 +54,7 @@ class AboutLibrariesActivity : DaggerAppCompatActivity() {
         fun start(activity: Activity) {
             val launchIntent = Intent(activity, AboutLibrariesActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            DrawerActivityStartUtils.startActivity(launchIntent, activity)
+            activity.startActivity(launchIntent)
         }
     }
 }
