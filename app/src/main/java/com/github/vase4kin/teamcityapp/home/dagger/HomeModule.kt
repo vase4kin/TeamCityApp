@@ -16,9 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.home.dagger
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.app_navigation.*
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
+import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
+import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl
+import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
+import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
@@ -47,7 +51,6 @@ class HomeModule {
 
     @Provides
     fun providesRootDataManager(
-        context: Context,
         repository: Repository,
         sharedUserStorage: SharedUserStorage,
         rxCache: RxCache,
