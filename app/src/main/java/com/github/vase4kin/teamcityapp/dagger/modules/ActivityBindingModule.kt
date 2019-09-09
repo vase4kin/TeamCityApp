@@ -18,10 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.modules
 
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.about.AboutFragment
-import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
 import com.github.vase4kin.teamcityapp.about.dagger.AboutActivityScope
-import com.github.vase4kin.teamcityapp.about.dagger.AboutDrawerModule
-import com.github.vase4kin.teamcityapp.about.dagger.AboutLibrariesDrawerModule
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
@@ -75,12 +72,8 @@ abstract class ActivityBindingModule {
     abstract fun favoritesFragment(): FavoritesFragment
 
     @AboutActivityScope
-    @ContributesAndroidInjector(modules = [AboutDrawerModule::class])
+    @ContributesAndroidInjector
     abstract fun aboutActivity(): AboutActivity
-
-    @AboutActivityScope
-    @ContributesAndroidInjector(modules = [AboutLibrariesDrawerModule::class])
-    abstract fun aboutLibrariesActivity(): AboutLibrariesActivity
 
     @AboutActivityScope
     @ContributesAndroidInjector
