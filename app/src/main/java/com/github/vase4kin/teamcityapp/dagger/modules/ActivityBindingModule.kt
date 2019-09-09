@@ -32,7 +32,6 @@ import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListActivityScope
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
-import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListDrawerModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
@@ -94,7 +93,7 @@ abstract class ActivityBindingModule {
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope
-    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListDrawerModule::class, BuildListAdapterModule::class, BuildDetailsFragmentsBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListAdapterModule::class, BuildDetailsFragmentsBindingModule::class])
     abstract fun buildListActivity(): BuildListActivity
 
     @FilterBuildsActivityScope
