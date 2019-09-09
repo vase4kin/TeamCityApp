@@ -26,7 +26,6 @@ import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListActivity
 import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityScope
-import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsDrawerModule
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsFragmentsBindingModule
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
@@ -89,7 +88,7 @@ abstract class ActivityBindingModule {
     abstract fun accountListActivity(): AccountListActivity
 
     @BuildDetailsActivityScope
-    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsDrawerModule::class, BuildDetailsFragmentsBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class])
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope
