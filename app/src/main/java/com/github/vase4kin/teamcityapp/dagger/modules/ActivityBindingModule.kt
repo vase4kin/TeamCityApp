@@ -48,7 +48,6 @@ import com.github.vase4kin.teamcityapp.home.dagger.HomeModule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationActivityScope
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationBaseModule
-import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationDrawerModule
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentModule
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentScope
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationModule
@@ -111,7 +110,7 @@ abstract class ActivityBindingModule {
     abstract fun rootProjectsActivity(): HomeActivity
 
     @NavigationActivityScope
-    @ContributesAndroidInjector(modules = [NavigationModule::class, NavigationBaseModule::class, NavigationDrawerModule::class])
+    @ContributesAndroidInjector(modules = [NavigationModule::class, NavigationBaseModule::class])
     abstract fun navigationActivity(): NavigationActivity
 
     @NavigationFragmentScope
