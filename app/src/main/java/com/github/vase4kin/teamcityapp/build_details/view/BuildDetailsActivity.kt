@@ -75,6 +75,11 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
         presenter.onViewsCreated()
     }
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right)
+    }
+
     companion object {
 
         /**
@@ -92,6 +97,7 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
             b.putString(BundleExtractorValues.NAME, buildTypeName)
             intent.putExtras(b)
             activity.startActivity(intent)
+            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
 
         fun startNotAsNewTask(activity: Activity, build: Build, buildTypeName: String?) {
@@ -101,6 +107,7 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
             b.putString(BundleExtractorValues.NAME, buildTypeName)
             intent.putExtras(b)
             activity.startActivity(intent)
+            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 }

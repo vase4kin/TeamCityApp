@@ -51,6 +51,11 @@ class NavigationActivity : DaggerAppCompatActivity() {
         presenter.onResume()
     }
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right)
+    }
+
     companion object {
 
         fun start(name: String, id: String, activity: Activity) {
@@ -60,6 +65,7 @@ class NavigationActivity : DaggerAppCompatActivity() {
             bundle.putString(BundleExtractorValues.ID, id)
             intent.putExtras(bundle)
             activity.startActivity(intent)
+            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 }

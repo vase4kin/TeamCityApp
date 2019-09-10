@@ -79,6 +79,11 @@ class BuildListActivity : DaggerAppCompatActivity() {
         return presenter.onOptionsItemSelected(item)
     }
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right)
+    }
+
     companion object {
 
         /**
@@ -96,6 +101,7 @@ class BuildListActivity : DaggerAppCompatActivity() {
             bundle.putSerializable(BundleExtractorValues.BUILD_LIST_FILTER, filter)
             intent.putExtras(bundle)
             activity.startActivity(intent)
+            activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
         }
     }
 }
