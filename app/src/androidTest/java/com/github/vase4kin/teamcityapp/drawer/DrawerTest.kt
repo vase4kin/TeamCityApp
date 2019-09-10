@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.drawer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.contrib.DrawerActions.open
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isSelected
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
@@ -125,33 +124,6 @@ class DrawerTest {
     }
 
     @Test
-    fun testUserCanNavigateToProjectsScreen() {
-        // open build type
-        onView(withText("build type"))
-            .perform(click())
-
-        // Checking toolbar title
-        matchToolbarTitle("build type")
-
-        // Opening drawer
-        onView(withId(R.id.material_drawer_layout))
-            .perform(open())
-
-        // Check projects is opened
-        onView(
-            allOf(
-                withId(R.id.material_drawer_name),
-                withText(R.string.home_drawer_item),
-                isDisplayed()
-            )
-        )
-            .perform(click())
-
-        // Checking toolbar title
-        matchToolbarTitle("Projects")
-    }
-
-    @Test
     fun testUserCanNavigateToAboutScreen() {
         // Opening drawer
         clickOnBurgerButton()
@@ -168,20 +140,6 @@ class DrawerTest {
 
         // Checking toolbar title
         matchToolbarTitle("About")
-
-        // Opening drawer
-        onView(withId(R.id.material_drawer_layout))
-            .perform(open())
-
-        // Check about is selected
-        onView(
-            allOf(
-                withId(R.id.material_drawer_name),
-                withText(R.string.about_drawer_item),
-                isDisplayed()
-            )
-        )
-            .check(matches(isSelected()))
     }
 
     @Test
