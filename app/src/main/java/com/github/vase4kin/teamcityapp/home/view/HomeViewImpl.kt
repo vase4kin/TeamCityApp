@@ -167,7 +167,10 @@ class HomeViewImpl(
             }.show()
     }
 
-    override fun showTabsFilterPrompt(listener: OnboardingManager.OnPromptShownListener) {
+    /**
+     * {@inheritDoc}
+     */
+    override fun showRunningBuildsFilterPrompt(listener: OnboardingManager.OnPromptShownListener) {
         val color = ContextCompat.getColor(activity, defaultColor)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
@@ -179,6 +182,44 @@ class HomeViewImpl(
             .setPromptStateChangeListener { _, state ->
                 if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
                     listener.onPromptShown()
+                }
+            }.show()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun showBuildsQueueFilterPrompt(onPromptShown: () -> Unit) {
+        val color = ContextCompat.getColor(activity, defaultColor)
+        MaterialTapTargetPrompt.Builder(activity)
+            .setTarget(fab)
+            .setPrimaryText(R.string.title_onboarding_filter_queued)
+            .setSecondaryText(R.string.text_onboarding_filter_queued)
+            .setAnimationInterpolator(FastOutSlowInInterpolator())
+            .setBackgroundColour(color)
+            .setCaptureTouchEventOutsidePrompt(true)
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                    onPromptShown()
+                }
+            }.show()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun showAgentsFilterPrompt(onPromptShown: () -> Unit) {
+        val color = ContextCompat.getColor(activity, defaultColor)
+        MaterialTapTargetPrompt.Builder(activity)
+            .setTarget(fab)
+            .setPrimaryText(R.string.title_onboarding_filter_agents)
+            .setSecondaryText(R.string.text_onboarding_filter_agents)
+            .setAnimationInterpolator(FastOutSlowInInterpolator())
+            .setBackgroundColour(color)
+            .setCaptureTouchEventOutsidePrompt(true)
+            .setPromptStateChangeListener { _, state ->
+                if (state == MaterialTapTargetPrompt.STATE_DISMISSED) {
+                    onPromptShown()
                 }
             }.show()
     }

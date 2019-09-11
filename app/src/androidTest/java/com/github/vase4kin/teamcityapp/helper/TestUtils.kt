@@ -125,7 +125,9 @@ class TestUtils {
             onboardingManager.saveRestartBuildPromptShown()
             onboardingManager.saveAddFavPromptShown()
             onboardingManager.saveFavPromptShown()
-            onboardingManager.saveTabsFilterPromptShown()
+            onboardingManager.saveRunningBuildsFilterPromptShown()
+            onboardingManager.saveBuildsQueueFilterPromptShown()
+            onboardingManager.saveAgentsFilterPromptShown()
         }
 
         @JvmStatic
