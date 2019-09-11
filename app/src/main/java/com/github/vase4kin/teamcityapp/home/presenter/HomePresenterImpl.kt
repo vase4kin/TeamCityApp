@@ -142,17 +142,24 @@ class HomePresenterImpl @Inject constructor(
         }
         val titleRes = AppNavigationItem.values()[position].title
         bottomNavigationView.setTitle(titleRes)
-        if (position == AppNavigationItem.FAVORITES.ordinal) {
-            showFavoritesPrompt()
-            bottomNavigationView.showFavoritesFab()
-        } else if (position == AppNavigationItem.RUNNING_BUILDS.ordinal || position == AppNavigationItem.BUILD_QUEUE.ordinal) {
-            showFilterPrompt()
-            bottomNavigationView.showFilterFab()
-        } else if (position == AppNavigationItem.AGENTS.ordinal) {
-            // TODO: show agents filter prompt
-            bottomNavigationView.showFilterFab()
-        } else {
-            bottomNavigationView.hideFab()
+        when (position) {
+            AppNavigationItem.FAVORITES.ordinal -> {
+                showFavoritesPrompt()
+                bottomNavigationView.showFavoritesFab()
+            }
+            AppNavigationItem.RUNNING_BUILDS.ordinal -> {
+                showRunningBuildsFilterPrompt()
+                bottomNavigationView.showFilterFab()
+            }
+            AppNavigationItem.BUILD_QUEUE.ordinal -> {
+                showBuildQueueFilterPrompt()
+                bottomNavigationView.showFilterFab()
+            }
+            AppNavigationItem.AGENTS.ordinal -> {
+                showAgentsFilterPrompt()
+                bottomNavigationView.showFilterFab()
+            }
+            else -> bottomNavigationView.hideFab()
         }
         loadNotificationsCount()
         view.dimissSnackbar()
@@ -177,13 +184,31 @@ class HomePresenterImpl @Inject constructor(
     }
 
     /**
-     * Show tab filter prompt
+     * Show agents filter prompt
      */
-    private fun showFilterPrompt() {
-        if (!onboardingManager.isTabsFilterPromptShown) {
-            view.showTabsFilterPrompt(object : OnboardingManager.OnPromptShownListener {
+    private fun showAgentsFilterPrompt() {
+        if (!onboardingManager.isAgentsFilterPromptShown) {
+            view.showAgentsFilterPrompt { onboardingManager.saveAgentsFilterPromptShown() }
+        }
+    }
+
+    /**
+     * Show builds queue filter prompt
+     */
+    private fun showBuildQueueFilterPrompt() {
+        if (!onboardingManager.isBuildsQueueFilterPromptShown) {
+            view.showBuildsQueueFilterPrompt { onboardingManager.saveBuildsQueueFilterPromptShown() }
+        }
+    }
+
+    /**
+     * Show running builds filter prompt
+     */
+    private fun showRunningBuildsFilterPrompt() {
+        if (!onboardingManager.isRunningBuildsFilterPromptShown) {
+            view.showRunningBuildsFilterPrompt(object : OnboardingManager.OnPromptShownListener {
                 override fun onPromptShown() {
-                    onboardingManager.saveTabsFilterPromptShown()
+                    onboardingManager.saveRunningBuildsFilterPromptShown()
                 }
             })
         }

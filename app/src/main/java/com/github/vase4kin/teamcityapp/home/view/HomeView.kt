@@ -81,7 +81,17 @@ interface HomeView : DrawerView {
      *
      * @param listener - Listener to know when prompt is shown
      */
-    fun showTabsFilterPrompt(listener: OnboardingManager.OnPromptShownListener)
+    fun showRunningBuildsFilterPrompt(listener: OnboardingManager.OnPromptShownListener)
+
+    /**
+     * Show builds queue onboarding prompt
+     */
+    fun showBuildsQueueFilterPrompt(onPromptShown: () -> Unit)
+
+    /**
+     * Show agents onboarding prompt
+     */
+    fun showAgentsFilterPrompt(onPromptShown: () -> Unit)
 
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()

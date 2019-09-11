@@ -76,9 +76,20 @@ class OnboardingManagerImpl(context: Context) : OnboardingManager {
     /**
      * {@inheritDoc}
      */
-    override val isTabsFilterPromptShown: Boolean
-        get() = sharedPreferences.getBoolean(KEY_TABS_FILTER, false)
+    override val isRunningBuildsFilterPromptShown: Boolean
+        get() = sharedPreferences.getBoolean(KEY_R_BUILDS_FILTER, false)
 
+    /**
+     * {@inheritDoc}
+     */
+    override val isBuildsQueueFilterPromptShown: Boolean
+        get() = sharedPreferences.getBoolean(KEY_BUILDS_Q_FILTER, false)
+
+    /**
+     * {@inheritDoc}
+     */
+    override val isAgentsFilterPromptShown: Boolean
+        get() = sharedPreferences.getBoolean(KEY_AGENTS_FILTER, false)
     /**
      * {@inheritDoc}
      */
@@ -137,8 +148,22 @@ class OnboardingManagerImpl(context: Context) : OnboardingManager {
     /**
      * {@inheritDoc}
      */
-    override fun saveTabsFilterPromptShown() {
-        sharedPreferences.edit().putBoolean(KEY_TABS_FILTER, true).apply()
+    override fun saveRunningBuildsFilterPromptShown() {
+        sharedPreferences.edit().putBoolean(KEY_R_BUILDS_FILTER, true).apply()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun saveBuildsQueueFilterPromptShown() {
+        sharedPreferences.edit().putBoolean(KEY_BUILDS_Q_FILTER, true).apply()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun saveAgentsFilterPromptShown() {
+        sharedPreferences.edit().putBoolean(KEY_AGENTS_FILTER, true).apply()
     }
 
     /**
@@ -160,6 +185,8 @@ class OnboardingManagerImpl(context: Context) : OnboardingManager {
         private const val KEY_REMOVE_BUILDS_FROM_QUEUE = "RemoveBuildsFromQueue"
         private const val KEY_ADD_FAV = "AddToFavorites"
         private const val KEY_FAV = "AddToFavoritesFromBuildType"
-        private const val KEY_TABS_FILTER = "TabsFilterBuilds"
+        private const val KEY_R_BUILDS_FILTER = "RBFilter"
+        private const val KEY_BUILDS_Q_FILTER = "BQFilter"
+        private const val KEY_AGENTS_FILTER = "AFilter"
     }
 }
