@@ -59,7 +59,17 @@ interface OnboardingManager {
     /**
      * @return {true} if tab filter builds onboarding prompt is shown
      */
-    val isTabsFilterPromptShown: Boolean
+    val isRunningBuildsFilterPromptShown: Boolean
+
+    /**
+     * @return {true} if filter builds queue onboarding prompt is shown
+     */
+    val isBuildsQueueFilterPromptShown: Boolean
+
+    /**
+     * @return {true} if filter agents onboarding prompt is shown
+     */
+    val isAgentsFilterPromptShown: Boolean
 
     /**
      * @return {true} if add favorites from buildtype onboarding prompt is shown
@@ -102,9 +112,19 @@ interface OnboardingManager {
     fun saveAddFavPromptShown()
 
     /**
-     * Save that tab filter builds prompt is shown
+     * Save that tab filter running builds prompt is shown
      */
-    fun saveTabsFilterPromptShown()
+    fun saveRunningBuildsFilterPromptShown()
+
+    /**
+     * Save that filter running builds prompt is shown
+     */
+    fun saveBuildsQueueFilterPromptShown()
+
+    /**
+     * Save that agents filter prompt is shown
+     */
+    fun saveAgentsFilterPromptShown()
 
     /**
      * Save that add favorites from buildtype prompt is shown
