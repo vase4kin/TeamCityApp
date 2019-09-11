@@ -328,9 +328,9 @@
     <string name="title_onboarding_filter_builds">Filter builds</string>
     <string name="text_onboarding_filter_builds">Filter by branch, build status or show only personal or pinned ones</string>
     <string name="title_onboarding_build_menu">Explore menu</string>
-    <string name="text_onboarding_stop_build">Stop running builds</string>
-    <string name="text_onboarding_restart_build">Restart finished builds</string>
-    <string name="text_onboarding_remove_build_from_queue">Remove builds from queue</string>
+    <string name="text_onboarding_stop_build">Stop running builds, share or open in a browser</string>
+    <string name="text_onboarding_restart_build">Restart finished builds, share or open in a browser</string>
+    <string name="text_onboarding_remove_build_from_queue">Remove builds from queue, share or open in a browser</string>
     <string name="title_onboarding_add_fav">Add to favorites</string>
     <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
     <string name="title_onboarding_filter">Filter builds</string>
