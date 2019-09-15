@@ -39,9 +39,12 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Matchers.anyString
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
-import java.util.*
+import java.util.ArrayList
 
 @RunWith(MockitoJUnitRunner::class)
 class ArtifactPresenterImplTest {
@@ -265,7 +268,6 @@ class ArtifactPresenterImplTest {
 
     @Test
     fun testUnSubscribe() {
-        presenter.unSubscribe()
         verify(dataManager).unsubscribe()
         verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
     }

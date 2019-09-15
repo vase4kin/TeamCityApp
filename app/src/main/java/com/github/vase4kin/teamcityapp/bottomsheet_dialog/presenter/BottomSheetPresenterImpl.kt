@@ -88,8 +88,8 @@ class BottomSheetPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onArtifactOpenActionClick(href: String) {
-        interactor.postArtifactOpenEvent(href)
+    override fun onArtifactOpenActionClick(fileName: String, href: String) {
+        interactor.postArtifactOpenEvent(fileName, href)
         view.close()
     }
 

@@ -63,6 +63,7 @@ class BottomSheetAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<BottomS
         if (dataModel.hasArtifactOpenAction(position)) {
             holder.itemView.setOnClickListener {
                 listener?.onArtifactOpenActionClick(
+                    fileName,
                     description
                 )
             }

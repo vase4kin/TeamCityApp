@@ -68,7 +68,6 @@ class ArtifactViewImpl(
             .negativeText(R.string.text_cancel_button)
             .callback(object : MaterialDialog.ButtonCallback() {
                 override fun onNegative(dialog: MaterialDialog?) {
-                    this@ArtifactViewImpl.listener!!.unSubscribe()
                     progressDialog.dismiss()
                 }
             })
