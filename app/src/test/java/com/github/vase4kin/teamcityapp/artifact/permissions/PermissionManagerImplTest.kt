@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.artifact.permissions
 
 import android.content.pm.PackageManager
-import androidx.fragment.app.Fragment
+import androidx.appcompat.app.AppCompatActivity
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -31,7 +31,7 @@ import org.mockito.runners.MockitoJUnitRunner
 class PermissionManagerImplTest {
 
     @Mock
-    private lateinit var fragment: Fragment
+    private lateinit var activity: AppCompatActivity
 
     @Mock
     private lateinit var onPermissionsResultListener: OnPermissionsResultListener
@@ -40,12 +40,12 @@ class PermissionManagerImplTest {
 
     @Before
     fun setUp() {
-        manager = PermissionManagerImpl(fragment)
+        manager = PermissionManagerImpl(activity)
     }
 
     @After
     fun tearDown() {
-        verifyNoMoreInteractions(onPermissionsResultListener, fragment)
+        verifyNoMoreInteractions(onPermissionsResultListener, activity)
     }
 
     @Test

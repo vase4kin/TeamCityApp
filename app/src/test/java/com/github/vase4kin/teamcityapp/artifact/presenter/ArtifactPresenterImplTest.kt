@@ -124,8 +124,6 @@ class ArtifactPresenterImplTest {
     fun testInitViews() {
         presenter.initViews()
         verify(view).setOnArtifactPresenterListener(eq(presenter))
-        verify(dataManager).registerEventBus()
-        verify(dataManager).setListener(eq(presenter))
     }
 
     @Test
@@ -142,13 +140,12 @@ class ArtifactPresenterImplTest {
         `when`(file.hasChildren()).thenReturn(true)
         `when`(file.isFolder).thenReturn(true)
         `when`(file.children).thenReturn(children)
+        `when`(file.name).thenReturn("name")
         `when`(children.href).thenReturn("url")
         `when`(valueExtractor.buildDetails).thenReturn(buildDetails)
         presenter.onClick(file)
         verify(valueExtractor).buildDetails
-        verify(router).openArtifactFile(eq(buildDetails), eq("url"))
-        verify(dataManager).unregisterEventBus()
-        verify(dataManager).setListener(null)
+        verify(router).openArtifactFile(eq("name"), eq(buildDetails), eq("url"))
         verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
     }
 
@@ -249,12 +246,24 @@ class ArtifactPresenterImplTest {
     @Test
     fun testOpenArtifactFile() {
         `when`(valueExtractor.buildDetails).thenReturn(buildDetails)
-        presenter.onOpenArtifactEvent("href")
+        presenter.onOpenArtifactEvent("name", "href")
         verify(valueExtractor).buildDetails
-        verify(router).openArtifactFile(eq(buildDetails), eq("href"))
+        verify(router).openArtifactFile(eq("name"), eq(buildDetails), eq("href"))
+        verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
+    }
+
+    @Test
+    fun testOnPause() {
+        presenter.onPause()
         verify(dataManager).unregisterEventBus()
         verify(dataManager).setListener(null)
-        verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
+    }
+
+    @Test
+    fun testOnResume() {
+        presenter.onResume()
+        verify(dataManager).registerEventBus()
+        verify(dataManager).setListener(presenter)
     }
 
     @Test
@@ -263,12 +272,6 @@ class ArtifactPresenterImplTest {
         presenter.onStartBrowserEvent("url")
         verify(valueExtractor).buildDetails
         verify(router).startBrowser(eq(buildDetails), eq("url"))
-        verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
-    }
-
-    @Test
-    fun testUnSubscribe() {
-        verify(dataManager).unsubscribe()
         verifyNoMoreInteractions(view, dataManager, router, valueExtractor, permissionManager, tracker)
     }
 
