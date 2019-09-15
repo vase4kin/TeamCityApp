@@ -25,6 +25,9 @@ import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListActivityScope
 import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
+import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactActivityScope
+import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactsActivityModule
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsActivityScope
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsFragmentsBindingModule
 import com.github.vase4kin.teamcityapp.build_details.dagger.BuildDetailsModule
@@ -114,4 +117,8 @@ abstract class ActivityBindingModule {
     @NavigationFragmentScope
     @ContributesAndroidInjector(modules = [NavigationFragmentModule::class, NavigationBaseModule::class])
     abstract fun navigationListFragment(): NavigationListFragment
+
+    @ArtifactActivityScope
+    @ContributesAndroidInjector(modules = [ArtifactsActivityModule::class])
+    abstract fun artifactListActivity(): ArtifactListActivity
 }

@@ -79,7 +79,7 @@ interface BottomSheetView {
          *
          * @param href - file href
          */
-        fun onArtifactOpenActionClick(href: String)
+        fun onArtifactOpenActionClick(fileName: String, href: String)
 
         /**
          * On artifact open in browser click
