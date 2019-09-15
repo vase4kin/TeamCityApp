@@ -40,7 +40,8 @@ interface ArtifactRouter {
     fun openArtifactFile(
         artifactName: String,
         buildDetails: BuildDetails,
-        href: String)
+        href: String
+    )
 
     /**
      * Unbind customs chrome tabs
