@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.artifact.data
+package com.github.vase4kin.teamcityapp.artifact.dagger
 
-class ArtifactOpenEvent(val fileName: String, val href: String)
+import javax.inject.Scope
+
+@Scope
+annotation class ArtifactActivityScope

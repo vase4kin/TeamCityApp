@@ -37,7 +37,10 @@ interface ArtifactRouter {
      * @param buildDetails - Build details
      * @param href - Artifact file href
      */
-    fun openArtifactFile(buildDetails: BuildDetails, href: String)
+    fun openArtifactFile(
+        artifactName: String,
+        buildDetails: BuildDetails,
+        href: String)
 
     /**
      * Unbind customs chrome tabs

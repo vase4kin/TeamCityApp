@@ -82,8 +82,8 @@ class BottomSheetInteractorImpl(
     /**
      * {@inheritDoc}
      */
-    override fun postArtifactOpenEvent(href: String) {
-        eventBus.post(ArtifactOpenEvent(href))
+    override fun postArtifactOpenEvent(fileName: String, href: String) {
+        eventBus.post(ArtifactOpenEvent(fileName, href))
     }
 
     /**

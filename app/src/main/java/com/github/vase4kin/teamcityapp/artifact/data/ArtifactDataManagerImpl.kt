@@ -131,7 +131,7 @@ class ArtifactDataManagerImpl(
      */
     @Subscribe
     fun onEvent(event: ArtifactOpenEvent) {
-        listener?.onOpenArtifactEvent(event.href)
+        listener?.onOpenArtifactEvent(event.fileName, event.href)
     }
 
     /**
