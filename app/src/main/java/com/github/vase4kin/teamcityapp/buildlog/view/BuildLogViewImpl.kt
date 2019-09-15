@@ -114,48 +114,62 @@ class BuildLogViewImpl(private val view: View, private val client: BuildLogWebVi
      * {@inheritDoc}
      */
     override fun showWebView() {
-        webView.visibility = View.VISIBLE
+        if (::webView.isInitialized) {
+            webView.visibility = View.VISIBLE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun hideWebView() {
-        webView.visibility = View.GONE
+        if (::webView.isInitialized) {
+            webView.visibility = View.GONE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun showProgressWheel() {
-        progressWheel.visibility = View.VISIBLE
+        if (::progressWheel.isInitialized) {
+            progressWheel.visibility = View.VISIBLE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun hideProgressWheel() {
-        progressWheel.visibility = View.GONE
+        if (::progressWheel.isInitialized) {
+            progressWheel.visibility = View.GONE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun showError() {
-        errorView.visibility = View.VISIBLE
+        if (::errorView.isInitialized) {
+            errorView.visibility = View.VISIBLE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun hideError() {
-        errorView.visibility = View.GONE
+        if (::errorView.isInitialized) {
+            errorView.visibility = View.GONE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun evaluateScript(script: String) {
-        webView.evaluateJavascript(script, null)
+        if (::webView.isInitialized) {
+            webView.evaluateJavascript(script, null)
+        }
     }
 }
