@@ -31,4 +31,6 @@ interface ArtifactPresenter : BaseListPresenter {
         permissions: Array<String>,
         grantResults: IntArray
     )
+
+    fun onPause()
 }

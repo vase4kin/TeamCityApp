@@ -23,20 +23,20 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
 
 /**
  * Impl of [PermissionManager]
  */
-class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager {
+class PermissionManagerImpl(private val activity: AppCompatActivity) : PermissionManager {
 
     /**
      * {@inheritDoc}
      */
     override val isWriteStoragePermissionsGranted: Boolean
         get() = ActivityCompat.checkSelfPermission(
-            fragment.requireContext(),
+            activity,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) == PackageManager.PERMISSION_GRANTED
 
@@ -45,7 +45,7 @@ class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager 
      */
     override val isInstallPackagesPermissionGranted: Boolean
         get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            fragment.requireContext().packageManager.canRequestPackageInstalls()
+            activity.packageManager.canRequestPackageInstalls()
         } else {
             true
         }
@@ -54,7 +54,8 @@ class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager 
      * {@inheritDoc}
      */
     override fun requestWriteStoragePermissions() {
-        fragment.requestPermissions(
+        ActivityCompat.requestPermissions(
+            activity,
             arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
             PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
         )
@@ -66,9 +67,9 @@ class PermissionManagerImpl(private val fragment: Fragment) : PermissionManager 
     @TargetApi(Build.VERSION_CODES.O)
     override fun requestInstallPackagesPermission() {
         val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-        val packageUri = Uri.parse("package:" + fragment.requireContext().packageName)
+        val packageUri = Uri.parse("package:" + activity.packageName)
         intent.data = packageUri
-        fragment.startActivity(intent)
+        activity.startActivity(intent)
     }
 
     /**

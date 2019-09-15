@@ -21,8 +21,7 @@ import android.webkit.MimeTypeMap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.github.vase4kin.teamcityapp.BuildConfig
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
+import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -59,7 +58,8 @@ class ArtifactRouterImpl(
             BuildConfig.APPLICATION_ID + ".provider", file
         )
         intent.setDataAndType(data, type)
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        intent.flags =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 
         // User couldn't have app with type intent
         try {
@@ -73,14 +73,12 @@ class ArtifactRouterImpl(
     /**
      * {@inheritDoc}
      */
-    override fun openArtifactFile(buildDetails: BuildDetails, href: String) {
-        val fragmentTransaction = activity.supportFragmentManager.beginTransaction()
-        fragmentTransaction.add(
-            R.id.artifact_fragment_list,
-            ArtifactListFragment.newInstance(buildDetails.toBuild(), href)
-        )
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.commit()
+    override fun openArtifactFile(
+        artifactName: String,
+        buildDetails: BuildDetails,
+        href: String
+    ) {
+        ArtifactListActivity.start(artifactName, buildDetails.toBuild(), href, activity)
     }
 
     /**
@@ -94,7 +92,8 @@ class ArtifactRouterImpl(
      * {@inheritDoc}
      */
     override fun startBrowser(buildDetails: BuildDetails, href: String) {
-        val pathToFile = href.split("/metadata/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
+        val pathToFile =
+            href.split("/metadata/".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()[1]
         val url = String.format(
             FILE_URL_PATTERN,
             sharedUserStorage.activeUser.teamcityUrl,

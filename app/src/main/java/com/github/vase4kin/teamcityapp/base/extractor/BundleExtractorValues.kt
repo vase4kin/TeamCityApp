@@ -25,7 +25,6 @@ interface BundleExtractorValues {
         const val URL = "url"
         const val NAME = "name"
         const val ID = "id"
-        const val AGENT_TYPE = "agent.type"
         const val IS_REQUIRED_TO_RELOAD = "isRequiredToReload"
         const val IS_NEW_ACCOUNT_CREATED = "isNewAccountCreated"
         const val PASSED_COUNT_PARAM = "passedCount"

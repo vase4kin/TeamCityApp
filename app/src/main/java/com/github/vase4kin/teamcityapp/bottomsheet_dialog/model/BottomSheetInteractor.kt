@@ -71,7 +71,7 @@ interface BottomSheetInteractor {
     /**
      * Post [com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenEvent]
      */
-    fun postArtifactOpenEvent(href: String)
+    fun postArtifactOpenEvent(fileName: String, href: String)
 
     /**
      * Post [com.github.vase4kin.teamcityapp.artifact.data.ArtifactOpenInBrowserEvent]

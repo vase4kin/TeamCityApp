@@ -21,7 +21,7 @@ import androidx.appcompat.widget.Toolbar
 import com.github.vase4kin.teamcityapp.R
 
 fun AppCompatActivity.initToolbar() {
-    val toolBar: Toolbar? = findViewById<Toolbar>(R.id.toolbar)
+    val toolBar: Toolbar? = findViewById(R.id.toolbar)
     if (toolBar != null) {
         setSupportActionBar(toolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

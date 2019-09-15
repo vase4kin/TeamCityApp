@@ -73,8 +73,17 @@ class ArtifactPresenterImpl @Inject constructor(
     public override fun initViews() {
         super.initViews()
         view.setOnArtifactPresenterListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
         dataManager.registerEventBus()
         dataManager.setListener(this)
+    }
+
+    override fun onPause() {
+        dataManager.unregisterEventBus()
+        dataManager.setListener(null)
     }
 
     /**
@@ -83,8 +92,11 @@ class ArtifactPresenterImpl @Inject constructor(
     override fun onClick(artifactFile: File) {
         if (artifactFile.hasChildren() && artifactFile.isFolder) {
             val href = artifactFile.children.href
-            router.openArtifactFile(valueExtractor.buildDetails, href)
-            unRegister()
+            router.openArtifactFile(
+                artifactFile.name,
+                valueExtractor.buildDetails,
+                href
+            )
         } else {
             onLongClick(artifactFile)
         }
@@ -143,18 +155,6 @@ class ArtifactPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun unSubscribe() {
-        dataManager.unsubscribe()
-    }
-
-    private fun unRegister() {
-        dataManager.unregisterEventBus()
-        dataManager.setListener(null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     override fun onDownloadArtifactEvent(fileName: String, href: String) {
         this.fileName = fileName
         this.fileHref = href
@@ -194,9 +194,8 @@ class ArtifactPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onOpenArtifactEvent(href: String) {
-        router.openArtifactFile(valueExtractor.buildDetails, href)
-        unRegister()
+    override fun onOpenArtifactEvent(fileName: String, href: String) {
+        router.openArtifactFile(fileName, valueExtractor.buildDetails, href)
     }
 
     /**
@@ -209,7 +208,11 @@ class ArtifactPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         permissionManager.onRequestPermissionsResult(
             requestCode,
             permissions,

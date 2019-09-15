@@ -31,7 +31,7 @@ interface OnArtifactEventListener {
      *
      * @param href - File href
      */
-    fun onOpenArtifactEvent(href: String)
+    fun onOpenArtifactEvent(fileName: String, href: String)
 
     /**
      * Open artifact with browser

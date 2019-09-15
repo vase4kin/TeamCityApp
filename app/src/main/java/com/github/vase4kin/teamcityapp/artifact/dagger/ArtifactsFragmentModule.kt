@@ -46,20 +46,34 @@ import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
 
 @Module
-class ArtifactsModule {
+class ArtifactsFragmentModule {
 
     @Provides
-    fun providesArtifactDataManager(repository: Repository, eventBus: EventBus): ArtifactDataManager {
+    fun providesArtifactDataManager(
+        repository: Repository,
+        eventBus: EventBus
+    ): ArtifactDataManager {
         return ArtifactDataManagerImpl(repository, eventBus)
     }
 
     @Provides
-    fun providesArtifactView(fragment: ArtifactListFragment, adapter: ArtifactAdapter): ArtifactView {
-        return ArtifactViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_artifacts, adapter)
+    fun providesArtifactView(
+        fragment: ArtifactListFragment,
+        adapter: ArtifactAdapter
+    ): ArtifactView {
+        return ArtifactViewImpl(
+            fragment.view!!,
+            fragment.requireActivity(),
+            R.string.empty_list_message_artifacts,
+            adapter
+        )
     }
 
     @Provides
-    fun providesArtifactRouter(fragment: ArtifactListFragment, sharedUserStorage: SharedUserStorage): ArtifactRouter {
+    fun providesArtifactRouter(
+        fragment: ArtifactListFragment,
+        sharedUserStorage: SharedUserStorage
+    ): ArtifactRouter {
         return ArtifactRouterImpl(
             sharedUserStorage,
             fragment.requireActivity() as AppCompatActivity,
@@ -79,7 +93,7 @@ class ArtifactsModule {
 
     @Provides
     fun providesPermissionManager(fragment: ArtifactListFragment): PermissionManager {
-        return PermissionManagerImpl(fragment)
+        return PermissionManagerImpl(fragment.requireActivity() as AppCompatActivity)
     }
 
     @Provides
