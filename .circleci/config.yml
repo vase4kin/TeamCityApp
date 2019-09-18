@@ -4,7 +4,7 @@ references:
       ~/TeamCityApp
   container_config: &container_config
     docker:
-      - image: circleci/android:api-28-alpha
+      - image: circleci/android:api-29
     working_directory: *workspace_root
   attach_workspace: &attach_workspace
     attach_workspace:
@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Download sdk
           command: |
-            echo y | sdkmanager "tools" "platform-tools" "build-tools;28.0.3" "extras;android;m2repository" "platforms;android-28" "emulator" --verbose
+            echo y | sdkmanager "tools" "platform-tools" "build-tools;29.0.2" "extras;android;m2repository" "platforms;android-29" "emulator" --verbose
             sdkmanager --update --verbose
       - run:
           name: Download dependencies
