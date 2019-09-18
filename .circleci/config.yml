@@ -85,18 +85,6 @@ jobs:
       - restore_cache:
           <<: *general_cache_key
       - run:
-          name: Install Crcmod
-          command: |
-            sudo apt-get install gcc python-dev python-setuptools
-            sudo easy_install -U pip
-            echo y | sudo pip uninstall crcmod
-            sudo pip install -U crcmod
-      - run:
-          name: Install Gcloud
-          command: |
-            curl -L "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-166.0.0-linux-x86_64.tar.gz" | tar xz
-            CLOUDSDK_CORE_DISABLE_PROMPTS=1 ./google-cloud-sdk/install.sh
-      - run:
           name: Log in to Google Cloud Platform
           shell: /bin/bash -euo pipefail
           command: |
