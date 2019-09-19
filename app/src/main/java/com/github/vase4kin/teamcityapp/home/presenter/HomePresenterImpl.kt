@@ -240,7 +240,7 @@ class HomePresenterImpl @Inject constructor(
             AppNavigationItem.AGENTS.ordinal -> {
                 val filter = filterProvider.agentsFilter
                 view.showFilterBottomSheet(filter)
-                // TODO: track
+                tracker.trackUserClicksOnAgentsFilterFab()
             }
         }
     }

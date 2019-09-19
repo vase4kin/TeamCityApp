@@ -25,19 +25,38 @@ interface FilterBottomSheetTracker {
 
     companion object {
 
-        const val EVENT_FILTER_SELECTED = "builds_filter_selected"
+        const val EVENT_FILTER_QUEUED_BUILDS_SELECTED = "filter_queued_builds_selected"
+        const val EVENT_FILTER_RUNNING_BUILDS_SELECTED = "filter_running_builds_selected"
+        const val EVENT_FILTER_AGENTS_SELECTED = "filter_agents_selected"
         const val ARG_FILTER = "filter"
     }
 
-    fun trackFilterSelected(filter: Filter)
+    fun trackQueuedBuildsFilterSelected(filter: Filter)
+
+    fun trackRunningBuildsFilterSelected(filter: Filter)
+
+    fun trackAgentsFilterSelected(filter: Filter)
 }
 
 class FilterBottomSheetTrackerImpl @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics
 ) : FilterBottomSheetTracker {
-    override fun trackFilterSelected(filter: Filter) {
+
+    override fun trackRunningBuildsFilterSelected(filter: Filter) {
         firebaseAnalytics.logEvent(
-            FilterBottomSheetTracker.EVENT_FILTER_SELECTED,
+            FilterBottomSheetTracker.EVENT_FILTER_RUNNING_BUILDS_SELECTED,
+            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
+    }
+
+    override fun trackAgentsFilterSelected(filter: Filter) {
+        firebaseAnalytics.logEvent(
+            FilterBottomSheetTracker.EVENT_FILTER_AGENTS_SELECTED,
+            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
+    }
+
+    override fun trackQueuedBuildsFilterSelected(filter: Filter) {
+        firebaseAnalytics.logEvent(
+            FilterBottomSheetTracker.EVENT_FILTER_QUEUED_BUILDS_SELECTED,
             Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
     }
 }

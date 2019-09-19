@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,6 +43,11 @@ interface HomeTracker : DrawerTracker {
      * Track user clicks on builds queue filter fab
      */
     fun trackUserClicksOnBuildsQueueFilterFab()
+
+    /**
+     * Track user clicks on agents filter fab
+     */
+    fun trackUserClicksOnAgentsFilterFab()
 
     /**
      * Track user selects tab
@@ -85,5 +90,10 @@ interface HomeTracker : DrawerTracker {
          * Event
          */
         const val EVENT_USER_CLICKS_ON_BUILD_QUEUE_FILTER_FAB = "build_queue_tab_click_on_filter_fab"
+
+        /**
+         * Event
+         */
+        const val EVENT_USER_CLICKS_ON_AGENTS_FILTER_FAB = "agents_tab_click_on_filter_fab"
     }
 }

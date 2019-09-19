@@ -72,6 +72,13 @@ class HomeTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracke
     /**
      * {@inheritDoc}
      */
+    override fun trackUserClicksOnAgentsFilterFab() {
+        firebaseAnalytics.logEvent(HomeTracker.EVENT_USER_CLICKS_ON_AGENTS_FILTER_FAB, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun trackTabSelected(navigationItem: AppNavigationItem) {
         firebaseAnalytics.logEvent(
             HomeTracker.EVENT_USER_SELECTS_TAB,

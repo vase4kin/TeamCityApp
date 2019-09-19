@@ -75,19 +75,19 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
                     val oppositeFilter = filter.opposite()
                     filterProvider.runningBuildsFilter = oppositeFilter
                     eventBus.post(FilterAppliedEvent(filter))
-                    bottomSheetTracker.trackFilterSelected(oppositeFilter)
+                    bottomSheetTracker.trackRunningBuildsFilterSelected(oppositeFilter)
                 }
                 filter.isQueued -> {
                     val oppositeFilter = filter.opposite()
                     filterProvider.queuedBuildsFilter = oppositeFilter
                     eventBus.post(FilterAppliedEvent(oppositeFilter))
-                    bottomSheetTracker.trackFilterSelected(oppositeFilter)
+                    bottomSheetTracker.trackQueuedBuildsFilterSelected(oppositeFilter)
                 }
                 filter.isAgents -> {
                     val oppositeFilter = filter.opposite()
                     filterProvider.agentsFilter = oppositeFilter
                     eventBus.post(FilterAppliedEvent(oppositeFilter))
-                    bottomSheetTracker.trackFilterSelected(oppositeFilter)
+                    bottomSheetTracker.trackAgentsFilterSelected(oppositeFilter)
                 }
             }
             this@FilterBottomSheetDialogFragment.dismiss()
