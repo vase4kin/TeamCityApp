@@ -30,7 +30,7 @@ class TeamCityAuthenticator(private val userAccount: UserAccount) : okhttp3.Auth
     /**
      * {@inheritDoc}
      */
-    override fun authenticate(route: Route, response: Response): Request? {
+    override fun authenticate(route: Route?, response: Response): Request? {
         // by default do three attempts
         if (responseCount(response) >= ATTEMPTS_COUNT) {
             return null // If we've failed 3 times, give up.
