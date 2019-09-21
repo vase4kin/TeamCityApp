@@ -185,6 +185,9 @@ interface BuildDetails : Jsonable {
      */
     val projectId: String?
 
+    /**
+     * @return properties
+     */
     val properties: Properties?
 
     /**
