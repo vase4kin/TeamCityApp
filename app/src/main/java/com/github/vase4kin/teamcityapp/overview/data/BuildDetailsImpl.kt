@@ -339,8 +339,8 @@ class BuildDetailsImpl(private val build: Build) : BuildDetails {
     /**
      * {@inheritDoc}
      */
-    override val artifactsHref: String
-        get() = build.artifacts.href
+    override val artifactsHref: String?
+        get() = build.artifacts?.href
 
     /**
      * {@inheritDoc}
