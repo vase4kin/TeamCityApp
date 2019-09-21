@@ -70,6 +70,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return number;
     }
 
+    @Nullable
     public String getState() {
         return state;
     }
@@ -89,6 +90,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return startDate;
     }
 
+    @Nullable
     public String getStatus() {
         return status;
     }
@@ -98,6 +100,7 @@ public class Build extends BaseObject implements Collectible<BuildElement> {
         return testOccurrences;
     }
 
+    @Nullable
     public Artifacts getArtifacts() {
         return artifacts;
     }

@@ -39,7 +39,7 @@ class IconUtils {
          * @param state - Build state
          * @return build status icon as String
          */
-        fun getBuildStatusIcon(status: String, state: String): String {
+        fun getBuildStatusIcon(status: String?, state: String?): String {
             if (state == BuildDetails.STATE_RUNNING) return RunningBuildIconUtils.RUNNING
             if (state == BuildDetails.STATE_QUEUED) return ICON_QUEUE
             return when (status) {
