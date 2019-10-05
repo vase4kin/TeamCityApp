@@ -1,11 +1,11 @@
 <!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="@dimen/default_margin"
-            android:backgroundTint="@color/main_text_color"
+            android:tint="@color/sub_text_color"
             app:srcCompat="@drawable/ic_accessible_black_24px" />
 
         <TextView
@@ -82,7 +82,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="32dp"
-            android:backgroundTint="@color/main_text_color"
+            android:tint="@color/sub_text_color"
             app:srcCompat="@drawable/ic_warning_black_24dp" />
 
         <TextView

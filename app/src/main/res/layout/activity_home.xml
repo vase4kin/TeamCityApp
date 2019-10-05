@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,8 @@
             style="@style/Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:layout_scrollFlags="scroll|enterAlways"
+            tools:title="@string/home_drawer_item" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -46,9 +47,9 @@
         android:id="@+id/snackbar_anchor"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:background="@color/transparent"
         android:layout_gravity="end|bottom"
-        android:layout_marginBottom="136dp" />
+        android:layout_marginBottom="136dp"
+        android:background="@color/transparent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/home_floating_action_button"
