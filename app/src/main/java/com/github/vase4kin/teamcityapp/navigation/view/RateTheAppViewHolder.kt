@@ -20,14 +20,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
-
-private const val ICON_RATE_THE_APP = "{md-shop}"
 
 /**
  * Rate the app single item view holder
@@ -44,8 +41,6 @@ class RateTheAppViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataMod
     lateinit var buttonCancel: Button
     @BindView(R.id.button_rate)
     lateinit var buttonRate: Button
-    @BindView(R.id.itemIcon)
-    lateinit var icon: TextView
 
     init {
         ButterKnife.bind(this, itemView)
@@ -54,9 +49,7 @@ class RateTheAppViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataMod
     /**
      * {@inheritDoc}
      */
-    override fun bind(dataModel: NavigationDataModel, position: Int) {
-        icon.text = ICON_RATE_THE_APP
-    }
+    override fun bind(dataModel: NavigationDataModel, position: Int) {}
 
     fun setListeners(cancel: View.OnClickListener, rate: View.OnClickListener) {
         buttonCancel.setOnClickListener(cancel)
