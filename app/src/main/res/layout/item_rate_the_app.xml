@@ -32,7 +32,7 @@
         app:srcCompat="@drawable/ic_shop_black_24dp" />
 
     <TextView
-        android:id="@id/itemTitle"
+        android:id="@id/title"
         style="@style/ItemTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/ItemSubTitle"
+        android:id="@+id/subTitle"
         style="@style/ItemSubTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -54,8 +54,8 @@
         android:text="@string/rate_description"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/itemTitle"
-        app:layout_constraintTop_toBottomOf="@id/itemTitle" />
+        app:layout_constraintStart_toStartOf="@id/title"
+        app:layout_constraintTop_toBottomOf="@id/title" />
 
     <Button
         android:id="@+id/button_cancel"
@@ -64,8 +64,8 @@
         android:layout_marginEnd="@dimen/default_margin"
         android:text="@string/rate_cancel"
         app:layout_constraintEnd_toStartOf="@id/button_rate"
-        app:layout_constraintStart_toStartOf="@id/ItemSubTitle"
-        app:layout_constraintTop_toBottomOf="@id/ItemSubTitle" />
+        app:layout_constraintStart_toStartOf="@id/subTitle"
+        app:layout_constraintTop_toBottomOf="@id/subTitle" />
 
     <Button
         android:id="@+id/button_rate"

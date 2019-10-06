@@ -155,31 +155,31 @@ class ArtifactListFragmentTest {
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 0,
-                R.id.itemTitle
+                R.id.title
             )
         ).check(matches(withText("res")))
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 1,
-                R.id.itemTitle
+                R.id.title
             )
         ).check(matches(withText("AndroidManifest.xml")))
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 1,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         ).check(matches(withText("7.77 kB")))
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 2,
-                R.id.itemTitle
+                R.id.title
             )
         ).check(matches(withText("index.html")))
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 2,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         ).check(matches(withText("698 kB")))
     }
@@ -299,11 +299,11 @@ class ArtifactListFragmentTest {
 
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("res")))
 
         // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
             .perform(click())
 
         ConditionWatcher.waitForCondition(object : Instruction() {
@@ -378,11 +378,11 @@ class ArtifactListFragmentTest {
 
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("res")))
 
         // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
             .perform(longClick())
 
         ConditionWatcher.waitForCondition(object : Instruction() {
@@ -401,7 +401,7 @@ class ArtifactListFragmentTest {
                     onView(
                         withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                             0,
-                            R.id.itemTitle
+                            R.id.title
                         )
                     )
                         .perform(longClick())
@@ -456,7 +456,7 @@ class ArtifactListFragmentTest {
         // Clicking on artifact to download
         onView(
             withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(1, R.id.itemTitle)
+                .atPositionOnView(1, R.id.title)
         )
             .check(matches(withText("AndroidManifest.xml")))
             .perform(click())
@@ -502,7 +502,7 @@ class ArtifactListFragmentTest {
         // Clicking on artifact
         onView(
             withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(2, R.id.itemTitle)
+                .atPositionOnView(2, R.id.title)
         )
             .check(matches(withText("index.html")))
             .perform(click())
@@ -549,7 +549,7 @@ class ArtifactListFragmentTest {
         // Checking artifact title
         onView(
             withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(1, R.id.itemTitle)
+                .atPositionOnView(1, R.id.title)
         )
             .check(matches(withText("AndroidManifest.xml")))
             .perform(click())
@@ -571,7 +571,7 @@ class ArtifactListFragmentTest {
                 } catch (ignored: Exception) {
                     onView(
                         withRecyclerView(R.id.artifact_recycler_view)
-                            .atPositionOnView(1, R.id.itemTitle)
+                            .atPositionOnView(1, R.id.title)
                     )
                         .perform(click())
                 }
@@ -632,7 +632,7 @@ class ArtifactListFragmentTest {
         // Clicking on apk to download
         onView(
             withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.title)
         )
             .check(matches(withText("my-fancy-app.apk")))
             .perform(click())
@@ -651,7 +651,7 @@ class ArtifactListFragmentTest {
                 } catch (ignored: Exception) {
                     onView(
                         withRecyclerView(R.id.artifact_recycler_view)
-                            .atPositionOnView(0, R.id.itemTitle)
+                            .atPositionOnView(0, R.id.title)
                     )
                         .perform(click())
                 }

@@ -151,12 +151,12 @@ class RateTheAppTest {
             )
         )
             .check(matches(withText("Description")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText(R.string.rate_title)))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 1,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText(R.string.rate_description)))
