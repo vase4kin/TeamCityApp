@@ -32,7 +32,7 @@
 
     <View
         android:id="@+id/block1"
-        android:layout_width="64dp"
+        android:layout_width="122dp"
         android:layout_height="18dp"
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginTop="@dimen/default_margin"
@@ -42,24 +42,6 @@
 
     <View
         android:id="@+id/block2"
-        android:layout_width="144dp"
-        android:layout_height="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/divider_color"
-        app:layout_constraintStart_toStartOf="@id/block1"
-        app:layout_constraintTop_toBottomOf="@id/block1" />
-
-    <View
-        android:id="@+id/block3"
-        android:layout_width="216dp"
-        android:layout_height="16dp"
-        android:layout_marginTop="8dp"
-        android:background="@color/divider_color"
-        app:layout_constraintStart_toStartOf="@id/block2"
-        app:layout_constraintTop_toBottomOf="@id/block2" />
-
-    <View
-        android:id="@+id/block4"
         android:layout_width="wrap_content"
         android:layout_height="16dp"
         android:layout_marginTop="8dp"
@@ -67,8 +49,8 @@
         android:background="@color/divider_color"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/block3"
-        app:layout_constraintTop_toBottomOf="@id/block3" />
+        app:layout_constraintStart_toStartOf="@id/block1"
+        app:layout_constraintTop_toBottomOf="@id/block1" />
 
     <include
         layout="@layout/layout_divider"
@@ -78,6 +60,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/block4" />
+        app:layout_constraintTop_toBottomOf="@id/block2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

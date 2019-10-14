@@ -17,14 +17,12 @@
 <io.supercharge.shimmerlayout.ShimmerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ShimmerStyle"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <include layout="@layout/layout_skeleton_build_list_item" />
 
         <include layout="@layout/layout_skeleton_build_list_item" />
 
