@@ -91,7 +91,7 @@ class ArtifactPresenterImpl @Inject constructor(
      */
     override fun onClick(artifactFile: File) {
         if (artifactFile.hasChildren() && artifactFile.isFolder) {
-            val href = artifactFile.children.href
+            val href = artifactFile.children!!.href
             router.openArtifactFile(
                 artifactFile.name,
                 valueExtractor.buildDetails,
@@ -108,7 +108,7 @@ class ArtifactPresenterImpl @Inject constructor(
     override fun onLongClick(artifactFile: File) {
         if (!artifactFile.isFolder && artifactFile.hasChildren()) {
             view.showFullBottomSheet(artifactFile)
-        } else if (artifactFile.isFolder) {
+        } else if (artifactFile.isFolder && artifactFile.hasChildren()) {
             view.showFolderBottomSheet(artifactFile)
         } else if (isBrowserUrl(artifactFile.href)) {
             view.showBrowserBottomSheet(artifactFile)

@@ -105,7 +105,7 @@ class ArtifactViewImpl(
     override fun showFullBottomSheet(artifactFile: File) {
         val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
             artifactFile.name,
-            arrayOf(artifactFile.content.href, artifactFile.children.href),
+            arrayOf(artifactFile.content.href, artifactFile.children!!.href),
             MenuItemsFactory.TYPE_ARTIFACT_FULL
         )
         bottomSheetDialogFragment.show(
@@ -119,7 +119,7 @@ class ArtifactViewImpl(
      */
     override fun showFolderBottomSheet(artifactFile: File) {
         val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
-            artifactFile.name, artifactFile.children.href, MenuItemsFactory.TYPE_ARTIFACT_FOLDER
+            artifactFile.name, artifactFile.children!!.href, MenuItemsFactory.TYPE_ARTIFACT_FOLDER
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
