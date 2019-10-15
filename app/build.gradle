@@ -233,17 +233,27 @@ dependencies {
     testImplementation "org.powermock:powermock-api-mockito:$rootProject.powerMockVersion"
     testImplementation "org.powermock:powermock-classloading-xstream:$rootProject.powerMockVersion"
     // Ui tests
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    // Core library
+    androidTestImplementation 'androidx.test:core:1.2.0'
+    // AndroidJUnitRunner and JUnit Rules
+    androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test:rules:1.2.0'
+    // Assertions
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    // Espresso dependenciesd
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-web:3.2.0'
+    // Mockito
     androidTestImplementation "org.mockito:mockito-core:$rootProject.mockitoCoreVersion"
+    // Dex maker
     androidTestImplementation "com.crittercism.dexmaker:dexmaker:$rootProject.dexMakerVersion"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-dx:$rootProject.dexMakerVersion"
     androidTestImplementation "com.crittercism.dexmaker:dexmaker-mockito:$rootProject.dexMakerVersion"
+    // Dagger mock
     androidTestImplementation 'com.github.fabioCollini:DaggerMock:0.8.5'
+    // Condition watcher
     androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
     // Resolve conflits between apks
     androidTestImplementation 'com.google.android.material:material:1.0.0'
