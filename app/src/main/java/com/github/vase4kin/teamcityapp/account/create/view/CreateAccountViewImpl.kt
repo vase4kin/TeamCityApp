@@ -195,6 +195,7 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      * {@inheritDoc}
      */
     override fun onDestroyView() {
+        dismissAllDialogsOnDestroy()
         unbinder.unbind()
     }
 
@@ -323,5 +324,17 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
             .autoDismiss(false)
             .cancelable(false)
             .show()
+    }
+
+    /**
+     * Dismiss all dialogs on destroy
+     */
+    private fun dismissAllDialogsOnDestroy() {
+        if (::progressDialog.isInitialized && progressDialog.isShowing) {
+            progressDialog.dismiss()
+        }
+        if (::discardDialog.isInitialized && discardDialog.isShowing) {
+            discardDialog.dismiss()
+        }
     }
 }
