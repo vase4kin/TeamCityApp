@@ -36,38 +36,27 @@ class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDa
         super.onBindViewHolder(holder, position)
         val header = dataModel.getHeaderName(position)
         val description = dataModel.getDescription(position)
-        if (dataModel.isBranchCard(position)) {
-            (holder as OverviewViewHolder).frameLayout.setOnClickListener { viewListener?.onBranchCardClick(description) }
-            holder.frameLayout.setOnLongClickListener {
-                viewListener?.onBranchCardClick(description)
-                true
+        when {
+            dataModel.isBranchCard(position) -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+                viewListener?.onBranchCardClick(
+                    description
+                )
             }
-        } else if (dataModel.isBuildTypeCard(position)) {
-            (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+            dataModel.isBuildTypeCard(position) -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
                 viewListener?.onBuildTypeCardClick(
                     description
                 )
             }
-            holder.frameLayout.setOnLongClickListener {
-                viewListener?.onBuildTypeCardClick(description)
-                true
+            dataModel.isProjectCard(position) -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+                viewListener?.onProjectCardClick(
+                    description
+                )
             }
-        } else if (dataModel.isProjectCard(position)) {
-            (holder as OverviewViewHolder).frameLayout.setOnClickListener { viewListener?.onProjectCardClick(description) }
-            holder.frameLayout.setOnLongClickListener {
-                viewListener?.onProjectCardClick(description)
-                true
-            }
-        } else {
-            (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+            else -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
                 viewListener?.onCardClick(
                     header,
                     description
                 )
-            }
-            holder.frameLayout.setOnLongClickListener {
-                viewListener?.onCardClick(header, description)
-                true
             }
         }
     }
