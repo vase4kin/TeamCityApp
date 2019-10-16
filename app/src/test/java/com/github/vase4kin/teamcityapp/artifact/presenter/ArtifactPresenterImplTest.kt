@@ -210,7 +210,7 @@ class ArtifactPresenterImplTest {
 
     @Test
     fun testOnLongClickIfFileIsAFolder() {
-        `when`(file.hasChildren()).thenReturn(false)
+        `when`(file.hasChildren()).thenReturn(true)
         `when`(file.isFolder).thenReturn(true)
         presenter.onLongClick(file)
         verify(view).showFolderBottomSheet(eq(file))
