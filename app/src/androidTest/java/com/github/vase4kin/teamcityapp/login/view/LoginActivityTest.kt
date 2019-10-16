@@ -485,7 +485,6 @@ class LoginActivityTest {
         activityRule.launchActivity(null)
 
         onView(withId(R.id.give_it_a_try))
-            .perform(scrollTo())
             .check(matches(not(isDisplayed())))
     }
 
