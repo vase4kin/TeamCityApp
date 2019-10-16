@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.login.view
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.typeText
@@ -483,7 +484,8 @@ class LoginActivityTest {
 
         activityRule.launchActivity(null)
 
-        onView(withId(R.id.give_it_a_try)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.give_it_a_try))
+            .check(matches(not(isDisplayed())))
     }
 
     @Test
@@ -494,7 +496,10 @@ class LoginActivityTest {
 
         activityRule.launchActivity(null)
 
-        onView(withId(R.id.give_it_a_try)).check(matches(isDisplayed())).perform(click())
+        onView(withId(R.id.give_it_a_try))
+            .perform(scrollTo())
+            .check(matches(isDisplayed()))
+            .perform(click())
         onView(withText(R.string.warning_ssl_dialog_negative)).perform(click())
         assertNoUnverifiedIntents()
     }
@@ -521,7 +526,9 @@ class LoginActivityTest {
 
         activityRule.launchActivity(null)
 
-        onView(withId(R.id.give_it_a_try)).check(matches(isDisplayed())).perform(click())
+        onView(withId(R.id.give_it_a_try))
+            .perform(scrollTo())
+            .check(matches(isDisplayed())).perform(click())
 
         onView(withText(R.string.text_try_it_out_button)).perform(click())
 

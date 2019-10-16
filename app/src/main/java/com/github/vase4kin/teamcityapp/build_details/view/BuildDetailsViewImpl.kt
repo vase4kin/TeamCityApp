@@ -563,4 +563,45 @@ class BuildDetailsViewImpl(
         // UNCOMMENT THIS LINE WHEN RUNNING BUILD FEATURE IS IMPLEMENTED
         // <!---------------------------------------!>
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun unBindViews() {
+        dismissAllDialogsOnDestroy()
+        super.unBindViews()
+    }
+
+    /**
+     * Dismiss all dialogs on destroy
+     */
+    private fun dismissAllDialogsOnDestroy() {
+        if (::stoppingBuildProgressDialog.isInitialized && stoppingBuildProgressDialog.isShowing) {
+            stoppingBuildProgressDialog.dismiss()
+        }
+        if (::removingBuildFromQueueProgressDialog.isInitialized && removingBuildFromQueueProgressDialog.isShowing) {
+            removingBuildFromQueueProgressDialog.dismiss()
+        }
+        if (::restartingBuildProgressDialog.isInitialized && restartingBuildProgressDialog.isShowing) {
+            restartingBuildProgressDialog.dismiss()
+        }
+        if (::openingBuildProgressDialog.isInitialized && openingBuildProgressDialog.isShowing) {
+            openingBuildProgressDialog.dismiss()
+        }
+        if (::youAreAboutToStopBuildDialog.isInitialized && youAreAboutToStopBuildDialog.isShowing) {
+            youAreAboutToStopBuildDialog.dismiss()
+        }
+        if (::youAreAboutToRestartBuildDialog.isInitialized && youAreAboutToRestartBuildDialog.isShowing) {
+            youAreAboutToRestartBuildDialog.dismiss()
+        }
+        if (::youAreAboutToStopNotYoursBuildDialog.isInitialized && youAreAboutToStopNotYoursBuildDialog.isShowing) {
+            youAreAboutToStopNotYoursBuildDialog.dismiss()
+        }
+        if (::youAreAboutToRemoveBuildFromQueueDialog.isInitialized && youAreAboutToRemoveBuildFromQueueDialog.isShowing) {
+            youAreAboutToRemoveBuildFromQueueDialog.dismiss()
+        }
+        if (::youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.isInitialized && youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.isShowing) {
+            youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog.dismiss()
+        }
+    }
 }

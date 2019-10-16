@@ -197,6 +197,7 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      */
     override fun unbindViews() {
         listener = null
+        dismissAllDialogsOnDestroy()
         unbinder.unbind()
     }
 
@@ -388,5 +389,14 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
     private fun setError(@StringRes errorMessage: Int) {
         val errorMessageString = activity.getString(errorMessage)
         serverUrlWrapperLayout.error = errorMessageString
+    }
+
+    /**
+     * Dismiss all dialogs on destroy
+     */
+    private fun dismissAllDialogsOnDestroy() {
+        if (::progressDialog.isInitialized && progressDialog.isShowing) {
+            progressDialog.dismiss()
+        }
     }
 }
