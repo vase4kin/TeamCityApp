@@ -104,7 +104,7 @@ jobs:
             (gcloud firebase test android run --type instrumentation \
               --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=blueline,version=28,locale=en,orientation=portrait \
+              --device model=sailfish,version=28,locale=en,orientation=portrait \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
