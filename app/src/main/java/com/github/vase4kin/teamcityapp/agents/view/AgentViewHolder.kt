@@ -24,7 +24,6 @@ import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
-import com.joanzapata.iconify.widget.IconTextView
 
 /**
  * Agent view holder
@@ -33,16 +32,14 @@ class AgentViewHolder(
     parent: ViewGroup
 ) : BaseViewHolder<AgentDataModel>(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_with_title_list,
+        R.layout.item_agent_list,
         parent,
         false
     )
 ) {
 
-    @BindView(R.id.itemTitle)
+    @BindView(R.id.title)
     lateinit var textView: TextView
-    @BindView(R.id.itemIcon)
-    lateinit var icon: IconTextView
 
     init {
         ButterKnife.bind(this, itemView)
@@ -54,10 +51,5 @@ class AgentViewHolder(
     override fun bind(dataModel: AgentDataModel, position: Int) {
         val name = dataModel.getName(position)
         textView.text = name
-        icon.text = ICON
-    }
-
-    companion object {
-        private const val ICON = "{md-directions-railway}"
     }
 }
