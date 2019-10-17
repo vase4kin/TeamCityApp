@@ -18,16 +18,12 @@ package com.github.vase4kin.teamcityapp.account.manage.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
-import com.joanzapata.iconify.widget.IconTextView
-
-private const val DEFAULT_ACCOUNT_ICON = "{md-account-circle}"
 
 class AccountViewHolder(parent: ViewGroup) : BaseViewHolder<AccountDataModel>(
     LayoutInflater.from(parent.context).inflate(
@@ -37,22 +33,17 @@ class AccountViewHolder(parent: ViewGroup) : BaseViewHolder<AccountDataModel>(
     )
 ) {
 
-    @BindView(R.id.itemSubTitle)
-    lateinit var teamCityUrlTextView: TextView
-    @BindView(R.id.itemTitle)
-    lateinit var userNameTextView: TextView
-    @BindView(R.id.itemIcon)
-    lateinit var accountIcon: IconTextView
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
+    @BindView(R.id.title)
+    lateinit var userName: TextView
+    @BindView(R.id.subTitle)
+    lateinit var teamCityUrl: TextView
 
     init {
         ButterKnife.bind(this, itemView)
     }
 
     override fun bind(dataModel: AccountDataModel, position: Int) {
-        teamCityUrlTextView.text = dataModel.getTeamcityUrl(position)
-        userNameTextView.text = dataModel.getUserName(position)
-        accountIcon.text = DEFAULT_ACCOUNT_ICON
+        userName.text = dataModel.getUserName(position)
+        teamCityUrl.text = dataModel.getTeamcityUrl(position)
     }
 }
