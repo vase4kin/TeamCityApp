@@ -140,9 +140,9 @@ class TestOccurrencesFragmentTest {
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("Failed (2)")))
         onView(withId(R.id.tests_recycler_view)).check(TestUtils.hasItemsCount(3))
-        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("Test 1")))
-        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
+        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.title))
             .check(matches(withText("Test 6")))
     }
 
@@ -252,9 +252,9 @@ class TestOccurrencesFragmentTest {
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("Passed (10)")))
         onView(withId(R.id.tests_recycler_view)).check(TestUtils.hasItemsCount(3))
-        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("Test 5")))
-        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
+        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.title))
             .check(matches(withText("Test 2")))
     }
 
@@ -329,9 +329,9 @@ class TestOccurrencesFragmentTest {
         onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("Ignored (4)")))
         onView(withId(R.id.tests_recycler_view)).check(TestUtils.hasItemsCount(3))
-        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("Test 4")))
-        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.itemTitle))
+        onView(withRecyclerView(R.id.tests_recycler_view).atPositionOnView(2, R.id.title))
             .check(matches(withText("Test 9")))
     }
 

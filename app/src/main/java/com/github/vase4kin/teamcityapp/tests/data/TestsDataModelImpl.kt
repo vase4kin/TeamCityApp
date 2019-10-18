@@ -17,14 +17,18 @@
 package com.github.vase4kin.teamcityapp.tests.data
 
 import androidx.annotation.VisibleForTesting
+import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_ERROR
+import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_FAILURE
+import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_UNKNOWN
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-import com.github.vase4kin.teamcityapp.utils.IconUtils
 import java.util.UUID
 
 /**
  * Impl of [TestsDataModel]
  */
-class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccurrence>) : TestsDataModel {
+class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccurrence>) :
+    TestsDataModel {
 
     /**
      * {@inheritDoc}
@@ -49,8 +53,13 @@ class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccu
     /**
      * {@inheritDoc}
      */
-    override fun getStatusIcon(position: Int): String {
-        return IconUtils.getBuildStatusIcon(tests[position].status, "")
+    override fun getStatusIcon(position: Int): Int {
+        return when (tests[position].status) {
+            TEST_STATUS_FAILURE -> R.drawable.ic_error_black_24dp
+            TEST_STATUS_ERROR -> R.drawable.ic_report_problem_black_24dp
+            TEST_STATUS_UNKNOWN -> R.drawable.ic_help_black_24dp
+            else -> R.drawable.ic_check_circle_black_24dp
+        }
     }
 
     /**

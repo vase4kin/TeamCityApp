@@ -36,7 +36,13 @@ class TestOccurrencesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<Tes
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is TestOccurrenceViewHolder && dataModel.isFailed(position)) {
-            holder.container.setOnClickListener { onClickListener?.onFailedTestClick(dataModel.getHref(position)) }
+            holder.itemView.setOnClickListener {
+                onClickListener?.onFailedTestClick(
+                    dataModel.getHref(
+                        position
+                    )
+                )
+            }
         }
     }
 }
