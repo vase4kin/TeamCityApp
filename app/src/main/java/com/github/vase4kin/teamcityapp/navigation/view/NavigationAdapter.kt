@@ -45,11 +45,9 @@ class NavigationAdapter(
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is NavigationViewHolder) {
-            holder.container.setOnClickListener {
+            holder.itemView.setOnClickListener {
                 onClickListener?.onClick(
-                    dataModel.getNavigationItem(
-                        position
-                    )
+                    dataModel.getNavigationItem(position)
                 )
             }
         }

@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.navigation.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -27,28 +27,23 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
 
-private const val PROJECT = "{md-filter-none}"
-private const val BUILD_TYPE = "{md-crop-din}"
-
 /**
  * Changes single item view holder
  */
 class NavigationViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataModel>(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_with_title_and_sub_title_list,
+        R.layout.item_project_configuration_list,
         parent,
         false
     )
 ) {
 
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
-    @BindView(R.id.itemTitle)
-    lateinit var textView: TextView
-    @BindView(R.id.itemSubTitle)
+    @BindView(R.id.title)
+    lateinit var title: TextView
+    @BindView(R.id.subTitle)
     lateinit var description: TextView
     @BindView(R.id.itemIcon)
-    lateinit var icon: TextView
+    lateinit var image: ImageView
 
     init {
         ButterKnife.bind(this, itemView)
@@ -58,7 +53,7 @@ class NavigationViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataMod
      * {@inheritDoc}
      */
     override fun bind(dataModel: NavigationDataModel, position: Int) {
-        textView.text = dataModel.getName(position)
+        title.text = dataModel.getName(position)
         if (dataModel.hasDescription(position)) {
             description.text = dataModel.getDescription(position)
             description.visibility = View.VISIBLE
@@ -66,9 +61,9 @@ class NavigationViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataMod
             description.visibility = View.GONE
         }
         if (dataModel.isProject(position)) {
-            icon.text = PROJECT
+            image.setImageResource(R.drawable.ic_filter_none_black_24dp)
         } else {
-            icon.text = BUILD_TYPE
+            image.setImageResource(R.drawable.ic_crop_din_black_24dp)
         }
     }
 }

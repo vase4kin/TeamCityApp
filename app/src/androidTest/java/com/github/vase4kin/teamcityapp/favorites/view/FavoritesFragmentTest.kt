@@ -197,7 +197,7 @@ class FavoritesFragmentTest {
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("Secret project")))
         // Checking adapter item 1
-        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("build type")))
     }
 
@@ -222,11 +222,11 @@ class FavoritesFragmentTest {
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("Secret project")))
         // Checking adapter item 1
-        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("build type")))
 
         // Click on item 1
-        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.title))
             .perform(click())
 
         // Click on add to favorites
