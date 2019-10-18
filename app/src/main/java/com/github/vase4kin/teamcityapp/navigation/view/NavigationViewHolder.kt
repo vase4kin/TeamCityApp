@@ -32,7 +32,7 @@ import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
  */
 class NavigationViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataModel>(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_project_configuration_list,
+        R.layout.item_navigation_list,
         parent,
         false
     )

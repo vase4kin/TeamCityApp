@@ -48,7 +48,7 @@
             style="@style/RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/item_project_configuration_list"/>
+            tools:listitem="@layout/item_navigation_list"/>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
