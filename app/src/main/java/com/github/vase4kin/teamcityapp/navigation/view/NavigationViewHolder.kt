@@ -42,7 +42,7 @@ class NavigationViewHolder(parent: ViewGroup) : BaseViewHolder<NavigationDataMod
     lateinit var title: TextView
     @BindView(R.id.subTitle)
     lateinit var description: TextView
-    @BindView(R.id.itemIcon)
+    @BindView(R.id.image)
     lateinit var image: ImageView
 
     init {
