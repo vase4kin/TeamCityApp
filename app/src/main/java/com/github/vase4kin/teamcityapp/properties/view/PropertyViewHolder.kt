@@ -18,9 +18,7 @@ package com.github.vase4kin.teamcityapp.properties.view
 
 import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
 import android.widget.TextView
 import butterknife.BindColor
 import butterknife.BindView
@@ -28,7 +26,6 @@ import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.properties.data.PropertiesDataModel
-import com.joanzapata.iconify.widget.IconTextView
 
 /**
  * Properties single item view holder
@@ -41,35 +38,30 @@ class PropertyViewHolder
  */
     (parent: ViewGroup) : BaseViewHolder<PropertiesDataModel>(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_simple_element_list,
+        R.layout.item_properties_list,
         parent,
         false
     )
 ) {
-    @BindColor(R.color.abc_primary_text_material_light)
+    @BindColor(R.color.main_text_color)
     @JvmField
     var emptyColor: Int = 0
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
-    @BindView(R.id.itemTitle)
-    lateinit var textView: TextView
-    @BindView(R.id.itemHeader)
-    lateinit var header: TextView
-    @BindView(R.id.itemIcon)
-    lateinit var icon: IconTextView
+    @BindView(R.id.title)
+    lateinit var parameterName: TextView
+    @BindView(R.id.subTitle)
+    lateinit var parameterValue: TextView
 
     init {
         ButterKnife.bind(this, itemView)
     }
 
     override fun bind(dataModel: PropertiesDataModel, position: Int) {
-        header.text = dataModel.getName(position)
-        textView.text = dataModel.getValue(position)
+        parameterName.text = dataModel.getName(position)
+        parameterValue.text = dataModel.getValue(position)
         if (dataModel.isEmpty(position)) {
-            textView.setTextColor(Color.LTGRAY)
+            parameterValue.setTextColor(Color.LTGRAY)
         } else {
-            textView.setTextColor(emptyColor)
+            parameterValue.setTextColor(emptyColor)
         }
-        icon.visibility = View.GONE
     }
 }

@@ -136,25 +136,25 @@ class PropertiesFragmentTest {
         onView(
             withRecyclerView(R.id.properties_recycler_view).atPositionOnView(
                 0,
-                R.id.itemHeader
+                R.id.title
             )
         ).check(matches(withText("sdk")))
         onView(
             withRecyclerView(R.id.properties_recycler_view).atPositionOnView(
                 0,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("24")))
         onView(
             withRecyclerView(R.id.properties_recycler_view).atPositionOnView(
                 1,
-                R.id.itemHeader
+                R.id.title
             )
         ).check(matches(withText("userName")))
         onView(
             withRecyclerView(R.id.properties_recycler_view).atPositionOnView(
                 1,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("Murdock")))
     }
