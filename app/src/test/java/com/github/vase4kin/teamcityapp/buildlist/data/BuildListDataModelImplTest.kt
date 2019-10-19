@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
-import java.util.*
+import java.util.ArrayList
 
 @RunWith(MockitoJUnitRunner::class)
 class BuildListDataModelImplTest {
@@ -65,8 +65,8 @@ class BuildListDataModelImplTest {
 
     @Test
     fun testGetBuildStatusIcon() {
-        `when`(buildDetails.statusIcon).thenReturn("icon")
-        assertThat(dataModel.getBuildStatusIcon(0), `is`("icon"))
+        `when`(buildDetails.statusIcon).thenReturn(123)
+        assertThat(dataModel.getBuildStatusIcon(0), `is`(123))
     }
 
     @Test
@@ -117,12 +117,6 @@ class BuildListDataModelImplTest {
     fun testGetBuildTypeName() {
         `when`(buildDetails.buildTypeFullName).thenReturn("name")
         assertThat(dataModel.getBuildTypeFullName(0), `is`("name"))
-    }
-
-    @Test
-    fun testHasBranch() {
-        `when`(buildDetails.branchName).thenReturn("")
-        assertThat(dataModel.hasBranch(0), `is`(true))
     }
 
     @Test

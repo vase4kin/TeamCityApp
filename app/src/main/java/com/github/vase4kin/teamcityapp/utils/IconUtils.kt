@@ -16,40 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.utils
 
-import androidx.annotation.VisibleForTesting
-
-import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
-
 /**
  * Icon utils class
  */
 class IconUtils {
 
     companion object {
-
-        @VisibleForTesting
-        const val ICON_FAILURE = "{md-error}"
-        private const val ICON_ERROR = "{md-report-problem}"
-        private const val ICON_UNKNOWN = "{md-help}"
-        const val ICON_SUCCESS = "{md-check-circle}"
-        private const val ICON_QUEUE = "{mdi-clock-fast}"
-
-        /**
-         * @param status - Build status
-         * @param state - Build state
-         * @return build status icon as String
-         */
-        fun getBuildStatusIcon(status: String?, state: String?): String {
-            if (state == BuildDetails.STATE_RUNNING) return RunningBuildIconUtils.RUNNING
-            if (state == BuildDetails.STATE_QUEUED) return ICON_QUEUE
-            return when (status) {
-                BuildDetails.STATUS_FAILURE -> ICON_FAILURE
-                BuildDetails.STATUS_ERROR -> ICON_ERROR
-                BuildDetails.STATUS_UNKNOWN -> ICON_UNKNOWN
-                BuildDetails.STATUS_SUCCESS -> ICON_SUCCESS
-                else -> ICON_SUCCESS
-            }
-        }
 
         /**
          * @param count - Files count

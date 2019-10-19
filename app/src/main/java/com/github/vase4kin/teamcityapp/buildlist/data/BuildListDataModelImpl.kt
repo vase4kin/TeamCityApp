@@ -40,14 +40,10 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
         return buildDetailsList[position].branchName ?: ""
     }
 
-    override fun hasBranch(position: Int): Boolean {
-        return buildDetailsList[position].branchName != null
-    }
-
     /**
      * {@inheritDoc}
      */
-    override fun getBuildStatusIcon(position: Int): String {
+    override fun getBuildStatusIcon(position: Int): Int {
         return buildDetailsList[position].statusIcon
     }
 

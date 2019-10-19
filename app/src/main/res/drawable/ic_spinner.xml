@@ -1,0 +1,20 @@
+<!--
+  ~ Copyright 2019 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<vector android:height="24dp" android:viewportHeight="1728"
+    android:viewportWidth="1664" android:width="23.11111dp" xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="#FF000000" android:pathData="M462,1394q0,53 -37.5,90.5T334,1522q-52,0 -90,-38t-38,-90q0,-53 37.5,-90.5T334,1266t90.5,37.5T462,1394zM960,1600q0,53 -37.5,90.5T832,1728t-90.5,-37.5T704,1600t37.5,-90.5T832,1472t90.5,37.5T960,1600zM256,896q0,53 -37.5,90.5T128,1024t-90.5,-37.5T0,896t37.5,-90.5T128,768t90.5,37.5T256,896zM1458,1394q0,52 -38,90t-90,38q-53,0 -90.5,-37.5T1202,1394t37.5,-90.5t90.5,-37.5t90.5,37.5t37.5,90.5zM494,398q0,66 -47,113t-113,47t-113,-47t-47,-113t47,-113t113,-47t113,47t47,113zM1664,896q0,53 -37.5,90.5T1536,1024t-90.5,-37.5T1408,896t37.5,-90.5T1536,768t90.5,37.5T1664,896zM1024,192q0,80 -56,136t-136,56t-136,-56t-56,-136t56,-136T832,0t136,56t56,136zM1554,398q0,93 -66,158.5T1330,622q-93,0 -158.5,-65.5T1106,398q0,-92 65.5,-158t158.5,-66q92,0 158,66t66,158z"/>
+</vector>

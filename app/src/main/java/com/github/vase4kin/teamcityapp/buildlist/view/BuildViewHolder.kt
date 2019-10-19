@@ -16,11 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.view
 
-import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -33,52 +32,52 @@ import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
  */
 class BuildViewHolder(parent: ViewGroup) : BaseViewHolder<BuildListDataModel>(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_build_list_with_sub_title,
+        R.layout.item_build_list,
         parent,
         false
     )
 ) {
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
-    @BindView(R.id.itemSubTitle)
+    @BindView(R.id.branchName)
     lateinit var branchName: TextView
-    @BindView(R.id.itemTitle)
-    lateinit var statusText: TextView
-    @BindView(R.id.itemIcon)
-    lateinit var icon: TextView
+    @BindView(R.id.buildStatus)
+    lateinit var buildStatus: TextView
+    @BindView(R.id.buildStatusImage)
+    lateinit var buildStatusImage: ImageView
     @BindView(R.id.buildNumber)
     lateinit var buildNumber: TextView
-    @BindView(R.id.icon_personal)
-    lateinit var iconPersonal: View
-    @BindView(R.id.icon_pinned)
-    lateinit var iconPinned: View
+    @BindView(R.id.isPersonal)
+    lateinit var isPersonalImage: View
+    @BindView(R.id.isPinned)
+    lateinit var isPinnedImage: View
 
     init {
         ButterKnife.bind(this, itemView)
     }
 
     override fun bind(dataModel: BuildListDataModel, position: Int) {
-        icon.text = dataModel.getBuildStatusIcon(position)
-        statusText.text = dataModel.getStatusText(position)
+        val iconImageRes = dataModel.getBuildStatusIcon(position)
+        buildStatusImage.setImageResource(iconImageRes)
+        buildStatus.text = dataModel.getStatusText(position)
         val buildNumber = dataModel.getBuildNumber(position)
-        if (TextUtils.isEmpty(buildNumber)) {
+        if (buildNumber.isEmpty()) {
             this.buildNumber.visibility = View.GONE
         } else {
             this.buildNumber.text = dataModel.getBuildNumber(position)
             this.buildNumber.visibility = View.VISIBLE
         }
         if (dataModel.isPersonal(position)) {
-            iconPersonal.visibility = View.VISIBLE
+            isPersonalImage.visibility = View.VISIBLE
         } else {
-            iconPersonal.visibility = View.GONE
+            isPersonalImage.visibility = View.GONE
         }
         if (dataModel.isPinned(position)) {
-            iconPinned.visibility = View.VISIBLE
+            isPinnedImage.visibility = View.VISIBLE
         } else {
-            iconPinned.visibility = View.GONE
+            isPinnedImage.visibility = View.GONE
         }
-        if (dataModel.hasBranch(position)) {
-            branchName.text = dataModel.getBranchName(position)
+        val branchNameValue = dataModel.getBranchName(position)
+        if (branchNameValue.isNotEmpty()) {
+            branchName.text = branchNameValue
             branchName.visibility = View.VISIBLE
         } else {
             branchName.visibility = View.GONE

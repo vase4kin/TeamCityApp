@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.overview.data
 
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.api.Agent
 import com.github.vase4kin.teamcityapp.artifact.api.Artifacts
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
@@ -32,7 +33,6 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.Companion.
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.Companion.TEXT_QUEUED_BUILD
 import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-import com.github.vase4kin.teamcityapp.utils.IconUtils
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
@@ -118,7 +118,7 @@ class BuildDetailsImplTest {
     fun testGetStatusIcon() {
         `when`(build.state).thenReturn("")
         `when`(build.status).thenReturn("")
-        assertThat(mBuildDetails.statusIcon, `is`(equalTo(IconUtils.ICON_SUCCESS)))
+        assertThat(mBuildDetails.statusIcon, `is`(equalTo(R.drawable.ic_check_circle_black_24dp)))
     }
 
     @Test

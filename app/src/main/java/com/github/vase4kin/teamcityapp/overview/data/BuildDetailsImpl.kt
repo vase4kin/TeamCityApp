@@ -16,11 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.overview.data
 
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.User
 import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.utils.DateUtils
-import com.github.vase4kin.teamcityapp.utils.IconUtils
 
 /**
  * Impl of [BuildDetails]
@@ -61,8 +61,20 @@ class BuildDetailsImpl(private val build: Build) : BuildDetails {
     /**
      * {@inheritDoc}
      */
-    override val statusIcon: String
-        get() = IconUtils.getBuildStatusIcon(build.status, build.state)
+    override val statusIcon: Int
+        get() {
+            val status = build.status
+            val state = build.state
+            if (state == BuildDetails.STATE_RUNNING) return R.drawable.ic_spinner
+            if (state == BuildDetails.STATE_QUEUED) return R.drawable.ic_clock_fast
+            return when (status) {
+                BuildDetails.STATUS_FAILURE -> R.drawable.ic_error_black_24dp
+                BuildDetails.STATUS_ERROR -> R.drawable.ic_report_problem_black_24dp
+                BuildDetails.STATUS_UNKNOWN -> R.drawable.ic_help_black_24dp
+                BuildDetails.STATUS_SUCCESS -> R.drawable.ic_check_circle_black_24dp
+                else -> R.drawable.ic_check_circle_black_24dp
+            }
+        }
 
     /**
      * {@inheritDoc}

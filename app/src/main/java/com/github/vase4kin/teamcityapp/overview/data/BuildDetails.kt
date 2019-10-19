@@ -48,7 +48,7 @@ interface BuildDetails : Jsonable {
     /**
      * @return as status icon as {String}
      */
-    val statusIcon: String
+    val statusIcon: Int
 
     /**
      * @return {true} if build is running
@@ -324,8 +324,8 @@ interface BuildDetails : Jsonable {
             override val statusText: String
                 get() = ""
 
-            override val statusIcon: String
-                get() = ""
+            override val statusIcon: Int
+                get() = 0
 
             override val isRunning: Boolean
                 get() = false

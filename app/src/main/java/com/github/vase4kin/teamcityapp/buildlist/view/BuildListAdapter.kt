@@ -43,12 +43,8 @@ class BuildListAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<BuildList
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is BuildViewHolder) {
-            holder.container.setOnClickListener {
-                onBuildListPresenterListener?.onBuildClick(
-                    dataModel.getBuild(
-                        position
-                    )
-                )
+            holder.itemView.setOnClickListener {
+                onBuildListPresenterListener?.onBuildClick(dataModel.getBuild(position))
             }
         }
     }

@@ -263,10 +263,11 @@ class OverviewPresenterImpl @Inject internal constructor(
         // Status
         val statusIcon = buildDetails.statusIcon
         val statusText = buildDetails.statusText
+        val icon = "{mdi-clock}"
         if (buildDetails.isQueued) {
-            view.addWaitReasonStatusCard(statusIcon, statusText)
+            view.addWaitReasonStatusCard(icon, statusText)
         } else {
-            view.addResultStatusCard(statusIcon, statusText)
+            view.addResultStatusCard(icon, statusText)
         }
         // Cancellation info
         if (buildDetails.hasCancellationInfo()) {
@@ -274,7 +275,7 @@ class OverviewPresenterImpl @Inject internal constructor(
             if (buildDetails.hasUserInfoWhoCancelledBuild()) {
                 val userName = buildDetails.userNameWhoCancelledBuild
                 if (userName != null) {
-                    view.addCancelledByCard(statusIcon, userName)
+                    view.addCancelledByCard(icon, userName)
                 }
             }
             // Cancellation time
