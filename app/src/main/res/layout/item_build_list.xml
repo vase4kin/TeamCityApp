@@ -50,8 +50,8 @@
 
     <ImageView
         android:id="@+id/isPersonal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_margin="@dimen/small_margin"
         android:tint="@color/sub_text_color"
         app:layout_constraintEnd_toStartOf="@id/isPinned"
@@ -60,8 +60,8 @@
 
     <ImageView
         android:id="@+id/isPinned"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_margin="@dimen/small_margin"
         android:tint="@color/sub_text_color"
         app:layout_constraintEnd_toEndOf="parent"
