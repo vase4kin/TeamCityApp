@@ -25,6 +25,7 @@ import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Matchers.anyInt
 import org.mockito.Matchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
@@ -78,7 +79,7 @@ class OverviewPresenterCardLogicTest {
         presenter.onSuccess(buildDetails)
         verify(buildDetails, times(3)).isQueued
         verify(view).addWaitReasonStatusCard(eq(STATUS_ICON), eq(STATUS_TEXT))
-        verify(view, never()).addResultStatusCard(anyString(), anyString())
+        verify(view, never()).addResultStatusCard(anyInt(), anyString())
     }
 
     @Test
@@ -88,7 +89,7 @@ class OverviewPresenterCardLogicTest {
         presenter.onSuccess(buildDetails)
         verify(buildDetails, times(3)).isQueued
         verify(view).addResultStatusCard(eq(STATUS_ICON), eq(STATUS_TEXT))
-        verify(view, never()).addWaitReasonStatusCard(anyString(), anyString())
+        verify(view, never()).addWaitReasonStatusCard(anyInt(), anyString())
     }
 
     @Test
@@ -97,7 +98,7 @@ class OverviewPresenterCardLogicTest {
         `when`(buildDetails.finishTime).thenReturn(TIME)
         presenter.onSuccess(buildDetails)
         verify(buildDetails).hasCancellationInfo()
-        verify(view, never()).addCancelledByCard(anyString(), anyString())
+        verify(view, never()).addCancelledByCard(anyInt(), anyString())
         verify(view, never()).addCancellationTimeCard(anyString())
     }
 
@@ -339,7 +340,7 @@ class OverviewPresenterCardLogicTest {
 
     companion object {
         private const val STATUS_TEXT = "StatusText"
-        private const val STATUS_ICON = "StatusIcon"
+        private const val STATUS_ICON = 123
         private const val USER = "user"
         private const val TIME = "time"
         private const val TRIGGERED_DETAILS = "triggered_details"

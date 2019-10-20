@@ -45,8 +45,8 @@ class OverviewDataModelImplTest {
 
     @Test
     fun testGetIcon() {
-        `when`(element.icon).thenReturn("icon")
-        assertThat(dataModel.getIcon(0), `is`("icon"))
+        `when`(element.icon).thenReturn(123)
+        assertThat(dataModel.getIcon(0), `is`(123))
     }
 
     @Test

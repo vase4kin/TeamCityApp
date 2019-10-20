@@ -1,0 +1,25 @@
+<!--
+  ~ Copyright 2019 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M2.6,10.59L8.38,4.8l1.69,1.7c-0.24,0.85 0.15,1.78 0.93,2.23v5.54c-0.6,0.34 -1,0.99 -1,1.73a2,2 0,0 0,2 2a2,2 0,0 0,2 -2c0,-0.74 -0.4,-1.39 -1,-1.73V9.41l2.07,2.09c-0.07,0.15 -0.07,0.32 -0.07,0.5a2,2 0,0 0,2 2a2,2 0,0 0,2 -2a2,2 0,0 0,-2 -2c-0.18,0 -0.35,0 -0.5,0.07L13.93,7.5a1.98,1.98 0,0 0,-1.15 -2.34c-0.43,-0.16 -0.88,-0.2 -1.28,-0.09L9.8,3.38l0.79,-0.78c0.78,-0.79 2.04,-0.79 2.82,0l7.99,7.99c0.79,0.78 0.79,2.04 0,2.82l-7.99,7.99c-0.78,0.79 -2.04,0.79 -2.82,0L2.6,13.41c-0.79,-0.78 -0.79,-2.04 0,-2.82z"
+      android:fillColor="#FF000000"/>
+</vector>

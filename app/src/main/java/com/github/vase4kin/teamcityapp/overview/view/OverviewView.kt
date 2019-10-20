@@ -74,7 +74,7 @@ interface OverviewView {
      * @param icon - icon to setup with
      * @param waitReason - text with setup with
      */
-    fun addWaitReasonStatusCard(icon: String, waitReason: String)
+    fun addWaitReasonStatusCard(icon: Int, waitReason: String)
 
     /**
      * Add result status card
@@ -82,7 +82,7 @@ interface OverviewView {
      * @param icon - icon to setup with
      * @param result - text with setup with
      */
-    fun addResultStatusCard(icon: String, result: String)
+    fun addResultStatusCard(icon: Int, result: String)
 
     /**
      * Add cancelled by card
@@ -90,7 +90,7 @@ interface OverviewView {
      * @param icon - icon to setup with
      * @param userName - text with setup with
      */
-    fun addCancelledByCard(icon: String, userName: String)
+    fun addCancelledByCard(icon: Int, userName: String)
 
     /**
      * Add cancellation time card

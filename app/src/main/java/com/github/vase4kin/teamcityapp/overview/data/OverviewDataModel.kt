@@ -27,7 +27,7 @@ interface OverviewDataModel : BaseDataModel {
      * @param position - Adapter position
      * @return Icon
      */
-    fun getIcon(position: Int): String
+    fun getIcon(position: Int): Int
 
     /**
      * @param position - Adapter position
