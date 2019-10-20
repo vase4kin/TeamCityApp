@@ -24,7 +24,6 @@ import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
@@ -141,7 +140,7 @@ open class DrawerViewImpl(
         profileList.add(
             ProfileSettingDrawerItem()
                 .withName("Manage Accounts")
-                .withIcon(getDrawableWithDefaultColor(R.drawable.ic_settings_black_24dp))
+                .withIcon(getDrawable(R.drawable.ic_settings_black_24dp))
                 .withIdentifier(DrawerView.PROFILES_MANAGING.toLong())
         )
     }
@@ -158,7 +157,7 @@ open class DrawerViewImpl(
             val iProfile = ProfileDrawerItem()
                 .withName(userAccount.userName)
                 .withEmail(userAccount.teamcityUrl)
-                .withIcon(getDrawableWithDefaultColor(R.drawable.ic_account_circle_black_24dp))
+                .withIcon(getDrawable(R.drawable.ic_account_circle_black_24dp))
                 .withNameShown(true)
                 .withIdentifier(id)
             profiles.add(iProfile)
@@ -211,13 +210,13 @@ open class DrawerViewImpl(
             .addDrawerItems(
                 PrimaryDrawerItem()
                     .withName(R.string.home_drawer_item)
-                    .withIcon(getDrawableWithDefaultColor(R.drawable.ic_home_black_24dp))
+                    .withIcon(getDrawable(R.drawable.ic_home_black_24dp))
                     .withSelectedTextColorRes(defaultColor)
                     .withIdentifier(DrawerView.HOME.toLong()),
                 DividerDrawerItem(),
                 PrimaryDrawerItem()
                     .withName("About")
-                    .withIcon(getDrawableWithDefaultColor(R.drawable.ic_help_black_24dp))
+                    .withIcon(getDrawable(R.drawable.ic_help_black_24dp))
                     .withSelectedTextColorRes(defaultColor)
                     .withIdentifier(DrawerView.ABOUT.toLong())
             )
@@ -301,11 +300,8 @@ open class DrawerViewImpl(
         activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
     }
 
-    private fun getDrawableWithDefaultColor(@DrawableRes intRes: Int): Drawable {
-        val drawable = ContextCompat.getDrawable(activity, intRes) ?: getEmptyDrawable()
-        val wrappedDrawable = DrawableCompat.wrap(drawable)
-        DrawableCompat.setTint(wrappedDrawable.mutate(), defaultColor)
-        return wrappedDrawable
+    private fun getDrawable(@DrawableRes intRes: Int): Drawable {
+        return ContextCompat.getDrawable(activity, intRes) ?: getEmptyDrawable()
     }
 
     private fun getEmptyDrawable(): Drawable = ColorDrawable(
