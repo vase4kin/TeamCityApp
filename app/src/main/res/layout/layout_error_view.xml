@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,4 +24,6 @@
     android:visibility="gone"
     app:ev_title="@string/error_view_oops_message"
     app:ev_retryText="@string/error_view_retry_button_text"
+    app:ev_titleColor="@color/main_text_color"
+    app:ev_subtitleColor="@color/sub_text_color"
     app:ev_retryColor="@color/main_text_color" />
