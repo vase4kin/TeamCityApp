@@ -36,7 +36,7 @@ class ChangesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<ChangesData
         super.onBindViewHolder(holder, position)
         // Find the way how to make it through DI
         if (holder is ChangesViewHolder) {
-            holder.container.setOnClickListener { onChangeClickListener?.onClick(dataModel.getChange(position)) }
+            holder.itemView.setOnClickListener { onChangeClickListener?.onClick(dataModel.getChange(position)) }
         }
     }
 }

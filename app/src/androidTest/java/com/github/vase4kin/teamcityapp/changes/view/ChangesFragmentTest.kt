@@ -139,18 +139,18 @@ class ChangesFragmentTest {
         onView(
             withRecyclerView(R.id.changes_recycler_view).atPositionOnView(
                 0,
-                R.id.itemTitle
+                R.id.commitName
             )
         ).check(matches(withText("Do you believe?")))
         // Checking commit number
         onView(
             withRecyclerView(R.id.changes_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.commitHash
             )
         ).check(matches(withText("21312fsd1321")))
         // Checking data
-        onView(withRecyclerView(R.id.changes_recycler_view).atPositionOnView(0, R.id.date)).check(
+        onView(withRecyclerView(R.id.changes_recycler_view).atPositionOnView(0, R.id.commitDate)).check(
             matches(withText("30 Jul 16 00:36"))
         )
 
