@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
@@ -30,15 +31,16 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
 
 /**
  * Impl of [TestDetailsView]
  */
-class TestDetailsViewImpl @Inject
-constructor(activity: TestDetailsActivity, private val statusBarUtils: StatusBarUtils) :
+class TestDetailsViewImpl @Inject constructor(
+    activity: TestDetailsActivity,
+    private val statusBarUtils: StatusBarUtils
+) :
     TestDetailsView, OnActionModeListener {
 
     @BindView(R.id.test_occurrence_details)
@@ -46,7 +48,7 @@ constructor(activity: TestDetailsActivity, private val statusBarUtils: StatusBar
     @BindView(R.id.error_view)
     lateinit var errorView: ErrorView
     @BindView(R.id.progress_wheel)
-    lateinit var progressWheel: MaterialProgressBar
+    lateinit var progressWheel: ProgressBar
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
     @BindView(R.id.empty)

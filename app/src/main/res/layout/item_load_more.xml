@@ -20,9 +20,9 @@
     android:background="@color/recycler_view_background"
     android:padding="@dimen/default_margin">
 
-    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+    <ProgressBar
         android:id="@+id/progress_wheel"
-        style="@style/Widget.MaterialProgressBar.ProgressBar"
+        style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
