@@ -17,11 +17,12 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import androidx.core.content.ContextCompat
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
-import java.util.*
+import java.util.ArrayList
 
 /**
  * Impl of [MenuItemsFactory] for branch menu
@@ -39,7 +40,10 @@ class ArtifactFullMenuItemsFactory(context: Context, descriptions: List<String>)
                 BottomSheetItem.TYPE_ARTIFACT_DOWNLOAD,
                 getString(R.string.artifact_download),
                 getDescription(0),
-                IconDrawable(context, MaterialIcons.md_file_download)
+                ContextCompat.getDrawable(context, R.drawable.ic_file_download_black_24dp)
+                    ?: ColorDrawable(
+                        Color.TRANSPARENT
+                    )
             )
         )
         list.add(
@@ -47,7 +51,10 @@ class ArtifactFullMenuItemsFactory(context: Context, descriptions: List<String>)
                 BottomSheetItem.TYPE_ARTIFACT_OPEN,
                 getString(R.string.artifact_open),
                 getDescription(1),
-                IconDrawable(context, MaterialIcons.md_open_in_new)
+                ContextCompat.getDrawable(context, R.drawable.ic_open_in_new_black_24dp)
+                    ?: ColorDrawable(
+                        Color.TRANSPARENT
+                    )
             )
         )
         return list

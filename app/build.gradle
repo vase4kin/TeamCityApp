@@ -178,10 +178,6 @@ dependencies {
     implementation('com.mikepenz:materialdrawer:6.1.2') {
         transitive = true
     }
-    // Icons
-    implementation 'com.joanzapata.iconify:android-iconify-material:2.2.2'
-    implementation 'com.joanzapata.iconify:android-iconify-fontawesome:2.2.2'
-    implementation 'com.joanzapata.iconify:android-iconify-material-community:2.2.2'
     // Dialogs
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     // Views

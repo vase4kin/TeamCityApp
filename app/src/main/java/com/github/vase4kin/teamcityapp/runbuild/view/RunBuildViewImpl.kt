@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.view
 
-import android.graphics.Color
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -36,8 +35,6 @@ import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationLi
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 
 /**
  * Impl of [RunBuildView]
@@ -106,8 +103,7 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
 
         // For ui testing purpose
         toolbar.setNavigationContentDescription(R.string.navigate_up)
-        toolbar.navigationIcon =
-            IconDrawable(activity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize()
+        toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         toolbar.setNavigationOnClickListener(OnToolBarNavigationListenerImpl(listener))
 
         queueBuildFab.setOnClickListener {

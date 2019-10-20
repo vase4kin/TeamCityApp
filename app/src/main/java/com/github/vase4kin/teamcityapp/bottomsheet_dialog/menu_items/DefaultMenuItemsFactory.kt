@@ -17,11 +17,12 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import androidx.core.content.ContextCompat
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
-import java.util.*
+import java.util.ArrayList
 
 /**
  * Impl of [MenuItemsFactory] for default menu
@@ -39,7 +40,10 @@ open class DefaultMenuItemsFactory(context: Context, descriptions: List<String>)
                 BottomSheetItem.TYPE_COPY,
                 getString(R.string.build_element_copy),
                 description,
-                IconDrawable(context, MaterialIcons.md_content_copy)
+                ContextCompat.getDrawable(context, R.drawable.ic_content_copy_black_24dp)
+                    ?: ColorDrawable(
+                        Color.TRANSPARENT
+                    )
             )
         )
         return list

@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.build_details.view
 
-import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
@@ -43,8 +42,6 @@ import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 
 private const val TAB_TITLE = "tabTitle"
 
@@ -142,12 +139,7 @@ class BuildDetailsViewImpl(
      */
     override fun initViews() {
         super.initViews()
-        floatingActionButton.setImageDrawable(
-            IconDrawable(
-                activity,
-                MaterialIcons.md_directions_run
-            ).color(Color.WHITE)
-        )
+        floatingActionButton.setImageResource(R.drawable.ic_directions_run_white_24px)
         val offScreenPageLimit = viewPager.adapter?.count ?: 0
         viewPager.offscreenPageLimit = offScreenPageLimit
         overviewTabTitle = activity.getString(R.string.tab_overview)

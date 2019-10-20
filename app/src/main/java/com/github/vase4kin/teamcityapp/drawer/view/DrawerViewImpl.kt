@@ -16,17 +16,20 @@
 
 package com.github.vase4kin.teamcityapp.drawer.view
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
@@ -138,7 +141,7 @@ open class DrawerViewImpl(
         profileList.add(
             ProfileSettingDrawerItem()
                 .withName("Manage Accounts")
-                .withIcon(IconDrawable(activity, MaterialIcons.md_settings).colorRes(defaultColor))
+                .withIcon(getDrawableWithDefaultColor(R.drawable.ic_settings_black_24dp))
                 .withIdentifier(DrawerView.PROFILES_MANAGING.toLong())
         )
     }
@@ -155,11 +158,7 @@ open class DrawerViewImpl(
             val iProfile = ProfileDrawerItem()
                 .withName(userAccount.userName)
                 .withEmail(userAccount.teamcityUrl)
-                .withIcon(
-                    IconDrawable(activity, MaterialIcons.md_account_circle).colorRes(
-                        defaultColor
-                    )
-                )
+                .withIcon(getDrawableWithDefaultColor(R.drawable.ic_account_circle_black_24dp))
                 .withNameShown(true)
                 .withIdentifier(id)
             profiles.add(iProfile)
@@ -212,13 +211,13 @@ open class DrawerViewImpl(
             .addDrawerItems(
                 PrimaryDrawerItem()
                     .withName(R.string.home_drawer_item)
-                    .withIcon(IconDrawable(activity, MaterialIcons.md_home).colorRes(defaultColor))
+                    .withIcon(getDrawableWithDefaultColor(R.drawable.ic_home_black_24dp))
                     .withSelectedTextColorRes(defaultColor)
                     .withIdentifier(DrawerView.HOME.toLong()),
                 DividerDrawerItem(),
                 PrimaryDrawerItem()
                     .withName("About")
-                    .withIcon(IconDrawable(activity, MaterialIcons.md_help).colorRes(defaultColor))
+                    .withIcon(getDrawableWithDefaultColor(R.drawable.ic_help_black_24dp))
                     .withSelectedTextColorRes(defaultColor)
                     .withIdentifier(DrawerView.ABOUT.toLong())
             )
@@ -301,4 +300,15 @@ open class DrawerViewImpl(
     protected open fun overridePendingTransition() {
         activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
     }
+
+    private fun getDrawableWithDefaultColor(@DrawableRes intRes: Int): Drawable {
+        val drawable = ContextCompat.getDrawable(activity, intRes) ?: getEmptyDrawable()
+        val wrappedDrawable = DrawableCompat.wrap(drawable)
+        DrawableCompat.setTint(wrappedDrawable.mutate(), defaultColor)
+        return wrappedDrawable
+    }
+
+    private fun getEmptyDrawable(): Drawable = ColorDrawable(
+        Color.TRANSPARENT
+    )
 }

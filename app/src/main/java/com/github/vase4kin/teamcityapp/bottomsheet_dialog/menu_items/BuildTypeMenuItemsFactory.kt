@@ -17,10 +17,11 @@
 package com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import androidx.core.content.ContextCompat
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.model.BottomSheetItem
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialCommunityIcons
 
 /**
  * Impl of [MenuItemsFactory] for build type menu
@@ -38,7 +39,10 @@ class BuildTypeMenuItemsFactory(context: Context, descriptions: List<String>) :
                 BottomSheetItem.TYPE_BUILD_TYPE,
                 getString(R.string.build_element_open_build_type),
                 description,
-                IconDrawable(context, MaterialCommunityIcons.mdi_open_in_app)
+                ContextCompat.getDrawable(context, R.drawable.ic_open_in_new_black_24dp)
+                    ?: ColorDrawable(
+                        Color.TRANSPARENT
+                    )
             )
         )
         return list

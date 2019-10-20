@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.account.manage.view
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.view.View
 import androidx.annotation.StringRes
 import butterknife.BindView
@@ -27,13 +26,10 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel
-import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 
 /**
  * View impl for account
@@ -68,15 +64,6 @@ class AccountsViewImpl(
      */
     override fun setOnViewListener(listener: AccountsView.ViewListener) {
         this.listener = listener
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun initViews(listener: BaseListView.ViewListener) {
-        super.initViews(listener)
-        // Setting float button icon
-        floatingActionButton.setImageDrawable(IconDrawable(activity, MaterialIcons.md_add).color(Color.WHITE))
     }
 
     /**

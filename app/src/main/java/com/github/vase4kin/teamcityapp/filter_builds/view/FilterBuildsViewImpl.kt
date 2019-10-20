@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.filter_builds.view
 
-import android.graphics.Color
 import android.view.View
 import android.widget.Switch
 import android.widget.TextView
@@ -29,8 +28,6 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
 import com.google.android.material.button.MaterialButton
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 
 /**
  * Impl of [FilterBuildsView]
@@ -64,17 +61,16 @@ class FilterBuildsViewImpl(private val activity: FilterBuildsActivity) : FilterB
     override fun initViews(listener: FilterBuildsView.ViewListener) {
         unbinder = ButterKnife.bind(this, activity)
 
-        val mToolbar = activity.findViewById<Toolbar>(R.id.toolbar)
-        activity.setSupportActionBar(mToolbar)
+        val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
+        activity.setSupportActionBar(toolbar)
 
         val actionBar = activity.supportActionBar
         actionBar?.setTitle(R.string.title_filter_builds)
 
         // For ui testing purpose
-        mToolbar.setNavigationContentDescription(R.string.navigate_up)
-        mToolbar.navigationIcon =
-            IconDrawable(activity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize()
-        mToolbar.setNavigationOnClickListener(OnToolBarNavigationListenerImpl(listener))
+        toolbar.setNavigationContentDescription(R.string.navigate_up)
+        toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
+        toolbar.setNavigationOnClickListener(OnToolBarNavigationListenerImpl(listener))
 
         filterFab.setOnClickListener {
             listener.onFilterFabClick(

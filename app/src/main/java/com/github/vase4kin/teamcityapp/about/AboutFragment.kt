@@ -30,9 +30,6 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutList
 import com.github.vase4kin.teamcityapp.BuildConfig
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialCommunityIcons
-import com.joanzapata.iconify.fonts.MaterialIcons
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -100,28 +97,15 @@ class AboutFragment : MaterialAboutFragment() {
         serverInfo.addItem(
             MaterialAboutActionItem.Builder()
                 .text(getString(R.string.version))
-                .icon(
-                    IconDrawable(
-                        context,
-                        MaterialIcons.md_info_outline
-                    ).colorRes(R.color.sub_text_color).sizeDp(
-                        iconSize
-                    )
-                )
+                .icon(R.drawable.ic_info_outline_black_24dp)
                 .subText(version)
                 .build()
         )
         val serverUrlItem = MaterialAboutActionItem.Builder()
             .text(R.string.about_app_text_server_url)
             .subText(serverUrl)
-            .icon(
-                IconDrawable(
-                    context,
-                    MaterialCommunityIcons.mdi_web
-                ).colorRes(R.color.sub_text_color).sizeDp(
-                    iconSize
-                )
-            ).setOnClickAction {
+            .icon(R.drawable.ic_web_black_24dp)
+            .setOnClickAction {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(serverUrl)
                 activity.startActivity(intent)
@@ -139,24 +123,14 @@ class AboutFragment : MaterialAboutFragment() {
         appCardBuilder.addItem(
             MaterialAboutActionItem.Builder()
                 .text(getString(R.string.version))
-                .icon(
-                    IconDrawable(
-                        activity,
-                        MaterialIcons.md_info_outline
-                    ).colorRes(R.color.sub_text_color).sizeDp(
-                        iconSize
-                    )
-                )
+                .icon(R.drawable.ic_info_outline_black_24dp)
                 .subText(BuildConfig.VERSION_NAME)
                 .build()
         )
             .addItem(
                 ConvenienceBuilder.createRateActionItem(
                     activity,
-                    IconDrawable(
-                        activity,
-                        MaterialIcons.md_star_border
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
+                    activity.getDrawable(R.drawable.ic_star_border_black_24dp),
                     getString(R.string.about_app_text_rate_app),
                     null
                 )
@@ -164,12 +138,7 @@ class AboutFragment : MaterialAboutFragment() {
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_found_issue)
                 .subText(R.string.about_app_subtext_found_issue)
-                .icon(
-                    IconDrawable(
-                        activity,
-                        MaterialIcons.md_question_answer
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
-                )
+                .icon(R.drawable.ic_question_answer_black_24dp)
                 .setOnClickAction {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(getString(R.string.about_app_url_found_issue))
@@ -182,12 +151,7 @@ class AboutFragment : MaterialAboutFragment() {
         miscCardBuilder
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_source_code)
-                .icon(
-                    IconDrawable(
-                        activity,
-                        MaterialCommunityIcons.mdi_github_circle
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
-                )
+                .icon(R.drawable.ic_github_circle)
                 .setOnClickAction {
                     val intent = Intent(Intent.ACTION_VIEW)
                     intent.data = Uri.parse(getString(R.string.about_app_url_source_code))
@@ -196,12 +160,7 @@ class AboutFragment : MaterialAboutFragment() {
                 .build())
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_libraries)
-                .icon(
-                    IconDrawable(
-                        activity,
-                        MaterialCommunityIcons.mdi_github_circle
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize)
-                )
+                .icon(R.drawable.ic_github_circle)
                 .setOnClickAction { AboutLibrariesActivity.start(activity) }
                 .build())
 
@@ -210,14 +169,7 @@ class AboutFragment : MaterialAboutFragment() {
         authorCardBuilder.addItem(MaterialAboutActionItem.Builder()
             .text(R.string.about_app_text_web)
             .subText(R.string.about_app_url_web)
-            .icon(
-                IconDrawable(
-                    activity,
-                    MaterialCommunityIcons.mdi_web
-                ).colorRes(R.color.sub_text_color).sizeDp(
-                    iconSize
-                )
-            )
+            .icon(R.drawable.ic_web_black_24dp)
             .setOnClickAction {
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = Uri.parse(getString(R.string.about_app_url_web))
@@ -227,10 +179,7 @@ class AboutFragment : MaterialAboutFragment() {
             .addItem(
                 ConvenienceBuilder.createEmailItem(
                     activity,
-                    IconDrawable(
-                        activity,
-                        MaterialIcons.md_email
-                    ).colorRes(R.color.sub_text_color).sizeDp(iconSize),
+                    activity.getDrawable(R.drawable.ic_email_black_24dp),
                     getText(R.string.about_app_text_email),
                     true,
                     getString(R.string.about_app_email),
