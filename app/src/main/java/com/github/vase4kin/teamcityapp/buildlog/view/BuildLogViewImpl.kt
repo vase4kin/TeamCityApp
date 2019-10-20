@@ -22,11 +22,11 @@ import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.Button
+import android.widget.ProgressBar
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.github.vase4kin.teamcityapp.R
-import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import tr.xip.errorview.ErrorView
 
 /**
@@ -36,7 +36,7 @@ class BuildLogViewImpl(private val view: View, private val client: BuildLogWebVi
     BuildLogView, OnBuildLogViewListener {
 
     @BindView(R.id.progress_wheel)
-    lateinit var progressWheel: MaterialProgressBar
+    lateinit var progressWheel: ProgressBar
     @BindView(R.id.error_view)
     lateinit var errorView: ErrorView
     @BindView(R.id.web_view)
