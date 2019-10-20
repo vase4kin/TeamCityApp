@@ -37,22 +37,16 @@ class OverviewAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<OverviewDa
         val header = dataModel.getHeaderName(position)
         val description = dataModel.getDescription(position)
         when {
-            dataModel.isBranchCard(position) -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
-                viewListener?.onBranchCardClick(
-                    description
-                )
+            dataModel.isBranchCard(position) -> (holder as OverviewViewHolder).itemView.setOnClickListener {
+                viewListener?.onBranchCardClick(description)
             }
-            dataModel.isBuildTypeCard(position) -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
-                viewListener?.onBuildTypeCardClick(
-                    description
-                )
+            dataModel.isBuildTypeCard(position) -> (holder as OverviewViewHolder).itemView.setOnClickListener {
+                viewListener?.onBuildTypeCardClick(description)
             }
-            dataModel.isProjectCard(position) -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
-                viewListener?.onProjectCardClick(
-                    description
-                )
+            dataModel.isProjectCard(position) -> (holder as OverviewViewHolder).itemView.setOnClickListener {
+                viewListener?.onProjectCardClick(description)
             }
-            else -> (holder as OverviewViewHolder).frameLayout.setOnClickListener {
+            else -> (holder as OverviewViewHolder).itemView.setOnClickListener {
                 viewListener?.onCardClick(
                     header,
                     description

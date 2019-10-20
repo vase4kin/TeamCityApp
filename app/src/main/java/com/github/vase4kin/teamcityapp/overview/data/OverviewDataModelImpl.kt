@@ -37,7 +37,7 @@ class OverviewDataModelImpl(
     /**
      * {@inheritDoc}
      */
-    override fun getIcon(position: Int): String {
+    override fun getIcon(position: Int): Int {
         return elements[position].icon
     }
 

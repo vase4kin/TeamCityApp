@@ -154,7 +154,7 @@ class OverviewFragmentTest {
         // List has item with header
         onView(withId(R.id.overview_recycler_view)).check(hasItemsCount(7))
         // Checking Result
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(0, R.id.title)).check(
             matches(
                 withText("Result")
             )
@@ -162,11 +162,11 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 0,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("Success")))
         // Checking Time
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.title)).check(
             matches(
                 withText("Time")
             )
@@ -174,11 +174,11 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 1,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("21 Jun 16 23:00 - 23:30 (30m:)")))
         // Checking Branch
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.title)).check(
             matches(
                 withText("Branch")
             )
@@ -186,11 +186,11 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 2,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("refs/heads/master")))
         // Checking Agent
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(3, R.id.title)).check(
             matches(
                 withText("Agent")
             )
@@ -198,7 +198,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 3,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("agent-love")))
 
@@ -206,7 +206,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking Triggered by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText("Triggered by")
             )
@@ -214,7 +214,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("code-lover")))
     }
@@ -292,7 +292,7 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking Canceled by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.title)).check(
             matches(
                 withText(R.string.build_canceled_by_text)
             )
@@ -300,7 +300,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 1,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("User name")))
     }
@@ -326,7 +326,7 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking Canceled by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(1, R.id.title)).check(
             matches(
                 withText(R.string.build_canceled_by_text)
             )
@@ -334,7 +334,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 1,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("user.name")))
     }
@@ -360,7 +360,7 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking time stamp
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(2, R.id.title)).check(
             matches(
                 withText(R.string.build_cancellation_time_text)
             )
@@ -368,7 +368,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 2,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("23 Dec 16 15:11")))
     }
@@ -397,7 +397,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_triggered_by_section_text)
             )
@@ -405,7 +405,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(NAME)))
     }
@@ -434,7 +434,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_triggered_by_section_text)
             )
@@ -442,7 +442,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(USER_NAME)))
     }
@@ -471,7 +471,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_restarted_by_section_text)
             )
@@ -479,7 +479,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(NAME)))
     }
@@ -508,7 +508,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_restarted_by_section_text)
             )
@@ -516,7 +516,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(USER_NAME)))
     }
@@ -545,7 +545,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_triggered_by_section_text)
             )
@@ -553,7 +553,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(R.string.triggered_deleted_configuration_text)))
     }
@@ -582,7 +582,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_restarted_by_section_text)
             )
@@ -590,7 +590,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(R.string.triggered_deleted_user_text)))
     }
@@ -619,7 +619,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(4))
 
         // Checking restarted by
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(4, R.id.title)).check(
             matches(
                 withText(R.string.build_triggered_by_section_text)
             )
@@ -627,7 +627,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 4,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(R.string.triggered_deleted_user_text)))
     }
@@ -659,7 +659,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(5))
 
         // Checking Personal of
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.title)).check(
             matches(
                 withText(R.string.build_personal_text)
             )
@@ -667,7 +667,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 5,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText(USER_NAME)))
     }
@@ -728,7 +728,7 @@ class OverviewFragmentTest {
         onView(withId(R.id.overview_recycler_view)).perform(scrollToPosition<RecyclerView.ViewHolder>(6))
 
         // Checking configuration  details
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(5, R.id.title)).check(
             matches(
                 withText(R.string.build_type_by_section_text)
             )
@@ -736,7 +736,7 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 5,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("build type name")))
 
@@ -789,7 +789,7 @@ class OverviewFragmentTest {
         onView(withId(android.R.id.content)).perform(swipeUp())
 
         // Checking configuration  details
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).check(
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.title)).check(
             matches(
                 withText(R.string.build_project_by_section_text)
             )
@@ -797,12 +797,12 @@ class OverviewFragmentTest {
         onView(
             withRecyclerView(R.id.overview_recycler_view).atPositionOnView(
                 6,
-                R.id.itemTitle
+                R.id.subTitle
             )
         ).check(matches(withText("project name")))
 
         // Click on that card
-        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.itemHeader)).perform(click())
+        onView(withRecyclerView(R.id.overview_recycler_view).atPositionOnView(6, R.id.title)).perform(click())
 
         // Clicking on show project
         onView(withText(R.string.build_element_open_project)).perform(click())

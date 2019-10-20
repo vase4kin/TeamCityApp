@@ -27,6 +27,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ActionMenuView
@@ -50,12 +51,6 @@ import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import java.util.ArrayList
 
 private const val TIMEOUT_PROMPT = 500
-private const val ICON_TIME = "{mdi-clock}"
-private const val ICON_BRANCH = "{mdi-git}"
-private const val ICON_AGENT = "{md-directions-railway}"
-private const val ICON_TRIGGER_BY = "{md-account-circle}"
-private const val ICON_BUILD_TYPE = "{md-crop-din}"
-private const val ICON_PROJECT = "{md-filter-none}"
 private const val TAG_BOTTOM_SHEET = "BottomSheet Dialog"
 
 /**
@@ -172,78 +167,98 @@ class OverviewViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun addWaitReasonStatusCard(icon: String, waitReason: String) {
+    override fun addWaitReasonStatusCard(icon: Int, waitReason: String) {
         addCard(R.string.build_wait_reason_section_text, icon, waitReason)
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun addResultStatusCard(icon: String, result: String) {
+    override fun addResultStatusCard(icon: Int, result: String) {
         addCard(R.string.build_result_section_text, icon, result)
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun addCancelledByCard(icon: String, userName: String) {
+    override fun addCancelledByCard(icon: Int, userName: String) {
         addCard(R.string.build_canceled_by_text, icon, userName)
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun addCancellationTimeCard(time: String) {
-        addCard(R.string.build_cancellation_time_text, ICON_TIME, time)
+    override fun addCancellationTimeCard(cancellationTime: String) {
+        addCard(
+            R.string.build_cancellation_time_text,
+            R.drawable.ic_access_time_black_24dp,
+            cancellationTime
+        )
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addTimeCard(time: String) {
-        addCard(R.string.build_time_section_text, ICON_TIME, time)
+        addCard(R.string.build_time_section_text, R.drawable.ic_access_time_black_24dp, time)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addQueuedTimeCard(time: String) {
-        addCard(R.string.build_queued_time_section_text, ICON_TIME, time)
+        addCard(R.string.build_queued_time_section_text, R.drawable.ic_access_time_black_24dp, time)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addEstimatedTimeToStartCard(time: String) {
-        addCard(R.string.build_time_to_start_section_text, ICON_TIME, time)
+        addCard(
+            R.string.build_time_to_start_section_text,
+            R.drawable.ic_access_time_black_24dp,
+            time
+        )
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addBranchCard(branchName: String) {
-        addCard(R.string.build_branch_section_text, ICON_BRANCH, branchName)
+        addCard(R.string.build_branch_section_text, R.drawable.ic_git, branchName)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addAgentCard(agentName: String) {
-        addCard(R.string.build_agent_section_text, ICON_AGENT, agentName)
+        addCard(
+            R.string.build_agent_section_text,
+            R.drawable.ic_directions_railway_black_24dp,
+            agentName
+        )
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addTriggeredByCard(triggeredBy: String) {
-        addCard(R.string.build_triggered_by_section_text, ICON_TRIGGER_BY, triggeredBy)
+        addCard(
+            R.string.build_triggered_by_section_text,
+            R.drawable.ic_account_circle_black_24dp,
+            triggeredBy
+        )
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addRestartedByCard(restartedBy: String) {
-        addCard(R.string.build_restarted_by_section_text, ICON_TRIGGER_BY, restartedBy)
+        addCard(
+            R.string.build_restarted_by_section_text,
+            R.drawable.ic_account_circle_black_24dp,
+            restartedBy
+        )
     }
 
     /**
@@ -258,21 +273,29 @@ class OverviewViewImpl(
      * {@inheritDoc}
      */
     override fun addBuildTypeNameCard(buildTypeName: String) {
-        addCard(R.string.build_type_by_section_text, ICON_BUILD_TYPE, buildTypeName)
+        addCard(
+            R.string.build_type_by_section_text,
+            R.drawable.ic_crop_din_black_24dp,
+            buildTypeName
+        )
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addBuildTypeProjectNameCard(buildTypeProjectName: String) {
-        addCard(R.string.build_project_by_section_text, ICON_PROJECT, buildTypeProjectName)
+        addCard(
+            R.string.build_project_by_section_text,
+            R.drawable.ic_filter_none_black_24dp,
+            buildTypeProjectName
+        )
     }
 
     /**
      * {@inheritDoc}
      */
     override fun addPersonalCard(userName: String) {
-        addCard(R.string.build_personal_text, ICON_TRIGGER_BY, userName)
+        addCard(R.string.build_personal_text, R.drawable.ic_account_circle_black_24dp, userName)
     }
 
     /**
@@ -282,7 +305,7 @@ class OverviewViewImpl(
      * @param icon - Icon
      * @param text - Text
      */
-    private fun addCard(@StringRes header: Int, icon: String, text: String) {
+    private fun addCard(@StringRes header: Int, @DrawableRes icon: Int, text: String) {
         elements.add(BuildElement(icon, text, activity.getString(header)))
     }
 

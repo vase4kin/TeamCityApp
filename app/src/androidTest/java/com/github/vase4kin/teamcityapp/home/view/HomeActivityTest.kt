@@ -119,16 +119,16 @@ class HomeActivityTest {
 
         // Checking projects data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("Project")))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText("Description")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("build type")))
         // Click on projects
         onView(withText("Project"))
@@ -137,16 +137,16 @@ class HomeActivityTest {
         TestUtils.matchToolbarTitle("Project")
         // Check Project data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("New project")))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText("Contains a lof of projects")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("Build and run tests")))
     }
 }

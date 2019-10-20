@@ -144,9 +144,9 @@ class BuildListActivityTest {
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("22 June")))
         // Checking adapter item 1
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.buildStatus))
             .check(matches(withText("Running tests")))
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemSubTitle))
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.branchName))
             .check(matches(withText("refs/heads/master")))
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.buildNumber))
             .check(matches(withText("#2458")))
@@ -154,14 +154,14 @@ class BuildListActivityTest {
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(2, R.id.section_text))
             .check(matches(withText("21 June")))
         // Checking adapter item 2
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(3, R.id.itemTitle))
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(3, R.id.buildStatus))
             .check(matches(withText("Success")))
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(3, R.id.itemSubTitle))
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(3, R.id.branchName))
             .check(matches(withText("refs/heads/master")))
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(3, R.id.buildNumber))
             .check(matches(withText("#2459")))
         // Checking adapter item 3
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(4, R.id.itemTitle))
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(4, R.id.buildStatus))
             .check(matches(withText("Error with smth")))
         onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(4, R.id.buildNumber))
             .check(matches(withText("#2460")))
@@ -293,7 +293,7 @@ class BuildListActivityTest {
             .perform(click())
 
         // Check new items appeared
-        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.build_recycler_view).atPositionOnView(1, R.id.buildStatus))
             .check(matches(withText("Running tests")))
     }
 

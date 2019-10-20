@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,47 +14,83 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BaseItem">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/base_item_color"
+    android:foreground="?attr/selectableItemBackground">
 
-    <FrameLayout
-        style="@style/Item.Clickable"
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/default_margin"
+        android:tint="@color/main_text_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@drawable/ic_check_circle_black_24dp" />
+
+    <TextView
+        android:id="@+id/userName"
+        style="@style/ItemSubTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/default_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/image"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="user.name" />
+
+    <TextView
+        android:id="@+id/commitName"
+        style="@style/ItemTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/userName"
+        app:layout_constraintTop_toBottomOf="@id/userName"
+        tools:text="Commit message" />
+
+    <TextView
+        android:id="@+id/commitHash"
+        style="@style/ItemSubTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/commitName"
+        app:layout_constraintTop_toBottomOf="@id/commitName"
+        tools:text="6d1080507eea" />
+
+    <TextView
+        android:id="@+id/commitDate"
+        style="@style/ItemSubTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/default_margin"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/commitHash"
+        app:layout_constraintTop_toBottomOf="@id/commitHash"
+        tools:text="26.06.14" />
+
+    <include
+        layout="@layout/layout_divider"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/default_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/commitDate" />
 
-        <LinearLayout style="@style/BaseItemsContainer">
-
-            <include layout="@layout/layout_item_icon" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/userName"
-                    style="@style/ItemSubTitle"
-                    android:textColor="@color/main_text_color"
-                    tools:text="user.name" />
-
-                <include layout="@layout/layout_item_title" />
-
-                <TextView
-                    style="@style/ItemSubTitle"
-                    tools:text="6d1080507eea" />
-
-                <TextView
-                    android:id="@+id/date"
-                    style="@style/ItemSubTitle"
-                    tools:text="26.06.14" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <include layout="@layout/layout_divider" />
-
-    </FrameLayout>
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

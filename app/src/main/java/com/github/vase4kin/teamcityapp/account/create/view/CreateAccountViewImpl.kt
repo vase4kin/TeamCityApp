@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.account.create.view
 
 import android.app.Activity
-import android.graphics.Color
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -31,8 +30,6 @@ import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.google.android.material.textfield.TextInputLayout
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 
 class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView {
 
@@ -244,8 +241,7 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
         toolbar.setTitle(R.string.add_new_account_dialog_title)
         // For ui testing purpose
         toolbar.setNavigationContentDescription(R.string.navigate_up)
-        toolbar.navigationIcon =
-            IconDrawable(activity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize()
+        toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         toolbar.setNavigationOnClickListener(OnToolBarNavigationListenerImpl(listener))
         toolbar.inflateMenu(R.menu.menu_create_account_dialog)
         toolbar.setOnMenuItemClickListener(

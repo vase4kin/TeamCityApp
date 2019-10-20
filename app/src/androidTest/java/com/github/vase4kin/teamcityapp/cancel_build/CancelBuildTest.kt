@@ -180,7 +180,7 @@ class CancelBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
     }
@@ -228,7 +228,7 @@ class CancelBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
     }
@@ -360,7 +360,7 @@ class CancelBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("Error with smth")))
     }
@@ -421,7 +421,7 @@ class CancelBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("Error with smth")))
     }
@@ -547,7 +547,7 @@ class CancelBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("Error with smth")))
 
@@ -604,7 +604,7 @@ class CancelBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.itemTitle)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
 

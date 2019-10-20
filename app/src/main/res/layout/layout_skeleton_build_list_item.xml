@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,43 +14,61 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/BaseItem">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/base_item_color">
 
-    <LinearLayout style="@style/BaseItemsContainer">
+    <View
+        android:id="@+id/image"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_margin="@dimen/default_margin"
+        android:background="@drawable/skeleton_image_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <FrameLayout
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:layout_marginRight="@dimen/default_margin"
-            android:background="@drawable/skeleton_image_background" />
+    <View
+        android:id="@+id/block1"
+        android:layout_width="64dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="@dimen/default_margin"
+        android:layout_marginTop="@dimen/default_margin"
+        android:background="@color/divider_color"
+        app:layout_constraintStart_toEndOf="@+id/image"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+    <View
+        android:id="@+id/block2"
+        android:layout_width="144dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/divider_color"
+        app:layout_constraintStart_toStartOf="@id/block1"
+        app:layout_constraintTop_toBottomOf="@id/block1" />
 
-            <FrameLayout
-                android:layout_width="64dp"
-                android:layout_height="18dp"
-                android:background="@color/divider_color" />
+    <View
+        android:id="@+id/block3"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:background="@color/divider_color"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/block2"
+        app:layout_constraintTop_toBottomOf="@id/block2" />
 
-            <FrameLayout
-                android:layout_width="164dp"
-                android:layout_height="22dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/divider_color" />
+    <include
+        layout="@layout/layout_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/default_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/block3" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="16dp"
-                android:layout_marginTop="8dp"
-                android:background="@color/divider_color" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <include layout="@layout/layout_divider" />
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

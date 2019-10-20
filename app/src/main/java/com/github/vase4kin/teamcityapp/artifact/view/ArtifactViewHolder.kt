@@ -20,17 +20,13 @@ import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
-import com.joanzapata.iconify.widget.IconTextView
-
-private const val FILE_ICON = "{mdi-file}"
-private const val FOLDER_ICON = "{mdi-folder}"
 
 class ArtifactViewHolder(parent: ViewGroup) : BaseViewHolder<ArtifactDataModel>(
     LayoutInflater.from(parent.context).inflate(
@@ -40,13 +36,11 @@ class ArtifactViewHolder(parent: ViewGroup) : BaseViewHolder<ArtifactDataModel>(
     )
 ) {
 
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
-    @BindView(R.id.itemIcon)
-    lateinit var icon: IconTextView
-    @BindView(R.id.itemTitle)
+    @BindView(R.id.image)
+    lateinit var image: ImageView
+    @BindView(R.id.title)
     lateinit var fileName: TextView
-    @BindView(R.id.itemSubTitle)
+    @BindView(R.id.subTitle)
     lateinit var size: TextView
 
     init {
@@ -59,9 +53,9 @@ class ArtifactViewHolder(parent: ViewGroup) : BaseViewHolder<ArtifactDataModel>(
     override fun bind(dataModel: ArtifactDataModel, position: Int) {
         val artifactFile = dataModel.getFile(position)
         if (artifactFile.children != null) {
-            icon.text = FOLDER_ICON
+            image.setImageResource(R.drawable.ic_folder_black_24dp)
         } else {
-            icon.text = FILE_ICON
+            image.setImageResource(R.drawable.ic_insert_drive_file_black_24dp)
         }
         fileName.text = artifactFile.name
         if (dataModel.hasSize(position)) {

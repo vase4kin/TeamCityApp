@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.overview.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -31,19 +31,17 @@ import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModel
  */
 class OverviewViewHolder(parent: ViewGroup) : BaseViewHolder<OverviewDataModel>(
     LayoutInflater.from(parent.context).inflate(
-        R.layout.item_card_element_list,
+        R.layout.item_build_overview_list,
         parent,
         false
     )
 ) {
-    @BindView(R.id.container)
-    lateinit var frameLayout: FrameLayout
-    @BindView(R.id.itemIcon)
-    lateinit var icon: TextView
-    @BindView(R.id.itemTitle)
-    lateinit var description: TextView
-    @BindView(R.id.itemHeader)
+    @BindView(R.id.image)
+    lateinit var icon: ImageView
+    @BindView(R.id.title)
     lateinit var header: TextView
+    @BindView(R.id.subTitle)
+    lateinit var description: TextView
 
     init {
         ButterKnife.bind(this, itemView)
@@ -53,7 +51,7 @@ class OverviewViewHolder(parent: ViewGroup) : BaseViewHolder<OverviewDataModel>(
      * {@inheritDoc}
      */
     override fun bind(dataModel: OverviewDataModel, position: Int) {
-        icon.text = dataModel.getIcon(position)
+        icon.setImageResource(dataModel.getIcon(position))
         header.text = dataModel.getHeaderName(position)
         description.text = dataModel.getDescription(position)
     }

@@ -30,8 +30,6 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
-import com.joanzapata.iconify.IconDrawable
-import com.joanzapata.iconify.fonts.MaterialIcons
 import me.zhanghai.android.materialprogressbar.MaterialProgressBar
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
@@ -90,8 +88,7 @@ constructor(activity: TestDetailsActivity, private val statusBarUtils: StatusBar
      */
     private fun initToolBar() {
         toolbar.setTitle(R.string.test_details_title)
-        toolbar.navigationIcon =
-            IconDrawable(activity, MaterialIcons.md_close).color(Color.WHITE).actionBarSize()
+        toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         toolbar.setNavigationOnClickListener(
             OnToolBarNavigationListenerImpl(object : OnToolBarNavigationListener {
                 override fun onClick() {

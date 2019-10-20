@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.navigation.api;
 
+import androidx.annotation.NonNull;
+
 import com.github.vase4kin.teamcityapp.base.api.Jsonable;
 
 /**
@@ -23,30 +25,33 @@ import com.github.vase4kin.teamcityapp.base.api.Jsonable;
  */
 public class BuildElement implements Jsonable {
 
-    private String mIcon;
-    private String mDescription;
-    private String mSectionName;
+    private int icon;
+    private String description;
+    private String sectionName;
 
-    public BuildElement(String icon, String description, String sectionName) {
-        this.mIcon = icon;
-        this.mDescription = description;
-        this.mSectionName = sectionName;
+    public BuildElement(int icon, String description, String sectionName) {
+        this.icon = icon;
+        this.description = description;
+        this.sectionName = sectionName;
     }
 
-    public String getIcon() {
-        return mIcon;
+    public int getIcon() {
+        return icon;
     }
 
+    @NonNull
     public String getDescription() {
-        return mDescription;
+        return description;
     }
 
+    @NonNull
     @Override
     public String getId() {
-        return mDescription;
+        return description;
     }
 
+    @NonNull
     public String getSectionName() {
-        return mSectionName;
+        return sectionName;
     }
 }

@@ -142,26 +142,26 @@ class RateTheAppTest {
 
         // Checking data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(3))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("Project")))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText("Description")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText(R.string.rate_title)))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 1,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText(R.string.rate_description)))
 
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(2, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(2, R.id.title))
             .check(matches(withText("build type")))
     }
 
@@ -192,16 +192,16 @@ class RateTheAppTest {
 
         // Checking data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("Project")))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText("Description")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("build type")))
 
         // Click on projects
@@ -210,16 +210,16 @@ class RateTheAppTest {
 
         // Check Project data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("New project")))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText("Contains a lof of projects")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("Build and run tests")))
     }
 
@@ -285,16 +285,16 @@ class RateTheAppTest {
 
         // Checking data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(0, R.id.title))
             .check(matches(withText("Project")))
         onView(
             withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(
                 0,
-                R.id.itemSubTitle
+                R.id.subTitle
             )
         )
             .check(matches(withText("Description")))
-        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("build type")))
 
         // Click on projects

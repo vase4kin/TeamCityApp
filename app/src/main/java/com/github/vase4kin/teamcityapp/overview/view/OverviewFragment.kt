@@ -17,7 +17,12 @@
 package com.github.vase4kin.teamcityapp.overview.view
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -65,12 +70,12 @@ class OverviewFragment : Fragment() {
         super.onStop()
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        presenter.onCreateOptionsMenu(menu!!, inflater!!)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        presenter.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return presenter.onOptionsItemSelected(item!!)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return presenter.onOptionsItemSelected(item)
     }
 
     companion object {

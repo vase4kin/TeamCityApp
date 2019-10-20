@@ -121,7 +121,7 @@ class AgentListFragmentTest {
             allOf(
                 withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
                     0,
-                    R.id.itemTitle
+                    R.id.title
                 ), isDisplayed()
             )
         )
@@ -129,14 +129,14 @@ class AgentListFragmentTest {
         onView(
             withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
                 1,
-                R.id.itemTitle
+                R.id.title
             )
         )
             .check(matches(withText("agent 2")))
         onView(
             withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
                 2,
-                R.id.itemTitle
+                R.id.title
             )
         )
             .check(matches(withText("agent 3")))
@@ -157,7 +157,7 @@ class AgentListFragmentTest {
         onView(
             withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
                 0,
-                R.id.itemTitle
+                R.id.title
             )
         )
             .check(matches(withText("Mac mini 3434")))

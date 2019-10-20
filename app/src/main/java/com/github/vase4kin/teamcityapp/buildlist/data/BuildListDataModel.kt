@@ -24,7 +24,8 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 /**
  * Model managing build list data
  */
-interface BuildListDataModel : BaseDataModel, Iterable<BuildDetails>, ModelLoadMore<BuildListDataModel> {
+interface BuildListDataModel : BaseDataModel, Iterable<BuildDetails>,
+    ModelLoadMore<BuildListDataModel> {
 
     /**
      * Get branch name
@@ -35,18 +36,12 @@ interface BuildListDataModel : BaseDataModel, Iterable<BuildDetails>, ModelLoadM
     fun getBranchName(position: Int): String
 
     /**
-     * @param position - adapter position
-     * @return true if model has branch name
-     */
-    fun hasBranch(position: Int): Boolean
-
-    /**
      * Get build status icon
      *
      * @param position - Adapter position
      * @return
      */
-    fun getBuildStatusIcon(position: Int): String
+    fun getBuildStatusIcon(position: Int): Int
 
     /**
      * Get build status text

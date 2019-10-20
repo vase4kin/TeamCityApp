@@ -16,8 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.tests.data
 
+import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_FAILURE
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-import com.github.vase4kin.teamcityapp.utils.IconUtils
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.Assert.assertThat
@@ -55,8 +56,8 @@ class TestsDataModelImplTest {
 
     @Test
     fun testGetStatusIcon() {
-        `when`(test.status).thenReturn("FAILURE")
-        assertThat(dataModel.getStatusIcon(0), `is`(equalTo(IconUtils.ICON_FAILURE)))
+        `when`(test.status).thenReturn(TEST_STATUS_FAILURE)
+        assertThat(dataModel.getStatusIcon(0), `is`(equalTo(R.drawable.ic_error_black_24dp)))
     }
 
     @Test

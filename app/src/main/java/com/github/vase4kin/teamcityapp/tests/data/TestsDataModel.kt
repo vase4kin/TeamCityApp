@@ -45,7 +45,7 @@ interface TestsDataModel : BaseDataModel, Iterable<TestOccurrences.TestOccurrenc
      * @param position - Adapter position
      * @return String
      */
-    fun getStatusIcon(position: Int): String
+    fun getStatusIcon(position: Int): Int
 
     /**
      * Get test details url

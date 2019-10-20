@@ -27,10 +27,6 @@ import com.github.vase4kin.teamcityapp.dagger.components.DaggerRestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
-import com.joanzapata.iconify.Iconify
-import com.joanzapata.iconify.fonts.FontAwesomeModule
-import com.joanzapata.iconify.fonts.MaterialCommunityModule
-import com.joanzapata.iconify.fonts.MaterialModule
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -57,12 +53,6 @@ class TeamCityApplication : Application(), HasActivityInjector {
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, Crashlytics())
         }
-
-        // #=============== Iconify ================#//
-        Iconify
-            .with(MaterialModule())
-            .with(MaterialCommunityModule())
-            .with(FontAwesomeModule())
 
         // #=============== Dagger ================#//
         // app injector init

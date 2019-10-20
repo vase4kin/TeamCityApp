@@ -18,14 +18,13 @@ package com.github.vase4kin.teamcityapp.tests.view
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel
-import com.joanzapata.iconify.widget.IconTextView
 
 /**
  * Test single item view holder
@@ -37,12 +36,10 @@ class TestOccurrenceViewHolder(parent: ViewGroup) : BaseViewHolder<TestsDataMode
         false
     )
 ) {
-    @BindView(R.id.container)
-    lateinit var container: FrameLayout
-    @BindView(R.id.itemTitle)
-    lateinit var textView: TextView
-    @BindView(R.id.itemIcon)
-    lateinit var icon: IconTextView
+    @BindView(R.id.title)
+    lateinit var testName: TextView
+    @BindView(R.id.image)
+    lateinit var testStatusImage: ImageView
 
     init {
         ButterKnife.bind(this, itemView)
@@ -52,7 +49,8 @@ class TestOccurrenceViewHolder(parent: ViewGroup) : BaseViewHolder<TestsDataMode
      * {@inheritDoc}
      */
     override fun bind(dataModel: TestsDataModel, position: Int) {
-        textView.text = dataModel.getName(position)
-        icon.text = dataModel.getStatusIcon(position)
+        testName.text = dataModel.getName(position)
+        val statusIconRes = dataModel.getStatusIcon(position)
+        testStatusImage.setImageResource(statusIconRes)
     }
 }

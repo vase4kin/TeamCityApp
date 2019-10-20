@@ -33,10 +33,6 @@ class PropertiesAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<Properti
         super.onBindViewHolder(holder, position)
         val title = dataModel.getName(position)
         val value = dataModel.getValue(position)
-        (holder as PropertyViewHolder).container.setOnClickListener { listener?.onCardClick(title, value) }
-        holder.container.setOnLongClickListener {
-            listener?.onCardClick(title, value)
-            true
-        }
+        (holder as PropertyViewHolder).itemView.setOnClickListener { listener?.onCardClick(title, value) }
     }
 }
