@@ -156,22 +156,22 @@ class SnapshotDependenciesFragmentTest {
         onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(0, R.id.section_text))
             .check(matches(withText("project name - build type name")))
         // Checking adapter item 1
-        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(1, R.id.itemTitle))
+        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(1, R.id.buildStatus))
             .check(matches(withText("Queued build")))
-        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(1, R.id.itemSubTitle))
+        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(1, R.id.branchName))
             .check(matches(withText("refs/heads/master")))
         // Checking adapter item 2
-        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(2, R.id.itemTitle))
+        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(2, R.id.buildStatus))
             .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
-        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(2, R.id.itemSubTitle))
+        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(2, R.id.branchName))
             .check(matches(withText("refs/heads/dev")))
         // Checking header 2
         onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(3, R.id.section_text))
             .check(matches(withText("Project name one two - Another configuration")))
         // Checking adapter item 3
-        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(4, R.id.itemTitle))
+        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(4, R.id.buildStatus))
             .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
-        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(4, R.id.itemSubTitle))
+        onView(withRecyclerView(R.id.snapshot_recycler_view).atPositionOnView(4, R.id.branchName))
             .check(matches(withText("refs/heads/dev0feature")))
     }
 }
