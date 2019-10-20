@@ -40,16 +40,18 @@ import javax.inject.Inject
 
 class AboutFragment : MaterialAboutFragment() {
 
-    private val iconSize = 24
-
     @Inject
     lateinit var repository: Repository
 
+    private var listener: AboutActivityLoadingListener? = null
     private val subscriptions: CompositeDisposable = CompositeDisposable()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         AndroidSupportInjection.inject(this)
+        if (context is AboutActivityLoadingListener) {
+            listener = context
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,6 +71,8 @@ class AboutFragment : MaterialAboutFragment() {
     private fun loadServerInfo() {
         repository.serverInfo().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { listener?.showLoader() }
+            .doFinally { listener?.hideLoader() }
             .subscribeBy(
                 onSuccess = {
                     val serverInfo = createServerInfoCard(it.version, it.webUrl)

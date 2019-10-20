@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.about
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
@@ -26,7 +27,7 @@ import dagger.android.support.DaggerAppCompatActivity
 /**
  * About activity
  */
-class AboutActivity : DaggerAppCompatActivity() {
+class AboutActivity : DaggerAppCompatActivity(), AboutActivityLoadingListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,14 @@ class AboutActivity : DaggerAppCompatActivity() {
             .commit()
     }
 
+    override fun showLoader() {
+        findViewById<View>(R.id.progress_wheel).visibility = View.VISIBLE
+    }
+
+    override fun hideLoader() {
+        findViewById<View>(R.id.progress_wheel).visibility = View.GONE
+    }
+
     companion object {
 
         /**
@@ -52,4 +61,9 @@ class AboutActivity : DaggerAppCompatActivity() {
             activity.startActivity(launchIntent)
         }
     }
+}
+
+interface AboutActivityLoadingListener {
+    fun showLoader()
+    fun hideLoader()
 }
