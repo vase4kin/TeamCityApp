@@ -218,7 +218,7 @@ class RestartBuildTest {
         // Checking Result was changed
         onView(
             withRecyclerView(R.id.overview_recycler_view)
-                .atPositionOnView(0, R.id.buildStatus)
+                .atPositionOnView(0, R.id.subTitle)
         )
             .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
     }
