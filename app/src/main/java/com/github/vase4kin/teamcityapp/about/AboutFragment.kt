@@ -190,6 +190,16 @@ class AboutFragment : MaterialAboutFragment() {
                     getString(R.string.about_app_email_title)
                 )
             )
+            .addItem(MaterialAboutActionItem.Builder()
+                .text(R.string.about_app_text_privacy)
+                .subText(R.string.about_app_url_privacy)
+                .icon(R.drawable.ic_web_black_24dp)
+                .setOnClickAction {
+                    val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = Uri.parse(getString(R.string.about_app_url_privacy))
+                    activity.startActivity(intent)
+                }
+                .build())
         return if (serverCard == null) {
             MaterialAboutList(
                 appCardBuilder.build(),
