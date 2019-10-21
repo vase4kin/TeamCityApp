@@ -22,16 +22,32 @@
     android:background="@color/base_item_color"
     android:foreground="?attr/selectableItemBackground">
 
-    <ImageView
-        android:id="@+id/buildStatusImage"
+    <FrameLayout
+        android:id="@+id/buildStatusContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/default_margin"
-        android:tint="@color/main_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@drawable/ic_check_circle_black_24dp" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/buildStatusImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/main_text_color"
+            tools:srcCompat="@drawable/ic_check_circle_black_24dp" />
+
+        <ProgressBar
+            android:id="@+id/buildStatusProgress"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:indeterminate="true"
+            android:indeterminateTint="@color/main_text_color"
+            tools:visibility="gone"/>
+
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/buildNumber"
@@ -44,7 +60,7 @@
         android:maxLines="1"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="@id/isPersonal"
-        app:layout_constraintStart_toEndOf="@+id/buildStatusImage"
+        app:layout_constraintStart_toEndOf="@+id/buildStatusContainer"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="#12345678901234567890123456789012345678901234567890" />
 

@@ -44,6 +44,11 @@ interface BuildListDataModel : BaseDataModel, Iterable<BuildDetails>,
     fun getBuildStatusIcon(position: Int): Int
 
     /**
+     * If the build is running
+     */
+    fun isRunning(position: Int): Boolean
+
+    /**
      * Get build status text
      *
      * @param position - Adapter position

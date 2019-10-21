@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -49,14 +50,23 @@ class BuildViewHolder(parent: ViewGroup) : BaseViewHolder<BuildListDataModel>(
     lateinit var isPersonalImage: View
     @BindView(R.id.isPinned)
     lateinit var isPinnedImage: View
+    @BindView(R.id.buildStatusProgress)
+    lateinit var buildStatusProgress: ProgressBar
 
     init {
         ButterKnife.bind(this, itemView)
     }
 
     override fun bind(dataModel: BuildListDataModel, position: Int) {
-        val iconImageRes = dataModel.getBuildStatusIcon(position)
-        buildStatusImage.setImageResource(iconImageRes)
+        if (dataModel.isRunning(position)) {
+            buildStatusProgress.visibility = View.VISIBLE
+            buildStatusImage.visibility = View.GONE
+        } else {
+            buildStatusProgress.visibility = View.GONE
+            buildStatusImage.visibility = View.VISIBLE
+            val iconImageRes = dataModel.getBuildStatusIcon(position)
+            buildStatusImage.setImageResource(iconImageRes)
+        }
         buildStatus.text = dataModel.getStatusText(position)
         val buildNumber = dataModel.getBuildNumber(position)
         if (buildNumber.isEmpty()) {

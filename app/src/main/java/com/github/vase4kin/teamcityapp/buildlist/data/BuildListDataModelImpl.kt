@@ -50,6 +50,13 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
     /**
      * {@inheritDoc}
      */
+    override fun isRunning(position: Int): Boolean {
+        return buildDetailsList[position].isRunning
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun getStatusText(position: Int): String {
         return buildDetailsList[position].statusText
     }
