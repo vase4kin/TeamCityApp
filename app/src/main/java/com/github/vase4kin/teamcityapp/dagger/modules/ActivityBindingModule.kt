@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.dagger.modules
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.about.AboutFragment
 import com.github.vase4kin.teamcityapp.about.dagger.AboutActivityScope
+import com.github.vase4kin.teamcityapp.about.dagger.AboutFragmentModule
+import com.github.vase4kin.teamcityapp.about.dagger.AboutFragmentScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
@@ -74,8 +76,8 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector
     abstract fun aboutActivity(): AboutActivity
 
-    @AboutActivityScope
-    @ContributesAndroidInjector
+    @AboutFragmentScope
+    @ContributesAndroidInjector(modules = [AboutFragmentModule::class])
     abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope

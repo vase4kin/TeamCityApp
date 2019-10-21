@@ -18,8 +18,6 @@ package com.github.vase4kin.teamcityapp.about
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
@@ -30,6 +28,7 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutList
 import com.github.vase4kin.teamcityapp.BuildConfig
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -42,6 +41,9 @@ class AboutFragment : MaterialAboutFragment() {
 
     @Inject
     lateinit var repository: Repository
+
+    @Inject
+    lateinit var chromeCustomTabs: ChromeCustomTabs
 
     private var listener: AboutActivityLoadingListener? = null
     private val subscriptions: CompositeDisposable = CompositeDisposable()
@@ -56,11 +58,13 @@ class AboutFragment : MaterialAboutFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        chromeCustomTabs.initCustomsTabs()
         loadServerInfo()
     }
 
     override fun onDestroyView() {
         subscriptions.clear()
+        chromeCustomTabs.unbindCustomsTabs()
         super.onDestroyView()
     }
 
@@ -95,7 +99,6 @@ class AboutFragment : MaterialAboutFragment() {
         version: String,
         serverUrl: String
     ): MaterialAboutCard {
-        val activity = requireActivity()
         val serverInfo = MaterialAboutCard.Builder()
         serverInfo.title(R.string.about_app_text_server_info)
         serverInfo.addItem(
@@ -110,9 +113,7 @@ class AboutFragment : MaterialAboutFragment() {
             .subText(serverUrl)
             .icon(R.drawable.ic_web_black_24dp)
             .setOnClickAction {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(serverUrl)
-                activity.startActivity(intent)
+                openUrl(serverUrl)
             }
         serverInfo.addItem(serverUrlItem.build())
         return serverInfo.build()
@@ -144,9 +145,8 @@ class AboutFragment : MaterialAboutFragment() {
                 .subText(R.string.about_app_subtext_found_issue)
                 .icon(R.drawable.ic_question_answer_black_24dp)
                 .setOnClickAction {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(getString(R.string.about_app_url_found_issue))
-                    activity.startActivity(intent)
+                    val url = getString(R.string.about_app_url_found_issue)
+                    openUrl(url)
                 }
                 .build())
 
@@ -157,9 +157,8 @@ class AboutFragment : MaterialAboutFragment() {
                 .text(R.string.about_app_text_source_code)
                 .icon(R.drawable.ic_github_circle)
                 .setOnClickAction {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(getString(R.string.about_app_url_source_code))
-                    activity.startActivity(intent)
+                    val url = getString(R.string.about_app_url_source_code)
+                    openUrl(url)
                 }
                 .build())
             .addItem(MaterialAboutActionItem.Builder()
@@ -175,9 +174,8 @@ class AboutFragment : MaterialAboutFragment() {
             .subText(R.string.about_app_url_web)
             .icon(R.drawable.ic_web_black_24dp)
             .setOnClickAction {
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = Uri.parse(getString(R.string.about_app_url_web))
-                activity.startActivity(intent)
+                val url = getString(R.string.about_app_url_web)
+                openUrl(url)
             }
             .build())
             .addItem(
@@ -194,9 +192,8 @@ class AboutFragment : MaterialAboutFragment() {
                 .text(R.string.about_app_text_privacy)
                 .icon(R.drawable.ic_web_black_24dp)
                 .setOnClickAction {
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = Uri.parse(getString(R.string.about_app_url_privacy))
-                    activity.startActivity(intent)
+                    val url = getString(R.string.about_app_url_privacy)
+                    openUrl(url)
                 }
                 .build())
         return if (serverCard == null) {
@@ -213,5 +210,9 @@ class AboutFragment : MaterialAboutFragment() {
                 authorCardBuilder.build()
             )
         }
+    }
+
+    private fun openUrl(url: String) {
+        chromeCustomTabs.launchUrl(url)
     }
 }
