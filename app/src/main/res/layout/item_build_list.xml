@@ -46,7 +46,6 @@
             android:indeterminateTint="@color/main_text_color"
             tools:visibility="gone"/>
 
-
     </FrameLayout>
 
     <TextView
