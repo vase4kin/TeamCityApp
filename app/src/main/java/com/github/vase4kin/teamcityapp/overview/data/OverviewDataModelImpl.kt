@@ -44,6 +44,13 @@ class OverviewDataModelImpl(
     /**
      * {@inheritDoc}
      */
+    override fun isRunning(position: Int): Boolean {
+        return getIcon(position) == R.drawable.ic_spinner
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun getDescription(position: Int): String {
         return elements[position].description
     }

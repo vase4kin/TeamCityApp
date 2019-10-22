@@ -17,8 +17,10 @@
 package com.github.vase4kin.teamcityapp.overview.view
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -38,6 +40,8 @@ class OverviewViewHolder(parent: ViewGroup) : BaseViewHolder<OverviewDataModel>(
 ) {
     @BindView(R.id.image)
     lateinit var icon: ImageView
+    @BindView(R.id.progress)
+    lateinit var progress: ProgressBar
     @BindView(R.id.title)
     lateinit var header: TextView
     @BindView(R.id.subTitle)
@@ -51,7 +55,14 @@ class OverviewViewHolder(parent: ViewGroup) : BaseViewHolder<OverviewDataModel>(
      * {@inheritDoc}
      */
     override fun bind(dataModel: OverviewDataModel, position: Int) {
-        icon.setImageResource(dataModel.getIcon(position))
+        if (dataModel.isRunning(position)) {
+            icon.visibility = View.GONE
+            progress.visibility = View.VISIBLE
+        } else {
+            icon.visibility = View.VISIBLE
+            progress.visibility = View.GONE
+            icon.setImageResource(dataModel.getIcon(position))
+        }
         header.text = dataModel.getHeaderName(position)
         description.text = dataModel.getDescription(position)
     }

@@ -30,6 +30,11 @@ interface OverviewDataModel : BaseDataModel {
     fun getIcon(position: Int): Int
 
     /**
+     * Is build running
+     */
+    fun isRunning(position: Int): Boolean
+
+    /**
      * @param position - Adapter position
      * @return Description for element
      */
