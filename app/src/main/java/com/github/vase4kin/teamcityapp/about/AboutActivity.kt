@@ -38,7 +38,7 @@ class AboutActivity : DaggerAppCompatActivity(), AboutActivityLoadingListener {
         // Commit fragment to container
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.about_library_container, AboutFragment())
+            .replace(R.id.about_library_container, AboutFragment())
             .commit()
     }
 
