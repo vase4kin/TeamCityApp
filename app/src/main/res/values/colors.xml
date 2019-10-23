@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,9 +27,6 @@
     <color name="section_color">@color/md_blue_A100</color>
 
     <color name="snack_bar_action_color">@color/section_color</color>
-
-    <color name="default_color">@color/material_drawer_primary</color>
-    <color name="default_unselected_color">#7986CB</color>
 
     <color name="queued_status_bar_color">#9E9E9E</color>
     <color name="queued_tool_bar_color">#BDBDBD</color>

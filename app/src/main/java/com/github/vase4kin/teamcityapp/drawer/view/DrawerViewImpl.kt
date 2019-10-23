@@ -16,19 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.drawer.view
 
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
-import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutLibrariesActivity
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.utils.getTintedDrawable
 import com.mikepenz.materialdrawer.AccountHeader
 import com.mikepenz.materialdrawer.AccountHeaderBuilder
 import com.mikepenz.materialdrawer.Drawer
@@ -56,9 +53,6 @@ open class DrawerViewImpl(
     private lateinit var drawerDataModel: DrawerDataModel
 
     private var onDrawerPresenterListener: OnDrawerPresenterListener? = null
-
-    @ColorRes
-    protected var defaultColor = R.color.default_color
 
     /**
      * Method to know if the drawer was closed or not
@@ -211,13 +205,13 @@ open class DrawerViewImpl(
                 PrimaryDrawerItem()
                     .withName(R.string.home_drawer_item)
                     .withIcon(getDrawable(R.drawable.ic_home_black_24dp))
-                    .withSelectedTextColorRes(defaultColor)
+                    .withSelectedTextColorRes(R.color.primary)
                     .withIdentifier(DrawerView.HOME.toLong()),
                 DividerDrawerItem(),
                 PrimaryDrawerItem()
                     .withName("About")
                     .withIcon(getDrawable(R.drawable.ic_help_black_24dp))
-                    .withSelectedTextColorRes(defaultColor)
+                    .withSelectedTextColorRes(R.color.primary)
                     .withIdentifier(DrawerView.ABOUT.toLong())
             )
             .withOnDrawerItemClickListener { _, _, drawerItem ->
@@ -289,22 +283,11 @@ open class DrawerViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun setDefaultColors(@DrawableRes color: Int) {
-        defaultColor = color
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     protected open fun overridePendingTransition() {
         activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
     }
 
     private fun getDrawable(@DrawableRes intRes: Int): Drawable {
-        return ContextCompat.getDrawable(activity, intRes) ?: getEmptyDrawable()
+        return getTintedDrawable(activity, intRes, R.color.primary)
     }
-
-    private fun getEmptyDrawable(): Drawable = ColorDrawable(
-        Color.TRANSPARENT
-    )
 }
