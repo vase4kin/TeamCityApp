@@ -32,37 +32,13 @@ class TeamCityAuthenticator(private val userAccount: UserAccount) : okhttp3.Auth
      */
     override fun authenticate(route: Route?, response: Response): Request? {
         // by default do three attempts
-        if (responseCount(response) >= ATTEMPTS_COUNT) {
-            return null // If we've failed 3 times, give up.
+        if (response.request().header(AUTHORIZATION) != null) {
+            return null // Give up, we've already attempted to authenticate.
         }
         // Use user credentials
         val credential = Credentials.basic(userAccount.userName, userAccount.passwordAsString)
         return response.request().newBuilder()
             .header(AUTHORIZATION, credential)
             .build()
-    }
-
-    /**
-     * Response count
-     *
-     * @param response - Response
-     * @return count of response tries failed by 401
-     */
-    private fun responseCount(response: Response): Int {
-        var result = 0
-        var priorResponse = response.priorResponse()
-        while (priorResponse != null) {
-            priorResponse = response.priorResponse()
-            result++
-        }
-        return result
-    }
-
-    companion object {
-
-        /**
-         * Count of attempts on 401
-         */
-        private const val ATTEMPTS_COUNT = 3
     }
 }
