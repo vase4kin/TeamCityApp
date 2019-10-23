@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.drawer.view
 
-import androidx.annotation.ColorRes
-
 import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataModel
 
 /**
@@ -55,13 +53,6 @@ interface DrawerView {
      * @param count - Number to update
      */
     fun updateAgentsBadge(count: Int)
-
-    /**
-     * Set default color for drawer
-     *
-     * @param color - Color to make default
-     */
-    fun setDefaultColors(@ColorRes color: Int)
 
     companion object {
 

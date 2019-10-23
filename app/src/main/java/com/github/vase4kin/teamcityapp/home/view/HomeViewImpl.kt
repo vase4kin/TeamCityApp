@@ -131,7 +131,7 @@ class HomeViewImpl(
      */
     override fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener) {
         // Creating prompt
-        val color = ContextCompat.getColor(activity, defaultColor)
+        val color = ContextCompat.getColor(activity, R.color.primary)
         val navigationDrawerPrompt = MaterialTapTargetPrompt.Builder(activity)
             .setPrimaryText(R.string.title_onboarding_navigation_drawer)
             .setSecondaryText(R.string.text_onboarding_navigation_drawer)
@@ -152,7 +152,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showAddFavPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = ContextCompat.getColor(activity, defaultColor)
+        val color = ContextCompat.getColor(activity, R.color.primary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_add_fav)
@@ -171,7 +171,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showRunningBuildsFilterPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = ContextCompat.getColor(activity, defaultColor)
+        val color = ContextCompat.getColor(activity, R.color.primary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter)
@@ -190,7 +190,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showBuildsQueueFilterPrompt(onPromptShown: () -> Unit) {
-        val color = ContextCompat.getColor(activity, defaultColor)
+        val color = ContextCompat.getColor(activity, R.color.primary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter_queued)
@@ -209,7 +209,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showAgentsFilterPrompt(onPromptShown: () -> Unit) {
-        val color = ContextCompat.getColor(activity, defaultColor)
+        val color = ContextCompat.getColor(activity, R.color.primary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter_agents)
