@@ -66,4 +66,9 @@ interface AccountDataModel : BaseDataModel {
      * @return [UserAccount]
      */
     operator fun get(position: Int): UserAccount
+
+    /**
+     * Is ssl enabled for an account
+     */
+    fun isSslDisabled(position: Int): Boolean
 }

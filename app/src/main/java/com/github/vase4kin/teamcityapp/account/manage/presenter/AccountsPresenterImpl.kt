@@ -102,4 +102,11 @@ class AccountsPresenterImpl @Inject constructor(
     override fun onAccountClick(account: UserAccount) {
         view.showRemoveAccountDialog(account, dataManager.isLastAccount())
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onSslDisabledClick() {
+        view.showSslDisabledInfoDialog()
+    }
 }

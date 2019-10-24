@@ -17,7 +17,9 @@
 package com.github.vase4kin.teamcityapp.account.manage.view
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import butterknife.BindView
 import butterknife.ButterKnife
@@ -33,16 +35,27 @@ class AccountViewHolder(parent: ViewGroup) : BaseViewHolder<AccountDataModel>(
     )
 ) {
 
+    @BindView(R.id.image)
+    lateinit var image: ImageView
     @BindView(R.id.title)
     lateinit var userName: TextView
     @BindView(R.id.subTitle)
     lateinit var teamCityUrl: TextView
+    @BindView(R.id.sslDisabled)
+    lateinit var sslDisabled: TextView
 
     init {
         ButterKnife.bind(this, itemView)
     }
 
     override fun bind(dataModel: AccountDataModel, position: Int) {
+        if (dataModel.isSslDisabled(position)) {
+            image.setImageResource(R.drawable.ic_account_alert)
+            sslDisabled.visibility = View.VISIBLE
+        } else {
+            image.setImageResource(R.drawable.ic_account)
+            sslDisabled.visibility = View.GONE
+        }
         userName.text = dataModel.getUserName(position)
         teamCityUrl.text = dataModel.getTeamcityUrl(position)
     }

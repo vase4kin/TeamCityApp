@@ -68,6 +68,13 @@ class AccountDataModelImpl(private val accounts: MutableList<UserAccount>) : Acc
     /**
      * {@inheritDoc}
      */
+    override fun isSslDisabled(position: Int): Boolean {
+        return accounts[position].isSslDisabled
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override val itemCount: Int
         get() = accounts.size
 }

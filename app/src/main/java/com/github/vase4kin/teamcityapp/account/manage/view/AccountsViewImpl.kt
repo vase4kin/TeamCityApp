@@ -112,6 +112,23 @@ class AccountsViewImpl(
     }
 
     /**
+     * {@inheritDoc}
+     */
+    override fun showSslDisabledInfoDialog() {
+        MaterialDialog.Builder(activity)
+            .title(R.string.warning_ssl_dialog_title)
+            .content(R.string.warning_ssl_dialog_content)
+            .positiveText(R.string.dialog_ok_title)
+            .callback(object : MaterialDialog.ButtonCallback() {
+                override fun onPositive(dialog: MaterialDialog?) {
+                    dialog?.dismiss()
+                }
+            })
+            .build()
+            .show()
+    }
+
+    /**
      * Show create new account dialog
      *
      *
