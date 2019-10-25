@@ -183,11 +183,15 @@ workflows:
   build_checks_unit_and_ui_tests_coverage:
     jobs:
       - pre-build
-      - build-unit-tests
-      - build-ui-tests
+      - build-unit-tests:
+          requires:
+            - pre-build
+      - build-ui-tests:
+          requires:
+            - pre-build
       - checks:
           requires:
-            - build
+            - pre-build
       - unit-tests:
           requires:
             - build-unit-tests
