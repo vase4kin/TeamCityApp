@@ -163,7 +163,7 @@ workflows:
             - build
       - unit-tests:
           requires:
-            - checks
+            - build
       - ui-tests:
           requires:
             - unit-tests
