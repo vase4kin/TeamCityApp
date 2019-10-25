@@ -166,7 +166,8 @@ workflows:
             - build
       - ui-tests:
           requires:
-            - unit-tests
+            - build
       - coverage:
           requires:
             - ui-tests
+            - unit-tests
