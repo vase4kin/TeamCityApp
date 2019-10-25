@@ -53,7 +53,7 @@ allprojects {
 
 ext {
     // versions
-    versionCode = 70
+    versionCode = 71
     versionName = "1.4.4.0"
 
     // sdk and tools
