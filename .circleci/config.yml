@@ -180,7 +180,7 @@ jobs:
           destination: artifacts
 workflows:
   version: 2
-  mobile-workflow:
+  mobile_workflow:
     jobs:
       - pre-build
       - build-unit-tests:
