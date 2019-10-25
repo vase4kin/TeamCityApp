@@ -48,7 +48,7 @@ jobs:
       - restore_cache:
           <<: *general_cache_key
       - run:
-          name: Prepare apks
+          name: Build unit tests
           command: ./gradlew assembleMockDebugUnitTest
       - persist_to_workspace:
           root: *workspace_root
@@ -63,7 +63,7 @@ jobs:
       - restore_cache:
           <<: *general_cache_key
       - run:
-          name: Prepare apks
+          name: Build UI tests
           command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest
       - persist_to_workspace:
           root: *workspace_root
