@@ -41,30 +41,15 @@ jobs:
           root: *workspace_root
           paths:
             - .
-  build-unit-tests:
+  build-tests:
     <<: *container_config
     steps:
       - *attach_workspace
       - restore_cache:
           <<: *general_cache_key
       - run:
-          name: Build unit tests
-          command: ./gradlew assembleMockDebugUnitTest
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - .
-  build-ui-tests:
-    <<: *container_config
-    steps:
-      - *attach_workspace
-      - restore_cache:
-          <<: *general_cache_key
-      - restore_cache:
-          <<: *general_cache_key
-      - run:
-          name: Build UI tests
-          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest
+          name: Build tests
+          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest assembleMockDebugUnitTest
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -183,10 +168,7 @@ workflows:
   mobile_workflow:
     jobs:
       - pre-build
-      - build-unit-tests:
-          requires:
-            - pre-build
-      - build-ui-tests:
+      - build-tests:
           requires:
             - pre-build
       - checks:
@@ -194,10 +176,10 @@ workflows:
             - pre-build
       - unit-tests:
           requires:
-            - build-unit-tests
+            - build-tests
       - ui-tests:
           requires:
-            - build-ui-tests
+            - build-tests
       - coverage:
           requires:
             - ui-tests
