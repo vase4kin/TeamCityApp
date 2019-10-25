@@ -20,6 +20,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.WindowManager
 import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import javax.inject.Inject
 
 /**
@@ -41,6 +42,6 @@ class StatusBarUtils @Inject constructor() {
         // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         // finally change the color
-        window.statusBarColor = activity.resources.getColor(color, activity.theme)
+        window.statusBarColor = ContextCompat.getColor(activity, color)
     }
 }
