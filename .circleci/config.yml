@@ -12,7 +12,7 @@ references:
   general_cache_key: &general_cache_key
     key: jars-{{ checksum "build.gradle" }}-{{ checksum  "app/build.gradle" }}
 jobs:
-  build:
+  pre-build:
     <<: *container_config
     steps:
       - checkout
@@ -37,9 +37,34 @@ jobs:
             cp mock-mockDebug-google-services.json ./app/src/mock/debug/google-services.json
             mkdir -p app/src/prod/debug/
             cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .
+  build-unit-tests:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
       - run:
           name: Prepare apks
-          command: ./gradlew assembleMockDebug assembleMockDebugUnitTest assembleMockDebugAndroidTest
+          command: ./gradlew assembleMockDebugUnitTest
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .
+  build-ui-tests:
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - restore_cache:
+          <<: *general_cache_key
+      - restore_cache:
+          <<: *general_cache_key
+      - run:
+          name: Prepare apks
+          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -157,16 +182,18 @@ workflows:
   version: 2
   build_checks_unit_and_ui_tests_coverage:
     jobs:
-      - build
+      - pre-build
+      - build-unit-tests
+      - build-ui-tests
       - checks:
           requires:
             - build
       - unit-tests:
           requires:
-            - build
+            - build-unit-tests
       - ui-tests:
           requires:
-            - build
+            - build-ui-tests
       - coverage:
           requires:
             - ui-tests
