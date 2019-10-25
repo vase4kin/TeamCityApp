@@ -179,8 +179,7 @@
     <string name="error_save_account">Could not save user. Please try again</string>
 
     <!--Managing account values-->
-    <string name="header_text_active_account">Active</string>
-    <string name="header_text_not_active_account">Not active</string>
+    <string name="text_account_un_secure_ssl_">Ignore SSL certificate validity is enabled for this account</string>
 
     <!--Tests-->
     <string name="text_passed">Passed (%d)</string>

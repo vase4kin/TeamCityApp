@@ -36,8 +36,13 @@ class AccountAdapter(viewHolderFactories: Map<Int, ViewHolderFactory<AccountData
     override fun onBindViewHolder(holder: BaseViewHolder<AccountDataModel>, position: Int) {
         super.onBindViewHolder(holder, position)
         val userAccount = dataModel[position]
-        (holder as AccountViewHolder).itemView.setOnClickListener {
-            listener?.onAccountClick(userAccount)
+        if (holder is AccountViewHolder) {
+            holder.itemView.setOnClickListener {
+                listener?.onAccountClick(userAccount)
+            }
+            holder.sslDisabled.setOnClickListener {
+                listener?.onSslDisabledClick()
+            }
         }
     }
 }
