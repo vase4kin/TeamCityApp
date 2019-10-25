@@ -371,14 +371,18 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      * {@inheritDoc}
      */
     override fun hideTryItOutLoading() {
-        progressBar.visibility = View.GONE
+        if (::progressBar.isInitialized) {
+            progressBar.visibility = View.GONE
+        }
     }
 
     /**
      * {@inheritDoc}
      */
     override fun showTryItOut() {
-        tryItOutTextView.visibility = View.VISIBLE
+        if (::tryItOutTextView.isInitialized) {
+            tryItOutTextView.visibility = View.VISIBLE
+        }
     }
 
     /**
