@@ -180,7 +180,7 @@ jobs:
           destination: artifacts
 workflows:
   version: 2
-  build_checks_unit_and_ui_tests_coverage:
+  mobile-workflow:
     jobs:
       - pre-build
       - build-unit-tests:
