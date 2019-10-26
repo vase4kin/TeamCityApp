@@ -39,26 +39,51 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/default_margin"
+        android:layout_marginBottom="@dimen/default_margin">
 
-        <Button
-            android:id="@+id/button_cancel"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/privacy"
+            style="@style/ItemSubTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin"
-            android:text="@string/rate_cancel"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/about_app_text_privacy"
+            app:layout_constraintEnd_toStartOf="@id/guideline"
+            app:layout_constraintHorizontal_bias="0.8"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/button_rate"
-            android:layout_width="0dp"
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/default_margin"
-            android:text="@string/rate_now"
+            android:text="@string/text_divider"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guideline"
+            app:layout_constraintStart_toStartOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50" />
+
+        <TextView
+            android:id="@+id/website"
+            style="@style/ItemSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="@string/text_web_site"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/button_cancel"
-            app:layout_constraintTop_toTopOf="@id/button_cancel" />
+            app:layout_constraintHorizontal_bias="0.2"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="@id/privacy" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

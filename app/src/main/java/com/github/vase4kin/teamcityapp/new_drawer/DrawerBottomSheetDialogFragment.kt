@@ -35,7 +35,7 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return View.inflate(context, R.layout.fragment_bottom_sheet_drawer, null)
+        return View.inflate(context, R.layout.dialog_bottom_sheet_drawer, null)
     }
 
     companion object {
