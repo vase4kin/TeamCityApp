@@ -93,6 +93,11 @@ interface HomeView : DrawerView {
      */
     fun showAgentsFilterPrompt(onPromptShown: () -> Unit)
 
+    /**
+     * Show drawer
+     */
+    fun showDrawer()
+
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()
     }

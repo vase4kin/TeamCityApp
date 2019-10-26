@@ -110,6 +110,13 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
+    override fun onAccountsClick() {
+        view.showDrawer()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     override fun onPause() {
         dataManager.unsubscribeOfEventBusEvents()
         dataManager.setListener(null)

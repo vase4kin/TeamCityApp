@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.home.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
@@ -77,6 +79,21 @@ class HomeActivity : DaggerAppCompatActivity() {
 
     override fun onBackPressed() {
         presenter.onBackButtonPressed()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_home_activity, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.accounts -> {
+                presenter.onAccountsClick()
+                true
+            }
+            else -> false
+        }
     }
 
     private fun reinitDeps() {

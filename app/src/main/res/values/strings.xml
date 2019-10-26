@@ -34,6 +34,9 @@
     <string name="build_queue_drawer_item">Build queue</string>
     <string name="about_drawer_item">About</string>
 
+    <!--new drawer-->
+    <string name="text_menu_accounts">Accounts</string>
+
     <!--Activity titles-->
     <string name="title_activity_agent_tabs">@string/agents_drawer_item</string>
     <string name="title_activity_project_and_build_type_navigator">@string/projects_drawer_item</string>

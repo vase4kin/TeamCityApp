@@ -29,6 +29,7 @@ import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl
 import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.new_drawer.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -36,6 +37,7 @@ import com.google.android.material.snackbar.Snackbar
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 private const val TAG_BOTTOM_SHEET = "Tag filter bottom sheet"
+private const val TAG_DRAWER_BOTTOM_SHEET = "Tag drawer bottom sheet"
 private const val TIME_PROMPT_DELAY = 500
 
 /**
@@ -222,5 +224,13 @@ class HomeViewImpl(
                     onPromptShown()
                 }
             }.show()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun showDrawer() {
+        DrawerBottomSheetDialogFragment.createInstance()
+            .show(activity.supportFragmentManager, TAG_DRAWER_BOTTOM_SHEET)
     }
 }
