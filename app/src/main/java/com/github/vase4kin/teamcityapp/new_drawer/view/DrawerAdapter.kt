@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.viewmodel
+package com.github.vase4kin.teamcityapp.new_drawer.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -23,10 +23,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.new_drawer.AccountDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.BaseDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.DrawerType
-import com.github.vase4kin.teamcityapp.new_drawer.MenuDrawerItem
 
 class DrawerAdapter(
     private val list: List<BaseDrawerItem>
@@ -34,13 +30,23 @@ class DrawerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseDrawerItemViewHolder {
         return when (viewType) {
-            DrawerType.ACCOUNT.hashCode() -> AccountViewHolder(parent)
+            DrawerType.ACCOUNT.hashCode() -> AccountViewHolder(
+                parent
+            )
             DrawerType.NEW_ACCOUNT.hashCode(),
             DrawerType.MANAGE_ACCOUNTS.hashCode(),
-            DrawerType.ABOUT.hashCode() -> MenuViewHolder(parent)
-            DrawerType.ACCOUNTS_DIVIDER.hashCode() -> AccountsDividerViewHolder(parent)
-            DrawerType.DIVIDER.hashCode() -> DividerViewHolder(parent)
-            DrawerType.BOTTOM.hashCode() -> BottomViewHolder(parent)
+            DrawerType.ABOUT.hashCode() -> MenuViewHolder(
+                parent
+            )
+            DrawerType.ACCOUNTS_DIVIDER.hashCode() -> AccountsDividerViewHolder(
+                parent
+            )
+            DrawerType.DIVIDER.hashCode() -> DividerViewHolder(
+                parent
+            )
+            DrawerType.BOTTOM.hashCode() -> BottomViewHolder(
+                parent
+            )
             else -> DividerViewHolder(parent)
         }
     }

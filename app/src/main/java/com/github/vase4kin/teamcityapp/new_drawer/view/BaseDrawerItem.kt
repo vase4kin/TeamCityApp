@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer
+package com.github.vase4kin.teamcityapp.new_drawer.view
 
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
@@ -30,7 +30,9 @@ enum class DrawerType {
 
 class AccountDrawerItem(
     val account: UserAccount
-) : BaseDrawerItem(account.hashCode(), DrawerType.ACCOUNT)
+) : BaseDrawerItem(account.hashCode(),
+    DrawerType.ACCOUNT
+)
 
 abstract class MenuDrawerItem(
     override val id: Int,
@@ -45,11 +47,20 @@ private const val ID_ACCOUNTS_DIVIDER = "ID_ACCOUNTS_DIVIDER"
 private const val ID_DIVIDER = "ID_DIVIDER"
 private const val ID_BOTTOM = "ID_BOTTOM"
 
-class AccountsDividerDrawerItem: BaseDrawerItem(ID_ACCOUNTS_DIVIDER.hashCode(), DrawerType.ACCOUNTS_DIVIDER)
+class AccountsDividerDrawerItem: BaseDrawerItem(
+    ID_ACCOUNTS_DIVIDER.hashCode(),
+    DrawerType.ACCOUNTS_DIVIDER
+)
 
-class DividerDrawerItem: BaseDrawerItem(ID_DIVIDER.hashCode(), DrawerType.DIVIDER)
+class DividerDrawerItem: BaseDrawerItem(
+    ID_DIVIDER.hashCode(),
+    DrawerType.DIVIDER
+)
 
-class BottomDrawerItem: BaseDrawerItem(ID_BOTTOM.hashCode(), DrawerType.BOTTOM)
+class BottomDrawerItem: BaseDrawerItem(
+    ID_BOTTOM.hashCode(),
+    DrawerType.BOTTOM
+)
 
 class NewAccountDrawerItem : MenuDrawerItem(
     id = ID_NEW_ACCOUNT.hashCode(),

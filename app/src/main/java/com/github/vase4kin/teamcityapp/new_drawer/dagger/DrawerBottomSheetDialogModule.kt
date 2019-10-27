@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.dagger
 
-import com.github.vase4kin.teamcityapp.new_drawer.BaseDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.DrawerBottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module

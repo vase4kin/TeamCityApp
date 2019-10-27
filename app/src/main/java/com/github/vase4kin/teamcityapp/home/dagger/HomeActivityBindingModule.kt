@@ -23,9 +23,9 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetDialogScope
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetModule
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
-import com.github.vase4kin.teamcityapp.new_drawer.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.new_drawer.dagger.DrawerBottomSheetDialogModule
 import com.github.vase4kin.teamcityapp.new_drawer.dagger.DrawerBottomSheetDialogScope
+import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentScope
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment

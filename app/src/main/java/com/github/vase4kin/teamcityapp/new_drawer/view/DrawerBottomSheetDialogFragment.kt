@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer
+package com.github.vase4kin.teamcityapp.new_drawer.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,7 +23,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerAdapter
 import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.android.support.AndroidSupportInjection
@@ -59,6 +58,7 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        fun createInstance(): DrawerBottomSheetDialogFragment = DrawerBottomSheetDialogFragment()
+        fun createInstance(): DrawerBottomSheetDialogFragment =
+            DrawerBottomSheetDialogFragment()
     }
 }

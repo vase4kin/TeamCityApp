@@ -16,14 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.viewmodel
 
-import com.github.vase4kin.teamcityapp.new_drawer.AboutDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.AccountDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.AccountsDividerDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.BaseDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.BottomDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.DividerDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.ManageAccountsDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.NewAccountDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.AboutDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.AccountDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.BottomDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.DividerDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.ManageAccountsDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.NewAccountDrawerItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 
 class DrawerViewModel(
