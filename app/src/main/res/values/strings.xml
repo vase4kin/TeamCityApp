@@ -38,6 +38,8 @@
     <string name="text_menu_accounts">Accounts</string>
     <string name="text_web_site">Website</string>
     <string name="text_divider">•</string>
+    <string name="text_add_account">Add another account</string>
+    <string name="text_manage_accounts">Manage accounts</string>
 
     <!--Activity titles-->
     <string name="title_activity_agent_tabs">@string/agents_drawer_item</string>

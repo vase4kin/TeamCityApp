@@ -20,22 +20,42 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerAdapter
+import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import dagger.android.support.AndroidSupportInjection
+import javax.inject.Inject
 
 /**
  * Bottom sheet dialog
  */
 class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
+    @Inject
+    lateinit var viewModel: DrawerViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
-        // AndroidSupportInjection.inject(this)
+        AndroidSupportInjection.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return View.inflate(context, R.layout.dialog_bottom_sheet_drawer, null)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.onCreate()
+    }
+
+    fun setAdapter(list: List<BaseDrawerItem>) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.recycler_view) ?: return
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        recyclerView.adapter = DrawerAdapter(list)
     }
 
     companion object {
