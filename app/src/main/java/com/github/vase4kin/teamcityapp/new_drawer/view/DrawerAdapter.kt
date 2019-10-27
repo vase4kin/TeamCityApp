@@ -154,8 +154,10 @@ class AccountViewHolder(
         } else {
             imageView.setImageResource(R.drawable.ic_account)
         }
-        if (account.isActive) {
-            // Control router behaviour
+        if (account.isActive.not()) {
+            itemView.setOnClickListener {
+                router.swithAccounts(account)
+            }
         }
     }
 }

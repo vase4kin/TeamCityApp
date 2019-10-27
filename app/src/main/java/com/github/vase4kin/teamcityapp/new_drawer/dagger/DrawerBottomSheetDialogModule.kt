@@ -46,9 +46,10 @@ class DrawerBottomSheetDialogModule {
     @Provides
     fun providesRouter(
         fragment: DrawerBottomSheetDialogFragment,
+        sharedUserStorage: SharedUserStorage,
         chromeCustomTabs: ChromeCustomTabs
     ): DrawerRouter {
-        return DrawerRouterImpl(fragment, chromeCustomTabs)
+        return DrawerRouterImpl(fragment, sharedUserStorage, chromeCustomTabs)
     }
 
     @Provides

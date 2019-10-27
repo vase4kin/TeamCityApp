@@ -22,7 +22,10 @@ import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 
 interface DrawerRouter {
 
@@ -35,10 +38,13 @@ interface DrawerRouter {
     fun openAddNewAccount()
 
     fun openManageAccounts()
+
+    fun swithAccounts(account: UserAccount)
 }
 
 class DrawerRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment,
+    private val sharedUserStorage: SharedUserStorage,
     private val chromeCustomTabs: ChromeCustomTabs
 ) :
     DrawerRouter {
@@ -67,5 +73,10 @@ class DrawerRouterImpl(
     override fun openManageAccounts() {
         AccountListActivity.start(fragment.requireActivity())
         fragment.dismiss()
+    }
+
+    override fun swithAccounts(account: UserAccount) {
+        sharedUserStorage.setUserActive(account.teamcityUrl, account.userName)
+        HomeActivity.startWhenSwitchingAccountsFromDrawer(fragment.requireActivity())
     }
 }
