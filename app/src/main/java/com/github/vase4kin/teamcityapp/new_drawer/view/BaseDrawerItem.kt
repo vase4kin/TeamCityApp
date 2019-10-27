@@ -77,5 +77,5 @@ class ManageAccountsDrawerItem : MenuDrawerItem(
 class AboutDrawerItem : MenuDrawerItem(
     ID_ABOUT.hashCode(),
     DrawerType.ABOUT,
-    imageRes = R.drawable.ic_help_black_24dp,
+    imageRes = R.drawable.ic_info_outline_black_24dp,
     stringRes = R.string.about_drawer_item)

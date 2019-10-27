@@ -155,7 +155,7 @@ class AccountViewHolder(
         itemView.findViewById<TextView>(R.id.subTitle).text = account.teamcityUrl
         val imageView: ImageView = itemView.findViewById(R.id.image)
         if (account.isSslDisabled) {
-            imageView.setImageResource(R.drawable.ic_account_alert)
+            imageView.setImageResource(R.drawable.ic_account_alert_outline)
         } else {
             imageView.setImageResource(R.drawable.ic_account)
         }
