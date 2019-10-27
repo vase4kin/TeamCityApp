@@ -29,13 +29,18 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/bottom_sheet_view" />
 
-    <include layout="@layout/item_user_account_list" />
+    <include layout="@layout/item_drawer_main_user_account" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:itemCount="2"
-        tools:listitem="@layout/item_user_account_list" />
+        tools:listitem="@layout/item_drawer_user_account" />
+
+    <include
+        layout="@layout/layout_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
