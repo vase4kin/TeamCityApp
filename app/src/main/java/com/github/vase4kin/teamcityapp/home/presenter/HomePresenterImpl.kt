@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.home.presenter
 
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
@@ -62,6 +63,8 @@ class HomePresenterImpl @Inject constructor(
         start()
         super.onCreate()
         view.setListener(this)
+        // Set title for Projects tab
+        bottomNavigationView.setTitle(R.string.projects_drawer_item)
     }
 
     /**

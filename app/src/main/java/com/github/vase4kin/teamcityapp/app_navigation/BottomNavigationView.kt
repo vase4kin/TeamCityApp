@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.app_navigation
 
 import android.os.Handler
+import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
@@ -130,9 +131,7 @@ class BottomNavigationViewImpl(
     override fun hideFab() = fab.hide()
 
     override fun setTitle(title: Int) {
-        activity.supportActionBar?.apply {
-            this@apply.title = activity.getString(title)
-        }
+        activity.findViewById<TextView>(R.id.toolbar_title).text = activity.getString(title)
     }
 
     override fun updateNotifications(tabPosition: Int, count: Int) {
