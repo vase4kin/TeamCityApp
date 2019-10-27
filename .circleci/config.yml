@@ -175,7 +175,7 @@ jobs:
               --device model=Nexus6P,version=24,locale=en,orientation=portrait \
               --device model=Nexus6P,version=26,locale=en,orientation=portrait \
               --device model=Nexus6,version=21,locale=en,orientation=portrait \
-              --timeout 15m \
+              --timeout 20m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
               --directories-to-pull /sdcard 2>&1 | tee firebase.log) || EXIT_CODE=$?
