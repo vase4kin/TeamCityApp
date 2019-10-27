@@ -54,13 +54,13 @@ class BottomDrawerItem: BaseDrawerItem(ID_BOTTOM.hashCode(), DrawerType.BOTTOM)
 class NewAccountDrawerItem : MenuDrawerItem(
     id = ID_NEW_ACCOUNT.hashCode(),
     type = DrawerType.NEW_ACCOUNT,
-    imageRes = R.drawable.ic_add_black_24dp,
+    imageRes = R.drawable.ic_accounts_add,
     stringRes = R.string.text_add_account)
 
 class ManageAccountsDrawerItem : MenuDrawerItem(
     id = ID_MANAGE_ACCOUNTS.hashCode(),
     type = DrawerType.MANAGE_ACCOUNTS,
-    imageRes = R.drawable.ic_settings_black_24dp,
+    imageRes = R.drawable.ic_accounts,
     stringRes = R.string.text_manage_accounts)
 
 class AboutDrawerItem : MenuDrawerItem(
