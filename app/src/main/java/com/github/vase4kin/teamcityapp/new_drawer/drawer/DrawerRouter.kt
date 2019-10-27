@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.new_drawer.drawer
 
 import android.content.Intent
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
@@ -38,15 +39,18 @@ interface DrawerRouter {
 
 class DrawerRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment,
-    private val chromeCustomTabs: ChromeCustomTabs):
+    private val chromeCustomTabs: ChromeCustomTabs
+) :
     DrawerRouter {
 
     override fun openPrivacy() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val privacyUrl = fragment.getString(R.string.about_app_url_privacy)
+        chromeCustomTabs.launchUrl(privacyUrl)
     }
 
     override fun openWebsite() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val website = fragment.getString(R.string.about_app_url_web)
+        chromeCustomTabs.launchUrl(website)
     }
 
     override fun openAbout() {

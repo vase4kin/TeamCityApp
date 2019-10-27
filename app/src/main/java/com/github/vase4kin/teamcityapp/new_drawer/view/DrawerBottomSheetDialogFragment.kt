@@ -51,7 +51,12 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onCreate()
+        viewModel.onViewCreated()
+    }
+
+    override fun onDestroyView() {
+        viewModel.onDestroyView()
+        super.onDestroyView()
     }
 
     fun setAdapter(list: List<BaseDrawerItem>) {

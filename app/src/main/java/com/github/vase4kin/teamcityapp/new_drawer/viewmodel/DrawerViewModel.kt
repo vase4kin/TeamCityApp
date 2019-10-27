@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.viewmodel
 
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.new_drawer.view.AboutDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.AccountDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerDrawerItem
@@ -28,10 +29,16 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 
 class DrawerViewModel(
     private val sharedUserStorage: SharedUserStorage,
+    private val chromeCustomTabs: ChromeCustomTabs,
     private val setAdapter: (items: List<BaseDrawerItem>) -> Unit
 ) {
 
-    fun onCreate() {
+    fun onViewCreated() {
+        chromeCustomTabs.initCustomsTabs()
+        initDrawer()
+    }
+
+    private fun initDrawer() {
         // Set title
         val activeAccounts = sharedUserStorage.userAccounts.filter {
             it.isActive
@@ -60,5 +67,9 @@ class DrawerViewModel(
         // set adapter
         setAdapter(list)
         // set links to open by chrome tabs
+    }
+
+    fun onDestroyView() {
+        chromeCustomTabs.unbindCustomsTabs()
     }
 }

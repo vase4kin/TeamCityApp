@@ -31,25 +31,14 @@ class DrawerAdapter(
 ) : RecyclerView.Adapter<BaseDrawerItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseDrawerItemViewHolder {
-        return when (viewType) {
-            DrawerType.ACCOUNT.hashCode() -> AccountViewHolder(
-                parent
-            )
-            DrawerType.NEW_ACCOUNT.hashCode(),
-            DrawerType.MANAGE_ACCOUNTS.hashCode(),
-            DrawerType.ABOUT.hashCode() -> MenuViewHolder(
-                parent
-            )
-            DrawerType.ACCOUNTS_DIVIDER.hashCode() -> AccountsDividerViewHolder(
-                parent
-            )
-            DrawerType.DIVIDER.hashCode() -> DividerViewHolder(
-                parent
-            )
-            DrawerType.BOTTOM.hashCode() -> BottomViewHolder(
-                parent
-            )
-            else -> DividerViewHolder(parent)
+        return when (DrawerType.values()[viewType]) {
+            DrawerType.ACCOUNT -> AccountViewHolder(parent, router)
+            DrawerType.NEW_ACCOUNT,
+            DrawerType.MANAGE_ACCOUNTS,
+            DrawerType.ABOUT -> MenuViewHolder(parent, router)
+            DrawerType.ACCOUNTS_DIVIDER -> AccountsDividerViewHolder(parent)
+            DrawerType.DIVIDER -> DividerViewHolder(parent)
+            DrawerType.BOTTOM -> BottomViewHolder(parent, router)
         }
     }
 
@@ -58,24 +47,10 @@ class DrawerAdapter(
     override fun onBindViewHolder(holder: BaseDrawerItemViewHolder, position: Int) {
         val item = list[position]
         holder.bind(item)
-        // Do not set click listener for active accounts
-        if (item is AccountDrawerItem) {
-            val account = item.account
-            if (account.isActive) {
-                return
-            }
-        }
-        holder.itemView.setOnClickListener {
-            when(holder.itemViewType) {
-                DrawerType.ABOUT.hashCode() -> router.openAbout()
-                DrawerType.NEW_ACCOUNT.hashCode() -> router.openAddNewAccount()
-                DrawerType.MANAGE_ACCOUNTS.hashCode() -> router.openManageAccounts()
-            }
-        }
     }
 
     override fun getItemViewType(position: Int): Int {
-        return list[position].type.hashCode()
+        return list[position].type.ordinal
     }
 }
 
@@ -111,7 +86,8 @@ class DividerViewHolder(
 }
 
 class BottomViewHolder(
-    parent: ViewGroup
+    parent: ViewGroup,
+    private val router: DrawerRouter
 ) : BaseDrawerItemViewHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_drawer_bottom,
@@ -119,11 +95,19 @@ class BottomViewHolder(
         false
     )
 ) {
-    override fun bind(drawerItem: BaseDrawerItem) {}
+    override fun bind(drawerItem: BaseDrawerItem) {
+        itemView.findViewById<View>(R.id.privacy).setOnClickListener {
+            router.openPrivacy()
+        }
+        itemView.findViewById<View>(R.id.website).setOnClickListener {
+            router.openWebsite()
+        }
+    }
 }
 
 class MenuViewHolder(
-    parent: ViewGroup
+    parent: ViewGroup,
+    private val router: DrawerRouter
 ) : BaseDrawerItemViewHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_drawer_menu,
@@ -135,11 +119,22 @@ class MenuViewHolder(
         val item = drawerItem as MenuDrawerItem
         itemView.findViewById<TextView>(R.id.title).setText(item.stringRes)
         itemView.findViewById<ImageView>(R.id.image).setImageResource(drawerItem.imageRes)
+        itemView.setOnClickListener {
+            when (drawerItem.type) {
+                DrawerType.ABOUT -> router.openAbout()
+                DrawerType.NEW_ACCOUNT -> router.openAddNewAccount()
+                DrawerType.MANAGE_ACCOUNTS -> router.openManageAccounts()
+                else -> {
+                    //Do nothing
+                }
+            }
+        }
     }
 }
 
 class AccountViewHolder(
-    parent: ViewGroup
+    parent: ViewGroup,
+    private val router: DrawerRouter
 ) : BaseDrawerItemViewHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_drawer_user_account,
@@ -158,6 +153,9 @@ class AccountViewHolder(
             imageView.setImageResource(R.drawable.ic_account_alert_outline)
         } else {
             imageView.setImageResource(R.drawable.ic_account)
+        }
+        if (account.isActive) {
+            // Control router behaviour
         }
     }
 }

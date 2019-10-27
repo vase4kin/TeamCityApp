@@ -33,14 +33,16 @@ class DrawerBottomSheetDialogModule {
     @Provides
     fun providesViewModel(
         fragment: DrawerBottomSheetDialogFragment,
-        sharedUserStorage: SharedUserStorage
+        sharedUserStorage: SharedUserStorage,
+        chromeCustomTabs: ChromeCustomTabs
     ): DrawerViewModel {
         val setAdapter: (items: List<BaseDrawerItem>) -> Unit = {
             fragment.setAdapter(it)
         }
-        return DrawerViewModel(sharedUserStorage, setAdapter)
+        return DrawerViewModel(sharedUserStorage, chromeCustomTabs, setAdapter)
     }
 
+    @DrawerBottomSheetDialogScope
     @Provides
     fun providesRouter(
         fragment: DrawerBottomSheetDialogFragment,
