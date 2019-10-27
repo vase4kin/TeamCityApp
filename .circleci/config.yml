@@ -145,7 +145,7 @@ jobs:
           destination: artifacts
       - store_test_results:
           path: app/build/circleci/test-results
-  ui-tests-v21-v23-v24:
+  ui-tests-v21-v23-v24-v26:
     <<: *container_config
     steps:
       - *attach_workspace
@@ -236,7 +236,7 @@ workflows:
       - ui-tests-v28:
           requires:
             - build-tests
-      - ui-tests-v21-v23-v24:
+      - ui-tests-v21-v23-v24-v26:
           requires:
             - build-tests
       - coverage:
