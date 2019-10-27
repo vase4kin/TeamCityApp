@@ -16,7 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.dagger
 
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
+import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
+import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouterImpl
 import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerAdapter
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -35,5 +39,18 @@ class DrawerBottomSheetDialogModule {
             fragment.setAdapter(it)
         }
         return DrawerViewModel(sharedUserStorage, setAdapter)
+    }
+
+    @Provides
+    fun providesRouter(
+        fragment: DrawerBottomSheetDialogFragment,
+        chromeCustomTabs: ChromeCustomTabs
+    ): DrawerRouter {
+        return DrawerRouterImpl(fragment, chromeCustomTabs)
+    }
+
+    @Provides
+    fun providesAdapter(router: DrawerRouter): DrawerAdapter {
+        return DrawerAdapter(mutableListOf(), router)
     }
 }

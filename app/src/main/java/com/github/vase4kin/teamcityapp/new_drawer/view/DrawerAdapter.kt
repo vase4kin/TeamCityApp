@@ -23,9 +23,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
 
 class DrawerAdapter(
-    private val list: List<BaseDrawerItem>
+    val list: MutableList<BaseDrawerItem>,
+    private val router: DrawerRouter
 ) : RecyclerView.Adapter<BaseDrawerItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseDrawerItemViewHolder {
@@ -56,6 +58,20 @@ class DrawerAdapter(
     override fun onBindViewHolder(holder: BaseDrawerItemViewHolder, position: Int) {
         val item = list[position]
         holder.bind(item)
+        // Do not set click listener for active accounts
+        if (item is AccountDrawerItem) {
+            val account = item.account
+            if (account.isActive) {
+                return
+            }
+        }
+        holder.itemView.setOnClickListener {
+            when(holder.itemViewType) {
+                DrawerType.ABOUT.hashCode() -> router.openAbout()
+                DrawerType.NEW_ACCOUNT.hashCode() -> router.openAddNewAccount()
+                DrawerType.MANAGE_ACCOUNTS.hashCode() -> router.openManageAccounts()
+            }
+        }
     }
 
     override fun getItemViewType(position: Int): Int {

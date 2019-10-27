@@ -23,6 +23,8 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
@@ -89,4 +91,9 @@ class HomeModule {
     @HomeActivityScope
     @Provides
     fun provideFilterProvider(): FilterProvider = FilterProvider()
+
+    @HomeActivityScope
+    @Provides
+    fun provideChromeTabs(activity: HomeActivity): ChromeCustomTabs =
+        ChromeCustomTabsImpl(activity)
 }

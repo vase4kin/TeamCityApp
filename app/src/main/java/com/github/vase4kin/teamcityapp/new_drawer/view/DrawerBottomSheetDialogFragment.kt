@@ -34,6 +34,9 @@ import javax.inject.Inject
 class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     @Inject
+    lateinit var drawerAdapter: DrawerAdapter
+
+    @Inject
     lateinit var viewModel: DrawerViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +57,10 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
     fun setAdapter(list: List<BaseDrawerItem>) {
         val recyclerView = view?.findViewById<RecyclerView>(R.id.recycler_view) ?: return
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        recyclerView.adapter = DrawerAdapter(list)
+        recyclerView.adapter = drawerAdapter
+        drawerAdapter.list.clear()
+        drawerAdapter.list.addAll(list)
+        recyclerView.invalidate()
     }
 
     companion object {
