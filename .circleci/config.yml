@@ -173,6 +173,7 @@ jobs:
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
               --device model=Nexus6P,version=23,locale=en,orientation=portrait \
               --device model=Nexus6P,version=24,locale=en,orientation=portrait \
+              --device model=Nexus6P,version=26,locale=en,orientation=portrait \
               --device model=Nexus6,version=21,locale=en,orientation=portrait \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
