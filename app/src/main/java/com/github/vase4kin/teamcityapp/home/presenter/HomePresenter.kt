@@ -49,9 +49,4 @@ interface HomePresenter {
      * Select tab
      */
     fun selectTab(navigationItem: AppNavigationItem)
-
-    /**
-     * On accounts click
-     */
-    fun onAccountsClick()
 }
