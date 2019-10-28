@@ -152,7 +152,7 @@ class AccountViewHolder(
         if (account.isSslDisabled) {
             imageView.setImageResource(R.drawable.ic_account_alert_outline)
         } else {
-            imageView.setImageResource(R.drawable.ic_account)
+            imageView.setImageResource(R.drawable.ic_account_outline)
         }
         if (account.isActive.not()) {
             itemView.setOnClickListener {
