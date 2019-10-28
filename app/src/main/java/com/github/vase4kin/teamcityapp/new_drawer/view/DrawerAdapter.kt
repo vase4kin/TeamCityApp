@@ -27,19 +27,12 @@ import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
 
 class DrawerAdapter(
     val list: MutableList<BaseDrawerItem>,
-    private val router: DrawerRouter
+    private val viewHolderFactories: Map<Int, BaseDrawerViewHolderFactory>
 ) : RecyclerView.Adapter<BaseDrawerItemViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseDrawerItemViewHolder {
-        return when (DrawerType.values()[viewType]) {
-            DrawerType.ACCOUNT -> AccountViewHolder(parent, router)
-            DrawerType.NEW_ACCOUNT,
-            DrawerType.MANAGE_ACCOUNTS,
-            DrawerType.ABOUT -> MenuViewHolder(parent, router)
-            DrawerType.ACCOUNTS_DIVIDER -> AccountsDividerViewHolder(parent)
-            DrawerType.DIVIDER -> DividerViewHolder(parent)
-            DrawerType.BOTTOM -> BottomViewHolder(parent, router)
-        }
+        val type = DrawerType.values()[viewType].type
+        return viewHolderFactories[type]?.create(parent) ?: DividerViewHolder(parent)
     }
 
     override fun getItemCount(): Int = list.count()

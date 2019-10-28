@@ -19,13 +19,26 @@ package com.github.vase4kin.teamcityapp.new_drawer.dagger
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouterImpl
+import com.github.vase4kin.teamcityapp.new_drawer.view.AccountViewHolderFactory
+import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerViewHolderFactory
 import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
+import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerViewHolderFactory
+import com.github.vase4kin.teamcityapp.new_drawer.view.BottomViewHolderFactory
+import com.github.vase4kin.teamcityapp.new_drawer.view.DividerViewHolderFactory
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerAdapter
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.new_drawer.view.MenuViewHolderFactory
+import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_ACCOUNT
+import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_ACCOUNTS_DIVIDER
+import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_BOTTOM
+import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_DIVIDER
+import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_MENU
 import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
+import dagger.multibindings.IntKey
+import dagger.multibindings.IntoMap
 
 @Module
 class DrawerBottomSheetDialogModule {
@@ -53,7 +66,43 @@ class DrawerBottomSheetDialogModule {
     }
 
     @Provides
-    fun providesAdapter(router: DrawerRouter): DrawerAdapter {
-        return DrawerAdapter(mutableListOf(), router)
+    fun providesAdapter(
+        viewHolderFactories: Map<Int, @JvmSuppressWildcards BaseDrawerViewHolderFactory>): DrawerAdapter {
+        return DrawerAdapter(mutableListOf(), viewHolderFactories)
+    }
+
+    @IntoMap
+    @IntKey(TYPE_ACCOUNTS_DIVIDER)
+    @Provides
+    fun providesAccountsDividerViewHolderFactory(): BaseDrawerViewHolderFactory {
+        return AccountsDividerViewHolderFactory()
+    }
+
+    @IntoMap
+    @IntKey(TYPE_DIVIDER)
+    @Provides
+    fun providesDividerViewHolderFactory(): BaseDrawerViewHolderFactory {
+        return DividerViewHolderFactory()
+    }
+
+    @IntoMap
+    @IntKey(TYPE_BOTTOM)
+    @Provides
+    fun providesBottomViewHolderFactory(router: DrawerRouter): BaseDrawerViewHolderFactory {
+        return BottomViewHolderFactory(router)
+    }
+
+    @IntoMap
+    @IntKey(TYPE_MENU)
+    @Provides
+    fun providesMenuViewHolderFactory(router: DrawerRouter): BaseDrawerViewHolderFactory {
+        return MenuViewHolderFactory(router)
+    }
+
+    @IntoMap
+    @IntKey(TYPE_ACCOUNT)
+    @Provides
+    fun providesAccountViewHolderFactory(router: DrawerRouter): BaseDrawerViewHolderFactory {
+        return AccountViewHolderFactory(router)
     }
 }

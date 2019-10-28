@@ -24,8 +24,20 @@ abstract class BaseDrawerItem(
     open val type: DrawerType
 )
 
-enum class DrawerType {
-    ACCOUNT, ABOUT, NEW_ACCOUNT, MANAGE_ACCOUNTS, ACCOUNTS_DIVIDER, DIVIDER, BOTTOM
+const val TYPE_ACCOUNT = 0
+const val TYPE_MENU = 1
+const val TYPE_ACCOUNTS_DIVIDER = 2
+const val TYPE_DIVIDER = 3
+const val TYPE_BOTTOM = 4
+
+enum class DrawerType(val type: Int) {
+    ACCOUNT(TYPE_ACCOUNT),
+    ABOUT(TYPE_MENU),
+    NEW_ACCOUNT(TYPE_MENU),
+    MANAGE_ACCOUNTS(TYPE_MENU),
+    ACCOUNTS_DIVIDER(TYPE_ACCOUNTS_DIVIDER),
+    DIVIDER(TYPE_DIVIDER),
+    BOTTOM(TYPE_BOTTOM)
 }
 
 class AccountDrawerItem(
