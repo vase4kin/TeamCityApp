@@ -200,9 +200,9 @@
 
     <style name="LoginEditTextTheme" parent="BaseEditTextStyle">
         <item name="android:singleLine">true</item>
-        <item name="colorControlNormal">@color/md_white_1000</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
         <item name="colorControlActivated">?android:attr/textColorSecondaryInverse</item>
-        <item name="android:textColorPrimary">@color/md_white_1000</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
     </style>
 
     <style name="BaseEditTextStyle" />
@@ -217,11 +217,11 @@
     </style>
 
     <style name="Autocomplete" parent="Widget.AppCompat.Light.AutoCompleteTextView">
-        <item name="android:background">@color/md_white_1000</item>
-        <item name="colorControlNormal">@color/md_white_1000</item>
+        <item name="android:background">@color/colorWhite</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
         <item name="colorControlActivated">?android:attr/textColorSecondaryInverse</item>
         <item name="android:textColorHint">?android:attr/textColorSecondaryInverse</item>
-        <item name="android:textColorPrimary">@color/md_white_1000</item>
+        <item name="android:textColorPrimary">@color/colorWhite</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:inputType">textNoSuggestions</item>
         <item name="android:maxLines">1</item>
