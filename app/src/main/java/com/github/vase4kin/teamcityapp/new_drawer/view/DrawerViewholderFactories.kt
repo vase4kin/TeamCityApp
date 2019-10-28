@@ -24,14 +24,14 @@ abstract class BaseDrawerViewHolderFactory {
     abstract fun create(parent: ViewGroup): BaseDrawerItemViewHolder
 }
 
-class AccountsDividerViewHolderFactory: BaseDrawerViewHolderFactory() {
+class AccountsDividerViewHolderFactory : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
         return AccountsDividerViewHolder(parent)
     }
 }
 
-class DividerViewHolderFactory: BaseDrawerViewHolderFactory() {
+class DividerViewHolderFactory : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
         return DividerViewHolder(parent)
@@ -40,7 +40,7 @@ class DividerViewHolderFactory: BaseDrawerViewHolderFactory() {
 
 class BottomViewHolderFactory(
     private val router: DrawerRouter
-): BaseDrawerViewHolderFactory() {
+) : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
         return BottomViewHolder(parent, router)
@@ -49,7 +49,7 @@ class BottomViewHolderFactory(
 
 class MenuViewHolderFactory(
     private val router: DrawerRouter
-): BaseDrawerViewHolderFactory() {
+) : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
         return MenuViewHolder(parent, router)
@@ -58,7 +58,7 @@ class MenuViewHolderFactory(
 
 class AccountViewHolderFactory(
     private val router: DrawerRouter
-): BaseDrawerViewHolderFactory() {
+) : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
         return AccountViewHolder(parent, router)

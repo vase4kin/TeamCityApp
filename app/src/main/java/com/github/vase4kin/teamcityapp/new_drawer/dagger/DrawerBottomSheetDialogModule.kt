@@ -67,7 +67,8 @@ class DrawerBottomSheetDialogModule {
 
     @Provides
     fun providesAdapter(
-        viewHolderFactories: Map<Int, @JvmSuppressWildcards BaseDrawerViewHolderFactory>): DrawerAdapter {
+        viewHolderFactories: Map<Int, @JvmSuppressWildcards BaseDrawerViewHolderFactory>
+    ): DrawerAdapter {
         return DrawerAdapter(mutableListOf(), viewHolderFactories)
     }
 
