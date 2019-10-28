@@ -18,12 +18,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/default_margin"
+    android:layout_marginTop="12dp"
     android:layout_marginBottom="@dimen/default_margin">
 
     <TextView
         android:id="@+id/privacy"
         style="@style/ItemSubTitle"
+        android:padding="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
@@ -54,6 +55,7 @@
     <TextView
         android:id="@+id/website"
         style="@style/ItemSubTitle"
+        android:padding="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
