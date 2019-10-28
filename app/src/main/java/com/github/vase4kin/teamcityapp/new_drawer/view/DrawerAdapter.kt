@@ -125,7 +125,7 @@ class MenuViewHolder(
                 DrawerType.NEW_ACCOUNT -> router.openAddNewAccount()
                 DrawerType.MANAGE_ACCOUNTS -> router.openManageAccounts()
                 else -> {
-                    //Do nothing
+                    // Do nothing
                 }
             }
         }

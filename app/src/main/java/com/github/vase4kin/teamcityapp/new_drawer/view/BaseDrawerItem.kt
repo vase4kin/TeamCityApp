@@ -38,7 +38,8 @@ abstract class MenuDrawerItem(
     override val id: Int,
     override val type: DrawerType,
     val imageRes: Int,
-    val stringRes: Int): BaseDrawerItem(id, type)
+    val stringRes: Int
+) : BaseDrawerItem(id, type)
 
 private const val ID_NEW_ACCOUNT = "ID_NEW_ACCOUNT"
 private const val ID_MANAGE_ACCOUNTS = "ID_MANAGE_ACCOUNTS"
@@ -47,17 +48,17 @@ private const val ID_ACCOUNTS_DIVIDER = "ID_ACCOUNTS_DIVIDER"
 private const val ID_DIVIDER = "ID_DIVIDER"
 private const val ID_BOTTOM = "ID_BOTTOM"
 
-class AccountsDividerDrawerItem: BaseDrawerItem(
+class AccountsDividerDrawerItem : BaseDrawerItem(
     ID_ACCOUNTS_DIVIDER.hashCode(),
     DrawerType.ACCOUNTS_DIVIDER
 )
 
-class DividerDrawerItem: BaseDrawerItem(
+class DividerDrawerItem : BaseDrawerItem(
     ID_DIVIDER.hashCode(),
     DrawerType.DIVIDER
 )
 
-class BottomDrawerItem: BaseDrawerItem(
+class BottomDrawerItem : BaseDrawerItem(
     ID_BOTTOM.hashCode(),
     DrawerType.BOTTOM
 )
