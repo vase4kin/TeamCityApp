@@ -25,7 +25,10 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.BoundedMatcher
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl
 import org.hamcrest.Matcher
 import org.hamcrest.core.Is.`is`
@@ -137,6 +140,12 @@ class TestUtils {
             context.getSharedPreferences(OnboardingManagerImpl.PREF_NAME, Context.MODE_PRIVATE)
                 .edit()
                 .clear().commit()
+        }
+
+        @JvmStatic
+        fun matchHomeToolbarTitle(title: String) {
+            onView(withId(R.id.toolbar_title))
+                .check(matches(withText(title)))
         }
     }
 }

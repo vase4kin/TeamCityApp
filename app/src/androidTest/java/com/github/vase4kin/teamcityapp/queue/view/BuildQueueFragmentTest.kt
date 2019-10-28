@@ -40,7 +40,6 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
@@ -197,7 +196,7 @@ class BuildQueueFragmentTest {
         // Click on build queue tab
         clickOnBuildQueueTab()
 
-        matchToolbarTitle("Build queue")
+        TestUtils.matchHomeToolbarTitle("Build queue")
     }
 
     @Test

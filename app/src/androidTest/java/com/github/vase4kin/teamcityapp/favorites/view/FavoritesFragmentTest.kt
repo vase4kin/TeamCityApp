@@ -39,7 +39,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchHomeToolbarTitle
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
@@ -108,7 +108,7 @@ class FavoritesFragmentTest {
         clickOnFavoritesTab()
 
         // Checking toolbar title
-        matchToolbarTitle("Favorites")
+        matchHomeToolbarTitle("Favorites")
     }
 
     @Test
@@ -164,7 +164,7 @@ class FavoritesFragmentTest {
         onView(withText(R.string.text_info_add_action)).perform(click())
 
         // Checking toolbar title
-        matchToolbarTitle("Projects")
+        matchHomeToolbarTitle("Projects")
     }
 
     @Test
@@ -189,7 +189,7 @@ class FavoritesFragmentTest {
         onView(withText(R.string.text_view_favorites)).perform(click())
 
         // Checking toolbar title
-        matchToolbarTitle("Favorites")
+        matchHomeToolbarTitle("Favorites")
 
         // List has item with header
         onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2))

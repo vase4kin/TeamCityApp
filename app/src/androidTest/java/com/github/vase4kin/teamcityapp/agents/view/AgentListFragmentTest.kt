@@ -40,7 +40,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchHomeToolbarTitle
 import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -171,7 +171,7 @@ class AgentListFragmentTest {
         clickOnAgentsTab()
 
         val toolbarTitle = context.getString(R.string.agents_drawer_item)
-        matchToolbarTitle(toolbarTitle)
+        matchHomeToolbarTitle(toolbarTitle)
     }
 
     @Test
