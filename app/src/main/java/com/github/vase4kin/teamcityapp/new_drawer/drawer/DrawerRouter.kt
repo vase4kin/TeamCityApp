@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.new_drawer.drawer
 
 import android.content.Intent
+import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
@@ -31,7 +32,7 @@ interface DrawerRouter {
 
     fun openPrivacy()
 
-    fun openWebsite()
+    fun openRateTheApp()
 
     fun openAbout()
 
@@ -54,9 +55,8 @@ class DrawerRouterImpl(
         chromeCustomTabs.launchUrl(privacyUrl)
     }
 
-    override fun openWebsite() {
-        val website = fragment.getString(R.string.about_app_url_web)
-        chromeCustomTabs.launchUrl(website)
+    override fun openRateTheApp() {
+        ConvenienceBuilder.createRateOnClickAction(fragment.requireActivity()).onClick()
     }
 
     override fun openAbout() {

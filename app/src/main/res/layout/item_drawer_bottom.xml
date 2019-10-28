@@ -60,7 +60,7 @@
         android:clickable="true"
         android:focusable="true"
         android:padding="4dp"
-        android:text="@string/text_web_site"
+        android:text="@string/text_rate_the_app"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.2"

@@ -100,7 +100,7 @@ class BottomViewHolder(
             router.openPrivacy()
         }
         itemView.findViewById<View>(R.id.website).setOnClickListener {
-            router.openWebsite()
+            router.openRateTheApp()
         }
     }
 }
