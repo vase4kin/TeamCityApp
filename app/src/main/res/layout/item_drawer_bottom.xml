@@ -23,14 +23,14 @@
 
     <TextView
         android:id="@+id/privacy"
-        style="@style/ItemSubTitle"
-        android:padding="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
+        android:padding="4dp"
         android:text="@string/about_app_text_privacy"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toStartOf="@id/guideline"
         app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,14 +54,14 @@
 
     <TextView
         android:id="@+id/website"
-        style="@style/ItemSubTitle"
-        android:padding="4dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
+        android:padding="4dp"
         android:text="@string/text_web_site"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toEndOf="@id/guideline"

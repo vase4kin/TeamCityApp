@@ -41,6 +41,7 @@
         android:layout_marginStart="@dimen/default_margin"
         android:layout_marginTop="@dimen/small_margin"
         android:layout_marginEnd="@dimen/default_margin"
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/image"
@@ -55,10 +56,10 @@
         android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginBottom="@dimen/small_margin"
         app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/title"
-        app:layout_constraintBottom_toBottomOf="parent"
         tools:text="https://www.teamcity.jetbrains.com" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
