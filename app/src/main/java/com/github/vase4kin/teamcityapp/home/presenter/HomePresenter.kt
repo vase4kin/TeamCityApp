@@ -17,12 +17,18 @@
 package com.github.vase4kin.teamcityapp.home.presenter
 
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenter
 
-/**
- * Custom [DrawerPresenter] for [com.github.vase4kin.teamcityapp.home.view.HomeActivity] management
- */
-interface HomePresenter : DrawerPresenter {
+interface HomePresenter {
+
+    /**
+     * On activity create callback
+     */
+    fun onCreate()
+
+    /**
+     * On activity destroy callback
+     */
+    fun onDestroy()
 
     /**
      * On resume activity

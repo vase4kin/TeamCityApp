@@ -17,14 +17,18 @@
 package com.github.vase4kin.teamcityapp.home.data
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManager
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 
 /**
  * Data manager to handle root data operations
  */
-interface HomeDataManager : DrawerDataManager {
+interface HomeDataManager {
+
+    /**
+     * Is model empty
+     */
+    val isModelEmpty: Boolean
 
     /**
      * @return Active user account
@@ -103,6 +107,18 @@ interface HomeDataManager : DrawerDataManager {
      * Post @{[AgentsFilterChangedEvent] }
      */
     fun postAgentsFilterChangedEvent()
+
+    /**
+     * Unsubscribe
+     */
+    fun unsubscribe()
+
+    /**
+     * Load the number of connected agents
+     *
+     * @param loadingListener - Listener to receive callbacks
+     */
+    fun loadAgentsCount(loadingListener: OnLoadingListener<Int>, includeDisconnected: Boolean)
 
     interface Listener {
         fun onFilterApplied(filter: Filter)

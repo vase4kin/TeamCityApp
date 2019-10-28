@@ -18,8 +18,8 @@ package com.github.vase4kin.teamcityapp.home.data
 
 import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.drawer.data.DrawerDataManagerImpl
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -33,16 +33,20 @@ import org.greenrobot.eventbus.Subscribe
  */
 class HomeDataManagerImpl(
     repository: Repository,
-    sharedUserStorage: SharedUserStorage,
+    private val sharedUserStorage: SharedUserStorage,
     private val rxCache: RxCache,
     private val eventBus: EventBus
-) : DrawerDataManagerImpl(repository, sharedUserStorage, eventBus), HomeDataManager {
+) : HomeDataManager {
 
-    private val runningBuildsDataManager = RunningBuildsDataManagerImpl(repository, sharedUserStorage)
+    private val runningBuildsDataManager =
+        RunningBuildsDataManagerImpl(repository, sharedUserStorage)
     private val queuedBuildsDataManager = BuildQueueDataManagerImpl(repository, sharedUserStorage)
+    private val agentsDataManager = AgentsDataManagerImpl(repository, eventBus)
 
     private var listener: HomeDataManager.Listener? = null
 
+    override val isModelEmpty: Boolean
+        get() = sharedUserStorage.hasUserAccounts().not()
     /**
      * {@inheritDoc}
      */
@@ -116,7 +120,6 @@ class HomeDataManagerImpl(
      * {@inheritDoc}
      */
     override fun unsubscribe() {
-        super.unsubscribe()
         runningBuildsDataManager.unsubscribe()
         queuedBuildsDataManager.unsubscribe()
     }
@@ -140,6 +143,13 @@ class HomeDataManagerImpl(
      */
     override fun postAgentsFilterChangedEvent() {
         eventBus.post(HomeDataManager.AgentsFilterChangedEvent())
+    }
+
+    override fun loadAgentsCount(
+        loadingListener: OnLoadingListener<Int>,
+        includeDisconnected: Boolean
+    ) {
+        agentsDataManager.loadCount(loadingListener, includeDisconnected)
     }
 
     /***

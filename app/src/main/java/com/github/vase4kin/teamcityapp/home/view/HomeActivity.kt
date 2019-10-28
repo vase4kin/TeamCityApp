@@ -77,10 +77,6 @@ class HomeActivity : DaggerAppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        presenter.onBackButtonPressed()
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_home_activity, menu)
         return true
@@ -113,15 +109,6 @@ class HomeActivity : DaggerAppCompatActivity() {
 
         fun startWhenNewAccountIsCreated(activity: Activity) {
             startWhenSwitchingAccountsFromDrawer(activity)
-        }
-
-        fun startWhenNavigateToRootFromDrawer(activity: Activity) {
-            val launchIntent = Intent(activity, HomeActivity::class.java)
-                .addFlags(
-                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                )
-            DrawerActivityStartUtils.startActivity(launchIntent, activity)
         }
 
         fun startWithTabSelected(activity: Activity, navigationItem: AppNavigationItem) {
