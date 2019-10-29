@@ -611,16 +611,27 @@ class ArtifactListFragmentTest {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        // Checking artifact title
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(1, R.id.title)
-        )
-            .check(matches(withText("AndroidManifest.xml")))
-            .perform(click())
+        // Checking artifact title and clicking on it
+        val artifactName = "AndroidManifest.xml"
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't click on artifact with name $artifactName"
+            }
 
-        // Clicking on artifact to download
-        onView(withText("AndroidManifest.xml")).perform(click())
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view)
+                            .atPositionOnView(1, R.id.title)
+                    )
+                        .check(matches(withText(artifactName)))
+                        .perform(click())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
