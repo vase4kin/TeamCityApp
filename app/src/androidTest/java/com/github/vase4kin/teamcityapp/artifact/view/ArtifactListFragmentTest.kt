@@ -32,6 +32,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.azimolabs.conditionwatcher.ConditionWatcher
@@ -164,12 +165,17 @@ class ArtifactListFragmentTest {
                 R.id.title
             )
         ).check(matches(withText("AndroidManifest.xml")))
+        val sizeText = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
+            "7.77 kB"
+        } else {
+            "7.59 KB"
+        }
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 1,
                 R.id.subTitle
             )
-        ).check(matches(withText("7.77 kB")))
+        ).check(matches(withText(sizeText)))
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 2,
@@ -589,8 +595,8 @@ class ArtifactListFragmentTest {
             .check(matches(isDisplayed()))
     }
 
+    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.O)
     @Test
-    @Throws(Exception::class)
     fun testUserBeingAskedToGrantAllowInstallPackagesPermissions() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
