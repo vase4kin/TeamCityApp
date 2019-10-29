@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 references:
   workspace_root: &workspace_root
       ~/TeamCityApp
@@ -88,8 +88,13 @@ jobs:
             - app/build/jacoco
       - store_test_results:
           path: app/build/test-results/testMockDebugUnitTest
-  ui-tests-v28:
+  ui-tests:
     <<: *container_config
+    parameters:
+      devicemodel:
+        description: "Device name to execute tests on"
+        default: "sailfish,version=28,locale=en,orientation=portrait"
+        type: string
     steps:
       - *attach_workspace
       - restore_cache:
@@ -114,7 +119,7 @@ jobs:
             (gcloud firebase test android run --type instrumentation \
               --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=sailfish,version=28,locale=en,orientation=portrait \
+              --device model=<< parameters.devicemodel >> \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
@@ -135,62 +140,6 @@ jobs:
           root: *workspace_root
           paths:
             - app/build/coverage.ec
-      - run:
-          name: Copy UI Junit artifacts
-          command: |
-            mkdir -p app/build/circleci/test-results/
-            find app/build/circleci/artifacts/testlab -name "*.xml" -exec cp {} app/build/circleci/test-results/ \;
-      - store_artifacts:
-          path: app/build/circleci/artifacts
-          destination: artifacts
-      - store_test_results:
-          path: app/build/circleci/test-results
-  ui-tests-v21-v23-v24-v26:
-    <<: *container_config
-    steps:
-      - *attach_workspace
-      - restore_cache:
-          <<: *general_cache_key
-      - run:
-          name: Install Crcmod
-          command: |
-            sudo pip install -U crcmod
-      - run:
-          name: Log in to Google Cloud Platform
-          shell: /bin/bash -euo pipefail
-          command: |
-            echo $GCLOUD_SERVICE_KEY | base64 --decode > ${HOME}/client-secret.json
-            gcloud config set project $PROJECT_ID
-            gcloud auth activate-service-account $SERVICE_ACCOUNT --key-file ${HOME}/client-secret.json
-      - run:
-          name: Run UI tests
-          no_output_timeout: 15m
-          shell: /bin/bash -euo pipefail
-          command: |
-            gcloud firebase test android models list
-            (gcloud firebase test android run --type instrumentation \
-              --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
-              --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=hammerhead,version=21,locale=en,orientation=portrait \
-              --device model=shamu,version=23,locale=en,orientation=portrait \
-              --device model=lucye,version=24,locale=en,orientation=portrait \
-              --device model=dreamqlteue,version=26,locale=en,orientation=portrait \
-              --timeout 20m \
-              --results-bucket $PROJECT_ID \
-              --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
-              --directories-to-pull /sdcard 2>&1 | tee firebase.log) || EXIT_CODE=$?
-
-            RESULTS_BUCKET=$(sed -n 's|^.*\[https://console.developers.google.com/storage/browser/\([^]]*\).*|gs://\1|p' firebase.log)
-            TEST_LAB_ARTIFACTS_DIRECTORY="app/build/circleci/artifacts/testlab"
-            echo "Downloading from: ${RESULTS_BUCKET}"
-            mkdir -p $TEST_LAB_ARTIFACTS_DIRECTORY
-            chmod +x $TEST_LAB_ARTIFACTS_DIRECTORY
-            gsutil -m cp -n -R -Z "$RESULTS_BUCKET*" $TEST_LAB_ARTIFACTS_DIRECTORY
-
-            exit ${EXIT_CODE:-0}
-      - run:
-          name: Copy UI tests coverage artifact
-          command: find app/build/circleci/artifacts/testlab -name "*.ec" -exec cp {} app/build/ \;
       - run:
           name: Copy UI Junit artifacts
           command: |
@@ -233,13 +182,18 @@ workflows:
       - unit-tests:
           requires:
             - build-tests
-      - ui-tests-v28:
+      - ui-tests:
           requires:
             - build-tests
-      - ui-tests-v21-v23-v24-v26:
+      - ui-tests:
+          devicemodel: dreamqlteue,version=26,locale=en,orientation=portrait
+          requires:
+            - build-tests
+      - ui-tests:
+          devicemodel: lucye,version=24,locale=en,orientation=portrait
           requires:
             - build-tests
       - coverage:
           requires:
-            - ui-tests-v28
+            - ui-tests
             - unit-tests
