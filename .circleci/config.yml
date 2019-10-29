@@ -183,7 +183,8 @@ workflows:
           requires:
             - build-tests
       - ui-tests:
-          name: ui-tests-v28
+          name: ui-tests-v24
+          devicemodel: lucye,version=24,locale=en,orientation=portrait
           requires:
             - build-tests
       - ui-tests:
@@ -192,8 +193,7 @@ workflows:
           requires:
             - build-tests
       - ui-tests:
-          name: ui-tests-v24
-          devicemodel: lucye,version=24,locale=en,orientation=portrait
+          name: ui-tests-v28
           requires:
             - build-tests
       - coverage:
