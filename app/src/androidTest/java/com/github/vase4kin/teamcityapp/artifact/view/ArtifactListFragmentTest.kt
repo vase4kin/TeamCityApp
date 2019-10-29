@@ -182,12 +182,17 @@ class ArtifactListFragmentTest {
                 R.id.title
             )
         ).check(matches(withText("index.html")))
+        val sizeText2 = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
+            "698 kB"
+        } else {
+            "681 KB"
+        }
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 2,
                 R.id.subTitle
             )
-        ).check(matches(withText("698 kB")))
+        ).check(matches(withText(sizeText2)))
     }
 
     @Test
