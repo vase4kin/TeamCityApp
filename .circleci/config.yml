@@ -171,10 +171,10 @@ jobs:
             (gcloud firebase test android run --type instrumentation \
               --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=Nexus6P,version=23,locale=en,orientation=portrait \
-              --device model=Nexus6P,version=24,locale=en,orientation=portrait \
-              --device model=Nexus6P,version=26,locale=en,orientation=portrait \
-              --device model=Nexus6,version=21,locale=en,orientation=portrait \
+              --device model=hammerhead,version=21,locale=en,orientation=portrait \
+              --device model=shamu,version=23,locale=en,orientation=portrait \
+              --device model=lucye,version=24,locale=en,orientation=portrait \
+              --device model=dreamqlteue,version=26,locale=en,orientation=portrait \
               --timeout 20m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
