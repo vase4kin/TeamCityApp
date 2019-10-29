@@ -446,9 +446,27 @@ class ArtifactListFragmentTest {
             }
         })
 
-        // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .perform(longClick())
+        // Long click on first level artifacts
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't do long click on artifact at 0 position"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .perform(longClick())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
