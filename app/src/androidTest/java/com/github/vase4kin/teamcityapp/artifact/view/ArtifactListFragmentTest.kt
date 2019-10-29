@@ -28,7 +28,6 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasType
-import androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -324,7 +323,7 @@ class ArtifactListFragmentTest {
                             R.id.title
                         )
                     )
-                        .check(matches(allOf(isCompletelyDisplayed(), withText("res"))))
+                        .check(matches(withText("res")))
                     true
                 } catch (ignored: Exception) {
                     false
@@ -421,7 +420,7 @@ class ArtifactListFragmentTest {
                             R.id.title
                         )
                     )
-                        .check(matches(allOf(isCompletelyDisplayed(), withText("res"))))
+                        .check(matches(withText("res")))
                     true
                 } catch (ignored: Exception) {
                     false
@@ -677,7 +676,7 @@ class ArtifactListFragmentTest {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        // Wait for artifact to appear on the screen
+        // Clicking on apk to download
         val artifactName = "my-fancy-app.apk"
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
@@ -690,21 +689,14 @@ class ArtifactListFragmentTest {
                         withRecyclerView(R.id.artifact_recycler_view)
                             .atPositionOnView(0, R.id.title)
                     )
-                        .check(matches(allOf(isCompletelyDisplayed(), withText(artifactName))))
+                        .check(matches(withText(artifactName)))
+                        .perform(click())
                     true
                 } catch (ignored: Exception) {
                     false
                 }
             }
         })
-
-        // Clicking on apk to download
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(0, R.id.title)
-        )
-            .check(matches(withText(artifactName)))
-            .perform(click())
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
