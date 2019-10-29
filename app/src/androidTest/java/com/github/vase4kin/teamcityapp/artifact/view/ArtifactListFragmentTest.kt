@@ -332,8 +332,26 @@ class ArtifactListFragmentTest {
         })
 
         // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .perform(click())
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't click on artifact at position 0"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .perform(click())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
