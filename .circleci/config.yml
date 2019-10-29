@@ -189,7 +189,7 @@ workflows:
             - build-tests
       - ui-tests:
           name: ui-tests-v26
-          devicemodel: dreamqlteue,version=26,locale=en,orientation=portrait
+          devicemodel: sailfish,version=26,locale=en,orientation=portrait
           requires:
             - build-tests
       - ui-tests:
