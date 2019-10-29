@@ -310,8 +310,26 @@ class ArtifactListFragmentTest {
 
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .check(matches(withText("res")))
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't find artifact with name res"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .check(matches(withText("res")))
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         // Clicking first level artifacts
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
@@ -389,8 +407,26 @@ class ArtifactListFragmentTest {
 
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .check(matches(withText("res")))
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't find artifact with name res"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .check(matches(withText("res")))
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         // Clicking first level artifacts
         onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
@@ -640,12 +676,33 @@ class ArtifactListFragmentTest {
             .check(matches(isDisplayed()))
             .perform(click())
 
+        // Wait for artifact to appear on the street
+        val artifactName = "my-fancy-app.apk"
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't click on artifact with name $artifactName"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view)
+                            .atPositionOnView(0, R.id.title)
+                    )
+                        .check(matches(withText(artifactName)))
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
+
         // Clicking on apk to download
         onView(
             withRecyclerView(R.id.artifact_recycler_view)
                 .atPositionOnView(0, R.id.title)
         )
-            .check(matches(withText("my-fancy-app.apk")))
+            .check(matches(withText(artifactName)))
             .perform(click())
 
         ConditionWatcher.waitForCondition(object : Instruction() {
