@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
   ~ You may obtain a copy of the License at
   ~
-  ~        http://www.apache.org/licenses/LICENSE-2.0
+  ~    http://www.apache.org/licenses/LICENSE-2.0
   ~
   ~ Unless required by applicable law or agreed to in writing, software
   ~ distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
   -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -42,19 +43,34 @@
         android:textAppearance="@style/Text.Headline"
         tools:text="@string/text_filters" />
 
-    <TextView
-        android:id="@+id/text"
+    <LinearLayout
+        android:id="@+id/apply_filters"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center_vertical"
-        android:minHeight="64dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:singleLine="true"
-        android:textAppearance="@style/Text.Title"
-        tools:text="Show all queue builds" />
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/buildStatusImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/default_margin"
+            android:tint="@color/main_text_color"
+            app:srcCompat="@drawable/ic_done_24px" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:minHeight="64dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:singleLine="true"
+            android:textAppearance="@style/Text.Title"
+            tools:text="Show all queue builds" />
+
+    </LinearLayout>
 
 </LinearLayout>
