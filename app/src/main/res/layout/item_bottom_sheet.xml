@@ -29,9 +29,9 @@
         android:layout_height="24dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:tint="@color/sub_text_color"
         tools:ignore="ContentDescription"
-        tools:src="@drawable/ic_done_24px" />
+        tools:src="@drawable/ic_done_24px"
+        tools:tint="@color/md_black_1000" />
 
     <TextView
         android:id="@+id/bs_title"
