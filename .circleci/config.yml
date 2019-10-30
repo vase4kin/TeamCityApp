@@ -187,11 +187,19 @@ workflows:
           devicemodel: lucye,version=24,locale=en,orientation=portrait
           requires:
             - build-tests
+          filters:
+            branches:
+              only:
+                - /release-.*/
       - ui-tests:
           name: ui-tests-v26
           devicemodel: sailfish,version=26,locale=en,orientation=portrait
           requires:
             - build-tests
+          filters:
+            branches:
+              only:
+                - /release-.*/
       - ui-tests:
           name: ui-tests-v28
           requires:
