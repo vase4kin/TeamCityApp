@@ -115,7 +115,7 @@ class HomeActivityTest {
         activityRule.launchActivity(null)
 
         // Checking toolbar title
-        TestUtils.matchToolbarTitle("Projects")
+        TestUtils.matchHomeToolbarTitle("Projects")
 
         // Checking projects data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))

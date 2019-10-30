@@ -34,6 +34,13 @@
     <string name="build_queue_drawer_item">Build queue</string>
     <string name="about_drawer_item">About</string>
 
+    <!--new drawer-->
+    <string name="text_menu_accounts">Accounts</string>
+    <string name="text_rate_the_app">Rate the app</string>
+    <string name="text_divider">•</string>
+    <string name="text_add_account">Add another account</string>
+    <string name="text_manage_accounts">Manage accounts</string>
+
     <!--Activity titles-->
     <string name="title_activity_agent_tabs">@string/agents_drawer_item</string>
     <string name="title_activity_project_and_build_type_navigator">@string/projects_drawer_item</string>

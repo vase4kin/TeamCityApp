@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,10 +14,12 @@
   ~ limitations under the License.
   -->
 
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android"
-    android:opacity="opaque">
-    <item android:drawable="@color/white" />
-    <item
-        android:drawable="@drawable/ic_launcher"
-        android:gravity="center" />
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M21.1,12.5l1.4,1.41l-6.53,6.59L12.5,17l1.4,-1.41l2.07,2.08l5.13,-5.17M11,4a4,4 0,0 1,4 4a4,4 0,0 1,-4 4a4,4 0,0 1,-4 -4a4,4 0,0 1,4 -4m0,2a2,2 0,0 0,-2 2a2,2 0,0 0,2 2a2,2 0,0 0,2 -2a2,2 0,0 0,-2 -2m0,7c0.68,0 1.5,0.09 2.41,0.26l-1.67,1.67l-0.74,-0.03c-2.97,0 -6.1,1.46 -6.1,2.1v1.1h6.2L13,20H3v-3c0,-2.66 5.33,-4 8,-4z"
+      android:fillColor="#000000"/>
+</vector>

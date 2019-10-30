@@ -85,7 +85,7 @@
             android:layout_marginTop="@dimen/small_margin"
             android:layout_marginEnd="@dimen/login_screen_margin"
             android:text="@string/text_guest_user_switch"
-            android:textColor="@color/md_white_1000" />
+            android:textColor="@color/white" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_field_wrapper"
@@ -137,7 +137,7 @@
             android:layout_marginTop="@dimen/small_margin"
             android:layout_marginEnd="@dimen/login_screen_margin"
             android:text="@string/text_disable_ssl_switch"
-            android:textColor="@color/md_white_1000" />
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/btn_login"

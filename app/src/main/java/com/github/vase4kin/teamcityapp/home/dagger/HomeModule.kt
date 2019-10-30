@@ -23,12 +23,11 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
+import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
-import com.github.vase4kin.teamcityapp.home.router.HomeRouter
-import com.github.vase4kin.teamcityapp.home.router.HomeRouterImpl
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTrackerImpl
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
@@ -46,7 +45,7 @@ class HomeModule {
 
     @Provides
     fun providesRootDrawerView(activity: HomeActivity): HomeView {
-        return HomeViewImpl(activity, DrawerView.HOME, false)
+        return HomeViewImpl(activity)
     }
 
     @Provides
@@ -58,9 +57,6 @@ class HomeModule {
     ): HomeDataManager {
         return HomeDataManagerImpl(repository, sharedUserStorage, rxCache, eventBus)
     }
-
-    @Provides
-    fun providesRootRouter(activity: HomeActivity): HomeRouter = HomeRouterImpl(activity)
 
     @Provides
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {
@@ -89,4 +85,9 @@ class HomeModule {
     @HomeActivityScope
     @Provides
     fun provideFilterProvider(): FilterProvider = FilterProvider()
+
+    @HomeActivityScope
+    @Provides
+    fun provideChromeTabs(activity: HomeActivity): ChromeCustomTabs =
+        ChromeCustomTabsImpl(activity)
 }

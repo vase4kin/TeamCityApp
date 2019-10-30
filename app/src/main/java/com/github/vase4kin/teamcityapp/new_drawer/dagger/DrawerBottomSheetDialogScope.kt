@@ -14,25 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.drawer.tracker
+package com.github.vase4kin.teamcityapp.new_drawer.dagger
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
-import com.google.firebase.analytics.FirebaseAnalytics
+import javax.inject.Scope
 
-/**
- * Tracker firebase impl of [DrawerTracker]
- */
-class DrawerTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracker(firebaseAnalytics), DrawerTracker {
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackView() {}
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackChangeAccount() {
-        firebaseAnalytics.logEvent(DrawerTracker.EVENT_CHANGE_ACCOUNT, null)
-    }
-}
+@Scope
+annotation class DrawerBottomSheetDialogScope

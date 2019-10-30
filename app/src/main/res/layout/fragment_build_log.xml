@@ -20,7 +20,7 @@
     android:id="@+id/build_log_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_white_1000"
+    android:background="@color/white"
     tools:context=".buildlog.view.BuildLogFragment">
 
     <include layout="@layout/layout_progress_wheel" />

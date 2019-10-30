@@ -16,19 +16,16 @@
 
 package com.github.vase4kin.teamcityapp.home.presenter
 
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
-import com.github.vase4kin.teamcityapp.drawer.presenter.DrawerPresenterImpl
-import com.github.vase4kin.teamcityapp.drawer.router.DrawerRouter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
-import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.view.HomeView
-import com.github.vase4kin.teamcityapp.home.view.OnDrawerUpdateListener
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import javax.inject.Inject
 
@@ -36,21 +33,14 @@ import javax.inject.Inject
  * Impl of [HomePresenter]
  */
 class HomePresenterImpl @Inject constructor(
-    view: HomeView,
-    dataManager: HomeDataManager,
-    tracker: HomeTracker,
-    router: HomeRouter,
+    private val view: HomeView,
+    private val dataManager: HomeDataManager,
+    private val tracker: HomeTracker,
     private val interactor: BuildLogInteractor,
     private val onboardingManager: OnboardingManager,
     private val bottomNavigationView: BottomNavigationView,
     private val filterProvider: FilterProvider
-) : DrawerPresenterImpl<HomeView, HomeDataManager, DrawerRouter, HomeTracker>(
-    view,
-    dataManager,
-    router,
-    tracker
-),
-    HomePresenter, OnDrawerUpdateListener, BottomNavigationView.ViewListener, HomeView.ViewListener,
+) : HomePresenter, BottomNavigationView.ViewListener, HomeView.ViewListener,
     HomeDataManager.Listener {
 
     private var baseUrl: String? = null
@@ -60,8 +50,18 @@ class HomePresenterImpl @Inject constructor(
      */
     override fun onCreate() {
         start()
-        super.onCreate()
-        view.setListener(this)
+        view.initViews(this)
+        // Set title for Projects tab
+        bottomNavigationView.setTitle(R.string.projects_drawer_item)
+        // Load notifications
+        loadNotificationsCount()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onDestroy() {
+        dataManager.unsubscribe()
     }
 
     /**
@@ -69,8 +69,8 @@ class HomePresenterImpl @Inject constructor(
      */
     override fun onResume() {
         // update on every return
-        if (!view.isModelEmpty) {
-            update()
+        if (!dataManager.isModelEmpty) {
+            loadNotificationsCount()
         }
 
         // track view
@@ -113,14 +113,6 @@ class HomePresenterImpl @Inject constructor(
     override fun onPause() {
         dataManager.unsubscribeOfEventBusEvents()
         dataManager.setListener(null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun update() {
-        loadData()
-        loadNotificationsCount()
     }
 
     /**
@@ -248,7 +240,7 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun loadNotificationsCount() {
+    private fun loadNotificationsCount() {
         loadRunningBuildsCount()
         loadQueueBuildsCount()
         loadFavoritesCount()
@@ -388,5 +380,12 @@ class HomePresenterImpl @Inject constructor(
             dataManager.postAgentsFilterChangedEvent()
             view.showAgentsFilterAppliedSnackBar()
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onDrawerClick() {
+        view.showDrawer()
     }
 }

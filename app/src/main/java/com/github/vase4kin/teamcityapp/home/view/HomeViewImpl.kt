@@ -21,52 +21,49 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
-
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerViewImpl
-import com.github.vase4kin.teamcityapp.drawer.view.OnDrawerPresenterListener
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 private const val TAG_BOTTOM_SHEET = "Tag filter bottom sheet"
+private const val TAG_DRAWER_BOTTOM_SHEET = "Tag drawer bottom sheet"
 private const val TIME_PROMPT_DELAY = 500
 
 /**
  * impl of [HomeView]
  */
-class HomeViewImpl(
-    activity: AppCompatActivity,
-    drawerSelection: Int,
-    isBackArrowEnabled: Boolean
-) : DrawerViewImpl(activity, drawerSelection, isBackArrowEnabled), HomeView {
+class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
 
     private lateinit var snackBarAnchor: View
     private lateinit var fab: FloatingActionButton
+    private lateinit var toolbar: Toolbar
     private var snackbar: Snackbar? = null
     private var listener: HomeView.ViewListener? = null
-
-    override fun initViews(listener: OnDrawerPresenterListener) {
-        super.initViews(listener)
-        snackBarAnchor = activity.findViewById(R.id.snackbar_anchor)
-        fab = activity.findViewById(R.id.home_floating_action_button)
-    }
-
-    override fun setListener(listener: HomeView.ViewListener?) {
-        this.listener = listener
-    }
 
     /**
      * {@inheritDoc}
      */
-    override fun setDrawerSelection(selection: Int) {
-        drawerResult.setSelection(selection.toLong(), false)
+    override fun initViews(listener: HomeView.ViewListener?) {
+        this.listener = listener
+        snackBarAnchor = activity.findViewById(R.id.snackbar_anchor)
+        fab = activity.findViewById(R.id.home_floating_action_button)
+        toolbar = activity.findViewById(R.id.toolbar)
+        activity.setSupportActionBar(toolbar)
+        val actionBar = activity.supportActionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.setDisplayShowHomeEnabled(true)
+        toolbar.setNavigationOnClickListener {
+            listener?.onDrawerClick()
+        }
+        toolbar.setNavigationIcon(R.drawable.ic_dehaze_black_24dp)
     }
 
     /**
@@ -131,7 +128,7 @@ class HomeViewImpl(
      */
     override fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener) {
         // Creating prompt
-        val color = ContextCompat.getColor(activity, R.color.primary)
+        val color = ContextCompat.getColor(activity, R.color.colorPrimary)
         val navigationDrawerPrompt = MaterialTapTargetPrompt.Builder(activity)
             .setPrimaryText(R.string.title_onboarding_navigation_drawer)
             .setSecondaryText(R.string.text_onboarding_navigation_drawer)
@@ -140,7 +137,7 @@ class HomeViewImpl(
             .setIconDrawableTintList(ColorStateList.valueOf(color))
             .setBackgroundColour(color)
             .setCaptureTouchEventOutsidePrompt(true)
-            .setPromptStateChangeListener { prompt, state -> listener.onPromptShown() }
+            .setPromptStateChangeListener { _, _ -> listener.onPromptShown() }
         // Show prompt
         Handler(Looper.getMainLooper()).postDelayed({
             navigationDrawerPrompt.setTarget(toolbar.getChildAt(1))
@@ -152,7 +149,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showAddFavPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = ContextCompat.getColor(activity, R.color.primary)
+        val color = ContextCompat.getColor(activity, R.color.colorPrimary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_add_fav)
@@ -171,7 +168,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showRunningBuildsFilterPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = ContextCompat.getColor(activity, R.color.primary)
+        val color = ContextCompat.getColor(activity, R.color.colorPrimary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter)
@@ -190,7 +187,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showBuildsQueueFilterPrompt(onPromptShown: () -> Unit) {
-        val color = ContextCompat.getColor(activity, R.color.primary)
+        val color = ContextCompat.getColor(activity, R.color.colorPrimary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter_queued)
@@ -209,7 +206,7 @@ class HomeViewImpl(
      * {@inheritDoc}
      */
     override fun showAgentsFilterPrompt(onPromptShown: () -> Unit) {
-        val color = ContextCompat.getColor(activity, R.color.primary)
+        val color = ContextCompat.getColor(activity, R.color.colorPrimary)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter_agents)
@@ -222,5 +219,13 @@ class HomeViewImpl(
                     onPromptShown()
                 }
             }.show()
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun showDrawer() {
+        DrawerBottomSheetDialogFragment.createInstance()
+            .show(activity.supportFragmentManager, TAG_DRAWER_BOTTOM_SHEET)
     }
 }

@@ -22,11 +22,7 @@
 
     <color name="snackbar_action_color_done">#ffccccff</color>
 
-    <color name="base_item_color">@color/md_white_1000</color>
-
-    <color name="section_color">@color/md_blue_A100</color>
-
-    <color name="snack_bar_action_color">@color/section_color</color>
+    <color name="base_item_color">@color/white</color>
 
     <color name="queued_status_bar_color">#9E9E9E</color>
     <color name="queued_tool_bar_color">#BDBDBD</color>
@@ -58,7 +54,7 @@
 
     <color name="transparent">#00000000</color>
 
-    <color name="white">@color/md_white_1000</color>
+    <color name="white">@color/colorWhite</color>
 
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorWhiteWithOpacity">#B3FFFFFF</color>

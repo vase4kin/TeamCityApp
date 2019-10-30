@@ -20,7 +20,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
-import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.view.HomeView
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
@@ -46,8 +45,6 @@ class HomePresenterImplTest {
     @Mock
     internal lateinit var dataManager: HomeDataManager
     @Mock
-    internal lateinit var router: HomeRouter
-    @Mock
     internal lateinit var interactor: BuildLogInteractor
     @Mock
     internal lateinit var tracker: HomeTracker
@@ -66,7 +63,6 @@ class HomePresenterImplTest {
             view,
             dataManager,
             tracker,
-            router,
             interactor,
             onboardingManager,
             bottomNavigationView,

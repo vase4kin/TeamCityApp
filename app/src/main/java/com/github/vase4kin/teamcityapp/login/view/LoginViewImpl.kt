@@ -39,7 +39,7 @@ import com.google.android.material.textfield.TextInputLayout
 class LoginViewImpl(private val activity: Activity) : LoginView {
 
     @JvmField
-    @BindColor(R.color.md_white_1000)
+    @BindColor(R.color.white)
     var whiteColor: Int = 0
     @JvmField
     @BindColor(R.color.colorPrimary)

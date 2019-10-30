@@ -16,21 +16,18 @@
 
 package com.github.vase4kin.teamcityapp.home.view
 
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerView
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 
 /**
  * Root drawer view interactions
  */
-interface HomeView : DrawerView {
+interface HomeView {
 
     /**
-     * Select drawer selection
-     *
-     * @param selection - Drawer selection
+     * Init views
      */
-    fun setDrawerSelection(selection: Int)
+    fun initViews(listener: ViewListener?)
 
     /**
      * Show navigation drawer onboarding prompt
@@ -38,11 +35,6 @@ interface HomeView : DrawerView {
      * @param listener - Listener to know when prompt is shown
      */
     fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener)
-
-    /**
-     * Set listener
-     */
-    fun setListener(listener: ViewListener?)
 
     /**
      * Show add favorites info snack bar
@@ -93,7 +85,13 @@ interface HomeView : DrawerView {
      */
     fun showAgentsFilterPrompt(onPromptShown: () -> Unit)
 
+    /**
+     * Show drawer
+     */
+    fun showDrawer()
+
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()
+        fun onDrawerClick()
     }
 }

@@ -466,35 +466,35 @@ class BuildDetailsViewImpl(
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color)
             tabLayout.setTabTextColors(
                 activity.resources.getColor(R.color.tab_queued_unselected_color),
-                activity.resources.getColor(R.color.md_white_1000)
+                activity.resources.getColor(R.color.white)
             )
         } else if (buildDetails.isRunning) {
             statusBarUtils.changeStatusBarColor(activity, R.color.running_tool_bar_color)
             setToolBarAndTabLayoutColor(R.color.running_tool_bar_color)
             tabLayout.setTabTextColors(
                 activity.resources.getColor(R.color.tab_running_unselected_color),
-                activity.resources.getColor(R.color.md_white_1000)
+                activity.resources.getColor(R.color.white)
             )
         } else if (buildDetails.isFailed) {
             statusBarUtils.changeStatusBarColor(activity, R.color.failed_tool_bar_color)
             setToolBarAndTabLayoutColor(R.color.failed_tool_bar_color)
             tabLayout.setTabTextColors(
                 activity.resources.getColor(R.color.tab_failed_unselected_color),
-                activity.resources.getColor(R.color.md_white_1000)
+                activity.resources.getColor(R.color.white)
             )
         } else if (buildDetails.isSuccess) {
             statusBarUtils.changeStatusBarColor(activity, R.color.success_tool_bar_color)
             setToolBarAndTabLayoutColor(R.color.success_tool_bar_color)
             tabLayout.setTabTextColors(
                 activity.resources.getColor(R.color.tab_success_unselected_color),
-                activity.resources.getColor(R.color.md_white_1000)
+                activity.resources.getColor(R.color.white)
             )
         } else {
             statusBarUtils.changeStatusBarColor(activity, R.color.queued_tool_bar_color)
             setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color)
             tabLayout.setTabTextColors(
                 activity.resources.getColor(R.color.tab_queued_unselected_color),
-                activity.resources.getColor(R.color.md_white_1000)
+                activity.resources.getColor(R.color.white)
             )
         }
     }
