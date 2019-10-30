@@ -32,6 +32,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.azimolabs.conditionwatcher.ConditionWatcher
@@ -164,24 +165,34 @@ class ArtifactListFragmentTest {
                 R.id.title
             )
         ).check(matches(withText("AndroidManifest.xml")))
+        val sizeText = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
+            "7.77 kB"
+        } else {
+            "7.59 KB"
+        }
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 1,
                 R.id.subTitle
             )
-        ).check(matches(withText("7.77 kB")))
+        ).check(matches(withText(sizeText)))
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 2,
                 R.id.title
             )
         ).check(matches(withText("index.html")))
+        val sizeText2 = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
+            "698 kB"
+        } else {
+            "681 KB"
+        }
         onView(
             withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
                 2,
                 R.id.subTitle
             )
-        ).check(matches(withText("698 kB")))
+        ).check(matches(withText(sizeText2)))
     }
 
     @Test
@@ -299,12 +310,48 @@ class ArtifactListFragmentTest {
 
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .check(matches(withText("res")))
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't find artifact with name res"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .check(matches(withText("res")))
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .perform(click())
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't click on artifact at position 0"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .perform(click())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
@@ -378,12 +425,48 @@ class ArtifactListFragmentTest {
 
         // Checking first level artifacts
         onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .check(matches(withText("res")))
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't find artifact with name res"
+            }
 
-        // Clicking first level artifacts
-        onView(withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(0, R.id.title))
-            .perform(longClick())
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .check(matches(withText("res")))
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
+
+        // Long click on first level artifacts
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't do long click on artifact at 0 position"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                            0,
+                            R.id.title
+                        )
+                    )
+                        .perform(longClick())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
@@ -546,16 +629,27 @@ class ArtifactListFragmentTest {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        // Checking artifact title
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(1, R.id.title)
-        )
-            .check(matches(withText("AndroidManifest.xml")))
-            .perform(click())
+        // Checking artifact title and clicking on it
+        val artifactName = "AndroidManifest.xml"
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't click on artifact with name $artifactName"
+            }
 
-        // Clicking on artifact to download
-        onView(withText("AndroidManifest.xml")).perform(click())
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view)
+                            .atPositionOnView(1, R.id.title)
+                    )
+                        .check(matches(withText(artifactName)))
+                        .perform(click())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {
@@ -589,8 +683,8 @@ class ArtifactListFragmentTest {
             .check(matches(isDisplayed()))
     }
 
+    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.O)
     @Test
-    @Throws(Exception::class)
     fun testUserBeingAskedToGrantAllowInstallPackagesPermissions() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
@@ -630,12 +724,26 @@ class ArtifactListFragmentTest {
             .perform(click())
 
         // Clicking on apk to download
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(0, R.id.title)
-        )
-            .check(matches(withText("my-fancy-app.apk")))
-            .perform(click())
+        val artifactName = "my-fancy-app.apk"
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String {
+                return "Can't click on artifact with name $artifactName"
+            }
+
+            override fun checkCondition(): Boolean {
+                return try {
+                    onView(
+                        withRecyclerView(R.id.artifact_recycler_view)
+                            .atPositionOnView(0, R.id.title)
+                    )
+                        .check(matches(withText(artifactName)))
+                        .perform(click())
+                    true
+                } catch (ignored: Exception) {
+                    false
+                }
+            }
+        })
 
         ConditionWatcher.waitForCondition(object : Instruction() {
             override fun getDescription(): String {

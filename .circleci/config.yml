@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 references:
   workspace_root: &workspace_root
       ~/TeamCityApp
@@ -90,6 +90,11 @@ jobs:
           path: app/build/test-results/testMockDebugUnitTest
   ui-tests:
     <<: *container_config
+    parameters:
+      devicemodel:
+        description: "Device name to execute tests on"
+        default: "sailfish,version=28,locale=en,orientation=portrait"
+        type: string
     steps:
       - *attach_workspace
       - restore_cache:
@@ -114,7 +119,7 @@ jobs:
             (gcloud firebase test android run --type instrumentation \
               --app app/build/outputs/apk/mock/debug/app-mock-debug.apk \
               --test app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
-              --device model=sailfish,version=28,locale=en,orientation=portrait \
+              --device model=<< parameters.devicemodel >> \
               --timeout 15m \
               --results-bucket $PROJECT_ID \
               --environment-variables coverage=true,coverageFile="/sdcard/coverage.ec" \
@@ -178,9 +183,28 @@ workflows:
           requires:
             - build-tests
       - ui-tests:
+          name: ui-tests-v24
+          devicemodel: lucye,version=24,locale=en,orientation=portrait
+          requires:
+            - build-tests
+          filters:
+            branches:
+              only:
+                - /release-.*/
+      - ui-tests:
+          name: ui-tests-v26
+          devicemodel: sailfish,version=26,locale=en,orientation=portrait
+          requires:
+            - build-tests
+          filters:
+            branches:
+              only:
+                - /release-.*/
+      - ui-tests:
+          name: ui-tests-v28
           requires:
             - build-tests
       - coverage:
           requires:
-            - ui-tests
+            - ui-tests-v28
             - unit-tests
