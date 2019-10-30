@@ -69,7 +69,7 @@ class FilterBottomSheetDialogFragment : com.google.android.material.bottomsheet.
         }
         val titleTextView = view.findViewById<TextView>(R.id.main_title)
         titleTextView.setText(title)
-        descriptionTextView.setOnClickListener {
+        view.findViewById<View>(R.id.apply_filters).setOnClickListener {
             when {
                 filter.isRunning -> {
                     val oppositeFilter = filter.opposite()
