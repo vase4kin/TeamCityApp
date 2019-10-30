@@ -35,7 +35,7 @@
             android:id="@+id/buildStatusImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:tint="@color/main_text_color"
+            android:tint="@color/sub_text_color"
             tools:srcCompat="@drawable/ic_check_circle_black_24dp" />
 
         <ProgressBar
