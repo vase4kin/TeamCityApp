@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.drawer.tracker
+package com.github.vase4kin.teamcityapp.new_drawer.tracker
 
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 

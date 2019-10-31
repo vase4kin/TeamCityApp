@@ -23,8 +23,8 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.drawer.utils.DrawerActivityStartUtils
 import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
+import com.github.vase4kin.teamcityapp.new_drawer.utils.DrawerActivityStartUtils
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity

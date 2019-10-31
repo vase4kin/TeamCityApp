@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.drawer.utils
+package com.github.vase4kin.teamcityapp.new_drawer.utils
 
 import android.app.Activity
 import android.content.Intent

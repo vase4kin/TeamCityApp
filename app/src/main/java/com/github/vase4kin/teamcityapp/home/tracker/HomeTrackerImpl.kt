@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.home.tracker
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
-import com.github.vase4kin.teamcityapp.drawer.tracker.DrawerTracker
+import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
 import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
