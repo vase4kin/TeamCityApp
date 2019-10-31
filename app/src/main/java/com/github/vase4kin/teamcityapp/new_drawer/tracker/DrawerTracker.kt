@@ -82,10 +82,9 @@ interface DrawerTracker : ViewTracker {
          */
         const val EVENT_OPEN_ADD_NEW_ACCOUNT = "drawer_open_add_new_account"
 
-
         /**
          * Event open manage accounts
          */
-        const val EVENT_OPEN_MANAGE_ACCOUNTS= "drawer_open_manage_accounts"
+        const val EVENT_OPEN_MANAGE_ACCOUNTS = "drawer_open_manage_accounts"
     }
 }
