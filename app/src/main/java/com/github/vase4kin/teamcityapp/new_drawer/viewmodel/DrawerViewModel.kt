@@ -48,18 +48,21 @@ class DrawerViewModel(
         }.map { AccountDrawerItem(it) }
         // add user account to list
         val list = mutableListOf<BaseDrawerItem>()
+        // add active accounts
         list.addAll(activeAccounts)
-        if (otherAccounts.isNotEmpty()) {
-            list.add(AccountsDividerDrawerItem())
-            list.addAll(otherAccounts)
-        }
+        // add active accounts divider
+        list.add(AccountsDividerDrawerItem())
+        // add all other accounts
+        list.addAll(otherAccounts)
         // add new account item
         list.add(NewAccountDrawerItem())
         // add manage account items
         list.add(ManageAccountsDrawerItem())
+        // add divider
         list.add(DividerDrawerItem())
         // add about item
         list.add(AboutDrawerItem())
+        // add divider
         list.add(DividerDrawerItem())
         // add bottom
         list.add(BottomDrawerItem())
