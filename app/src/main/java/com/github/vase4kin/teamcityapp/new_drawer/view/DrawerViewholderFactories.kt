@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.new_drawer.view
 
 import android.view.ViewGroup
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
+import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
 
 abstract class BaseDrawerViewHolderFactory {
 
@@ -39,28 +40,31 @@ class DividerViewHolderFactory : BaseDrawerViewHolderFactory() {
 }
 
 class BottomViewHolderFactory(
-    private val router: DrawerRouter
+    private val router: DrawerRouter,
+    private val tracker: DrawerTracker
 ) : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
-        return BottomViewHolder(parent, router)
+        return BottomViewHolder(parent, router, tracker)
     }
 }
 
 class MenuViewHolderFactory(
-    private val router: DrawerRouter
+    private val router: DrawerRouter,
+    private val tracker: DrawerTracker
 ) : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
-        return MenuViewHolder(parent, router)
+        return MenuViewHolder(parent, router, tracker)
     }
 }
 
 class AccountViewHolderFactory(
-    private val router: DrawerRouter
+    private val router: DrawerRouter,
+    private val tracker: DrawerTracker
 ) : BaseDrawerViewHolderFactory() {
 
     override fun create(parent: ViewGroup): BaseDrawerItemViewHolder {
-        return AccountViewHolder(parent, router)
+        return AccountViewHolder(parent, router, tracker)
     }
 }

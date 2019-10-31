@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.new_drawer.dagger
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouterImpl
+import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
+import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTrackerImpl
 import com.github.vase4kin.teamcityapp.new_drawer.view.AccountViewHolderFactory
 import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerViewHolderFactory
 import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
@@ -35,6 +37,7 @@ import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_DIVIDER
 import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_MENU
 import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
@@ -47,12 +50,13 @@ class DrawerBottomSheetDialogModule {
     fun providesViewModel(
         fragment: DrawerBottomSheetDialogFragment,
         sharedUserStorage: SharedUserStorage,
-        chromeCustomTabs: ChromeCustomTabs
+        chromeCustomTabs: ChromeCustomTabs,
+        tracker: DrawerTracker
     ): DrawerViewModel {
         val setAdapter: (items: List<BaseDrawerItem>) -> Unit = {
             fragment.setAdapter(it)
         }
-        return DrawerViewModel(sharedUserStorage, chromeCustomTabs, setAdapter)
+        return DrawerViewModel(sharedUserStorage, chromeCustomTabs, setAdapter, tracker)
     }
 
     @DrawerBottomSheetDialogScope
@@ -72,6 +76,11 @@ class DrawerBottomSheetDialogModule {
         return DrawerAdapter(mutableListOf(), viewHolderFactories)
     }
 
+    @Provides
+    fun providesTracker(firebaseAnalytics: FirebaseAnalytics): DrawerTracker {
+        return DrawerTrackerImpl(firebaseAnalytics)
+    }
+
     @IntoMap
     @IntKey(TYPE_ACCOUNTS_DIVIDER)
     @Provides
@@ -89,21 +98,30 @@ class DrawerBottomSheetDialogModule {
     @IntoMap
     @IntKey(TYPE_BOTTOM)
     @Provides
-    fun providesBottomViewHolderFactory(router: DrawerRouter): BaseDrawerViewHolderFactory {
-        return BottomViewHolderFactory(router)
+    fun providesBottomViewHolderFactory(
+        router: DrawerRouter,
+        tracker: DrawerTracker
+    ): BaseDrawerViewHolderFactory {
+        return BottomViewHolderFactory(router, tracker)
     }
 
     @IntoMap
     @IntKey(TYPE_MENU)
     @Provides
-    fun providesMenuViewHolderFactory(router: DrawerRouter): BaseDrawerViewHolderFactory {
-        return MenuViewHolderFactory(router)
+    fun providesMenuViewHolderFactory(
+        router: DrawerRouter,
+        tracker: DrawerTracker
+    ): BaseDrawerViewHolderFactory {
+        return MenuViewHolderFactory(router, tracker)
     }
 
     @IntoMap
     @IntKey(TYPE_ACCOUNT)
     @Provides
-    fun providesAccountViewHolderFactory(router: DrawerRouter): BaseDrawerViewHolderFactory {
-        return AccountViewHolderFactory(router)
+    fun providesAccountViewHolderFactory(
+        router: DrawerRouter,
+        tracker: DrawerTracker
+    ): BaseDrawerViewHolderFactory {
+        return AccountViewHolderFactory(router, tracker)
     }
 }

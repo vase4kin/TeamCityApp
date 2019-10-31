@@ -24,6 +24,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
+import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
 
 class DrawerAdapter(
     val list: MutableList<BaseDrawerItem>,
@@ -80,7 +81,8 @@ class DividerViewHolder(
 
 class BottomViewHolder(
     parent: ViewGroup,
-    private val router: DrawerRouter
+    private val router: DrawerRouter,
+    private val tracker: DrawerTracker
 ) : BaseDrawerItemViewHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_drawer_bottom,
@@ -90,9 +92,12 @@ class BottomViewHolder(
 ) {
     override fun bind(drawerItem: BaseDrawerItem) {
         itemView.findViewById<View>(R.id.privacy).setOnClickListener {
+            tracker.trackOpenPrivacy()
             router.openPrivacy()
+
         }
         itemView.findViewById<View>(R.id.website).setOnClickListener {
+            tracker.trackRateTheApp()
             router.openRateTheApp()
         }
     }
@@ -100,7 +105,8 @@ class BottomViewHolder(
 
 class MenuViewHolder(
     parent: ViewGroup,
-    private val router: DrawerRouter
+    private val router: DrawerRouter,
+    private val tracker: DrawerTracker
 ) : BaseDrawerItemViewHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_drawer_menu,
@@ -114,9 +120,18 @@ class MenuViewHolder(
         itemView.findViewById<ImageView>(R.id.image).setImageResource(drawerItem.imageRes)
         itemView.setOnClickListener {
             when (drawerItem.type) {
-                DrawerType.ABOUT -> router.openAbout()
-                DrawerType.NEW_ACCOUNT -> router.openAddNewAccount()
-                DrawerType.MANAGE_ACCOUNTS -> router.openManageAccounts()
+                DrawerType.ABOUT -> {
+                    tracker.trackOpenAbout()
+                    router.openAbout()
+                }
+                DrawerType.NEW_ACCOUNT -> {
+                    tracker.trackOpenAddNewAccount()
+                    router.openAddNewAccount()
+                }
+                DrawerType.MANAGE_ACCOUNTS -> {
+                    tracker.trackOpenManageAccounts()
+                    router.openManageAccounts()
+                }
                 else -> {
                     // Do nothing
                 }
@@ -127,7 +142,8 @@ class MenuViewHolder(
 
 class AccountViewHolder(
     parent: ViewGroup,
-    private val router: DrawerRouter
+    private val router: DrawerRouter,
+    private val tracker: DrawerTracker
 ) : BaseDrawerItemViewHolder(
     LayoutInflater.from(parent.context).inflate(
         R.layout.item_drawer_user_account,
@@ -153,6 +169,7 @@ class AccountViewHolder(
         }
         if (account.isActive.not()) {
             itemView.setOnClickListener {
+                tracker.trackChangeAccount()
                 router.swithAccounts(account)
             }
         }

@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.home.tracker
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
 import com.google.firebase.analytics.FirebaseAnalytics
 
 /**
@@ -32,13 +31,6 @@ class HomeTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracke
      */
     override fun trackView() {
         firebaseAnalytics.logEvent(HomeTracker.SCREEN_NAME_HOME, null)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackChangeAccount() {
-        firebaseAnalytics.logEvent(DrawerTracker.EVENT_CHANGE_ACCOUNT, null)
     }
 
     /**

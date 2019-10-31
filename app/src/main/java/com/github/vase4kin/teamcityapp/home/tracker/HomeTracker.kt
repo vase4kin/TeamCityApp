@@ -17,12 +17,12 @@
 package com.github.vase4kin.teamcityapp.home.tracker
 
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 
 /**
  * Root tracker
  */
-interface HomeTracker : DrawerTracker {
+interface HomeTracker : ViewTracker {
 
     /**
      * Track user clicks on favorites fab

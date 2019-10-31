@@ -18,9 +18,6 @@ package com.github.vase4kin.teamcityapp.new_drawer.tracker
 
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 
-/**
- * Custom tracker class
- */
 interface DrawerTracker : ViewTracker {
 
     /**
@@ -28,11 +25,67 @@ interface DrawerTracker : ViewTracker {
      */
     fun trackChangeAccount()
 
+    /**
+     * Track open privacy
+     */
+    fun trackOpenPrivacy()
+
+    /**
+     * Track rate the app
+     */
+    fun trackRateTheApp()
+
+    /**
+     * Track open about
+     */
+    fun trackOpenAbout()
+
+    /**
+     * Track open add new account
+     */
+    fun trackOpenAddNewAccount()
+
+    /**
+     * Track open manage accounts
+     */
+    fun trackOpenManageAccounts()
+
     companion object {
+
+        /**
+         * Screen name to track
+         */
+        const val SCREEN_NAME = "screen_open_drawer"
 
         /**
          * Event change name
          */
-        const val EVENT_CHANGE_ACCOUNT = "change_account"
+        const val EVENT_CHANGE_ACCOUNT = "drawer_change_account"
+
+        /**
+         * Event open privacy
+         */
+        const val EVENT_OPEN_PRIVACY = "drawer_open_privacy"
+
+        /**
+         * Event rate the app
+         */
+        const val EVENT_RATE_THE_APP = "drawer_rate_the_app"
+
+        /**
+         * Event open about
+         */
+        const val EVENT_OPEN_ABOUT = "drawer_open_about"
+
+        /**
+         * Event open add new account
+         */
+        const val EVENT_OPEN_ADD_NEW_ACCOUNT = "drawer_open_add_new_account"
+
+
+        /**
+         * Event open manage accounts
+         */
+        const val EVENT_OPEN_MANAGE_ACCOUNTS= "drawer_open_manage_accounts"
     }
 }
