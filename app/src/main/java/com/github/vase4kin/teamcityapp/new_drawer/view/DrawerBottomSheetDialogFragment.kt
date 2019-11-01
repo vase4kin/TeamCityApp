@@ -54,6 +54,11 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
         viewModel.onViewCreated()
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
     override fun onDestroyView() {
         viewModel.onDestroyView()
         super.onDestroyView()
