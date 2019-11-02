@@ -60,6 +60,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
         val actionBar = activity.supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setDisplayShowHomeEnabled(true)
+        toolbar.setNavigationContentDescription(R.string.content_navigation_content_description)
         toolbar.setNavigationOnClickListener {
             listener?.onDrawerClick()
         }

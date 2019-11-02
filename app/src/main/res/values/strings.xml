@@ -40,6 +40,7 @@
     <string name="text_divider">•</string>
     <string name="text_add_account">Add another account</string>
     <string name="text_manage_accounts">Manage accounts</string>
+    <string name="content_navigation_content_description">Navigation drawer</string>
 
     <!--Activity titles-->
     <string name="title_activity_agent_tabs">@string/agents_drawer_item</string>

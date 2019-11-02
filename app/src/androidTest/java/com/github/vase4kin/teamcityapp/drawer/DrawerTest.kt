@@ -19,8 +19,9 @@ package com.github.vase4kin.teamcityapp.drawer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isSelected
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -28,6 +29,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.about.AboutActivity
+import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
@@ -35,9 +39,8 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
-import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.core.AllOf.allOf
@@ -52,7 +55,6 @@ import org.mockito.Spy
 /**
  * Tests for Drawer
  */
-@Ignore
 @RunWith(AndroidJUnit4::class)
 class DrawerTest {
 
@@ -72,8 +74,8 @@ class DrawerTest {
 
     @JvmField
     @Rule
-    val activityTestRule: CustomActivityTestRule<HomeActivity> =
-        CustomActivityTestRule(HomeActivity::class.java)
+    val activityTestRule: CustomIntentsTestRule<HomeActivity> =
+        CustomIntentsTestRule(HomeActivity::class.java)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -96,6 +98,13 @@ class DrawerTest {
         activityTestRule.launchActivity(null)
     }
 
+    /**
+     * Check the active account title is not clickable
+     *
+     *
+     * Check that you can switch between accounts
+     */
+    @Ignore
     @Test
     fun testUserCanSeeInfo() {
         // Opening drawer
@@ -110,38 +119,18 @@ class DrawerTest {
     }
 
     @Test
-    fun testUserCanSeeProjectsIsSelectedByDefault() {
-        // Opening drawer
-        clickOnBurgerButton()
-
-        // Check projects is selected
-        onView(
-            allOf(
-                withId(R.id.main_title),
-                withText(R.string.home_drawer_item),
-                isDisplayed()
-            )
-        )
-            .check(matches(isSelected()))
-    }
-
-    @Test
     fun testUserCanNavigateToAboutScreen() {
         // Opening drawer
         clickOnBurgerButton()
 
-        // Check about is opened
-        onView(
-            allOf(
-                withId(R.id.main_title),
-                withText(R.string.about_drawer_item),
-                isDisplayed()
-            )
-        )
+        // Click on about
+        onView(withText(R.string.about_drawer_item))
             .perform(click())
 
-        // Checking toolbar title
-        matchToolbarTitle("About")
+        // Check about screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(AboutActivity::class.java.name)
+        )
     }
 
     @Test
@@ -149,27 +138,49 @@ class DrawerTest {
         // Opening drawer
         clickOnBurgerButton()
 
-        // Click on account
-        onView(allOf(withId(R.id.main_title), isDisplayed()))
-            .perform(click())
-
         // Opening managing account activity
-        onView(
-            allOf(
-                withId(R.id.main_title),
-                withText(R.string.title_activity_account_list)
-            )
-        )
+        onView(withText(R.string.text_manage_accounts))
             .perform(click())
 
-        // Checking toolbar title
-        matchToolbarTitle("Manage Accounts")
+        // Check manage accounts screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(AccountListActivity::class.java.name)
+        )
+    }
+
+    @Test
+    fun testUserCanNavigateToCreateAccount() {
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Opening new account activity
+        onView(withText(R.string.text_add_account))
+            .perform(click())
+
+        // Check create account screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(CreateAccountActivity::class.java.name)
+        )
+    }
+
+    @Test
+    fun testUserCanSeeBottomNavigation() {
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Check rate the app is there
+        onView(withText(R.string.text_rate_the_app)).check(matches(isDisplayed()))
+
+        // Check the privicy policy is there
+        onView(withText(R.string.about_app_text_privacy)).check(matches(isDisplayed()))
     }
 
     /**
      * Open drawer by clicking on burger button
      */
     private fun clickOnBurgerButton() {
-        onView(withContentDescription("Open")).perform(click())
+        onView(withContentDescription(R.string.content_navigation_content_description)).perform(
+            click()
+        )
     }
 }
