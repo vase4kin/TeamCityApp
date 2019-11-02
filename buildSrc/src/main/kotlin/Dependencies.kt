@@ -88,9 +88,9 @@ object Deps {
     val test_powerMockApiMockito = "org.powermock:powermock-api-mockito:${Versions.powerMock}"
     val test_powerMockClassLoadingXstream = "org.powermock:powermock-classloading-xstream:${Versions.powerMock}"
 
-    val androidx_test_rules = "androidx.test:rules:${Versions.androidx_testing}"
-    val androidx_test_runner = "androidx.test:runner:${Versions.androidx_testing}"
-    val androidx_test_espressocore = "androidx.test.espresso:espresso-core:${Versions.androidx_espresso}"
+    val test_androidx_rules = "androidx.test:rules:${Versions.androidx_testing}"
+    val test_androidx_runner = "androidx.test:runner:${Versions.androidx_testing}"
+    val test_androidx_espressocore = "androidx.test.espresso:espresso-core:${Versions.androidx_espresso}"
 
     val dexmaker = "com.crittercism.dexmaker:dexmaker:${Versions.dexMaker}"
     val dexmakerDx = "com.crittercism.dexmaker:dexmaker-dx:${Versions.dexMaker}"

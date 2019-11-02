@@ -16,9 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.view
 
-import android.app.Activity
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.view.View
 import android.widget.ProgressBar
@@ -28,8 +26,6 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListener
-import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
 import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
@@ -38,7 +34,7 @@ import javax.inject.Inject
  * Impl of [TestDetailsView]
  */
 class TestDetailsViewImpl @Inject constructor(
-    activity: TestDetailsActivity,
+    private val activity: TestDetailsActivity,
     private val statusBarUtils: StatusBarUtils
 ) :
     TestDetailsView, OnActionModeListener {
@@ -55,12 +51,6 @@ class TestDetailsViewImpl @Inject constructor(
     lateinit var empty: TextView
 
     lateinit var unbinder: Unbinder
-
-    private val activity: Activity
-
-    init {
-        this.activity = activity
-    }
 
     /**
      * {@inheritDoc}
@@ -89,16 +79,10 @@ class TestDetailsViewImpl @Inject constructor(
      * Init toolbar
      */
     private fun initToolBar() {
-        toolbar.setTitle(R.string.test_details_title)
         toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
-        toolbar.setNavigationOnClickListener(
-            OnToolBarNavigationListenerImpl(object : OnToolBarNavigationListener {
-                override fun onClick() {
-                    finish()
-                }
-            })
-        )
-        toolbar.setBackgroundDrawable(ColorDrawable(activity.resources.getColor(R.color.failed_tool_bar_color)))
+        toolbar.setNavigationOnClickListener {
+            finish()
+        }
         statusBarUtils.changeStatusBarColor(activity, R.color.failed_tool_bar_color)
     }
 
