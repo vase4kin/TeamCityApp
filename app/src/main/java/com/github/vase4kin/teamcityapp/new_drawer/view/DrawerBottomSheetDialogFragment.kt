@@ -65,7 +65,7 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     fun setAdapter(list: List<BaseDrawerItem>) {
-        val recyclerView = view?.findViewById<RecyclerView>(R.id.recycler_view) ?: return
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.bottom_sheet_drawer_recycler_view) ?: return
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = drawerAdapter
         drawerAdapter.list.clear()

@@ -19,31 +19,40 @@ package com.github.vase4kin.teamcityapp.drawer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.BundleMatchers
+import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.isSelected
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.about.AboutActivity
+import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
+import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
-import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import it.cosenonjaviste.daggermock.DaggerMockRule
+import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.AllOf.allOf
+import org.junit.Assert
 import org.junit.Before
 import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,7 +61,6 @@ import org.mockito.Spy
 /**
  * Tests for Drawer
  */
-@Ignore
 @RunWith(AndroidJUnit4::class)
 class DrawerTest {
 
@@ -72,8 +80,8 @@ class DrawerTest {
 
     @JvmField
     @Rule
-    val activityTestRule: CustomActivityTestRule<HomeActivity> =
-        CustomActivityTestRule(HomeActivity::class.java)
+    val activityTestRule: CustomIntentsTestRule<HomeActivity> =
+        CustomIntentsTestRule(HomeActivity::class.java)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -86,90 +94,214 @@ class DrawerTest {
         }
     }
 
+    private val sharedStorage: SharedUserStorage
+        get() {
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            return app.restApiInjector.sharedUserStorage()
+        }
+
     @Before
     fun setUp() {
-        val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        app.restApiInjector.sharedUserStorage().clearAll()
-        app.restApiInjector.sharedUserStorage()
-            .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        val sharedUserStorage = this.sharedStorage
+        sharedUserStorage.clearAll()
+        sharedUserStorage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+    }
+
+    @Test
+    fun testUserCanSwitchAccounts() {
+        val url = Mocks.URL + "/v2"
+        sharedStorage.saveGuestUserAccountAndSetItAsActive(url, false)
         activityTestRule.launchActivity(null)
-    }
-
-    @Test
-    fun testUserCanSeeInfo() {
         // Opening drawer
         clickOnBurgerButton()
 
-        // Check userInfo
-        onView(allOf(withId(R.id.main_title), isDisplayed()))
-            .check(matches(withText("Guest user")))
-
-        onView(allOf(withId(R.id.main_title), isDisplayed()))
-            .check(matches(withText(Mocks.URL)))
-    }
-
-    @Test
-    fun testUserCanSeeProjectsIsSelectedByDefault() {
-        // Opening drawer
-        clickOnBurgerButton()
-
-        // Check projects is selected
+        // Check active user details
         onView(
-            allOf(
-                withId(R.id.main_title),
-                withText(R.string.home_drawer_item),
-                isDisplayed()
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                0,
+                R.id.title
             )
         )
-            .check(matches(isSelected()))
+            .check(matches(withText("Guest user")))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                0,
+                R.id.subTitle
+            )
+        )
+            .check(matches(withText(url)))
+
+        // Check another user
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                2,
+                R.id.title
+            )
+        )
+            .check(matches(withText("Guest user")))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                2,
+                R.id.subTitle
+            )
+        )
+            .check(matches(withText(Mocks.URL)))
+
+        // Click on another user
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPosition(
+                2
+            )
+        )
+            .perform(click())
+
+        // Check user has been switched
+        Intents.intended(
+            allOf(
+                IntentMatchers.hasComponent(HomeActivity::class.java.name),
+                IntentMatchers.hasExtras(
+                    BundleMatchers.hasEntry(
+                        CoreMatchers.equalTo(
+                            BundleExtractorValues.IS_REQUIRED_TO_RELOAD
+                        ), CoreMatchers.equalTo(true)
+                    )
+                )
+            )
+        )
+
+        // Check that active user
+        Assert.assertEquals(sharedStorage.activeUser.teamcityUrl, Mocks.URL)
+    }
+
+    @Test
+    fun testUserCanSeeActiveUser() {
+        activityTestRule.launchActivity(null)
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Check active user details
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                0,
+                R.id.title
+            )
+        )
+            .check(matches(withText("Guest user")))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                0,
+                R.id.subTitle
+            )
+        )
+            .check(matches(withText(Mocks.URL)))
+
+        // Check active user is not clickable
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPosition(
+                0
+            )
+        )
+            .check(matches(not(isClickable())))
     }
 
     @Test
     fun testUserCanNavigateToAboutScreen() {
+        activityTestRule.launchActivity(null)
         // Opening drawer
         clickOnBurgerButton()
 
-        // Check about is opened
+        // Click on about
         onView(
-            allOf(
-                withId(R.id.main_title),
-                withText(R.string.about_drawer_item),
-                isDisplayed()
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                5,
+                R.id.title
             )
         )
+            .check(matches(withText(R.string.about_drawer_item)))
             .perform(click())
 
-        // Checking toolbar title
-        matchToolbarTitle("About")
+        // Check about screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(AboutActivity::class.java.name)
+        )
     }
 
     @Test
     fun testUserCanNavigateToAccounts() {
+        activityTestRule.launchActivity(null)
         // Opening drawer
         clickOnBurgerButton()
 
-        // Click on account
-        onView(allOf(withId(R.id.main_title), isDisplayed()))
-            .perform(click())
-
         // Opening managing account activity
         onView(
-            allOf(
-                withId(R.id.main_title),
-                withText(R.string.title_activity_account_list)
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                3,
+                R.id.title
             )
         )
+            .check(matches(withText(R.string.text_manage_accounts)))
             .perform(click())
 
-        // Checking toolbar title
-        matchToolbarTitle("Manage Accounts")
+        // Check manage accounts screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(AccountListActivity::class.java.name)
+        )
+    }
+
+    @Test
+    fun testUserCanNavigateToCreateAccount() {
+        activityTestRule.launchActivity(null)
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Opening new account activity
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                2,
+                R.id.title
+            )
+        )
+            .check(matches(withText(R.string.text_add_account)))
+            .perform(click())
+
+        // Check create account screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(CreateAccountActivity::class.java.name)
+        )
+    }
+
+    @Test
+    fun testUserCanSeeBottomNavigation() {
+        activityTestRule.launchActivity(null)
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Check rate the app is there
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                7,
+                R.id.privacy
+            )
+        )
+            .check(matches(allOf(withText(R.string.about_app_text_privacy), isDisplayed())))
+
+        // Check the privicy policy is there
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                7,
+                R.id.rate_the_app
+            )
+        )
+            .check(matches(allOf(withText(R.string.text_rate_the_app), isDisplayed())))
     }
 
     /**
      * Open drawer by clicking on burger button
      */
     private fun clickOnBurgerButton() {
-        onView(withContentDescription("Open")).perform(click())
+        onView(withContentDescription(R.string.content_navigation_content_description)).perform(
+            click()
+        )
     }
 }

@@ -95,7 +95,7 @@ class BottomViewHolder(
             tracker.trackOpenPrivacy()
             router.openPrivacy()
         }
-        itemView.findViewById<View>(R.id.website).setOnClickListener {
+        itemView.findViewById<View>(R.id.rate_the_app).setOnClickListener {
             tracker.trackRateTheApp()
             router.openRateTheApp()
         }
