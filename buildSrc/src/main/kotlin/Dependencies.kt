@@ -73,12 +73,12 @@ object Deps {
     val androidx_navigation_ui = "androidx.navigation:navigation-ui-ktx:${Versions.androidx_navigation}"
     val androidx_recyclerview = "androidx.recyclerview:recyclerview:${Versions.androidx_recyclerview}"
 
-    val api_okhhtp = "com.squareup.okhttp3:okhttp:${Versions.okhttp}"
-    val api_logginInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
+    val api_okhttp = "com.squareup.okhttp3:okhttp:${Versions.okhttp}"
+    val api_okhttpLogginInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
     val api_gson = "com.google.code.gson:gson:${Versions.gson}"
     val api_retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    val api_converterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
-    val api_adapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
+    val api_retrofitConverterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+    val api_retrofitAdapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
 
     val test_junit = "junit:junit:${Versions.junit}"
     val test_mockito = "org.mockito:mockito-core:${Versions.mockitoCore}"
@@ -92,7 +92,7 @@ object Deps {
     val androidx_test_runner = "androidx.test:runner:${Versions.androidx_testing}"
     val androidx_test_espressocore = "androidx.test.espresso:espresso-core:${Versions.androidx_espresso}"
 
-    val dexmaker =  "com.crittercism.dexmaker:dexmaker:${Versions.dexMaker}"
+    val dexmaker = "com.crittercism.dexmaker:dexmaker:${Versions.dexMaker}"
     val dexmakerDx = "com.crittercism.dexmaker:dexmaker-dx:${Versions.dexMaker}"
     val dexmakerMockito = "com.crittercism.dexmaker:dexmaker-mockito:${Versions.dexMaker}"
 
