@@ -20,8 +20,5 @@ import android.app.Activity
 
 import androidx.test.rule.ActivityTestRule
 
-/**
- * Simple ActivityTestRule with spoon screenshot support on failure
- */
 class CustomActivityTestRule<T : Activity>(activityClass: Class<T>) :
     ActivityTestRule<T>(activityClass, false, false)
