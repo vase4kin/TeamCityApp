@@ -73,12 +73,12 @@ object Deps {
     val androidx_navigation_ui = "androidx.navigation:navigation-ui-ktx:${Versions.androidx_navigation}"
     val androidx_recyclerview = "androidx.recyclerview:recyclerview:${Versions.androidx_recyclerview}"
 
-    val okhhtp = "com.squareup.okhttp3:okhttp:${Versions.okhttp}"
-    val logginInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
-    val gson = "com.google.code.gson:gson:${Versions.gson}"
-    val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    val converterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
-    val adapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
+    val api_okhhtp = "com.squareup.okhttp3:okhttp:${Versions.okhttp}"
+    val api_logginInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
+    val api_gson = "com.google.code.gson:gson:${Versions.gson}"
+    val api_retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+    val api_converterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+    val api_adapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
 
     val test_junit = "junit:junit:${Versions.junit}"
     val test_mockito = "org.mockito:mockito-core:${Versions.mockitoCore}"
