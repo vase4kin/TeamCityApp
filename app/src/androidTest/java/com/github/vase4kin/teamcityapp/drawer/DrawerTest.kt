@@ -40,6 +40,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -118,13 +119,28 @@ class DrawerTest {
             .check(matches(withText(Mocks.URL)))
     }
 
+    @Ignore
+    @Test
+    fun testUserCanSeeActiveUser() {
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Check userInfo
+        onView(allOf(withId(R.id.main_title), isDisplayed()))
+            .check(matches(withText("Guest user")))
+
+        onView(allOf(withId(R.id.main_title), isDisplayed()))
+            .check(matches(withText(Mocks.URL)))
+    }
+
     @Test
     fun testUserCanNavigateToAboutScreen() {
         // Opening drawer
         clickOnBurgerButton()
 
         // Click on about
-        onView(withText(R.string.about_drawer_item))
+        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(5, R.id.title))
+            .check(matches(withText(R.string.about_drawer_item)))
             .perform(click())
 
         // Check about screen is being opened
@@ -139,7 +155,8 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Opening managing account activity
-        onView(withText(R.string.text_manage_accounts))
+        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(3, R.id.title))
+            .check(matches(withText(R.string.text_manage_accounts)))
             .perform(click())
 
         // Check manage accounts screen is being opened
@@ -154,7 +171,8 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Opening new account activity
-        onView(withText(R.string.text_add_account))
+        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(2, R.id.title))
+            .check(matches(withText(R.string.text_add_account)))
             .perform(click())
 
         // Check create account screen is being opened
@@ -169,10 +187,12 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Check rate the app is there
-        onView(withText(R.string.text_rate_the_app)).check(matches(isDisplayed()))
+        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(7, R.id.privacy))
+            .check(matches(allOf(withText(R.string.about_app_text_privacy), isDisplayed())))
 
         // Check the privicy policy is there
-        onView(withText(R.string.about_app_text_privacy)).check(matches(isDisplayed()))
+        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(7, R.id.rate_the_app))
+            .check(matches(allOf(withText(R.string.text_rate_the_app), isDisplayed())))
     }
 
     /**

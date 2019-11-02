@@ -29,7 +29,7 @@
         android:background="@drawable/bottom_sheet_view" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+        android:id="@+id/bottom_sheet_drawer_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:itemCount="2"
