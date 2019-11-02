@@ -21,6 +21,7 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isClickable
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -44,6 +45,7 @@ import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import it.cosenonjaviste.daggermock.DaggerMockRule
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.BeforeClass
@@ -99,15 +101,9 @@ class DrawerTest {
         activityTestRule.launchActivity(null)
     }
 
-    /**
-     * Check the active account title is not clickable
-     *
-     *
-     * Check that you can switch between accounts
-     */
     @Ignore
     @Test
-    fun testUserCanSeeInfo() {
+    fun testUserCanSwitchAccounts() {
         // Opening drawer
         clickOnBurgerButton()
 
@@ -119,18 +115,34 @@ class DrawerTest {
             .check(matches(withText(Mocks.URL)))
     }
 
-    @Ignore
     @Test
     fun testUserCanSeeActiveUser() {
         // Opening drawer
         clickOnBurgerButton()
 
-        // Check userInfo
-        onView(allOf(withId(R.id.main_title), isDisplayed()))
+        // Check active user details
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                0,
+                R.id.title
+            )
+        )
             .check(matches(withText("Guest user")))
-
-        onView(allOf(withId(R.id.main_title), isDisplayed()))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                0,
+                R.id.subTitle
+            )
+        )
             .check(matches(withText(Mocks.URL)))
+
+        // Check active user is not clickable
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPosition(
+                0
+            )
+        )
+            .check(matches(not(isClickable())))
     }
 
     @Test
@@ -139,7 +151,12 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Click on about
-        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(5, R.id.title))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                5,
+                R.id.title
+            )
+        )
             .check(matches(withText(R.string.about_drawer_item)))
             .perform(click())
 
@@ -155,7 +172,12 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Opening managing account activity
-        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(3, R.id.title))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                3,
+                R.id.title
+            )
+        )
             .check(matches(withText(R.string.text_manage_accounts)))
             .perform(click())
 
@@ -171,7 +193,12 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Opening new account activity
-        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(2, R.id.title))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                2,
+                R.id.title
+            )
+        )
             .check(matches(withText(R.string.text_add_account)))
             .perform(click())
 
@@ -187,11 +214,21 @@ class DrawerTest {
         clickOnBurgerButton()
 
         // Check rate the app is there
-        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(7, R.id.privacy))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                7,
+                R.id.privacy
+            )
+        )
             .check(matches(allOf(withText(R.string.about_app_text_privacy), isDisplayed())))
 
         // Check the privicy policy is there
-        onView(RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(7, R.id.rate_the_app))
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                7,
+                R.id.rate_the_app
+            )
+        )
             .check(matches(allOf(withText(R.string.text_rate_the_app), isDisplayed())))
     }
 
