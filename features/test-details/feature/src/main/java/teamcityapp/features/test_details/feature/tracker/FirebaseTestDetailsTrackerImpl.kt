@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':features:test-details:api-models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.test_details.feature.tracker
+
+import com.google.firebase.analytics.FirebaseAnalytics
+import javax.inject.Inject
+
+/**
+ * Test details tracking class
+ */
+class FirebaseTestDetailsTrackerImpl @Inject constructor(
+    private val firebaseAnalytics: FirebaseAnalytics
+) : TestDetailsTracker {
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackView() {
+        firebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
+    }
+}

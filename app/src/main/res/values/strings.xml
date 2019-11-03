@@ -150,9 +150,6 @@
     <string name="build_type_by_section_text">Configuration</string>
     <string name="build_project_by_section_text">Project</string>
 
-    <!--Test occurrence-->
-    <string name="test_details_title">Details</string>
-
     <!--Artifact-->
     <!--bottom sheet menu-->
     <string name="artifact_download">Download</string>
@@ -193,9 +190,6 @@
     <string name="text_passed">Passed (%d)</string>
     <string name="text_failed">Failed (%d)</string>
     <string name="text_ignored">Ignored (%d)</string>
-
-    <!--Test details-->
-    <string name="text_empty_test_details">No test details</string>
 
     <!--Testing-->
     <string name="navigate_up">Navigate up</string>

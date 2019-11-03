@@ -14,20 +14,28 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.tests.router
+package teamcityapp.features.test_details.feature.data
 
-import android.app.Activity
-import teamcityapp.features.test_details.feature.view.TestDetailsActivity
+import teamcity.features.test_details.api.models.TestOccurrence
 
 /**
- * Impl of [TestsRouter]
+ * Data manager for managing server operations for [TestDetailsActivity]
  */
-class TestsRouterImpl(private val activity: Activity) : TestsRouter {
+interface TestDetailsDataManager {
 
     /**
-     * {@inheritDoc}
+     * Load test details
+     *
+     * @param loadingListener - Listener to receive server callbacks
+     * @param url - Test details url
      */
-    override fun openFailedTest(url: String) {
-        TestDetailsActivity.openFailedTest(url, activity)
-    }
+    fun loadData(
+        onSuccess: (test: TestOccurrence) -> Unit,
+        onError: (errorMessage: String) -> Unit,
+        url: String)
+
+    /**
+     * Unsubscribe all server subscriptions
+     */
+    fun unsubscribe()
 }

@@ -36,7 +36,7 @@ object Versions {
     val androidx_recyclerview = "1.0.0"
     val androidx_navigation = "2.0.0"
     val androidx_constraintLayout = "1.1.3"
-    val material = "1.1.0-alpha04"
+    val material = "1.0.0"
 
     //Retrofit
     val okhttp = "3.9.0"
@@ -45,6 +45,20 @@ object Versions {
 
     //Rxjava
     val rxjava = "2.2.6"
+    val rxjava_android = "2.1.1"
+    val rxjava_kotlin = "2.3.0"
+
+    // Dagger
+    val dagger = "2.21"
+
+    // Firebase
+    val firebase_core = "17.2.0"
+
+    // ButterKnife
+    val butterKnife = "10.1.0"
+
+    // Other
+    val errorView = "3.0.0"
 
     // Testing
     val junit = "4.12"
@@ -52,6 +66,8 @@ object Versions {
     val androidx_testing = "1.1.1"
     val mockitoCore = "1.10.19"
     val powerMock = "1.6.4"
+    val mockitoKotlin = "2.2.0"
+    val mockitoCore3 = "3.1.0"
 
     // Gradle plugins
     val gradleandroid = "3.4.2"
@@ -88,6 +104,20 @@ object Deps {
     val api_retrofitAdapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
 
     val rxjava = "io.reactivex.rxjava2:rxjava:${Versions.rxjava}"
+    val rxjava_android = "io.reactivex.rxjava2:rxandroid:${Versions.rxjava_android}"
+    val rxjava_kotlin = "io.reactivex.rxjava2:rxkotlin:${Versions.rxjava_kotlin}"
+
+    val dagger = "com.google.dagger:dagger:${Versions.dagger}"
+    val dagger_compiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+    val dagger_android = "com.google.dagger:dagger-android-support:${Versions.dagger}"
+    val dagger_androidProcessor = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
+
+    val firebase_core = "com.google.firebase:firebase-core:${Versions.firebase_core}"
+
+    val butterKnife = "com.jakewharton:butterknife:${Versions.butterKnife}"
+    val butterKnife_compiler = "com.jakewharton:butterknife-compiler:${Versions.butterKnife}"
+
+    val errorView = "tr.xip.errorview:library:${Versions.errorView}"
 
     val test_junit = "junit:junit:${Versions.junit}"
     val test_mockito = "org.mockito:mockito-core:${Versions.mockitoCore}"
@@ -96,6 +126,9 @@ object Deps {
     val test_powerMockJunitRule = "org.powermock:powermock-module-junit4-rule:${Versions.powerMock}"
     val test_powerMockApiMockito = "org.powermock:powermock-api-mockito:${Versions.powerMock}"
     val test_powerMockClassLoadingXstream = "org.powermock:powermock-classloading-xstream:${Versions.powerMock}"
+
+    val test_mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
+    val test_mockito3 = "org.mockito:mockito-core:${Versions.mockitoCore3}"
 
     val test_androidx_rules = "androidx.test:rules:${Versions.androidx_testing}"
     val test_androidx_runner = "androidx.test:runner:${Versions.androidx_testing}"

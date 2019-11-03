@@ -71,9 +71,6 @@
             android:label="@string/title_activity_create_account"
             android:theme="@style/PrimaryColorNavBarTheme" />
         <activity
-            android:name=".testdetails.view.TestDetailsActivity"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
-        <activity
             android:name=".about.AboutLibrariesActivity"
             android:label="@string/title_activity_about_libraries"
             android:launchMode="singleTop"

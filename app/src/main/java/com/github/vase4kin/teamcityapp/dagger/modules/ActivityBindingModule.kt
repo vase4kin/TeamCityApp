@@ -59,13 +59,13 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailBundlesModule
-import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
-import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
-import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
 import com.github.vase4kin.teamcityapp.utils.di.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import teamcityapp.features.test_details.feature.dagger.TestDetailBundlesModule
+import teamcityapp.features.test_details.feature.dagger.TestDetailsActivityScope
+import teamcityapp.features.test_details.feature.dagger.TestDetailsModule
+import teamcityapp.features.test_details.feature.view.TestDetailsActivity
 
 @Module
 abstract class ActivityBindingModule {
@@ -86,8 +86,8 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(
         modules = [
             TestDetailsModule::class,
-            UtilsModule::class,
             TestDetailBundlesModule::class,
+            UtilsModule::class,
             TestDetailsRepositoryModule::class
         ]
     )

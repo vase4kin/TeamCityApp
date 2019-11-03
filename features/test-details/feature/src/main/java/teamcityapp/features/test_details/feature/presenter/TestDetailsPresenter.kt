@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':features:test-details:api-models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.test_details.feature.presenter
+
+/**
+ * Presenter to manage logic of [TestDetailsActivity]
+ */
+interface TestDetailsPresenter {
+
+    /**
+     * On activity create
+     */
+    fun onCreate()
+
+    /**
+     * On activity destroy
+     */
+    fun onDestroy()
+
+    /**
+     * On activity on back button pressed
+     */
+    fun onBackPressed()
+
+    /**
+     * On activity resume
+     */
+    fun onResume()
+}

@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':features:test-details:api-models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.test_details.feature.tracker
+
+interface TestDetailsTracker {
+
+    /**
+     * Track view
+     */
+    fun trackView()
+
+    companion object {
+        /**
+         * Screen name
+         */
+        const val SCREEN_NAME = "screen_test_details"
+    }
+}

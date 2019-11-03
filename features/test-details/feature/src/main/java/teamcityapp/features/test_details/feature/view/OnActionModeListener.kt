@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':features:test-details:api-models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.test_details.feature.view
+
+/**
+ * On action mode enabled listener
+ */
+interface OnActionModeListener {
+
+    /**
+     * On action mode create
+     */
+    fun onCreate()
+
+    /**
+     * On action mode destroy
+     */
+    fun onDestroy()
+}
