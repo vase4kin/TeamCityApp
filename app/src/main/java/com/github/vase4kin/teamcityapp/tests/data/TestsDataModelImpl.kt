@@ -21,7 +21,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_ERROR
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_FAILURE
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_UNKNOWN
-import teamcity.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.api.modelsTestOccurrence
 import java.util.UUID
 
 /**

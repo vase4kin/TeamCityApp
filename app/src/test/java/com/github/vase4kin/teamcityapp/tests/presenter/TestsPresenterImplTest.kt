@@ -43,7 +43,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
-import teamcity.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.api.modelsTestOccurrence
 
 @RunWith(MockitoJUnitRunner::class)
 class TestsPresenterImplTest {

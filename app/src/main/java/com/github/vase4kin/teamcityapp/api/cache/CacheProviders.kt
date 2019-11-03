@@ -32,7 +32,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import io.rx_cache2.LifeCache
-import teamcity.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.api.modelsTestOccurrence
 import java.util.concurrent.TimeUnit
 
 /**

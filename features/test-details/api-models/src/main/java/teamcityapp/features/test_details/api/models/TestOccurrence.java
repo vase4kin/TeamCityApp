@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcity.features.test_details.api.models;
+package teamcityapp.features.test_details.api.models;
 
 import teamcityapp.libraries.api.BaseObject;
 

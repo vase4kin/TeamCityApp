@@ -47,7 +47,7 @@ import org.mockito.Matchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcity.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.api.modelsTestOccurrence
 import teamcityapp.features.test_details.feature.view.TestDetailsActivity
 
 /**

@@ -34,7 +34,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.Project
 import com.github.vase4kin.teamcityapp.navigation.api.Projects
 import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-import teamcity.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.api.modelsTestOccurrence
 
 import java.util.ArrayList
 
