@@ -106,6 +106,7 @@ subprojects {
                 testOptions {
                     unitTests {
                         all {
+                            includeAndroidResources = true
                             jvmArgs '-noverify'
                             testLogging {
                                 events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
