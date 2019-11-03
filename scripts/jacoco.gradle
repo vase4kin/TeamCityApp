@@ -47,17 +47,17 @@ task generateCodeCoverageReport(type: JacocoReport) {
     rootProject.subprojects.each { proj ->
         javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/debug", excludes: fileFilter)
         kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+        javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/mockDebug", excludes: fileFilter) // Support testMockDebugUnitTest
+        kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/mockDebug", excludes: fileFilter)  // Support testMockDebugUnitTest
         javaSrc       << "$proj.projectDir/src/main/java"
         kotlinSrc     << "$proj.projectDir/src/main/kotlin"
         execution     << fileTree(dir: proj.buildDir,
-                includes: ['jacoco/testMockDebugUnitTest.exec',
+                includes: ['jacoco/*.exec',
                            'coverage.ec'])
     }
 
     sourceDirectories = files([javaSrc, kotlinSrc])
     classDirectories = files([javaClasses, kotlinClasses])
-
-    print execution
 
     executionData = files(execution)
 
