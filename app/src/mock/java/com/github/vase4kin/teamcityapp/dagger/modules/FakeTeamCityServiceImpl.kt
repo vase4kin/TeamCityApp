@@ -30,7 +30,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import teamcity.features.test_details.api.models.TestOccurrence
+import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MediaType
@@ -39,6 +39,7 @@ import retrofit2.http.Body
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
+import teamcity.features.test_details.api.models.TestOccurrence
 import java.util.ArrayList
 
 /**

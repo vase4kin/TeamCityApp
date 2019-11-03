@@ -28,10 +28,10 @@ import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import teamcity.features.test_details.api.models.TestOccurrence
-
+import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import okhttp3.ResponseBody
+import teamcity.features.test_details.api.models.TestOccurrence
 
 /**
  * Fake repository impl for UI tests without cache support
