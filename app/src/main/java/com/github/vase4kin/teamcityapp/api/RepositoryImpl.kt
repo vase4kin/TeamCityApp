@@ -35,7 +35,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import okhttp3.ResponseBody
-import teamcityapp.features.test_details.api.modelsTestOccurrence
+import teamcityapp.features.test_details.api.models.TestOccurrence
 
 /**
  * Impl of [Repository]

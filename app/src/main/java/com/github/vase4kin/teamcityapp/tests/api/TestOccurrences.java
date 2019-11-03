@@ -21,6 +21,7 @@ import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import java.util.Collections;
 import java.util.List;
 
+import teamcityapp.features.test_details.api.models.TestOccurrence;
 import teamcityapp.libraries.api.BaseObject;
 
 /**

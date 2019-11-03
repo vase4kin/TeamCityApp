@@ -31,7 +31,7 @@ import com.github.vase4kin.teamcityapp.tests.router.TestsRouter
 import com.github.vase4kin.teamcityapp.tests.view.OnTestsPresenterListener
 import com.github.vase4kin.teamcityapp.tests.view.TestsView
 import com.mugen.MugenCallbacks
-import teamcityapp.features.test_details.api.modelsTestOccurrence
+import teamcityapp.features.test_details.api.models.TestOccurrence
 import javax.inject.Inject
 
 /**

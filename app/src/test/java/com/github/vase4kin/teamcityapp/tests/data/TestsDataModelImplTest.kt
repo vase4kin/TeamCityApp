@@ -27,7 +27,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
-import teamcityapp.features.test_details.api.modelsTestOccurrence
+import teamcityapp.features.test_details.api.models.TestOccurrence
 
 @RunWith(MockitoJUnitRunner::class)
 class TestsDataModelImplTest {

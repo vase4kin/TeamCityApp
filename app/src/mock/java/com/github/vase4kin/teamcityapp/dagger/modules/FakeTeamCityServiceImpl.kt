@@ -39,7 +39,7 @@ import retrofit2.http.Body
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
-import teamcityapp.features.test_details.api.modelsTestOccurrence
+import teamcityapp.features.test_details.api.models.TestOccurrence
 import java.util.ArrayList
 
 /**

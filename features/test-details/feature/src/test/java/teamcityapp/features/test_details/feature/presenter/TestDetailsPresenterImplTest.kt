@@ -26,7 +26,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import teamcityapp.features.test_details.api.modelsTestOccurrence
+import teamcityapp.features.test_details.api.models.TestOccurrence
 import teamcityapp.features.test_details.feature.data.TestDetailsDataManager
 import teamcityapp.features.test_details.feature.tracker.TestDetailsTracker
 import teamcityapp.features.test_details.feature.view.TestDetailsView
