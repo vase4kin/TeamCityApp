@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:utils'
-include ':features:test-details:api-models'
-include ':features:test-details:repository'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+dependencies {
+    implementation Deps.kotlin_stdlibJdk7
+}
