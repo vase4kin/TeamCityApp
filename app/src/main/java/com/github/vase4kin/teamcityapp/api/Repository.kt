@@ -34,7 +34,7 @@ import teamcityapp.features.test_details.repository.TestDetailsRepository
 /**
  * Repository to manage api
  */
-interface Repository: TestDetailsRepository {
+interface Repository : TestDetailsRepository {
 
     /**
      * List agents (cache's supported)

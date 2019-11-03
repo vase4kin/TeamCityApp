@@ -32,7 +32,8 @@ interface TestDetailsDataManager {
     fun loadData(
         onSuccess: (test: TestOccurrence) -> Unit,
         onError: (errorMessage: String) -> Unit,
-        url: String)
+        url: String
+    )
 
     /**
      * Unsubscribe all server subscriptions

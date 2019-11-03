@@ -54,7 +54,8 @@ allprojects {
 subprojects {
     afterEvaluate { project ->
         if (project.hasProperty('android')) {
-            apply plugin: "com.github.ben-manes.versions"
+
+            apply plugin: 'com.github.ben-manes.versions'
             apply plugin: 'org.jmailen.kotlinter'
 
             android {
@@ -112,10 +113,6 @@ subprojects {
                         }
                     }
                 }
-            }
-
-            dependencies {
-                implementation Deps.kotlin_stdlibJdk7
             }
         }
     }

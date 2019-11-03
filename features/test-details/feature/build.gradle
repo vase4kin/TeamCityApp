@@ -18,6 +18,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'org.jmailen.kotlinter'
 
 dependencies {
     implementation project(':features:test-details:repository')
