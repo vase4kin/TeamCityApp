@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.navigation.api;
 
 import androidx.annotation.NonNull;
 
-import com.github.vase4kin.teamcityapp.base.api.Jsonable;
+import teamcityapp.libraries.api.Jsonable;
 
 /**
  * Single build element

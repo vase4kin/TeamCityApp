@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.artifact.api;
 
 import androidx.annotation.Nullable;
 
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+import teamcityapp.libraries.api.BaseObject;
 
 /**
  * Artifact file

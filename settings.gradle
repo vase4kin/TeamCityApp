@@ -15,6 +15,7 @@
  */
 
 include ':app'
+include ':libraries:api'
 include ':libraries:utils'
 include ':features:test-details:api-models'
 include ':features:test-details:repository'

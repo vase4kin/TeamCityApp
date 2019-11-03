@@ -17,12 +17,12 @@
 package com.github.vase4kin.teamcityapp.base.list.presenter
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
-import com.github.vase4kin.teamcityapp.base.api.Jsonable
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+import teamcityapp.libraries.api.Jsonable
 
 /**
  * Base impl of [BaseListPresenter]

@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.base.api;
-
-import androidx.annotation.NonNull;
-
-import java.io.Serializable;
+package teamcityapp.libraries.api;
 
 /**
- * Base object
+ * Common object
  */
-public class BaseObject implements Jsonable, Serializable {
+public class CommonJsonObject extends BaseObject implements Jsonable {
 
-    public String id;
-    protected String href;
+    private String name;
+    private String description;
 
-    @NonNull
-    public String getId() {
-        return id;
+    public String getName() {
+        return name;
     }
 
-    @NonNull
-    public String getHref() {
-        return href;
+    public String getDescription() {
+        return description;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

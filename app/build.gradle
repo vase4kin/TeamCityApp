@@ -89,6 +89,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation project(':libraries:utils')
+    implementation project(':libraries:api')
 
     // Android support libraries
     implementation Deps.androidx_appcompat

@@ -14,30 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.api;
+apply plugin: 'com.android.library'
 
-import teamcityapp.libraries.api.BaseObject;
-
-import java.io.Serializable;
-
-/**
- * User
- */
-public class User extends BaseObject implements Serializable {
-
-    private String username;
-    private String name;
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public User(String username, String name) {
-        this.username = username;
-        this.name = name;
-    }
+dependencies {
+    implementation Deps.androidx_annotation
 }

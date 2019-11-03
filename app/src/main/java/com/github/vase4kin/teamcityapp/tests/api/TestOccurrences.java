@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.tests.api;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+import teamcityapp.libraries.api.BaseObject;
 
 import java.util.Collections;
 import java.util.List;

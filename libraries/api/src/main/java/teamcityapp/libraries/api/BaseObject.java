@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlist.api;
+package teamcityapp.libraries.api;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
-import teamcityapp.libraries.api.BaseObject;
+import java.io.Serializable;
 
 /**
- * Build canceled info
+ * Base object
  */
-public class CanceledInfo extends BaseObject {
+public class BaseObject implements Jsonable, Serializable {
 
-    private User user;
-    private String timestamp;
+    public String id;
+    protected String href;
 
     @NonNull
-    public String getTimestamp() {
-        return timestamp;
+    public String getId() {
+        return id;
     }
 
     @NonNull
-    public User getUser() {
-        return user;
-    }
-
-    @VisibleForTesting
-    public CanceledInfo(String timestamp, User user) {
-        this.timestamp = timestamp;
-        this.user = user;
+    public String getHref() {
+        return href;
     }
 }

@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.agents.api
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible
-import com.github.vase4kin.teamcityapp.base.api.BaseObject
+import teamcityapp.libraries.api.BaseObject
 
 data class Agents(
     val count: Int,

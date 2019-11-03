@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.base.api;
+package teamcityapp.libraries.api;
 
 import androidx.annotation.NonNull;
 
