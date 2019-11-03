@@ -17,19 +17,19 @@
 package com.github.vase4kin.teamcityapp.testdetails.data
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
-import com.github.vase4kin.teamcityapp.api.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import teamcity.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.repository.TestDetailsRepository
 import javax.inject.Inject
 
 /**
  * Impl of [TestDetailsDataManager]
  */
-class TestDetailsDataManagerImpl @Inject constructor(private val repository: Repository) : TestDetailsDataManager {
+class TestDetailsDataManagerImpl @Inject constructor(private val repository: TestDetailsRepository) : TestDetailsDataManager {
 
     private val subscriptions = CompositeDisposable()
 

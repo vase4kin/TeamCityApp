@@ -38,7 +38,12 @@ import org.greenrobot.eventbus.EventBus
 @UserScope
 @Component(
     dependencies = [AppComponent::class],
-    modules = [RestApiModule::class, UrlFormatterModule::class, ActivityBindingModule::class, AppActivityBindingModule::class, AndroidInjectionModule::class]
+    modules = [
+        RestApiModule::class,
+        UrlFormatterModule::class,
+        ActivityBindingModule::class,
+        AppActivityBindingModule::class,
+        AndroidInjectionModule::class]
 )
 interface RestApiComponent : AndroidInjector<TeamCityApplication> {
 

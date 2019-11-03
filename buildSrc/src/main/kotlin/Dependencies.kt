@@ -43,6 +43,9 @@ object Versions {
     val gson = "2.8.2"
     val retrofit = "2.4.0"
 
+    //Rxjava
+    val rxjava = "2.2.6"
+
     // Testing
     val junit = "4.12"
     val androidx_espresso = "3.1.0"
@@ -83,6 +86,8 @@ object Deps {
     val api_retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     val api_retrofitConverterGson = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     val api_retrofitAdapterRxJava2 = "com.squareup.retrofit2:adapter-rxjava2:${Versions.retrofit}"
+
+    val rxjava = "io.reactivex.rxjava2:rxjava:${Versions.rxjava}"
 
     val test_junit = "junit:junit:${Versions.junit}"
     val test_mockito = "org.mockito:mockito-core:${Versions.mockitoCore}"

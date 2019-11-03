@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+package teamcityapp.features.test_details.repository
 
-dependencies {
-    implementation project(':features:test-details:api-models')
-    implementation Deps.rxjava
-    implementation Deps.kotlin_stdlibJdk7
+import io.reactivex.Single
+import teamcity.features.test_details.api.models.TestOccurrence
+
+interface TestDetailsRepository {
+
+    /**
+     * Get single test info by url (cache's supported)
+     *
+     * @param url - Test url
+     * @return [Single] with [TestOccurrence]
+     */
+    fun testOccurrence(url: String): Single<TestOccurrence>
 }

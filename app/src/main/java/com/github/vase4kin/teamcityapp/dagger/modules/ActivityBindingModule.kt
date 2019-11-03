@@ -83,7 +83,14 @@ abstract class ActivityBindingModule {
     abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope
-    @ContributesAndroidInjector(modules = [TestDetailsModule::class, UtilsModule::class, TestDetailBundlesModule::class])
+    @ContributesAndroidInjector(
+        modules = [
+            TestDetailsModule::class,
+            UtilsModule::class,
+            TestDetailBundlesModule::class,
+            TestDetailsRepositoryModule::class
+        ]
+    )
     abstract fun testDetailsActivity(): TestDetailsActivity
 
     @CreateAccountActivityScope

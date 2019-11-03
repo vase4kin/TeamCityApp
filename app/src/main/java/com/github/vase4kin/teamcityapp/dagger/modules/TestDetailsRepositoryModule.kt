@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+package com.github.vase4kin.teamcityapp.dagger.modules
 
-dependencies {
-    implementation project(':features:test-details:api-models')
-    implementation Deps.rxjava
-    implementation Deps.kotlin_stdlibJdk7
+import com.github.vase4kin.teamcityapp.api.Repository
+import dagger.Module
+import dagger.Provides
+import teamcityapp.features.test_details.repository.TestDetailsRepository
+
+@Module
+class TestDetailsRepositoryModule {
+
+    @Provides
+    fun providesTestDetailsRepository(repository: Repository): TestDetailsRepository = repository
 }
