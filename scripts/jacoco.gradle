@@ -42,7 +42,15 @@ task generateCodeCoverageReport(type: JacocoReport) {
     def kotlinSrc = []
     def execution = []
 
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            '**/*Test*.*',
+            'android/**/*.*',
+            '**/dagger/**'
+    ]
 
     rootProject.subprojects.each { proj ->
         javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/debug", excludes: fileFilter)
