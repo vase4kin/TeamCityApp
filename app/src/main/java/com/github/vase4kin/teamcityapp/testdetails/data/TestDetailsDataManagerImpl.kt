@@ -35,6 +35,9 @@ class TestDetailsDataManagerImpl @Inject constructor(private val repository: Rep
 
     /**
      * {@inheritDoc}
+     *
+     *
+     * TODO: Instead of loading listener use to callbacks
      */
     override fun loadData(loadingListener: OnLoadingListener<TestOccurrences.TestOccurrence>, url: String) {
         subscriptions.clear()

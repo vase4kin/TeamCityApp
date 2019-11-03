@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.utils
+package teamcityapp.libraries.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.WindowManager
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
-import javax.inject.Inject
 
 /**
  * Status bar utils class
  */
-class StatusBarUtils @Inject constructor() {
+class StatusBarUtils {
 
     /**
      * Changing the status bar color

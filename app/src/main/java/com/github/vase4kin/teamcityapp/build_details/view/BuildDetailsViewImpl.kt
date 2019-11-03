@@ -38,10 +38,10 @@ import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
 import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
-import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import teamcityapp.libraries.utils.StatusBarUtils
 
 private const val TAB_TITLE = "tabTitle"
 

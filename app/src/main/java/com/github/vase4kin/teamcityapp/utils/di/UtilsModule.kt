@@ -14,5 +14,15 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:utils'
+package com.github.vase4kin.teamcityapp.utils.di
+
+import dagger.Module
+import dagger.Provides
+import teamcityapp.libraries.utils.StatusBarUtils
+
+@Module
+class UtilsModule {
+
+    @Provides
+    fun providesUtils() = StatusBarUtils()
+}

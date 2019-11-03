@@ -56,9 +56,6 @@ subprojects {
         if (project.hasProperty('android')) {
             apply plugin: "com.github.ben-manes.versions"
             apply plugin: 'org.jmailen.kotlinter'
-            apply from: 'scripts/jacoco.gradle'
-            apply from: 'scripts/pmd.gradle'
-            apply from: 'scripts/findbugs.gradle'
 
             android {
                 buildToolsVersion Config.buildTools
@@ -68,6 +65,12 @@ subprojects {
                     minSdkVersion Config.minSdk
                     targetSdkVersion Config.targetSdk
                     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+                }
+
+                buildTypes {
+                    release {}
+                    debug {}
+                    showcase.initWith(buildTypes.release)
                 }
 
                 compileOptions {

@@ -36,11 +36,11 @@ import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.libraries.utils.StatusBarUtils
 
 @Module
 class BuildDetailsModule {
@@ -62,11 +62,6 @@ class BuildDetailsModule {
     @Provides
     fun providesBuildTabsValueExtractor(activity: BuildDetailsActivity): BaseValueExtractor {
         return BaseValueExtractorImpl(activity.intent.extras!!)
-    }
-
-    @Provides
-    fun providesStatusBarUtils(): StatusBarUtils {
-        return StatusBarUtils()
     }
 
     @Provides

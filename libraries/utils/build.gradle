@@ -14,5 +14,11 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:utils'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+dependencies {
+    implementation Deps.androidx_appcompat
+    implementation Deps.kotlin_stdlibJdk7
+}

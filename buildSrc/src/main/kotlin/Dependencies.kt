@@ -30,6 +30,7 @@ object Config {
 
 object Versions {
     // AndroidX
+    val androidx_appcompat = "1.0.2"
     val androidx_core = "1.0.1"
     val androidx_recyclerview = "1.0.0"
     val androidx_navigation = "2.0.0"
@@ -66,6 +67,7 @@ object Versions {
 }
 
 object Deps {
+    val androidx_appcompat = "androidx.appcompat:appcompat:${Versions.androidx_appcompat}"
     val androidx_core = "androidx.core:core-ktx:${Versions.androidx_core}"
     val androidx_constraintlayout = "androidx.constraintlayout:constraintlayout:${Versions.androidx_constraintLayout}"
     val androidx_material = "com.google.android.material:material:${Versions.material}"

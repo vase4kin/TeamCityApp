@@ -62,6 +62,7 @@ import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
+import com.github.vase4kin.teamcityapp.utils.di.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -81,7 +82,7 @@ abstract class ActivityBindingModule {
     abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope
-    @ContributesAndroidInjector(modules = [TestDetailsModule::class])
+    @ContributesAndroidInjector(modules = [TestDetailsModule::class, UtilsModule::class])
     abstract fun testDetailsActivity(): TestDetailsActivity
 
     @CreateAccountActivityScope
@@ -93,7 +94,7 @@ abstract class ActivityBindingModule {
     abstract fun accountListActivity(): AccountListActivity
 
     @BuildDetailsActivityScope
-    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class, UtilsModule::class])
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope

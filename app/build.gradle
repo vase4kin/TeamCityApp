@@ -20,6 +20,9 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 apply plugin: 'com.google.firebase.firebase-perf'
+apply from: '../scripts/jacoco.gradle'
+apply from: '../scripts/pmd.gradle'
+apply from: '../scripts/findbugs.gradle'
 
 android {
     defaultConfig {
@@ -84,8 +87,11 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation project(':libraries:utils')
+
     // Android support libraries
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation Deps.androidx_appcompat
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'

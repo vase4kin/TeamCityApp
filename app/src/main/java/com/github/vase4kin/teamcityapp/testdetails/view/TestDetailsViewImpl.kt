@@ -26,7 +26,7 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.utils.StatusBarUtils
+import teamcityapp.libraries.utils.StatusBarUtils
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
 
