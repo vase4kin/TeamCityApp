@@ -20,7 +20,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager
 import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcity.features.test_details.api.models.TestOccurrence
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
 
@@ -79,8 +79,8 @@ class TestDetailsPresenterImpl @Inject constructor(
         if (url.isEmpty()) {
             return
         }
-        dataManager.loadData(object : OnLoadingListener<TestOccurrences.TestOccurrence> {
-            override fun onSuccess(data: TestOccurrences.TestOccurrence) {
+        dataManager.loadData(object : OnLoadingListener<TestOccurrence> {
+            override fun onSuccess(data: TestOccurrence) {
                 view.hideProgress()
                 val testDetails = data.details
                 if (testDetails.isEmpty()) {

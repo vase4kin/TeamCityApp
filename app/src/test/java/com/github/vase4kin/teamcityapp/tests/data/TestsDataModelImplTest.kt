@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.tests.data
 
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_FAILURE
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsEqual.equalTo
 import org.junit.Assert.assertThat
@@ -28,12 +27,13 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
+import teamcity.features.test_details.api.models.TestOccurrence
 
 @RunWith(MockitoJUnitRunner::class)
 class TestsDataModelImplTest {
 
     @Mock
-    private lateinit var test: TestOccurrences.TestOccurrence
+    private lateinit var test: TestOccurrence
     private lateinit var dataModel: TestsDataModelImpl
 
     @Before
@@ -79,7 +79,7 @@ class TestsDataModelImplTest {
 
     @Test
     fun testAddTestDataModel() {
-        val testOccurrence = TestOccurrences.TestOccurrence()
+        val testOccurrence = TestOccurrence()
         dataModel.addMoreBuilds(TestsDataModelImpl(mutableListOf(testOccurrence)))
         assertThat(dataModel.itemCount, `is`(equalTo(2)))
     }

@@ -30,7 +30,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcity.features.test_details.api.models.TestOccurrence
 import io.reactivex.Observable
 import io.reactivex.Single
 import okhttp3.MediaType
@@ -148,15 +148,15 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         }
     }
 
-    override fun testOccurrence(@Url url: String): Single<TestOccurrences.TestOccurrence> {
+    override fun testOccurrence(@Url url: String): Single<TestOccurrence> {
         return when (url) {
             "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)" -> Single.just(
-                TestOccurrences.TestOccurrence("exception error")
+                TestOccurrence("exception error")
             )
             "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)" -> Single.error(
                 RuntimeException("Something bad happens!")
             )
-            else -> Observable.empty<TestOccurrences.TestOccurrence>().singleOrError()
+            else -> Observable.empty<TestOccurrence>().singleOrError()
         }
     }
 

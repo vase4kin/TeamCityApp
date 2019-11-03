@@ -32,6 +32,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import io.rx_cache2.LifeCache
+import teamcity.features.test_details.api.models.TestOccurrence
 import java.util.concurrent.TimeUnit
 
 /**
@@ -102,9 +103,9 @@ interface CacheProviders {
      */
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun testOccurrence(
-        testOccurrenceSingle: Single<TestOccurrences.TestOccurrence>,
+        testOccurrenceSingle: Single<TestOccurrence>,
         testUrl: DynamicKey
-    ): Single<TestOccurrences.TestOccurrence>
+    ): Single<TestOccurrence>
 
     /**
      * Cache artifacts for one hour

@@ -20,7 +20,6 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager
 import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.github.vase4kin.teamcityapp.utils.any
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
@@ -35,14 +34,15 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
+import teamcity.features.test_details.api.models.TestOccurrence
 
 @RunWith(MockitoJUnitRunner::class)
 class TestDetailsPresenterImplTest {
 
     @Captor
-    private lateinit var argumentCaptor: ArgumentCaptor<OnLoadingListener<TestOccurrences.TestOccurrence>>
+    private lateinit var argumentCaptor: ArgumentCaptor<OnLoadingListener<TestOccurrence>>
     @Mock
-    private lateinit var testOccurrence: TestOccurrences.TestOccurrence
+    private lateinit var testOccurrence: TestOccurrence
     @Mock
     private lateinit var tracker: TestDetailsTracker
     @Mock

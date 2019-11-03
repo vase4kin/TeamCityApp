@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.testdetails.data
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcity.features.test_details.api.models.TestOccurrence
 
 /**
  * Data manager for managing server operations for [com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity]
@@ -30,7 +30,7 @@ interface TestDetailsDataManager {
      * @param loadingListener - Listener to receive server callbacks
      * @param url - Test details url
      */
-    fun loadData(loadingListener: OnLoadingListener<TestOccurrences.TestOccurrence>, url: String)
+    fun loadData(loadingListener: OnLoadingListener<TestOccurrence>, url: String)
 
     /**
      * Unsubscribe all server subscriptions

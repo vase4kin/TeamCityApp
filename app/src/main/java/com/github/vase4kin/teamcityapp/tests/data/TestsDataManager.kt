@@ -19,11 +19,12 @@ package com.github.vase4kin.teamcityapp.tests.data
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcity.features.test_details.api.models.TestOccurrence
 
 /**
  * Data manager to manage data operations for [com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment]
  */
-interface TestsDataManager : BaseListRxDataManager<TestOccurrences, TestOccurrences.TestOccurrence> {
+interface TestsDataManager : BaseListRxDataManager<TestOccurrences, TestOccurrence> {
 
     /**
      * Load tests
@@ -34,7 +35,7 @@ interface TestsDataManager : BaseListRxDataManager<TestOccurrences, TestOccurren
      */
     fun load(
         url: String,
-        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        loadingListener: OnLoadingListener<List<TestOccurrence>>,
         update: Boolean
     )
 
@@ -47,7 +48,7 @@ interface TestsDataManager : BaseListRxDataManager<TestOccurrences, TestOccurren
      */
     fun loadFailedTests(
         url: String,
-        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        loadingListener: OnLoadingListener<List<TestOccurrence>>,
         update: Boolean
     )
 
@@ -84,7 +85,7 @@ interface TestsDataManager : BaseListRxDataManager<TestOccurrences, TestOccurren
      *
      * @param loadingListener - Listener to receive server callbacks
      */
-    fun loadMore(loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>)
+    fun loadMore(loadingListener: OnLoadingListener<List<TestOccurrence>>)
 
     /**
      * @return Boolean which indicates can load more builds or not

@@ -28,7 +28,7 @@ import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcity.features.test_details.api.models.TestOccurrence
 
 import io.reactivex.Single
 import okhttp3.ResponseBody
@@ -99,7 +99,7 @@ class FakeRepositoryImpl(private val teamCityService: TeamCityService) : Reposit
         return teamCityService.listTestOccurrences(url)
     }
 
-    override fun testOccurrence(url: String): Single<TestOccurrences.TestOccurrence> {
+    override fun testOccurrence(url: String): Single<TestOccurrence> {
         return teamCityService.testOccurrence(url)
     }
 

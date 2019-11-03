@@ -18,12 +18,12 @@ package com.github.vase4kin.teamcityapp.tests.data
 
 import com.github.vase4kin.teamcityapp.base.list.adapter.ModelLoadMore
 import com.github.vase4kin.teamcityapp.base.list.view.BaseDataModel
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcity.features.test_details.api.models.TestOccurrence
 
 /**
  * Data model to manage tests data
  */
-interface TestsDataModel : BaseDataModel, Iterable<TestOccurrences.TestOccurrence>, ModelLoadMore<TestsDataModel> {
+interface TestsDataModel : BaseDataModel, Iterable<TestOccurrence>, ModelLoadMore<TestsDataModel> {
 
     /**
      * @param position - Adapter position

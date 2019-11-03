@@ -18,12 +18,12 @@ package com.github.vase4kin.teamcityapp.testdetails.data
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import teamcity.features.test_details.api.models.TestOccurrence
 import javax.inject.Inject
 
 /**
@@ -39,7 +39,7 @@ class TestDetailsDataManagerImpl @Inject constructor(private val repository: Rep
      *
      * TODO: Instead of loading listener use to callbacks
      */
-    override fun loadData(loadingListener: OnLoadingListener<TestOccurrences.TestOccurrence>, url: String) {
+    override fun loadData(loadingListener: OnLoadingListener<TestOccurrence>, url: String) {
         subscriptions.clear()
         repository.testOccurrence(url)
             .subscribeOn(Schedulers.io())
