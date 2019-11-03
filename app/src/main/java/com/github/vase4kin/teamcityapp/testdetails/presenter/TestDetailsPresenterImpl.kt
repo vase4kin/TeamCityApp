@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.testdetails.presenter
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager
-import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor
 import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
@@ -32,7 +31,7 @@ class TestDetailsPresenterImpl @Inject constructor(
     private val view: TestDetailsView,
     private val dataManager: TestDetailsDataManager,
     private val tracker: TestDetailsTracker,
-    private val valueExtractor: TestDetailsValueExtractor
+    private val url: String
 ) : TestDetailsPresenter, ErrorView.RetryListener {
 
     /**
@@ -77,6 +76,9 @@ class TestDetailsPresenterImpl @Inject constructor(
      * Load test details data
      */
     private fun loadData() {
+        if (url.isEmpty()) {
+            return
+        }
         dataManager.loadData(object : OnLoadingListener<TestOccurrences.TestOccurrence> {
             override fun onSuccess(data: TestOccurrences.TestOccurrence) {
                 view.hideProgress()
@@ -92,6 +94,6 @@ class TestDetailsPresenterImpl @Inject constructor(
                 view.hideProgress()
                 view.showRetryView(errorMessage)
             }
-        }, valueExtractor.testUrl)
+        }, url)
     }
 }

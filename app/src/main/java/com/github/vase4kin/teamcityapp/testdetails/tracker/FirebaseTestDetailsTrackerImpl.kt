@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
 import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 
@@ -24,8 +23,8 @@ import javax.inject.Inject
  * Test details tracking class
  */
 class FirebaseTestDetailsTrackerImpl @Inject constructor(
-    firebaseAnalytics: FirebaseAnalytics
-) : BaseFirebaseTracker(firebaseAnalytics), TestDetailsTracker {
+    private val firebaseAnalytics: FirebaseAnalytics
+) : TestDetailsTracker {
 
     /**
      * {@inheritDoc}

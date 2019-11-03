@@ -16,9 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.testdetails.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+interface TestDetailsTracker {
 
-interface TestDetailsTracker : ViewTracker {
+    /**
+     * Track view
+     */
+    fun trackView()
+
     companion object {
         /**
          * Screen name

@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.testdetails.presenter
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.testdetails.data.TestDetailsDataManager
-import com.github.vase4kin.teamcityapp.testdetails.extractor.TestDetailsValueExtractor
 import com.github.vase4kin.teamcityapp.testdetails.tracker.TestDetailsTracker
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsView
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
@@ -31,11 +30,14 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class TestOccurrencePresenterImplTest {
+class TestDetailsPresenterImplTest {
 
     @Captor
     private lateinit var argumentCaptor: ArgumentCaptor<OnLoadingListener<TestOccurrences.TestOccurrence>>
@@ -47,23 +49,22 @@ class TestOccurrencePresenterImplTest {
     private lateinit var viewModel: TestDetailsView
     @Mock
     private lateinit var dataManager: TestDetailsDataManager
-    @Mock
-    private lateinit var valueExtractor: TestDetailsValueExtractor
+
+    private val url = "url"
+
     private lateinit var presenter: TestDetailsPresenterImpl
 
     @Before
     fun setUp() {
-        presenter = TestDetailsPresenterImpl(viewModel, dataManager, tracker, valueExtractor)
+        presenter = TestDetailsPresenterImpl(viewModel, dataManager, tracker, url)
     }
 
     @Test
     fun testOnViewPreparedAndOnRetryIfUrlIsNotNull() {
-        `when`(valueExtractor.testUrl).thenReturn("url")
         presenter.onCreate()
         verify(viewModel).initViews(eq(presenter))
         verify(viewModel).showProgress()
-        verify(dataManager).loadData(capture(argumentCaptor), eq("url"))
-        verify(valueExtractor).testUrl
+        verify(dataManager).loadData(capture(argumentCaptor), eq(url))
 
         `when`(testOccurrence.details).thenReturn("Test details")
         val listener = argumentCaptor.value

@@ -59,6 +59,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
+import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailBundlesModule
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
 import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
 import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
@@ -82,7 +83,7 @@ abstract class ActivityBindingModule {
     abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope
-    @ContributesAndroidInjector(modules = [TestDetailsModule::class, UtilsModule::class])
+    @ContributesAndroidInjector(modules = [TestDetailsModule::class, UtilsModule::class, TestDetailBundlesModule::class])
     abstract fun testDetailsActivity(): TestDetailsActivity
 
     @CreateAccountActivityScope

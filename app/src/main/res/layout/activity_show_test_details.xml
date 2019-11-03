@@ -32,7 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/failed_tool_bar_color"
-            app:title="@string/test_details_title" />
+            app:title="@string/test_details_title"
+            app:titleTextColor="@color/white"/>
 
     </com.google.android.material.appbar.AppBarLayout>
 
