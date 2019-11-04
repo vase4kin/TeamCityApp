@@ -93,7 +93,7 @@ subprojects {
                     disable 'InvalidPackage'
                     xmlReport false
                     abortOnError true
-                    htmlOutput file("build/reports/lint-report/lint-report.html")
+                    htmlOutput file("$buildDir/reports/lint-report/lint-report.html")
                 }
 
                 packagingOptions {
