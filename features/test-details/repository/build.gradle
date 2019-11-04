@@ -22,7 +22,7 @@ apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../../scripts/jacoco.gradle'
 
 dependencies {
-    implementation project(':features:test-details:api-models')
+    implementation project(':features:test-details:models')
     implementation Deps.rxjava
     implementation Deps.kotlin_stdlibJdk7
 }
