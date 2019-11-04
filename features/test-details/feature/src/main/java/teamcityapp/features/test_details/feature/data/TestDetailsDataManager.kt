@@ -16,7 +16,7 @@
 
 package teamcityapp.features.test_details.feature.data
 
-import teamcityapp.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Data manager for managing server operations for [TestDetailsActivity]

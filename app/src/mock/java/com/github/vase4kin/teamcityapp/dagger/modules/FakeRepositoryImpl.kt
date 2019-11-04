@@ -31,7 +31,7 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import okhttp3.ResponseBody
-import teamcityapp.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Fake repository impl for UI tests without cache support

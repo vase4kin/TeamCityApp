@@ -14,4 +14,4 @@
   ~ limitations under the License.
   -->
 
-<manifest package="teamcityapp.features.test_details.api.models" />
+<manifest package="teamcityapp.features.test_details.repository.models" />

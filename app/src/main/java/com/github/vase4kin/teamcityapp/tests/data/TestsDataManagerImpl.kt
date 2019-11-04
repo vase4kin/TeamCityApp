@@ -28,7 +28,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Impl of [TestsDataManager]

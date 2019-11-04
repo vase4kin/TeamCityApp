@@ -17,7 +17,7 @@
 package teamcityapp.features.test_details.repository
 
 import io.reactivex.Single
-import teamcityapp.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 interface TestDetailsRepository {
 

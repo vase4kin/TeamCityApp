@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.tests.data
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-import teamcityapp.features.test_details.api.models.TestOccurrence
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Data manager to manage data operations for [com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment]

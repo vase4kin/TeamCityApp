@@ -21,8 +21,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import teamcityapp.features.test_details.api.models.TestOccurrence
 import teamcityapp.features.test_details.repository.TestDetailsRepository
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 import javax.inject.Inject
 
 /**
