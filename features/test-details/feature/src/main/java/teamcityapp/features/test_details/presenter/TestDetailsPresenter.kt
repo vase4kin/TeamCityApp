@@ -14,9 +14,30 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.dagger
+package teamcityapp.features.test_details.presenter
 
-import javax.inject.Scope
+/**
+ * Presenter to manage logic of [TestDetailsActivity]
+ */
+interface TestDetailsPresenter {
 
-@Scope
-annotation class TestDetailsActivityScope
+    /**
+     * On activity create
+     */
+    fun onCreate()
+
+    /**
+     * On activity destroy
+     */
+    fun onDestroy()
+
+    /**
+     * On activity on back button pressed
+     */
+    fun onBackPressed()
+
+    /**
+     * On activity resume
+     */
+    fun onResume()
+}

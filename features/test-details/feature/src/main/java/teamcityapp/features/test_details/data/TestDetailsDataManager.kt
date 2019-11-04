@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.presenter
+package teamcityapp.features.test_details.data
+
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
- * Presenter to manage logic of [TestDetailsActivity]
+ * Data manager for managing server operations for [TestDetailsActivity]
  */
-interface TestDetailsPresenter {
+interface TestDetailsDataManager {
 
     /**
-     * On activity create
+     * Load test details
+     *
+     * @param loadingListener - Listener to receive server callbacks
+     * @param url - Test details url
      */
-    fun onCreate()
+    fun loadData(
+        onSuccess: (test: TestOccurrence) -> Unit,
+        onError: (errorMessage: String) -> Unit,
+        url: String
+    )
 
     /**
-     * On activity destroy
+     * Unsubscribe all server subscriptions
      */
-    fun onDestroy()
-
-    /**
-     * On activity on back button pressed
-     */
-    fun onBackPressed()
-
-    /**
-     * On activity resume
-     */
-    fun onResume()
+    fun unsubscribe()
 }

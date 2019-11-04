@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.tests.router
 
 import android.app.Activity
-import teamcityapp.features.test_details.feature.view.TestDetailsActivity
+import teamcityapp.features.test_details.view.TestDetailsActivity
 
 /**
  * Impl of [TestsRouter]

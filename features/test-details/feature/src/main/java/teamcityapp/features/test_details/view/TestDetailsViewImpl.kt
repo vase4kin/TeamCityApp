@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.view
+package teamcityapp.features.test_details.view
 
 import android.graphics.Color
 import android.os.Build
@@ -22,7 +22,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
-import teamcityapp.features.test_details.feature.R
+import teamcityapp.features.test_details.R
 import teamcityapp.libraries.utils.StatusBarUtils
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject

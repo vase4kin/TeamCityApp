@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<manifest package="teamcityapp.features.test_details.feature"
+<manifest package="teamcityapp.features.test_details"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--ADD THEME-->

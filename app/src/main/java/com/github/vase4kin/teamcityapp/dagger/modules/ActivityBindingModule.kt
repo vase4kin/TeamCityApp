@@ -62,10 +62,10 @@ import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import com.github.vase4kin.teamcityapp.utils.dagger.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
-import teamcityapp.features.test_details.feature.dagger.TestDetailBundlesModule
-import teamcityapp.features.test_details.feature.dagger.TestDetailsActivityScope
-import teamcityapp.features.test_details.feature.dagger.TestDetailsModule
-import teamcityapp.features.test_details.feature.view.TestDetailsActivity
+import teamcityapp.features.test_details.dagger.TestDetailBundlesModule
+import teamcityapp.features.test_details.dagger.TestDetailsActivityScope
+import teamcityapp.features.test_details.dagger.TestDetailsModule
+import teamcityapp.features.test_details.view.TestDetailsActivity
 
 @Module
 abstract class ActivityBindingModule {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.view
+package teamcityapp.features.test_details.view
 
 import android.view.ActionMode
 import android.view.Menu

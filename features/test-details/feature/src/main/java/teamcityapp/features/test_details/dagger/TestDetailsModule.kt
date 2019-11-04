@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.dagger
+package teamcityapp.features.test_details.dagger
 
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import teamcityapp.features.test_details.feature.data.TestDetailsDataManager
-import teamcityapp.features.test_details.feature.data.TestDetailsDataManagerImpl
-import teamcityapp.features.test_details.feature.tracker.FirebaseTestDetailsTrackerImpl
-import teamcityapp.features.test_details.feature.tracker.TestDetailsTracker
-import teamcityapp.features.test_details.feature.view.ARG_TEST_URL
-import teamcityapp.features.test_details.feature.view.TestDetailsActivity
-import teamcityapp.features.test_details.feature.view.TestDetailsView
-import teamcityapp.features.test_details.feature.view.TestDetailsViewImpl
+import teamcityapp.features.test_details.data.TestDetailsDataManager
+import teamcityapp.features.test_details.data.TestDetailsDataManagerImpl
+import teamcityapp.features.test_details.tracker.FirebaseTestDetailsTrackerImpl
+import teamcityapp.features.test_details.tracker.TestDetailsTracker
+import teamcityapp.features.test_details.view.ARG_TEST_URL
+import teamcityapp.features.test_details.view.TestDetailsActivity
+import teamcityapp.features.test_details.view.TestDetailsView
+import teamcityapp.features.test_details.view.TestDetailsViewImpl
 
 @Module
 abstract class TestDetailsModule {

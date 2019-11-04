@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.view
+package teamcityapp.features.test_details.view
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
-import teamcityapp.features.test_details.feature.R
-import teamcityapp.features.test_details.feature.presenter.TestDetailsPresenterImpl
+import teamcityapp.features.test_details.R
+import teamcityapp.features.test_details.presenter.TestDetailsPresenterImpl
 import javax.inject.Inject
 
 const val ARG_TEST_URL = "testUrl"

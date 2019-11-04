@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.tracker
+package teamcityapp.features.test_details.tracker
 
 interface TestDetailsTracker {
 

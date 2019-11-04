@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.data
+package teamcityapp.features.test_details.data
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

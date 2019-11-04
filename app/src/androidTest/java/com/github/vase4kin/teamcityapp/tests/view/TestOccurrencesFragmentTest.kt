@@ -60,7 +60,7 @@ import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.test_details.feature.view.TestDetailsActivity
+import teamcityapp.features.test_details.view.TestDetailsActivity
 
 private const val BUILD_TYPE_NAME = "name"
 

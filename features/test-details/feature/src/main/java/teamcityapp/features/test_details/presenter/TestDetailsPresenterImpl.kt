@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.presenter
+package teamcityapp.features.test_details.presenter
 
-import teamcityapp.features.test_details.feature.data.TestDetailsDataManager
-import teamcityapp.features.test_details.feature.tracker.TestDetailsTracker
-import teamcityapp.features.test_details.feature.view.TestDetailsView
+import teamcityapp.features.test_details.data.TestDetailsDataManager
+import teamcityapp.features.test_details.tracker.TestDetailsTracker
+import teamcityapp.features.test_details.view.TestDetailsView
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
 

@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.data
+package teamcityapp.features.test_details.tracker
 
-import teamcityapp.features.test_details.repository.models.TestOccurrence
+import com.google.firebase.analytics.FirebaseAnalytics
+import javax.inject.Inject
 
 /**
- * Data manager for managing server operations for [TestDetailsActivity]
+ * Test details tracking class
  */
-interface TestDetailsDataManager {
+class FirebaseTestDetailsTrackerImpl @Inject constructor(
+    private val firebaseAnalytics: FirebaseAnalytics
+) : TestDetailsTracker {
 
     /**
-     * Load test details
-     *
-     * @param loadingListener - Listener to receive server callbacks
-     * @param url - Test details url
+     * {@inheritDoc}
      */
-    fun loadData(
-        onSuccess: (test: TestOccurrence) -> Unit,
-        onError: (errorMessage: String) -> Unit,
-        url: String
-    )
-
-    /**
-     * Unsubscribe all server subscriptions
-     */
-    fun unsubscribe()
+    override fun trackView() {
+        firebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
+    }
 }

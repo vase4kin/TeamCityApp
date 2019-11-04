@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.presenter
+package teamcityapp.features.test_details
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
@@ -26,10 +26,11 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import teamcityapp.features.test_details.feature.data.TestDetailsDataManager
-import teamcityapp.features.test_details.feature.tracker.TestDetailsTracker
-import teamcityapp.features.test_details.feature.view.TestDetailsView
+import teamcityapp.features.test_details.data.TestDetailsDataManager
+import teamcityapp.features.test_details.presenter.TestDetailsPresenterImpl
 import teamcityapp.features.test_details.repository.models.TestOccurrence
+import teamcityapp.features.test_details.tracker.TestDetailsTracker
+import teamcityapp.features.test_details.view.TestDetailsView
 
 class TestDetailsPresenterImplTest {
 
@@ -44,7 +45,12 @@ class TestDetailsPresenterImplTest {
 
     @Before
     fun setUp() {
-        presenter = TestDetailsPresenterImpl(viewModel, dataManager, tracker, url)
+        presenter = TestDetailsPresenterImpl(
+            viewModel,
+            dataManager,
+            tracker,
+            url
+        )
     }
 
     @Test

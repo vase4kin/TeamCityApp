@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.feature.view
+package teamcityapp.features.test_details.dagger
 
-/**
- * On action mode enabled listener
- */
-interface OnActionModeListener {
+import javax.inject.Scope
 
-    /**
-     * On action mode create
-     */
-    fun onCreate()
-
-    /**
-     * On action mode destroy
-     */
-    fun onDestroy()
-}
+@Scope
+annotation class TestDetailsActivityScope
