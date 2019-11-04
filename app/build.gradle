@@ -91,6 +91,7 @@ dependencies {
 
     implementation project(':libraries:utils')
     implementation project(':libraries:api')
+    implementation project(':libraries:resources')
 
     implementation project(':features:test-details:models')
     implementation project(':features:test-details:repository')

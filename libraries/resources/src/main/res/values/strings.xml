@@ -15,5 +15,7 @@
   -->
 
 <resources>
-    <string name="app_name">Resources</string>
+    <string name="error_view_oops_message">Oops</string>
+    <string name="error_view_retry_button_text">TRY AGAIN</string>
+    <string name="error_view_error_text">There\'s an error loading the page</string>
 </resources>

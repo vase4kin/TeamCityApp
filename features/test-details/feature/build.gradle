@@ -27,6 +27,7 @@ dependencies {
     implementation project(':features:test-details:models')
     implementation project(':libraries:utils')
     implementation project(':libraries:api')
+    implementation project(':libraries:resources')
 
     implementation Deps.androidx_appcompat
     implementation Deps.androidx_material

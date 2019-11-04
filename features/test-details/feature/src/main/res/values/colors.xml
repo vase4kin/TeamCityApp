@@ -15,13 +15,5 @@
   -->
 
 <resources>
-
-    <!--REMOVE-->
     <color name="tool_bar">#EF9A9A</color>
-    <color name="white">@color/colorWhite</color>
-    <color name="colorWhite">#FFFFFF</color>
-
-    <color name="main_text_color">@android:color/secondary_text_light</color>
-    <color name="sub_text_color">@android:color/tertiary_text_dark</color>
-
 </resources>

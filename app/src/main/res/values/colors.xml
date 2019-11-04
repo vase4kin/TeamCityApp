@@ -40,9 +40,6 @@
     <color name="failed_tool_bar_color">#EF9A9A</color>
     <color name="tab_failed_unselected_color">#FFCDD2</color>
 
-    <color name="main_text_color">@android:color/secondary_text_light</color>
-    <color name="sub_text_color">@android:color/tertiary_text_dark</color>
-
     <color name="indigo_500">#3f51b5</color>
     <color name="pink_200">#ff4081</color>
 
@@ -54,9 +51,6 @@
 
     <color name="transparent">#00000000</color>
 
-    <color name="white">@color/colorWhite</color>
-
-    <color name="colorWhite">#FFFFFF</color>
     <color name="colorWhiteWithOpacity">#B3FFFFFF</color>
 
 </resources>

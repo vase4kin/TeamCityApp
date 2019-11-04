@@ -71,7 +71,6 @@
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <!--TODO: Use resources from res module-->
         <tr.xip.errorview.ErrorView
             android:id="@+id/error_view"
             android:layout_width="match_parent"

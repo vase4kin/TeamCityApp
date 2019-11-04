@@ -79,11 +79,6 @@
     <string name="discard_dialog_positive_button_text">Discard</string>
     <string name="discard_dialog_negative_button_text">Cancel</string>
 
-    <!--error_view-->
-    <string name="error_view_oops_message">Oops</string>
-    <string name="error_view_retry_button_text">TRY AGAIN</string>
-    <string name="error_view_error_text">There\'s an error loading the page</string>
-
     <!--snack bar remove account-->
     <string name="snack_bar_remove_account_undo_button_text">Undo</string>
     <string name="snack_bar_remove_account_single_account_removed_text">User account removed</string>
