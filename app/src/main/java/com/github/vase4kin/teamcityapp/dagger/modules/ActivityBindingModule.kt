@@ -59,7 +59,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.utils.di.UtilsModule
+import com.github.vase4kin.teamcityapp.utils.dagger.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import teamcityapp.features.test_details.feature.dagger.TestDetailBundlesModule

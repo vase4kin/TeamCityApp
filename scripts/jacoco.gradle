@@ -47,7 +47,6 @@ task generateCodeCoverageReport(type: JacocoReport) {
             '**/R$*.class',
             '**/BuildConfig.*',
             '**/Manifest*.*',
-            '**/*Test*.*',
             'android/**/*.*',
             '**/dagger/**'
     ]
