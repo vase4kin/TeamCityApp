@@ -16,10 +16,6 @@
 
 <resources>
 
-    <color name="colorAccent">#4db6ac</color>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-
     <color name="snackbar_action_color_done">#ffccccff</color>
 
     <color name="base_item_color">@color/white</color>
@@ -44,10 +40,6 @@
     <color name="pink_200">#ff4081</color>
 
     <color name="login_text_error_color">#FFD180</color>
-
-    <color name="divider_color">#E0E0E0</color>
-
-    <color name="recycler_view_background">#F5F5F5</color>
 
     <color name="transparent">#00000000</color>
 

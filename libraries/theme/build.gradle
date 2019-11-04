@@ -17,5 +17,6 @@
 apply plugin: 'com.android.library'
 
 dependencies {
-
+    implementation project(':libraries:resources')
+    implementation Deps.androidx_material
 }

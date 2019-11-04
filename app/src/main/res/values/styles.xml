@@ -16,16 +16,6 @@
 
 <resources>
 
-    <style name="AppTheme" parent="BaseTheme" />
-
-    <style name="BaseTheme" parent="Theme.MaterialComponents.Light">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="colorPrimaryDark">@color/white</item>
@@ -45,14 +35,6 @@
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
-    <style name="PrimaryColorNavBarTheme" parent="AppTheme">
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-    </style>
-
-    <style name="WhiteColorNavBarTheme" parent="AppTheme" />
-
-    <style name="WhiteColorNavBarWithSeparatorTheme" parent="AppTheme" />
 
     <style name="RecyclerView">
         <item name="android:paddingBottom">24dp</item>

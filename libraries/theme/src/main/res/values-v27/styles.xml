@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,16 @@
   -->
 
 <resources>
-    <color name="colorAccent">#4db6ac</color>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="divider_color">#E0E0E0</color>
-    <color name="recycler_view_background">#F5F5F5</color>
-    <color name="white">@color/colorWhite</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="main_text_color">@android:color/secondary_text_light</color>
-    <color name="sub_text_color">@android:color/tertiary_text_dark</color>
+
+    <style name="AppTheme" parent="BaseTheme">
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:navigationBarColor">@color/recycler_view_background</item>
+    </style>
+
+    <style name="WhiteColorNavBarTheme" parent="AppTheme" />
+
+    <style name="WhiteColorNavBarWithSeparatorTheme" parent="AppTheme">
+        <item name="android:navigationBarDividerColor">@color/divider_color</item>
+    </style>
+
 </resources>
