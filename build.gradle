@@ -70,7 +70,9 @@ subprojects {
 
                 buildTypes {
                     release {}
-                    debug {}
+                    debug {
+                        testCoverageEnabled true
+                    }
                     showcase.initWith(buildTypes.release)
                 }
 

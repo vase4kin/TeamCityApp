@@ -51,7 +51,6 @@ android {
             minifyEnabled true
         }
         debug {
-            testCoverageEnabled true
             applicationIdSuffix = ".debug"
         }
         showcase.initWith(buildTypes.release)
