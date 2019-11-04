@@ -29,11 +29,12 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import okhttp3.ResponseBody
+import teamcityapp.features.test_details.repository.TestDetailsRepository
 
 /**
  * Repository to manage api
  */
-interface Repository {
+interface Repository : TestDetailsRepository {
 
     /**
      * List agents (cache's supported)
@@ -151,14 +152,6 @@ interface Repository {
      * @return [Single] with [TestOccurrences]
      */
     fun listTestOccurrences(url: String, update: Boolean): Single<TestOccurrences>
-
-    /**
-     * Get single test info by url (cache's supported)
-     *
-     * @param url - Test url
-     * @return [Single] with [TestOccurrences.TestOccurrence]
-     */
-    fun testOccurrence(url: String): Single<TestOccurrences.TestOccurrence>
 
     /**
      * List changes (cache's supported)

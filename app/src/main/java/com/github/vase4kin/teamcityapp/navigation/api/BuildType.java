@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.navigation.api;
 
 import androidx.annotation.NonNull;
 
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+import teamcityapp.libraries.api.BaseObject;
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds;
 
 import java.io.Serializable;

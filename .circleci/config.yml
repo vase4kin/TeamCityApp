@@ -81,11 +81,11 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Run unit tests
-          command: ./gradlew testMockDebugUnitTest
+          command: ./gradlew testMockDebugUnitTest testDebugUnitTest
       - persist_to_workspace:
           root: *workspace_root
           paths:
-            - app/build/jacoco
+            - .
       - store_test_results:
           path: app/build/test-results/testMockDebugUnitTest
   ui-tests:
@@ -159,7 +159,7 @@ jobs:
       - run:
           name: Generate code coverage
           command: |
-            ./gradlew generateCodeCoverageReport --stacktrace
+            ./gradlew :app:generateCodeCoverageReport --stacktrace
             mkdir -p app/build/circleci/artifacts/coverage/
             find . -type f -regex ".*/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml" -exec cp {} app/build/circleci/artifacts/coverage/ \;
       - run:

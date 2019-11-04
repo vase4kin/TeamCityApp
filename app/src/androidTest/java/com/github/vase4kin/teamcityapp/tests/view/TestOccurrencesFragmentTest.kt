@@ -47,7 +47,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -61,6 +60,7 @@ import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.test_details.view.TestDetailsActivity
 
 private const val BUILD_TYPE_NAME = "name"
 

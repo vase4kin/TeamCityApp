@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.buildlist.api;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+import teamcityapp.libraries.api.BaseObject;
 
 /**
  * Build canceled info

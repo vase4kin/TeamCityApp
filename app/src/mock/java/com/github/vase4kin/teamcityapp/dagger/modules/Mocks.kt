@@ -34,6 +34,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.Project
 import com.github.vase4kin.teamcityapp.navigation.api.Projects
 import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 import java.util.ArrayList
 
@@ -375,16 +376,16 @@ class Mocks {
          * @return failed tests
          */
         fun failedTests(): TestOccurrences {
-            val failedTests = ArrayList<TestOccurrences.TestOccurrence>()
+            val failedTests = ArrayList<TestOccurrence>()
             failedTests.add(
-                TestOccurrences.TestOccurrence(
+                TestOccurrence(
                     "Test 1",
                     "FAILURE",
                     "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)"
                 )
             )
             failedTests.add(
-                TestOccurrences.TestOccurrence(
+                TestOccurrence(
                     "Test 6",
                     "FAILURE",
                     "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)"
@@ -399,16 +400,16 @@ class Mocks {
          * @return passed tests
          */
         fun passedTests(): TestOccurrences {
-            val failedTests = ArrayList<TestOccurrences.TestOccurrence>()
+            val failedTests = ArrayList<TestOccurrence>()
             failedTests.add(
-                TestOccurrences.TestOccurrence(
+                TestOccurrence(
                     "Test 5",
                     "SUCCESS",
                     "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)"
                 )
             )
             failedTests.add(
-                TestOccurrences.TestOccurrence(
+                TestOccurrence(
                     "Test 2",
                     "SUCCESS",
                     "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)"
@@ -423,16 +424,16 @@ class Mocks {
          * @return ignored tests
          */
         fun ignoredTests(): TestOccurrences {
-            val failedTests = ArrayList<TestOccurrences.TestOccurrence>()
+            val failedTests = ArrayList<TestOccurrence>()
             failedTests.add(
-                TestOccurrences.TestOccurrence(
+                TestOccurrence(
                     "Test 4",
                     "UNKNOWN",
                     "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)"
                 )
             )
             failedTests.add(
-                TestOccurrences.TestOccurrence(
+                TestOccurrence(
                     "Test 9",
                     "UNKNOWN",
                     "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)"

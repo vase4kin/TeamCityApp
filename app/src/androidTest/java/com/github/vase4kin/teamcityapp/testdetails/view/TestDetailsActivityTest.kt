@@ -37,7 +37,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.core.AllOf.allOf
@@ -48,6 +47,8 @@ import org.mockito.Matchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.test_details.repository.models.TestOccurrence
+import teamcityapp.features.test_details.view.TestDetailsActivity
 
 /**
  * Tests for [TestDetailsActivity]
@@ -76,7 +77,7 @@ class TestDetailsActivityTest {
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
     @Mock
-    lateinit var test: TestOccurrences.TestOccurrence
+    lateinit var test: TestOccurrence
 
     @Test
     fun testUserSeesTestDetails() {

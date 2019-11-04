@@ -59,11 +59,13 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsActivityScope
-import com.github.vase4kin.teamcityapp.testdetails.dagger.TestDetailsModule
-import com.github.vase4kin.teamcityapp.testdetails.view.TestDetailsActivity
+import com.github.vase4kin.teamcityapp.utils.dagger.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import teamcityapp.features.test_details.dagger.TestDetailBundlesModule
+import teamcityapp.features.test_details.dagger.TestDetailsActivityScope
+import teamcityapp.features.test_details.dagger.TestDetailsModule
+import teamcityapp.features.test_details.view.TestDetailsActivity
 
 @Module
 abstract class ActivityBindingModule {
@@ -81,7 +83,14 @@ abstract class ActivityBindingModule {
     abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope
-    @ContributesAndroidInjector(modules = [TestDetailsModule::class])
+    @ContributesAndroidInjector(
+        modules = [
+            TestDetailsModule::class,
+            TestDetailBundlesModule::class,
+            UtilsModule::class,
+            TestDetailsRepositoryModule::class
+        ]
+    )
     abstract fun testDetailsActivity(): TestDetailsActivity
 
     @CreateAccountActivityScope
@@ -93,7 +102,7 @@ abstract class ActivityBindingModule {
     abstract fun accountListActivity(): AccountListActivity
 
     @BuildDetailsActivityScope
-    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class, UtilsModule::class])
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope

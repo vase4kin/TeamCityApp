@@ -28,6 +28,7 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Impl of [TestsDataManager]
@@ -35,17 +36,17 @@ import org.greenrobot.eventbus.EventBus
 class TestsDataManagerImpl(
     private val repository: Repository,
     private val eventBus: EventBus
-) : BaseListRxDataManagerImpl<TestOccurrences, TestOccurrences.TestOccurrence>(), TestsDataManager {
+) : BaseListRxDataManagerImpl<TestOccurrences, TestOccurrence>(), TestsDataManager {
 
     private var mLoadMoreUrl: String? = null
-    private var mLoadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>? = null
+    private var mLoadingListener: OnLoadingListener<List<TestOccurrence>>? = null
 
     /**
      * {@inheritDoc}
      */
     override fun load(
         url: String,
-        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        loadingListener: OnLoadingListener<List<TestOccurrence>>,
         update: Boolean
     ) {
         mLoadingListener = loadingListener
@@ -61,7 +62,7 @@ class TestsDataManagerImpl(
      */
     private fun loadTests(
         url: String,
-        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        loadingListener: OnLoadingListener<List<TestOccurrence>>,
         update: Boolean
     ) {
         repository.listTestOccurrences(url, update)
@@ -84,7 +85,7 @@ class TestsDataManagerImpl(
      */
     override fun loadFailedTests(
         url: String,
-        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        loadingListener: OnLoadingListener<List<TestOccurrence>>,
         update: Boolean
     ) {
         load("$url,status:FAILURE,count:10", loadingListener, update)
@@ -128,7 +129,7 @@ class TestsDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun loadMore(loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>) {
+    override fun loadMore(loadingListener: OnLoadingListener<List<TestOccurrence>>) {
         loadTests(mLoadMoreUrl!!, loadingListener, true)
     }
 

@@ -18,11 +18,11 @@ package com.github.vase4kin.teamcityapp.storage.api;
 
 import androidx.annotation.NonNull;
 
-import com.github.vase4kin.teamcityapp.base.api.Jsonable;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import teamcityapp.libraries.api.Jsonable;
 
 /**
  * User account

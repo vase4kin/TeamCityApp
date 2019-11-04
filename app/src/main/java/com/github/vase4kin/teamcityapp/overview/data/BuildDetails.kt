@@ -16,9 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.overview.data
 
-import com.github.vase4kin.teamcityapp.base.api.Jsonable
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.properties.api.Properties
+import teamcityapp.libraries.api.Jsonable
 
 /**
  * Interface to handle build details

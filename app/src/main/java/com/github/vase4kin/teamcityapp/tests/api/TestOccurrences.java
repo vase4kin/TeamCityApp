@@ -17,15 +17,17 @@
 package com.github.vase4kin.teamcityapp.tests.api;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
 
 import java.util.Collections;
 import java.util.List;
 
+import teamcityapp.features.test_details.repository.models.TestOccurrence;
+import teamcityapp.libraries.api.BaseObject;
+
 /**
  * TestOccurrences
  */
-public class TestOccurrences extends BaseObject implements Collectible<TestOccurrences.TestOccurrence> {
+public class TestOccurrences extends BaseObject implements Collectible<TestOccurrence> {
 
     private int count;
     private int passed;
@@ -75,50 +77,5 @@ public class TestOccurrences extends BaseObject implements Collectible<TestOccur
 
     public TestOccurrences(int count) {
         this.count = count;
-    }
-
-    /**
-     * TestOccurrence
-     */
-    public static class TestOccurrence extends BaseObject {
-
-        private String name;
-        private String status;
-        private int duration;
-        private String details;
-
-        public String getName() {
-            return name;
-        }
-
-        public String getStatus() {
-            return status;
-        }
-
-        public int getDuration() {
-            return duration;
-        }
-
-        public String getDetails() {
-            return details;
-        }
-
-        public boolean isFailed() {
-            return TestStatusKt.TEST_STATUS_FAILURE.equals(status);
-        }
-
-        //default
-        public TestOccurrence() {
-        }
-
-        public TestOccurrence(String details) {
-            this.details = details;
-        }
-
-        public TestOccurrence(String name, String status, String href) {
-            this.name = name;
-            this.status = status;
-            this.href = href;
-        }
     }
 }

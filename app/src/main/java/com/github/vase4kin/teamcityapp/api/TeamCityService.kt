@@ -36,6 +36,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Authorization header
@@ -198,11 +199,11 @@ interface TeamCityService {
      * Get single test info by url
      *
      * @param url - Test url
-     * @return [Single] with [TestOccurrences.TestOccurrence]
+     * @return [Single] with [TestOccurrence]
      */
     @Headers(APPLICATION_JSON)
     @GET
-    fun testOccurrence(@Url url: String): Single<TestOccurrences.TestOccurrence>
+    fun testOccurrence(@Url url: String): Single<TestOccurrence>
 
     /**
      * List changes

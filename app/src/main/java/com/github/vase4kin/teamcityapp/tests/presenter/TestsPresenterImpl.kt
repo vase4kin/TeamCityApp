@@ -23,7 +23,6 @@ import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataManager
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModelImpl
@@ -32,6 +31,7 @@ import com.github.vase4kin.teamcityapp.tests.router.TestsRouter
 import com.github.vase4kin.teamcityapp.tests.view.OnTestsPresenterListener
 import com.github.vase4kin.teamcityapp.tests.view.TestsView
 import com.mugen.MugenCallbacks
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 import javax.inject.Inject
 
 /**
@@ -43,7 +43,7 @@ class TestsPresenterImpl @Inject constructor(
     tracker: ViewTracker,
     valueExtractor: TestsValueExtractor,
     private val router: TestsRouter
-) : BaseListPresenterImpl<TestsDataModel, TestOccurrences.TestOccurrence, TestsView, TestsDataManager, ViewTracker, TestsValueExtractor>(
+) : BaseListPresenterImpl<TestsDataModel, TestOccurrence, TestsView, TestsDataManager, ViewTracker, TestsValueExtractor>(
     view,
     dataManager,
     tracker,
@@ -57,7 +57,7 @@ class TestsPresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     public override fun loadData(
-        loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>,
+        loadingListener: OnLoadingListener<List<TestOccurrence>>,
         update: Boolean
     ) {
         dataManager.loadFailedTests(valueExtractor.url, loadingListener, update)
@@ -66,7 +66,7 @@ class TestsPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: List<TestOccurrences.TestOccurrence>): TestsDataModel {
+    public override fun createModel(data: List<TestOccurrence>): TestsDataModel {
         return TestsDataModelImpl(data.toMutableList())
     }
 
@@ -80,8 +80,8 @@ class TestsPresenterImpl @Inject constructor(
             override fun onLoadMore() {
                 isLoadMoreLoading = true
                 view.addLoadMore()
-                dataManager.loadMore(object : OnLoadingListener<List<TestOccurrences.TestOccurrence>> {
-                    override fun onSuccess(data: List<TestOccurrences.TestOccurrence>) {
+                dataManager.loadMore(object : OnLoadingListener<List<TestOccurrence>> {
+                    override fun onSuccess(data: List<TestOccurrence>) {
                         view.removeLoadMore()
                         view.addMoreBuilds(TestsDataModelImpl(data.toMutableList()))
                         isLoadMoreLoading = false

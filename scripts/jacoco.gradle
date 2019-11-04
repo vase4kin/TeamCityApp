@@ -1,0 +1,74 @@
+/*
+ * Copyright 2019 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.1"
+    reportsDir = file("$buildDir/coverage")
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+task generateCodeCoverageReport(type: JacocoReport) {
+    group = "code quality"
+
+    description = "Generate Jacoco coverage reports"
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        html.destination file("${rootProject.buildDir}/coverage-report")
+    }
+
+    def javaClasses = []
+    def kotlinClasses = []
+    def javaSrc = []
+    def kotlinSrc = []
+    def execution = []
+
+    def fileFilter = [
+            '**/R.class',
+            '**/R$*.class',
+            '**/BuildConfig.*',
+            '**/Manifest*.*',
+            'android/**/*.*',
+            '**/dagger/**'
+    ]
+
+    rootProject.subprojects.each { proj ->
+        javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/debug", excludes: fileFilter)
+        kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
+        javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/mockDebug", excludes: fileFilter) // Support testMockDebugUnitTest
+        kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/mockDebug", excludes: fileFilter)  // Support testMockDebugUnitTest
+        javaSrc       << "$proj.projectDir/src/main/java"
+        kotlinSrc     << "$proj.projectDir/src/main/kotlin"
+        execution     << fileTree(dir: proj.buildDir,
+                includes: ['jacoco/*.exec',
+                           'coverage.ec'])
+    }
+
+    sourceDirectories = files([javaSrc, kotlinSrc])
+    classDirectories = files([javaClasses, kotlinClasses])
+
+    executionData = files(execution)
+
+    doLast() {
+        print "file://${reports.html.destination}/index.html"
+    }
+}

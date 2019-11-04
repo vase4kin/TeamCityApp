@@ -20,8 +20,5 @@ import android.app.Activity
 
 import androidx.test.espresso.intent.rule.IntentsTestRule
 
-/**
- * Simple IntentsTestRule with spoon screenshot support on failure
- */
 class CustomIntentsTestRule<T : Activity>(activityClass: Class<T>) :
     IntentsTestRule<T>(activityClass, false, false)

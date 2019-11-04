@@ -22,7 +22,7 @@ import androidx.annotation.Nullable;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.artifact.api.Artifacts;
-import com.github.vase4kin.teamcityapp.base.api.BaseObject;
+import teamcityapp.libraries.api.BaseObject;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;

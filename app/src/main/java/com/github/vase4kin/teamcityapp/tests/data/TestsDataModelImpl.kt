@@ -21,13 +21,13 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_ERROR
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_FAILURE
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_UNKNOWN
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 import java.util.UUID
 
 /**
  * Impl of [TestsDataModel]
  */
-class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccurrence>) :
+class TestsDataModelImpl(private val tests: MutableList<TestOccurrence>) :
     TestsDataModel {
 
     /**
@@ -79,7 +79,7 @@ class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccu
     /**
      * {@inheritDoc}
      */
-    override fun iterator(): Iterator<TestOccurrences.TestOccurrence> {
+    override fun iterator(): Iterator<TestOccurrence> {
         return tests.iterator()
     }
 
@@ -105,7 +105,7 @@ class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccu
     }
 
     override fun addMoreBuilds(dataModel: TestsDataModel) {
-        val moreTests = mutableListOf<TestOccurrences.TestOccurrence>()
+        val moreTests = mutableListOf<TestOccurrence>()
         dataModel.iterator().forEach {
             moreTests.add(it)
         }
@@ -118,7 +118,7 @@ class TestsDataModelImpl(private val tests: MutableList<TestOccurrences.TestOccu
          * Load more
          */
         @VisibleForTesting
-        val LOAD_MORE: TestOccurrences.TestOccurrence = object : TestOccurrences.TestOccurrence() {
+        val LOAD_MORE: TestOccurrence = object : TestOccurrence() {
             override fun getId(): String {
                 return UUID.randomUUID().toString()
             }

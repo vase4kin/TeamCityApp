@@ -29,9 +29,9 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
-
 import io.reactivex.Single
 import okhttp3.ResponseBody
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Fake repository impl for UI tests without cache support
@@ -99,7 +99,7 @@ class FakeRepositoryImpl(private val teamCityService: TeamCityService) : Reposit
         return teamCityService.listTestOccurrences(url)
     }
 
-    override fun testOccurrence(url: String): Single<TestOccurrences.TestOccurrence> {
+    override fun testOccurrence(url: String): Single<TestOccurrence> {
         return teamCityService.testOccurrence(url)
     }
 

@@ -21,7 +21,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataManager
 import com.github.vase4kin.teamcityapp.tests.extractor.TestsValueExtractor
 import com.github.vase4kin.teamcityapp.tests.router.TestsRouter
@@ -39,8 +38,12 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 @RunWith(MockitoJUnitRunner::class)
 class TestsPresenterImplTest {
@@ -50,7 +53,7 @@ class TestsPresenterImplTest {
     @Captor
     private lateinit var onLoadMoreListenerArgumentCaptor: ArgumentCaptor<MugenCallbacks>
     @Captor
-    private lateinit var onLoadingListenerArgumentCaptor: ArgumentCaptor<OnLoadingListener<List<TestOccurrences.TestOccurrence>>>
+    private lateinit var onLoadingListenerArgumentCaptor: ArgumentCaptor<OnLoadingListener<List<TestOccurrence>>>
     @Mock
     private lateinit var menuItem: MenuItem
     @Mock
@@ -58,9 +61,9 @@ class TestsPresenterImplTest {
     @Mock
     private lateinit var menuInflater: MenuInflater
     @Mock
-    private lateinit var testOccurrence: TestOccurrences.TestOccurrence
+    private lateinit var testOccurrence: TestOccurrence
     @Mock
-    private lateinit var loadingListener: OnLoadingListener<List<TestOccurrences.TestOccurrence>>
+    private lateinit var loadingListener: OnLoadingListener<List<TestOccurrence>>
     @Mock
     private lateinit var view: TestsView
     @Mock
@@ -109,7 +112,7 @@ class TestsPresenterImplTest {
         assertThat(presenter.isLoadMoreLoading, `is`(true))
 
         val listOnLoadingListener = onLoadingListenerArgumentCaptor.value
-        val tests = emptyList<TestOccurrences.TestOccurrence>()
+        val tests = emptyList<TestOccurrence>()
         listOnLoadingListener.onSuccess(tests)
         verify(view).removeLoadMore()
         verify(view).addMoreBuilds(any())

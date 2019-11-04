@@ -39,6 +39,7 @@ import retrofit2.http.Body
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 import java.util.ArrayList
 
 /**
@@ -148,15 +149,15 @@ open class FakeTeamCityServiceImpl : TeamCityService {
         }
     }
 
-    override fun testOccurrence(@Url url: String): Single<TestOccurrences.TestOccurrence> {
+    override fun testOccurrence(@Url url: String): Single<TestOccurrence> {
         return when (url) {
             "/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)" -> Single.just(
-                TestOccurrences.TestOccurrence("exception error")
+                TestOccurrence("exception error")
             )
             "/guestAuth/app/rest/testOccurrences/id:4484,build:(id:835695)" -> Single.error(
                 RuntimeException("Something bad happens!")
             )
-            else -> Observable.empty<TestOccurrences.TestOccurrence>().singleOrError()
+            else -> Observable.empty<TestOccurrence>().singleOrError()
         }
     }
 

@@ -35,6 +35,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import okhttp3.ResponseBody
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Impl of [Repository]
@@ -184,7 +185,7 @@ class RepositoryImpl(
     /**
      * {@inheritDoc}
      */
-    override fun testOccurrence(url: String): Single<TestOccurrences.TestOccurrence> {
+    override fun testOccurrence(url: String): Single<TestOccurrence> {
         return cacheProviders.testOccurrence(
             teamCityService.testOccurrence(urlFormatter.formatBasicUrl(url)),
             DynamicKey(url)
