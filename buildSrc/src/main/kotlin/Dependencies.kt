@@ -70,7 +70,7 @@ object Versions {
     val mockitoCore3 = "3.1.0"
 
     // Gradle plugins
-    val gradleandroid = "3.4.2"
+    val gradleandroid = "3.5.1"
     val kotlin = "1.3.41"
     val gradleversions = "0.21.0"
     val androidAppt = "1.8"
