@@ -71,7 +71,7 @@ object Versions {
 
     // Gradle plugins
     val gradleandroid = "3.5.1"
-    val kotlin = "1.3.41"
+    val kotlin = "1.3.50"
     val gradleversions = "0.21.0"
     val androidAppt = "1.8"
     val googleServices = "4.3.0"
@@ -79,9 +79,6 @@ object Versions {
     val firebasePerf = "1.3.1"
     val kotlinter = "2.1.1"
     val fabric = "1.+"
-
-    // Kotlin
-    val kotlin_stdlibJdk7 = "1.3.41"
 
     val dexMaker = "1.4"
 }
@@ -138,7 +135,7 @@ object Deps {
     val dexmakerDx = "com.crittercism.dexmaker:dexmaker-dx:${Versions.dexMaker}"
     val dexmakerMockito = "com.crittercism.dexmaker:dexmaker-mockito:${Versions.dexMaker}"
 
-    val kotlin_stdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin_stdlibJdk7}"
+    val kotlin_stdlibJdk7 = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
 
     val tools_gradleandroid = "com.android.tools.build:gradle:${Versions.gradleandroid}"
     val tools_kotlin = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
