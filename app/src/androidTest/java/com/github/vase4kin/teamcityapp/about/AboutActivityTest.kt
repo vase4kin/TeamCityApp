@@ -43,7 +43,7 @@ import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
 /**
- * Tests for [AboutLibrariesActivity]
+ * Tests for [AboutActivity]
  */
 @RunWith(AndroidJUnit4::class)
 class AboutActivityTest {

@@ -197,7 +197,7 @@
     <string name="about_app_url_privacy" tools:ignore="TypographyDashes">https://telegra.ph/TeamCityApp-Private-Policy-09-18</string>
     <string name="about_app_text_source_code">Source code</string>
     <string name="about_app_url_source_code">https://github.com/vase4kin/TeamCityApp</string>
-    <string name="about_app_text_libraries">Libraries</string>
+    <string name="about_app_text_libraries">Open sources libraries</string>
     <string name="about_app_text_contacts">Contacts</string>
     <string name="about_app_text_dev">Developer details</string>
     <string name="about_app_text_app">Application details</string>
@@ -209,6 +209,8 @@
     <string name="about_app_text_privacy">Privacy policy</string>
     <string name="about_app_email">contact@teamcity.app</string>
     <string name="about_app_email_title">Questions about TeamCityApp</string>
+    <string name="about_version">Version</string>
+
 
     <!--Build log-->
     <string name="text_login_again">In order to view build log please login</string>

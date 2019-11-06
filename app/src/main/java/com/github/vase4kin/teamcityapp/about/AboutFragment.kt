@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.about
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
@@ -30,6 +31,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.utils.getTintedDrawable
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -104,15 +106,27 @@ class AboutFragment : MaterialAboutFragment() {
         serverInfo.title(R.string.about_app_text_server_info)
         serverInfo.addItem(
             MaterialAboutActionItem.Builder()
-                .text(getString(R.string.version))
-                .icon(getTintedDrawable(requireContext(), R.drawable.ic_info_outline_black_24dp, R.color.sub_text_color))
+                .text(getString(R.string.about_version))
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_info_outline_black_24dp,
+                        R.color.sub_text_color
+                    )
+                )
                 .subText(version)
                 .build()
         )
         val serverUrlItem = MaterialAboutActionItem.Builder()
             .text(R.string.about_app_text_server_url)
             .subText(serverUrl)
-            .icon(getTintedDrawable(requireContext(), R.drawable.ic_web_black_24dp, R.color.sub_text_color))
+            .icon(
+                getTintedDrawable(
+                    requireContext(),
+                    R.drawable.ic_web_black_24dp,
+                    R.color.sub_text_color
+                )
+            )
             .setOnClickAction {
                 openUrl(serverUrl)
             }
@@ -128,15 +142,25 @@ class AboutFragment : MaterialAboutFragment() {
         appCardBuilder.title(R.string.about_app_text_app)
         appCardBuilder.addItem(
             MaterialAboutActionItem.Builder()
-                .text(getString(R.string.version))
-                .icon(getTintedDrawable(requireContext(), R.drawable.ic_info_outline_black_24dp, R.color.sub_text_color))
+                .text(getString(R.string.about_version))
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_info_outline_black_24dp,
+                        R.color.sub_text_color
+                    )
+                )
                 .subText(BuildConfig.VERSION_NAME)
                 .build()
         )
             .addItem(
                 ConvenienceBuilder.createRateActionItem(
                     activity,
-                    getTintedDrawable(requireContext(), R.drawable.ic_star_border_black_24dp, R.color.sub_text_color),
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_star_border_black_24dp,
+                        R.color.sub_text_color
+                    ),
                     getString(R.string.about_app_text_rate_app),
                     null
                 )
@@ -144,7 +168,13 @@ class AboutFragment : MaterialAboutFragment() {
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_found_issue)
                 .subText(R.string.about_app_subtext_found_issue)
-                .icon(getTintedDrawable(requireContext(), R.drawable.ic_question_answer_black_24dp, R.color.sub_text_color))
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_question_answer_black_24dp,
+                        R.color.sub_text_color
+                    )
+                )
                 .setOnClickAction {
                     val url = getString(R.string.about_app_url_found_issue)
                     openUrl(url)
@@ -156,7 +186,13 @@ class AboutFragment : MaterialAboutFragment() {
         miscCardBuilder
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_source_code)
-                .icon(getTintedDrawable(requireContext(), R.drawable.ic_github_circle, R.color.sub_text_color))
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_github_circle,
+                        R.color.sub_text_color
+                    )
+                )
                 .setOnClickAction {
                     val url = getString(R.string.about_app_url_source_code)
                     openUrl(url)
@@ -164,8 +200,22 @@ class AboutFragment : MaterialAboutFragment() {
                 .build())
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_libraries)
-                .icon(getTintedDrawable(requireContext(), R.drawable.ic_github_circle, R.color.sub_text_color))
-                .setOnClickAction { AboutLibrariesActivity.start(activity) }
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_github_circle,
+                        R.color.sub_text_color
+                    )
+                )
+                .setOnClickAction {
+                    OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_app_text_libraries))
+                    startActivity(
+                        Intent(
+                            requireContext(),
+                            OssLicensesMenuActivity::class.java
+                        )
+                    )
+                }
                 .build())
 
         val authorCardBuilder = MaterialAboutCard.Builder()
@@ -173,7 +223,13 @@ class AboutFragment : MaterialAboutFragment() {
         authorCardBuilder.addItem(MaterialAboutActionItem.Builder()
             .text(R.string.about_app_text_web)
             .subText(R.string.about_app_url_web)
-            .icon(getTintedDrawable(requireContext(), R.drawable.ic_web_black_24dp, R.color.sub_text_color))
+            .icon(
+                getTintedDrawable(
+                    requireContext(),
+                    R.drawable.ic_web_black_24dp,
+                    R.color.sub_text_color
+                )
+            )
             .setOnClickAction {
                 val url = getString(R.string.about_app_url_web)
                 openUrl(url)
@@ -182,7 +238,11 @@ class AboutFragment : MaterialAboutFragment() {
             .addItem(
                 ConvenienceBuilder.createEmailItem(
                     activity,
-                    getTintedDrawable(requireContext(), R.drawable.ic_email_black_24dp, R.color.sub_text_color),
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_email_black_24dp,
+                        R.color.sub_text_color
+                    ),
                     getText(R.string.about_app_text_email),
                     true,
                     getString(R.string.about_app_email),
@@ -191,7 +251,13 @@ class AboutFragment : MaterialAboutFragment() {
             )
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_privacy)
-                .icon(getTintedDrawable(requireContext(), R.drawable.ic_web_black_24dp, R.color.sub_text_color))
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_web_black_24dp,
+                        R.color.sub_text_color
+                    )
+                )
                 .setOnClickAction {
                     val url = getString(R.string.about_app_url_privacy)
                     openUrl(url)
