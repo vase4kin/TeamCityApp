@@ -16,6 +16,9 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+import teamcityapp.buildsrc.Libs
+import teamcityapp.buildsrc.Config
+
 buildscript {
     repositories {
         google()
@@ -26,15 +29,16 @@ buildscript {
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
-        classpath Deps.tools_gradleandroid
-        classpath Deps.tools_kotlin
-        classpath Deps.tools_gradleversions
-        classpath Deps.tools_androidAapt
-        classpath Deps.tools_googleServices
-        classpath Deps.tools_jacoco
-        classpath Deps.tools_firebasePerf
-        classpath Deps.tools_kotlinter
-        classpath Deps.tools_fabric
+        classpath Libs.Tools.gradleAndroid
+        classpath Libs.Tools.gradleversions
+        classpath Libs.Tools.androidAapt
+        classpath Libs.Tools.googleServices
+        classpath Libs.Tools.firebasePerf
+        classpath Libs.Tools.jacoco
+        classpath Libs.Tools.kotlinter
+        classpath Libs.Tools.fabric
+        classpath Libs.Kotlin.Tools.gradlePlugin
+        classpath Libs.Kotlin.Tools.extensions
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import teamcityapp.buildsrc.Libs
+import teamcityapp.buildsrc.Config
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -99,28 +102,27 @@ dependencies {
     implementation project(':features:test-details:feature')
 
     // Android support libraries
-    implementation Deps.androidx_appcompat
+    implementation Libs.AndroidX.appcompat
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation Deps.androidx_material
+    implementation Libs.Google.material
     implementation 'androidx.browser:browser:1.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     // Api third party libraries
-    implementation Deps.api_okhttp
-    implementation Deps.api_okhttpLogginInterceptor
-    implementation Deps.api_gson
-    implementation Deps.api_retrofit
-    implementation Deps.api_retrofitConverterGson
-    implementation Deps.api_retrofitAdapterRxJava2
+    implementation Libs.OkHttp.okhttp
+    implementation Libs.OkHttp.loggingInterceptor
+    implementation Libs.Retrofit.retrofit
+    implementation Libs.Retrofit.gsonConverter
+    implementation Libs.Retrofit.retrofitRxjavaAdapter
     // Dialogs
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     // Views
-    implementation Deps.errorView
+    implementation Libs.errorView
     // View injection
-    implementation Deps.butterKnife
-    annotationProcessor Deps.butterKnife_compiler
-    kapt Deps.butterKnife_compiler
+    implementation Libs.ButterKnife.butterKnife
+    annotationProcessor Libs.ButterKnife.butterKnifeCompiler
+    kapt Libs.ButterKnife.butterKnifeCompiler
     // Event bus
     implementation 'org.greenrobot:eventbus:3.0.0'
     // Others
@@ -134,36 +136,36 @@ dependencies {
     // Onboarding
     implementation 'uk.co.samuelwall:material-tap-target-prompt:2.14.0'
     // Dagger
-    implementation Deps.dagger
-    annotationProcessor Deps.dagger_compiler
-    kapt Deps.dagger_compiler
-    implementation Deps.dagger_android
-    annotationProcessor Deps.dagger_androidProcessor
-    kapt Deps.dagger_androidProcessor
+    implementation Libs.Dagger.dagger
+    annotationProcessor Libs.Dagger.compiler
+    kapt Libs.Dagger.compiler
+    implementation Libs.Dagger.androidSupport
+    annotationProcessor Libs.Dagger.androidProcessor
+    kapt Libs.Dagger.androidProcessor
     // Rx
-    implementation Deps.rxjava
-    implementation Deps.rxjava_android
-    implementation Deps.rxjava_kotlin
+    implementation Libs.RxJava.rxJava
+    implementation Libs.RxJava.rxAndroid
+    implementation Libs.RxJava.rxjava_kotlin
     // Rx cache
     implementation "com.github.VictorAlbertos.RxCache:runtime:1.8.3-2.x"
     implementation 'com.github.VictorAlbertos.Jolyglot:gson:0.0.4'
     // Encryption
     implementation 'com.facebook.conceal:conceal:1.1.3@aar'
     // Firebase
-    implementation Deps.firebase_core
+    implementation Libs.Google.firebaseCore
     implementation 'com.google.firebase:firebase-config:19.0.0'
     implementation 'com.google.firebase:firebase-perf:19.0.0'
     // Bottom nav libries
     implementation 'com.ncapdevi:frag-nav:3.3.0'
     implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
     // Unit tests
-    testImplementation Deps.test_junit
-    testImplementation Deps.test_mockito
+    testImplementation Libs.junit
+    testImplementation Libs.Mockito.mockito
     testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
-    testImplementation Deps.test_powerMockJunit4
-    testImplementation Deps.test_powerMockJunitRule
-    testImplementation Deps.test_powerMockApiMockito
-    testImplementation Deps.test_powerMockClassLoadingXstream
+    testImplementation Libs.PowerMock.junit4
+    testImplementation Libs.PowerMock.junitRule
+    testImplementation Libs.PowerMock.apiMockito
+    testImplementation Libs.PowerMock.classLoadingXstream
     // Ui tests
     // Core library
     androidTestImplementation 'androidx.test:core:1.2.0'
@@ -178,11 +180,11 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-web:3.2.0'
     // Mockito
-    androidTestImplementation Deps.test_mockito
+    androidTestImplementation Libs.Mockito.mockito
     // Dex maker
-    androidTestImplementation Deps.dexmaker
-    androidTestImplementation Deps.dexmakerDx
-    androidTestImplementation Deps.dexmakerMockito
+    androidTestImplementation Libs.DexMaker.dexmaker
+    androidTestImplementation Libs.DexMaker.dexmakerDx
+    androidTestImplementation Libs.DexMaker.dexmakerMockito
     // Dagger mock
     androidTestImplementation 'com.github.fabioCollini:DaggerMock:0.8.5'
     // Condition watcher
@@ -194,6 +196,8 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
+
+    implementation Libs.Kotlin.stdlib
 }
 
 apply plugin: 'com.google.gms.google-services'

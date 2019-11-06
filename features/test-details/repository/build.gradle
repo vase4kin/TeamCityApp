@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import teamcityapp.buildsrc.Libs
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
@@ -23,6 +25,6 @@ apply from: '../../../scripts/jacoco.gradle'
 
 dependencies {
     implementation project(':features:test-details:models')
-    implementation Deps.rxjava
-    implementation Deps.kotlin_stdlibJdk7
+    implementation Libs.RxJava.rxJava
+    implementation Libs.Kotlin.stdlib
 }
