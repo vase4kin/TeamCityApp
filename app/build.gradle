@@ -25,6 +25,7 @@ apply plugin: 'io.fabric'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
+apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply from: '../scripts/jacoco.gradle'
 apply from: '../scripts/pmd.gradle'
 apply from: '../scripts/findbugs.gradle'
@@ -101,6 +102,8 @@ dependencies {
     implementation project(':features:test-details:repository')
     implementation project(':features:test-details:feature')
 
+    implementation Libs.Google.openSourceLicensesLibrary
+
     // Android support libraries
     implementation Libs.AndroidX.appcompat
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -128,9 +131,6 @@ dependencies {
     // Others
     implementation 'joda-time:joda-time:2.8.1'
     implementation 'com.vinaysshenoy:mugen:1.0.2'
-    implementation('com.mikepenz:aboutlibraries:6.1.1@aar') {
-        transitive = true
-    }
     implementation 'io.supercharge:shimmerlayout:2.1.0'
     implementation 'com.github.daniel-stoneuk:material-about-library:2.2.5'
     // Onboarding

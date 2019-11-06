@@ -18,12 +18,17 @@
 
     <style name="AppTheme" parent="BaseTheme" />
 
-    <style name="BaseTheme" parent="Theme.MaterialComponents.Light">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme.ActionBar" parent="BaseTheme.ActionBar" />
+
+    <style name="BaseTheme.ActionBar" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="BaseTheme" parent="BaseTheme.ActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="PrimaryColorNavBarTheme" parent="AppTheme">

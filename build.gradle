@@ -39,6 +39,7 @@ buildscript {
         classpath Libs.Tools.fabric
         classpath Libs.Kotlin.Tools.gradlePlugin
         classpath Libs.Kotlin.Tools.extensions
+        classpath Libs.Google.Tools.openSourceLicensesPlugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

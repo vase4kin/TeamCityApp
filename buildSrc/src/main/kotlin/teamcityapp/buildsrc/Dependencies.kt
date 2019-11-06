@@ -43,6 +43,13 @@ object Libs {
     object Google {
         const val material = "com.google.android.material:material:1.0.0"
         const val firebaseCore = "com.google.firebase:firebase-core:17.2.0"
+
+        const val openSourceLicensesLibrary =
+            "com.google.android.gms:play-services-oss-licenses:17.0.0"
+
+        object Tools {
+            const val openSourceLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.9.5"
+        }
     }
 
     object OkHttp {

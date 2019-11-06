@@ -28,7 +28,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/AppTheme"
+        android:theme="@style/AppTheme.ActionBar"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
@@ -70,11 +70,6 @@
             android:name=".account.create.view.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
             android:theme="@style/PrimaryColorNavBarTheme" />
-        <activity
-            android:name=".about.AboutLibrariesActivity"
-            android:label="@string/title_activity_about_libraries"
-            android:launchMode="singleTop"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
             android:name=".runbuild.view.RunBuildActivity"
             android:label="@string/title_run_build"
