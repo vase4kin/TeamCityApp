@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp
 
-import android.app.Activity
 import android.app.Application
 import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
@@ -29,17 +28,17 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
+import dagger.android.HasAndroidInjector
 import io.fabric.sdk.android.Fabric
 import javax.inject.Inject
 
 /**
  * TeamCityApplication class
  */
-class TeamCityApplication : Application(), HasActivityInjector {
+class TeamCityApplication : Application(), HasAndroidInjector {
 
     @Inject
-    lateinit var activityInjector: DispatchingAndroidInjector<Activity>
+    lateinit var activityInjector: DispatchingAndroidInjector<Any>
 
     lateinit var restApiInjector: RestApiComponent
         private set
@@ -99,7 +98,7 @@ class TeamCityApplication : Application(), HasActivityInjector {
         this.appInjector.inject(this)
     }
 
-    override fun activityInjector(): AndroidInjector<Activity> {
+    override fun androidInjector(): AndroidInjector<Any> {
         return activityInjector
     }
 }
