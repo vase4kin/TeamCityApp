@@ -153,8 +153,8 @@ dependencies {
     implementation 'com.facebook.conceal:conceal:1.1.3@aar'
     // Firebase
     implementation Libs.Google.firebaseCore
-    implementation 'com.google.firebase:firebase-config:19.0.0'
-    implementation 'com.google.firebase:firebase-perf:19.0.0'
+    implementation Libs.Google.firebaseConfig
+    implementation Libs.Google.firebasePerf
     // Bottom nav libries
     implementation 'com.ncapdevi:frag-nav:3.3.0'
     implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
