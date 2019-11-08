@@ -17,10 +17,10 @@
 package com.github.vase4kin.teamcityapp.about.dagger
 
 import com.github.vase4kin.teamcityapp.about.AboutFragment
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import dagger.Module
 import dagger.Provides
+import teamcityapp.chrome_tabs.ChromeCustomTabs
+import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
 class AboutFragmentModule {

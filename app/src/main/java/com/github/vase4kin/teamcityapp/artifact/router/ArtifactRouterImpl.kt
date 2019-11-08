@@ -22,9 +22,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.github.vase4kin.teamcityapp.BuildConfig
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import teamcityapp.chrome_tabs.ChromeCustomTabs
 import java.io.File
 
 /**

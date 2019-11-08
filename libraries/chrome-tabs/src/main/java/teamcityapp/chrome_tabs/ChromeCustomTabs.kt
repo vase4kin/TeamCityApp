@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.custom_tabs
+package teamcityapp.chrome_tabs
 
 /**
  * Chrome custom tabs manager

@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.viewmodel
 
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
 import com.github.vase4kin.teamcityapp.new_drawer.view.AboutDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.AccountDrawerItem
@@ -27,6 +26,7 @@ import com.github.vase4kin.teamcityapp.new_drawer.view.DividerDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.ManageAccountsDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.NewAccountDrawerItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import teamcityapp.chrome_tabs.ChromeCustomTabs
 
 class DrawerViewModel(
     private val sharedUserStorage: SharedUserStorage,

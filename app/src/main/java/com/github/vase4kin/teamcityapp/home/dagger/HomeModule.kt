@@ -23,8 +23,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
@@ -39,6 +37,8 @@ import dagger.Module
 import dagger.Provides
 import io.rx_cache2.internal.RxCache
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.chrome_tabs.ChromeCustomTabs
+import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
 class HomeModule {
