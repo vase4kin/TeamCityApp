@@ -22,11 +22,11 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import teamcityapp.chrome_tabs.ChromeCustomTabs
 
 interface DrawerRouter {
 

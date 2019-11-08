@@ -38,10 +38,12 @@ object Libs {
     object AndroidX {
         const val appcompat = "androidx.appcompat:appcompat:1.0.2"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
+        const val browser = "androidx.browser:browser:1.0.0"
     }
 
     object Google {
         const val material = "com.google.android.material:material:1.0.0"
+
         const val firebaseCore = "com.google.firebase:firebase-core:17.2.1"
         const val firebaseConfig = "com.google.firebase:firebase-config:19.0.3"
         const val firebasePerf = "com.google.firebase:firebase-perf:19.0.1"

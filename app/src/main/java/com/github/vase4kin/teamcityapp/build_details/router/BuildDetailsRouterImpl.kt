@@ -23,8 +23,8 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
+import teamcityapp.chrome_tabs.ChromeCustomTabs
 
 /**
  * Impl of [BuildDetailsRouter]

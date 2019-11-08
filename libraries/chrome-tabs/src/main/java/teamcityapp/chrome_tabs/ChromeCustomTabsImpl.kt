@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.custom_tabs
+package teamcityapp.chrome_tabs
 
 import android.app.Activity
 import android.content.ComponentName
@@ -24,8 +24,6 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
 import androidx.core.content.ContextCompat
-
-import com.github.vase4kin.teamcityapp.R
 
 private const val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 

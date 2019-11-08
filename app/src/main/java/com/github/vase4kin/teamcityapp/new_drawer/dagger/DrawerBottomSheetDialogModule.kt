@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.dagger
 
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabs
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouterImpl
 import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
@@ -42,6 +41,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import teamcityapp.chrome_tabs.ChromeCustomTabs
 
 @Module
 class DrawerBottomSheetDialogModule {

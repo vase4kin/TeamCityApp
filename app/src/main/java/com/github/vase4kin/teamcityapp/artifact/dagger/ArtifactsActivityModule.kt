@@ -36,13 +36,13 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactViewImpl
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-import com.github.vase4kin.teamcityapp.custom_tabs.ChromeCustomTabsImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
 class ArtifactsActivityModule {
