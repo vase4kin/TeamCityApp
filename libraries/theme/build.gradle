@@ -17,6 +17,8 @@
 import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.ben-manes.versions'
+apply from: '../../scripts/jacoco.gradle'
 
 dependencies {
     implementation project(':libraries:resources')
