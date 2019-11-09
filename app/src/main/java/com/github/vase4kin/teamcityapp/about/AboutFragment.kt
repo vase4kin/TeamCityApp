@@ -37,7 +37,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import teamcityapp.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import javax.inject.Inject
 
 class AboutFragment : MaterialAboutFragment() {

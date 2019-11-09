@@ -41,7 +41,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
-import teamcityapp.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 
 @Module
 class DrawerBottomSheetDialogModule {

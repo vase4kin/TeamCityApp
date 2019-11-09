@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.chrome_tabs
+package teamcityapp.libraries.chrome_tabs
 
 import android.app.Activity
 import android.content.ComponentName
@@ -30,7 +30,8 @@ private const val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 /**
  * Impl of [ChromeCustomTabs]
  */
-class ChromeCustomTabsImpl(private val activity: Activity) : ChromeCustomTabs {
+class ChromeCustomTabsImpl(private val activity: Activity) :
+    ChromeCustomTabs {
 
     private var client: CustomTabsClient? = null
     private var customTabsServiceConnection: CustomTabsServiceConnection? = null
