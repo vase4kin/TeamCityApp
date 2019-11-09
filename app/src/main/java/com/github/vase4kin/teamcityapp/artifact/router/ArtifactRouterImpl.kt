@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.BuildConfig
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import teamcityapp.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import java.io.File
 
 /**

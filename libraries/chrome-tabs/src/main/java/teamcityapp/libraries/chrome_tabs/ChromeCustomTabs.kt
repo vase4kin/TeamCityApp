@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.chrome_tabs
+package teamcityapp.libraries.chrome_tabs
 
 /**
  * Chrome custom tabs manager

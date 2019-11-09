@@ -37,8 +37,8 @@ import dagger.Module
 import dagger.Provides
 import io.rx_cache2.internal.RxCache
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.chrome_tabs.ChromeCustomTabs
-import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
 class HomeModule {

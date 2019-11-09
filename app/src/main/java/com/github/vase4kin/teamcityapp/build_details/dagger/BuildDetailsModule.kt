@@ -39,7 +39,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.utils.StatusBarUtils
 
 @Module

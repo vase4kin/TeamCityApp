@@ -43,7 +43,7 @@ import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
 class ArtifactsFragmentModule {

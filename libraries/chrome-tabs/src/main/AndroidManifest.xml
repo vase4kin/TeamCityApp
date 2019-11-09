@@ -14,4 +14,4 @@
   ~ limitations under the License.
   -->
 
-<manifest package="teamcityapp.chrome_tabs" />
+<manifest package="teamcityapp.libraries.chrome_tabs" />

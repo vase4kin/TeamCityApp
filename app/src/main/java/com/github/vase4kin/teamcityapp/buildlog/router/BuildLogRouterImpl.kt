@@ -17,8 +17,8 @@
 package com.github.vase4kin.teamcityapp.buildlog.router
 
 import android.app.Activity
-import teamcityapp.chrome_tabs.ChromeCustomTabs
-import teamcityapp.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
 class BuildLogRouterImpl(activity: Activity) : BuildLogRouter {
 
