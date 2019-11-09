@@ -88,6 +88,19 @@ android {
     dexOptions {
         jumboMode true
     }
+
+    packagingOptions {
+        // Exclude AndroidX version files
+        exclude 'META-INF/*.version'
+        // Exclude consumer proguard files
+        exclude 'META-INF/proguard/*'
+        // Exclude the Firebase/Fabric/other random properties files
+        exclude '/*.properties'
+        exclude 'fabric/*.properties'
+        exclude 'META-INF/*.properties'
+        // More than one file was found with OS independent path 'META-INF/repository_debug.kotlin_module'
+        exclude 'META-INF/repository_debug.kotlin_module'
+    }
 }
 
 dependencies {
