@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.dagger.modules
+package com.github.vase4kin.teamcityapp.dagger.modules.test_details
 
 import com.github.vase4kin.teamcityapp.api.Repository
 import dagger.Module

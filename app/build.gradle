@@ -103,7 +103,11 @@ dependencies {
     implementation project(':features:test-details:models')
     implementation project(':features:test-details:repository')
     implementation project(':features:test-details:feature')
+
     implementation project(':features:splash')
+
+    implementation project(':features:about:models')
+    implementation project(':features:about:repository')
 
     implementation Libs.Google.openSourceLicensesLibrary
 

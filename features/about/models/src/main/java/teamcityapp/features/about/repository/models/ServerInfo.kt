@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about
+package teamcityapp.features.about.repository.models
 
 data class ServerInfo(val version: String, val webUrl: String)

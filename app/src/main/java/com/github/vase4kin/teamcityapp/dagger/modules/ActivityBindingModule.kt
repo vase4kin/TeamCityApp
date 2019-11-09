@@ -39,6 +39,8 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
+import com.github.vase4kin.teamcityapp.dagger.modules.about.AboutRepositoryModule
+import com.github.vase4kin.teamcityapp.dagger.modules.test_details.TestDetailsRepositoryModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentScope
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
@@ -79,7 +81,7 @@ abstract class ActivityBindingModule {
     abstract fun aboutActivity(): AboutActivity
 
     @AboutFragmentScope
-    @ContributesAndroidInjector(modules = [AboutFragmentModule::class])
+    @ContributesAndroidInjector(modules = [AboutFragmentModule::class, AboutRepositoryModule::class])
     abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope

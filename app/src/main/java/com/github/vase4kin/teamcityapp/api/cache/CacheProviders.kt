@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.api.cache
 
-import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
@@ -32,6 +31,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import io.rx_cache2.LifeCache
+import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 import java.util.concurrent.TimeUnit
 

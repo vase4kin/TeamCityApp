@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.api
 
-import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
@@ -29,12 +28,13 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import okhttp3.ResponseBody
+import teamcityapp.features.about.repository.AboutRepository
 import teamcityapp.features.test_details.repository.TestDetailsRepository
 
 /**
  * Repository to manage api
  */
-interface Repository : TestDetailsRepository {
+interface Repository : TestDetailsRepository, AboutRepository {
 
     /**
      * List agents (cache's supported)
@@ -193,9 +193,4 @@ interface Repository : TestDetailsRepository {
      * @return [Single] with [Build]
      */
     fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build>
-
-    /**
-     * Server info
-     */
-    fun serverInfo(): Single<ServerInfo>
 }

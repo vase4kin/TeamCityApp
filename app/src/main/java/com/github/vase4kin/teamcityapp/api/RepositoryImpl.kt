@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.api
 
-import com.github.vase4kin.teamcityapp.about.ServerInfo
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
@@ -35,6 +34,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import okhttp3.ResponseBody
+import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**

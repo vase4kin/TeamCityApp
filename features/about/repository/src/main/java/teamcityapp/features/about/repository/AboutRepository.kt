@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
-include ':features:about:models'
-include ':features:about:repository'
+package teamcityapp.features.about.repository
+
+import io.reactivex.Single
+import teamcityapp.features.about.repository.models.ServerInfo
+
+interface AboutRepository {
+
+    /**
+     * Server info
+     */
+    fun serverInfo(): Single<ServerInfo>
+}
