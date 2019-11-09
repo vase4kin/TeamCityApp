@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.view
+package teamcityapp.features.splash.view
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -62,7 +62,8 @@ class SplashActivityTest {
 
     @JvmField
     @Rule
-    val activityRule: CustomIntentsTestRule<SplashActivity> = CustomIntentsTestRule(SplashActivity::class.java)
+    val activityRule: CustomIntentsTestRule<teamcityapp.features.splash.view.SplashActivity> = CustomIntentsTestRule(
+        teamcityapp.features.splash.view.SplashActivity::class.java)
 
     @Before
     fun setUp() {
