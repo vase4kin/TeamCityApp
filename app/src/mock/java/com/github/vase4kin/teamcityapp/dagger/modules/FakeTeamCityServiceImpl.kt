@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.dagger.modules
 
 import com.github.vase4kin.teamcityapp.BuildConfig
-import com.github.vase4kin.teamcityapp.about.ServerInfo
+import teamcityapp.features.about.repository.models.ServerInfo
 import com.github.vase4kin.teamcityapp.agents.api.Agent
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.TeamCityService
