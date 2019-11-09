@@ -16,10 +16,11 @@
 
 import teamcityapp.buildsrc.Libs
 
-import teamcityapp.buildsrc.Libs
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'org.jmailen.kotlinter'
+apply from: '../../../scripts/jacoco.gradle'
 
 dependencies {
     implementation Libs.Kotlin.stdlib
