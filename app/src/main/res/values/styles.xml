@@ -16,12 +16,6 @@
 
 <resources>
 
-    <style name="SplashTheme" parent="AppTheme">
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="android:navigationBarColor">@color/white</item>
-    </style>
-
     <style name="HomeTheme" parent="AppTheme">
         <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>

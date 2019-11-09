@@ -62,6 +62,7 @@ import io.rx_cache2.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import teamcityapp.libraries.storage.Storage;
 
 /**
  * Todo: Convert to Kotlin
@@ -95,6 +96,12 @@ public class AppModule {
     @Singleton
     protected SharedUserStorage provideSharedUserStorage(CryptoManager cryptoManager) {
         return SharedUserStorage.init(mApplication.getApplicationContext(), cryptoManager);
+    }
+
+    @Provides
+    @Singleton
+    protected Storage provideStorage(SharedUserStorage sharedUserStorage) {
+        return sharedUserStorage;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

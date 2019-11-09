@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.splash.presenter
+
+/**
+ * Presenter to handle logic of [teamcityapp.features.splash.view.SplashActivity]
+ */
+interface SplashPresenter {
+
+    /**
+     * On activity create
+     */
+    fun onCreate()
+}

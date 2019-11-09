@@ -98,10 +98,12 @@ dependencies {
     implementation project(':libraries:resources')
     implementation project(':libraries:theme')
     implementation project(':libraries:chrome-tabs')
+    implementation project(':libraries:storage')
 
     implementation project(':features:test-details:models')
     implementation project(':features:test-details:repository')
     implementation project(':features:test-details:feature')
+    implementation project(':features:splash')
 
     implementation Libs.Google.openSourceLicensesLibrary
 

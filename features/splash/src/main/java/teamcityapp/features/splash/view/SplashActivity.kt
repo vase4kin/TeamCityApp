@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.splash.view
+
+import android.os.Bundle
+import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.features.splash.presenter.SplashPresenterImpl
+import javax.inject.Inject
+
+/**
+ * Activity to handle splash screen
+ */
+class SplashActivity : DaggerAppCompatActivity() {
+
+    @Inject
+    lateinit var presenter: SplashPresenterImpl
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        presenter.onCreate()
+    }
+}

@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package teamcityapp.features.splash.presenter
+
+import teamcityapp.features.splash.router.SplashRouter
+import teamcityapp.libraries.storage.Storage
+import javax.inject.Inject
+
+/**
+ * impl of [SplashPresenter]
+ */
+class SplashPresenterImpl @Inject constructor(
+    private val router: SplashRouter,
+    private val storage: Storage
+) : SplashPresenter {
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun onCreate() {
+        if (storage.hasUserAccounts()) {
+            router.openProjectsRootPage()
+        } else {
+            router.openLoginPage()
+        }
+        router.close()
+    }
+}

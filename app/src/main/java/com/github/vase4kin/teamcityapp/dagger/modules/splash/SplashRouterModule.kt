@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
+package com.github.vase4kin.teamcityapp.dagger.modules.splash
+
+import dagger.Binds
+import dagger.Module
+import teamcityapp.features.splash.router.SplashRouter
+
+@Module
+abstract class SplashRouterModule {
+
+    @Binds
+    abstract fun providesSplashRouter(impl: SplashRouterImpl): SplashRouter
+}
