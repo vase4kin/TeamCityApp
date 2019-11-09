@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.presenter
+package teamcityapp.features.splash.presenter
 
-import com.github.vase4kin.teamcityapp.splash.data.SplashDataManager
-import com.github.vase4kin.teamcityapp.splash.router.SplashRouter
-import com.github.vase4kin.teamcityapp.splash.view.SplashView
+import teamcityapp.features.splash.router.SplashRouter
+import teamcityapp.libraries.storage.Storage
 import javax.inject.Inject
 
 /**
  * impl of [SplashPresenter]
  */
 class SplashPresenterImpl @Inject constructor(
-    private val mRouter: SplashRouter,
-    private val mDataManager: SplashDataManager,
-    private val mView: SplashView
+    private val router: SplashRouter,
+    private val storage: Storage
 ) : SplashPresenter {
 
     /**
      * {@inheritDoc}
      */
     override fun onCreate() {
-        if (mDataManager.hasUserAccounts()) {
-            mRouter.openProjectsRootPage()
+        if (storage.hasUserAccounts()) {
+            router.openProjectsRootPage()
         } else {
-            mRouter.openLoginPage()
+            router.openLoginPage()
         }
-        mView.close()
+        router.close()
     }
 }

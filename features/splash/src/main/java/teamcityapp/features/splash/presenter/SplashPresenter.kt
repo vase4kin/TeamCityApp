@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.splash.router
+package teamcityapp.features.splash.presenter
 
 /**
- * Router to handle [com.github.vase4kin.teamcityapp.splash.view.SplashActivity] navigation
+ * Presenter to handle logic of [teamcityapp.features.splash.view.SplashActivity]
  */
-interface SplashRouter {
+interface SplashPresenter {
 
     /**
-     * Open login page [com.github.vase4kin.teamcityapp.login.view.LoginActivity]
+     * On activity create
      */
-    fun openLoginPage()
-
-    /**
-     * Open root projects activity [com.github.vase4kin.teamcityapp.home.view.HomeActivity]
-     */
-    fun openProjectsRootPage()
+    fun onCreate()
 }
