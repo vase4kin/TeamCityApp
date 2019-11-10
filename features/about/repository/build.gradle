@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.dagger.modules
+import teamcityapp.buildsrc.Libs
 
-import com.github.vase4kin.teamcityapp.api.Repository
-import dagger.Module
-import dagger.Provides
-import teamcityapp.features.test_details.repository.TestDetailsRepository
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'org.jmailen.kotlinter'
+apply from: '../../../scripts/jacoco.gradle'
 
-@Module
-class TestDetailsRepositoryModule {
-
-    @Provides
-    fun providesTestDetailsRepository(repository: Repository): TestDetailsRepository = repository
+dependencies {
+    implementation project(':features:about:models')
+    implementation Libs.RxJava.rxJava
+    implementation Libs.Kotlin.stdlib
 }

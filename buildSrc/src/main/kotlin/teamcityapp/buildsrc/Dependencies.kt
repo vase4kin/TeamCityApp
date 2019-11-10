@@ -32,6 +32,7 @@ object Config {
 object Libs {
 
     const val errorView = "tr.xip.errorview:library:3.0.0"
+    const val aboutLibrary = "com.github.daniel-stoneuk:material-about-library:2.2.5"
 
     const val junit = "junit:junit:4.12"
 

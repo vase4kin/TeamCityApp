@@ -24,12 +24,6 @@ apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../../scripts/jacoco.gradle'
 
-android {
-    androidExtensions {
-        experimental = true
-    }
-}
-
 dependencies {
     implementation project(':features:test-details:repository')
     implementation project(':features:test-details:models')

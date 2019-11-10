@@ -60,7 +60,6 @@ subprojects {
     afterEvaluate { project ->
         if (project.hasProperty('android')) {
 
-            apply plugin: 'com.github.ben-manes.versions'
             apply plugin: 'org.jmailen.kotlinter'
 
             android {
@@ -101,13 +100,6 @@ subprojects {
                     xmlReport false
                     abortOnError true
                     htmlOutput file("$buildDir/reports/lint-report/lint-report.html")
-                }
-
-                packagingOptions {
-                    exclude 'LICENSE.txt'
-                    //https://code.google.com/p/android/issues/detail?id=195331
-                    exclude 'META-INF/maven/com.google.guava/guava/pom.properties'
-                    exclude 'META-INF/maven/com.google.guava/guava/pom.xml'
                 }
 
                 testOptions {

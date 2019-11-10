@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about.dagger
+package com.github.vase4kin.teamcityapp.dagger.modules.test_details
 
-import javax.inject.Scope
+import com.github.vase4kin.teamcityapp.api.Repository
+import dagger.Module
+import dagger.Provides
+import teamcityapp.features.test_details.repository.TestDetailsRepository
 
-@Scope
-annotation class AboutActivityScope
+@Module
+class TestDetailsRepositoryModule {
+
+    @Provides
+    fun providesTestDetailsRepository(repository: Repository): TestDetailsRepository = repository
+}

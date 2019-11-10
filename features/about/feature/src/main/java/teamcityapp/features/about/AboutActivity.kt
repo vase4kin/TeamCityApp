@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about
+package teamcityapp.features.about
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.libraries.utils.initToolbar
 
 /**
  * About activity
  */
-class AboutActivity : DaggerAppCompatActivity(), AboutActivityLoadingListener {
+class AboutActivity : DaggerAppCompatActivity(),
+    AboutActivityLoadingListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

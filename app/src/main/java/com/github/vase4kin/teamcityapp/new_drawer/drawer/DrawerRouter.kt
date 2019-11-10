@@ -19,13 +19,13 @@ package com.github.vase4kin.teamcityapp.new_drawer.drawer
 import android.content.Intent
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.about.AboutActivity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import teamcityapp.features.about.AboutActivity
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 
 interface DrawerRouter {

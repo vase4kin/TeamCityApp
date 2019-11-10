@@ -21,8 +21,8 @@ import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl
-import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
 
 /**

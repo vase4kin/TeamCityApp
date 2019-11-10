@@ -41,6 +41,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.about.AboutActivity
 
 /**
  * Tests for [AboutActivity]
@@ -89,7 +90,12 @@ class AboutActivityTest {
     fun testAboutServerInfoDetails() {
         val version = "xxx117"
         val serverUrl = "https://www.server.xxx177.com"
-        `when`(teamCityService.serverInfo()).thenReturn(Single.just(ServerInfo(version, serverUrl)))
+        `when`(teamCityService.serverInfo()).thenReturn(Single.just(
+            teamcityapp.features.about.repository.models.ServerInfo(
+                version,
+                serverUrl
+            )
+        ))
         activityTestRule.launchActivity(null)
         onView(withText(version)).check(ViewAssertions.matches(isDisplayed()))
         onView(withText(serverUrl)).check(ViewAssertions.matches(isDisplayed()))

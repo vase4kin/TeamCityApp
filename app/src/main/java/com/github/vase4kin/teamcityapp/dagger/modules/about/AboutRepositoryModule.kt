@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about.dagger
+package com.github.vase4kin.teamcityapp.dagger.modules.about
 
-import com.github.vase4kin.teamcityapp.about.AboutFragment
+import com.github.vase4kin.teamcityapp.api.Repository
 import dagger.Module
 import dagger.Provides
-import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
-import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.features.about.repository.AboutRepository
 
 @Module
-class AboutFragmentModule {
+class AboutRepositoryModule {
 
     @Provides
-    fun provideChromeTabs(fragment: AboutFragment): ChromeCustomTabs =
-        ChromeCustomTabsImpl(fragment.requireActivity())
+    fun providesRepository(repository: Repository): AboutRepository = repository
 }

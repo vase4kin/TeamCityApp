@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.utils
+import teamcityapp.buildsrc.Libs
 
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import com.github.vase4kin.teamcityapp.R
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'org.jmailen.kotlinter'
+apply from: '../../../scripts/jacoco.gradle'
 
-fun AppCompatActivity.initToolbar() {
-    val toolBar: Toolbar? = findViewById(R.id.toolbar)
-    if (toolBar != null) {
-        setSupportActionBar(toolBar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        toolBar.setNavigationOnClickListener {
-            finish()
-        }
-    }
+dependencies {
+    implementation Libs.Kotlin.stdlib
 }

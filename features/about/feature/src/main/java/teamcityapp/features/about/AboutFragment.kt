@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about
+package teamcityapp.features.about
 
 import android.app.Activity
 import android.content.Context
@@ -26,10 +26,6 @@ import com.danielstone.materialaboutlibrary.MaterialAboutFragment
 import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList
-import com.github.vase4kin.teamcityapp.BuildConfig
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.utils.getTintedDrawable
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,13 +33,15 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import teamcityapp.features.about.repository.AboutRepository
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.utils.getTintedDrawable
 import javax.inject.Inject
 
 class AboutFragment : MaterialAboutFragment() {
 
     @Inject
-    lateinit var repository: Repository
+    lateinit var repository: AboutRepository
 
     @Inject
     lateinit var chromeCustomTabs: ChromeCustomTabs

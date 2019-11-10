@@ -23,9 +23,9 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenterImpl
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
 
 /**

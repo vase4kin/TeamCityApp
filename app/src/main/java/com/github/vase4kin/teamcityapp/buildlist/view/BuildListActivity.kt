@@ -30,8 +30,8 @@ import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
 
 /**

@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about
+package teamcityapp.features.about.repository
 
-data class ServerInfo(val version: String, val webUrl: String)
+import io.reactivex.Single
+import teamcityapp.features.about.repository.models.ServerInfo
+
+interface AboutRepository {
+
+    /**
+     * Server info
+     */
+    fun serverInfo(): Single<ServerInfo>
+}
