@@ -14,4 +14,16 @@
   ~ limitations under the License.
   -->
 
-<manifest package="teamcityapp.features.about" />
+<manifest package="teamcityapp.features.about"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+
+        <activity
+            android:name="teamcityapp.features.about.AboutActivity"
+            android:label="@string/about_drawer_item"
+            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+
+    </application>
+
+</manifest>

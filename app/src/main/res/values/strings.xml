@@ -32,7 +32,6 @@
     <string name="running_builds_drawer_item">Running builds</string>
     <string name="agents_drawer_item">Agents</string>
     <string name="build_queue_drawer_item">Build queue</string>
-    <string name="about_drawer_item">About</string>
 
     <!--new drawer-->
     <string name="text_menu_accounts">Accounts</string>
