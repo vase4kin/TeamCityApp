@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about.dagger
+package teamcityapp.libraries.utils
 
-import com.github.vase4kin.teamcityapp.about.AboutFragment
-import dagger.Module
-import dagger.Provides
-import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
-import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
-@Module
-class AboutFragmentModule {
-
-    @Provides
-    fun provideChromeTabs(fragment: AboutFragment): ChromeCustomTabs =
-        ChromeCustomTabsImpl(fragment.requireActivity())
+fun AppCompatActivity.initToolbar() {
+    val toolBar: Toolbar? = findViewById(R.id.toolbar)
+    if (toolBar != null) {
+        setSupportActionBar(toolBar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        toolBar.setNavigationOnClickListener {
+            finish()
+        }
+    }
 }

@@ -16,11 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules
 
-import com.github.vase4kin.teamcityapp.about.AboutActivity
-import com.github.vase4kin.teamcityapp.about.AboutFragment
-import com.github.vase4kin.teamcityapp.about.dagger.AboutActivityScope
-import com.github.vase4kin.teamcityapp.about.dagger.AboutFragmentModule
-import com.github.vase4kin.teamcityapp.about.dagger.AboutFragmentScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
@@ -64,6 +59,11 @@ import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import com.github.vase4kin.teamcityapp.utils.dagger.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import teamcityapp.features.about.AboutActivity
+import teamcityapp.features.about.AboutFragment
+import teamcityapp.features.about.dagger.AboutActivityScope
+import teamcityapp.features.about.dagger.AboutFragmentModule
+import teamcityapp.features.about.dagger.AboutFragmentScope
 import teamcityapp.features.test_details.dagger.TestDetailBundlesModule
 import teamcityapp.features.test_details.dagger.TestDetailsActivityScope
 import teamcityapp.features.test_details.dagger.TestDetailsModule

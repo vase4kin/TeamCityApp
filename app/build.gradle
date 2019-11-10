@@ -100,6 +100,7 @@ android {
         exclude 'META-INF/*.properties'
         // More than one file was found with OS independent path 'META-INF/repository_debug.kotlin_module'
         exclude 'META-INF/repository_debug.kotlin_module'
+        exclude 'META-INF/feature_debug.kotlin_module'
     }
 }
 
@@ -121,8 +122,7 @@ dependencies {
 
     implementation project(':features:about:models')
     implementation project(':features:about:repository')
-
-    implementation Libs.Google.openSourceLicensesLibrary
+    implementation project(':features:about:feature')
 
     // Android support libraries
     implementation Libs.AndroidX.appcompat
@@ -151,7 +151,7 @@ dependencies {
     implementation 'joda-time:joda-time:2.8.1'
     implementation 'com.vinaysshenoy:mugen:1.0.2'
     implementation 'io.supercharge:shimmerlayout:2.1.0'
-    implementation 'com.github.daniel-stoneuk:material-about-library:2.2.5'
+    implementation Libs.aboutLibrary
     // Onboarding
     implementation 'uk.co.samuelwall:material-tap-target-prompt:2.14.0'
     // Dagger

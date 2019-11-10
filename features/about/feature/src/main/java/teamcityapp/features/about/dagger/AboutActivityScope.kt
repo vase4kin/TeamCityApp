@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.about.dagger
+package teamcityapp.features.about.dagger
 
 import javax.inject.Scope
 
 @Scope
-annotation class AboutFragmentScope
+annotation class AboutActivityScope

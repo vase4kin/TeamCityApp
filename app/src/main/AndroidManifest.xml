@@ -70,7 +70,7 @@
             android:label="@string/title_filter_builds"
             android:theme="@style/WhiteColorNavBarTheme" />
         <activity
-            android:name=".about.AboutActivity"
+            android:name="teamcityapp.features.about.AboutActivity"
             android:label="@string/about_drawer_item"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.utils
+package teamcityapp.libraries.utils
 
 import android.content.Context
 import android.graphics.Color

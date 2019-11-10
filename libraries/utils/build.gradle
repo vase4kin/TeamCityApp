@@ -24,6 +24,8 @@ apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../scripts/jacoco.gradle'
 
 dependencies {
+    implementation project(':libraries:resources')
+
     implementation Libs.AndroidX.appcompat
     implementation Libs.Kotlin.stdlib
 }

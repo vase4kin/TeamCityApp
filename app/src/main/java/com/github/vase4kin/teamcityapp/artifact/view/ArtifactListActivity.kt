@@ -24,8 +24,8 @@ import com.github.vase4kin.teamcityapp.artifact.extractor.ArtifactValueExtractor
 import com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.utils.initToolbar
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
 
 class ArtifactListActivity : DaggerAppCompatActivity() {

@@ -39,4 +39,11 @@
 
     <style name="WhiteColorNavBarWithSeparatorTheme" parent="AppTheme" />
 
+    <style name="Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+        <item name="android:theme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
+        <item name="popupTheme">@style/ThemeOverlay.MaterialComponents.Light</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
+    </style>
+
 </resources>

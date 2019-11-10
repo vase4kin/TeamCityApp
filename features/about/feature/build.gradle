@@ -25,28 +25,24 @@ apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../../scripts/jacoco.gradle'
 
 dependencies {
-    implementation project(':features:test-details:repository')
-    implementation project(':features:test-details:models')
-    implementation project(':libraries:utils')
-    implementation project(':libraries:api')
+    implementation project(':features:about:repository')
+    implementation project(':features:about:models')
     implementation project(':libraries:resources')
     implementation project(':libraries:theme')
+    implementation project(':libraries:chrome-tabs')
+    implementation project(':libraries:utils')
 
     implementation Libs.AndroidX.appcompat
     implementation Libs.Google.material
+    implementation Libs.Google.openSourceLicensesLibrary
     implementation Libs.Dagger.dagger
     implementation Libs.Dagger.androidSupport
     implementation Libs.RxJava.rxJava
     implementation Libs.RxJava.rxAndroid
     implementation Libs.RxJava.rxjava_kotlin
-    implementation Libs.Google.firebaseCore
     implementation Libs.Kotlin.stdlib
-    implementation Libs.errorView
+    implementation Libs.aboutLibrary
 
     kapt Libs.Dagger.compiler
     kapt Libs.Dagger.androidProcessor
-
-    testImplementation Libs.junit
-    testImplementation Libs.Mockito.mockito3
-    testImplementation Libs.Mockito.mockitoKotlin
 }

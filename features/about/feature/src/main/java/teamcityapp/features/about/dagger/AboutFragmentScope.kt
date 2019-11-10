@@ -14,20 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.utils
+package teamcityapp.features.about.dagger
 
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import com.github.vase4kin.teamcityapp.R
+import javax.inject.Scope
 
-fun AppCompatActivity.initToolbar() {
-    val toolBar: Toolbar? = findViewById(R.id.toolbar)
-    if (toolBar != null) {
-        setSupportActionBar(toolBar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
-        toolBar.setNavigationOnClickListener {
-            finish()
-        }
-    }
-}
+@Scope
+annotation class AboutFragmentScope
