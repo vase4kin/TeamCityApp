@@ -16,9 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.view
 
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -95,23 +98,65 @@ class ManageAccountsActivityTest {
         activityRule.launchActivity(null)
 
         // List has item with header
-        Espresso.onView(ViewMatchers.withId(R.id.my_recycler_view))
+        onView(ViewMatchers.withId(R.id.my_recycler_view))
             .check(TestUtils.hasItemsCount(1))
         // Checking the user name
-        Espresso.onView(
+        onView(
             RecyclerViewMatcher.withRecyclerView(R.id.my_recycler_view).atPositionOnView(
                 0,
                 R.id.title
             )
         )
-            .check(ViewAssertions.matches(ViewMatchers.withText(UsersFactory.GUEST_USER_USER_NAME)))
+            .check(matches(withText(UsersFactory.GUEST_USER_USER_NAME)))
         // Checking the user teamcity server url
-        Espresso.onView(
+        onView(
             RecyclerViewMatcher.withRecyclerView(R.id.my_recycler_view).atPositionOnView(
                 0,
                 R.id.subTitle
             )
         )
-            .check(ViewAssertions.matches(ViewMatchers.withText(Mocks.URL)))
+            .check(matches(withText(Mocks.URL)))
+    }
+
+    @Test
+    fun testUserCanSeeSslWarning() {
+        // Prepare
+        storage.clearAll()
+        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, true)
+        // Launch activity
+        activityRule.launchActivity(null)
+
+        // List has item with header
+        onView(ViewMatchers.withId(R.id.my_recycler_view))
+            .check(TestUtils.hasItemsCount(1))
+        // Checking the user name
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.my_recycler_view).atPositionOnView(
+                0,
+                R.id.title
+            )
+        )
+            .check(matches(withText(UsersFactory.GUEST_USER_USER_NAME)))
+        // Checking the user teamcity server url
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.my_recycler_view).atPositionOnView(
+                0,
+                R.id.subTitle
+            )
+        )
+            .check(matches(withText(Mocks.URL)))
+        // Checking the user has ssl warning text and click on it
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.my_recycler_view).atPositionOnView(
+                0,
+                R.id.sslDisabled
+            )
+        )
+            .check(matches(withText(R.string.text_account_un_secure_ssl_)))
+            .perform(click())
+
+        onView(withText(R.string.warning_ssl_dialog_title)).check(matches(isDisplayed()))
+        onView(withText(R.string.warning_ssl_dialog_content)).check(matches(isDisplayed()))
+        onView(withText(R.string.dialog_ok_title)).perform(click())
     }
 }
