@@ -103,7 +103,7 @@ android {
         exclude 'META-INF/feature_debug.kotlin_module'
     }
 
-    // Remove when accounts code moved out to a separated module
+    // TODO: Remove when manage accounts code is moved out to a separated module
     dataBinding {
         enabled = true
     }
@@ -129,9 +129,11 @@ dependencies {
     implementation project(':features:about:repository')
     implementation project(':features:about:feature')
 
+    // TODO: Remove when manage accounts code is moved out to a separated module
     implementation Libs.Groupie.groupie
     implementation Libs.Groupie.groupieDatabinding
 
+    // TODO: Remove when manage accounts code is moved out to a separated module
     implementation Libs.AndroidX.LifeCycle.lifeCycle
     kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
 
