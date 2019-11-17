@@ -36,7 +36,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.UsersFactory
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -66,7 +65,7 @@ class ManageAccountsActivityTest {
 
     @Rule
     @JvmField
-    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule = CustomIntentsTestRule(ManageAccountsActivity::class.java)
 
     @Spy
     val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
