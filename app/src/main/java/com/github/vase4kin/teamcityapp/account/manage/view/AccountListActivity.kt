@@ -41,15 +41,11 @@ class AccountListActivity : DaggerAppCompatActivity() {
             this,
             R.layout.activity_account_list
         ).apply {
-            viewmodel = viewModel
+            val injectedViewModel = viewModel
+            viewmodel = injectedViewModel
+            lifecycle.addObserver(injectedViewModel)
         }
         initToolbar()
-        viewModel.onCreate()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.onResume()
     }
 
     companion object {

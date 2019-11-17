@@ -132,6 +132,9 @@ dependencies {
     implementation Libs.Groupie.groupie
     implementation Libs.Groupie.groupieDatabinding
 
+    implementation Libs.AndroidX.LifeCycle.lifeCycle
+    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
+
     // Android support libraries
     implementation Libs.AndroidX.appcompat
     implementation 'androidx.cardview:cardview:1.0.0'

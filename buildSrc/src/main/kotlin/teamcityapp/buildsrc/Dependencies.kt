@@ -40,6 +40,12 @@ object Libs {
         const val appcompat = "androidx.appcompat:appcompat:1.0.2"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
+
+        object LifeCycle {
+            private const val version = "2.2.0-rc02"
+            const val lifeCycle = "androidx.lifecycle:lifecycle-runtime:$version"
+            const val lifeCycleCompiler = "androidx.lifecycle:lifecycle-compiler:$version"
+        }
     }
 
     object Google {

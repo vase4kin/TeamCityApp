@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.viewmodel
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
@@ -29,13 +32,15 @@ class ManageAccountsViewModel(
     private val router: AccountListRouter,
     private val tracker: ManageAccountsTracker,
     val adapter: GroupAdapter<GroupieViewHolder>
-) {
+): LifecycleObserver {
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
         val items: List<Group> = sharedUserStorage.userAccounts.map { AccountItem(it) }
         adapter.addAll(items)
     }
 
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
         tracker.trackView()
     }
