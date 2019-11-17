@@ -21,7 +21,7 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 /**
  * Tracker interface
  */
-interface ManageAccountsTracker: ViewTracker {
+interface ManageAccountsTracker : ViewTracker {
 
     /**
      * Track view

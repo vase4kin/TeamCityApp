@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.account.manage.viewmodel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter
+import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRouter
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -32,7 +32,7 @@ import io.rx_cache2.internal.RxCache
 
 class ManageAccountsViewModel(
     private val sharedUserStorage: SharedUserStorage,
-    private val router: AccountListRouter,
+    private val router: ManageAccountsRouter,
     private val tracker: ManageAccountsTracker,
     private val showSslDisabledInfoDialog: () -> Unit,
     private val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit,

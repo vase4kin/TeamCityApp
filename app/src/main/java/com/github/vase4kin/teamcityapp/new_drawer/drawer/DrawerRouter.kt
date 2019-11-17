@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.new_drawer.drawer
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
-import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
+import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -70,7 +70,7 @@ class DrawerRouterImpl(
     }
 
     override fun openManageAccounts() {
-        AccountListActivity.start(fragment.requireActivity())
+        ManageAccountsActivity.start(fragment.requireActivity())
         fragment.dismiss()
     }
 

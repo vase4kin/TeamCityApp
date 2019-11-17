@@ -23,7 +23,7 @@ import androidx.databinding.DataBindingUtil
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
-import com.github.vase4kin.teamcityapp.databinding.ActivityAccountListBinding
+import com.github.vase4kin.teamcityapp.databinding.ActivityManageAccountsBinding
 import dagger.android.support.DaggerAppCompatActivity
 import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
@@ -31,16 +31,16 @@ import javax.inject.Inject
 /**
  * Manages account list
  */
-class AccountListActivity : DaggerAppCompatActivity() {
+class ManageAccountsActivity : DaggerAppCompatActivity() {
 
     @Inject
     lateinit var viewModel: ManageAccountsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DataBindingUtil.setContentView<ActivityAccountListBinding>(
+        DataBindingUtil.setContentView<ActivityManageAccountsBinding>(
             this,
-            R.layout.activity_account_list
+            R.layout.activity_manage_accounts
         ).apply {
             val injectedViewModel = viewModel
             viewmodel = injectedViewModel
@@ -49,6 +49,9 @@ class AccountListActivity : DaggerAppCompatActivity() {
         initToolbar()
     }
 
+    /**
+     * Show account ssl disabled dialog
+     */
     fun showSslDisabledInfoDialog() {
         MaterialDialog.Builder(this)
             .title(R.string.warning_ssl_dialog_title)
@@ -63,6 +66,9 @@ class AccountListActivity : DaggerAppCompatActivity() {
             .show()
     }
 
+    /**
+     * Show account remove dialog
+     */
     fun showRemoveAccountDialog(onAccountRemove: () -> Unit) {
         MaterialDialog.Builder(this)
             .content(R.string.dialog_remove_not_active_account_positive_content_text)
@@ -85,7 +91,7 @@ class AccountListActivity : DaggerAppCompatActivity() {
          * @param activity - Activity context
          */
         fun start(activity: Activity) {
-            val launchIntent = Intent(activity, AccountListActivity::class.java)
+            val launchIntent = Intent(activity, ManageAccountsActivity::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             activity.startActivity(launchIntent)
         }

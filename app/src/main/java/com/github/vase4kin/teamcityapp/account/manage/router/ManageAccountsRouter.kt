@@ -21,7 +21,7 @@ import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity
 
-interface AccountListRouter {
+interface ManageAccountsRouter {
 
     fun openHome()
 
@@ -30,7 +30,7 @@ interface AccountListRouter {
     fun openLogin()
 }
 
-class AccountListRouterImpl(private val activity: Activity) : AccountListRouter {
+class ManageAccountsRouterImpl(private val activity: Activity) : ManageAccountsRouter {
 
     override fun openHome() {
         HomeActivity.startWhenSwitchingAccountsFromDrawer(activity)

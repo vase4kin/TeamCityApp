@@ -19,9 +19,9 @@ package com.github.vase4kin.teamcityapp.dagger.modules
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
-import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountListActivityScope
-import com.github.vase4kin.teamcityapp.account.manage.dagger.AccountsModule
-import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
+import com.github.vase4kin.teamcityapp.account.manage.dagger.ManageAccountsActivityScope
+import com.github.vase4kin.teamcityapp.account.manage.dagger.ManagerAccountsModule
+import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactActivityScope
 import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactsActivityModule
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity
@@ -99,9 +99,9 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(modules = [CreateAccountModule::class])
     abstract fun createAccountActivity(): CreateAccountActivity
 
-    @AccountListActivityScope
-    @ContributesAndroidInjector(modules = [AccountsModule::class])
-    abstract fun accountListActivity(): AccountListActivity
+    @ManageAccountsActivityScope
+    @ContributesAndroidInjector(modules = [ManagerAccountsModule::class])
+    abstract fun accountListActivity(): ManageAccountsActivity
 
     @BuildDetailsActivityScope
     @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class, UtilsModule::class])

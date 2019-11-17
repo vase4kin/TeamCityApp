@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.view
+package com.github.vase4kin.teamcityapp.account.manage.dagger
 
-import android.view.ViewGroup
-import com.github.vase4kin.teamcityapp.account.manage.data.AccountDataModel
-import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
-import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
+import javax.inject.Scope
 
-/**
- * Accounts single item view factory
- */
-class AccountViewHolderFactory : ViewHolderFactory<AccountDataModel> {
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun createViewHolder(parent: ViewGroup): BaseViewHolder<AccountDataModel> {
-        return AccountViewHolder(parent)
-    }
-}
+@Scope
+annotation class ManageAccountsActivityScope
