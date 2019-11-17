@@ -19,8 +19,10 @@ package com.github.vase4kin.teamcityapp.account.manage.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.databinding.DataBindingUtil
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.account.manage.presenter.AccountsPresenterImpl
+import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
+import com.github.vase4kin.teamcityapp.databinding.ActivityAccountListBinding
 import dagger.android.support.DaggerAppCompatActivity
 import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
@@ -31,23 +33,23 @@ import javax.inject.Inject
 class AccountListActivity : DaggerAppCompatActivity() {
 
     @Inject
-    lateinit var presenter: AccountsPresenterImpl
+    lateinit var viewModel: ManageAccountsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account_list)
+        DataBindingUtil.setContentView<ActivityAccountListBinding>(
+            this,
+            R.layout.activity_account_list
+        ).apply {
+            viewmodel = viewModel
+        }
         initToolbar()
-        presenter.onViewsCreated()
-    }
-
-    override fun onDestroy() {
-        presenter.onViewsDestroyed()
-        super.onDestroy()
+        viewModel.onCreate()
     }
 
     override fun onResume() {
         super.onResume()
-        presenter.onResume()
+        viewModel.onResume()
     }
 
     companion object {

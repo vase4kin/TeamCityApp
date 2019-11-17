@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.drawer
 
-import android.content.Intent
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
@@ -66,7 +65,7 @@ class DrawerRouterImpl(
 
     override fun openAddNewAccount() {
         val activity = fragment.requireActivity()
-        activity.startActivity(Intent(activity, CreateAccountActivity::class.java))
+        CreateAccountActivity.start(activity)
         fragment.dismiss()
     }
 

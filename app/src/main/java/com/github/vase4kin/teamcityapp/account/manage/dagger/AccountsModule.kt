@@ -23,19 +23,22 @@ import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManager
 import com.github.vase4kin.teamcityapp.account.manage.data.AccountsDataManagerImpl
 import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter
 import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouterImpl
-import com.github.vase4kin.teamcityapp.account.manage.tracker.FirebaseManageAccountsTrackerImpl
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
+import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountAdapter
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountViewHolderFactory
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsView
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountsViewImpl
+import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
@@ -46,7 +49,10 @@ import io.rx_cache2.internal.RxCache
 class AccountsModule {
 
     @Provides
-    fun providesBaseListRxDataManager(sharedUserStorage: SharedUserStorage, rxCache: RxCache): AccountsDataManager {
+    fun providesBaseListRxDataManager(
+        sharedUserStorage: SharedUserStorage,
+        rxCache: RxCache
+    ): AccountsDataManager {
         return AccountsDataManagerImpl(sharedUserStorage, rxCache)
     }
 
@@ -90,11 +96,24 @@ class AccountsModule {
 
     @Provides
     fun providesViewFirebaseTracker(firebaseAnalytics: FirebaseAnalytics): ManageAccountsTracker {
-        return FirebaseManageAccountsTrackerImpl(firebaseAnalytics)
+        return ManageAccountsTrackerImpl(firebaseAnalytics)
     }
 
     @Provides
     fun provideAccountListRouter(activity: AccountListActivity): AccountListRouter {
         return AccountListRouterImpl(activity)
     }
+
+    @Provides
+    fun providesViewModel(
+        sharedUserStorage: SharedUserStorage,
+        router: AccountListRouter,
+        tracker: ManageAccountsTracker,
+        adapter: GroupAdapter<GroupieViewHolder>
+    ): ManageAccountsViewModel {
+        return ManageAccountsViewModel(sharedUserStorage, router, tracker, adapter)
+    }
+
+    @Provides
+    fun providesAdapter() = GroupAdapter<GroupieViewHolder>()
 }

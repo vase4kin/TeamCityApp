@@ -102,6 +102,11 @@ android {
         exclude 'META-INF/repository_debug.kotlin_module'
         exclude 'META-INF/feature_debug.kotlin_module'
     }
+
+    // Remove when accounts code moved out to a separated module
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -123,6 +128,9 @@ dependencies {
     implementation project(':features:about:models')
     implementation project(':features:about:repository')
     implementation project(':features:about:feature')
+
+    implementation Libs.Groupie.groupie
+    implementation Libs.Groupie.groupieDatabinding
 
     // Android support libraries
     implementation Libs.AndroidX.appcompat
