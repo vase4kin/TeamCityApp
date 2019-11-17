@@ -125,10 +125,16 @@ object Libs {
     }
 
     object PowerMock {
-        const val version = "1.6.4"
+        private const val version = "1.6.4"
         const val junit4 = "org.powermock:powermock-module-junit4:$version"
         const val junitRule = "org.powermock:powermock-module-junit4-rule:$version"
         const val apiMockito = "org.powermock:powermock-api-mockito:$version"
         const val classLoadingXstream = "org.powermock:powermock-classloading-xstream:$version"
+    }
+
+    object Groupie {
+        private const val version = "2.7.0"
+        const val groupie = "com.xwray:groupie:$version"
+        const val groupieDatabinding = "com.xwray:groupie-databinding:$version"
     }
 }
