@@ -31,12 +31,18 @@ class ManageAccountsViewModel(
     private val sharedUserStorage: SharedUserStorage,
     private val router: AccountListRouter,
     private val tracker: ManageAccountsTracker,
+    private val showSslDisabledInfoDialog: () -> Unit,
     val adapter: GroupAdapter<GroupieViewHolder>
-): LifecycleObserver {
+) : LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-        val items: List<Group> = sharedUserStorage.userAccounts.map { AccountItem(it) }
+        val items: List<Group> = sharedUserStorage.userAccounts.map {
+            AccountItem(it) {
+                tracker.trackUserClicksOnSslDisabledWarning()
+                showSslDisabledInfoDialog()
+            }
+        }
         adapter.addAll(items)
     }
 

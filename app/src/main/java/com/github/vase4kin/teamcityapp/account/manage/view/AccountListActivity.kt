@@ -20,6 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
 import com.github.vase4kin.teamcityapp.databinding.ActivityAccountListBinding
@@ -46,6 +47,20 @@ class AccountListActivity : DaggerAppCompatActivity() {
             lifecycle.addObserver(injectedViewModel)
         }
         initToolbar()
+    }
+
+    fun showSslDisabledInfoDialog() {
+        MaterialDialog.Builder(this)
+            .title(R.string.warning_ssl_dialog_title)
+            .content(R.string.warning_ssl_dialog_content)
+            .positiveText(R.string.dialog_ok_title)
+            .callback(object : MaterialDialog.ButtonCallback() {
+                override fun onPositive(dialog: MaterialDialog?) {
+                    dialog?.dismiss()
+                }
+            })
+            .build()
+            .show()
     }
 
     companion object {

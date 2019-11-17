@@ -23,7 +23,8 @@ import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.xwray.groupie.databinding.BindableItem
 
 class AccountItem(
-    private val userAccount: UserAccount
+    private val userAccount: UserAccount,
+    private val showSslDisabledInfoDialog: () -> Unit
 ) : BindableItem<ItemUserAccountListBinding>() {
 
     override fun getLayout() = R.layout.item_user_account_list
@@ -33,6 +34,9 @@ class AccountItem(
             if (userAccount.isSslDisabled) {
                 image.setImageResource(R.drawable.ic_account_alert)
                 sslDisabled.visibility = View.VISIBLE
+                sslDisabled.setOnClickListener {
+                    showSslDisabledInfoDialog()
+                }
             } else {
                 image.setImageResource(R.drawable.ic_account)
                 sslDisabled.visibility = View.GONE

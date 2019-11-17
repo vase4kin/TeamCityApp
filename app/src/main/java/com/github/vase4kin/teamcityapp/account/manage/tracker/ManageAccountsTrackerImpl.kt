@@ -35,4 +35,11 @@ class ManageAccountsTrackerImpl(
     override fun trackAccountRemove() {
         firebaseAnalytics.logEvent(ManageAccountsTracker.EVENT_REMOVE_ACCOUNT, null)
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserClicksOnSslDisabledWarning() {
+        firebaseAnalytics.logEvent(ManageAccountsTracker.EVENT_SSL_WARNING, null)
+    }
 }

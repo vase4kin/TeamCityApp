@@ -16,20 +16,27 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.tracker
 
+import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+
 /**
  * Tracker interface
  */
-interface ManageAccountsTracker {
+interface ManageAccountsTracker: ViewTracker {
 
     /**
      * Track view
      */
-    fun trackView()
+    override fun trackView()
 
     /**
      * Track account is removed
      */
     fun trackAccountRemove()
+
+    /**
+     * Track user clicks on ssl disabled warning
+     */
+    fun trackUserClicksOnSslDisabledWarning()
 
     companion object {
 
@@ -42,5 +49,10 @@ interface ManageAccountsTracker {
          * Remove account event
          */
         const val EVENT_REMOVE_ACCOUNT = "remove_account"
+
+        /**
+         * Remove account event
+         */
+        const val EVENT_SSL_WARNING = "account_ssl_warning"
     }
 }

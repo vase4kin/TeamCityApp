@@ -106,12 +106,19 @@ class AccountsModule {
 
     @Provides
     fun providesViewModel(
+        activity: AccountListActivity,
         sharedUserStorage: SharedUserStorage,
         router: AccountListRouter,
         tracker: ManageAccountsTracker,
         adapter: GroupAdapter<GroupieViewHolder>
     ): ManageAccountsViewModel {
-        return ManageAccountsViewModel(sharedUserStorage, router, tracker, adapter)
+        return ManageAccountsViewModel(
+            sharedUserStorage,
+            router,
+            tracker,
+            { activity.showSslDisabledInfoDialog() },
+            adapter
+        )
     }
 
     @Provides
