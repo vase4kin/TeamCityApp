@@ -23,26 +23,26 @@ import com.github.vase4kin.teamcityapp.account.manage.router.AccountListRouter
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import io.reactivex.rxkotlin.blockingSubscribeBy
+import io.rx_cache2.internal.RxCache
 
 class ManageAccountsViewModel(
     private val sharedUserStorage: SharedUserStorage,
     private val router: AccountListRouter,
     private val tracker: ManageAccountsTracker,
     private val showSslDisabledInfoDialog: () -> Unit,
+    private val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit,
+    private val rxCache: RxCache,
     val adapter: GroupAdapter<GroupieViewHolder>
 ) : LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-        val items: List<Group> = sharedUserStorage.userAccounts.map {
-            AccountItem(it) {
-                tracker.trackUserClicksOnSslDisabledWarning()
-                showSslDisabledInfoDialog()
-            }
-        }
+        val items: List<Group> = createItems()
         adapter.addAll(items)
     }
 
@@ -53,5 +53,40 @@ class ManageAccountsViewModel(
 
     fun onFabClick() {
         router.openCreateNewAccount()
+    }
+
+    private fun createItems(): List<Group> = sharedUserStorage.userAccounts.map {
+        AccountItem(
+            userAccount = it,
+            showSslDisabledInfoDialog = {
+                tracker.trackUserClicksOnSslDisabledWarning()
+                showSslDisabledInfoDialog()
+            },
+            showRemoveAccountDialog = {
+                showRemoveAccountDialog(onAccountRemove(it))
+            })
+    }
+
+    private fun onAccountRemove(account: UserAccount): () -> Unit = {
+        when {
+            sharedUserStorage.userAccounts.size == 1 -> {
+                tracker.trackAccountRemove()
+                sharedUserStorage.removeUserAccount(account)
+                rxCache.evictAll().blockingSubscribeBy()
+                router.openLogin()
+            }
+            account.isActive -> {
+                tracker.trackAccountRemove()
+                sharedUserStorage.removeUserAccount(account)
+                sharedUserStorage.setOtherUserActive()
+                router.openHome()
+            }
+            else -> {
+                tracker.trackAccountRemove()
+                sharedUserStorage.removeUserAccount(account)
+                val items: List<Group> = createItems()
+                adapter.updateAsync(items)
+            }
+        }
     }
 }

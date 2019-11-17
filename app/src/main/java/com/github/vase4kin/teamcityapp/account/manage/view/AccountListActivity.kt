@@ -63,6 +63,20 @@ class AccountListActivity : DaggerAppCompatActivity() {
             .show()
     }
 
+    fun showRemoveAccountDialog(onAccountRemove: () -> Unit) {
+        MaterialDialog.Builder(this)
+            .content(R.string.dialog_remove_not_active_account_positive_content_text)
+            .positiveText(R.string.dialog_remove_active_account_positive_button_text)
+            .callback(object : MaterialDialog.ButtonCallback() {
+                override fun onPositive(dialog: MaterialDialog?) {
+                    onAccountRemove()
+                }
+            })
+            .negativeText(R.string.dialog_remove_active_account_positive_negative_text)
+            .build()
+            .show()
+    }
+
     companion object {
 
         /**

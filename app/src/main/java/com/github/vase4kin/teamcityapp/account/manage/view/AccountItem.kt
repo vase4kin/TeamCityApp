@@ -24,7 +24,8 @@ import com.xwray.groupie.databinding.BindableItem
 
 class AccountItem(
     private val userAccount: UserAccount,
-    private val showSslDisabledInfoDialog: () -> Unit
+    private val showSslDisabledInfoDialog: () -> Unit,
+    private val showRemoveAccountDialog: () -> Unit
 ) : BindableItem<ItemUserAccountListBinding>() {
 
     override fun getLayout() = R.layout.item_user_account_list
@@ -43,6 +44,7 @@ class AccountItem(
             }
             title.text = userAccount.userName
             subTitle.text = userAccount.teamcityUrl
+            root.setOnClickListener { showRemoveAccountDialog() }
         }
     }
 }

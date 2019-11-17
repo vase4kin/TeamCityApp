@@ -110,13 +110,20 @@ class AccountsModule {
         sharedUserStorage: SharedUserStorage,
         router: AccountListRouter,
         tracker: ManageAccountsTracker,
+        rxCache: RxCache,
         adapter: GroupAdapter<GroupieViewHolder>
     ): ManageAccountsViewModel {
+        val showSslDisabledInfoDialog: () -> Unit = { activity.showSslDisabledInfoDialog() }
+        val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit = {
+            activity.showRemoveAccountDialog(it)
+        }
         return ManageAccountsViewModel(
             sharedUserStorage,
             router,
             tracker,
-            { activity.showSslDisabledInfoDialog() },
+            showSslDisabledInfoDialog,
+            showRemoveAccountDialog,
+            rxCache,
             adapter
         )
     }
