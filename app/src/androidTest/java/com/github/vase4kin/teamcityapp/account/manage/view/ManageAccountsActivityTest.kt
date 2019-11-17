@@ -19,6 +19,8 @@ package com.github.vase4kin.teamcityapp.account.manage.view
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -36,6 +38,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.login.view.LoginActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.UsersFactory
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -115,6 +118,31 @@ class ManageAccountsActivityTest {
             )
         )
             .check(matches(withText(Mocks.URL)))
+    }
+
+    @Test
+    fun testUserRemovesSingleAccountAndNavigatesToLoginScreen() {
+        // Launch activity
+        activityRule.launchActivity(null)
+
+        // check accounts size
+        onView(ViewMatchers.withId(R.id.my_recycler_view))
+            .check(TestUtils.hasItemsCount(1))
+        // Click on account
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.my_recycler_view).atPosition(
+                0
+            )
+        ).perform(click())
+        // Click on OK
+        onView(withText(R.string.dialog_remove_active_account_positive_button_text)).perform(click())
+
+        // Check login activity is opened
+        Intents.intended(
+            hasComponent(
+                LoginActivity::class.java.name
+            )
+        )
     }
 
     @Test
