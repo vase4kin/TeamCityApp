@@ -22,16 +22,16 @@ import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrac
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl
 import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
+import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
-import io.rx_cache2.internal.RxCache
 
 @Module
-class ManagerAccountsModule {
+class ManageAccountsModule {
 
     @Provides
     fun providesViewFirebaseTracker(firebaseAnalytics: FirebaseAnalytics): ManageAccountsTracker {
@@ -49,7 +49,7 @@ class ManagerAccountsModule {
         sharedUserStorage: SharedUserStorage,
         router: ManageAccountsRouter,
         tracker: ManageAccountsTracker,
-        rxCache: RxCache,
+        cacheManager: CacheManager,
         adapter: GroupAdapter<GroupieViewHolder>
     ): ManageAccountsViewModel {
         val showSslDisabledInfoDialog: () -> Unit = { activity.showSslDisabledInfoDialog() }
@@ -62,7 +62,7 @@ class ManagerAccountsModule {
             tracker,
             showSslDisabledInfoDialog,
             showRemoveAccountDialog,
-            rxCache,
+            cacheManager,
             adapter
         )
     }

@@ -22,13 +22,12 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRouter
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
+import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import io.reactivex.rxkotlin.blockingSubscribeBy
-import io.rx_cache2.internal.RxCache
 
 class ManageAccountsViewModel(
     private val sharedUserStorage: SharedUserStorage,
@@ -36,7 +35,7 @@ class ManageAccountsViewModel(
     private val tracker: ManageAccountsTracker,
     private val showSslDisabledInfoDialog: () -> Unit,
     private val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit,
-    private val rxCache: RxCache,
+    private val cacheManager: CacheManager,
     val adapter: GroupAdapter<GroupieViewHolder>
 ) : LifecycleObserver {
 
@@ -72,7 +71,7 @@ class ManageAccountsViewModel(
             sharedUserStorage.userAccounts.size == 1 -> {
                 tracker.trackAccountRemove()
                 sharedUserStorage.removeUserAccount(account)
-                rxCache.evictAll().blockingSubscribeBy()
+                cacheManager.evictAllCache()
                 router.openLogin()
             }
             account.isActive -> {

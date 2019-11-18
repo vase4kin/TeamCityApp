@@ -20,11 +20,11 @@ import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.github.vase4kin.teamcityapp.storage.api.UserAccount
-import io.rx_cache2.internal.RxCache
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -34,7 +34,7 @@ import org.greenrobot.eventbus.Subscribe
 class HomeDataManagerImpl(
     repository: Repository,
     private val sharedUserStorage: SharedUserStorage,
-    private val rxCache: RxCache,
+    private val cacheManager: CacheManager,
     private val eventBus: EventBus
 ) : HomeDataManager {
 
@@ -70,7 +70,7 @@ class HomeDataManagerImpl(
      * {@inheritDoc}
      */
     override fun evictAllCache() {
-        rxCache.evictAll().subscribe()
+        cacheManager.evictAllCache()
     }
 
     /**

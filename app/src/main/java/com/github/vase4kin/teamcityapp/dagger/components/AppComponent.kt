@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.components
 
 import android.content.Context
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
@@ -31,7 +32,6 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
-import io.rx_cache2.internal.RxCache
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.storage.Storage
@@ -59,7 +59,7 @@ interface AppComponent : AndroidInjector<TeamCityApplication> {
 
     fun eventBus(): EventBus
 
-    fun rxCache(): RxCache
+    fun cacheManager(): CacheManager
 
     fun providers(): CacheProviders
 
