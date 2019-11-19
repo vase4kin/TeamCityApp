@@ -23,11 +23,13 @@ import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
@@ -149,6 +151,25 @@ class ManageAccountsActivityTest {
             )
         )
     }
+
+    @Test
+    fun testUserCanOpenCreateNewAccount() {
+        // Launch activity
+        activityRule.launchActivity(null)
+
+        onView(withId(R.id.floating_action_button)).perform(click())
+
+        // Check login activity is opened
+        Intents.intended(
+            hasComponent(
+                CreateAccountActivity::class.java.name
+            )
+        )
+    }
+
+    // Test to remove regular account
+
+    // Test to remove active one
 
     @Test
     fun testUserCanSeeSslWarning() {
