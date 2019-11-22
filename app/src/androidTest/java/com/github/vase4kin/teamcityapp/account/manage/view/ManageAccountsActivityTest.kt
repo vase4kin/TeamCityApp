@@ -21,7 +21,6 @@ import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -47,6 +46,7 @@ import com.github.vase4kin.teamcityapp.storage.UsersFactory
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -107,7 +107,7 @@ class ManageAccountsActivityTest {
         activityRule.launchActivity(null)
 
         // List has item with header
-        onView(ViewMatchers.withId(R.id.my_recycler_view))
+        onView(withId(R.id.my_recycler_view))
             .check(TestUtils.hasItemsCount(1))
         // Checking the user name
         onView(
@@ -133,7 +133,7 @@ class ManageAccountsActivityTest {
         activityRule.launchActivity(null)
 
         // check accounts size
-        onView(ViewMatchers.withId(R.id.my_recycler_view))
+        onView(withId(R.id.my_recycler_view))
             .check(TestUtils.hasItemsCount(1))
         // Click on account
         onView(
@@ -167,9 +167,21 @@ class ManageAccountsActivityTest {
         )
     }
 
-    // Test to remove regular account
+    /**
+     * Two accounts, active and not active, remove not active check it disappear
+     */
+    @Ignore("ADD TEST")
+    @Test
+    fun testUserCanRemoveNotActiveAccount() {
+    }
 
-    // Test to remove active one
+    /**
+     * Two accounts, active and not active, remove active check it the user being navigated to home screen
+     */
+    @Ignore("ADD TEST")
+    @Test
+    fun testUserCanRemoveActiveAccount() {
+    }
 
     @Test
     fun testUserCanSeeSslWarning() {
@@ -180,7 +192,7 @@ class ManageAccountsActivityTest {
         activityRule.launchActivity(null)
 
         // List has item with header
-        onView(ViewMatchers.withId(R.id.my_recycler_view))
+        onView(withId(R.id.my_recycler_view))
             .check(TestUtils.hasItemsCount(1))
         // Checking the user name
         onView(
