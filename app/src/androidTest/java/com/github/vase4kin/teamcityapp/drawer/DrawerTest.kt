@@ -31,7 +31,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
-import com.github.vase4kin.teamcityapp.account.manage.view.AccountListActivity
+import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
@@ -245,7 +245,7 @@ class DrawerTest {
 
         // Check manage accounts screen is being opened
         Intents.intended(
-            IntentMatchers.hasComponent(AccountListActivity::class.java.name)
+            IntentMatchers.hasComponent(ManageAccountsActivity::class.java.name)
         )
     }
 

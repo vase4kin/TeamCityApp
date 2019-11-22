@@ -16,15 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.account.manage.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.BaseFirebaseTracker
 import com.google.firebase.analytics.FirebaseAnalytics
 
-/**
- * Firebase tracker
- */
-class FirebaseManageAccountsTrackerImpl(
-    firebaseAnalytics: FirebaseAnalytics
-) : BaseFirebaseTracker(firebaseAnalytics), ManageAccountsTracker {
+class ManageAccountsTrackerImpl(
+    private val firebaseAnalytics: FirebaseAnalytics
+) : ManageAccountsTracker {
 
     /**
      * {@inheritDoc}
@@ -38,5 +34,12 @@ class FirebaseManageAccountsTrackerImpl(
      */
     override fun trackAccountRemove() {
         firebaseAnalytics.logEvent(ManageAccountsTracker.EVENT_REMOVE_ACCOUNT, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackUserClicksOnSslDisabledWarning() {
+        firebaseAnalytics.logEvent(ManageAccountsTracker.EVENT_SSL_WARNING, null)
     }
 }

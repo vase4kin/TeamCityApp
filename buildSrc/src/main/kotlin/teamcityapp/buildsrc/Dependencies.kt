@@ -40,6 +40,12 @@ object Libs {
         const val appcompat = "androidx.appcompat:appcompat:1.0.2"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
+
+        object LifeCycle {
+            private const val version = "2.2.0-rc02"
+            const val lifeCycle = "androidx.lifecycle:lifecycle-runtime:$version"
+            const val lifeCycleCompiler = "androidx.lifecycle:lifecycle-compiler:$version"
+        }
     }
 
     object Google {
@@ -125,10 +131,16 @@ object Libs {
     }
 
     object PowerMock {
-        const val version = "1.6.4"
+        private const val version = "1.6.4"
         const val junit4 = "org.powermock:powermock-module-junit4:$version"
         const val junitRule = "org.powermock:powermock-module-junit4-rule:$version"
         const val apiMockito = "org.powermock:powermock-api-mockito:$version"
         const val classLoadingXstream = "org.powermock:powermock-classloading-xstream:$version"
+    }
+
+    object Groupie {
+        private const val version = "2.7.0"
+        const val groupie = "com.xwray:groupie:$version"
+        const val groupieDatabinding = "com.xwray:groupie-databinding:$version"
     }
 }

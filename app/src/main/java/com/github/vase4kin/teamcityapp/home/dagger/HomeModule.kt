@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.home.dagger
 
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
@@ -35,7 +36,6 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
-import io.rx_cache2.internal.RxCache
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
@@ -52,10 +52,10 @@ class HomeModule {
     fun providesRootDataManager(
         repository: Repository,
         sharedUserStorage: SharedUserStorage,
-        rxCache: RxCache,
+        cacheManager: CacheManager,
         eventBus: EventBus
     ): HomeDataManager {
-        return HomeDataManagerImpl(repository, sharedUserStorage, rxCache, eventBus)
+        return HomeDataManagerImpl(repository, sharedUserStorage, cacheManager, eventBus)
     }
 
     @Provides

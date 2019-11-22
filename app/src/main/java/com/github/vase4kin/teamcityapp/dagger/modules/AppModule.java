@@ -31,6 +31,8 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
+import com.github.vase4kin.teamcityapp.api.cache.CacheManager;
+import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
@@ -242,5 +244,11 @@ public class AppModule {
     @Provides
     protected RemoteService provicesRemoteService(FirebaseRemoteConfig remoteConfig) {
         return new RemoteServiceImpl(remoteConfig);
+    }
+
+    @Singleton
+    @Provides
+    protected CacheManager providesCacheManager(RxCache rxCache) {
+        return new CacheManagerImpl(rxCache);
     }
 }

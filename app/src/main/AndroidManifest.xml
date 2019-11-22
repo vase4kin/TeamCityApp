@@ -49,7 +49,7 @@
             android:label="@string/title_activity_build"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
-            android:name=".account.manage.view.AccountListActivity"
+            android:name=".account.manage.view.ManageAccountsActivity"
             android:label="@string/title_activity_account_list"
             android:launchMode="singleTop"
             android:theme="@style/AccountsListTheme" />
