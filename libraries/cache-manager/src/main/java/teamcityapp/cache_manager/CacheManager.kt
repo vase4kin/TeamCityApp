@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.api.cache
-
-import io.reactivex.rxkotlin.blockingSubscribeBy
-import io.rx_cache2.internal.RxCache
+package teamcityapp.cache_manager
 
 interface CacheManager {
     fun evictAllCache()
-}
-
-class CacheManagerImpl(
-    private val rxCache: RxCache
-) : CacheManager {
-    override fun evictAllCache() {
-        rxCache.evictAll().blockingSubscribeBy()
-    }
 }

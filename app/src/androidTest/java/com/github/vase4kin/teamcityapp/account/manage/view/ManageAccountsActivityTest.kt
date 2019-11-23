@@ -30,7 +30,6 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
@@ -52,6 +51,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Spy
+import teamcityapp.cache_manager.CacheManager
 
 @RunWith(AndroidJUnit4::class)
 class ManageAccountsActivityTest {

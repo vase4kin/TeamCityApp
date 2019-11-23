@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.dagger.components
 
 import android.content.Context
 import com.github.vase4kin.teamcityapp.TeamCityApplication
-import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
@@ -34,6 +33,7 @@ import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 import javax.inject.Named
 import javax.inject.Singleton

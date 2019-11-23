@@ -22,13 +22,13 @@ import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrac
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl
 import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
-import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
+import teamcityapp.cache_manager.CacheManager
 
 @Module
 class ManageAccountsModule {

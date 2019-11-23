@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':libraries:cache-manager'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
-include ':features:about:models'
-include ':features:about:repository'
-include ':features:about:feature'
+package com.github.vase4kin.teamcityapp.api.cache
+
+import io.reactivex.rxkotlin.blockingSubscribeBy
+import io.rx_cache2.internal.RxCache
+import teamcityapp.cache_manager.CacheManager
+
+class CacheManagerImpl(
+    private val rxCache: RxCache
+) : CacheManager {
+    override fun evictAllCache() {
+        rxCache.evictAll().blockingSubscribeBy()
+    }
+}

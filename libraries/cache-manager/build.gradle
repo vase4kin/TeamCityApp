@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-include ':app'
-include ':libraries:api'
-include ':libraries:utils'
-include ':libraries:theme'
-include ':libraries:resources'
-include ':libraries:chrome-tabs'
-include ':libraries:storage'
-include ':libraries:cache-manager'
-include ':features:splash'
-include ':features:test-details:models'
-include ':features:test-details:repository'
-include ':features:test-details:feature'
-include ':features:about:models'
-include ':features:about:repository'
-include ':features:about:feature'
+import teamcityapp.buildsrc.Libs
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'org.jmailen.kotlinter'
+apply from: '../../scripts/jacoco.gradle'
+
+dependencies {
+    implementation Libs.Kotlin.stdlib
+}
