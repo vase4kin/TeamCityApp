@@ -206,7 +206,7 @@ public class SharedUserStorage implements Collectible<UserAccount>, Storage {
      *
      * @param userAccount - User account to remove
      */
-    public void removeUserAccount(UserAccount userAccount) {
+    public void removeUserAccount(@NonNull UserAccount userAccount) {
         List<UserAccount> modifiedCollection = new ArrayList<>(usersContainer.getUsersAccounts());
         for (UserAccount accountToRemove : modifiedCollection) {
             if (accountToRemove.equals(UsersFactory.user(userAccount.getTeamcityUrl(), userAccount.getUserName()))) {

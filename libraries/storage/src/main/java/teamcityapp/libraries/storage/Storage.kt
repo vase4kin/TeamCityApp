@@ -16,7 +16,15 @@
 
 package teamcityapp.libraries.storage
 
+import teamcityapp.libraries.storage.models.UserAccount
+
 interface Storage {
 
+    val userAccounts: List<UserAccount>
+
     fun hasUserAccounts(): Boolean
+
+    fun removeUserAccount(userAccount: UserAccount)
+
+    fun setOtherUserActive()
 }

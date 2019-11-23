@@ -23,5 +23,6 @@ apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../scripts/jacoco.gradle'
 
 dependencies {
+    implementation project(':libraries:storage-models')
     implementation Libs.Kotlin.stdlib
 }

@@ -22,13 +22,13 @@ import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrac
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl
 import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
 import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.storage.Storage
 
 @Module
 class ManageAccountsModule {
@@ -46,7 +46,7 @@ class ManageAccountsModule {
     @Provides
     fun providesViewModel(
         activity: ManageAccountsActivity,
-        sharedUserStorage: SharedUserStorage,
+        storage: Storage,
         router: ManageAccountsRouter,
         tracker: ManageAccountsTracker,
         cacheManager: CacheManager,
@@ -57,7 +57,7 @@ class ManageAccountsModule {
             activity.showRemoveAccountDialog(it)
         }
         return ManageAccountsViewModel(
-            sharedUserStorage,
+            storage,
             router,
             tracker,
             showSslDisabledInfoDialog,

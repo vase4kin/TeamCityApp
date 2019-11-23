@@ -22,15 +22,15 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRouter
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 
 class ManageAccountsViewModel(
-    private val sharedUserStorage: SharedUserStorage,
+    private val storage: Storage,
     private val router: ManageAccountsRouter,
     private val tracker: ManageAccountsTracker,
     private val showSslDisabledInfoDialog: () -> Unit,
@@ -54,7 +54,7 @@ class ManageAccountsViewModel(
         router.openCreateNewAccount()
     }
 
-    private fun createItems(): List<Group> = sharedUserStorage.userAccounts.map {
+    private fun createItems(): List<Group> = storage.userAccounts.map {
         AccountItem(
             userAccount = it,
             showSslDisabledInfoDialog = {
@@ -68,21 +68,21 @@ class ManageAccountsViewModel(
 
     private fun onAccountRemove(account: UserAccount): () -> Unit = {
         when {
-            sharedUserStorage.userAccounts.size == 1 -> {
+            storage.userAccounts.size == 1 -> {
                 tracker.trackAccountRemove()
-                sharedUserStorage.removeUserAccount(account)
+                storage.removeUserAccount(account)
                 cacheManager.evictAllCache()
                 router.openLogin()
             }
             account.isActive -> {
                 tracker.trackAccountRemove()
-                sharedUserStorage.removeUserAccount(account)
-                sharedUserStorage.setOtherUserActive()
+                storage.removeUserAccount(account)
+                storage.setOtherUserActive()
                 router.openHome()
             }
             else -> {
                 tracker.trackAccountRemove()
-                sharedUserStorage.removeUserAccount(account)
+                storage.removeUserAccount(account)
                 val items: List<Group> = createItems()
                 adapter.updateAsync(items)
             }
