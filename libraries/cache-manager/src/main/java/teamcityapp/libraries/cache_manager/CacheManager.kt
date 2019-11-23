@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package teamcityapp.cache_manager
+package teamcityapp.libraries.cache_manager
 
 interface CacheManager {
     fun evictAllCache()

@@ -51,7 +51,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Spy
-import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.cache_manager.CacheManager
 
 @RunWith(AndroidJUnit4::class)
 class ManageAccountsActivityTest {

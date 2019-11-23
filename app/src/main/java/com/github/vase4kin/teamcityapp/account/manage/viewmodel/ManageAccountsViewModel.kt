@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
-import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 

@@ -33,7 +33,7 @@ import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 import javax.inject.Named
 import javax.inject.Singleton

@@ -36,7 +36,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import org.greenrobot.eventbus.EventBus
-import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 

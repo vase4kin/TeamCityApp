@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.api.cache
 
 import io.reactivex.rxkotlin.blockingSubscribeBy
 import io.rx_cache2.internal.RxCache
-import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.cache_manager.CacheManager
 
 class CacheManagerImpl(
     private val rxCache: RxCache

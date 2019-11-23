@@ -62,7 +62,7 @@ import io.rx_cache2.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
-import teamcityapp.cache_manager.CacheManager;
+import teamcityapp.libraries.cache_manager.CacheManager;
 import teamcityapp.libraries.storage.Storage;
 import teamcityapp.libraries.storage.models.UserAccount;
 

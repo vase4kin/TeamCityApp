@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManag
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.models.UserAccount
 
 /**
