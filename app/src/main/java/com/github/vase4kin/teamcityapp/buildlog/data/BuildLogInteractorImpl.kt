@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildlog.data
 
 import android.content.SharedPreferences
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import teamcityapp.libraries.storage.models.UserAccount
 
 /**
  * Impl of [BuildLogInteractor]

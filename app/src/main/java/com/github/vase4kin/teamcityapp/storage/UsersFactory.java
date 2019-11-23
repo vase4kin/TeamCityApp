@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.storage;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
+import teamcityapp.libraries.storage.models.UserAccount;
 
 /**
  * Users factory

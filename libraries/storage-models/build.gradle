@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.storage.api;
+import teamcityapp.buildsrc.Libs
 
-import java.util.List;
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.ben-manes.versions'
+apply from: '../../scripts/jacoco.gradle'
 
-import teamcityapp.libraries.storage.models.UserAccount;
-
-/**
- * Container for user accounts
- */
-public class UsersContainer {
-
-    private List<UserAccount> users;
-
-    public List<UserAccount> getUsersAccounts() {
-        return users;
-    }
-
-    public void setUsersAccounts(List<UserAccount> users) {
-        this.users = users;
-    }
+dependencies {
+    implementation project(':libraries:api')
+    implementation Libs.AndroidX.annotationn
 }

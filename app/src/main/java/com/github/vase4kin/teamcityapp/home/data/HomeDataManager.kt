@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.home.data
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import teamcityapp.libraries.storage.models.UserAccount
 
 /**
  * Data manager to handle root data operations

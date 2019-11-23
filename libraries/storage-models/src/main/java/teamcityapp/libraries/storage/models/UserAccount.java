@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.storage.api;
+package teamcityapp.libraries.storage.models;
 
 import androidx.annotation.NonNull;
 

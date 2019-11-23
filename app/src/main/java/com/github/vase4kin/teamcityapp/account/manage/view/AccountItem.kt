@@ -19,8 +19,8 @@ package com.github.vase4kin.teamcityapp.account.manage.view
 import android.view.View
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.databinding.ItemUserAccountListBinding
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.xwray.groupie.databinding.BindableItem
+import teamcityapp.libraries.storage.models.UserAccount
 
 class AccountItem(
     private val userAccount: UserAccount,

@@ -23,11 +23,11 @@ import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRoute
 import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
 import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import teamcityapp.cache_manager.CacheManager
+import teamcityapp.libraries.storage.models.UserAccount
 
 class ManageAccountsViewModel(
     private val sharedUserStorage: SharedUserStorage,

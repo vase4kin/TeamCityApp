@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.new_drawer.view
 
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import teamcityapp.libraries.storage.models.UserAccount
 
 abstract class BaseDrawerItem(
     open val id: Int,

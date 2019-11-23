@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.github.vase4kin.teamcityapp.storage.api.UsersContainer;
 import com.google.gson.Gson;
 
@@ -31,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import teamcityapp.libraries.storage.Storage;
+import teamcityapp.libraries.storage.models.UserAccount;
 
 /**
  * SharePreferences json based storage for user accounts

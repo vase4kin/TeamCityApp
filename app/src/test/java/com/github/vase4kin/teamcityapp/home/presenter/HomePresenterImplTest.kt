@@ -23,7 +23,6 @@ import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.view.HomeView
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import com.github.vase4kin.teamcityapp.utils.capture
 import org.junit.Before
 import org.junit.Test
@@ -34,6 +33,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
 import org.mockito.runners.MockitoJUnitRunner
+import teamcityapp.libraries.storage.models.UserAccount
 
 @RunWith(MockitoJUnitRunner::class)
 class HomePresenterImplTest {

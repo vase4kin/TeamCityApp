@@ -40,7 +40,6 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl;
 import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -65,6 +64,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import teamcityapp.cache_manager.CacheManager;
 import teamcityapp.libraries.storage.Storage;
+import teamcityapp.libraries.storage.models.UserAccount;
 
 /**
  * Todo: Convert to Kotlin

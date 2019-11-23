@@ -23,9 +23,9 @@ import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivit
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import teamcityapp.features.about.AboutActivity
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.storage.models.UserAccount
 
 interface DrawerRouter {
 
