@@ -1,4 +1,4 @@
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,7 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".account.manage.view.ManageAccountsActivity">
-    <item
-        android:id="@+id/delete"
-        android:orderInCategory="100"
-        android:title="Delete"
-        app:showAsAction="always" />
-</menu>
+<resources>
+    <!--(2560x1600 - Nexus 10")-->
+    <dimen name="recycler_view_horizontal_margin">64dp</dimen>
+</resources>

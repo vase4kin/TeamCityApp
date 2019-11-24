@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,12 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <dimen name="small_margin">8dp</dimen>
-    <dimen name="default_item_margin_top">4dp</dimen>
-    <dimen name="other_dp">2dp</dimen>
-    <dimen name="login_screen_margin">24dp</dimen>
-    <dimen name="toolbar_with_fab_height">170dp</dimen>
-    <dimen name="padding_switch">12dp</dimen>
-    <dimen name="default_corner_radius">8dp</dimen>
-    <dimen name="default_fab_radius">32dp</dimen>
-    <dimen name="default_prompt_fab_radius">38dp</dimen>
-    <integer name="shimmer_length">1000</integer>
-</resources>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#000000"
+        android:pathData="M12,4a4,4 0,0 1,4 4a4,4 0,0 1,-4 4a4,4 0,0 1,-4 -4a4,4 0,0 1,4 -4m0,10c4.42,0 8,1.79 8,4v2H4v-2c0,-2.21 3.58,-4 8,-4z" />
+</vector>

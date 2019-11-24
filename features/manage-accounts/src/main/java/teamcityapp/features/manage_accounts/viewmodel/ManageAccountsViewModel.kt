@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.viewmodel
+package teamcityapp.features.manage_accounts.viewmodel
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRouter
-import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
-import com.github.vase4kin.teamcityapp.account.manage.view.AccountItem
 import com.xwray.groupie.Group
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
+import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
+import teamcityapp.features.manage_accounts.view.AccountItem
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount

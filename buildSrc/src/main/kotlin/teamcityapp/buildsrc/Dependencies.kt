@@ -33,6 +33,7 @@ object Libs {
 
     const val errorView = "tr.xip.errorview:library:3.0.0"
     const val aboutLibrary = "com.github.daniel-stoneuk:material-about-library:2.2.5"
+    const val dialogs = "com.afollestad.material-dialogs:core:0.9.6.0"
 
     const val junit = "junit:junit:4.12"
 
@@ -40,6 +41,7 @@ object Libs {
         const val appcompat = "androidx.appcompat:appcompat:1.0.2"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
+        const val constraintLayout = "com.android.support.constraint:constraint-layout:1.1.3"
 
         object LifeCycle {
             private const val version = "2.2.0-rc02"

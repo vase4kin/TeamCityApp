@@ -22,7 +22,7 @@
 
         <variable
             name="viewmodel"
-            type="com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel" />
+            type="teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel" />
 
     </data>
 

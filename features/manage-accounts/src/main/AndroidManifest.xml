@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<!--
   ~ Copyright 2019 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,15 +14,14 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <dimen name="small_margin">8dp</dimen>
-    <dimen name="default_item_margin_top">4dp</dimen>
-    <dimen name="other_dp">2dp</dimen>
-    <dimen name="login_screen_margin">24dp</dimen>
-    <dimen name="toolbar_with_fab_height">170dp</dimen>
-    <dimen name="padding_switch">12dp</dimen>
-    <dimen name="default_corner_radius">8dp</dimen>
-    <dimen name="default_fab_radius">32dp</dimen>
-    <dimen name="default_prompt_fab_radius">38dp</dimen>
-    <integer name="shimmer_length">1000</integer>
-</resources>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="teamcityapp.features.manage_accounts">
+
+    <application>
+        <activity
+            android:name="teamcityapp.features.manage_accounts.view.ManageAccountsActivity"
+            android:label="@string/title_activity_account_list"
+            android:launchMode="singleTop"
+            android:theme="@style/AccountsListTheme" />
+    </application>
+</manifest>

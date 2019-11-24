@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.view
+package teamcityapp.features.manage_accounts.view
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import com.afollestad.materialdialogs.MaterialDialog
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
-import com.github.vase4kin.teamcityapp.databinding.ActivityManageAccountsBinding
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.features.manage_accounts.R
+import teamcityapp.features.manage_accounts.databinding.ActivityManageAccountsBinding
+import teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel
 import teamcityapp.libraries.utils.initToolbar
 import javax.inject.Inject
 

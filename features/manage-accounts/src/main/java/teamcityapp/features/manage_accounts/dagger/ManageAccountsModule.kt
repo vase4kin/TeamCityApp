@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.dagger
+package teamcityapp.features.manage_accounts.dagger
 
-import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRouter
-import com.github.vase4kin.teamcityapp.account.manage.router.ManageAccountsRouterImpl
-import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTracker
-import com.github.vase4kin.teamcityapp.account.manage.tracker.ManageAccountsTrackerImpl
-import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
-import com.github.vase4kin.teamcityapp.account.manage.viewmodel.ManageAccountsViewModel
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
+import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
+import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
+import teamcityapp.features.manage_accounts.tracker.ManageAccountsTrackerImpl
+import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 
@@ -35,12 +34,9 @@ class ManageAccountsModule {
 
     @Provides
     fun providesViewFirebaseTracker(firebaseAnalytics: FirebaseAnalytics): ManageAccountsTracker {
-        return ManageAccountsTrackerImpl(firebaseAnalytics)
-    }
-
-    @Provides
-    fun provideAccountListRouter(activity: ManageAccountsActivity): ManageAccountsRouter {
-        return ManageAccountsRouterImpl(activity)
+        return ManageAccountsTrackerImpl(
+            firebaseAnalytics
+        )
     }
 
     @Provides

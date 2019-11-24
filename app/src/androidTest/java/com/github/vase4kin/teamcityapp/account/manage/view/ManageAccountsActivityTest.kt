@@ -72,7 +72,7 @@ class ManageAccountsActivityTest {
 
     @Rule
     @JvmField
-    val activityRule = CustomIntentsTestRule(ManageAccountsActivity::class.java)
+    val activityRule = CustomIntentsTestRule(teamcityapp.features.manage_accounts.view.ManageAccountsActivity::class.java)
 
     @Spy
     val teamCityService: TeamCityService = FakeTeamCityServiceImpl()

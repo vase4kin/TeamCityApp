@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.tracker
+package teamcityapp.features.manage_accounts.tracker
 
 import com.google.firebase.analytics.FirebaseAnalytics
 

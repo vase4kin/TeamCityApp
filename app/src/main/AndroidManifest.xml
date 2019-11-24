@@ -49,11 +49,6 @@
             android:label="@string/title_activity_build"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
         <activity
-            android:name=".account.manage.view.ManageAccountsActivity"
-            android:label="@string/title_activity_account_list"
-            android:launchMode="singleTop"
-            android:theme="@style/AccountsListTheme" />
-        <activity
             android:name=".navigation.view.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />

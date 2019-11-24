@@ -19,9 +19,6 @@ package com.github.vase4kin.teamcityapp.dagger.modules
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityScope
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountModule
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
-import com.github.vase4kin.teamcityapp.account.manage.dagger.ManageAccountsActivityScope
-import com.github.vase4kin.teamcityapp.account.manage.dagger.ManageAccountsModule
-import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactActivityScope
 import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactsActivityModule
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity
@@ -35,6 +32,7 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
 import com.github.vase4kin.teamcityapp.dagger.modules.about.AboutRepositoryModule
+import com.github.vase4kin.teamcityapp.dagger.modules.manage_accounts.ManageAccountsRouterModule
 import com.github.vase4kin.teamcityapp.dagger.modules.test_details.TestDetailsRepositoryModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentModule
 import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentScope
@@ -64,6 +62,9 @@ import teamcityapp.features.about.AboutFragment
 import teamcityapp.features.about.dagger.AboutActivityScope
 import teamcityapp.features.about.dagger.AboutFragmentModule
 import teamcityapp.features.about.dagger.AboutFragmentScope
+import teamcityapp.features.manage_accounts.dagger.ManageAccountsActivityScope
+import teamcityapp.features.manage_accounts.dagger.ManageAccountsModule
+import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
 import teamcityapp.features.test_details.dagger.TestDetailBundlesModule
 import teamcityapp.features.test_details.dagger.TestDetailsActivityScope
 import teamcityapp.features.test_details.dagger.TestDetailsModule
@@ -100,7 +101,7 @@ abstract class ActivityBindingModule {
     abstract fun createAccountActivity(): CreateAccountActivity
 
     @ManageAccountsActivityScope
-    @ContributesAndroidInjector(modules = [ManageAccountsModule::class])
+    @ContributesAndroidInjector(modules = [ManageAccountsModule::class, ManageAccountsRouterModule::class])
     abstract fun accountListActivity(): ManageAccountsActivity
 
     @BuildDetailsActivityScope

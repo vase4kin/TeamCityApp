@@ -16,4 +16,7 @@
 
 <resources>
     <dimen name="default_elevation">4dp</dimen>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="recycler_view_horizontal_margin">0dp</dimen>
+    <dimen name="recycler_view_vertical_margin">0dp</dimen>
 </resources>

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.view
+package teamcityapp.features.manage_accounts.view
 
 import android.view.View
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.databinding.ItemUserAccountListBinding
 import com.xwray.groupie.databinding.BindableItem
+import teamcityapp.features.manage_accounts.R
+import teamcityapp.features.manage_accounts.databinding.ItemUserAccountListBinding
 import teamcityapp.libraries.storage.models.UserAccount
 
 class AccountItem(

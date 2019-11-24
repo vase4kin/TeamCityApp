@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.router
-
-import android.app.Activity
-import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity
+package teamcityapp.features.manage_accounts.router
 
 interface ManageAccountsRouter {
 
@@ -28,19 +23,4 @@ interface ManageAccountsRouter {
     fun openCreateNewAccount()
 
     fun openLogin()
-}
-
-class ManageAccountsRouterImpl(private val activity: Activity) : ManageAccountsRouter {
-
-    override fun openHome() {
-        HomeActivity.startWhenSwitchingAccountsFromDrawer(activity)
-    }
-
-    override fun openCreateNewAccount() {
-        CreateAccountActivity.start(activity)
-    }
-
-    override fun openLogin() {
-        LoginActivity.startWithClearStack(activity)
-    }
 }

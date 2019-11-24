@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.dagger
+package teamcityapp.features.manage_accounts.dagger
 
 import javax.inject.Scope
 

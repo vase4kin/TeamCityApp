@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright 2019 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <!--Dialog remove active account-->
+    <string name="dialog_remove_active_account_positive_button_text">Sure</string>
+    <string name="dialog_remove_active_account_positive_negative_text">Nope</string>
+    <string name="dialog_remove_active_account_positive_content_text">Are you sure to delete active user account?</string>
+    <string name="dialog_remove_not_active_account_positive_content_text">Are you sure to delete a user account?</string>
+    <!--Managing account values-->
+    <string name="text_account_un_secure_ssl_">Ignore SSL certificate validity is enabled for this account</string>
+    <!--Title-->
+    <string name="title_activity_account_list">Manage Accounts</string>
+</resources>

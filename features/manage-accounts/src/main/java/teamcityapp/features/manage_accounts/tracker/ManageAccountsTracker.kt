@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.tracker
-
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
+package teamcityapp.features.manage_accounts.tracker
 
 /**
  * Tracker interface
  */
-interface ManageAccountsTracker : ViewTracker {
+interface ManageAccountsTracker {
 
     /**
      * Track view
      */
-    override fun trackView()
+    fun trackView()
 
     /**
      * Track account is removed

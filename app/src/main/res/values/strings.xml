@@ -48,7 +48,6 @@
     <string name="title_activity_build">Build</string>
     <string name="title_activity_navigation">Project/BuildType</string>
     <string name="title_activity_create_account">Create account</string>
-    <string name="title_activity_account_list">Manage Accounts</string>
     <string name="title_activity_running_builds">@string/running_builds_drawer_item</string>
     <string name="title_activity_queued_builds">@string/build_queue_drawer_item</string>
     <string name="title_activity_about">@string/about_drawer_item</string>
@@ -85,12 +84,6 @@
 
     <!--action mode-->
     <string name="action_mode_selected_text">selected</string>
-
-    <!--dialog remove active account-->
-    <string name="dialog_remove_active_account_positive_button_text">Sure</string>
-    <string name="dialog_remove_active_account_positive_negative_text">Nope</string>
-    <string name="dialog_remove_active_account_positive_content_text">Are you sure to delete active user account?</string>
-    <string name="dialog_remove_not_active_account_positive_content_text">Are you sure to delete a user account?</string>
 
     <!--All list empty message-->
     <string name="empty">No data</string>
@@ -163,9 +156,6 @@
     <string name="build_element_open_project">Open project</string>
     <string name="build_element_copy_text">Text copied!</string>
 
-    <!--Default dialogs button titles-->
-    <string name="dialog_ok_title">OK</string>
-
     <!--Create account values-->
     <string name="server_field_hint">TeamCity server url</string>
     <string name="server_cannot_be_empty">Server url cannot be empty</string>
@@ -176,9 +166,6 @@
     <string name="server_user_name_cannot_be_empty">Username cannot be empty</string>
     <string name="server_not_secure_http">Using http is insecure and it\'s recommend to use https instead. Use your favorite search engine to get more information about this topic.</string>
     <string name="error_save_account">Could not save user. Please try again</string>
-
-    <!--Managing account values-->
-    <string name="text_account_un_secure_ssl_">Ignore SSL certificate validity is enabled for this account</string>
 
     <!--Tests-->
     <string name="text_passed">Passed (%d)</string>
@@ -207,10 +194,8 @@
     <string name="hint_password">Password</string>
     <string name="info_unauthorized_dialog_title">Oh Snap!</string>
     <string name="info_try_it_out_title">Hey there</string>
-    <string name="warning_ssl_dialog_title">Warning</string>
     <string name="info_unauthorized_dialog_content">It seems that your TC server doesn\'t have Guest User enabled. In order to use the app make sure it is enabled. For more details see <a href="https://confluence.jetbrains.com/display/TCD10/Enabling+Guest+Login">TC help</a>.</string>
     <string name="info_try_it_out_dialog_content">Want to try the app out?\nWe can sign you in as a guest to official &lt;a href="%s">Jetbrains TeamCity server&lt;/a>.</string>
-    <string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making the app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
     <string name="warning_ssl_dialog_negative">Cancel</string>
     <string name="dialog_try_it_out_title">Try it out</string>
 
