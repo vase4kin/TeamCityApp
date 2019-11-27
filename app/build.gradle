@@ -220,6 +220,7 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
+    kaptAndroidTest Libs.Google.databindingCompiler
 
     implementation Libs.Kotlin.stdlib
 }

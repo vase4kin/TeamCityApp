@@ -54,7 +54,4 @@ dependencies {
     kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
     kapt Libs.Dagger.compiler
     kapt Libs.Dagger.androidProcessor
-    kapt Libs.Google.databindingCompiler
-
-    kaptAndroidTest Libs.Google.databindingCompiler
 }
