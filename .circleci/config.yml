@@ -182,7 +182,9 @@ workflows:
       - checks:
           requires:
             - pre-build
-      - unit-tests
+      - unit-tests:
+          requires:
+            - pre-build
       - ui-tests:
           name: ui-tests-v24
           devicemodel: lucye,version=24,locale=en,orientation=portrait
