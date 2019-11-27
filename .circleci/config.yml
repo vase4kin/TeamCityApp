@@ -7,7 +7,7 @@ references:
       - image: circleci/android:api-29
     environment:
       JVM_OPTS: -Xmx2048m
-      GRADLE_OPTS: -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -Dorg.gradle.caching=false -Dorg.gradle.configureondemand=true -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.incremental=false
+      GRADLE_OPTS: -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -Dorg.gradle.daemon=false -Dorg.gradle.caching=false -Dorg.gradle.configureondemand=true -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.incremental=false --max-workers=2
     working_directory: *workspace_root
   attach_workspace: &attach_workspace
     attach_workspace:
@@ -44,7 +44,7 @@ jobs:
           root: *workspace_root
           paths:
             - .
-  build-ui-tests-1:
+  build-ui-tests:
     <<: *container_config
     steps:
       - *attach_workspace
@@ -52,20 +52,7 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Build tests
-          command: ./gradlew assembleMockDebug
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - .
-  build-ui-tests-2:
-    <<: *container_config
-    steps:
-      - *attach_workspace
-      - restore_cache:
-          <<: *general_cache_key
-      - run:
-          name: Build tests
-          command: ./gradlew assembleMockDebugAndroidTest
+          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -189,24 +176,18 @@ workflows:
   mobile_workflow:
     jobs:
       - pre-build
-      - build-ui-tests-1:
-          requires:
-            - pre-build
-      - build-ui-tests-2:
+      - build-ui-tests:
           requires:
             - pre-build
       - checks:
           requires:
             - pre-build
       - unit-tests:
-          requires:
-            - pre-build
       - ui-tests:
           name: ui-tests-v24
           devicemodel: lucye,version=24,locale=en,orientation=portrait
           requires:
-            - build-ui-tests-1
-            - build-ui-tests-2
+            - build-ui-tests
           filters:
             branches:
               only:
@@ -215,8 +196,7 @@ workflows:
           name: ui-tests-v26
           devicemodel: sailfish,version=26,locale=en,orientation=portrait
           requires:
-            - build-ui-tests-1
-            - build-ui-tests-2
+            - build-ui-tests
           filters:
             branches:
               only:
@@ -224,8 +204,7 @@ workflows:
       - ui-tests:
           name: ui-tests-v28
           requires:
-            - build-ui-tests-1
-            - build-ui-tests-2
+            - build-ui-tests
       - coverage:
           requires:
             - ui-tests-v28
