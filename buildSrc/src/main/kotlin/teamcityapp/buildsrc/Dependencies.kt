@@ -60,6 +60,8 @@ object Libs {
         const val openSourceLicensesLibrary =
             "com.google.android.gms:play-services-oss-licenses:17.0.0"
 
+        const val databindingCompiler = "com.android.databinding:compiler:3.1.4"
+
         object Tools {
             const val openSourceLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.9.5"
         }
