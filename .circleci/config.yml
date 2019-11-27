@@ -44,7 +44,7 @@ jobs:
           root: *workspace_root
           paths:
             - .
-  build-tests:
+  build-ui-tests:
     <<: *container_config
     steps:
       - *attach_workspace
@@ -52,7 +52,7 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Build tests
-          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest assembleMockDebugUnitTest
+          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest
       - persist_to_workspace:
           root: *workspace_root
           paths:
@@ -176,20 +176,18 @@ workflows:
   mobile_workflow:
     jobs:
       - pre-build
-      - build-tests:
+      - build-ui-tests:
           requires:
             - pre-build
       - checks:
           requires:
             - pre-build
       - unit-tests:
-          requires:
-            - build-tests
       - ui-tests:
           name: ui-tests-v24
           devicemodel: lucye,version=24,locale=en,orientation=portrait
           requires:
-            - build-tests
+            - build-ui-tests
           filters:
             branches:
               only:
@@ -198,7 +196,7 @@ workflows:
           name: ui-tests-v26
           devicemodel: sailfish,version=26,locale=en,orientation=portrait
           requires:
-            - build-tests
+            - build-ui-tests
           filters:
             branches:
               only:
@@ -206,7 +204,7 @@ workflows:
       - ui-tests:
           name: ui-tests-v28
           requires:
-            - build-tests
+            - build-ui-tests
       - coverage:
           requires:
             - ui-tests-v28
