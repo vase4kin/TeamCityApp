@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.testdetails.view
+package teamcityapp.features.test_details.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -48,7 +48,6 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 import teamcityapp.features.test_details.repository.models.TestOccurrence
-import teamcityapp.features.test_details.view.TestDetailsActivity
 
 /**
  * Tests for [TestDetailsActivity]

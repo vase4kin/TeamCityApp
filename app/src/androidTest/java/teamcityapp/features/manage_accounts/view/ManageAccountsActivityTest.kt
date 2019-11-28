@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.account.manage.view
+package teamcityapp.features.manage_accounts.view
 
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -72,7 +72,7 @@ class ManageAccountsActivityTest {
 
     @Rule
     @JvmField
-    val activityRule = CustomIntentsTestRule(teamcityapp.features.manage_accounts.view.ManageAccountsActivity::class.java)
+    val activityRule = CustomIntentsTestRule(ManageAccountsActivity::class.java)
 
     @Spy
     val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
