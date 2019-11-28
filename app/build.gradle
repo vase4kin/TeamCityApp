@@ -102,6 +102,12 @@ android {
         exclude 'META-INF/repository_debug.kotlin_module'
         exclude 'META-INF/feature_debug.kotlin_module'
     }
+
+    // Fixing crash in androidTest
+    // java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -220,7 +226,6 @@ dependencies {
     implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
-    kaptAndroidTest Libs.Google.databindingCompiler
 
     implementation Libs.Kotlin.stdlib
 }
