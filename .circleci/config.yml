@@ -52,7 +52,7 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Build tests
-          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest assembleMockDebugUnitTest --scan
+          command: ./gradlew assembleMockDebug assembleMockDebugAndroidTest assembleMockDebugUnitTest
       - persist_to_workspace:
           root: *workspace_root
           paths:
