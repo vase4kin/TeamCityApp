@@ -65,7 +65,7 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Run checks
-          command: ./gradlew lint pmd lintKotlin
+          command: ./gradlew lintMockDebug pmd lintKotlin
       - run:
           name: Copy checks reports
           command: |
