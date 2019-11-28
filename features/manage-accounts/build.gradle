@@ -54,4 +54,8 @@ dependencies {
     kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
     kapt Libs.Dagger.compiler
     kapt Libs.Dagger.androidProcessor
+
+    testImplementation Libs.junit
+    testImplementation Libs.Mockito.mockito3
+    testImplementation Libs.Mockito.mockitoKotlin
 }

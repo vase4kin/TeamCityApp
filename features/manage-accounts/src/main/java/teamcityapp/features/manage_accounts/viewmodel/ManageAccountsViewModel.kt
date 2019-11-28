@@ -16,6 +16,7 @@
 
 package teamcityapp.features.manage_accounts.viewmodel
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
@@ -66,7 +67,8 @@ class ManageAccountsViewModel(
             })
     }
 
-    private fun onAccountRemove(account: UserAccount): () -> Unit = {
+    @VisibleForTesting
+    internal fun onAccountRemove(account: UserAccount): () -> Unit = {
         when {
             storage.userAccounts.size == 1 -> {
                 tracker.trackAccountRemove()
