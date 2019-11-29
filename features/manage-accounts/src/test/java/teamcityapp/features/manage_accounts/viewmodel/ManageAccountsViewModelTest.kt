@@ -16,8 +16,10 @@
 
 package teamcityapp.features.manage_accounts.viewmodel
 
+import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.nhaarman.mockitokotlin2.whenever
@@ -92,5 +94,16 @@ class ManageAccountsViewModelTest {
         verify(storage).removeUserAccount(userAccount)
         verify(storage).setOtherUserActive()
         verify(router).openHome()
+    }
+
+    @Test
+    fun testOnAccountRemove_AccountIsNotActive() {
+        whenever(userAccount.isActive).thenReturn(false)
+        doAnswer { listOf(userAccount, mock(), mock()) }.whenever(storage).userAccounts
+        viewModel.onAccountRemove(userAccount).invoke()
+        verify(storage, times(2)).userAccounts
+        verify(tracker).trackAccountRemove()
+        verify(storage).removeUserAccount(userAccount)
+        verify(adapter).updateAsync(any())
     }
 }
