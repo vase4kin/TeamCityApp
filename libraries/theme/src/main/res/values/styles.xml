@@ -46,4 +46,55 @@
         <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
+    <style name="SingleTextSizeItem">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Medium</item>
+    </style>
+
+    <style name="ItemTitle.WrapText" parent="ItemTitle">
+        <item name="android:ellipsize">none</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:maxLines">50</item>
+    </style>
+
+    <style name="ItemTitle" parent="SingleTextSizeItem">
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/main_text_color</item>
+    </style>
+
+    <style name="ItemSubTitle" parent="SingleSubTextSizeItem">
+        <item name="android:id">@id/itemSubTitle</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">false</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textColor">@color/sub_text_color</item>
+    </style>
+
+    <style name="SingleSubTextSizeItem">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+    </style>
+
+    <style name="BaseFloatingActionButton" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="android:layout_gravity">end|bottom</item>
+        <item name="android:layout_margin">@dimen/default_margin</item>
+        <item name="elevation">@dimen/default_elevation</item>
+        <item name="android:clickable">true</item>
+        <item name="fabSize">normal</item>
+    </style>
+
+    <style name="RecyclerView">
+        <item name="android:paddingBottom">24dp</item>
+        <item name="android:paddingLeft">@dimen/recycler_view_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/recycler_view_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/recycler_view_vertical_margin</item>
+        <item name="android:clipChildren">true</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:scrollbars">vertical</item>
+        <item name="android:background">@color/recycler_view_background</item>
+    </style>
+
 </resources>

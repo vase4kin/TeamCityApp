@@ -15,10 +15,7 @@
   -->
 
 <resources>
-    <dimen name="default_margin">16dp</dimen>
     <dimen name="small_margin">8dp</dimen>
-    <dimen name="recycler_view_horizontal_margin">0dp</dimen>
-    <dimen name="recycler_view_vertical_margin">0dp</dimen>
     <dimen name="default_item_margin_top">4dp</dimen>
     <dimen name="other_dp">2dp</dimen>
     <dimen name="login_screen_margin">24dp</dimen>

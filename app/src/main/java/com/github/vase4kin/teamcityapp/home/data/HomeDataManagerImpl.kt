@@ -20,13 +20,13 @@ import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import teamcityapp.libraries.cache_manager.CacheManager
+import teamcityapp.libraries.storage.models.UserAccount
 
 /**
  * Impl of [HomeDataManager]

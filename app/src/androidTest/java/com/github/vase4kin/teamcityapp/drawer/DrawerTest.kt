@@ -31,7 +31,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
-import com.github.vase4kin.teamcityapp.account.manage.view.ManageAccountsActivity
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
@@ -57,6 +56,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Spy
 import teamcityapp.features.about.AboutActivity
+import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
 
 /**
  * Tests for Drawer

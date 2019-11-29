@@ -20,4 +20,10 @@
     <string name="error_view_error_text">There\'s an error loading the page</string>
 
     <string name="about_drawer_item">About</string>
+
+    <string name="warning_ssl_dialog_title">Warning</string>
+    <string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making the app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
+
+    <!--Default dialogs button titles-->
+    <string name="dialog_ok_title">OK</string>
 </resources>

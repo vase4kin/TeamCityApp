@@ -103,7 +103,8 @@ android {
         exclude 'META-INF/feature_debug.kotlin_module'
     }
 
-    // TODO: Remove when manage accounts code is moved out to a separated module
+    // Fixing crash in androidTest
+    // java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;
     dataBinding {
         enabled = true
     }
@@ -118,6 +119,8 @@ dependencies {
     implementation project(':libraries:theme')
     implementation project(':libraries:chrome-tabs')
     implementation project(':libraries:storage')
+    implementation project(':libraries:storage-models')
+    implementation project(':libraries:cache-manager')
 
     implementation project(':features:test-details:models')
     implementation project(':features:test-details:repository')
@@ -129,13 +132,7 @@ dependencies {
     implementation project(':features:about:repository')
     implementation project(':features:about:feature')
 
-    // TODO: Remove when manage accounts code is moved out to a separated module
-    implementation Libs.Groupie.groupie
-    implementation Libs.Groupie.groupieDatabinding
-
-    // TODO: Remove when manage accounts code is moved out to a separated module
-    implementation Libs.AndroidX.LifeCycle.lifeCycle
-    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
+    implementation project(':features:manage-accounts')
 
     // Android support libraries
     implementation Libs.AndroidX.appcompat
@@ -143,7 +140,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation Libs.Google.material
-    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation Libs.AndroidX.constraintLayout
     // Api third party libraries
     implementation Libs.OkHttp.okhttp
     implementation Libs.OkHttp.loggingInterceptor
@@ -151,9 +148,10 @@ dependencies {
     implementation Libs.Retrofit.gsonConverter
     implementation Libs.Retrofit.retrofitRxjavaAdapter
     // Dialogs
-    implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
+    implementation Libs.dialogs
     // Views
     implementation Libs.errorView
+    implementation Libs.Groupie.groupie
     // View injection
     implementation Libs.ButterKnife.butterKnife
     annotationProcessor Libs.ButterKnife.butterKnifeCompiler

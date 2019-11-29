@@ -45,6 +45,8 @@ task generateCodeCoverageReport(type: JacocoReport) {
     def fileFilter = [
             '**/R.class',
             '**/R$*.class',
+            '**/BR.class',
+            '**/BR$*.class',
             '**/BuildConfig.*',
             '**/Manifest*.*',
             'android/**/*.*',

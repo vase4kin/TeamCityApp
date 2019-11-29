@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider
 
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount
+import teamcityapp.libraries.storage.models.UserAccount
 
 /**
  * Impl of [BuildLogUrlProvider]

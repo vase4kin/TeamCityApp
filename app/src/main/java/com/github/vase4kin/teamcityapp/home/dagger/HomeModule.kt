@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.home.dagger
 
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.api.cache.CacheManager
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
@@ -37,6 +36,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 

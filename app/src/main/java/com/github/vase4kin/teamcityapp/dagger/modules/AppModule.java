@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
-import com.github.vase4kin.teamcityapp.api.cache.CacheManager;
 import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
@@ -41,7 +40,6 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl;
 import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
-import com.github.vase4kin.teamcityapp.storage.api.UserAccount;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
@@ -64,7 +62,9 @@ import io.rx_cache2.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import teamcityapp.libraries.cache_manager.CacheManager;
 import teamcityapp.libraries.storage.Storage;
+import teamcityapp.libraries.storage.models.UserAccount;
 
 /**
  * Todo: Convert to Kotlin
