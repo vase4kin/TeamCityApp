@@ -4,3 +4,5 @@ coverage:
     patch:
       default:
         target: 50%
+comment:
+  behavior: new
