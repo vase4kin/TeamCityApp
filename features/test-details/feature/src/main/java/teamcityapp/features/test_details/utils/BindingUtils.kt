@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.tracker
+package teamcityapp.features.test_details.utils
 
-import com.google.firebase.analytics.FirebaseAnalytics
-import javax.inject.Inject
+import android.webkit.WebView
+import androidx.databinding.BindingAdapter
+import tr.xip.errorview.ErrorView
 
-/**
- * Test details tracking class
- */
-class FirebaseTestDetailsTrackerImpl @Inject constructor(
-    private val firebaseAnalytics: FirebaseAnalytics
-) : TestDetailsTracker {
+@BindingAdapter("testDetails")
+fun loadTestDetails(view: WebView, testDetails: String) {
+    view.loadDataWithBaseURL(null, testDetails, "text/html", "utf-8", null)
+}
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun trackView() {
-        firebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
-    }
+@BindingAdapter("retryListener")
+fun setRetryListener(errorView: ErrorView, retryListener: ErrorView.RetryListener) {
+    errorView.setRetryListener(retryListener)
 }

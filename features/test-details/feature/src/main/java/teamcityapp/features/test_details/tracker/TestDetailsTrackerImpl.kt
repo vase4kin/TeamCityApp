@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.view
+package teamcityapp.features.test_details.tracker
+
+import com.google.firebase.analytics.FirebaseAnalytics
+import javax.inject.Inject
 
 /**
- * On action mode enabled listener
+ * Test details tracking class
  */
-interface OnActionModeListener {
+class TestDetailsTrackerImpl @Inject constructor(
+    private val firebaseAnalytics: FirebaseAnalytics
+) : TestDetailsTracker {
 
     /**
-     * On action mode create
+     * {@inheritDoc}
      */
-    fun onCreate()
-
-    /**
-     * On action mode destroy
-     */
-    fun onDestroy()
+    override fun trackView() {
+        firebaseAnalytics.logEvent(TestDetailsTracker.SCREEN_NAME, null)
+    }
 }

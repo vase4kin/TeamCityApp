@@ -16,18 +16,15 @@
 
 package teamcityapp.features.test_details.data
 
+import android.text.Html
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import teamcityapp.features.test_details.repository.TestDetailsRepository
-import teamcityapp.features.test_details.repository.models.TestOccurrence
 import javax.inject.Inject
 
-/**
- * Impl of [TestDetailsDataManager]
- */
 class TestDetailsDataManagerImpl @Inject constructor(
     private val repository: TestDetailsRepository
 ) : TestDetailsDataManager {
@@ -38,13 +35,14 @@ class TestDetailsDataManagerImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun loadData(
-        onSuccess: (test: TestOccurrence) -> Unit,
+        onSuccess: (test: String) -> Unit,
         onError: (errorMessage: String) -> Unit,
         url: String
     ) {
         subscriptions.clear()
         repository.testOccurrence(url)
             .subscribeOn(Schedulers.io())
+            .map { Html.escapeHtml(it.details) }
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { onSuccess(it) },

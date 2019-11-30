@@ -19,12 +19,14 @@ package teamcityapp.features.test_details.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.databinding.DataBindingUtil
 import dagger.android.support.DaggerAppCompatActivity
 import teamcityapp.features.test_details.R
-import teamcityapp.features.test_details.presenter.TestDetailsPresenterImpl
+import teamcityapp.features.test_details.databinding.ActivityShowTestDetailsBinding
+import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
 import javax.inject.Inject
 
-const val ARG_TEST_URL = "testUrl"
+const val ARG_TEST_URL = "arg_testUrl"
 
 /**
  * Activity to manage test details
@@ -32,26 +34,22 @@ const val ARG_TEST_URL = "testUrl"
 class TestDetailsActivity : DaggerAppCompatActivity() {
 
     @Inject
-    lateinit var presenter: TestDetailsPresenterImpl
+    lateinit var viewModel: TestDetailsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_show_test_details)
-        presenter.onCreate()
+        DataBindingUtil.setContentView<ActivityShowTestDetailsBinding>(
+            this,
+            R.layout.activity_show_test_details
+        ).apply {
+            vm = viewModel
+        }
+        lifecycle.addObserver(viewModel)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        presenter.onDestroy()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        presenter.onResume()
-    }
-
-    override fun onBackPressed() {
-        presenter.onBackPressed()
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.hold, R.anim.slide_out_bottom)
     }
 
     companion object {

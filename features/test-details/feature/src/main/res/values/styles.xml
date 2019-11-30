@@ -14,13 +14,10 @@
   ~ limitations under the License.
   -->
 
-<manifest package="teamcityapp.features.test_details"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<resources>
 
-    <application>
-        <activity
-            android:name=".view.TestDetailsActivity"
-            android:theme="@style/TestDetailsTheme" />
-    </application>
+    <style name="TestDetailsTheme" parent="WhiteColorNavBarWithSeparatorTheme">
+        <item name="colorPrimaryDark">@color/red</item>
+    </style>
 
-</manifest>
+</resources>

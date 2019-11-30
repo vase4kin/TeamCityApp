@@ -24,7 +24,6 @@ public class TestOccurrence extends BaseObject {
 
     private String name;
     private String status;
-    private int duration;
     private String details;
 
     public String getName() {
@@ -33,10 +32,6 @@ public class TestOccurrence extends BaseObject {
 
     public String getStatus() {
         return status;
-    }
-
-    public int getDuration() {
-        return duration;
     }
 
     public String getDetails() {

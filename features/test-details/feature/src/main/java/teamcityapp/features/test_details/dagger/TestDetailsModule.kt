@@ -16,36 +16,40 @@
 
 package teamcityapp.features.test_details.dagger
 
-import dagger.Binds
+import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import teamcityapp.features.test_details.data.TestDetailsDataManager
 import teamcityapp.features.test_details.data.TestDetailsDataManagerImpl
-import teamcityapp.features.test_details.tracker.FirebaseTestDetailsTrackerImpl
+import teamcityapp.features.test_details.repository.TestDetailsRepository
 import teamcityapp.features.test_details.tracker.TestDetailsTracker
+import teamcityapp.features.test_details.tracker.TestDetailsTrackerImpl
 import teamcityapp.features.test_details.view.ARG_TEST_URL
 import teamcityapp.features.test_details.view.TestDetailsActivity
-import teamcityapp.features.test_details.view.TestDetailsView
-import teamcityapp.features.test_details.view.TestDetailsViewImpl
+import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
 
 @Module
-abstract class TestDetailsModule {
-
-    @Binds
-    abstract fun providesTestDetailsView(impl: TestDetailsViewImpl): TestDetailsView
-
-    @Binds
-    abstract fun providesTestDetailsDataManager(impl: TestDetailsDataManagerImpl): TestDetailsDataManager
-
-    @Binds
-    abstract fun providesFirebaseViewTracker(impl: FirebaseTestDetailsTrackerImpl): TestDetailsTracker
-}
-
-@Module
-class TestDetailBundlesModule {
+class TestDetailsModule {
 
     @Provides
-    fun providesUrl(activity: TestDetailsActivity): String {
-        return activity.intent.getStringExtra(ARG_TEST_URL) ?: ""
+    fun providesTestDetailsDataManager(repository: TestDetailsRepository): TestDetailsDataManager =
+        TestDetailsDataManagerImpl(repository)
+
+    @Provides
+    fun providesTracker(firebaseAnalytics: FirebaseAnalytics): TestDetailsTracker =
+        TestDetailsTrackerImpl(firebaseAnalytics)
+
+    @Provides
+    fun providesViewModel(
+        activity: TestDetailsActivity,
+        dataManager: TestDetailsDataManager,
+        tracker: TestDetailsTracker
+    ): TestDetailsViewModel {
+        return TestDetailsViewModel(
+            dataManager = dataManager,
+            tracker = tracker,
+            url = activity.intent.getStringExtra(ARG_TEST_URL) ?: "",
+            finish = { activity.finish() }
+        )
     }
 }

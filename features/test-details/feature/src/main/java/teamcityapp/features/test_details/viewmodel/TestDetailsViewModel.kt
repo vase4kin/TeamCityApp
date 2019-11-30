@@ -14,58 +14,48 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.presenter
+package teamcityapp.features.test_details.viewmodel
 
+import android.view.View
+import androidx.databinding.ObservableField
+import androidx.databinding.ObservableInt
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import teamcityapp.features.test_details.data.TestDetailsDataManager
 import teamcityapp.features.test_details.tracker.TestDetailsTracker
-import teamcityapp.features.test_details.view.TestDetailsView
 import tr.xip.errorview.ErrorView
 import javax.inject.Inject
 
-/**
- * Impl of [TestDetailsPresenter]
- */
-class TestDetailsPresenterImpl @Inject constructor(
-    private val view: TestDetailsView,
+class TestDetailsViewModel @Inject constructor(
     private val dataManager: TestDetailsDataManager,
     private val tracker: TestDetailsTracker,
-    private val url: String
-) : TestDetailsPresenter, ErrorView.RetryListener {
+    private val url: String,
+    val finish: () -> Unit
+) : ErrorView.RetryListener, LifecycleObserver {
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onCreate() {
-        view.initViews(this)
-        view.showProgress()
+    val progressVisibility = ObservableInt(View.GONE)
+    val testDetailsVisibility = ObservableInt(View.GONE)
+    val errorVisibility = ObservableInt(View.GONE)
+    val emptyVisibility = ObservableInt(View.GONE)
+    val testDetailsText = ObservableField<String>("")
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun onCreate() {
         loadData()
+        tracker.trackView()
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onDestroy() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
         dataManager.unsubscribe()
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun onBackPressed() {
-        view.finish()
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun onResume() {
-        tracker.trackView()
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     override fun onRetry() {
+        errorVisibility.set(View.GONE)
         loadData()
     }
 
@@ -74,21 +64,24 @@ class TestDetailsPresenterImpl @Inject constructor(
      */
     private fun loadData() {
         if (url.isEmpty()) {
+            // Show toast!
+            finish()
             return
         }
+        progressVisibility.set(View.VISIBLE)
         dataManager.loadData(
-            onSuccess = {
-                view.hideProgress()
-                val testDetails = it.details
+            onSuccess = { testDetails ->
+                progressVisibility.set(View.GONE)
                 if (testDetails.isEmpty()) {
-                    view.showEmptyData()
+                    emptyVisibility.set(View.VISIBLE)
                 } else {
-                    view.showTestDetails(testDetails)
+                    testDetailsVisibility.set(View.VISIBLE)
+                    testDetailsText.set(testDetails)
                 }
             },
             onError = {
-                view.hideProgress()
-                view.showRetryView(it)
+                progressVisibility.set(View.GONE)
+                errorVisibility.set(View.VISIBLE)
             },
             url = url
         )
