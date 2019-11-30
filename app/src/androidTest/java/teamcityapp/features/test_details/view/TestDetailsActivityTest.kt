@@ -28,7 +28,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
@@ -89,7 +88,7 @@ class TestDetailsActivityTest {
         // Prepare intent
         val intent = Intent()
         val b = Bundle()
-        b.putString(BundleExtractorValues.TEST_URL, "/test")
+        b.putString(TestDetailsActivity.ARG_TEST_URL, "/test")
         intent.putExtras(b)
 
         // Start activity
@@ -120,7 +119,7 @@ class TestDetailsActivityTest {
         // Prepare intent
         val intent = Intent()
         val b = Bundle()
-        b.putString(BundleExtractorValues.TEST_URL, "/test")
+        b.putString(TestDetailsActivity.ARG_TEST_URL, "/test")
         intent.putExtras(b)
 
         // Start activity
@@ -150,7 +149,7 @@ class TestDetailsActivityTest {
         // Prepare intent
         val intent = Intent()
         val b = Bundle()
-        b.putString(BundleExtractorValues.TEST_URL, "/test")
+        b.putString(TestDetailsActivity.ARG_TEST_URL, "/test")
         intent.putExtras(b)
 
         // Start activity

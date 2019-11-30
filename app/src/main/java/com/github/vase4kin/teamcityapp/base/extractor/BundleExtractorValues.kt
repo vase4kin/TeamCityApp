@@ -30,7 +30,6 @@ interface BundleExtractorValues {
         const val PASSED_COUNT_PARAM = "passedCount"
         const val FAILED_COUNT_PARAM = "failedCount"
         const val IGNORED_COUNT_PARAM = "ignoredCount"
-        const val TEST_URL = "testUrl"
         const val BUILD_ID = "buildId"
         const val BUILD_LIST_FILTER = "filter"
     }

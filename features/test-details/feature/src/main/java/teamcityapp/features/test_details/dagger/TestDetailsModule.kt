@@ -24,8 +24,8 @@ import teamcityapp.features.test_details.data.TestDetailsDataManagerImpl
 import teamcityapp.features.test_details.repository.TestDetailsRepository
 import teamcityapp.features.test_details.tracker.TestDetailsTracker
 import teamcityapp.features.test_details.tracker.TestDetailsTrackerImpl
-import teamcityapp.features.test_details.view.ARG_TEST_URL
 import teamcityapp.features.test_details.view.TestDetailsActivity
+import teamcityapp.features.test_details.view.TestDetailsActivity.Companion.ARG_TEST_URL
 import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
 
 @Module

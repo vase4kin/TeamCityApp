@@ -26,8 +26,6 @@ import teamcityapp.features.test_details.databinding.ActivityShowTestDetailsBind
 import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
 import javax.inject.Inject
 
-const val ARG_TEST_URL = "arg_testUrl"
-
 /**
  * Activity to manage test details
  */
@@ -53,6 +51,8 @@ class TestDetailsActivity : DaggerAppCompatActivity() {
     }
 
     companion object {
+
+        const val ARG_TEST_URL = "arg_test_url"
 
         /**
          * Open failed test activity

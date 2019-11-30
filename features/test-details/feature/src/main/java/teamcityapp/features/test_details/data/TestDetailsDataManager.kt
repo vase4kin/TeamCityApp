@@ -26,7 +26,7 @@ interface TestDetailsDataManager {
      */
     fun loadData(
         onSuccess: (testDetails: String) -> Unit,
-        onError: (errorMessage: String) -> Unit,
+        onError: (errorMessage: String) -> Unit, //No error needed here
         url: String
     )
 
