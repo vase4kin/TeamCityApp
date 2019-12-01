@@ -16,13 +16,21 @@
 
 package teamcityapp.features.test_details.utils
 
+import android.annotation.SuppressLint
 import android.webkit.WebView
 import androidx.databinding.BindingAdapter
 import tr.xip.errorview.ErrorView
 
+@SuppressLint("SetJavaScriptEnabled")
 @BindingAdapter("testDetails")
 fun loadTestDetails(view: WebView, testDetails: String) {
-    view.loadDataWithBaseURL(null, testDetails, "text/html", "utf-8", null)
+    view.settings.javaScriptEnabled = true
+    val html = createHtml(testDetails)
+    view.loadDataWithBaseURL(null, html, "text/html", "utf-8", null)
+}
+
+private fun createHtml(testDetails: String): String {
+    return "<html><header></header><body><div id=\"test_details\">$testDetails</div></body></html>"
 }
 
 @BindingAdapter("retryListener")

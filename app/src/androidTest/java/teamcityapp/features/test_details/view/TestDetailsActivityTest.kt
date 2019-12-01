@@ -26,6 +26,7 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.espresso.web.assertion.WebViewAssertions
 import androidx.test.espresso.web.sugar.Web
 import androidx.test.espresso.web.webdriver.DriverAtoms
+import androidx.test.espresso.web.webdriver.Locator
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -107,6 +108,7 @@ class TestDetailsActivityTest {
 
         // Check web view content
         Web.onWebView()
+            .withElement(DriverAtoms.findElement(Locator.ID, "test_details"))
             .withTimeout(5, TimeUnit.SECONDS)
             .check(
                 WebViewAssertions.webMatches(
