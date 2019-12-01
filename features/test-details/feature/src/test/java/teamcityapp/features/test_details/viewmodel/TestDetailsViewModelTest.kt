@@ -57,7 +57,7 @@ class TestDetailsViewModelTest {
         Mockito.verifyNoMoreInteractions(dataManager, tracker, finish)
     }
 
-    @Ignore
+    @Ignore("FIX IT")
     @Test
     fun testOnViewPreparedAndOnRetryIfUrlIsNotNull() {
         viewModel.onCreate()
@@ -68,7 +68,7 @@ class TestDetailsViewModelTest {
         Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
         val onSuccessCaptor = argumentCaptor<(test: String) -> Unit>()
-        val onErrorCaptor = argumentCaptor<(errorMessage: String) -> Unit>()
+        val onErrorCaptor = argumentCaptor<() -> Unit>()
         Mockito.verify(dataManager)
             .loadData(onSuccessCaptor.capture(), onErrorCaptor.capture(), eq(url))
 
@@ -86,8 +86,7 @@ class TestDetailsViewModelTest {
         Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
         Assert.assertEquals(View.VISIBLE, viewModel.emptyVisibility.get())
 
-        val error = "error"
-        onErrorCaptor.lastValue(error)
+        onErrorCaptor.lastValue()
         Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())

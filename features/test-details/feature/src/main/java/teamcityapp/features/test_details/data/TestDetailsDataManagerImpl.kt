@@ -36,7 +36,7 @@ class TestDetailsDataManagerImpl @Inject constructor(
      */
     override fun loadData(
         onSuccess: (test: String) -> Unit,
-        onError: (errorMessage: String) -> Unit,
+        onError: () -> Unit,
         url: String
     ) {
         subscriptions.clear()
@@ -46,7 +46,7 @@ class TestDetailsDataManagerImpl @Inject constructor(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onSuccess = { onSuccess(it) },
-                onError = { onError(it.message ?: "") }
+                onError = { onError() }
             )
             .addTo(subscriptions)
     }
