@@ -19,6 +19,7 @@ package teamcityapp.features.test_details.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import dagger.android.support.DaggerAppCompatActivity
 import teamcityapp.features.test_details.R
@@ -48,6 +49,10 @@ class TestDetailsActivity : DaggerAppCompatActivity() {
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.hold, R.anim.slide_out_bottom)
+    }
+
+    fun showErrorToast() {
+        Toast.makeText(this, R.string.error_view_error_text, Toast.LENGTH_LONG).show()
     }
 
     companion object {

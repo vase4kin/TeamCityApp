@@ -31,6 +31,7 @@ class TestDetailsViewModel @Inject constructor(
     private val dataManager: TestDetailsDataManager,
     private val tracker: TestDetailsTracker,
     private val url: String,
+    private val showErrorToast: () -> Unit,
     val finish: () -> Unit
 ) : ErrorView.RetryListener, LifecycleObserver {
 
@@ -64,7 +65,7 @@ class TestDetailsViewModel @Inject constructor(
      */
     private fun loadData() {
         if (url.isEmpty()) {
-            // Show toast!
+            showErrorToast()
             finish()
             return
         }

@@ -49,6 +49,7 @@ class TestDetailsModule {
             dataManager = dataManager,
             tracker = tracker,
             url = activity.intent.getStringExtra(ARG_TEST_URL) ?: "",
+            showErrorToast = { activity.showErrorToast() },
             finish = { activity.finish() }
         )
     }

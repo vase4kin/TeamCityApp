@@ -21,23 +21,21 @@ import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
-import org.junit.Ignore
 import org.junit.Test
 import org.mockito.Mockito
 import teamcityapp.features.test_details.data.TestDetailsDataManager
-import teamcityapp.features.test_details.repository.models.TestOccurrence
 import teamcityapp.features.test_details.tracker.TestDetailsTracker
 
 class TestDetailsViewModelTest {
 
-    private val testOccurrence: TestOccurrence = mock()
     private val tracker: TestDetailsTracker = mock()
     private val dataManager: TestDetailsDataManager = mock()
     private val finish: () -> Unit = mock()
-
+    private val showErrorToast: () -> Unit = mock()
     private val url = "url"
 
     private lateinit var viewModel: TestDetailsViewModel
@@ -48,44 +46,104 @@ class TestDetailsViewModelTest {
             dataManager,
             tracker,
             url,
+            showErrorToast,
             finish
         )
     }
 
     @After
     fun tearDown() {
-        Mockito.verifyNoMoreInteractions(dataManager, tracker, finish)
+        Mockito.verifyNoMoreInteractions(dataManager, tracker, finish, showErrorToast)
     }
 
-    @Ignore("FIX IT")
     @Test
-    fun testOnViewPreparedAndOnRetryIfUrlIsNotNull() {
+    fun testLoadDataIfTestUrlIsEmpty() {
+        viewModel = TestDetailsViewModel(
+            dataManager,
+            tracker,
+            "",
+            showErrorToast,
+            finish
+        )
         viewModel.onCreate()
-        Mockito.verify(dataManager).loadData(any(), any(), eq(url))
-        Mockito.verify(tracker).trackView()
+        verify(showErrorToast).invoke()
+        verify(tracker).trackView()
+        verify(finish).invoke()
+    }
+
+    @Test
+    fun testRetry() {
+        viewModel.onRetry()
+        verify(dataManager).loadData(any(), any(), any())
+    }
+
+    @Test
+    fun testFinish() {
+        viewModel.finish()
+        verify(finish).invoke()
+    }
+
+    @Test
+    fun testOnCreateOnSuccess() {
+        Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
+        viewModel.onCreate()
+        verify(tracker).trackView()
         Assert.assertEquals(View.VISIBLE, viewModel.progressVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
         val onSuccessCaptor = argumentCaptor<(test: String) -> Unit>()
-        val onErrorCaptor = argumentCaptor<() -> Unit>()
-        Mockito.verify(dataManager)
-            .loadData(onSuccessCaptor.capture(), onErrorCaptor.capture(), eq(url))
-
-        Mockito.`when`(testOccurrence.details).thenReturn("")
+        verify(dataManager)
+            .loadData(onSuccessCaptor.capture(), any(), eq(url))
         val testDetails = "Test details"
         onSuccessCaptor.lastValue(testDetails)
         Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
         Assert.assertEquals(View.VISIBLE, viewModel.testDetailsVisibility.get())
         Assert.assertEquals(testDetails, viewModel.testDetailsText.get())
+    }
 
-        Mockito.`when`(testOccurrence.details).thenReturn("")
-        onSuccessCaptor.lastValue(testDetails)
+    @Test
+    fun testOnCreateOnSuccessIfDetailsIsEmpty() {
         Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
+        viewModel.onCreate()
+        verify(tracker).trackView()
+        Assert.assertEquals(View.VISIBLE, viewModel.progressVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
+        val onSuccessCaptor = argumentCaptor<(test: String) -> Unit>()
+        verify(dataManager)
+            .loadData(onSuccessCaptor.capture(), any(), eq(url))
+        onSuccessCaptor.lastValue("")
+        Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
         Assert.assertEquals(View.VISIBLE, viewModel.emptyVisibility.get())
+    }
 
+    @Test
+    fun testOnCreateOnError() {
+        Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
+        viewModel.onCreate()
+        verify(tracker).trackView()
+        Assert.assertEquals(View.VISIBLE, viewModel.progressVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.emptyVisibility.get())
+        Assert.assertEquals(View.GONE, viewModel.errorVisibility.get())
+        val onErrorCaptor = argumentCaptor<() -> Unit>()
+        verify(dataManager)
+            .loadData(any(), onErrorCaptor.capture(), eq(url))
         onErrorCaptor.lastValue()
         Assert.assertEquals(View.GONE, viewModel.progressVisibility.get())
         Assert.assertEquals(View.GONE, viewModel.testDetailsVisibility.get())
@@ -96,6 +154,6 @@ class TestDetailsViewModelTest {
     @Test
     fun testOnDestroyViews() {
         viewModel.onDestroy()
-        Mockito.verify(dataManager).unsubscribe()
+        verify(dataManager).unsubscribe()
     }
 }
