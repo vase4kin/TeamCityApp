@@ -25,7 +25,6 @@ import com.github.vase4kin.teamcityapp.new_drawer.view.BottomDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.DividerDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.ManageAccountsDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.NewAccountDrawerItem
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -33,9 +32,10 @@ import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.storage.Storage
 
 class DrawerViewModel(
-    private val sharedUserStorage: SharedUserStorage,
+    private val storage: Storage,
     private val chromeCustomTabs: ChromeCustomTabs,
     private val setAdapter: (items: List<BaseDrawerItem>) -> Unit,
     private val tracker: DrawerTracker
@@ -63,10 +63,10 @@ class DrawerViewModel(
 
     private fun createItems(): List<BaseDrawerItem> {
         // Set title
-        val activeAccounts = sharedUserStorage.userAccounts.filter {
+        val activeAccounts = storage.userAccounts.filter {
             it.isActive
         }.map { AccountDrawerItem(it) }
-        val otherAccounts = sharedUserStorage.userAccounts.filterNot {
+        val otherAccounts = storage.userAccounts.filterNot {
             it.isActive
         }.map { AccountDrawerItem(it) }
         // add user account to list

@@ -19,13 +19,13 @@ package com.github.vase4kin.teamcityapp.new_drawer.drawer
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 
 class DrawerRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment,
-    private val sharedUserStorage: SharedUserStorage,
+    private val storage: Storage,
     private val chromeCustomTabs: ChromeCustomTabs,
     private val router: DrawerAppRouter
 ) :
@@ -57,7 +57,7 @@ class DrawerRouterImpl(
     }
 
     override fun switchToAccount(account: UserAccount) {
-        sharedUserStorage.setUserActive(account.teamcityUrl, account.userName)
+        storage.setUserActive(account.teamcityUrl, account.userName)
         router.openHomeActivity()
     }
 }

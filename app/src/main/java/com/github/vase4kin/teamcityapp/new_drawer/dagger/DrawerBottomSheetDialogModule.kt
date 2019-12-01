@@ -36,13 +36,13 @@ import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_BOTTOM
 import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_DIVIDER
 import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_MENU
 import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.storage.Storage
 
 @Module
 class DrawerBottomSheetDialogModule {
@@ -50,25 +50,25 @@ class DrawerBottomSheetDialogModule {
     @Provides
     fun providesViewModel(
         fragment: DrawerBottomSheetDialogFragment,
-        sharedUserStorage: SharedUserStorage,
+        storage: Storage,
         chromeCustomTabs: ChromeCustomTabs,
         tracker: DrawerTracker
     ): DrawerViewModel {
         val setAdapter: (items: List<BaseDrawerItem>) -> Unit = {
             fragment.setAdapter(it)
         }
-        return DrawerViewModel(sharedUserStorage, chromeCustomTabs, setAdapter, tracker)
+        return DrawerViewModel(storage, chromeCustomTabs, setAdapter, tracker)
     }
 
     @DrawerBottomSheetDialogScope
     @Provides
     fun providesRouter(
         fragment: DrawerBottomSheetDialogFragment,
-        sharedUserStorage: SharedUserStorage,
+        storage: Storage,
         chromeCustomTabs: ChromeCustomTabs,
         router: DrawerAppRouter
     ): DrawerRouter {
-        return DrawerRouterImpl(fragment, sharedUserStorage, chromeCustomTabs, router)
+        return DrawerRouterImpl(fragment, storage, chromeCustomTabs, router)
     }
 
     @Provides

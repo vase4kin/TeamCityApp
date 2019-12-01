@@ -27,4 +27,6 @@ interface Storage {
     fun removeUserAccount(userAccount: UserAccount)
 
     fun setOtherUserActive()
+
+    fun setUserActive(url: String, userName: String)
 }
