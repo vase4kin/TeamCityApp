@@ -26,6 +26,12 @@ import com.github.vase4kin.teamcityapp.new_drawer.view.DividerDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.ManageAccountsDrawerItem
 import com.github.vase4kin.teamcityapp.new_drawer.view.NewAccountDrawerItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 
 class DrawerViewModel(
@@ -34,6 +40,8 @@ class DrawerViewModel(
     private val setAdapter: (items: List<BaseDrawerItem>) -> Unit,
     private val tracker: DrawerTracker
 ) {
+
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     fun onViewCreated() {
         chromeCustomTabs.initCustomsTabs()
@@ -45,6 +53,15 @@ class DrawerViewModel(
     }
 
     private fun initDrawer() {
+        Observable.fromCallable { createItems() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { setAdapter(it) }
+            ).addTo(compositeDisposable)
+    }
+
+    private fun createItems(): List<BaseDrawerItem> {
         // Set title
         val activeAccounts = sharedUserStorage.userAccounts.filter {
             it.isActive
@@ -72,13 +89,11 @@ class DrawerViewModel(
         list.add(DividerDrawerItem())
         // add bottom
         list.add(BottomDrawerItem())
-
-        // set adapter
-        setAdapter(list)
-        // set links to open by chrome tabs
+        return list
     }
 
     fun onDestroyView() {
         chromeCustomTabs.unbindCustomsTabs()
+        compositeDisposable.clear()
     }
 }
