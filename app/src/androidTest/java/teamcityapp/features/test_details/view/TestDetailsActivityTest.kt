@@ -23,12 +23,15 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.web.assertion.WebViewAssertions
+import androidx.test.espresso.web.sugar.Web
+import androidx.test.espresso.web.webdriver.DriverAtoms
+import androidx.test.espresso.web.webdriver.Locator
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
@@ -39,6 +42,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
+import org.hamcrest.Matchers
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Rule
 import org.junit.Test
@@ -48,6 +52,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 import teamcityapp.features.test_details.repository.models.TestOccurrence
+import java.util.concurrent.TimeUnit
 
 /**
  * Tests for [TestDetailsActivity]
@@ -57,20 +62,22 @@ class TestDetailsActivityTest {
 
     @JvmField
     @Rule
-    val daggerRule: DaggerMockRule<RestApiComponent> = DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-        .addComponentDependency(
-            AppComponent::class.java,
-            AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-        )
-        .set { restApiComponent ->
-            val app =
-                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-            app.setRestApiInjector(restApiComponent)
-        }
+    val daggerRule: DaggerMockRule<RestApiComponent> =
+        DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
+            .addComponentDependency(
+                AppComponent::class.java,
+                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
+            )
+            .set { restApiComponent ->
+                val app =
+                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+                app.setRestApiInjector(restApiComponent)
+            }
 
     @JvmField
     @Rule
-    val activityRule: CustomActivityTestRule<TestDetailsActivity> = CustomActivityTestRule(TestDetailsActivity::class.java)
+    val activityRule: CustomActivityTestRule<TestDetailsActivity> =
+        CustomActivityTestRule(TestDetailsActivity::class.java)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -81,7 +88,8 @@ class TestDetailsActivityTest {
     @Test
     fun testUserSeesTestDetails() {
         // Prepare mocks
-        `when`(test.details).thenReturn("Test details")
+        val testDetails = "Test details"
+        `when`(test.details).thenReturn(testDetails)
         `when`(teamCityService.testOccurrence(anyString())).thenReturn(
             Single.just(test)
         )
@@ -89,7 +97,7 @@ class TestDetailsActivityTest {
         // Prepare intent
         val intent = Intent()
         val b = Bundle()
-        b.putString(BundleExtractorValues.TEST_URL, "/test")
+        b.putString(TestDetailsActivity.ARG_TEST_URL, "/test")
         intent.putExtras(b)
 
         // Start activity
@@ -98,15 +106,16 @@ class TestDetailsActivityTest {
         // Checking toolbar title
         TestUtils.matchToolbarTitle("Details")
 
-        // check details
-        onView(withId(R.id.test_occurrence_details)).check(
-            matches(
-                allOf(
-                    withText("Test details"),
-                    isDisplayed()
+        // Check web view content
+        Web.onWebView()
+            .withElement(DriverAtoms.findElement(Locator.ID, "test_details"))
+            .withTimeout(5, TimeUnit.SECONDS)
+            .check(
+                WebViewAssertions.webMatches(
+                    DriverAtoms.getText(),
+                    Matchers.containsString(testDetails)
                 )
             )
-        )
     }
 
     @Test
@@ -120,7 +129,7 @@ class TestDetailsActivityTest {
         // Prepare intent
         val intent = Intent()
         val b = Bundle()
-        b.putString(BundleExtractorValues.TEST_URL, "/test")
+        b.putString(TestDetailsActivity.ARG_TEST_URL, "/test")
         intent.putExtras(b)
 
         // Start activity
@@ -150,7 +159,7 @@ class TestDetailsActivityTest {
         // Prepare intent
         val intent = Intent()
         val b = Bundle()
-        b.putString(BundleExtractorValues.TEST_URL, "/test")
+        b.putString(TestDetailsActivity.ARG_TEST_URL, "/test")
         intent.putExtras(b)
 
         // Start activity
@@ -160,6 +169,6 @@ class TestDetailsActivityTest {
         TestUtils.matchToolbarTitle("Details")
 
         // check details error
-        onView(withText("Errror!")).check(matches(isDisplayed()))
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
     }
 }

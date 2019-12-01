@@ -65,7 +65,6 @@ import teamcityapp.features.about.dagger.AboutFragmentScope
 import teamcityapp.features.manage_accounts.dagger.ManageAccountsActivityScope
 import teamcityapp.features.manage_accounts.dagger.ManageAccountsModule
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
-import teamcityapp.features.test_details.dagger.TestDetailBundlesModule
 import teamcityapp.features.test_details.dagger.TestDetailsActivityScope
 import teamcityapp.features.test_details.dagger.TestDetailsModule
 import teamcityapp.features.test_details.view.TestDetailsActivity
@@ -89,7 +88,6 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(
         modules = [
             TestDetailsModule::class,
-            TestDetailBundlesModule::class,
             UtilsModule::class,
             TestDetailsRepositoryModule::class
         ]

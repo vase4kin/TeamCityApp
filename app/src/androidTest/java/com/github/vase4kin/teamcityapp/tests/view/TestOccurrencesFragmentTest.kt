@@ -179,7 +179,7 @@ class TestOccurrencesFragmentTest {
                 hasComponent(TestDetailsActivity::class.java.name),
                 hasExtras(
                     hasEntry(
-                        equalTo(BundleExtractorValues.TEST_URL),
+                        equalTo(TestDetailsActivity.ARG_TEST_URL),
                         equalTo("/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)")
                     )
                 )

@@ -14,52 +14,47 @@
   ~ limitations under the License.
   -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:orientation="vertical"
-    tools:context=".view.TestDetailsActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <data>
+
+        <variable
+            name="vm"
+            type="teamcityapp.features.test_details.viewmodel.TestDetailsViewModel" />
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        tools:context=".view.TestDetailsActivity">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/tool_bar"
-            app:title="@string/test_details_title"
-            app:titleTextColor="@color/white"/>
+            android:layout_height="?attr/actionBarSize">
 
-    </com.google.android.material.appbar.AppBarLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/red"
+                app:navigationIcon="@drawable/ic_close_white_24dp"
+                app:setNavigationOnClickListener="@{() -> vm.finish.invoke()}"
+                app:title="@string/test_details_title"
+                app:titleTextColor="@color/white" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-            <HorizontalScrollView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/test_occurrence_details"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:textIsSelectable="true"
-                    android:visibility="gone" />
-
-            </HorizontalScrollView>
-
-        </ScrollView>
+        <WebView
+            android:id="@+id/test_occurrence_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="@{vm.testDetailsVisibility}"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:testDetails="@{vm.testDetailsText}" />
 
         <ProgressBar
             android:id="@+id/progress_wheel"
@@ -68,30 +63,36 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:indeterminate="true"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            android:visibility="@{vm.progressVisibility}"
+            tools:visibility="gone" />
 
         <tr.xip.errorview.ErrorView
             android:id="@+id/error_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:layout_margin="16dp"
-            android:visibility="gone"
-            app:ev_title="@string/error_view_oops_message"
+            android:visibility="@{vm.errorVisibility}"
+            app:ev_imageTint="@color/sub_text_color"
+            app:ev_retryColor="@color/main_text_color"
             app:ev_retryText="@string/error_view_retry_button_text"
-            app:ev_titleColor="@color/main_text_color"
+            app:ev_subtitle="@string/error_view_error_text"
             app:ev_subtitleColor="@color/sub_text_color"
-            app:ev_retryColor="@color/main_text_color" />
+            app:ev_title="@string/error_view_oops_message"
+            app:ev_titleColor="@color/main_text_color"
+            app:retryListener="@{vm}"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            tools:visibility="gone" />
 
         <TextView
             android:id="@+id/empty"
+            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/text_empty_test_details"
-            android:visibility="gone" />
+            android:visibility="@{vm.emptyVisibility}"
+            tools:visibility="gone" />
 
-    </FrameLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-</LinearLayout>
+</layout>

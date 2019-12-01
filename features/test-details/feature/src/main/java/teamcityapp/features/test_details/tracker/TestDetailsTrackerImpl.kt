@@ -22,7 +22,7 @@ import javax.inject.Inject
 /**
  * Test details tracking class
  */
-class FirebaseTestDetailsTrackerImpl @Inject constructor(
+class TestDetailsTrackerImpl @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics
 ) : TestDetailsTracker {
 

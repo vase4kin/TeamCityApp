@@ -16,11 +16,6 @@
 
 package teamcityapp.features.test_details.data
 
-import teamcityapp.features.test_details.repository.models.TestOccurrence
-
-/**
- * Data manager for managing server operations for [TestDetailsActivity]
- */
 interface TestDetailsDataManager {
 
     /**
@@ -30,8 +25,8 @@ interface TestDetailsDataManager {
      * @param url - Test details url
      */
     fun loadData(
-        onSuccess: (test: TestOccurrence) -> Unit,
-        onError: (errorMessage: String) -> Unit,
+        onSuccess: (testDetails: String) -> Unit,
+        onError: () -> Unit,
         url: String
     )
 

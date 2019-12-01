@@ -24,6 +24,12 @@ apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../../scripts/jacoco.gradle'
 
+android {
+    dataBinding {
+        enabled = true
+    }
+}
+
 dependencies {
     implementation project(':features:test-details:repository')
     implementation project(':features:test-details:models')
@@ -33,6 +39,7 @@ dependencies {
     implementation project(':libraries:theme')
 
     implementation Libs.AndroidX.appcompat
+    implementation Libs.AndroidX.LifeCycle.lifeCycle
     implementation Libs.Google.material
     implementation Libs.Dagger.dagger
     implementation Libs.Dagger.androidSupport
@@ -43,6 +50,7 @@ dependencies {
     implementation Libs.Kotlin.stdlib
     implementation Libs.errorView
 
+    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
     kapt Libs.Dagger.compiler
     kapt Libs.Dagger.androidProcessor
 
