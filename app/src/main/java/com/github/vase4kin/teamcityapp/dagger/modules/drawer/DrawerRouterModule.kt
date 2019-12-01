@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.drawer
+package com.github.vase4kin.teamcityapp.dagger.modules.drawer
 
-import teamcityapp.libraries.storage.models.UserAccount
+import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerAppRouter
+import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerAppRouterImpl
+import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
+import dagger.Module
+import dagger.Provides
 
-interface DrawerRouter {
+@Module
+class DrawerRouterModule {
 
-    fun openPrivacy()
-
-    fun openRateTheApp()
-
-    fun openAbout()
-
-    fun openAddNewAccount()
-
-    fun openManageAccounts()
-
-    fun switchToAccount(account: UserAccount)
+    @Provides
+    fun providesAppRouter(
+        fragment: DrawerBottomSheetDialogFragment
+    ): DrawerAppRouter {
+        return DrawerAppRouterImpl(fragment)
+    }
 }

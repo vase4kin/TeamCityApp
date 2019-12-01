@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.dagger
 
+import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerAppRouter
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
 import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouterImpl
 import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
@@ -64,9 +65,10 @@ class DrawerBottomSheetDialogModule {
     fun providesRouter(
         fragment: DrawerBottomSheetDialogFragment,
         sharedUserStorage: SharedUserStorage,
-        chromeCustomTabs: ChromeCustomTabs
+        chromeCustomTabs: ChromeCustomTabs,
+        router: DrawerAppRouter
     ): DrawerRouter {
-        return DrawerRouterImpl(fragment, sharedUserStorage, chromeCustomTabs)
+        return DrawerRouterImpl(fragment, sharedUserStorage, chromeCustomTabs, router)
     }
 
     @Provides

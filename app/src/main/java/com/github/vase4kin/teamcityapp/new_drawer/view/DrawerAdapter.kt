@@ -169,7 +169,7 @@ class AccountViewHolder(
         if (account.isActive.not()) {
             itemView.setOnClickListener {
                 tracker.trackChangeAccount()
-                router.swithAccounts(account)
+                router.switchToAccount(account)
             }
         }
     }

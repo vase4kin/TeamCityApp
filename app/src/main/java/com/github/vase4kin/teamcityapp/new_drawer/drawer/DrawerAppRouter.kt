@@ -16,19 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.new_drawer.drawer
 
-import teamcityapp.libraries.storage.models.UserAccount
+interface DrawerAppRouter {
 
-interface DrawerRouter {
+    fun openAboutScreen()
 
-    fun openPrivacy()
-
-    fun openRateTheApp()
-
-    fun openAbout()
-
-    fun openAddNewAccount()
+    fun openNewAccount()
 
     fun openManageAccounts()
 
-    fun switchToAccount(account: UserAccount)
+    fun openHomeActivity()
 }
