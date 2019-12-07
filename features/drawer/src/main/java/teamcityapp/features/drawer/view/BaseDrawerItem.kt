@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.view
+package teamcityapp.features.drawer.view
 
-import com.github.vase4kin.teamcityapp.R
+import teamcityapp.features.drawer.R
 import teamcityapp.libraries.storage.models.UserAccount
 
 abstract class BaseDrawerItem(

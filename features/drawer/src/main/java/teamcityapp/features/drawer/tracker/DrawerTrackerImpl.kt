@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.tracker
+package teamcityapp.features.drawer.tracker
 
 import com.google.firebase.analytics.FirebaseAnalytics
 
-class DrawerTrackerImpl(private val firebaseAnalytics: FirebaseAnalytics) : DrawerTracker {
+class DrawerTrackerImpl(
+    private val firebaseAnalytics: FirebaseAnalytics
+) : DrawerTracker {
 
     /**
      * {@inheritDoc}

@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.viewmodel
+package teamcityapp.features.drawer.viewmodel
 
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.new_drawer.view.AboutDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.AccountDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.BottomDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.DividerDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.ManageAccountsDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.NewAccountDrawerItem
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import teamcityapp.features.drawer.tracker.DrawerTracker
+import teamcityapp.features.drawer.view.AboutDrawerItem
+import teamcityapp.features.drawer.view.AccountDrawerItem
+import teamcityapp.features.drawer.view.AccountsDividerDrawerItem
+import teamcityapp.features.drawer.view.BaseDrawerItem
+import teamcityapp.features.drawer.view.BottomDrawerItem
+import teamcityapp.features.drawer.view.DividerDrawerItem
+import teamcityapp.features.drawer.view.ManageAccountsDrawerItem
+import teamcityapp.features.drawer.view.NewAccountDrawerItem
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.storage.Storage
 

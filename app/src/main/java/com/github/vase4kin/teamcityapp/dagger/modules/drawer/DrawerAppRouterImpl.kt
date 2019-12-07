@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.drawer
+package com.github.vase4kin.teamcityapp.dagger.modules.drawer
 
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.about.AboutActivity
+import teamcityapp.features.drawer.drawer.DrawerAppRouter
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
 
 class DrawerAppRouterImpl(

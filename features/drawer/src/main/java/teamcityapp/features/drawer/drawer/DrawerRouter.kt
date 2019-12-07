@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.drawer
+package teamcityapp.features.drawer.drawer
 
-interface DrawerAppRouter {
+import teamcityapp.libraries.storage.models.UserAccount
 
-    fun openAboutScreen()
+interface DrawerRouter {
 
-    fun openNewAccount()
+    fun openPrivacy()
+
+    fun openRateTheApp()
+
+    fun openAbout()
+
+    fun openAddNewAccount()
 
     fun openManageAccounts()
 
-    fun openHomeActivity()
+    fun switchToAccount(account: UserAccount)
 }

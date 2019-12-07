@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.dagger
+package teamcityapp.features.drawer.drawer
 
-import javax.inject.Scope
+interface DrawerAppRouter {
 
-@Scope
-annotation class DrawerBottomSheetDialogScope
+    fun openAboutScreen()
+
+    fun openNewAccount()
+
+    fun openManageAccounts()
+
+    fun openHomeActivity()
+}

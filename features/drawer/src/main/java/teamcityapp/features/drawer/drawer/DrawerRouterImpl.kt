@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.drawer
+package teamcityapp.features.drawer.drawer
 
 import com.danielstone.materialaboutlibrary.ConvenienceBuilder
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
+import teamcityapp.features.drawer.R
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount

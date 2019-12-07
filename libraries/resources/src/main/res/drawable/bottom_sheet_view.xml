@@ -14,16 +14,7 @@
   ~ limitations under the License.
   -->
 
-<resources>
-    <color name="colorAccent">#4db6ac</color>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="divider_color">#E0E0E0</color>
-    <color name="recycler_view_background">#F5F5F5</color>
-    <color name="white">@color/colorWhite</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="main_text_color">@android:color/secondary_text_light</color>
-    <color name="sub_text_color">@android:color/tertiary_text_dark</color>
-    <color name="transparent">#00000000</color>
-    <color name="queued_tool_bar_color">#BDBDBD</color>
-</resources>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners android:radius="16dp" />
+    <solid android:color="@color/queued_tool_bar_color" />
+</shape>

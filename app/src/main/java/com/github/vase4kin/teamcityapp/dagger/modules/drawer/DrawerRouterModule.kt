@@ -16,11 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules.drawer
 
-import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerAppRouter
-import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerAppRouterImpl
-import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import dagger.Module
 import dagger.Provides
+import teamcityapp.features.drawer.drawer.DrawerAppRouter
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 
 @Module
 class DrawerRouterModule {

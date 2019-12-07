@@ -23,11 +23,12 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut
 import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
-import com.github.vase4kin.teamcityapp.new_drawer.utils.DrawerActivityStartUtils
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.android.AndroidInjection
 import dagger.android.support.DaggerAppCompatActivity
+import teamcityapp.features.drawer.utils.DrawerActivityStartUtils
 import javax.inject.Inject
 
 class HomeActivity : DaggerAppCompatActivity() {
@@ -76,7 +77,9 @@ class HomeActivity : DaggerAppCompatActivity() {
     }
 
     private fun reinitDeps() {
-        (this.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(sharedUserStorage.activeUser.teamcityUrl)
+        (this.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(
+            sharedUserStorage.activeUser.teamcityUrl
+        )
         AndroidInjection.inject(this)
     }
 
@@ -112,7 +115,11 @@ class HomeActivity : DaggerAppCompatActivity() {
                         or Intent.FLAG_ACTIVITY_SINGLE_TOP
                 )
             launchIntent.putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
-            DrawerActivityStartUtils.startActivity(launchIntent, activity)
+            DrawerActivityStartUtils.startActivity(
+                launchIntent,
+                activity,
+                DrawerTimeOut.DELAY_ON_CLOSE
+            )
         }
 
         fun start(activity: Activity) {
