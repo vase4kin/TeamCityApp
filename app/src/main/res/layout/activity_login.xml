@@ -139,46 +139,84 @@
             android:text="@string/text_disable_ssl_switch"
             android:textColor="@color/white" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_login"
+            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/login_screen_margin"
-            android:layout_marginTop="@dimen/login_screen_margin"
-            android:layout_marginRight="@dimen/login_screen_margin"
-            android:layout_marginBottom="@dimen/login_screen_margin"
-            android:text="@string/text_login_button"
-            android:theme="@style/LoginButton" />
+            android:layout_margin="@dimen/login_screen_margin"
+            android:text="@string/text_login_button" />
 
-        <TextView
-            android:id="@+id/give_it_a_try"
+        <ProgressBar
+            android:id="@+id/give_it_a_try_progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/login_screen_margin"
-            android:layout_marginRight="@dimen/login_screen_margin"
             android:layout_marginBottom="@dimen/login_screen_margin"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center"
-            android:text="@string/text_try_it_out"
-            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
-            android:textSize="16sp"
+            android:indeterminateTint="@color/white"
             android:visibility="gone"
             tools:visibility="visible" />
 
-        <ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="11dp"
-            android:layout_height="10dp"
-            android:layout_gravity="center"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/give_it_a_try_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/login_screen_margin"
             android:layout_marginRight="@dimen/login_screen_margin"
             android:layout_marginBottom="@dimen/login_screen_margin"
             android:visibility="gone"
-            android:indeterminateTint="@color/white"
-            tools:visibility="visible" />
+            app:cardBackgroundColor="@color/colorPrimaryDark"
+            app:cardCornerRadius="@dimen/small_margin"
+            tools:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_margin="@dimen/default_margin"
+                    android:tint="@color/white"
+                    app:layout_constraintBottom_toBottomOf="@id/text"
+                    app:layout_constraintEnd_toStartOf="@id/text"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/text"
+                    app:srcCompat="@drawable/ic_lightbulb_outline_black_24dp" />
+
+                <TextView
+                    android:id="@+id/text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/default_margin"
+                    android:layout_marginEnd="@dimen/default_margin"
+                    android:gravity="start"
+                    android:text="@string/text_try_it_out"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/imageView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_try_it_out"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:layout_marginEnd="@dimen/default_margin"
+                    android:text="@string/text_button_try_it_out"
+                    android:textColor="@color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/text"
+                    app:rippleColor="@color/white"
+                    app:strokeColor="@color/white" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
 
     </LinearLayout>
 

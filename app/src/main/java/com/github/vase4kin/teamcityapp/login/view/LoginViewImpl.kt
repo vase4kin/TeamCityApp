@@ -25,7 +25,6 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Switch
-import android.widget.TextView
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
 import butterknife.BindColor
@@ -34,6 +33,7 @@ import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputLayout
 
 class LoginViewImpl(private val activity: Activity) : LoginView {
@@ -65,10 +65,12 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
     lateinit var disableSslSwitch: Switch
     @BindView(R.id.btn_login)
     lateinit var loginButton: Button
-    @BindView(R.id.give_it_a_try)
-    lateinit var tryItOutTextView: TextView
-    @BindView(R.id.progress)
+    @BindView(R.id.give_it_a_try_view)
+    lateinit var tryItOutTextView: View
+    @BindView(R.id.give_it_a_try_progress)
     lateinit var progressBar: ProgressBar
+    @BindView(R.id.btn_try_it_out)
+    lateinit var tryItOutTextButton: MaterialButton
 
     private lateinit var unbinder: Unbinder
     private lateinit var progressDialog: MaterialDialog
@@ -126,7 +128,7 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
             }
         }
 
-        tryItOutTextView.setOnClickListener { listener.onTryItOutTextClick() }
+        tryItOutTextButton.setOnClickListener { listener.onTryItOutTextClick() }
     }
 
     /**

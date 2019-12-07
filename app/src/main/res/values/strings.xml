@@ -176,7 +176,8 @@
     <!--Login activity-->
     <string name="text_progress_bar_loading">Authenticating…</string>
     <string name="text_app_description">TeamCity in your pocket</string>
-    <string name="text_try_it_out">Haven\'t set up your server yet or having issues signing in? Want to give it a try? Tap here!</string>
+    <string name="text_try_it_out">Haven\'t set up your server yet or having issues signing in? Still want to give it a try?</string>
+    <string name="text_button_try_it_out">Tap here</string>
     <string name="text_teamcity_url">https://</string>
     <string name="text_guest_user_switch">Login as guest user</string>
     <string name="text_disable_ssl_switch">Ignore SSL issues</string>
