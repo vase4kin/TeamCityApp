@@ -19,9 +19,9 @@ package com.github.vase4kin.teamcityapp.login.view
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.clearText
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents
@@ -484,7 +484,7 @@ class LoginActivityTest {
 
         activityRule.launchActivity(null)
 
-        onView(withId(R.id.give_it_a_try))
+        onView(withId(R.id.give_it_a_try_view))
             .check(matches(not(isDisplayed())))
     }
 
@@ -496,7 +496,7 @@ class LoginActivityTest {
 
         activityRule.launchActivity(null)
 
-        onView(withId(R.id.give_it_a_try))
+        onView(withId(R.id.btn_try_it_out))
             .perform(scrollTo())
             .check(matches(isDisplayed()))
             .perform(click())
@@ -526,7 +526,7 @@ class LoginActivityTest {
 
         activityRule.launchActivity(null)
 
-        onView(withId(R.id.give_it_a_try))
+        onView(withId(R.id.btn_try_it_out))
             .perform(scrollTo())
             .check(matches(isDisplayed())).perform(click())
 
