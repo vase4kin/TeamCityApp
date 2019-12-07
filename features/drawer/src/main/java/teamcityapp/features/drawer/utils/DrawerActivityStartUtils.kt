@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.utils
+package teamcityapp.features.drawer.utils
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Handler
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut
+import teamcityapp.features.drawer.R
 
 /**
  * Helper for start activities from the drawer
@@ -33,12 +32,12 @@ object DrawerActivityStartUtils {
      * @param launchIntent - Intent to start
      * @param activity - Activity context
      */
-    fun startActivity(launchIntent: Intent?, activity: Activity) {
+    fun startActivity(launchIntent: Intent?, activity: Activity, drawerTimeOut: Int) {
         if (launchIntent != null) {
             Handler().postDelayed({
                 activity.startActivity(launchIntent)
                 activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
-            }, DrawerTimeOut.DELAY_ON_CLOSE.toLong())
+            }, drawerTimeOut.toLong())
         }
     }
 }

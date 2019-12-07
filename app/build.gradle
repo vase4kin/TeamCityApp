@@ -134,6 +134,8 @@ dependencies {
 
     implementation project(':features:manage-accounts')
 
+    implementation project(':features:drawer')
+
     // Android support libraries
     implementation Libs.AndroidX.appcompat
     implementation 'androidx.cardview:cardview:1.0.0'

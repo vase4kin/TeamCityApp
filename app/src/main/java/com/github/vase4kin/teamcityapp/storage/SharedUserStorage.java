@@ -190,7 +190,7 @@ public class SharedUserStorage implements Collectible<UserAccount>, Storage {
      *
      * @param url - TC url
      */
-    public void setUserActive(String url, String userName) {
+    public void setUserActive(@NonNull String url, @NonNull String userName) {
         setActiveUserNotActive();
         for (UserAccount userAccount : usersContainer.getUsersAccounts()) {
             if (userAccount.equals(UsersFactory.user(url, userName))) {

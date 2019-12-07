@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.dagger
+package teamcityapp.features.drawer.dagger
 
-import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
-import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouterImpl
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTrackerImpl
-import com.github.vase4kin.teamcityapp.new_drawer.view.AccountViewHolderFactory
-import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerViewHolderFactory
-import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerViewHolderFactory
-import com.github.vase4kin.teamcityapp.new_drawer.view.BottomViewHolderFactory
-import com.github.vase4kin.teamcityapp.new_drawer.view.DividerViewHolderFactory
-import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerAdapter
-import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
-import com.github.vase4kin.teamcityapp.new_drawer.view.MenuViewHolderFactory
-import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_ACCOUNT
-import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_ACCOUNTS_DIVIDER
-import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_BOTTOM
-import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_DIVIDER
-import com.github.vase4kin.teamcityapp.new_drawer.view.TYPE_MENU
-import com.github.vase4kin.teamcityapp.new_drawer.viewmodel.DrawerViewModel
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import teamcityapp.features.drawer.drawer.DrawerAppRouter
+import teamcityapp.features.drawer.drawer.DrawerRouter
+import teamcityapp.features.drawer.drawer.DrawerRouterImpl
+import teamcityapp.features.drawer.tracker.DrawerTracker
+import teamcityapp.features.drawer.tracker.DrawerTrackerImpl
+import teamcityapp.features.drawer.view.AccountViewHolderFactory
+import teamcityapp.features.drawer.view.AccountsDividerViewHolderFactory
+import teamcityapp.features.drawer.view.BaseDrawerItem
+import teamcityapp.features.drawer.view.BaseDrawerViewHolderFactory
+import teamcityapp.features.drawer.view.BottomViewHolderFactory
+import teamcityapp.features.drawer.view.DividerViewHolderFactory
+import teamcityapp.features.drawer.view.DrawerAdapter
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
+import teamcityapp.features.drawer.view.MenuViewHolderFactory
+import teamcityapp.features.drawer.view.TYPE_ACCOUNT
+import teamcityapp.features.drawer.view.TYPE_ACCOUNTS_DIVIDER
+import teamcityapp.features.drawer.view.TYPE_BOTTOM
+import teamcityapp.features.drawer.view.TYPE_DIVIDER
+import teamcityapp.features.drawer.view.TYPE_MENU
+import teamcityapp.features.drawer.viewmodel.DrawerViewModel
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.storage.Storage
 
 @Module
 class DrawerBottomSheetDialogModule {
@@ -49,24 +50,35 @@ class DrawerBottomSheetDialogModule {
     @Provides
     fun providesViewModel(
         fragment: DrawerBottomSheetDialogFragment,
-        sharedUserStorage: SharedUserStorage,
+        storage: Storage,
         chromeCustomTabs: ChromeCustomTabs,
         tracker: DrawerTracker
     ): DrawerViewModel {
         val setAdapter: (items: List<BaseDrawerItem>) -> Unit = {
             fragment.setAdapter(it)
         }
-        return DrawerViewModel(sharedUserStorage, chromeCustomTabs, setAdapter, tracker)
+        return DrawerViewModel(
+            storage,
+            chromeCustomTabs,
+            setAdapter,
+            tracker
+        )
     }
 
     @DrawerBottomSheetDialogScope
     @Provides
     fun providesRouter(
         fragment: DrawerBottomSheetDialogFragment,
-        sharedUserStorage: SharedUserStorage,
-        chromeCustomTabs: ChromeCustomTabs
+        storage: Storage,
+        chromeCustomTabs: ChromeCustomTabs,
+        router: DrawerAppRouter
     ): DrawerRouter {
-        return DrawerRouterImpl(fragment, sharedUserStorage, chromeCustomTabs)
+        return DrawerRouterImpl(
+            fragment,
+            storage,
+            chromeCustomTabs,
+            router
+        )
     }
 
     @Provides

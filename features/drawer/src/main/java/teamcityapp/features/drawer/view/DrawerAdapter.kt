@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.view
+package teamcityapp.features.drawer.view
 
 import android.view.LayoutInflater
 import android.view.View
@@ -22,9 +22,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
+import teamcityapp.features.drawer.R
+import teamcityapp.features.drawer.drawer.DrawerRouter
+import teamcityapp.features.drawer.tracker.DrawerTracker
 
 class DrawerAdapter(
     val list: MutableList<BaseDrawerItem>,
@@ -33,7 +33,9 @@ class DrawerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseDrawerItemViewHolder {
         val type = DrawerType.values()[viewType].type
-        return viewHolderFactories[type]?.create(parent) ?: DividerViewHolder(parent)
+        return viewHolderFactories[type]?.create(parent) ?: DividerViewHolder(
+            parent
+        )
     }
 
     override fun getItemCount(): Int = list.count()
@@ -169,7 +171,7 @@ class AccountViewHolder(
         if (account.isActive.not()) {
             itemView.setOnClickListener {
                 tracker.trackChangeAccount()
-                router.swithAccounts(account)
+                router.switchToAccount(account)
             }
         }
     }

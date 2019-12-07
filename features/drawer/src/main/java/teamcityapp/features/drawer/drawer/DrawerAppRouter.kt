@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package teamcityapp.libraries.storage
+package teamcityapp.features.drawer.drawer
 
-import teamcityapp.libraries.storage.models.UserAccount
+interface DrawerAppRouter {
 
-interface Storage {
+    fun openAboutScreen()
 
-    val userAccounts: List<UserAccount>
+    fun openNewAccount()
 
-    fun hasUserAccounts(): Boolean
+    fun openManageAccounts()
 
-    fun removeUserAccount(userAccount: UserAccount)
-
-    fun setOtherUserActive()
-
-    fun setUserActive(url: String, userName: String)
+    fun openHomeActivity()
 }

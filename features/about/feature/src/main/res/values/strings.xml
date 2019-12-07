@@ -14,12 +14,11 @@
   ~ limitations under the License.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="about_app_text_rate_app">Rate the app</string>
     <string name="about_app_text_found_issue">Found an issue?</string>
     <string name="about_app_subtext_found_issue">Or want to suggest an improvement?</string>
     <string name="about_app_url_found_issue">https://github.com/vase4kin/TeamCityApp/issues/new/choose</string>
-    <string name="about_app_url_privacy" tools:ignore="TypographyDashes">https://telegra.ph/TeamCityApp-Private-Policy-09-18</string>
     <string name="about_app_text_source_code">Source code</string>
     <string name="about_app_url_source_code">https://github.com/vase4kin/TeamCityApp</string>
     <string name="about_app_text_libraries">Open sources libraries</string>

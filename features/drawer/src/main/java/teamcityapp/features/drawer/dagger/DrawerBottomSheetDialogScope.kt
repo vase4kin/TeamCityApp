@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package teamcityapp.libraries.storage
+package teamcityapp.features.drawer.dagger
 
-import teamcityapp.libraries.storage.models.UserAccount
+import javax.inject.Scope
 
-interface Storage {
-
-    val userAccounts: List<UserAccount>
-
-    fun hasUserAccounts(): Boolean
-
-    fun removeUserAccount(userAccount: UserAccount)
-
-    fun setOtherUserActive()
-
-    fun setUserActive(url: String, userName: String)
-}
+@Scope
+annotation class DrawerBottomSheetDialogScope

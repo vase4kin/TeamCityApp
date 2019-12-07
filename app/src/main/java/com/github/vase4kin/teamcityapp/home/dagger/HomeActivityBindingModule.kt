@@ -20,12 +20,10 @@ import com.github.vase4kin.teamcityapp.agents.dagger.AgentFragmentScope
 import com.github.vase4kin.teamcityapp.agents.dagger.AgentModule
 import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
+import com.github.vase4kin.teamcityapp.dagger.modules.drawer.DrawerRouterModule
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetDialogScope
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetModule
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
-import com.github.vase4kin.teamcityapp.new_drawer.dagger.DrawerBottomSheetDialogModule
-import com.github.vase4kin.teamcityapp.new_drawer.dagger.DrawerBottomSheetDialogScope
-import com.github.vase4kin.teamcityapp.new_drawer.view.DrawerBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentScope
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
@@ -54,7 +52,7 @@ abstract class HomeActivityBindingModule {
     @ContributesAndroidInjector(modules = [AgentModule::class])
     abstract fun agentListFragment(): AgentListFragment
 
-    @DrawerBottomSheetDialogScope
-    @ContributesAndroidInjector(modules = [DrawerBottomSheetDialogModule::class])
-    abstract fun drawerBottomSheetDialog(): DrawerBottomSheetDialogFragment
+    @teamcityapp.features.drawer.dagger.DrawerBottomSheetDialogScope
+    @ContributesAndroidInjector(modules = [teamcityapp.features.drawer.dagger.DrawerBottomSheetDialogModule::class, DrawerRouterModule::class])
+    abstract fun drawerBottomSheetDialog(): teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 }

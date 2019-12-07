@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.view
+package teamcityapp.features.drawer.view
 
 import android.view.ViewGroup
-import com.github.vase4kin.teamcityapp.new_drawer.drawer.DrawerRouter
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
+import teamcityapp.features.drawer.drawer.DrawerRouter
+import teamcityapp.features.drawer.tracker.DrawerTracker
 
 abstract class BaseDrawerViewHolderFactory {
 

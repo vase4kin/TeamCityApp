@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.dagger
+package com.github.vase4kin.teamcityapp.dagger.modules.drawer
 
-import javax.inject.Scope
+import dagger.Module
+import dagger.Provides
+import teamcityapp.features.drawer.drawer.DrawerAppRouter
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 
-@Scope
-annotation class DrawerBottomSheetDialogScope
+@Module
+class DrawerRouterModule {
+
+    @Provides
+    fun providesAppRouter(
+        fragment: DrawerBottomSheetDialogFragment
+    ): DrawerAppRouter {
+        return DrawerAppRouterImpl(fragment)
+    }
+}

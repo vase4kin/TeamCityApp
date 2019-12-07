@@ -21,7 +21,6 @@
     <color name="base_item_color">@color/white</color>
 
     <color name="queued_status_bar_color">#9E9E9E</color>
-    <color name="queued_tool_bar_color">#BDBDBD</color>
     <color name="tab_queued_unselected_color">#E0E0E0</color>
 
     <color name="running_status_bar_color">#00BCD4</color>
@@ -40,8 +39,6 @@
     <color name="pink_200">#ff4081</color>
 
     <color name="login_text_error_color">#FFD180</color>
-
-    <color name="transparent">#00000000</color>
 
     <color name="colorWhiteWithOpacity">#B3FFFFFF</color>
 

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-import teamcityapp.buildsrc.Config
 import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
@@ -24,32 +22,34 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
-apply from: '../../../scripts/jacoco.gradle'
+apply from: '../../scripts/jacoco.gradle'
 
 android {
-    defaultConfig {
-        versionName Config.versionName
+    dataBinding {
+        enabled = true
     }
 }
 
 dependencies {
-    implementation project(':features:about:repository')
-    implementation project(':features:about:models')
+    implementation project(':libraries:storage')
+    implementation project(':libraries:storage-models')
     implementation project(':libraries:resources')
     implementation project(':libraries:theme')
-    implementation project(':libraries:chrome-tabs')
     implementation project(':libraries:utils')
+    implementation project(':libraries:api')
+    implementation project(':libraries:chrome-tabs')
 
-    implementation Libs.AndroidX.appcompat
+    implementation Libs.Google.firebaseCore
     implementation Libs.Google.material
-    implementation Libs.Google.openSourceLicensesLibrary
+    implementation Libs.AndroidX.appcompat
+    implementation Libs.AndroidX.constraintLayout
     implementation Libs.Dagger.dagger
     implementation Libs.Dagger.androidSupport
+    implementation Libs.Kotlin.stdlib
+    implementation Libs.aboutLibrary
     implementation Libs.RxJava.rxJava
     implementation Libs.RxJava.rxAndroid
     implementation Libs.RxJava.rxjava_kotlin
-    implementation Libs.Kotlin.stdlib
-    implementation Libs.aboutLibrary
 
     kapt Libs.Dagger.compiler
     kapt Libs.Dagger.androidProcessor

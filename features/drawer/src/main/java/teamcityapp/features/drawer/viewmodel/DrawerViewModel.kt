@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.viewmodel
+package teamcityapp.features.drawer.viewmodel
 
-import com.github.vase4kin.teamcityapp.new_drawer.tracker.DrawerTracker
-import com.github.vase4kin.teamcityapp.new_drawer.view.AboutDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.AccountDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.AccountsDividerDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.BaseDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.BottomDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.DividerDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.ManageAccountsDrawerItem
-import com.github.vase4kin.teamcityapp.new_drawer.view.NewAccountDrawerItem
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxkotlin.addTo
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import teamcityapp.features.drawer.tracker.DrawerTracker
+import teamcityapp.features.drawer.view.AboutDrawerItem
+import teamcityapp.features.drawer.view.AccountDrawerItem
+import teamcityapp.features.drawer.view.AccountsDividerDrawerItem
+import teamcityapp.features.drawer.view.BaseDrawerItem
+import teamcityapp.features.drawer.view.BottomDrawerItem
+import teamcityapp.features.drawer.view.DividerDrawerItem
+import teamcityapp.features.drawer.view.ManageAccountsDrawerItem
+import teamcityapp.features.drawer.view.NewAccountDrawerItem
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.storage.Storage
 
 class DrawerViewModel(
-    private val sharedUserStorage: SharedUserStorage,
+    private val storage: Storage,
     private val chromeCustomTabs: ChromeCustomTabs,
     private val setAdapter: (items: List<BaseDrawerItem>) -> Unit,
     private val tracker: DrawerTracker
 ) {
+
+    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     fun onViewCreated() {
         chromeCustomTabs.initCustomsTabs()
@@ -45,11 +53,20 @@ class DrawerViewModel(
     }
 
     private fun initDrawer() {
+        Observable.fromCallable { createItems() }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { setAdapter(it) }
+            ).addTo(compositeDisposable)
+    }
+
+    private fun createItems(): List<BaseDrawerItem> {
         // Set title
-        val activeAccounts = sharedUserStorage.userAccounts.filter {
+        val activeAccounts = storage.userAccounts.filter {
             it.isActive
         }.map { AccountDrawerItem(it) }
-        val otherAccounts = sharedUserStorage.userAccounts.filterNot {
+        val otherAccounts = storage.userAccounts.filterNot {
             it.isActive
         }.map { AccountDrawerItem(it) }
         // add user account to list
@@ -72,13 +89,11 @@ class DrawerViewModel(
         list.add(DividerDrawerItem())
         // add bottom
         list.add(BottomDrawerItem())
-
-        // set adapter
-        setAdapter(list)
-        // set links to open by chrome tabs
+        return list
     }
 
     fun onDestroyView() {
         chromeCustomTabs.unbindCustomsTabs()
+        compositeDisposable.clear()
     }
 }

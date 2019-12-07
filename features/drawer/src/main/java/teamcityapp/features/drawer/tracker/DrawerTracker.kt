@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.new_drawer.tracker
+package teamcityapp.features.drawer.tracker
 
-import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
-
-interface DrawerTracker : ViewTracker {
+interface DrawerTracker {
 
     /**
      * Track account was changed
@@ -49,6 +47,11 @@ interface DrawerTracker : ViewTracker {
      * Track open manage accounts
      */
     fun trackOpenManageAccounts()
+
+    /**
+     * Track view
+     */
+    fun trackView()
 
     companion object {
 
