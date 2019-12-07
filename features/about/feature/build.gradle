@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import teamcityapp.buildsrc.Config
 import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
@@ -23,6 +25,12 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../../scripts/jacoco.gradle'
+
+android {
+    defaultConfig {
+        versionName Config.versionName
+    }
+}
 
 dependencies {
     implementation project(':features:about:repository')
