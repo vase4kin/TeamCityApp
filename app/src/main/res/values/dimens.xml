@@ -16,10 +16,7 @@
 
 <resources>
     <dimen name="small_margin">8dp</dimen>
-    <dimen name="default_item_margin_top">4dp</dimen>
-    <dimen name="other_dp">2dp</dimen>
     <dimen name="login_screen_margin">24dp</dimen>
-    <dimen name="toolbar_with_fab_height">170dp</dimen>
     <dimen name="padding_switch">12dp</dimen>
     <dimen name="default_fab_radius">32dp</dimen>
     <dimen name="default_prompt_fab_radius">38dp</dimen>
