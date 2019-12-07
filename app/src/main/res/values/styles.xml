@@ -24,35 +24,6 @@
         <item name="windowActionModeOverlay">true</item>
     </style>
 
-    <style name="BaseItem">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@color/base_item_color</item>
-    </style>
-
-    <style name="Item">
-        <item name="android:id">@id/container</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
-    </style>
-
-    <style name="Item.Clickable">
-        <item name="android:clickable">true</item>
-    </style>
-
-    <style name="Item.NotClickable">
-        <item name="android:clickable">false</item>
-    </style>
-
-    <style name="BaseItem.WrapHeight" parent="BaseItem">
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="BaseItem.WrapHeight.WrapWidth" parent="BaseItem.WrapHeight">
-        <item name="android:layout_width">wrap_content</item>
-    </style>
-
     <style name="BaseFloatingActionButton.NotVisible">
         <item name="android:visibility">gone</item>
     </style>
@@ -69,10 +40,6 @@
         <item name="backgroundTint">@color/colorAccent</item>
     </style>
 
-    <style name="Section.Build" parent="Header">
-        <item name="android:layout_height">28dp</item>
-    </style>
-
     <style name="Header" parent="SingleSubTextSizeItem">
         <item name="android:id">@id/section_text</item>
         <item name="android:layout_width">match_parent</item>
@@ -83,28 +50,15 @@
         <item name="android:singleLine">true</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:background">@color/recycler_view_background</item>
-        <item name="android:text">@string/default_name_value</item>
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/queued_status_bar_color</item>
         <item name="android:textStyle">bold</item>
         <item name="android:clickable">true</item>
     </style>
 
-    <style name="BaseItemsContainer">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:padding">@dimen/default_margin</item>
-    </style>
-
     <style name="Toolbar.NoElevation">
         <item name="android:elevation">0dp</item>
     </style>
-
-    <style name="LoginButton" parent="AppTheme" />
-
-    <style name="Hint" parent="LoginEditTextFloatingLabel" />
 
     <style name="LoginEditTextFloatingLabel" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
 
@@ -126,17 +80,6 @@
     <style name="LoginTextErrorAppearance" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/login_text_error_color</item>
         <item name="android:textSize">14sp</item>
-    </style>
-
-    <style name="Autocomplete" parent="Widget.AppCompat.Light.AutoCompleteTextView">
-        <item name="android:background">@color/colorWhite</item>
-        <item name="colorControlNormal">@color/colorWhite</item>
-        <item name="colorControlActivated">?android:attr/textColorSecondaryInverse</item>
-        <item name="android:textColorHint">?android:attr/textColorSecondaryInverse</item>
-        <item name="android:textColorPrimary">@color/colorWhite</item>
-        <item name="android:completionThreshold">1</item>
-        <item name="android:inputType">textNoSuggestions</item>
-        <item name="android:maxLines">1</item>
     </style>
 
     <style name="Switch">

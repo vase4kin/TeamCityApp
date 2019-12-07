@@ -15,28 +15,19 @@
   -->
 
 <resources>
-
-    <color name="snackbar_action_color_done">#ffccccff</color>
-
     <color name="base_item_color">@color/white</color>
 
     <color name="queued_status_bar_color">#9E9E9E</color>
     <color name="tab_queued_unselected_color">#E0E0E0</color>
 
-    <color name="running_status_bar_color">#00BCD4</color>
     <color name="running_tool_bar_color">#26C6DA</color>
     <color name="tab_running_unselected_color">#B2EBF2</color>
 
-    <color name="success_status_bar_color">#4CAF50</color>
     <color name="success_tool_bar_color">#66BB6A</color>
     <color name="tab_success_unselected_color">#A5D6A7</color>
 
-    <color name="failed_status_bar_color">#E57373</color>
     <color name="failed_tool_bar_color">#EF9A9A</color>
     <color name="tab_failed_unselected_color">#FFCDD2</color>
-
-    <color name="indigo_500">#3f51b5</color>
-    <color name="pink_200">#ff4081</color>
 
     <color name="login_text_error_color">#FFD180</color>
 

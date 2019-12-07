@@ -17,14 +17,6 @@
 <resources>
     <string name="app_name">TeamCityApp</string>
 
-    <!--default values-->
-    <string name="default_name_value">Name</string>
-    <string name="default_description_value">Description</string>
-
-    <!--agent tabs-->
-    <string name="tab_connected">Connected</string>
-    <string name="tab_disconnected">Disconnected</string>
-
     <!--drawer items-->
     <string name="home_drawer_item">Home</string>
     <string name="projects_drawer_item">Projects</string>
@@ -34,16 +26,10 @@
     <string name="build_queue_drawer_item">Build queue</string>
 
     <!--Activity titles-->
-    <string name="title_activity_agent_tabs">@string/agents_drawer_item</string>
-    <string name="title_activity_project_and_build_type_navigator">@string/projects_drawer_item</string>
     <string name="title_activity_build_list">Builds</string>
     <string name="title_activity_build">Build</string>
     <string name="title_activity_navigation">Project/BuildType</string>
     <string name="title_activity_create_account">Create account</string>
-    <string name="title_activity_running_builds">@string/running_builds_drawer_item</string>
-    <string name="title_activity_queued_builds">@string/build_queue_drawer_item</string>
-    <string name="title_activity_about">@string/about_drawer_item</string>
-    <string name="title_activity_about_libraries">Libraries</string>
 
     <!--Build tabs-->
     <string name="tab_overview">Overview</string>
@@ -63,22 +49,9 @@
     <string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
     <string name="add_new_account_dialog_create_account_button_text">Add</string>
 
-    <string name="add_new_account_warning_dialog_content">In order to use application you should add user account</string>
-
     <string name="discard_dialog_content">Discard user account?</string>
     <string name="discard_dialog_positive_button_text">Discard</string>
     <string name="discard_dialog_negative_button_text">Cancel</string>
-
-    <!--snack bar remove account-->
-    <string name="snack_bar_remove_account_undo_button_text">Undo</string>
-    <string name="snack_bar_remove_account_single_account_removed_text">User account removed</string>
-    <string name="snack_bar_remove_account_multiple_accounts_removed_text">user accounts removed</string>
-
-    <!--action mode-->
-    <string name="action_mode_selected_text">selected</string>
-
-    <!--All list empty message-->
-    <string name="empty">No data</string>
 
     <!--Download artifact dialog -->
     <string name="download_artifact_dialog_title">Downloading artifact file..</string>
@@ -92,7 +65,6 @@
     <string name="load_more_retry_snack_bar_text">Error loading more data</string>
 
     <!--Empty list messages-->
-    <string name="empty_list_message_accounts">No accounts</string>
     <string name="empty_list_message_artifacts">No artifacts</string>
     <string name="empty_list_message_builds">No builds</string>
     <string name="empty_list_message_running_builds">No running builds</string>
@@ -107,8 +79,6 @@
     <string name="empty_list_message_favorites">No favorite configurations added</string>
     <string name="empty_passed_tests">There are no failed tests</string>
     <string name="empty_list_files">No files</string>
-
-    <string name="default_icon_text">{icon}</string>
 
     <!--Build elements-->
     <string name="unknown_trigger_type_text">Unknown trigger type!</string>
@@ -139,7 +109,6 @@
     <string name="permissions_dialog_content">In order to download artifact the app requires to have WRITE_EXTERNAL_STORAGE permissions granted.</string>
     <string name="permissions_install_packages_dialog_content">In order to install apk files the app requires to have install unknown apps permissions enabled.</string>
     <string name="permissions_dialog_text_no_permissions">The download artifacts functionality is disabled. Please enable required permissions.</string>
-    <string name="permissions_install_packages_dialog_text_no_permissions">You can\'t install packages. You haven\'t granted permission. Please enable required permissions.</string>
 
     <!--Build element-->
     <string name="build_element_copy">Copy</string>
@@ -297,7 +266,6 @@
     <!--Favorites-->
     <string name="text_info_add">Add a configuration to favorites for an easy access</string>
     <string name="text_info_add_action">Add projects</string>
-    <string name="text_fab_add_fav">Add fav</string>
 
     <!--Rate-->
     <string name="rate_title">Rate TeamCityApp</string>
