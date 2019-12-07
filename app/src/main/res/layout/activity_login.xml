@@ -170,13 +170,14 @@
 
         <ProgressBar
             android:id="@+id/progress"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="11dp"
+            android:layout_height="10dp"
             android:layout_gravity="center"
             android:layout_marginLeft="@dimen/login_screen_margin"
             android:layout_marginRight="@dimen/login_screen_margin"
             android:layout_marginBottom="@dimen/login_screen_margin"
             android:visibility="gone"
+            android:indeterminateTint="@color/white"
             tools:visibility="visible" />
 
     </LinearLayout>

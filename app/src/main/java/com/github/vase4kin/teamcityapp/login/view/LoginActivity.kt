@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.login.view
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -36,7 +35,6 @@ class LoginActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var presenter: LoginPresenterImpl
 
-    @SuppressLint("InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
