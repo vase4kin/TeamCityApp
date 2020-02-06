@@ -139,7 +139,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/login_screen_margin"
-            android:text="@string/text_login_button" />
+            android:text="@string/text_login_button"
+            app:backgroundTint="@color/colorAccent" />
 
         <ProgressBar
             android:id="@+id/give_it_a_try_progress"
