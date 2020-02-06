@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ private const val TIME_PROMPT_DELAY = 500
  */
 class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
 
-    private lateinit var snackBarAnchor: View
+    private lateinit var snackBarParentView: View
     private lateinit var fab: FloatingActionButton
     private lateinit var toolbar: Toolbar
     private var snackbar: Snackbar? = null
@@ -53,7 +53,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun initViews(listener: HomeView.ViewListener?) {
         this.listener = listener
-        snackBarAnchor = activity.findViewById(R.id.snackbar_anchor)
+        snackBarParentView = activity.findViewById(android.R.id.content)
         fab = activity.findViewById(R.id.home_floating_action_button)
         toolbar = activity.findViewById(R.id.toolbar)
         activity.setSupportActionBar(toolbar)
@@ -72,10 +72,11 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showFavoritesInfoSnackbar() {
         this.snackbar = Snackbar.make(
-            snackBarAnchor,
+            snackBarParentView,
             R.string.text_info_add,
             Snackbar.LENGTH_LONG
         )
+            .setAnchorView(fab)
             .setAction(R.string.text_info_add_action) {
                 listener?.onFavoritesSnackBarActionClicked()
             }
@@ -105,10 +106,11 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showFilterAppliedSnackBar() {
         this.snackbar = Snackbar.make(
-            snackBarAnchor,
+            snackBarParentView,
             R.string.text_filters_applied,
             Snackbar.LENGTH_LONG
         )
+            .setAnchorView(fab)
         snackbar?.show()
     }
 
@@ -117,10 +119,11 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showAgentsFilterAppliedSnackBar() {
         this.snackbar = Snackbar.make(
-            snackBarAnchor,
+            snackBarParentView,
             R.string.text_agents_filters_applied,
             Snackbar.LENGTH_LONG
         )
+            .setAnchorView(fab)
         snackbar?.show()
     }
 
