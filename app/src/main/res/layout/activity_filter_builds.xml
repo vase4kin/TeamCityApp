@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -35,12 +35,17 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.button.MaterialButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_filter"
-        style="@style/MaterialButton"
+        style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/default_margin"
         android:text="@string/text_apply_filters_button"
-        app:icon="@drawable/ic_done_24px" />
-
+        android:textColor="@color/white"
+        app:icon="@drawable/ic_done_24px"
+        app:iconTint="@color/white" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
