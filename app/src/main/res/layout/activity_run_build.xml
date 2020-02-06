@@ -213,19 +213,20 @@
                         android:layout_marginTop="8dp"
                         android:orientation="horizontal">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/button_add_parameter"
-                            style="@style/Widget.AppCompat.Button"
+                            style="@style/Widget.MaterialComponents.Button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_add_parameter" />
+                            android:text="@string/text_add_parameter"
+                            app:backgroundTint="@color/colorAccent" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/button_clear_parameters"
-                            style="@style/Widget.AppCompat.Button"
+                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/default_margin"
+                            android:layout_marginStart="@dimen/default_margin"
                             android:enabled="false"
                             android:text="@string/text_clear_parameters" />
 
