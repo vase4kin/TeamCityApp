@@ -96,7 +96,7 @@ jobs:
     parameters:
       devicemodel:
         description: "Device name to execute tests on"
-        default: "sailfish,version=28,locale=en,orientation=portrait"
+        default: "blueline,version=29,locale=en,orientation=portrait"
         type: string
     steps:
       - *attach_workspace
@@ -204,10 +204,10 @@ workflows:
               only:
                 - /release-.*/
       - ui-tests:
-          name: ui-tests-v28
+          name: ui-tests-v29
           requires:
             - build-tests
       - coverage:
           requires:
-            - ui-tests-v28
+            - ui-tests-v29
             - unit-tests
