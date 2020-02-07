@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?colorPrimary"
     android:orientation="vertical"
     tools:context=".account.create.view.CreateAccountActivity">
@@ -36,23 +35,21 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/teamcity_url_wrapper"
+                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
-                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-                app:errorTextAppearance="@style/LoginTextErrorAppearance"
-                style="@style/LoginEditTextLayout">
+                android:hint="@string/server_field_hint">
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/teamcity_url"
+                    style="@style/LoginEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/server_field_hint"
                     android:inputType="textUri"
-                    android:text="@string/text_teamcity_url"
-                    style="@style/LoginEditText" />
+                    android:text="@string/text_teamcity_url" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -60,53 +57,49 @@
                 android:id="@+id/guest_user_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
                 android:text="@string/text_guest_user_switch"
                 android:textColor="@color/white" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/user_field_wrapper"
+                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
-                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-                app:errorTextAppearance="@style/LoginTextErrorAppearance"
-                style="@style/LoginEditTextLayout">
+                android:hint="@string/hint_user_name">
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/user_name"
+                    style="@style/LoginEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_user_name"
                     android:imeOptions="actionNext"
-                    android:inputType="text"
-                    style="@style/LoginEditText" />
+                    android:inputType="text" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_field_wrapper"
+                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
-                app:hintTextAppearance="@style/LoginEditTextFloatingLabel"
-                app:errorTextAppearance="@style/LoginTextErrorAppearance"
-                style="@style/LoginEditTextLayout">
+                android:hint="@string/hint_password">
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/password"
+                    style="@style/LoginEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/hint_password"
                     android:imeOptions="actionDone"
-                    android:inputType="textPassword"
-                    style="@style/LoginEditText" />
+                    android:inputType="textPassword" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -114,8 +107,8 @@
                 android:id="@+id/disable_ssl_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginLeft="@dimen/default_margin"
+                android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
                 android:text="@string/text_disable_ssl_switch"
                 android:textColor="@color/white" />

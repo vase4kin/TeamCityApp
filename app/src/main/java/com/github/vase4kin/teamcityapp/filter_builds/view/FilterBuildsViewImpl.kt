@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 /**
  * Impl of [FilterBuildsView]
@@ -35,7 +35,7 @@ import com.google.android.material.button.MaterialButton
 class FilterBuildsViewImpl(private val activity: FilterBuildsActivity) : FilterBuildsView {
 
     @BindView(R.id.fab_filter)
-    lateinit var filterFab: MaterialButton
+    lateinit var filterFab: ExtendedFloatingActionButton
     @BindView(R.id.selected_filter)
     lateinit var selectedFilterStatus: TextView
     @BindView(R.id.switcher_is_personal)

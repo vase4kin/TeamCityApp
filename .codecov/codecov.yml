@@ -3,6 +3,6 @@ coverage:
     project: off
     patch:
       default:
-        target: 50%
+        target: 1%
 comment:
   behavior: new

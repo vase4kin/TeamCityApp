@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -60,10 +60,6 @@
         <item name="android:elevation">0dp</item>
     </style>
 
-    <style name="LoginEditTextFloatingLabel" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
-
-    <style name="LoginEditTextLayout" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse" />
-
     <style name="LoginEditTextTheme" parent="BaseEditTextStyle">
         <item name="android:singleLine">true</item>
         <item name="colorControlNormal">@color/colorWhite</item>
@@ -73,13 +69,16 @@
 
     <style name="BaseEditTextStyle" />
 
-    <style name="LoginEditText">
+    <style name="LoginEditText" parent="">
         <item name="android:theme">@style/LoginEditTextTheme</item>
     </style>
 
-    <style name="LoginTextErrorAppearance" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/login_text_error_color</item>
-        <item name="android:textSize">14sp</item>
+    <style name="LoginTextInputLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="hintTextColor">@color/white</item>
+        <item name="errorTextColor">@color/login_text_error_color</item>
+        <item name="errorIconTint">@color/login_text_error_color</item>
     </style>
 
     <style name="Switch">

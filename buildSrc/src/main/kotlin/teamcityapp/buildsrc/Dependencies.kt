@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ object Libs {
     }
 
     object Google {
-        const val material = "com.google.android.material:material:1.0.0"
+        const val material = "com.google.android.material:material:1.1.0"
 
         const val firebaseCore = "com.google.firebase:firebase-core:17.2.1"
         const val firebaseConfig = "com.google.firebase:firebase-config:19.0.3"

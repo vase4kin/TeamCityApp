@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 
@@ -42,7 +42,7 @@ import com.google.android.material.textfield.TextInputLayout
 class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
 
     @BindView(R.id.fab_queue_build)
-    lateinit var queueBuildFab: MaterialButton
+    lateinit var queueBuildFab: ExtendedFloatingActionButton
     @BindView(R.id.switcher_is_personal)
     lateinit var personalBuildSwitch: Switch
     @BindView(R.id.switcher_queueAtTop)
@@ -181,6 +181,7 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
             R.string.error_forbidden_error,
             Snackbar.LENGTH_LONG
         )
+            .setAnchorView(queueBuildFab)
         snackBar.show()
     }
 
@@ -193,6 +194,7 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
             R.string.error_base_error,
             Snackbar.LENGTH_LONG
         )
+            .setAnchorView(queueBuildFab)
         snackBar.show()
     }
 

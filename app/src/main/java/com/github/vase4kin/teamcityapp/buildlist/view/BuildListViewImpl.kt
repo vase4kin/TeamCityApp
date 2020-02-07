@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerVie
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
-import com.google.android.material.button.MaterialButton
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.mugen.Mugen
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
@@ -62,7 +62,7 @@ open class BuildListViewImpl(
     @BindString(R.string.text_queued_header)
     lateinit var queuedHeaderText: String
     @BindView(R.id.floating_action_button)
-    lateinit var floatingActionButton: MaterialButton
+    lateinit var floatingActionButton: ExtendedFloatingActionButton
     private lateinit var progressDialog: MaterialDialog
     private lateinit var sections: ArrayList<SimpleSectionedRecyclerViewAdapter.Section>
     private lateinit var dataModel: BuildListDataModel
@@ -156,6 +156,7 @@ open class BuildListViewImpl(
             Snackbar.LENGTH_LONG
         )
             .setAction(R.string.download_artifact_retry_snack_bar_retry_button) { listener?.onLoadMore() }
+            .setAnchorView(floatingActionButton)
         snackBar.show()
     }
 
@@ -200,6 +201,7 @@ open class BuildListViewImpl(
             Snackbar.LENGTH_LONG
         )
             .setAction(R.string.text_show_build) { listener?.onShowQueuedBuildSnackBarClick() }
+            .setAnchorView(floatingActionButton)
         snackBar.show()
     }
 
@@ -213,6 +215,7 @@ open class BuildListViewImpl(
             Snackbar.LENGTH_INDEFINITE
         )
             .setAction(R.string.text_snackbar_button_reset_filters) { listener?.onResetFiltersSnackBarActionClick() }
+            .setAnchorView(floatingActionButton)
         filtersAppliedSnackBar?.show()
     }
 
@@ -226,6 +229,7 @@ open class BuildListViewImpl(
             Snackbar.LENGTH_LONG
         )
             .setAction(R.string.download_artifact_retry_snack_bar_retry_button) { listener?.onShowQueuedBuildSnackBarClick() }
+            .setAnchorView(floatingActionButton)
         snackBar.show()
     }
 
@@ -239,6 +243,7 @@ open class BuildListViewImpl(
             Snackbar.LENGTH_LONG
         )
             .setAction(R.string.text_view_favorites) { listener?.onNavigateToFavorites() }
+            .setAnchorView(floatingActionButton)
         snackBar.show()
     }
 
@@ -251,6 +256,7 @@ open class BuildListViewImpl(
             R.string.text_remove_from_favorites,
             Snackbar.LENGTH_LONG
         )
+            .setAnchorView(floatingActionButton)
         snackBar.show()
     }
 
