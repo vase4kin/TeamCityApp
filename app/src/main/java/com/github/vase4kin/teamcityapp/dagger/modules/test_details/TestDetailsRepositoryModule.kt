@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@ import dagger.Provides
 import teamcityapp.features.test_details.repository.TestDetailsRepository
 
 @Module
-class TestDetailsRepositoryModule {
+object TestDetailsRepositoryModule {
 
+    @JvmStatic
     @Provides
     fun providesTestDetailsRepository(repository: Repository): TestDetailsRepository = repository
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,9 @@ import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.storage.Storage
 
 @Module
-class DrawerBottomSheetDialogModule {
+object DrawerBottomSheetDialogModule {
 
+    @JvmStatic
     @Provides
     fun providesViewModel(
         fragment: DrawerBottomSheetDialogFragment,
@@ -65,6 +66,7 @@ class DrawerBottomSheetDialogModule {
         )
     }
 
+    @JvmStatic
     @DrawerBottomSheetDialogScope
     @Provides
     fun providesRouter(
@@ -81,6 +83,7 @@ class DrawerBottomSheetDialogModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesAdapter(
         viewHolderFactories: Map<Int, @JvmSuppressWildcards BaseDrawerViewHolderFactory>
@@ -88,11 +91,13 @@ class DrawerBottomSheetDialogModule {
         return DrawerAdapter(mutableListOf(), viewHolderFactories)
     }
 
+    @JvmStatic
     @Provides
     fun providesTracker(firebaseAnalytics: FirebaseAnalytics): DrawerTracker {
         return DrawerTrackerImpl(firebaseAnalytics)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(TYPE_ACCOUNTS_DIVIDER)
     @Provides
@@ -100,6 +105,7 @@ class DrawerBottomSheetDialogModule {
         return AccountsDividerViewHolderFactory()
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(TYPE_DIVIDER)
     @Provides
@@ -107,6 +113,7 @@ class DrawerBottomSheetDialogModule {
         return DividerViewHolderFactory()
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(TYPE_BOTTOM)
     @Provides
@@ -117,6 +124,7 @@ class DrawerBottomSheetDialogModule {
         return BottomViewHolderFactory(router, tracker)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(TYPE_MENU)
     @Provides
@@ -127,6 +135,7 @@ class DrawerBottomSheetDialogModule {
         return MenuViewHolderFactory(router, tracker)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(TYPE_ACCOUNT)
     @Provides

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,33 +37,39 @@ import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 
 @Module
-class PropertiesModule {
+object PropertiesModule {
 
+    @JvmStatic
     @Provides
     fun providesPropertiesDataManager(): PropertiesDataManager {
         return PropertiesDataManagerImpl()
     }
 
+    @JvmStatic
     @Provides
     fun providesBaseValueExtractor(fragment: PropertiesFragment): PropertiesValueExtractor {
         return PropertiesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
+    @JvmStatic
     @Provides
     fun providesPropertiesView(fragment: PropertiesFragment, adapter: PropertiesAdapter): PropertiesView {
         return PropertiesViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_parameters, adapter)
     }
 
+    @JvmStatic
     @Provides
     fun providesViewTracker(): ViewTracker {
         return ViewTracker.STUB
     }
 
+    @JvmStatic
     @Provides
     fun providesPropertiesAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<PropertiesDataModel>>): PropertiesAdapter {
         return PropertiesAdapter(viewHolderFactories)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
     @Provides

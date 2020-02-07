@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,9 @@ import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 
 @Module
-class ManageAccountsModule {
+object ManageAccountsModule {
 
+    @JvmStatic
     @Provides
     fun providesViewFirebaseTracker(firebaseAnalytics: FirebaseAnalytics): ManageAccountsTracker {
         return ManageAccountsTrackerImpl(
@@ -39,6 +40,7 @@ class ManageAccountsModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesViewModel(
         activity: ManageAccountsActivity,
@@ -63,6 +65,7 @@ class ManageAccountsModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesAdapter() = GroupAdapter<GroupieViewHolder>()
 }

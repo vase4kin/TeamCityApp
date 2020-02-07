@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
-class AboutFragmentModule {
+object AboutFragmentModule {
 
+    @JvmStatic
     @Provides
     fun provideChromeTabs(fragment: AboutFragment): ChromeCustomTabs =
         ChromeCustomTabsImpl(fragment.requireActivity())

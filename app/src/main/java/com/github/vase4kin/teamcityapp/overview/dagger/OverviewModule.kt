@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,9 @@ import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
 
 @Module
-class OverviewModule {
+object OverviewModule {
 
+    @JvmStatic
     @Provides
     fun providesOverViewDataManager(
         repository: Repository,
@@ -52,21 +53,25 @@ class OverviewModule {
         return OverviewInteractorImpl(repository, eventBus, valueExtractor)
     }
 
+    @JvmStatic
     @Provides
     fun providesBaseValueExtractor(fragment: OverviewFragment): OverviewValueExtractor {
         return OverviewValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
+    @JvmStatic
     @Provides
     fun providesBaseListView(adapter: OverviewAdapter, fragment: OverviewFragment): OverviewView {
         return OverviewViewImpl(fragment.view!!, fragment.activity as AppCompatActivity, adapter)
     }
 
+    @JvmStatic
     @Provides
     fun providesOverviewAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<OverviewDataModel>>): OverviewAdapter {
         return OverviewAdapter(viewHolderFactories)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
     @Provides
@@ -74,6 +79,7 @@ class OverviewModule {
         return OverviewViewHolderFactory()
     }
 
+    @JvmStatic
     @Provides
     fun providesFirebaseViewTracker(firebaseAnalytics: FirebaseAnalytics): OverviewTracker {
         return FirebaseOverviewTrackerImpl(firebaseAnalytics)

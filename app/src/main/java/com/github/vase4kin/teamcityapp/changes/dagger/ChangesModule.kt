@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,33 +40,39 @@ import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
 
 @Module
-class ChangesModule {
+object ChangesModule {
 
+    @JvmStatic
     @Provides
     fun providesChangesDataManager(repository: Repository, eventBus: EventBus): ChangesDataManager {
         return ChangesDataManagerImpl(repository, eventBus)
     }
 
+    @JvmStatic
     @Provides
     fun providesChangesView(fragment: ChangesFragment, changesAdapter: ChangesAdapter): ChangesView {
         return ChangesViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter)
     }
 
+    @JvmStatic
     @Provides
     fun providesChangesValueExtractor(fragment: ChangesFragment): ChangesValueExtractor {
         return ChangesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
+    @JvmStatic
     @Provides
     fun providesViewTracker(): ViewTracker {
         return ViewTracker.STUB
     }
 
+    @JvmStatic
     @Provides
     fun providesChangesAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ChangesDataModel>>): ChangesAdapter {
         return ChangesAdapter(viewHolderFactories)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_LOAD_MORE)
     @Provides
@@ -74,6 +80,7 @@ class ChangesModule {
         return LoadMoreViewHolderFactory()
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
     @Provides

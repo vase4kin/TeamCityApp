@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,18 +44,21 @@ import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
 
 @Module
-class TestsModule {
+object TestsModule {
 
+    @JvmStatic
     @Provides
     internal fun providesTestsDataManager(repository: Repository, eventBus: EventBus): TestsDataManager {
         return TestsDataManagerImpl(repository, eventBus)
     }
 
+    @JvmStatic
     @Provides
     internal fun providesTestsValueExtractor(fragment: TestOccurrencesFragment): TestsValueExtractor {
         return TestsValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
+    @JvmStatic
     @Provides
     internal fun providesTestsView(
         testsValueExtractor: TestsValueExtractor,
@@ -71,21 +74,25 @@ class TestsModule {
         )
     }
 
+    @JvmStatic
     @Provides
     internal fun providesTestsRouter(fragment: TestOccurrencesFragment): TestsRouter {
         return TestsRouterImpl(fragment.requireActivity())
     }
 
+    @JvmStatic
     @Provides
     internal fun providesViewTracker(): ViewTracker {
         return ViewTracker.STUB
     }
 
+    @JvmStatic
     @Provides
     internal fun providesTestOccurrencesAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<TestsDataModel>>): TestOccurrencesAdapter {
         return TestOccurrencesAdapter(viewHolderFactories)
     }
 
+    @JvmStatic
     @Provides
     internal fun providesSimpleSectionedRecyclerViewAdapter(
         context: Context,
@@ -94,6 +101,7 @@ class TestsModule {
         return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_LOAD_MORE)
     @Provides
@@ -101,6 +109,7 @@ class TestsModule {
         return LoadMoreViewHolderFactory()
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
     @Provides
