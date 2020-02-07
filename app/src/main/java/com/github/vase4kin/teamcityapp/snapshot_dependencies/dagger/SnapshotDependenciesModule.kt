@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,28 +42,33 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class SnapshotDependenciesModule {
+object SnapshotDependenciesModule {
 
+    @JvmStatic
     @Provides
     fun providesBuildListRouter(fragment: SnapshotDependenciesFragment): SnapshotDependenciesRouter {
         return SnapshotDependenciesRouterImpl(fragment.requireActivity())
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildListValueExtractor(fragment: SnapshotDependenciesFragment): SnapshotDependenciesValueExtractor {
         return SnapshotDependenciesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
         return BuildInteractorImpl(teamCityService)
     }
 
+    @JvmStatic
     @Provides
     fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): SnapshotDependenciesTracker {
         return SnapshotDependenciesTrackerImpl(firebaseAnalytics)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildListDataManager(
         repository: Repository,
@@ -72,6 +77,7 @@ class SnapshotDependenciesModule {
         return SnapshotDependenciesInteractorImpl(repository, storage)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildListView(
         fragment: SnapshotDependenciesFragment,

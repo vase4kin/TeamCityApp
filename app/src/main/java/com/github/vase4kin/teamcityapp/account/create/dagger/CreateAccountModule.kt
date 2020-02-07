@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,15 @@ import okhttp3.OkHttpClient
 import javax.inject.Named
 
 @Module
-class CreateAccountModule {
+object CreateAccountModule {
 
+    @JvmStatic
     @Provides
     fun providesCreateAccountView(activity: CreateAccountActivity): CreateAccountView {
         return CreateAccountViewImpl(activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesCreateAccountDataManager(
         context: Context,
@@ -57,16 +59,19 @@ class CreateAccountModule {
         return CreateAccountDataManagerImpl(context, okHttpClient, unsafeOkHttpClient, sharedUserStorage, urlFormatter)
     }
 
+    @JvmStatic
     @Provides
     fun providesCreateAccountDataModel(sharedUserStorage: SharedUserStorage): CreateAccountDataModel {
         return CreateAccountDataModelImpl(sharedUserStorage)
     }
 
+    @JvmStatic
     @Provides
     fun providesCreateAccountRouter(activity: CreateAccountActivity): CreateAccountRouter {
         return CreateAccountRouterImpl(activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesFirebaseCreateAccountTracker(firebaseAnalytics: FirebaseAnalytics): CreateAccountTracker {
         return CreateAccountTrackerImpl(firebaseAnalytics)

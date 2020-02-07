@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,9 @@ import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 
 @Module
-class FavoritesFragmentModule {
+object FavoritesFragmentModule {
 
+    @JvmStatic
     @Provides
     fun providesNavigationView(
         fragment: FavoritesFragment,
@@ -61,11 +62,13 @@ class FavoritesFragmentModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesNavigationRouter(fragment: FavoritesFragment): NavigationRouter {
         return NavigationRouterImpl(fragment.activity as Activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesNavigationValueExtractor(): NavigationValueExtractor {
         return object : NavigationValueExtractor {
@@ -82,6 +85,7 @@ class FavoritesFragmentModule {
         }
     }
 
+    @JvmStatic
     @Provides
     fun providesFavoritesInteractor(
         repository: Repository,
@@ -90,6 +94,7 @@ class FavoritesFragmentModule {
         return FavoritesInteractorImpl(repository, storage)
     }
 
+    @JvmStatic
     @Provides
     fun providesNavigationAdapter(
         viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<NavigationDataModel>>
@@ -97,6 +102,7 @@ class FavoritesFragmentModule {
         return NavigationAdapter(viewHolderFactories)
     }
 
+    @JvmStatic
     @Provides
     fun providesSimpleSectionedRecyclerViewAdapter(
         context: Context,
@@ -105,6 +111,7 @@ class FavoritesFragmentModule {
         return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
     @Provides
@@ -112,6 +119,7 @@ class FavoritesFragmentModule {
         return NavigationViewHolderFactory()
     }
 
+    @JvmStatic
     @Provides
     fun providesFavoritesTracker(firebaseAnalytics: FirebaseAnalytics): FavoritesTracker {
         return FavoritesTrackerImpl(firebaseAnalytics)

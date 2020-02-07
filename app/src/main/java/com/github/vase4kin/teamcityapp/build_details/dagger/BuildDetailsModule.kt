@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,9 @@ import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.utils.StatusBarUtils
 
 @Module
-class BuildDetailsModule {
+object BuildDetailsModule {
 
+    @JvmStatic
     @Provides
     fun providesBuildTabsView(
         activity: BuildDetailsActivity,
@@ -59,11 +60,13 @@ class BuildDetailsModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildTabsValueExtractor(activity: BuildDetailsActivity): BaseValueExtractor {
         return BaseValueExtractorImpl(activity.intent.extras!!)
     }
 
+    @JvmStatic
     @Provides
     fun providesBaseTabsDataManager(
         eventBus: EventBus,
@@ -74,6 +77,7 @@ class BuildDetailsModule {
         return BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildTabsRouter(activity: BuildDetailsActivity): BuildDetailsRouter {
         return BuildDetailsRouterImpl(
@@ -82,6 +86,7 @@ class BuildDetailsModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesRunBuildInteractor(
         repository: Repository,
@@ -90,11 +95,13 @@ class BuildDetailsModule {
         return RunBuildInteractorImpl(repository, valueExtractor.buildDetails.buildTypeId)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
         return BuildInteractorImpl(teamCityService)
     }
 
+    @JvmStatic
     @Provides
     fun providesFirebaseViewTracker(firebaseAnalytics: FirebaseAnalytics): BuildDetailsTracker {
         return FirebaseBuildDetailsTrackerImpl(firebaseAnalytics)

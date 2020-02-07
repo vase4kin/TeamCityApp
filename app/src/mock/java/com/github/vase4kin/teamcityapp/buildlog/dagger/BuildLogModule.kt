@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,9 @@ import dagger.Provides
  * Build log module with testing support
  */
 @Module
-class BuildLogModule {
+object BuildLogModule {
 
+    @JvmStatic
     @Provides
     fun providesBuildLogViewModel(
         fragment: BuildLogFragment,
@@ -44,6 +45,7 @@ class BuildLogModule {
         return BuildLogViewImpl(fragment.view!!, client)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildLogValueExtractor(fragment: BuildLogFragment): BuildLogValueExtractor {
         return BuildLogValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
@@ -52,6 +54,7 @@ class BuildLogModule {
     /**
      * Provides fake html to make build log testable
      */
+    @JvmStatic
     @Provides
     fun providesUrlProvider(
         buildLogValueExtractor: BuildLogValueExtractor,
@@ -64,6 +67,7 @@ class BuildLogModule {
         }
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
         return BuildLogRouterImpl(fragment.requireActivity())

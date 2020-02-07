@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,9 @@ import com.github.vase4kin.teamcityapp.runningbuilds.dagger.RunningBuildsFragmen
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import teamcityapp.features.drawer.dagger.DrawerBottomSheetDialogModule
+import teamcityapp.features.drawer.dagger.DrawerBottomSheetDialogScope
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 
 @Module
 abstract class HomeActivityBindingModule {
@@ -52,7 +55,7 @@ abstract class HomeActivityBindingModule {
     @ContributesAndroidInjector(modules = [AgentModule::class])
     abstract fun agentListFragment(): AgentListFragment
 
-    @teamcityapp.features.drawer.dagger.DrawerBottomSheetDialogScope
-    @ContributesAndroidInjector(modules = [teamcityapp.features.drawer.dagger.DrawerBottomSheetDialogModule::class, DrawerRouterModule::class])
-    abstract fun drawerBottomSheetDialog(): teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
+    @DrawerBottomSheetDialogScope
+    @ContributesAndroidInjector(modules = [DrawerBottomSheetDialogModule::class, DrawerRouterModule::class])
+    abstract fun drawerBottomSheetDialog(): DrawerBottomSheetDialogFragment
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,13 +37,15 @@ import okhttp3.OkHttpClient
 import javax.inject.Named
 
 @Module
-class LoginModule {
+object LoginModule {
 
+    @JvmStatic
     @Provides
     fun providesLoginView(activity: LoginActivity): LoginView {
         return LoginViewImpl(activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesCreateAccountDataManager(
         context: Context,
@@ -57,11 +59,13 @@ class LoginModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesLoginRouter(activity: LoginActivity): LoginRouter {
         return LoginRouterImpl(activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesFirebaseLoginTracker(firebaseAnalytics: FirebaseAnalytics): LoginTracker {
         return LoginTrackerImpl(firebaseAnalytics)

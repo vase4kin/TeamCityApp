@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,9 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class BuildLogInteractorModule {
+object BuildLogInteractorModule {
 
+    @JvmStatic
     @Provides
     fun providesBuildLogInteractor(context: Context, sharedUserStorage: SharedUserStorage): BuildLogInteractor {
         return BuildLogInteractorImpl(
@@ -35,6 +36,7 @@ class BuildLogInteractorModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
         return BuildLogWebViewClient()

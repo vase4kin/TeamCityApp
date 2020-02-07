@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,9 @@ import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
-class ArtifactsFragmentModule {
+object ArtifactsFragmentModule {
 
+    @JvmStatic
     @Provides
     fun providesArtifactDataManager(
         repository: Repository,
@@ -56,6 +57,7 @@ class ArtifactsFragmentModule {
         return ArtifactDataManagerImpl(repository, eventBus)
     }
 
+    @JvmStatic
     @Provides
     fun providesArtifactView(
         fragment: ArtifactListFragment,
@@ -69,6 +71,7 @@ class ArtifactsFragmentModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesArtifactRouter(
         fragment: ArtifactListFragment,
@@ -81,26 +84,31 @@ class ArtifactsFragmentModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesArtifactValueExtractor(fragment: ArtifactListFragment): ArtifactValueExtractor {
         return ArtifactValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
+    @JvmStatic
     @Provides
     fun providesViewTracker(): ViewTracker {
         return ViewTracker.STUB
     }
 
+    @JvmStatic
     @Provides
     fun providesPermissionManager(fragment: ArtifactListFragment): PermissionManager {
         return PermissionManagerImpl(fragment.requireActivity() as AppCompatActivity)
     }
 
+    @JvmStatic
     @Provides
     fun providesArtifactAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ArtifactDataModel>>): ArtifactAdapter {
         return ArtifactAdapter(viewHolderFactories)
     }
 
+    @JvmStatic
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
     @Provides

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,19 @@ import teamcityapp.features.test_details.view.TestDetailsActivity.Companion.ARG_
 import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
 
 @Module
-class TestDetailsModule {
+object TestDetailsModule {
 
+    @JvmStatic
     @Provides
     fun providesTestDetailsDataManager(repository: TestDetailsRepository): TestDetailsDataManager =
         TestDetailsDataManagerImpl(repository)
 
+    @JvmStatic
     @Provides
     fun providesTracker(firebaseAnalytics: FirebaseAnalytics): TestDetailsTracker =
         TestDetailsTrackerImpl(firebaseAnalytics)
 
+    @JvmStatic
     @Provides
     fun providesViewModel(
         activity: TestDetailsActivity,
