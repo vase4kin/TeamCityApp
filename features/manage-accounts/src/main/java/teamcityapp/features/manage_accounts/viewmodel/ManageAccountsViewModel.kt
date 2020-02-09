@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
 import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
-import teamcityapp.features.manage_accounts.view.AccountItem
+import teamcityapp.features.manage_accounts.view.AccountItemFactory
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
@@ -34,9 +34,8 @@ class ManageAccountsViewModel(
     private val storage: Storage,
     private val router: ManageAccountsRouter,
     private val tracker: ManageAccountsTracker,
-    private val showSslDisabledInfoDialog: () -> Unit,
-    private val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit,
     private val cacheManager: CacheManager,
+    private val itemFactory: AccountItemFactory,
     val adapter: GroupAdapter<GroupieViewHolder>
 ) : LifecycleObserver {
 
@@ -56,15 +55,10 @@ class ManageAccountsViewModel(
     }
 
     private fun createItems(): List<Group> = storage.userAccounts.map {
-        AccountItem(
+        itemFactory.create(
             userAccount = it,
-            showSslDisabledInfoDialog = {
-                tracker.trackUserClicksOnSslDisabledWarning()
-                showSslDisabledInfoDialog()
-            },
-            showRemoveAccountDialog = {
-                showRemoveAccountDialog(onAccountRemove(it))
-            })
+            onAccountRemove = onAccountRemove(it)
+        )
     }
 
     @VisibleForTesting
