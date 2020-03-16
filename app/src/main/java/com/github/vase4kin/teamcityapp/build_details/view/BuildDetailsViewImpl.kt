@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.build_details.view
 
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import butterknife.BindView
@@ -41,7 +39,6 @@ import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import teamcityapp.libraries.utils.StatusBarUtils
 
 private const val TAB_TITLE = "tabTitle"
 
@@ -51,7 +48,6 @@ private const val TAB_TITLE = "tabTitle"
 class BuildDetailsViewImpl(
     view: View,
     activity: AppCompatActivity,
-    private val statusBarUtils: StatusBarUtils,
     valueExtractor: BaseValueExtractor
 ) : BaseTabsViewModelImpl(view, activity), BuildDetailsView {
 
@@ -159,7 +155,6 @@ class BuildDetailsViewImpl(
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
         setTitle()
-        setColorsByBuildType()
 
         stoppingBuildProgressDialog = createProgressDialogWithContent(R.string.text_stopping_build)
         removingBuildFromQueueProgressDialog =
@@ -455,59 +450,6 @@ class BuildDetailsViewImpl(
             text,
             Snackbar.LENGTH_LONG
         )
-    }
-
-    /**
-     * Setting proper color for different build types
-     */
-    private fun setColorsByBuildType() {
-        if (buildDetails.isQueued) {
-            statusBarUtils.changeStatusBarColor(activity, R.color.queued_tool_bar_color)
-            setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color)
-            tabLayout.setTabTextColors(
-                activity.resources.getColor(R.color.tab_queued_unselected_color),
-                activity.resources.getColor(R.color.white)
-            )
-        } else if (buildDetails.isRunning) {
-            statusBarUtils.changeStatusBarColor(activity, R.color.running_tool_bar_color)
-            setToolBarAndTabLayoutColor(R.color.running_tool_bar_color)
-            tabLayout.setTabTextColors(
-                activity.resources.getColor(R.color.tab_running_unselected_color),
-                activity.resources.getColor(R.color.white)
-            )
-        } else if (buildDetails.isFailed) {
-            statusBarUtils.changeStatusBarColor(activity, R.color.failed_tool_bar_color)
-            setToolBarAndTabLayoutColor(R.color.failed_tool_bar_color)
-            tabLayout.setTabTextColors(
-                activity.resources.getColor(R.color.tab_failed_unselected_color),
-                activity.resources.getColor(R.color.white)
-            )
-        } else if (buildDetails.isSuccess) {
-            statusBarUtils.changeStatusBarColor(activity, R.color.success_tool_bar_color)
-            setToolBarAndTabLayoutColor(R.color.success_tool_bar_color)
-            tabLayout.setTabTextColors(
-                activity.resources.getColor(R.color.tab_success_unselected_color),
-                activity.resources.getColor(R.color.white)
-            )
-        } else {
-            statusBarUtils.changeStatusBarColor(activity, R.color.queued_tool_bar_color)
-            setToolBarAndTabLayoutColor(R.color.queued_tool_bar_color)
-            tabLayout.setTabTextColors(
-                activity.resources.getColor(R.color.tab_queued_unselected_color),
-                activity.resources.getColor(R.color.white)
-            )
-        }
-    }
-
-    /**
-     * Setting toolbar color
-     *
-     * @param color - Color to set
-     */
-    private fun setToolBarAndTabLayoutColor(@ColorRes color: Int) {
-        val actionBar = activity.supportActionBar
-        actionBar?.setBackgroundDrawable(ColorDrawable(activity.resources.getColor(color)))
-        tabLayout.setBackgroundColor(activity.resources.getColor(color))
     }
 
     /**

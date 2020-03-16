@@ -40,7 +40,6 @@ import dagger.Module
 import dagger.Provides
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
-import teamcityapp.libraries.utils.StatusBarUtils
 
 @Module
 object BuildDetailsModule {
@@ -49,13 +48,11 @@ object BuildDetailsModule {
     @Provides
     fun providesBuildTabsView(
         activity: BuildDetailsActivity,
-        statusBarUtils: StatusBarUtils,
         valueExtractor: BaseValueExtractor
     ): BuildDetailsView {
         return BuildDetailsViewImpl(
             activity.findViewById<View>(android.R.id.content),
             activity,
-            statusBarUtils,
             valueExtractor
         )
     }
