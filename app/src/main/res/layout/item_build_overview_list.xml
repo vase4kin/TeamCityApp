@@ -42,7 +42,7 @@
                 android:id="@+id/image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:tint="@color/material_on_surface_emphasis_medium"
+                app:tint="@color/material_on_surface_emphasis_high_type"
                 tools:srcCompat="@drawable/ic_check_circle_black_24dp" />
 
             <ProgressBar
@@ -50,7 +50,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:indeterminate="true"
-                android:indeterminateTint="@color/material_on_surface_emphasis_medium"
+                android:indeterminateTint="@color/material_on_surface_emphasis_high_type"
                 tools:visibility="gone"/>
 
         </FrameLayout>
