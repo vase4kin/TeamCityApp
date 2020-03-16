@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package com.github.vase4kin.teamcityapp.app_navigation
 
+import android.content.Context
 import android.os.Handler
+import android.util.TypedValue
 import android.widget.TextView
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
-import androidx.core.content.ContextCompat
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.github.vase4kin.teamcityapp.R
@@ -84,6 +87,10 @@ class BottomNavigationViewImpl(
         }
     }
 
+    @ColorInt
+    fun Context.getThemeColor(@AttrRes attribute: Int) =
+        TypedValue().let { theme.resolveAttribute(attribute, it, true); it.data }
+
     private fun initBottomNavView() {
         bottomNavigation.removeAllItems()
 
@@ -95,15 +102,13 @@ class BottomNavigationViewImpl(
         }
 
         // Set bottom nav settings
-        bottomNavigation.defaultBackgroundColor = ContextCompat.getColor(activity, R.color.colorPrimary)
-        bottomNavigation.accentColor = ContextCompat.getColor(activity, R.color.colorWhite)
+        bottomNavigation.defaultBackgroundColor = activity.getThemeColor(R.attr.colorPrimarySurface)
+        bottomNavigation.accentColor =
+            activity.getThemeColor(R.attr.colorOnPrimarySurface)
         bottomNavigation.inactiveColor =
-            ContextCompat.getColor(activity, R.color.colorWhiteWithOpacity)
+            activity.getThemeColor(R.attr.colorControlHighlight)
         bottomNavigation.setNotificationBackgroundColor(
-            ContextCompat.getColor(
-                activity,
-                R.color.colorAccent
-            )
+            activity.getThemeColor(R.attr.colorSecondary)
         )
         bottomNavigation.isBehaviorTranslationEnabled = false
 

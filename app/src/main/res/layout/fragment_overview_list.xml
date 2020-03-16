@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -25,17 +25,16 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white">
+        android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
+            style="@style/RecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             android:clipToPadding="false"
-            style="@style/RecyclerView" />
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
@@ -50,8 +49,8 @@
         android:visibility="gone">
 
         <include
-            layout="@layout/layout_skeleton_navigation_list"
-            android:id="@+id/skeleton_view_items" />
+            android:id="@+id/skeleton_view_items"
+            layout="@layout/layout_skeleton_navigation_list" />
 
     </androidx.core.widget.NestedScrollView>
 

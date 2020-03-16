@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import android.widget.ProgressBar
 import android.widget.Switch
 import androidx.annotation.StringRes
 import androidx.core.text.HtmlCompat
-import butterknife.BindColor
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
@@ -38,15 +37,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class LoginViewImpl(private val activity: Activity) : LoginView {
 
-    @JvmField
-    @BindColor(R.color.white)
-    var whiteColor: Int = 0
-    @JvmField
-    @BindColor(R.color.colorPrimary)
-    var primaryColor: Int = 0
-    @JvmField
-    @BindColor(R.color.login_text_error_color)
-    var orangeColor: Int = 0
     @BindView(R.id.teamcity_url)
     lateinit var serverUrl: EditText
     @BindView(R.id.teamcity_url_wrapper)
@@ -88,10 +78,7 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
         progressDialog = MaterialDialog.Builder(activity)
             .content(R.string.text_progress_bar_loading)
             .progress(true, 0)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
             .autoDismiss(false)
-            .backgroundColor(primaryColor)
             .build()
         progressDialog.setCancelable(false)
         progressDialog.setCanceledOnTouchOutside(false)
@@ -258,15 +245,9 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      */
     override fun showUnauthorizedInfoDialog() {
         MaterialDialog.Builder(activity)
-            .titleColor(whiteColor)
             .title(R.string.info_unauthorized_dialog_title)
             .content(R.string.info_unauthorized_dialog_content)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
-            .backgroundColor(primaryColor)
-            .positiveColor(orangeColor)
             .positiveText(R.string.dialog_ok_title)
-            .linkColor(orangeColor)
             .show()
     }
 
@@ -277,16 +258,9 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
         val content = activity.getString(R.string.info_try_it_out_dialog_content, url)
         val formattedContent = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_COMPACT)
         MaterialDialog.Builder(activity)
-            .titleColor(whiteColor)
             .title(R.string.info_try_it_out_title)
             .content(formattedContent)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
-            .backgroundColor(primaryColor)
-            .positiveColor(orangeColor)
             .positiveText(R.string.dialog_try_it_out_title)
-            .linkColor(orangeColor)
-            .negativeColor(orangeColor)
             .negativeText(R.string.warning_ssl_dialog_negative)
             .onPositive { dialog, _ ->
                 listener?.onTryItOutActionClick()
@@ -307,17 +281,10 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      */
     override fun showDisableSslWarningDialog() {
         MaterialDialog.Builder(activity)
-            .titleColor(whiteColor)
             .title(R.string.warning_ssl_dialog_title)
             .content(R.string.warning_ssl_dialog_content)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
-            .backgroundColor(primaryColor)
-            .positiveColor(orangeColor)
             .positiveText(R.string.dialog_ok_title)
-            .negativeColor(orangeColor)
             .negativeText(R.string.warning_ssl_dialog_negative)
-            .linkColor(orangeColor)
             .onPositive { dialog, _ ->
                 disableSslSwitch.isChecked = true
                 dialog.dismiss()
@@ -337,17 +304,10 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      */
     override fun showNotSecureConnectionDialog(isGuest: Boolean) {
         MaterialDialog.Builder(activity)
-            .titleColor(whiteColor)
             .title(R.string.warning_ssl_dialog_title)
             .content(R.string.server_not_secure_http)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
-            .backgroundColor(primaryColor)
-            .positiveColor(orangeColor)
             .positiveText(R.string.dialog_ok_title)
-            .negativeColor(orangeColor)
             .negativeText(R.string.warning_ssl_dialog_negative)
-            .linkColor(orangeColor)
             .onPositive { dialog, _ ->
                 listener?.onAcceptNotSecureConnectionClick(isGuest)
                 dialog.dismiss()

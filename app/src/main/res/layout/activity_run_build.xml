@@ -28,7 +28,6 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            style="@style/Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize" />
 
@@ -36,27 +35,22 @@
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_queue_build"
-        style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/default_margin"
         android:text="@string/title_run_build"
-        android:textColor="@color/white"
-        app:icon="@drawable/ic_directions_run_white_24px"
-        app:iconTint="@color/white" />
+        app:icon="@drawable/ic_directions_run_white_24px" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/recycler_view_background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/base_item_color">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,7 +79,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/text_agents"
-                        android:textColor="@color/main_text_color"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
                         android:textSize="18sp" />
 
                     <TextView
@@ -96,6 +90,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/hint_default_filter_agent"
+                        android:textColor="@color/material_on_background_emphasis_medium"
                         android:textSize="16sp"
                         android:visibility="gone"
                         tools:visibility="visible" />
@@ -106,6 +101,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/text_no_agents_available"
+                        android:textColor="@color/material_on_background_emphasis_medium"
                         android:textSize="16sp"
                         android:visibility="gone" />
 
@@ -123,6 +119,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/default_margin"
                             android:text="@string/text_loading_agents"
+                            android:textColor="@color/material_on_background_emphasis_medium"
                             android:textSize="18sp" />
 
                         <ProgressBar
@@ -130,7 +127,8 @@
                             style="?android:attr/progressBarStyleSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:indeterminate="true" />
+                            android:indeterminate="true"
+                            android:indeterminateTint="?attr/colorOnBackground" />
 
                     </LinearLayout>
 
@@ -180,7 +178,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/text_parameters"
-                        android:textColor="@color/main_text_color"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
                         android:textSize="18sp" />
 
                     <TextView
@@ -191,6 +189,7 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/text_filters_none"
+                        android:textColor="@color/material_on_background_emphasis_medium"
                         android:textSize="16sp" />
 
                     <LinearLayout
@@ -218,8 +217,7 @@
                             style="@style/Widget.MaterialComponents.Button"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_add_parameter"
-                            app:backgroundTint="@color/colorAccent" />
+                            android:text="@string/text_add_parameter" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/button_clear_parameters"

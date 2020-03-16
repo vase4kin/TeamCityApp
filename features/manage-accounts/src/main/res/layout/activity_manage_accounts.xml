@@ -37,7 +37,6 @@
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@id/toolbar"
-                style="@style/Toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways" />
@@ -57,12 +56,12 @@
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floating_action_button"
-            style="@style/BaseFloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/default_margin"
             android:onClick="@{() -> viewmodel.onFabClick()}"
-            app:srcCompat="@drawable/ic_add_black_24dp"
-            app:tint="@color/white" />
+            app:srcCompat="@drawable/ic_add_black_24dp" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

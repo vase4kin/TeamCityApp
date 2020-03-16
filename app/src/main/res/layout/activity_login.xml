@@ -19,7 +19,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?colorPrimary"
+    android:background="?attr/colorPrimarySurface"
     android:fillViewport="true">
 
     <LinearLayout
@@ -42,7 +42,7 @@
             android:layout_marginTop="@dimen/default_margin"
             android:text="@string/app_name"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
-            android:textColor="@android:color/white"
+            android:textColor="@color/material_on_primary_emphasis_high_type"
             android:textSize="22sp" />
 
         <TextView
@@ -52,7 +52,8 @@
             android:layout_marginTop="@dimen/small_margin"
             android:gravity="center"
             android:text="@string/text_app_description"
-            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
+            android:textAppearance="?attr/textAppearanceSubtitle1"
+            android:textColor="@color/material_on_primary_emphasis_medium"
             android:textSize="20sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -148,7 +149,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/login_screen_margin"
-            android:indeterminateTint="@color/white"
+            android:indeterminateTint="?attr/colorOnPrimarySurface"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -160,8 +161,6 @@
             android:layout_marginRight="@dimen/login_screen_margin"
             android:layout_marginBottom="@dimen/login_screen_margin"
             android:visibility="gone"
-            app:cardBackgroundColor="@color/colorPrimaryDark"
-            app:cardCornerRadius="@dimen/small_margin"
             tools:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -173,12 +172,12 @@
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_margin="@dimen/default_margin"
-                    android:tint="@color/white"
                     app:layout_constraintBottom_toBottomOf="@id/text"
                     app:layout_constraintEnd_toStartOf="@id/text"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/text"
-                    app:srcCompat="@drawable/ic_lightbulb_outline_black_24dp" />
+                    app:srcCompat="@drawable/ic_lightbulb_outline_black_24dp"
+                    app:tint="?attr/colorOnPrimarySurface" />
 
                 <TextView
                     android:id="@+id/text"
@@ -188,7 +187,7 @@
                     android:layout_marginEnd="@dimen/default_margin"
                     android:gravity="start"
                     android:text="@string/text_try_it_out"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Subtitle.Inverse"
+                    android:textAppearance="?attr/textAppearanceSubtitle1"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/imageView"

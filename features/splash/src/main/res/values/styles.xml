@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 <resources>
 
-    <style name="SplashTheme" parent="AppTheme">
+    <style name="SplashTheme" parent="Theme.MyApp">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="colorPrimaryDark">@color/white</item>
         <item name="android:navigationBarColor">@color/white</item>

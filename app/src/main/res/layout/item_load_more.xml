@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -17,12 +17,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/recycler_view_background"
     android:padding="@dimen/default_margin">
 
     <ProgressBar
         android:id="@+id/progress_wheel"
-        style="?android:attr/progressBarStyle"
+        android:indeterminateTint="?attr/colorOnBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

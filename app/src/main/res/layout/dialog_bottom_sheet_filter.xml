@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bottom_sheet_background"
     android:orientation="vertical">
 
     <View
@@ -40,7 +39,8 @@
         android:gravity="center_vertical"
         android:minHeight="52dp"
         android:singleLine="true"
-        android:textAppearance="@style/Text.Headline"
+        android:textAppearance="?attr/textAppearanceBody1"
+        android:textColor="@color/material_on_background_emphasis_medium"
         tools:text="@string/text_filters" />
 
     <LinearLayout
@@ -56,8 +56,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginStart="@dimen/default_margin"
-            android:tint="@color/main_text_color"
-            app:srcCompat="@drawable/ic_done_24px" />
+            app:srcCompat="@drawable/ic_done_24px"
+            app:tint="?attr/colorOnBackground" />
 
         <TextView
             android:id="@+id/text"
@@ -68,7 +68,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:singleLine="true"
-            android:textAppearance="@style/Text.Title"
+            android:textAppearance="?attr/textAppearanceBody1"
             tools:text="Show all queue builds" />
 
     </LinearLayout>

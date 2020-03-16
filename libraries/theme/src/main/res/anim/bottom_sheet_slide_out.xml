@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2019 Andrey Tolpeev
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,8 +15,16 @@
   ~ limitations under the License.
   -->
 
-<View xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="1dp"
-    android:background="@color/divider_color"
-    android:layout_gravity="bottom"/>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+  android:duration="200"
+  android:interpolator="@android:anim/accelerate_interpolator">
+
+    <translate
+      android:fromYDelta="0"
+      android:toYDelta="20%p"/>
+
+    <alpha
+      android:fromAlpha="1.0"
+      android:toAlpha="0.0"/>
+
+</set>

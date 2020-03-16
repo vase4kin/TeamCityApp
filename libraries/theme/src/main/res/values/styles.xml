@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,30 +14,21 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="BaseTheme" />
-
-    <style name="AppTheme.ActionBar" parent="BaseTheme.ActionBar" />
-
-    <style name="BaseTheme.ActionBar" parent="Theme.MaterialComponents.Light.DarkActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimary</item>
-        <item name="colorAccent">@color/colorAccent</item>
+    <!--Bottom Sheets-->
+    <style name="ThemeOverlay.MyTheme.BottomSheetDialog" parent="ThemeOverlay.MaterialComponents.Dialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/Animation.MyTheme.BottomSheet.Modal</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="bottomSheetStyle">@style/Widget.MyTheme.BottomSheet.Modal</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@android:color/transparent</item>
     </style>
-
-    <style name="BaseTheme" parent="BaseTheme.ActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Widget.MyTheme.BottomSheet.Modal" parent="Widget.MaterialComponents.BottomSheet.Modal">
+        <item name="shapeAppearanceOverlay">?attr/shapeAppearanceMediumComponent</item>
     </style>
-
-    <style name="PrimaryColorNavBarTheme" parent="AppTheme">
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-    </style>
-
-    <style name="WhiteColorNavBarTheme" parent="AppTheme" />
-
-    <style name="WhiteColorNavBarWithSeparatorTheme" parent="AppTheme" />
 
     <style name="Toolbar">
         <item name="android:background">?attr/colorPrimary</item>
@@ -57,10 +48,11 @@
     </style>
 
     <style name="ItemTitle" parent="SingleTextSizeItem">
+        <item name="android:textSize">18sp</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:singleLine">false</item>
         <item name="android:maxLines">2</item>
-        <item name="android:textColor">@color/main_text_color</item>
+        <item name="android:textColor">@color/material_on_background_emphasis_high_type</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="ItemSubTitle" parent="SingleSubTextSizeItem">
@@ -68,9 +60,9 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:singleLine">false</item>
         <item name="android:maxLines">2</item>
-        <item name="android:textColor">@color/sub_text_color</item>
+        <item name="android:textColor">@color/material_on_background_emphasis_medium</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
     <style name="SingleSubTextSizeItem">
@@ -94,19 +86,24 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:scrollbarStyle">outsideOverlay</item>
         <item name="android:scrollbars">vertical</item>
-        <item name="android:background">@color/recycler_view_background</item>
     </style>
 
-    <style name="CustomBottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
-        <item name="android:windowIsFloating">false</item>
-        <item name="android:statusBarColor">@color/transparent</item>
-        <item name="android:navigationBarColor">@color/white</item>
-        <item name="android:colorBackground">@color/white</item>
-    </style>
-
-    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@color/transparent</item>
+    <style name="Header">
+        <item name="android:id">@id/section_text</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/default_margin</item>
+        <item name="android:paddingRight">@dimen/default_margin</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:textColor">@color/material_on_surface_emphasis_medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:clickable">true</item>
     </style>
 
 </resources>

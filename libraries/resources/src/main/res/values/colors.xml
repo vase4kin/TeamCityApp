@@ -27,4 +27,26 @@
     <color name="sub_text_color">@android:color/tertiary_text_dark</color>
     <color name="transparent">#00000000</color>
     <color name="queued_tool_bar_color">#BDBDBD</color>
+
+    <!--Color palette-->
+    <color name="blue_200">#90caf9</color> <!--Color primary (dark)-->
+    <color name="blue_500">#2196f3</color> <!--Color primary (light)-->
+    <color name="blue_600">#1e88e5</color> <!--Color primary variant (dark)-->
+    <color name="blue_700">#1976d2</color> <!--Color primary variant (light)-->
+
+    <color name="green_200">#03dac6</color> <!--Color secondary-->
+    <color name="green_500">#018786</color> <!--Color secondary variant-->
+
+    <color name="red_200">#cf6679</color> <!--Color error (dark)-->
+    <color name="red_600">#b00020</color> <!--Color error (light)-->
+
+    <!--Color surface (light), color on error (light), -->
+    <!--color on surface (dark), color on surface (dark)-->
+    <color name="white_50">#ffffff</color>
+
+    <color name="black_800">#121212</color> <!--Color surface (dark)-->
+    <!--Color on secondary (light), color on background (light),-->
+    <!--color on surface (light)-->
+    <color name="black_900">#000000</color>
+
 </resources>

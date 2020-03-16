@@ -28,7 +28,6 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            style="@style/Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             tools:title="@string/title_filter_builds" />
@@ -37,27 +36,22 @@
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab_filter"
-        style="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
         android:layout_margin="@dimen/default_margin"
         android:text="@string/text_apply_filters_button"
-        android:textColor="@color/white"
-        app:icon="@drawable/ic_done_24px"
-        app:iconTint="@color/white" />
+        app:icon="@drawable/ic_done_24px" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/recycler_view_background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/base_item_color">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,13 +79,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/text_filters"
-                        android:textColor="@color/main_text_color"
+                        android:textColor="@color/material_on_background_emphasis_high_type"
                         android:textSize="18sp" />
 
                     <TextView
                         android:id="@+id/selected_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textColor="@color/material_on_background_emphasis_medium"
                         android:text="@string/text_filters_none" />
 
                 </LinearLayout>
