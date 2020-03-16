@@ -70,6 +70,7 @@
         <item name="extendedFloatingActionButtonStyle">@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon</item>
         <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="cardViewStyle">@style/Widget.MaterialComponents.CardView</item>
+        <item name="tabStyle">@style/TabLayout</item>
     </style>
 
     <style name="Base.Theme.MaterialThemeBuilder" parent="Theme.MaterialComponents.DayNight.NoActionBar">

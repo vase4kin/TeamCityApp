@@ -36,16 +36,8 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
-            style="@style/Widget.MaterialComponents.TabLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimarySurface"
-            app:tabIndicator="@drawable/tabs_rounded_line_indicator"
-            app:tabIndicatorColor="?attr/colorOnPrimarySurface"
-            app:tabIndicatorFullWidth="false"
-            app:tabMode="scrollable"
-            app:tabSelectedTextColor="?attr/colorOnPrimarySurface"
-            app:tabTextColor="?attr/colorControlHighlight" />
+            android:layout_height="wrap_content" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
