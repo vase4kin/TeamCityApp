@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,22 +15,5 @@
   -->
 
 <resources>
-    <color name="base_item_color">@color/white</color>
-
-    <color name="queued_status_bar_color">#9E9E9E</color>
-    <color name="tab_queued_unselected_color">#E0E0E0</color>
-
-    <color name="running_tool_bar_color">#26C6DA</color>
-    <color name="tab_running_unselected_color">#B2EBF2</color>
-
-    <color name="success_tool_bar_color">#66BB6A</color>
-    <color name="tab_success_unselected_color">#A5D6A7</color>
-
-    <color name="failed_tool_bar_color">#EF9A9A</color>
-    <color name="tab_failed_unselected_color">#FFCDD2</color>
-
     <color name="login_text_error_color">#FFD180</color>
-
-    <color name="colorWhiteWithOpacity">#B3FFFFFF</color>
-
 </resources>

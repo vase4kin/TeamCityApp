@@ -20,22 +20,6 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="MaterialButton" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_height">64dp</item>
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_gravity">bottom|center</item>
-        <item name="android:layout_marginEnd">@dimen/default_margin</item>
-        <item name="android:layout_marginBottom">@dimen/default_margin</item>
-        <item name="android:elevation">@dimen/default_elevation</item>
-        <item name="android:textSize">14sp</item>
-        <item name="cornerRadius">@dimen/default_fab_radius</item>
-        <item name="backgroundTint">@color/colorAccent</item>
-    </style>
-
-    <style name="Toolbar.NoElevation">
-        <item name="android:elevation">0dp</item>
-    </style>
-
     <style name="LoginEditTextTheme" parent="BaseEditTextStyle">
         <item name="android:singleLine">true</item>
         <item name="colorControlNormal">@color/colorWhite</item>
@@ -64,20 +48,6 @@
         <item name="android:paddingRight">@dimen/default_margin</item>
         <item name="android:textSize">18sp</item>
         <item name="android:background">?attr/selectableItemBackground</item>
-    </style>
-
-    <style name="Text" />
-
-    <style name="Text.Headline">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">?android:textColorSecondary</item>
-    </style>
-
-    <style name="Text.Title">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="ShimmerStyle">
