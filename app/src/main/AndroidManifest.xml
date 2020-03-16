@@ -34,7 +34,7 @@
         <activity
             android:name=".login.view.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/PrimaryColorNavBarTheme"
+            android:theme="@style/PrimarySurfaceTheme"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".home.view.HomeActivity"
@@ -44,31 +44,31 @@
         <activity
             android:name=".buildlist.view.BuildListActivity"
             android:label="@string/title_activity_build_list"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+            android:theme="@style/Theme.MyApp" />
         <activity
             android:name=".build_details.view.BuildDetailsActivity"
             android:label="@string/title_activity_build"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+            android:theme="@style/Theme.MyApp" />
         <activity
             android:name=".navigation.view.NavigationActivity"
             android:label="@string/title_activity_navigation"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+            android:theme="@style/Theme.MyApp" />
         <activity
             android:name=".account.create.view.CreateAccountActivity"
             android:label="@string/title_activity_create_account"
-            android:theme="@style/PrimaryColorNavBarTheme" />
+            android:theme="@style/PrimarySurfaceTheme" />
         <activity
             android:name=".runbuild.view.RunBuildActivity"
             android:label="@string/title_run_build"
-            android:theme="@style/WhiteColorNavBarTheme" />
+            android:theme="@style/Theme.MyApp" />
         <activity
             android:name=".filter_builds.view.FilterBuildsActivity"
             android:label="@string/title_filter_builds"
-            android:theme="@style/WhiteColorNavBarTheme" />
+            android:theme="@style/Theme.MyApp" />
         <activity
             android:name=".artifact.view.ArtifactListActivity"
             android:label="@string/tab_artifacts"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+            android:theme="@style/Theme.MyApp" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

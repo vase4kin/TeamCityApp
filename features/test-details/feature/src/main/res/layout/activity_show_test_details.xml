@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
         tools:context=".view.TestDetailsActivity">
 
         <com.google.android.material.appbar.AppBarLayout
@@ -40,11 +39,9 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="@color/red"
                 app:navigationIcon="@drawable/ic_close_white_24dp"
                 app:setNavigationOnClickListener="@{() -> vm.finish.invoke()}"
-                app:title="@string/test_details_title"
-                app:titleTextColor="@color/white" />
+                app:title="@string/test_details_title" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -72,26 +69,27 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:visibility="@{vm.errorVisibility}"
-            app:ev_imageTint="@color/sub_text_color"
-            app:ev_retryColor="@color/main_text_color"
+            app:ev_imageTint="@color/material_on_background_emphasis_medium"
+            app:ev_retryColor="@color/material_on_background_emphasis_medium"
             app:ev_retryText="@string/error_view_retry_button_text"
             app:ev_subtitle="@string/error_view_error_text"
-            app:ev_subtitleColor="@color/sub_text_color"
+            app:ev_subtitleColor="@color/material_on_background_emphasis_medium"
             app:ev_title="@string/error_view_oops_message"
-            app:ev_titleColor="@color/main_text_color"
-            app:retryListener="@{vm}"
+            app:ev_titleColor="@color/material_on_background_emphasis_high_type"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
+            app:retryListener="@{vm}"
             tools:visibility="gone" />
 
         <TextView
             android:id="@+id/empty"
-            style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/text_empty_test_details"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/material_on_background_emphasis_high_type"
             android:visibility="@{vm.emptyVisibility}"
-            tools:visibility="gone" />
+            tools:visibility="visible" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -14,12 +14,4 @@
   ~ limitations under the License.
   -->
 
-<resources>
-
-    <style name="WhiteColorNavBarTheme" parent="Theme.MyApp" />
-
-    <style name="WhiteColorNavBarWithSeparatorTheme" parent="Theme.MyApp">
-        <!--        <item name="android:navigationBarDividerColor">@color/divider_color</item>-->
-    </style>
-
-</resources>
+<resources></resources>

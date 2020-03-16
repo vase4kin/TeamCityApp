@@ -68,6 +68,7 @@
         <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
         <item name="floatingActionButtonStyle">@style/Widget.MaterialComponents.FloatingActionButton</item>
         <item name="extendedFloatingActionButtonStyle">@style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon</item>
+        <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="cardViewStyle">@style/Widget.MaterialComponents.CardView</item>
     </style>
 
@@ -79,22 +80,14 @@
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">?attr/colorControlHighlight</item>
     </style>
 
-    <style name="PrimaryColorNavBarTheme" parent="Theme.MyApp">
+    <style name="PrimarySurfaceTheme" parent="Theme.MyApp">
         <item name="android:navigationBarColor">?attr/colorPrimarySurface</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@android:color/transparent</item>
     </style>
-
-    <style name="WhiteColorNavBarTheme" parent="Theme.MyApp" />
-
-    <style name="WhiteColorNavBarWithSeparatorTheme" parent="Theme.MyApp" />
 
     <style name="HomeTheme" parent="Theme.MyApp">
         <item name="android:navigationBarColor">?attr/colorPrimarySurface</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">@android:color/transparent</item>
-    </style>
-
-    <style name="AccountsListTheme" parent="WhiteColorNavBarWithSeparatorTheme">
-        <item name="windowActionModeOverlay">true</item>
     </style>
 
 </resources>
