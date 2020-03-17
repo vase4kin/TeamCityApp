@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,6 @@ class BottomSheetDialogFragment :
 
     @Inject
     lateinit var presenter: BottomSheetPresenterImpl
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setStyle(
-            STYLE_NORMAL,
-            R.style.CustomBottomSheetDialogTheme
-        )
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

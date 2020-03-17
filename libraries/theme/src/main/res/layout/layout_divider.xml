@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,18 +14,8 @@
   ~ limitations under the License.
   -->
 
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:left="4dp"
-        android:right="4dp">
-        <shape android:shape="rectangle">
-            <solid android:color="@android:color/white" />
-            <corners
-                android:bottomLeftRadius="0dp"
-                android:bottomRightRadius="0dp"
-                android:topLeftRadius="3dp"
-                android:topRightRadius="3dp" />
-            <size android:height="3dp" />
-        </shape>
-    </item>
-</layer-list>
+<View xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:background="?attr/colorControlHighlight"
+    android:layout_gravity="bottom"/>

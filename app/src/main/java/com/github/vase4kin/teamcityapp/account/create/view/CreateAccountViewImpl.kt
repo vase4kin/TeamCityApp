@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.widget.Toolbar
-import butterknife.BindColor
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
@@ -33,15 +32,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView {
 
-    @JvmField
-    @BindColor(R.color.white)
-    var whiteColor: Int = 0
-    @JvmField
-    @BindColor(R.color.colorPrimary)
-    var primaryColor: Int = 0
-    @JvmField
-    @BindColor(R.color.login_text_error_color)
-    var orangeColor: Int = 0
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
     @BindView(R.id.teamcity_url)
@@ -264,31 +254,21 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
             .title(R.string.progress_dialog_title)
             .content(R.string.progress_dialog_content)
             .progress(true, 0)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
-            .titleColor(whiteColor)
             .autoDismiss(false)
-            .backgroundColor(primaryColor)
             .build()
 
         progressDialog.setCancelable(false)
         progressDialog.setCanceledOnTouchOutside(false)
 
         discardDialog = MaterialDialog.Builder(activity)
-            .titleColor(whiteColor)
-            .widgetColor(whiteColor)
             .content(R.string.discard_dialog_content)
-            .contentColor(whiteColor)
-            .backgroundColor(primaryColor)
             .positiveText(R.string.discard_dialog_positive_button_text)
-            .positiveColor(orangeColor)
             .callback(object : MaterialDialog.ButtonCallback() {
                 override fun onPositive(dialog: MaterialDialog?) {
                     finish()
                 }
             })
             .negativeText(R.string.discard_dialog_negative_button_text)
-            .negativeColor(orangeColor)
             .build()
     }
 
@@ -297,17 +277,10 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      */
     override fun showDisableSslWarningDialog() {
         MaterialDialog.Builder(activity)
-            .titleColor(whiteColor)
             .title(R.string.warning_ssl_dialog_title)
             .content(R.string.warning_ssl_dialog_content)
-            .widgetColor(whiteColor)
-            .contentColor(whiteColor)
-            .backgroundColor(primaryColor)
-            .positiveColor(orangeColor)
             .positiveText(R.string.dialog_ok_title)
-            .negativeColor(orangeColor)
             .negativeText(R.string.warning_ssl_dialog_negative)
-            .linkColor(orangeColor)
             .onPositive { dialog, which ->
                 disableSslSwitch.isChecked = true
                 dialog.dismiss()

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
   -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/build_log_relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context=".buildlog.view.BuildLogFragment">
 
     <include layout="@layout/layout_progress_wheel" />
@@ -47,23 +46,22 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="@dimen/default_margin"
-            android:tint="@color/sub_text_color"
-            app:srcCompat="@drawable/ic_accessible_black_24px" />
+            app:srcCompat="@drawable/ic_accessible_black_24px"
+            app:tint="@color/material_on_background_emphasis_medium" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/default_margin"
             android:gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/sub_text_color"
-            android:text="@string/text_login_again" />
+            android:text="@string/text_login_again"
+            android:textColor="@color/material_on_background_emphasis_medium"
+            android:textSize="18sp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/auth_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
             android:text="@string/text_button_login" />
 
     </LinearLayout>
@@ -82,23 +80,22 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginBottom="32dp"
-            android:tint="@color/sub_text_color"
-            app:srcCompat="@drawable/ic_warning_black_24dp" />
+            app:srcCompat="@drawable/ic_warning_black_24dp"
+            app:tint="@color/material_on_background_emphasis_medium" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/default_margin"
             android:gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/sub_text_color"
-            android:text="@string/text_browse_build_log" />
+            android:text="@string/text_browse_build_log"
+            android:textColor="@color/material_on_background_emphasis_high_type"
+            android:textSize="18sp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/view_build_log_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
             android:text="@string/text_browse_build_log_button" />
 
     </LinearLayout>

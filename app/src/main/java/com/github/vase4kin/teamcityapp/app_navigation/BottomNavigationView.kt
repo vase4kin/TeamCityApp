@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import teamcityapp.libraries.utils.getThemeColor
 
 private const val DELAY = 40L
 
@@ -90,20 +91,22 @@ class BottomNavigationViewImpl(
         // Add bottom nav items
         for (itemApp: AppNavigationItem in AppNavigationItem.values()) {
             val bottomNavItem =
-                AHBottomNavigationItem(itemApp.title, itemApp.icon, R.color.colorWhite)
+                AHBottomNavigationItem(
+                    itemApp.title,
+                    itemApp.icon,
+                    R.color.material_on_primary_emphasis_high_type
+                )
             bottomNavigation.addItem(bottomNavItem)
         }
 
         // Set bottom nav settings
-        bottomNavigation.defaultBackgroundColor = ContextCompat.getColor(activity, R.color.colorPrimary)
-        bottomNavigation.accentColor = ContextCompat.getColor(activity, R.color.colorWhite)
+        bottomNavigation.defaultBackgroundColor = activity.getThemeColor(R.attr.colorPrimarySurface)
+        bottomNavigation.accentColor =
+            activity.getThemeColor(R.attr.colorOnPrimary)
         bottomNavigation.inactiveColor =
-            ContextCompat.getColor(activity, R.color.colorWhiteWithOpacity)
+            ContextCompat.getColor(activity, R.color.material_on_primary_emphasis_medium)
         bottomNavigation.setNotificationBackgroundColor(
-            ContextCompat.getColor(
-                activity,
-                R.color.colorAccent
-            )
+            activity.getThemeColor(R.attr.colorSecondary)
         )
         bottomNavigation.isBehaviorTranslationEnabled = false
 

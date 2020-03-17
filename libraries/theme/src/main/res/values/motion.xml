@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,15 +16,11 @@
 
 <resources>
 
-    <style name="AppTheme" parent="BaseTheme">
-        <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:navigationBarColor">@color/recycler_view_background</item>
-    </style>
+    <!--Motion-->
 
-    <style name="WhiteColorNavBarTheme" parent="AppTheme" />
-
-    <style name="WhiteColorNavBarWithSeparatorTheme" parent="AppTheme">
-        <item name="android:navigationBarDividerColor">@color/divider_color</item>
+    <style name="Animation.MyTheme.BottomSheet.Modal" parent="Animation.AppCompat.Dialog">
+        <item name="android:windowEnterAnimation">@anim/bottom_sheet_slide_in</item>
+        <item name="android:windowExitAnimation">@anim/bottom_sheet_slide_out</item>
     </style>
 
 </resources>

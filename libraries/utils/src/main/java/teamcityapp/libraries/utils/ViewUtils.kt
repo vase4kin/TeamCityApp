@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package teamcityapp.libraries.utils
 
+import android.content.Context
+import android.util.TypedValue
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 
@@ -24,9 +28,13 @@ fun AppCompatActivity.initToolbar() {
     if (toolBar != null) {
         setSupportActionBar(toolBar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_keyboard_backspace_black_24dp)
         toolBar.setNavigationOnClickListener {
             finish()
         }
     }
 }
+
+@ColorInt
+fun Context.getThemeColor(@AttrRes attribute: Int) =
+    TypedValue().let { theme.resolveAttribute(attribute, it, true); it.data }

@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,12 +15,16 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+  android:duration="250"
+  android:interpolator="@android:anim/accelerate_decelerate_interpolator">
 
-    <style name="SplashTheme" parent="AppTheme">
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="android:navigationBarColor">@color/white</item>
-    </style>
+    <translate
+      android:fromYDelta="20%p"
+      android:toYDelta="0"/>
 
-</resources>
+    <alpha
+      android:fromAlpha="0.0"
+      android:toAlpha="1.0"/>
+
+</set>

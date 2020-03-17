@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -14,12 +14,15 @@
   ~ limitations under the License.
   -->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="SplashTheme" parent="AppTheme">
+    <style name="SplashTheme" parent="Theme.MyApp">
+        <item name="android:statusBarColor" tools:ignore="NewApi">?android:attr/colorBackground</item>
         <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:navigationBarColor">?android:attr/colorBackground</item>
+        <item name="android:navigationBarDividerColor" tools:targetApi="o_mr1">
+            @android:color/transparent
+        </item>
     </style>
 
 </resources>

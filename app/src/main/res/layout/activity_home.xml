@@ -27,18 +27,17 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@id/toolbar"
-            style="@style/Toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <TextView
                 android:id="@+id/toolbar_title"
-                style="@style/TextAppearance.AppCompat.Title"
+                style="?attr/textAppearanceHeadline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnPrimarySurface"
                 tools:text="@string/home_drawer_item" />
 
         </androidx.appcompat.widget.Toolbar>
@@ -55,16 +54,12 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/home_floating_action_button"
-        style="@style/Widget.MaterialComponents.FloatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
         android:layout_marginEnd="@dimen/default_margin"
         android:layout_marginBottom="74dp"
         android:visibility="gone"
-        app:elevation="@dimen/default_elevation"
-        app:fabSize="normal"
-        app:tint="@color/white"
         tools:src="@drawable/ic_favorite_white_24dp"
         tools:visibility="visible" />
 

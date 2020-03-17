@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
         <activity
             android:name="teamcityapp.features.about.AboutActivity"
             android:label="@string/about_drawer_item"
-            android:theme="@style/WhiteColorNavBarWithSeparatorTheme" />
+            android:theme="@style/Theme.MyApp" />
 
     </application>
 

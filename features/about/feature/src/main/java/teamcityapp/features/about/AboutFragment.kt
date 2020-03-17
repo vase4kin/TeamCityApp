@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_info_outline_black_24dp,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     )
                 )
                 .subText(version)
@@ -122,7 +122,7 @@ class AboutFragment : MaterialAboutFragment() {
                 getTintedDrawable(
                     requireContext(),
                     R.drawable.ic_web_black_24dp,
-                    R.color.sub_text_color
+                    R.color.material_on_surface_emphasis_medium
                 )
             )
             .setOnClickAction {
@@ -145,7 +145,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_info_outline_black_24dp,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     )
                 )
                 .subText(BuildConfig.VERSION_NAME)
@@ -157,7 +157,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_star_border_black_24dp,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     ),
                     getString(R.string.about_app_text_rate_app),
                     null
@@ -170,7 +170,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_question_answer_black_24dp,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     )
                 )
                 .setOnClickAction {
@@ -188,7 +188,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_github_circle,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     )
                 )
                 .setOnClickAction {
@@ -202,7 +202,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_github_circle,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     )
                 )
                 .setOnClickAction {
@@ -225,7 +225,7 @@ class AboutFragment : MaterialAboutFragment() {
                 getTintedDrawable(
                     requireContext(),
                     R.drawable.ic_web_black_24dp,
-                    R.color.sub_text_color
+                    R.color.material_on_surface_emphasis_medium
                 )
             )
             .setOnClickAction {
@@ -239,7 +239,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_email_black_24dp,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     ),
                     getText(R.string.about_app_text_email),
                     true,
@@ -253,7 +253,7 @@ class AboutFragment : MaterialAboutFragment() {
                     getTintedDrawable(
                         requireContext(),
                         R.drawable.ic_web_black_24dp,
-                        R.color.sub_text_color
+                        R.color.material_on_surface_emphasis_medium
                     )
                 )
                 .setOnClickAction {
