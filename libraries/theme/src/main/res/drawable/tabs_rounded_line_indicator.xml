@@ -19,7 +19,7 @@
         android:left="4dp"
         android:right="4dp">
         <shape android:shape="rectangle">
-            <solid android:color="?attr/colorOnPrimarySurface" />
+            <solid android:color="?attr/colorOnPrimary" />
             <corners
                 android:bottomLeftRadius="0dp"
                 android:bottomRightRadius="0dp"

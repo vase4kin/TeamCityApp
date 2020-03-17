@@ -33,11 +33,11 @@
     <style name="TabLayout" parent="@style/Widget.MaterialComponents.TabLayout">
         <item name="android:background">?attr/colorPrimarySurface</item>
         <item name="tabIndicator">@drawable/tabs_rounded_line_indicator</item>
-        <item name="tabIndicatorColor">?attr/colorOnPrimarySurface</item>
+        <item name="tabIndicatorColor">?attr/colorOnPrimary</item>
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabMode">scrollable</item>
-        <item name="tabSelectedTextColor">?attr/colorOnPrimarySurface</item>
-        <item name="tabTextColor">?attr/colorControlHighlight</item>
+        <item name="tabSelectedTextColor">?attr/colorOnPrimary</item>
+        <item name="tabTextColor">@color/material_on_primary_emphasis_medium</item>
     </style>
 
     <style name="ItemTitle">

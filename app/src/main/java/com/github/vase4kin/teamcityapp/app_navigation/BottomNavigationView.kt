@@ -23,6 +23,7 @@ import android.widget.TextView
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
+import androidx.core.content.ContextCompat
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.github.vase4kin.teamcityapp.R
@@ -104,9 +105,9 @@ class BottomNavigationViewImpl(
         // Set bottom nav settings
         bottomNavigation.defaultBackgroundColor = activity.getThemeColor(R.attr.colorPrimarySurface)
         bottomNavigation.accentColor =
-            activity.getThemeColor(R.attr.colorOnPrimarySurface)
+            activity.getThemeColor(R.attr.colorOnPrimary)
         bottomNavigation.inactiveColor =
-            activity.getThemeColor(R.attr.colorControlHighlight)
+            ContextCompat.getColor(activity, R.color.material_on_primary_emphasis_medium)
         bottomNavigation.setNotificationBackgroundColor(
             activity.getThemeColor(R.attr.colorSecondary)
         )
