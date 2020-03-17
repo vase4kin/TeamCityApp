@@ -71,6 +71,7 @@
         <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
         <item name="cardViewStyle">@style/Widget.MaterialComponents.CardView</item>
         <item name="tabStyle">@style/TabLayout</item>
+        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
     </style>
 
     <style name="Base.Theme.MaterialThemeBuilder" parent="Theme.MaterialComponents.DayNight.NoActionBar">

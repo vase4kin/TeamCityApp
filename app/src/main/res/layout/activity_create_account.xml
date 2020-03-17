@@ -18,7 +18,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimarySurface"
     android:orientation="vertical"
     tools:context=".account.create.view.CreateAccountActivity">
 
@@ -45,7 +44,6 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/teamcity_url_wrapper"
-                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/default_margin"
@@ -55,7 +53,6 @@
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/teamcity_url"
-                    style="@style/LoginEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textUri"
@@ -70,12 +67,10 @@
                 android:layout_marginLeft="@dimen/default_margin"
                 android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
-                android:text="@string/text_guest_user_switch"
-                android:textColor="@color/white" />
+                android:text="@string/text_guest_user_switch" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/user_field_wrapper"
-                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/default_margin"
@@ -85,7 +80,6 @@
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/user_name"
-                    style="@style/LoginEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
@@ -95,7 +89,6 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_field_wrapper"
-                style="@style/LoginTextInputLayoutStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/default_margin"
@@ -105,7 +98,6 @@
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                     android:id="@+id/password"
-                    style="@style/LoginEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionDone"
@@ -120,8 +112,7 @@
                 android:layout_marginLeft="@dimen/default_margin"
                 android:layout_marginTop="@dimen/default_margin"
                 android:layout_marginRight="@dimen/default_margin"
-                android:text="@string/text_disable_ssl_switch"
-                android:textColor="@color/white" />
+                android:text="@string/text_disable_ssl_switch" />
 
         </LinearLayout>
 
