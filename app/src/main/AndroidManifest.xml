@@ -69,6 +69,12 @@
             android:name=".artifact.view.ArtifactListActivity"
             android:label="@string/tab_artifacts"
             android:theme="@style/Theme.MyApp" />
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"/>
+        <activity
+            android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
+            android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
