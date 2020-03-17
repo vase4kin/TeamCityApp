@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.properties.view
 
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import butterknife.BindColor
+import androidx.core.content.ContextCompat
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
@@ -43,9 +42,6 @@ class PropertyViewHolder
         false
     )
 ) {
-    @BindColor(R.color.main_text_color)
-    @JvmField
-    var emptyColor: Int = 0
     @BindView(R.id.title)
     lateinit var parameterName: TextView
     @BindView(R.id.subTitle)
@@ -58,10 +54,21 @@ class PropertyViewHolder
     override fun bind(dataModel: PropertiesDataModel, position: Int) {
         parameterName.text = dataModel.getName(position)
         parameterValue.text = dataModel.getValue(position)
+        val context = itemView.context
         if (dataModel.isEmpty(position)) {
-            parameterValue.setTextColor(Color.LTGRAY)
+            parameterValue.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.material_on_background_disabled
+                )
+            )
         } else {
-            parameterValue.setTextColor(emptyColor)
+            parameterValue.setTextColor(
+                ContextCompat.getColor(
+                    context,
+                    R.color.material_on_background_emphasis_high_type
+                )
+            )
         }
     }
 }

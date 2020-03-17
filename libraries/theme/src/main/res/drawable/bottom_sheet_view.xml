@@ -16,5 +16,5 @@
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <corners android:radius="16dp" />
-    <solid android:color="@color/queued_tool_bar_color" />
+    <solid android:color="?attr/colorControlHighlight" />
 </shape>

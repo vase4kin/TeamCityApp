@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
-import androidx.core.content.ContextCompat
+import teamcityapp.libraries.utils.getThemeColor
 
 private const val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 
@@ -70,7 +70,7 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
         )
 
         customTabsIntent = CustomTabsIntent.Builder(customTabsSession)
-            .setToolbarColor(ContextCompat.getColor(activity, R.color.colorPrimary))
+            .setToolbarColor(activity.getThemeColor(R.attr.colorPrimarySurface))
             .setShowTitle(true)
             .build()
         /*

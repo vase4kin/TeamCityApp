@@ -91,7 +91,11 @@ class BottomNavigationViewImpl(
         // Add bottom nav items
         for (itemApp: AppNavigationItem in AppNavigationItem.values()) {
             val bottomNavItem =
-                AHBottomNavigationItem(itemApp.title, itemApp.icon, R.color.colorWhite)
+                AHBottomNavigationItem(
+                    itemApp.title,
+                    itemApp.icon,
+                    R.color.material_on_primary_emphasis_high_type
+                )
             bottomNavigation.addItem(bottomNavItem)
         }
 

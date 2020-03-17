@@ -15,19 +15,6 @@
   -->
 
 <resources>
-    <color name="colorAccent">#4db6ac</color>
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="box_color">#9be7ff</color>
-    <color name="divider_color">#E0E0E0</color>
-    <color name="recycler_view_background">#F5F5F5</color>
-    <color name="white">@color/colorWhite</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="main_text_color">@android:color/secondary_text_light</color>
-    <color name="sub_text_color">@android:color/tertiary_text_dark</color>
-    <color name="transparent">#00000000</color>
-    <color name="queued_tool_bar_color">#BDBDBD</color>
-
     <!--Color palette-->
     <color name="indigo_200">#9FA8DA</color> <!--Color primary (dark)-->
     <color name="blue_500">#2196f3</color> <!--Color primary (light)-->
@@ -47,8 +34,7 @@
     <!--color on surface (dark), color on surface (dark)-->
     <color name="white_50">#ffffff</color>
 
-    <color name="black_800">#121212</color>
-    <!--Color surface (dark)-->
+    <color name="black_800">#121212</color><!--Color surface (dark)-->
     <!--Color on secondary (light), color on background (light),-->
     <!--color on surface (light)-->
     <color name="black_900">#000000</color>
