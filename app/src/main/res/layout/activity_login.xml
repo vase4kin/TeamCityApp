@@ -19,7 +19,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorPrimarySurface"
     android:fillViewport="true">
 
     <LinearLayout
@@ -41,9 +40,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/default_margin"
             android:text="@string/app_name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title.Inverse"
-            android:textColor="@color/material_on_primary_emphasis_high_type"
-            android:textSize="22sp" />
+            android:textAppearance="?attr/textAppearanceHeadline5" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -53,12 +50,11 @@
             android:gravity="center"
             android:text="@string/text_app_description"
             android:textAppearance="?attr/textAppearanceSubtitle1"
-            android:textColor="@color/material_on_primary_emphasis_medium"
+            android:textColor="@color/material_on_background_emphasis_medium"
             android:textSize="20sp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/teamcity_url_wrapper"
-            style="@style/LoginTextInputLayoutStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/login_screen_margin"
@@ -68,7 +64,6 @@
 
             <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                 android:id="@+id/teamcity_url"
-                style="@style/LoginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textUri"
@@ -83,12 +78,10 @@
             android:layout_marginStart="28dp"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_marginEnd="@dimen/login_screen_margin"
-            android:text="@string/text_guest_user_switch"
-            android:textColor="@color/white" />
+            android:text="@string/text_guest_user_switch" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_field_wrapper"
-            style="@style/LoginTextInputLayoutStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/login_screen_margin"
@@ -97,7 +90,6 @@
 
             <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                 android:id="@+id/user_name"
-                style="@style/LoginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionNext"
@@ -107,7 +99,6 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/password_field_wrapper"
-            style="@style/LoginTextInputLayoutStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/login_screen_margin"
@@ -116,7 +107,6 @@
 
             <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
                 android:id="@+id/password"
-                style="@style/LoginEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:imeOptions="actionDone"
@@ -131,17 +121,14 @@
             android:layout_marginStart="28dp"
             android:layout_marginTop="@dimen/small_margin"
             android:layout_marginEnd="@dimen/login_screen_margin"
-            android:text="@string/text_disable_ssl_switch"
-            android:textColor="@color/white" />
+            android:text="@string/text_disable_ssl_switch" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_login"
-            style="@style/Widget.MaterialComponents.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/login_screen_margin"
-            android:text="@string/text_login_button"
-            app:backgroundTint="@color/colorAccent" />
+            android:text="@string/text_login_button" />
 
         <ProgressBar
             android:id="@+id/give_it_a_try_progress"
@@ -149,7 +136,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/login_screen_margin"
-            android:indeterminateTint="?attr/colorOnPrimarySurface"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -177,7 +163,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/text"
                     app:srcCompat="@drawable/ic_lightbulb_outline_black_24dp"
-                    app:tint="?attr/colorOnPrimarySurface" />
+                    app:tint="@color/material_on_surface_emphasis_high_type" />
 
                 <TextView
                     android:id="@+id/text"
@@ -188,7 +174,6 @@
                     android:gravity="start"
                     android:text="@string/text_try_it_out"
                     android:textAppearance="?attr/textAppearanceSubtitle1"
-                    android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/imageView"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -202,11 +187,8 @@
                     android:layout_marginTop="@dimen/small_margin"
                     android:layout_marginEnd="@dimen/default_margin"
                     android:text="@string/text_button_try_it_out"
-                    android:textColor="@color/white"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/text"
-                    app:rippleColor="@color/white"
-                    app:strokeColor="@color/white" />
+                    app:layout_constraintTop_toBottomOf="@id/text" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

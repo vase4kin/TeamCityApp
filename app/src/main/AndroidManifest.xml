@@ -34,7 +34,7 @@
         <activity
             android:name=".login.view.LoginActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/PrimarySurfaceTheme"
+            android:theme="@style/LoginActivityTheme"
             tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".home.view.HomeActivity"
