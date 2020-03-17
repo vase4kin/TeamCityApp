@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="mal_color_primary">@color/material_on_background_emphasis_high_type</item>
+        <item name="mal_color_secondary">@color/material_on_background_emphasis_medium</item>
+        <item name="mal_card_background">?attr/colorSurface</item>
     </style>
 
 </resources>
