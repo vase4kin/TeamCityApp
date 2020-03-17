@@ -29,13 +29,16 @@
     <color name="queued_tool_bar_color">#BDBDBD</color>
 
     <!--Color palette-->
-    <color name="blue_200">#90caf9</color> <!--Color primary (dark)-->
+    <color name="indigo_200">#9FA8DA</color> <!--Color primary (dark)-->
     <color name="blue_500">#2196f3</color> <!--Color primary (light)-->
-    <color name="blue_600">#1e88e5</color> <!--Color primary variant (dark)-->
+    <color name="indigo_600">#3949AB</color> <!--Color primary variant (dark)-->
     <color name="blue_700">#1976d2</color> <!--Color primary variant (light)-->
 
-    <color name="green_200">#03dac6</color> <!--Color secondary-->
-    <color name="green_500">#018786</color> <!--Color secondary variant-->
+    <color name="green_200">#03dac6</color> <!--Color secondary (light)-->
+    <color name="green_500">#018786</color> <!--Color secondary variant (light)-->
+
+    <color name="cyan_200">#80DEEA</color> <!--Color secondary (light)-->
+    <color name="cyan_500">#00BCD4</color> <!--Color secondary variant (light)-->
 
     <color name="red_200">#cf6679</color> <!--Color error (dark)-->
     <color name="red_600">#b00020</color> <!--Color error (light)-->
