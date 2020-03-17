@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.overview.view
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
@@ -46,6 +45,7 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl
 import io.supercharge.shimmerlayout.ShimmerLayout
+import teamcityapp.libraries.utils.getThemeColor
 import tr.xip.errorview.ErrorView
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import java.util.ArrayList
@@ -437,7 +437,7 @@ class OverviewViewImpl(
     ) {
         // Creating prompt
         val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
-        val color = (toolbar.background as ColorDrawable).color
+        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
         val promptBuilder = MaterialTapTargetPrompt.Builder(activity)
             .setPrimaryText(R.string.title_onboarding_build_menu)
             .setSecondaryText(secondaryText)

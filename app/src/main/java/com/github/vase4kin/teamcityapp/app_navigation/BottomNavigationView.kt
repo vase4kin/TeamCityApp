@@ -16,12 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.app_navigation
 
-import android.content.Context
 import android.os.Handler
-import android.util.TypedValue
 import android.widget.TextView
-import androidx.annotation.AttrRes
-import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
@@ -30,6 +26,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import teamcityapp.libraries.utils.getThemeColor
 
 private const val DELAY = 40L
 
@@ -87,10 +84,6 @@ class BottomNavigationViewImpl(
             }
         }
     }
-
-    @ColorInt
-    fun Context.getThemeColor(@AttrRes attribute: Int) =
-        TypedValue().let { theme.resolveAttribute(attribute, it, true); it.data }
 
     private fun initBottomNavView() {
         bottomNavigation.removeAllItems()

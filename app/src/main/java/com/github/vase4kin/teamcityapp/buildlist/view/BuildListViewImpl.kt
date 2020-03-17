@@ -40,6 +40,7 @@ import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.mugen.Mugen
+import teamcityapp.libraries.utils.getThemeColor
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 import uk.co.samuelwall.materialtaptargetprompt.extras.focals.RectanglePromptFocal
 import java.util.ArrayList
@@ -278,7 +279,7 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showFilterBuildsPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = toolbarColor
+        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(R.id.filter_builds)
             .setPrimaryText(R.string.title_onboarding_filter_builds)
@@ -300,7 +301,7 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showRunBuildPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = toolbarColor
+        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(floatingActionButton)
             .setPrimaryText(R.string.title_onboarding_run_build)
@@ -326,7 +327,7 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showFavPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = toolbarColor
+        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(R.id.add_to_favorites)
             .setPrimaryText(R.string.title_onboarding_add_fav)

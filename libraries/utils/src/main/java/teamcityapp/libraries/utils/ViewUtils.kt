@@ -16,6 +16,10 @@
 
 package teamcityapp.libraries.utils
 
+import android.content.Context
+import android.util.TypedValue
+import androidx.annotation.AttrRes
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 
@@ -30,3 +34,7 @@ fun AppCompatActivity.initToolbar() {
         }
     }
 }
+
+@ColorInt
+fun Context.getThemeColor(@AttrRes attribute: Int) =
+    TypedValue().let { theme.resolveAttribute(attribute, it, true); it.data }
