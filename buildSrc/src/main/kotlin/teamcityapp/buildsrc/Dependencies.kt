@@ -63,7 +63,7 @@ object Libs {
         const val databindingCompiler = "com.android.databinding:compiler:3.1.4"
 
         object Tools {
-            const val openSourceLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.9.5"
+            const val openSourceLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.10.2"
         }
     }
 
