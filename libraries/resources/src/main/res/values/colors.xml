@@ -39,4 +39,7 @@
     <!--color on surface (light)-->
     <color name="black_900">#000000</color>
 
+    <!--Custom colors-->
+    <color name="grey_100">#f5f5f5</color>
+
 </resources>

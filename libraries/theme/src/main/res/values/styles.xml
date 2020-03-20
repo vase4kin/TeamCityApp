@@ -94,6 +94,7 @@
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:textColor">@color/material_on_background_emphasis_medium</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:background">?attr/colorOnHeaderBackground</item>
         <item name="android:clickable">true</item>
     </style>
 
