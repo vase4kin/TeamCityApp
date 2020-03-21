@@ -26,7 +26,7 @@
         <item name="android:paddingLeft">@dimen/default_margin</item>
         <item name="android:paddingRight">@dimen/default_margin</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
     <style name="ShimmerStyle">

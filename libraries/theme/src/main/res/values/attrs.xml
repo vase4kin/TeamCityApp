@@ -15,5 +15,6 @@
   -->
 
 <resources>
+    <!--Color for items in a list and so on-->
     <attr name="colorSecondaryBackground" format="color" />
 </resources>
