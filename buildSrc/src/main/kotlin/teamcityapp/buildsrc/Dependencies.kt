@@ -23,8 +23,8 @@ object Config {
     const val compileSdk = 29
     const val targetSdk = 29
     const val buildTools = "29.0.2"
-    const val versionCode = 101
-    const val versionName = "1.5.0.0-beta2"
+    const val versionCode = 102
+    const val versionName = "1.5.0.0-beta3"
     const val applicationId = "com.github.vase4kin.teamcityapp"
     val javaVersion = JavaVersion.VERSION_1_8
 }
