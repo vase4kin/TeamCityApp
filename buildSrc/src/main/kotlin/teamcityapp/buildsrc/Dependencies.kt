@@ -87,9 +87,9 @@ object Libs {
     object Google {
         const val material = "com.google.android.material:material:1.1.0"
 
-        const val firebaseCore = "com.google.firebase:firebase-core:17.2.1"
-        const val firebaseConfig = "com.google.firebase:firebase-config:19.0.3"
-        const val firebasePerf = "com.google.firebase:firebase-perf:19.0.1"
+        const val firebaseCore = "com.google.firebase:firebase-core:17.2.3"
+        const val firebaseConfig = "com.google.firebase:firebase-config:19.1.3"
+        const val firebasePerf = "com.google.firebase:firebase-perf:19.0.5"
 
         const val openSourceLicensesLibrary =
             "com.google.android.gms:play-services-oss-licenses:17.0.0"
