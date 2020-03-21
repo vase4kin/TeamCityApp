@@ -134,7 +134,7 @@ object Libs {
     }
 
     object ButterKnife {
-        private const val version = "10.1.0"
+        private const val version = "10.2.1"
         const val butterKnife = "com.jakewharton:butterknife:$version"
         const val butterKnifeCompiler = "com.jakewharton:butterknife-compiler:$version"
     }
