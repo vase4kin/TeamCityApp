@@ -17,9 +17,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RecyclerViewItem"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:foreground="?attr/selectableItemBackground">
+    android:layout_height="wrap_content">
 
     <FrameLayout
         android:id="@+id/buildStatusContainer"
@@ -43,7 +43,7 @@
             android:layout_height="24dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/material_on_surface_emphasis_high_type"
-            tools:visibility="gone"/>
+            tools:visibility="gone" />
 
     </FrameLayout>
 
@@ -67,20 +67,20 @@
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_margin="@dimen/small_margin"
-        app:tint="@color/material_on_background_emphasis_medium"
         app:layout_constraintEnd_toStartOf="@id/isPinned"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_person_black_24dp" />
+        app:srcCompat="@drawable/ic_person_black_24dp"
+        app:tint="@color/material_on_background_emphasis_medium" />
 
     <ImageView
         android:id="@+id/isPinned"
         android:layout_width="16dp"
         android:layout_height="16dp"
         android:layout_margin="@dimen/small_margin"
-        app:tint="@color/material_on_background_emphasis_medium"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_pin" />
+        app:srcCompat="@drawable/ic_pin"
+        app:tint="@color/material_on_background_emphasis_medium" />
 
     <TextView
         android:id="@+id/buildStatus"
