@@ -15,5 +15,5 @@
   -->
 
 <resources>
-    <attr name="colorOnHeaderBackground" format="color" />
+    <attr name="colorSecondaryBackground" format="color" />
 </resources>
