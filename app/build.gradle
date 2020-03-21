@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ android {
     }
 
     android.variantFilter { variant ->
-        if(variant.buildType.name.equals('release')
+        if (variant.buildType.name.equals('release')
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true)
         }
@@ -137,9 +137,9 @@ dependencies {
 
     // Android support libraries
     implementation Libs.AndroidX.appcompat
-    implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation Libs.AndroidX.cardView
+    implementation Libs.AndroidX.legacySupport
+    implementation Libs.AndroidX.recyclerView
     implementation Libs.Google.material
     implementation Libs.AndroidX.constraintLayout
     // Api third party libraries
@@ -158,14 +158,14 @@ dependencies {
     annotationProcessor Libs.ButterKnife.butterKnifeCompiler
     kapt Libs.ButterKnife.butterKnifeCompiler
     // Event bus
-    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation Libs.eventBus
     // Others
-    implementation 'joda-time:joda-time:2.8.1'
-    implementation 'com.vinaysshenoy:mugen:1.0.2'
-    implementation 'io.supercharge:shimmerlayout:2.1.0'
+    implementation Libs.jodaTime
+    implementation Libs.mugen
+    implementation Libs.shimmerlayout
     implementation Libs.aboutLibrary
     // Onboarding
-    implementation 'uk.co.samuelwall:material-tap-target-prompt:2.14.0'
+    implementation Libs.materialTapTargetPrompt
     // Dagger
     implementation Libs.Dagger.dagger
     annotationProcessor Libs.Dagger.compiler
@@ -178,38 +178,38 @@ dependencies {
     implementation Libs.RxJava.rxAndroid
     implementation Libs.RxJava.rxjava_kotlin
     // Rx cache
-    implementation "com.github.VictorAlbertos.RxCache:runtime:1.8.3-2.x"
-    implementation 'com.github.VictorAlbertos.Jolyglot:gson:0.0.4'
+    implementation Libs.RxCache.rxCache
+    implementation Libs.RxCache.jolyglot
     // Encryption
-    implementation 'com.facebook.conceal:conceal:1.1.3@aar'
+    implementation Libs.conceal
     // Firebase
     implementation Libs.Google.firebaseCore
     implementation Libs.Google.firebaseConfig
     implementation Libs.Google.firebasePerf
     // Bottom nav libries
-    implementation 'com.ncapdevi:frag-nav:3.3.0'
-    implementation 'com.aurelhubert:ahbottomnavigation:2.3.4'
+    implementation Libs.fragNav
+    implementation Libs.ahbottomnavigation
     // Unit tests
     testImplementation Libs.junit
     testImplementation Libs.Mockito.mockito
-    testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
+    testImplementation Libs.hamcrestJunit
     testImplementation Libs.PowerMock.junit4
     testImplementation Libs.PowerMock.junitRule
     testImplementation Libs.PowerMock.apiMockito
     testImplementation Libs.PowerMock.classLoadingXstream
     // Ui tests
     // Core library
-    androidTestImplementation 'androidx.test:core:1.2.0'
+    androidTestImplementation Libs.AndroidX.Test.core
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation 'androidx.test:runner:1.2.0'
-    androidTestImplementation 'androidx.test:rules:1.2.0'
+    androidTestImplementation Libs.AndroidX.Test.runner
+    androidTestImplementation Libs.AndroidX.Test.rules
     // Assertions
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation Libs.AndroidX.Test.extJunit
     // Espresso dependenciesd
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-intents:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.2.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-web:3.2.0'
+    androidTestImplementation Libs.AndroidX.Test.Espresso.core
+    androidTestImplementation Libs.AndroidX.Test.Espresso.intents
+    androidTestImplementation Libs.AndroidX.Test.Espresso.contrib
+    androidTestImplementation Libs.AndroidX.Test.Espresso.web
     // Mockito
     androidTestImplementation Libs.Mockito.mockito
     // Dex maker
@@ -217,14 +217,14 @@ dependencies {
     androidTestImplementation Libs.DexMaker.dexmakerDx
     androidTestImplementation Libs.DexMaker.dexmakerMockito
     // Dagger mock
-    androidTestImplementation 'com.github.fabioCollini:DaggerMock:0.8.5'
+    androidTestImplementation Libs.daggerMock
     // Condition watcher
-    androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
+    androidTestImplementation Libs.conditionwatcher
     // Resolve conflits between apks
-    androidTestImplementation 'com.google.android.material:material:1.0.0'
-    androidTestImplementation 'androidx.recyclerview:recyclerview:1.0.0'
+    androidTestImplementation Libs.Google.material
+    androidTestImplementation Libs.AndroidX.recyclerView
     // Crashlytics
-    implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    implementation(Libs.crashlytics) {
         transitive = true
     }
 

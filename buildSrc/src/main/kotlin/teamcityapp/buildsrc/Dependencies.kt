@@ -34,11 +34,27 @@ object Libs {
     const val errorView = "tr.xip.errorview:library:3.0.0"
     const val aboutLibrary = "com.github.daniel-stoneuk:material-about-library:2.4.2"
     const val dialogs = "com.afollestad.material-dialogs:core:0.9.6.0"
+    const val shimmerlayout = "io.supercharge:shimmerlayout:2.1.0"
+    const val eventBus = "org.greenrobot:eventbus:3.0.0"
+    const val materialTapTargetPrompt = "uk.co.samuelwall:material-tap-target-prompt:2.14.0"
+    const val conceal = "com.facebook.conceal:conceal:1.1.3@aar"
+    const val jodaTime = "joda-time:joda-time:2.8.1"
+    const val mugen = "com.vinaysshenoy:mugen:1.0.2"
+    const val fragNav = "com.ncapdevi:frag-nav:3.3.0"
+    const val ahbottomnavigation = "com.aurelhubert:ahbottomnavigation:2.3.4"
 
     const val junit = "junit:junit:4.12"
+    const val hamcrestJunit = "org.hamcrest:hamcrest-junit:2.0.0.0"
+    const val daggerMock = "com.github.fabioCollini:DaggerMock:0.8.5"
+    const val conditionwatcher = "com.azimolabs.conditionwatcher:conditionwatcher:0.2"
+
+    const val crashlytics = "com.crashlytics.sdk.android:crashlytics:2.6.8@aar"
 
     object AndroidX {
         const val appcompat = "androidx.appcompat:appcompat:1.0.2"
+        const val cardView = "androidx.cardview:cardview:1.0.0"
+        const val legacySupport = "androidx.legacy:legacy-support-v13:1.0.0"
+        const val recyclerView = "androidx.recyclerview:recyclerview:1.0.0"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
         const val constraintLayout = "com.android.support.constraint:constraint-layout:1.1.3"
@@ -47,6 +63,24 @@ object Libs {
             private const val version = "2.2.0-rc02"
             const val lifeCycle = "androidx.lifecycle:lifecycle-runtime:$version"
             const val lifeCycleCompiler = "androidx.lifecycle:lifecycle-compiler:$version"
+        }
+
+        object Test {
+
+            private const val version = "1.2.0"
+            const val core = "androidx.test:core:$version"
+            const val runner = "androidx.test:runner:$version"
+            const val rules = "androidx.test:rules:$version"
+
+            const val extJunit = "androidx.test.ext:junit:1.1.1"
+
+            object Espresso {
+                private const val version = "3.2.0"
+                const val core = "androidx.test.espresso:espresso-core:$version"
+                const val intents = "androidx.test.espresso:espresso-intents:$version"
+                const val contrib = "androidx.test.espresso:espresso-contrib:$version"
+                const val web = "androidx.test.espresso:espresso-web:$version"
+            }
         }
     }
 
@@ -84,6 +118,11 @@ object Libs {
         const val rxJava = "io.reactivex.rxjava2:rxjava:2.2.14"
         const val rxAndroid = "io.reactivex.rxjava2:rxandroid:2.1.1"
         const val rxjava_kotlin = "io.reactivex.rxjava2:rxkotlin:2.4.0"
+    }
+
+    object RxCache {
+        const val rxCache = "com.github.VictorAlbertos.RxCache:runtime:1.8.3-2.x"
+        const val jolyglot = "com.github.VictorAlbertos.Jolyglot:gson:0.0.4"
     }
 
     object Dagger {
