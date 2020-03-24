@@ -49,9 +49,9 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
+            style="@style/ElevatedView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?attr/colorSecondaryBackground">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
