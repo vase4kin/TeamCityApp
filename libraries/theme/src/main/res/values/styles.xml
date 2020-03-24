@@ -80,9 +80,12 @@
         <item name="android:scrollbars">vertical</item>
     </style>
 
-    <style name="RecyclerViewItem">
-        <item name="android:background">?attr/colorSecondaryBackground</item>
+    <style name="RecyclerViewItem" parent="ElevatedView">
         <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="ElevatedView">
+        <item name="android:background">?attr/colorSurface</item>
     </style>
 
     <style name="Header">

@@ -38,9 +38,9 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            style="@style/ElevatedView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorSecondaryBackground"
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputLayout

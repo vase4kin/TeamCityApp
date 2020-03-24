@@ -43,8 +43,6 @@
         <item name="colorOnBackground">@color/black_900</item>
         <item name="colorOnSurface">@color/black_900</item>
         <item name="colorOnError">@color/white_50</item>
-        <!--Custom colors-->
-        <item name="colorSecondaryBackground">@color/white_50</item>
         <!--Material type attributes-->
         <item name="textAppearanceHeadline1">@style/TextAppearance.MyTheme.Headline1</item>
         <item name="textAppearanceHeadline2">@style/TextAppearance.MyTheme.Headline2</item>
@@ -98,8 +96,8 @@
     </style>
 
     <style name="LoginActivityTheme" parent="Theme.MyApp">
-        <item name="android:statusBarColor">?attr/colorSecondaryBackground</item>
-        <item name="android:navigationBarColor">?attr/colorSecondaryBackground</item>
+        <item name="android:statusBarColor">?attr/colorSurface</item>
+        <item name="android:navigationBarColor">?attr/colorSurface</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">
             @android:color/transparent
         </item>

@@ -32,13 +32,9 @@
     <style name="ShimmerStyle">
         <item name="android:layout_marginBottom">24dp</item>
         <item name="shimmer_animation_duration">@integer/shimmer_length</item>
-        <item name="shimmer_color">@color/material_on_background_emphasis_high_type</item>
+        <item name="shimmer_color">?attr/colorSurface</item>
     </style>
 
-    <style name="CardView.ShimmerStyle">
-        <item name="android:layout_marginBottom">24dp</item>
-        <item name="shimmer_animation_duration">@integer/shimmer_length</item>
-        <item name="shimmer_color">@color/material_on_surface_emphasis_high_type</item>
-    </style>
+    <style name="ShimmerStyle.CardView"/>
 
 </resources>
