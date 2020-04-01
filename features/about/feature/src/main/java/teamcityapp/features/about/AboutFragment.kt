@@ -27,6 +27,7 @@ import com.danielstone.materialaboutlibrary.items.MaterialAboutActionItem
 import com.danielstone.materialaboutlibrary.model.MaterialAboutCard
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.google.android.material.elevation.ElevationOverlayProvider
 import dagger.android.support.AndroidSupportInjection
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -35,6 +36,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import teamcityapp.features.about.repository.AboutRepository
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.utils.getThemeColor
 import teamcityapp.libraries.utils.getTintedDrawable
 import javax.inject.Inject
 
@@ -102,6 +104,7 @@ class AboutFragment : MaterialAboutFragment() {
     ): MaterialAboutCard {
         val serverInfo = MaterialAboutCard.Builder()
         serverInfo.title(R.string.about_app_text_server_info)
+        serverInfo.cardColor(getBackgroundColor(requireActivity()))
         serverInfo.addItem(
             MaterialAboutActionItem.Builder()
                 .text(getString(R.string.about_version))
@@ -138,6 +141,7 @@ class AboutFragment : MaterialAboutFragment() {
     ): MaterialAboutList {
         val appCardBuilder = MaterialAboutCard.Builder()
         appCardBuilder.title(R.string.about_app_text_app)
+            .cardColor(getBackgroundColor(requireActivity()))
         appCardBuilder.addItem(
             MaterialAboutActionItem.Builder()
                 .text(getString(R.string.about_version))
@@ -181,6 +185,7 @@ class AboutFragment : MaterialAboutFragment() {
 
         val miscCardBuilder = MaterialAboutCard.Builder()
         miscCardBuilder.title(R.string.about_app_text_dev)
+            .cardColor(getBackgroundColor(requireActivity()))
         miscCardBuilder
             .addItem(MaterialAboutActionItem.Builder()
                 .text(R.string.about_app_text_source_code)
@@ -218,6 +223,7 @@ class AboutFragment : MaterialAboutFragment() {
 
         val authorCardBuilder = MaterialAboutCard.Builder()
         authorCardBuilder.title(R.string.about_app_text_contacts)
+            .cardColor(getBackgroundColor(requireActivity()))
         authorCardBuilder.addItem(MaterialAboutActionItem.Builder()
             .text(R.string.about_app_text_web)
             .subText(R.string.about_app_url_web)
@@ -275,6 +281,14 @@ class AboutFragment : MaterialAboutFragment() {
                 authorCardBuilder.build()
             )
         }
+    }
+
+    private fun getBackgroundColor(activity: Activity): Int {
+        val elevation =
+            activity.resources.getDimension(R.dimen.default_elevation)
+        return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
+            activity.getThemeColor(R.attr.colorSurface), elevation
+        )
     }
 
     private fun openUrl(url: String) {

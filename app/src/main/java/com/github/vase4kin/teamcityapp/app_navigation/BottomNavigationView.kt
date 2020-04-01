@@ -25,6 +25,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import teamcityapp.libraries.utils.getThemeColor
 
@@ -99,8 +100,13 @@ class BottomNavigationViewImpl(
             bottomNavigation.addItem(bottomNavItem)
         }
 
+        val elevation =
+            activity.resources.getDimension(R.dimen.elevation_bottom_navigation)
+        val backgroundColor = ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
+            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
+        )
         // Set bottom nav settings
-        bottomNavigation.defaultBackgroundColor = activity.getThemeColor(R.attr.colorPrimarySurface)
+        bottomNavigation.defaultBackgroundColor = backgroundColor
         bottomNavigation.accentColor =
             activity.getThemeColor(R.attr.colorOnPrimary)
         bottomNavigation.inactiveColor =

@@ -33,9 +33,14 @@
         <item name="shapeAppearanceOverlay">?attr/shapeAppearanceMediumComponent</item>
     </style>
 
-    <style name="TabLayout" parent="@style/Widget.MaterialComponents.TabLayout">
-        <item name="android:background">?attr/colorPrimarySurface</item>
+    <style name="Toolbar" parent="@style/Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="android:background">@null</item>
+        <item name="android:elevation">0dp</item>
+    </style>
+
+    <style name="TabLayout" parent="@style/Widget.MaterialComponents.TabLayout.PrimarySurface">
         <item name="tabIndicator">@drawable/tabs_rounded_line_indicator</item>
+        <item name="android:background">@null</item>
         <item name="tabIndicatorColor">?attr/colorOnPrimary</item>
         <item name="tabIndicatorFullWidth">false</item>
         <item name="tabMode">scrollable</item>
@@ -80,11 +85,11 @@
         <item name="android:scrollbars">vertical</item>
     </style>
 
-    <style name="RecyclerViewItem" parent="ElevatedView">
+    <style name="RecyclerViewItem" parent="SurfaceView">
         <item name="android:foreground">?attr/selectableItemBackground</item>
     </style>
 
-    <style name="ElevatedView">
+    <style name="SurfaceView">
         <item name="android:background">?attr/colorSurface</item>
     </style>
 
