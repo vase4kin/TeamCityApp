@@ -37,6 +37,7 @@ import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerVie
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.mugen.Mugen
@@ -279,7 +280,7 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showFilterBuildsPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(R.id.filter_builds)
             .setPrimaryText(R.string.title_onboarding_filter_builds)
@@ -301,7 +302,7 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showRunBuildPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(floatingActionButton)
             .setPrimaryText(R.string.title_onboarding_run_build)
@@ -327,7 +328,7 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showFavPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(R.id.add_to_favorites)
             .setPrimaryText(R.string.title_onboarding_add_fav)
@@ -385,6 +386,14 @@ open class BuildListViewImpl(
         if (filtersAppliedSnackBar != null && filtersAppliedSnackBar.isShown) {
             filtersAppliedSnackBar.dismiss()
         }
+    }
+
+    private fun getBackgroundColor(): Int {
+        val elevation =
+            activity.resources.getDimension(R.dimen.default_elevation)
+        return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
+            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
+        )
     }
 
     /**

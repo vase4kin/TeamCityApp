@@ -27,6 +27,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
+import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
@@ -132,7 +133,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showNavigationDrawerPrompt(listener: OnboardingManager.OnPromptShownListener) {
         // Creating prompt
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         val navigationDrawerPrompt = MaterialTapTargetPrompt.Builder(activity)
             .setPrimaryText(R.string.title_onboarding_navigation_drawer)
             .setSecondaryText(R.string.text_onboarding_navigation_drawer)
@@ -153,7 +154,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      * {@inheritDoc}
      */
     override fun showAddFavPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_add_fav)
@@ -172,7 +173,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      * {@inheritDoc}
      */
     override fun showRunningBuildsFilterPrompt(listener: OnboardingManager.OnPromptShownListener) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter)
@@ -191,7 +192,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      * {@inheritDoc}
      */
     override fun showBuildsQueueFilterPrompt(onPromptShown: () -> Unit) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter_queued)
@@ -210,7 +211,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      * {@inheritDoc}
      */
     override fun showAgentsFilterPrompt(onPromptShown: () -> Unit) {
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         MaterialTapTargetPrompt.Builder(activity)
             .setTarget(fab)
             .setPrimaryText(R.string.title_onboarding_filter_agents)
@@ -223,6 +224,14 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
                     onPromptShown()
                 }
             }.show()
+    }
+
+    private fun getBackgroundColor(): Int {
+        val elevation =
+            activity.resources.getDimension(R.dimen.default_elevation)
+        return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
+            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
+        )
     }
 
     /**

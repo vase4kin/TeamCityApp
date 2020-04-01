@@ -44,6 +44,7 @@ import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialog
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
 import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl
+import com.google.android.material.elevation.ElevationOverlayProvider
 import io.supercharge.shimmerlayout.ShimmerLayout
 import teamcityapp.libraries.utils.getThemeColor
 import tr.xip.errorview.ErrorView
@@ -437,7 +438,7 @@ class OverviewViewImpl(
     ) {
         // Creating prompt
         val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
-        val color = activity.getThemeColor(R.attr.colorPrimarySurface)
+        val color = getBackgroundColor()
         val promptBuilder = MaterialTapTargetPrompt.Builder(activity)
             .setPrimaryText(R.string.title_onboarding_build_menu)
             .setSecondaryText(secondaryText)
@@ -455,5 +456,13 @@ class OverviewViewImpl(
             }
             promptBuilder.show()
         }, TIMEOUT_PROMPT.toLong())
+    }
+
+    private fun getBackgroundColor(): Int {
+        val elevation =
+            activity.resources.getDimension(R.dimen.default_elevation)
+        return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
+            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
+        )
     }
 }

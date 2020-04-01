@@ -68,15 +68,18 @@
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.MaterialComponents.Dialog.Alert
         </item>
         <item name="bottomSheetDialogTheme">@style/ThemeOverlay.MyTheme.BottomSheetDialog</item>
-        <item name="toolbarStyle">@style/Widget.MaterialComponents.Toolbar.PrimarySurface</item>
+        <item name="toolbarStyle">@style/Toolbar</item>
+        <item name="appBarLayoutStyle">
+            @style/Widget.MaterialComponents.AppBarLayout.PrimarySurface
+        </item>
         <item name="floatingActionButtonStyle">
             @style/Widget.MaterialComponents.FloatingActionButton
         </item>
         <item name="extendedFloatingActionButtonStyle">
             @style/Widget.MaterialComponents.ExtendedFloatingActionButton.Icon
         </item>
-        <item name="buttonStyle">@style/Widget.MaterialComponents.Button</item>
-        <item name="cardViewStyle">@style/Widget.MaterialComponents.CardView</item>
+        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.MaterialComponents.CardView</item>
         <item name="tabStyle">@style/TabLayout</item>
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
