@@ -134,7 +134,7 @@ class MenuViewHolder(
                     router.openManageAccounts()
                 }
                 DrawerType.SETTINGS -> {
-                    // TODO: Track
+                    tracker.trackOpenSettings()
                     router.openSettings()
                 }
                 else -> {

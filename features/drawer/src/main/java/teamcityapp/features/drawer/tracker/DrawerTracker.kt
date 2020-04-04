@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,11 @@ interface DrawerTracker {
     fun trackOpenManageAccounts()
 
     /**
+     * Track open settings
+     */
+    fun trackOpenSettings()
+
+    /**
      * Track view
      */
     fun trackView()
@@ -89,5 +94,10 @@ interface DrawerTracker {
          * Event open manage accounts
          */
         const val EVENT_OPEN_MANAGE_ACCOUNTS = "drawer_open_manage_accounts"
+
+        /**
+         * Event open settings
+         */
+        const val EVENT_OPEN_SETTINGS = "drawer_open_settings"
     }
 }
