@@ -14,15 +14,21 @@
   ~ limitations under the License.
   -->
 
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string-array name="theme_entries" tools:ignore="InconsistentArrays">
-        <item>@string/name_light_theme</item>
-        <item>@string/name_dark_theme</item>
-    </string-array>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <string-array name="theme_values" tools:ignore="InconsistentArrays">
-        <item>@string/value_light_theme</item>
-        <item>@string/value_dark_theme</item>
-    </string-array>
+    <PreferenceCategory
+        app:title="@string/title_general"
+        app:iconSpaceReserved="false">
 
-</resources>
+    </PreferenceCategory>
+
+    <ListPreference
+        app:defaultValue="@string/value_auto_battery"
+        app:entries="@array/theme_entries"
+        app:entryValues="@array/theme_values"
+        app:icon="@drawable/ic_brightness_4_black_24dp"
+        app:key="@string/key_preference_theme"
+        app:title="@string/title_theme"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

@@ -14,21 +14,16 @@
   ~ limitations under the License.
   -->
 
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="theme_entries" tools:ignore="InconsistentArrays">
+        <item>@string/name_light_theme</item>
+        <item>@string/name_dark_theme</item>
+        <item>@string/name_follow_system</item>
+    </string-array>
 
-    <PreferenceCategory
-        app:title="@string/title_general"
-        app:iconSpaceReserved="false">
-
-    </PreferenceCategory>
-
-    <ListPreference
-        app:defaultValue="@string/value_follow_system"
-        app:entries="@array/theme_api_28_entries"
-        app:entryValues="@array/theme_api_28_values"
-        app:icon="@drawable/ic_brightness_4_black_24dp"
-        app:key="@string/key_preference_theme"
-        app:title="@string/title_theme"
-        app:useSimpleSummaryProvider="true" />
-
-</PreferenceScreen>
+    <string-array name="theme_values" tools:ignore="InconsistentArrays">
+        <item>@string/value_light_theme</item>
+        <item>@string/value_dark_theme</item>
+        <item>@string/value_follow_system</item>
+    </string-array>
+</resources>

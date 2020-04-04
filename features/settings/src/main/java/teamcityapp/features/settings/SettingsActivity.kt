@@ -51,7 +51,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            setPreferencesFromResource(R.xml.theme_api_28_preferences, rootKey)
+            setPreferencesFromResource(R.xml.theme_preferences, rootKey)
         }
 
         override fun onSharedPreferenceChanged(
