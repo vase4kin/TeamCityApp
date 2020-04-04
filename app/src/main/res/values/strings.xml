@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -245,7 +245,7 @@
 
     <!--Onboarding-->
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
-    <string name="text_onboarding_navigation_drawer">Manage your accounts easily in one place</string>
+    <string name="text_onboarding_navigation_drawer">Manage your accounts and control theme settings</string>
     <string name="title_onboarding_run_build">Run builds</string>
     <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
     <string name="title_onboarding_filter_builds">Filter builds</string>
