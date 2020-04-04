@@ -135,6 +135,8 @@ dependencies {
 
     implementation project(':features:drawer')
 
+    implementation project(':features:settings')
+
     // Android support libraries
     implementation Libs.AndroidX.appcompat
     implementation Libs.AndroidX.cardView

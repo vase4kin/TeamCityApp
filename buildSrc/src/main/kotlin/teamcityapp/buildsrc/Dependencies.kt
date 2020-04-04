@@ -58,6 +58,7 @@ object Libs {
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
         const val constraintLayout = "com.android.support.constraint:constraint-layout:1.1.3"
+        const val preference = "androidx.preference:preference:1.1.0"
 
         object LifeCycle {
             private const val version = "2.2.0-rc02"

@@ -28,5 +28,6 @@ dependencies {
     implementation project(':libraries:theme')
 
     implementation Libs.AndroidX.appcompat
+    implementation Libs.AndroidX.preference
     implementation Libs.Kotlin.stdlib
 }

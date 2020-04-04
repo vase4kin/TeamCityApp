@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import teamcityapp.features.about.AboutActivity
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.settings.SettingsActivity
 
 class DrawerAppRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment
@@ -45,5 +46,9 @@ class DrawerAppRouterImpl(
         HomeActivity.startWhenSwitchingAccountsFromDrawer(
             fragment.requireActivity()
         )
+    }
+
+    override fun openSettingsActivity() {
+        SettingsActivity.start(fragment.requireActivity())
     }
 }

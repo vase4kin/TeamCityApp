@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
     <string name="error_view_error_text">There\'s an error loading the page</string>
 
     <string name="about_drawer_item">About</string>
+    <string name="drawer_item_settings">Settings</string>
 
     <string name="warning_ssl_dialog_title">Warning</string>
     <string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making the app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
@@ -28,4 +29,17 @@
     <string name="dialog_ok_title">OK</string>
 
     <string name="about_app_url_privacy" tools:ignore="TypographyDashes">https://telegra.ph/TeamCityApp-Private-Policy-09-18</string>
+
+    <!--Theme-->
+    <string name="key_preference_theme" translatable="false">preference_key_theme</string>
+
+    <string name="name_light_theme">Light theme</string>
+    <string name="name_dark_theme">Dark theme</string>
+    <string name="name_auto_battery">Auto battery</string>
+    <string name="name_follow_system">Follow system</string>
+
+    <string name="value_light_theme" translatable="false">Light</string>
+    <string name="value_dark_theme" translatable="false">Dark</string>
+    <string name="value_auto_battery" translatable="false">Auto-battery</string>
+    <string name="value_follow_system" translatable="false">System</string>
 </resources>

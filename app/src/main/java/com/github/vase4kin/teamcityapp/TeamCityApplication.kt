@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
 import io.fabric.sdk.android.Fabric
+import teamcityapp.libraries.utils.applyThemeFromSettings
 import javax.inject.Inject
 
 /**
@@ -67,6 +68,9 @@ class TeamCityApplication : Application(), HasAndroidInjector {
             buildRestApiInjectorWithBaseUrl(baseUrl)
             restApiInjector.inject(this)
         }
+
+        // Theme
+        applyThemeFromSettings()
     }
 
     /**
