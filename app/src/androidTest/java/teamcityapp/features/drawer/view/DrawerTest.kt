@@ -215,7 +215,7 @@ class DrawerTest {
         // Click on about
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                6,
+                7,
                 R.id.title
             )
         )
@@ -237,7 +237,7 @@ class DrawerTest {
         // Click on about
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                7,
+                5,
                 R.id.title
             )
         )
@@ -303,7 +303,7 @@ class DrawerTest {
         // Check rate the app is there
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                8,
+                9,
                 R.id.privacy
             )
         )
@@ -312,7 +312,7 @@ class DrawerTest {
         // Check the privicy policy is there
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                7,
+                9,
                 R.id.rate_the_app
             )
         )
