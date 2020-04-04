@@ -57,6 +57,7 @@ import org.junit.runner.RunWith
 import org.mockito.Spy
 import teamcityapp.features.about.AboutActivity
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.settings.SettingsActivity
 
 /**
  * Tests for Drawer
@@ -224,6 +225,28 @@ class DrawerTest {
         // Check about screen is being opened
         Intents.intended(
             IntentMatchers.hasComponent(AboutActivity::class.java.name)
+        )
+    }
+
+    @Test
+    fun testUserCanNavigateToSetingsActivity() {
+        activityTestRule.launchActivity(null)
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Click on about
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                7,
+                R.id.title
+            )
+        )
+            .check(matches(withText(R.string.drawer_item_settings)))
+            .perform(click())
+
+        // Check about screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(SettingsActivity::class.java.name)
         )
     }
 
