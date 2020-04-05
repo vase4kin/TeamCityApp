@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,7 +177,7 @@ class OnboardingManagerImpl(context: Context) : OnboardingManager {
 
         @VisibleForTesting
         const val PREF_NAME = "OnboardingPref"
-        private const val KEY_NAV_DRAWER = "NavDrawer"
+        private const val KEY_NAV_DRAWER = "NavDrawerV1"
         private const val KEY_RUN_BUILD = "RunBuild"
         private const val KEY_FILTER_BUILDS = "FilterBuilds"
         private const val KEY_STOP_BUILDS = "StopBuilds"
