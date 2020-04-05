@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package teamcityapp.features.test_details.view
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
@@ -53,6 +54,17 @@ class TestDetailsActivity : DaggerAppCompatActivity() {
 
     fun showErrorToast() {
         Toast.makeText(this, R.string.error_view_error_text, Toast.LENGTH_LONG).show()
+    }
+
+    /**
+     * Workaround appcompat-1.1.0 bug https://issuetracker.google.com/issues/141132133
+     * TODO: Remove when bug is fixed
+     */
+    override fun applyOverrideConfiguration(overrideConfiguration: Configuration?) {
+        if (android.os.Build.VERSION.SDK_INT in android.os.Build.VERSION_CODES.LOLLIPOP..android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+            return
+        }
+        super.applyOverrideConfiguration(overrideConfiguration)
     }
 
     companion object {

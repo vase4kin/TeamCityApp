@@ -51,7 +51,7 @@ object Libs {
     const val crashlytics = "com.crashlytics.sdk.android:crashlytics:2.6.8@aar"
 
     object AndroidX {
-        const val appcompat = "androidx.appcompat:appcompat:1.0.2"
+        const val appcompat = "androidx.appcompat:appcompat:1.1.0"
         const val cardView = "androidx.cardview:cardview:1.0.0"
         const val legacySupport = "androidx.legacy:legacy-support-v13:1.0.0"
         const val recyclerView = "androidx.recyclerview:recyclerview:1.0.0"
