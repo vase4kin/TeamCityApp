@@ -56,7 +56,7 @@ interface SettingsTracker {
 
 class SettingsTrackerImpl(
     private val firebaseAnalytics: FirebaseAnalytics
-): SettingsTracker {
+) : SettingsTracker {
 
     /**
      * {@inheritDoc}
@@ -93,5 +93,3 @@ class SettingsTrackerImpl(
         firebaseAnalytics.logEvent(SettingsTracker.EVENT_NAME_SYSTEM_THEME, null)
     }
 }
-
-
