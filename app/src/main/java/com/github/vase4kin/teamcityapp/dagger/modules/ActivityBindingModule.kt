@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,6 +65,10 @@ import teamcityapp.features.about.dagger.AboutFragmentScope
 import teamcityapp.features.manage_accounts.dagger.ManageAccountsActivityScope
 import teamcityapp.features.manage_accounts.dagger.ManageAccountsModule
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.settings.dagger.SettingsActivityBindingModule
+import teamcityapp.features.settings.dagger.SettingsActivityModule
+import teamcityapp.features.settings.dagger.SettingsActivityScope
+import teamcityapp.features.settings.view.SettingsActivity
 import teamcityapp.features.test_details.dagger.TestDetailsActivityScope
 import teamcityapp.features.test_details.dagger.TestDetailsModule
 import teamcityapp.features.test_details.view.TestDetailsActivity
@@ -133,4 +137,8 @@ abstract class ActivityBindingModule {
     @ArtifactActivityScope
     @ContributesAndroidInjector(modules = [ArtifactsActivityModule::class])
     abstract fun artifactListActivity(): ArtifactListActivity
+
+    @SettingsActivityScope
+    @ContributesAndroidInjector(modules = [SettingsActivityModule::class, SettingsActivityBindingModule::class])
+    abstract fun settingsActivity(): SettingsActivity
 }

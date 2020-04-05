@@ -22,7 +22,7 @@ import teamcityapp.features.about.AboutActivity
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
-import teamcityapp.features.settings.SettingsActivity
+import teamcityapp.features.settings.view.SettingsActivity
 
 class DrawerAppRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment

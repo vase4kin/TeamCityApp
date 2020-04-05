@@ -20,7 +20,7 @@
 
     <application>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".view.SettingsActivity"
             android:label="@string/drawer_item_settings"
             android:theme="@style/Theme.MyApp" />
     </application>

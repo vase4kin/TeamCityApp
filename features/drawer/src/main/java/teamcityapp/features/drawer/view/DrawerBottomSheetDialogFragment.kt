@@ -16,6 +16,7 @@
 
 package teamcityapp.features.drawer.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,12 +40,11 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
     @Inject
     lateinit var viewModel: DrawerViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        AndroidSupportInjection.inject(this)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.dialog_bottom_sheet_drawer, container, false)
     }
 
@@ -64,12 +64,18 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
     }
 
     fun setAdapter(list: List<BaseDrawerItem>) {
-        val recyclerView = view?.findViewById<RecyclerView>(R.id.bottom_sheet_drawer_recycler_view) ?: return
+        val recyclerView =
+            view?.findViewById<RecyclerView>(R.id.bottom_sheet_drawer_recycler_view) ?: return
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = drawerAdapter
         drawerAdapter.list.clear()
         drawerAdapter.list.addAll(list)
         recyclerView.invalidate()
+    }
+
+    override fun onAttach(context: Context) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     companion object {

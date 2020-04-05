@@ -30,6 +30,12 @@ dependencies {
     implementation project(':libraries:resources')
 
     implementation Libs.Google.material
+    implementation Libs.Google.firebaseCore
     implementation Libs.AndroidX.preference
     implementation Libs.Kotlin.stdlib
+    implementation Libs.Dagger.dagger
+    implementation Libs.Dagger.androidSupport
+
+    kapt Libs.Dagger.compiler
+    kapt Libs.Dagger.androidProcessor
 }

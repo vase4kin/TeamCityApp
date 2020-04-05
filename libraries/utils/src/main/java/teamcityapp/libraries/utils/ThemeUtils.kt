@@ -20,16 +20,33 @@ import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.PreferenceManager
 
-fun Context.applyThemeFromSettings() {
+fun Context.applyThemeFromSettings(
+    onLightThemeSet: () -> Unit = {},
+    onDarkThemeSet: () -> Unit = {},
+    onAutoBatteryThemeSet: () -> Unit = {},
+    onSystemThemeSet: () -> Unit = {}
+) {
     val themePreferenceKey = getString(R.string.key_preference_theme)
     val selectedOption = PreferenceManager.getDefaultSharedPreferences(this)
         .getString(themePreferenceKey, "")
 
     when (selectedOption) {
-        getString(R.string.value_light_theme) -> setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        getString(R.string.value_dark_theme) -> setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        getString(R.string.value_auto_battery) -> setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
-        getString(R.string.value_follow_system) -> setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        getString(R.string.value_light_theme) -> {
+            onLightThemeSet()
+            setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        }
+        getString(R.string.value_dark_theme) -> {
+            onDarkThemeSet()
+            setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        }
+        getString(R.string.value_auto_battery) -> {
+            onAutoBatteryThemeSet()
+            setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY)
+        }
+        getString(R.string.value_follow_system) -> {
+            onSystemThemeSet()
+            setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
     }
 }
 

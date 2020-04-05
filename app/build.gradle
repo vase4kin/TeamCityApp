@@ -142,6 +142,7 @@ dependencies {
     implementation Libs.AndroidX.cardView
     implementation Libs.AndroidX.legacySupport
     implementation Libs.AndroidX.recyclerView
+    implementation Libs.AndroidX.preference
     implementation Libs.Google.material
     implementation Libs.AndroidX.constraintLayout
     // Api third party libraries
