@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.build_details.view
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
@@ -78,6 +79,17 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.pull_in_left, R.anim.push_out_right)
+    }
+
+    /**
+     * Workaround appcompat-1.1.0 bug https://issuetracker.google.com/issues/141132133
+     * TODO: Remove when bug is fixed
+     */
+    override fun applyOverrideConfiguration(overrideConfiguration: Configuration?) {
+        if (android.os.Build.VERSION.SDK_INT in android.os.Build.VERSION_CODES.LOLLIPOP..android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
+            return
+        }
+        super.applyOverrideConfiguration(overrideConfiguration)
     }
 
     companion object {
