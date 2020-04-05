@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.drawer.drawer
+package teamcityapp.features.settings.dagger
 
-interface DrawerAppRouter {
-    fun openAboutScreen()
-    fun openNewAccount()
-    fun openManageAccounts()
-    fun openHomeActivity()
-    fun openSettingsActivity()
+import com.google.firebase.analytics.FirebaseAnalytics
+import dagger.Module
+import dagger.Provides
+import teamcityapp.features.settings.tracker.SettingsTracker
+import teamcityapp.features.settings.tracker.SettingsTrackerImpl
+
+@Module
+object SettingsActivityModule {
+
+    @JvmStatic
+    @Provides
+    fun provideTracker(
+        firebaseAnalytics: FirebaseAnalytics
+    ): SettingsTracker {
+        return SettingsTrackerImpl(firebaseAnalytics)
+    }
 }

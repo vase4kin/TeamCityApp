@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,11 @@ package teamcityapp.features.drawer.drawer
 import teamcityapp.libraries.storage.models.UserAccount
 
 interface DrawerRouter {
-
     fun openPrivacy()
-
     fun openRateTheApp()
-
     fun openAbout()
-
     fun openAddNewAccount()
-
     fun openManageAccounts()
-
     fun switchToAccount(account: UserAccount)
+    fun openSettings()
 }

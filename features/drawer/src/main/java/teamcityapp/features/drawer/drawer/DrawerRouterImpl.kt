@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,5 +59,10 @@ class DrawerRouterImpl(
     override fun switchToAccount(account: UserAccount) {
         storage.setUserActive(account.teamcityUrl, account.userName)
         router.openHomeActivity()
+    }
+
+    override fun openSettings() {
+        router.openSettingsActivity()
+        fragment.dismiss()
     }
 }

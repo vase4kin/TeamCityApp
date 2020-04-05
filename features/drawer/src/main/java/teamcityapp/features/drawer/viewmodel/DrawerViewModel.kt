@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import teamcityapp.features.drawer.view.BottomDrawerItem
 import teamcityapp.features.drawer.view.DividerDrawerItem
 import teamcityapp.features.drawer.view.ManageAccountsDrawerItem
 import teamcityapp.features.drawer.view.NewAccountDrawerItem
+import teamcityapp.features.drawer.view.SettingsDrawerItem
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.storage.Storage
 
@@ -81,6 +82,10 @@ class DrawerViewModel(
         list.add(NewAccountDrawerItem())
         // add manage account items
         list.add(ManageAccountsDrawerItem())
+        // add divider
+        list.add(DividerDrawerItem())
+        // add about item
+        list.add(SettingsDrawerItem())
         // add divider
         list.add(DividerDrawerItem())
         // add about item

@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.drawer.drawer
+package teamcityapp.features.settings.dagger
 
-interface DrawerAppRouter {
-    fun openAboutScreen()
-    fun openNewAccount()
-    fun openManageAccounts()
-    fun openHomeActivity()
-    fun openSettingsActivity()
+import dagger.Module
+import dagger.android.ContributesAndroidInjector
+import teamcityapp.features.settings.view.SettingsFragment
+
+@Module
+abstract class SettingsActivityBindingModule {
+
+    @SettingsActivityFragmentScope
+    @ContributesAndroidInjector
+    abstract fun settingsFragment(): SettingsFragment
 }

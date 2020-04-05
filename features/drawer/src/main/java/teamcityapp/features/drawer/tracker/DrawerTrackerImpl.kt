@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,5 +69,12 @@ class DrawerTrackerImpl(
      */
     override fun trackOpenManageAccounts() {
         firebaseAnalytics.logEvent(DrawerTracker.EVENT_OPEN_MANAGE_ACCOUNTS, null)
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    override fun trackOpenSettings() {
+        firebaseAnalytics.logEvent(DrawerTracker.EVENT_OPEN_SETTINGS, null)
     }
 }

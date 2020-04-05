@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,8 @@ enum class DrawerType(val type: Int) {
     MANAGE_ACCOUNTS(TYPE_MENU),
     ACCOUNTS_DIVIDER(TYPE_ACCOUNTS_DIVIDER),
     DIVIDER(TYPE_DIVIDER),
-    BOTTOM(TYPE_BOTTOM)
+    BOTTOM(TYPE_BOTTOM),
+    SETTINGS(TYPE_MENU)
 }
 
 class AccountDrawerItem(
@@ -59,6 +60,7 @@ private const val ID_ABOUT = "ID_ABOUT"
 private const val ID_ACCOUNTS_DIVIDER = "ID_ACCOUNTS_DIVIDER"
 private const val ID_DIVIDER = "ID_DIVIDER"
 private const val ID_BOTTOM = "ID_BOTTOM"
+private const val ID_SETTINGS = "ID_SETTINGS"
 
 class AccountsDividerDrawerItem : BaseDrawerItem(
     ID_ACCOUNTS_DIVIDER.hashCode(),
@@ -88,7 +90,13 @@ class ManageAccountsDrawerItem : MenuDrawerItem(
     stringRes = R.string.text_manage_accounts)
 
 class AboutDrawerItem : MenuDrawerItem(
-    ID_ABOUT.hashCode(),
-    DrawerType.ABOUT,
+    id = ID_ABOUT.hashCode(),
+    type = DrawerType.ABOUT,
     imageRes = R.drawable.ic_info_outline_black_24dp,
     stringRes = R.string.about_drawer_item)
+
+class SettingsDrawerItem : MenuDrawerItem(
+    id = ID_SETTINGS.hashCode(),
+    type = DrawerType.SETTINGS,
+    imageRes = R.drawable.ic_settings_black_24dp,
+    stringRes = R.string.drawer_item_settings)

@@ -19,15 +19,23 @@ import teamcityapp.buildsrc.Libs
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../scripts/jacoco.gradle'
 
 dependencies {
-    implementation project(':libraries:resources')
     implementation project(':libraries:theme')
+    implementation project(':libraries:utils')
+    implementation project(':libraries:resources')
 
-    implementation Libs.AndroidX.appcompat
+    implementation Libs.Google.material
+    implementation Libs.Google.firebaseCore
     implementation Libs.AndroidX.preference
     implementation Libs.Kotlin.stdlib
+    implementation Libs.Dagger.dagger
+    implementation Libs.Dagger.androidSupport
+
+    kapt Libs.Dagger.compiler
+    kapt Libs.Dagger.androidProcessor
 }

@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.drawer.drawer
+package teamcityapp.features.settings.dagger
 
-interface DrawerAppRouter {
-    fun openAboutScreen()
-    fun openNewAccount()
-    fun openManageAccounts()
-    fun openHomeActivity()
-    fun openSettingsActivity()
-}
+import javax.inject.Scope
+
+@Scope
+annotation class SettingsActivityScope

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ import org.junit.runner.RunWith
 import org.mockito.Spy
 import teamcityapp.features.about.AboutActivity
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.settings.view.SettingsActivity
 
 /**
  * Tests for Drawer
@@ -214,7 +215,7 @@ class DrawerTest {
         // Click on about
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                5,
+                7,
                 R.id.title
             )
         )
@@ -224,6 +225,28 @@ class DrawerTest {
         // Check about screen is being opened
         Intents.intended(
             IntentMatchers.hasComponent(AboutActivity::class.java.name)
+        )
+    }
+
+    @Test
+    fun testUserCanNavigateToSetingsActivity() {
+        activityTestRule.launchActivity(null)
+        // Opening drawer
+        clickOnBurgerButton()
+
+        // Click on about
+        onView(
+            RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
+                5,
+                R.id.title
+            )
+        )
+            .check(matches(withText(R.string.drawer_item_settings)))
+            .perform(click())
+
+        // Check about screen is being opened
+        Intents.intended(
+            IntentMatchers.hasComponent(SettingsActivity::class.java.name)
         )
     }
 
@@ -280,7 +303,7 @@ class DrawerTest {
         // Check rate the app is there
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                7,
+                9,
                 R.id.privacy
             )
         )
@@ -289,7 +312,7 @@ class DrawerTest {
         // Check the privicy policy is there
         onView(
             RecyclerViewMatcher.withRecyclerView(R.id.bottom_sheet_drawer_recycler_view).atPositionOnView(
-                7,
+                9,
                 R.id.rate_the_app
             )
         )
