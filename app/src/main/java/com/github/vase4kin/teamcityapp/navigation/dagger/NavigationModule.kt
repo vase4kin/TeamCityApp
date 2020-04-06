@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package com.github.vase4kin.teamcityapp.navigation.dagger
 
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManager
+import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManagerImpl
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractor
 import com.github.vase4kin.teamcityapp.navigation.extractor.NavigationValueExtractorImpl
 import com.github.vase4kin.teamcityapp.navigation.router.NavigationRouter
@@ -26,6 +29,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl
+import com.github.vase4kin.teamcityapp.remote.RemoteService
 import dagger.Module
 import dagger.Provides
 
@@ -50,5 +54,14 @@ class NavigationModule {
     @Provides
     internal fun providesNavigationRouter(activity: NavigationActivity): NavigationRouter {
         return NavigationRouterImpl(activity)
+    }
+
+    @Provides
+    internal fun providesNavigationDataManager(
+        repository: Repository,
+        activity: NavigationActivity,
+        remoteService: RemoteService
+    ): NavigationDataManager {
+        return NavigationDataManagerImpl(repository, activity, remoteService)
     }
 }

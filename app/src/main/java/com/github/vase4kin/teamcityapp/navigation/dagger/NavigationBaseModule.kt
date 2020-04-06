@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.navigation.dagger
 
-import android.content.Context
-import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
-import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManager
-import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataManagerImpl
 import com.github.vase4kin.teamcityapp.navigation.data.NavigationDataModel
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTracker
 import com.github.vase4kin.teamcityapp.navigation.tracker.NavigationTrackerImpl
@@ -29,7 +25,6 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFactory
 import com.github.vase4kin.teamcityapp.navigation.view.RateTheAppViewHolderFactory
-import com.github.vase4kin.teamcityapp.remote.RemoteService
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
@@ -38,15 +33,6 @@ import dagger.multibindings.IntoMap
 
 @Module
 class NavigationBaseModule {
-
-    @Provides
-    internal fun providesNavigationDataManager(
-        repository: Repository,
-        context: Context,
-        remoteService: RemoteService
-    ): NavigationDataManager {
-        return NavigationDataManagerImpl(repository, context, remoteService)
-    }
 
     @Provides
     internal fun providesNavigationAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<NavigationDataModel>>): NavigationAdapter {

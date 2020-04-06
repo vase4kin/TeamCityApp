@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.favorites.dagger
 
 import android.app.Activity
-import android.content.Context
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
@@ -105,10 +104,10 @@ object FavoritesFragmentModule {
     @JvmStatic
     @Provides
     fun providesSimpleSectionedRecyclerViewAdapter(
-        context: Context,
+        fragment: FavoritesFragment,
         adapter: NavigationAdapter
     ): SimpleSectionedRecyclerViewAdapter<NavigationAdapter> {
-        return SimpleSectionedRecyclerViewAdapter(context, adapter)
+        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
     }
 
     @JvmStatic

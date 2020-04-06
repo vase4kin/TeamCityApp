@@ -26,7 +26,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.vase4kin.teamcityapp.R;
@@ -102,7 +101,7 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int typeView) {
         if (typeView == SECTION_TYPE) {
-            final View view = LayoutInflater.from(new ContextThemeWrapper(mContext, R.style.Theme_MyApp)).inflate(mSectionResourceId, parent, false);
+            final View view = LayoutInflater.from(mContext).inflate(mSectionResourceId, parent, false);
             return new SectionViewHolder(view, mTextResourceId);
         } else {
             return mBaseAdapter.onCreateViewHolder(parent, typeView - 1);

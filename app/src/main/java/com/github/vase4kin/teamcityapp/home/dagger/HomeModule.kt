@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.home.dagger
 
+import android.content.Context
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
@@ -23,6 +24,9 @@ import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationViewImpl
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
+import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
@@ -90,4 +94,23 @@ class HomeModule {
     @Provides
     fun provideChromeTabs(activity: HomeActivity): ChromeCustomTabs =
         ChromeCustomTabsImpl(activity)
+
+    @Provides
+    fun providesBuildLogInteractor(
+        activity: HomeActivity,
+        sharedUserStorage: SharedUserStorage
+    ): BuildLogInteractor {
+        return BuildLogInteractorImpl(
+            sharedUserStorage.activeUser,
+            activity.getSharedPreferences(
+                BuildLogInteractorImpl.PREF_NAME,
+                Context.MODE_PRIVATE
+            )
+        )
+    }
+
+    @Provides
+    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
+        return BuildLogWebViewClient()
+    }
 }

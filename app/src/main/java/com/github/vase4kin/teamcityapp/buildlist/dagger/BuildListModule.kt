@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,5 +82,13 @@ class BuildListModule {
     @Provides
     fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): BuildListTracker {
         return FirebaseBuildListTrackerImpl(firebaseAnalytics, BuildListTracker.SCREEN_NAME_BUILD_LIST)
+    }
+
+    @Provides
+    fun providesSimpleSectionedRecyclerViewAdapter(
+        activity: BuildListActivity,
+        adapter: BuildListAdapter
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
+        return SimpleSectionedRecyclerViewAdapter(activity, adapter)
     }
 }

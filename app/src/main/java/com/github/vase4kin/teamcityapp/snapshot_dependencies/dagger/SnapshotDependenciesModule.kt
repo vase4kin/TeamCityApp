@@ -96,4 +96,12 @@ object SnapshotDependenciesModule {
             }
         }
     }
+
+    @Provides
+    fun providesSimpleSectionedRecyclerViewAdapter(
+        fragment: SnapshotDependenciesFragment,
+        adapter: BuildListAdapter
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
+        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
+    }
 }

@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.tests.dagger
 
-import android.content.Context
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -95,10 +94,10 @@ object TestsModule {
     @JvmStatic
     @Provides
     internal fun providesSimpleSectionedRecyclerViewAdapter(
-        context: Context,
+        fragment: TestOccurrencesFragment,
         adapter: TestOccurrencesAdapter
     ): SimpleSectionedRecyclerViewAdapter<TestOccurrencesAdapter> {
-        return SimpleSectionedRecyclerViewAdapter(context, adapter)
+        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
     }
 
     @JvmStatic
