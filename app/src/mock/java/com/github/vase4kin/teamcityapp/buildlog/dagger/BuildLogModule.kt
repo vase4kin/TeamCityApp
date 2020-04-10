@@ -16,7 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
+import android.content.Context
 import android.os.Bundle
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
@@ -71,5 +74,26 @@ object BuildLogModule {
     @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
         return BuildLogRouterImpl(fragment.requireActivity())
+    }
+
+    @JvmStatic
+    @Provides
+    fun providesBuildLogInteractor(
+        fragment: BuildLogFragment,
+        sharedUserStorage: SharedUserStorage
+    ): BuildLogInteractor {
+        return BuildLogInteractorImpl(
+            sharedUserStorage.activeUser,
+            fragment.requireContext().getSharedPreferences(
+                BuildLogInteractorImpl.PREF_NAME,
+                Context.MODE_PRIVATE
+            )
+        )
+    }
+
+    @JvmStatic
+    @Provides
+    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
+        return BuildLogWebViewClient()
     }
 }
