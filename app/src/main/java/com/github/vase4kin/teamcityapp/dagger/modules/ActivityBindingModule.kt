@@ -30,7 +30,6 @@ import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListActivityScope
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListModule
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
-import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
 import com.github.vase4kin.teamcityapp.dagger.modules.about.AboutRepositoryModule
 import com.github.vase4kin.teamcityapp.dagger.modules.manage_accounts.ManageAccountsRouterModule
 import com.github.vase4kin.teamcityapp.dagger.modules.test_details.TestDetailsRepositoryModule
@@ -54,7 +53,6 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import com.github.vase4kin.teamcityapp.utils.dagger.UtilsModule
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import teamcityapp.features.about.AboutActivity
@@ -92,7 +90,6 @@ abstract class ActivityBindingModule {
     @ContributesAndroidInjector(
         modules = [
             TestDetailsModule::class,
-            UtilsModule::class,
             TestDetailsRepositoryModule::class
         ]
     )
@@ -107,11 +104,11 @@ abstract class ActivityBindingModule {
     abstract fun accountListActivity(): ManageAccountsActivity
 
     @BuildDetailsActivityScope
-    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class, UtilsModule::class])
+    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class])
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope
-    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListAdapterModule::class, BuildDetailsFragmentsBindingModule::class])
+    @ContributesAndroidInjector(modules = [BuildListModule::class, BuildListAdapterModule::class])
     abstract fun buildListActivity(): BuildListActivity
 
     @FilterBuildsActivityScope
@@ -123,7 +120,7 @@ abstract class ActivityBindingModule {
     abstract fun runBuildActivity(): RunBuildActivity
 
     @HomeActivityScope
-    @ContributesAndroidInjector(modules = [HomeModule::class, BuildLogInteractorModule::class, HomeActivityBindingModule::class])
+    @ContributesAndroidInjector(modules = [HomeModule::class, HomeActivityBindingModule::class])
     abstract fun rootProjectsActivity(): HomeActivity
 
     @NavigationActivityScope

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import com.github.vase4kin.teamcityapp.artifact.dagger.ArtifactsFragmentModule
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogFragmentScope
-import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogInteractorModule
 import com.github.vase4kin.teamcityapp.buildlog.dagger.BuildLogModule
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.changes.dagger.ChangesFragmentScope
@@ -58,7 +57,7 @@ abstract class BuildDetailsFragmentsBindingModule {
     abstract fun testOccurrencesFragment(): TestOccurrencesFragment
 
     @BuildLogFragmentScope
-    @ContributesAndroidInjector(modules = [BuildLogModule::class, BuildLogInteractorModule::class])
+    @ContributesAndroidInjector(modules = [BuildLogModule::class])
     abstract fun buildLogFragment(): BuildLogFragment
 
     @PropertiesFragmentScope

@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.login.dagger
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
@@ -48,14 +47,14 @@ object LoginModule {
     @JvmStatic
     @Provides
     fun providesCreateAccountDataManager(
-        context: Context,
+        activity: LoginActivity,
         @Named(CLIENT_BASE) baseOkHttpClient: OkHttpClient,
         @Named(CLIENT_BASE_UNSAFE) unsafeBaseOkHttpClient: OkHttpClient,
         sharedUserStorage: SharedUserStorage,
         urlFormatter: UrlFormatter
     ): CreateAccountDataManager {
         return CreateAccountDataManagerImpl(
-            context, baseOkHttpClient, unsafeBaseOkHttpClient, sharedUserStorage, urlFormatter
+            activity, baseOkHttpClient, unsafeBaseOkHttpClient, sharedUserStorage, urlFormatter
         )
     }
 

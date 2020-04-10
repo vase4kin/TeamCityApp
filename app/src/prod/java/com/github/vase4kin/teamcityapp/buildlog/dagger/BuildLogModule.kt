@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
@@ -56,5 +59,24 @@ class BuildLogModule {
     @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
         return BuildLogRouterImpl(fragment.activity as Activity)
+    }
+
+    @Provides
+    fun providesBuildLogInteractor(
+        fragment: BuildLogFragment,
+        sharedUserStorage: SharedUserStorage
+    ): BuildLogInteractor {
+        return BuildLogInteractorImpl(
+            sharedUserStorage.activeUser,
+            fragment.requireContext().getSharedPreferences(
+                BuildLogInteractorImpl.PREF_NAME,
+                Context.MODE_PRIVATE
+            )
+        )
+    }
+
+    @Provides
+    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
+        return BuildLogWebViewClient()
     }
 }

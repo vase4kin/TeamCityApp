@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.account.create.dagger
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel
@@ -50,13 +49,13 @@ object CreateAccountModule {
     @JvmStatic
     @Provides
     fun providesCreateAccountDataManager(
-        context: Context,
+        activity: CreateAccountActivity,
         @Named(CLIENT_BASE) okHttpClient: OkHttpClient,
         @Named(CLIENT_BASE_UNSAFE) unsafeOkHttpClient: OkHttpClient,
         sharedUserStorage: SharedUserStorage,
         urlFormatter: UrlFormatter
     ): CreateAccountDataManager {
-        return CreateAccountDataManagerImpl(context, okHttpClient, unsafeOkHttpClient, sharedUserStorage, urlFormatter)
+        return CreateAccountDataManagerImpl(activity, okHttpClient, unsafeOkHttpClient, sharedUserStorage, urlFormatter)
     }
 
     @JvmStatic

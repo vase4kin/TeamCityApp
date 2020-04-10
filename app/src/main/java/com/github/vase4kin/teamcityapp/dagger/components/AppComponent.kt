@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.dagger.components
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule
@@ -41,8 +40,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(modules = [AppModule::class, AndroidInjectionModule::class, AppActivityBindingModule::class])
 interface AppComponent : AndroidInjector<TeamCityApplication> {
-
-    fun context(): Context
 
     fun sharedUserStorage(): SharedUserStorage
 

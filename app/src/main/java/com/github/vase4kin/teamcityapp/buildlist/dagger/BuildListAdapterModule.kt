@@ -16,9 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.dagger
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
-import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
 import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
@@ -34,17 +32,10 @@ object BuildListAdapterModule {
 
     @JvmStatic
     @Provides
-    fun providesBuildListAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter {
+    fun providesBuildListAdapter(
+        viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>
+    ): BuildListAdapter {
         return BuildListAdapter(viewHolderFactories)
-    }
-
-    @JvmStatic
-    @Provides
-    fun providesSimpleSectionedRecyclerViewAdapter(
-        context: Context,
-        adapter: BuildListAdapter
-    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
-        return SimpleSectionedRecyclerViewAdapter(context, adapter)
     }
 
     @JvmStatic

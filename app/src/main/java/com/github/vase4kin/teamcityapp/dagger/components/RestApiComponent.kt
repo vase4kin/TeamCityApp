@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.dagger.components
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.dagger.UrlFormatterModule
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -56,8 +55,6 @@ interface RestApiComponent : AndroidInjector<TeamCityApplication> {
     fun sharedUserStorage(): SharedUserStorage
 
     fun eventBus(): EventBus
-
-    fun context(): Context
 
     fun firebaseAnalytics(): FirebaseAnalytics
 

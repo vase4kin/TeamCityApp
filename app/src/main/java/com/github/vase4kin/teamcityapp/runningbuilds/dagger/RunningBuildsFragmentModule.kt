@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,10 @@ import dagger.Provides
 class RunningBuildsFragmentModule {
 
     @Provides
-    fun providesRunningBuildsDataManager(repository: Repository, storage: SharedUserStorage): RunningBuildsDataManager {
+    fun providesRunningBuildsDataManager(
+        repository: Repository,
+        storage: SharedUserStorage
+    ): RunningBuildsDataManager {
         return RunningBuildsDataManagerImpl(repository, storage)
     }
 
@@ -85,5 +88,13 @@ class RunningBuildsFragmentModule {
         return object : FirebaseBuildListTrackerImpl(firebaseAnalytics, "") {
             override fun trackView() {}
         }
+    }
+
+    @Provides
+    fun providesSimpleSectionedRecyclerViewAdapter(
+        fragment: RunningBuildsFragment,
+        adapter: BuildListAdapter
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
+        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
     }
 }
