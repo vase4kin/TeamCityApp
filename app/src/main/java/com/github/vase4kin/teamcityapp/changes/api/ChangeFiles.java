@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.changes.api;
 
-import teamcityapp.libraries.api.BaseObject;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import teamcityapp.libraries.api.BaseObject;
 
 /**
  * Changes
@@ -36,12 +36,21 @@ public class ChangeFiles extends BaseObject {
         return files;
     }
 
+    public List<ChangeFile> getFile() {
+        return file;
+    }
+
     public static class ChangeFile extends BaseObject {
 
         private String file;
+        private String changeType;
 
         public String getFile() {
             return file;
+        }
+
+        public String getChangeType() {
+            return changeType;
         }
 
         public ChangeFile(String file) {

@@ -78,7 +78,6 @@
     <string name="empty_list_message_projects_or_build_types">No projects or build configurations</string>
     <string name="empty_list_message_favorites">No favorite configurations added</string>
     <string name="empty_passed_tests">There are no failed tests</string>
-    <string name="empty_list_files">No files</string>
 
     <!--Build elements-->
     <string name="unknown_trigger_type_text">Unknown trigger type!</string>
