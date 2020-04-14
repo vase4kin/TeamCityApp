@@ -114,6 +114,12 @@
                     android:id="@+id/divider_switcher_is_pinned"
                     layout="@layout/layout_divider" />
 
+                <!--View that makes a view scrollable for low-res devices, to make fab to not overlap the content-->
+                <View
+                    android:background="?android:attr/colorBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/dimen_96dp"/>
+
             </LinearLayout>
 
         </FrameLayout>

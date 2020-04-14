@@ -21,4 +21,5 @@
     <dimen name="recycler_view_horizontal_margin">0dp</dimen>
     <dimen name="recycler_view_vertical_margin">0dp</dimen>
     <dimen name="default_corner_radius">8dp</dimen>
+    <dimen name="dimen_96dp">96dp</dimen>
 </resources>
