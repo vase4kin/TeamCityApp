@@ -50,9 +50,8 @@
             android:layout_marginTop="@dimen/small_margin"
             android:gravity="center"
             android:text="@string/text_app_description"
-            android:textAppearance="?attr/textAppearanceSubtitle1"
-            android:textColor="@color/material_on_background_emphasis_medium"
-            android:textSize="20sp" />
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textColor="@color/material_on_background_emphasis_medium" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/teamcity_url_wrapper"

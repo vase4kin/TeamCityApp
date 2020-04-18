@@ -25,8 +25,8 @@
         <item name="android:paddingBottom">@dimen/padding_switch</item>
         <item name="android:paddingLeft">@dimen/default_margin</item>
         <item name="android:paddingRight">@dimen/default_margin</item>
-        <item name="android:textSize">18sp</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="ShimmerStyle">
@@ -35,6 +35,6 @@
         <item name="shimmer_color">?attr/colorSurface</item>
     </style>
 
-    <style name="ShimmerStyle.CardView"/>
+    <style name="ShimmerStyle.CardView" />
 
 </resources>

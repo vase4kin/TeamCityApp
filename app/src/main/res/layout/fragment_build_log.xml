@@ -55,8 +55,8 @@
             android:layout_marginBottom="@dimen/default_margin"
             android:gravity="center"
             android:text="@string/text_login_again"
-            android:textColor="@color/material_on_background_emphasis_medium"
-            android:textSize="18sp" />
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/material_on_background_emphasis_medium" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/auth_button"
@@ -89,8 +89,8 @@
             android:layout_marginBottom="@dimen/default_margin"
             android:gravity="center"
             android:text="@string/text_browse_build_log"
-            android:textColor="@color/material_on_background_emphasis_high_type"
-            android:textSize="18sp" />
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:textColor="@color/material_on_background_emphasis_high_type" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/view_build_log_button"

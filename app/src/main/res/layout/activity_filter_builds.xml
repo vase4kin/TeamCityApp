@@ -80,14 +80,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/text_filters"
-                        android:textColor="@color/material_on_background_emphasis_high_type"
-                        android:textSize="18sp" />
+                        android:textAppearance="?textAppearanceBody1" />
 
                     <TextView
                         android:id="@+id/selected_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/text_filters_none"
+                        android:textAppearance="?textAppearanceBody2"
                         android:textColor="@color/material_on_background_emphasis_medium" />
 
                 </LinearLayout>
@@ -116,9 +116,9 @@
 
                 <!--View that makes a view scrollable for low-res devices, to make fab to not overlap the content-->
                 <View
-                    android:background="?android:attr/colorBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_96dp"/>
+                    android:layout_height="@dimen/dimen_96dp"
+                    android:background="?android:attr/colorBackground" />
 
             </LinearLayout>
 
