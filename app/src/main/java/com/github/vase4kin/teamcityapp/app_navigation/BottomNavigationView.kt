@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.app_navigation
 
+import android.os.Bundle
 import android.os.Handler
 import android.widget.TextView
 import androidx.annotation.StringRes
@@ -35,7 +36,7 @@ interface BottomNavigationView {
     /**
      * Init bottom navigation
      */
-    fun initViews(listener: ViewListener)
+    fun initViews(listener: ViewListener, savedInstanceState: Bundle?)
 
     fun showFavoritesFab()
     fun showFilterFab()
@@ -62,12 +63,15 @@ class BottomNavigationViewImpl(
 
     private lateinit var listener: BottomNavigationView.ViewListener
 
-    override fun initViews(listener: BottomNavigationView.ViewListener) {
+    override fun initViews(
+        listener: BottomNavigationView.ViewListener,
+        savedInstanceState: Bundle?
+    ) {
         this.listener = listener
         initViews()
         initBottomNavView()
         initFab()
-        interactor.initNavigation()
+        interactor.initNavigation(savedInstanceState)
     }
 
     private fun initViews() {

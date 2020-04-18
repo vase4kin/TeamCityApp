@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.home.presenter
 
+import android.os.Bundle
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 
 interface HomePresenter {
@@ -23,7 +24,7 @@ interface HomePresenter {
     /**
      * On activity create callback
      */
-    fun onCreate()
+    fun onCreate(savedInstanceState: Bundle? = null)
 
     /**
      * On activity destroy callback
