@@ -24,7 +24,7 @@
         android:id="@+id/image"
         android:layout_width="44dp"
         android:layout_height="44dp"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:background="@drawable/skeleton_image_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,10 +32,10 @@
 
     <View
         android:id="@+id/description"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="22dp"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_16"
         android:background="?attr/colorControlHighlight"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -46,7 +46,7 @@
     <include
         layout="@layout/layout_divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="@dimen/dp_1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

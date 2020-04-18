@@ -21,8 +21,8 @@
         <shape android:shape="rectangle">
             <solid android:color="?attr/colorOnPrimary" />
             <corners
-                android:bottomLeftRadius="0dp"
-                android:bottomRightRadius="0dp"
+                android:bottomLeftRadius="@dimen/dp_0"
+                android:bottomRightRadius="@dimen/dp_0"
                 android:topLeftRadius="3dp"
                 android:topRightRadius="3dp" />
             <size android:height="3dp" />

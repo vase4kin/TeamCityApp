@@ -101,7 +101,7 @@ class BottomNavigationViewImpl(
         }
 
         val elevation =
-            activity.resources.getDimension(R.dimen.elevation_bottom_navigation)
+            activity.resources.getDimension(R.dimen.dp_8)
         val backgroundColor = ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
             activity.getThemeColor(R.attr.colorPrimarySurface), elevation
         )

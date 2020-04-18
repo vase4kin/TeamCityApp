@@ -58,7 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:text="@string/title_run_build"
         android:visibility="invisible"
         app:icon="@drawable/ic_directions_run_white_24px"

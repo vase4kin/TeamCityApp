@@ -25,8 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:text="@string/text_build_branch"
-        android:textColor="@color/material_on_background_emphasis_high_type"
-        android:textSize="18sp" />
+        android:textAppearance="?attr/textAppearanceBody1" />
 
     <AutoCompleteTextView
         android:id="@+id/autocomplete_branches"
@@ -46,8 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:text="@string/text_no_branches_available"
+        android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="@color/material_on_background_emphasis_medium"
-        android:textSize="18sp"
         android:visibility="gone" />
 
     <TextView
@@ -56,8 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
         android:text="@string/text_no_branches_available_to_filter"
+        android:textAppearance="?attr/textAppearanceBody2"
         android:textColor="@color/material_on_background_emphasis_medium"
-        android:textSize="18sp"
         android:visibility="gone" />
 
     <LinearLayout
@@ -71,10 +70,10 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/default_margin"
+            android:layout_marginRight="@dimen/dp_16"
             android:text="@string/text_loading_branches"
-            android:textColor="@color/material_on_background_emphasis_medium"
-            android:textSize="18sp" />
+            android:textAppearance="?attr/textAppearanceBody2"
+            android:textColor="@color/material_on_background_emphasis_medium" />
 
         <ProgressBar
             android:id="@+id/progress_wheel"

@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:text="@string/title_run_build"
         app:icon="@drawable/ic_directions_run_white_24px" />
 
@@ -66,22 +66,22 @@
                 <LinearLayout
                     android:id="@+id/chooser_agent"
                     android:layout_width="match_parent"
-                    android:layout_height="82dp"
+                    android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
+                    android:focusable="true"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingBottom="@dimen/padding_switch">
+                    android:paddingLeft="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingRight="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/text_agents"
-                        android:textColor="@color/material_on_background_emphasis_high_type"
-                        android:textSize="18sp" />
+                        android:textAppearance="?attr/textAppearanceBody1" />
 
                     <TextView
                         android:id="@+id/selected_agent"
@@ -91,8 +91,8 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/hint_default_filter_agent"
+                        android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="@color/material_on_background_emphasis_medium"
-                        android:textSize="16sp"
                         android:visibility="gone"
                         tools:visibility="visible" />
 
@@ -102,9 +102,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/text_no_agents_available"
+                        android:textAppearance="?attr/textAppearanceBody2"
                         android:textColor="@color/material_on_background_emphasis_medium"
-                        android:textSize="16sp"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        tools:visibility="visible" />
 
                     <LinearLayout
                         android:id="@+id/progress_agents_loading"
@@ -113,15 +114,15 @@
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:visibility="visible"
-                        tools:visibility="gone">
+                        tools:visibility="visible">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="@dimen/default_margin"
+                            android:layout_marginRight="@dimen/dp_16"
                             android:text="@string/text_loading_agents"
-                            android:textColor="@color/material_on_background_emphasis_medium"
-                            android:textSize="18sp" />
+                            android:textAppearance="?attr/textAppearanceBody2"
+                            android:textColor="@color/material_on_background_emphasis_medium" />
 
                         <ProgressBar
                             android:id="@+id/progress_wheel"
@@ -169,18 +170,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingBottom="@dimen/padding_switch">
+                    android:paddingLeft="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingRight="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:text="@string/text_parameters"
-                        android:textColor="@color/material_on_background_emphasis_high_type"
-                        android:textSize="18sp" />
+                        android:textAppearance="?attr/textAppearanceBody1" />
 
                     <TextView
                         android:id="@+id/parameters_none"
@@ -190,8 +190,8 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:text="@string/text_filters_none"
-                        android:textColor="@color/material_on_background_emphasis_medium"
-                        android:textSize="16sp" />
+                        android:textAppearance="?attr/textAppearanceBody2"
+                        android:textColor="@color/material_on_background_emphasis_medium" />
 
                     <LinearLayout
                         android:id="@+id/container_parameters"
@@ -225,7 +225,7 @@
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginStart="@dimen/dp_16"
                             android:enabled="false"
                             android:text="@string/text_clear_parameters" />
 
@@ -237,9 +237,9 @@
 
                 <!--View that makes a view scrollable for low-res devices, to make fab to not overlap the content-->
                 <View
-                    android:background="?android:attr/colorBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_96dp"/>
+                    android:layout_height="@dimen/dp_96"
+                    android:background="?android:attr/colorBackground" />
 
             </LinearLayout>
 

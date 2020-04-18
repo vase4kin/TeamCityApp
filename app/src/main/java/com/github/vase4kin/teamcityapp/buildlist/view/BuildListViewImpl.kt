@@ -312,8 +312,8 @@ open class BuildListViewImpl(
             .setCaptureTouchEventOutsidePrompt(true)
             .setPromptFocal(
                 RectanglePromptFocal().setCornerRadius(
-                    activity.resources.getDimension(R.dimen.default_prompt_fab_radius),
-                    activity.resources.getDimension(R.dimen.default_prompt_fab_radius)
+                    activity.resources.getDimension(R.dimen.dp_38),
+                    activity.resources.getDimension(R.dimen.dp_38)
                 )
             )
             .setPromptStateChangeListener { _, state ->
@@ -390,7 +390,7 @@ open class BuildListViewImpl(
 
     private fun getBackgroundColor(): Int {
         val elevation =
-            activity.resources.getDimension(R.dimen.default_elevation)
+            activity.resources.getDimension(R.dimen.dp_4)
         return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
             activity.getThemeColor(R.attr.colorPrimarySurface), elevation
         )

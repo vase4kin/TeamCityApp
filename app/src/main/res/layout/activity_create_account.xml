@@ -47,9 +47,9 @@
                 android:id="@+id/teamcity_url_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/default_margin"
-                android:layout_marginTop="@dimen/default_margin"
-                android:layout_marginRight="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginRight="@dimen/dp_16"
                 android:hint="@string/server_field_hint">
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
@@ -65,18 +65,18 @@
                 android:id="@+id/guest_user_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/default_margin"
-                android:layout_marginTop="@dimen/default_margin"
-                android:layout_marginRight="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginRight="@dimen/dp_16"
                 android:text="@string/text_guest_user_switch" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/user_field_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/default_margin"
-                android:layout_marginTop="@dimen/default_margin"
-                android:layout_marginRight="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginRight="@dimen/dp_16"
                 android:hint="@string/hint_user_name">
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
@@ -92,9 +92,9 @@
                 android:id="@+id/password_field_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/default_margin"
-                android:layout_marginTop="@dimen/default_margin"
-                android:layout_marginRight="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginRight="@dimen/dp_16"
                 android:hint="@string/hint_password">
 
                 <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
@@ -110,10 +110,10 @@
                 android:id="@+id/disable_ssl_switch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/default_margin"
-                android:layout_marginTop="@dimen/default_margin"
-                android:layout_marginRight="@dimen/default_margin"
-                android:layout_marginBottom="@dimen/default_margin"
+                android:layout_marginLeft="@dimen/dp_16"
+                android:layout_marginTop="@dimen/dp_16"
+                android:layout_marginRight="@dimen/dp_16"
+                android:layout_marginBottom="@dimen/dp_16"
                 android:text="@string/text_disable_ssl_switch" />
 
             <include layout="@layout/layout_divider" />

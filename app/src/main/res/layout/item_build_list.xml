@@ -25,7 +25,7 @@
         android:id="@+id/buildStatusContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -39,8 +39,8 @@
 
         <ProgressBar
             android:id="@+id/buildStatusProgress"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
             android:indeterminate="true"
             android:indeterminateTint="@color/material_on_surface_emphasis_high_type"
             tools:visibility="gone" />
@@ -50,11 +50,11 @@
     <TextView
         android:id="@+id/buildNumber"
         style="@style/ItemSubTitle"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginTop="@dimen/default_margin"
-        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_16"
+        android:layout_marginEnd="@dimen/dp_16"
         android:maxLines="1"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="@id/isPersonal"
@@ -64,9 +64,9 @@
 
     <ImageView
         android:id="@+id/isPersonal"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_margin="@dimen/small_margin"
+        android:layout_width="@dimen/dp_16"
+        android:layout_height="@dimen/dp_16"
+        android:layout_margin="@dimen/dp_8"
         app:layout_constraintEnd_toStartOf="@id/isPinned"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_person_black_24dp"
@@ -74,9 +74,9 @@
 
     <ImageView
         android:id="@+id/isPinned"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
-        android:layout_margin="@dimen/small_margin"
+        android:layout_width="@dimen/dp_16"
+        android:layout_height="@dimen/dp_16"
+        android:layout_margin="@dimen/dp_8"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_pin"
@@ -85,9 +85,9 @@
     <TextView
         android:id="@+id/buildStatus"
         style="@style/ItemTitle"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/dp_16"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/buildNumber"
@@ -97,9 +97,9 @@
     <TextView
         android:id="@+id/branchName"
         style="@style/ItemSubTitle"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginEnd="@dimen/dp_16"
         app:layout_constrainedWidth="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/buildStatus"
@@ -109,8 +109,8 @@
     <include
         layout="@layout/layout_divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/default_margin"
+        android:layout_height="@dimen/dp_1"
+        android:layout_marginTop="@dimen/dp_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

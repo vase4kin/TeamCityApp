@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:text="@string/text_apply_filters_button"
         app:icon="@drawable/ic_done_24px" />
 
@@ -71,23 +71,23 @@
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingBottom="@dimen/padding_switch">
+                    android:paddingLeft="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingRight="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/text_filters"
-                        android:textColor="@color/material_on_background_emphasis_high_type"
-                        android:textSize="18sp" />
+                        android:textAppearance="?textAppearanceBody1" />
 
                     <TextView
                         android:id="@+id/selected_filter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/text_filters_none"
+                        android:textAppearance="?textAppearanceBody2"
                         android:textColor="@color/material_on_background_emphasis_medium" />
 
                 </LinearLayout>
@@ -116,9 +116,9 @@
 
                 <!--View that makes a view scrollable for low-res devices, to make fab to not overlap the content-->
                 <View
-                    android:background="?android:attr/colorBackground"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_96dp"/>
+                    android:layout_height="@dimen/dp_96"
+                    android:background="?android:attr/colorBackground" />
 
             </LinearLayout>
 
