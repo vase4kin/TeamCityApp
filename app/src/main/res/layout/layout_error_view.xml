@@ -19,7 +19,7 @@
     android:id="@+id/error_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/default_margin"
+    android:layout_margin="@dimen/dp_16"
     android:gravity="center"
     android:visibility="gone"
     app:ev_retryColor="@color/material_on_background_emphasis_medium"

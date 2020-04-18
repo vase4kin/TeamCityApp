@@ -25,7 +25,7 @@
         android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,11 +34,11 @@
 
     <TextView
         android:id="@id/title"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginStart="@dimen/dp_16"
+        android:layout_marginTop="@dimen/dp_8"
+        android:layout_marginEnd="@dimen/dp_16"
         android:textAppearance="?attr/textAppearanceBody1"
         android:textColor="@color/material_on_surface_emphasis_high_type"
         app:layout_constrainedWidth="true"
@@ -49,10 +49,10 @@
 
     <TextView
         android:id="@+id/subTitle"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/dp_0"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/default_margin"
-        android:layout_marginBottom="@dimen/small_margin"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_8"
         android:textAppearance="?attr/textAppearanceBody1"
         android:textColor="@color/material_on_surface_emphasis_medium"
         app:layout_constrainedWidth="true"

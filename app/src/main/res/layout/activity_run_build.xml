@@ -38,7 +38,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:text="@string/title_run_build"
         app:icon="@drawable/ic_directions_run_white_24px" />
 
@@ -71,10 +71,10 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingBottom="@dimen/padding_switch">
+                    android:paddingLeft="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingRight="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -119,7 +119,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginRight="@dimen/default_margin"
+                            android:layout_marginRight="@dimen/dp_16"
                             android:text="@string/text_loading_agents"
                             android:textAppearance="?attr/textAppearanceBody2"
                             android:textColor="@color/material_on_background_emphasis_medium" />
@@ -170,10 +170,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingLeft="@dimen/default_margin"
-                    android:paddingTop="@dimen/padding_switch"
-                    android:paddingRight="@dimen/default_margin"
-                    android:paddingBottom="@dimen/padding_switch">
+                    android:paddingLeft="@dimen/dp_16"
+                    android:paddingTop="@dimen/dp_12"
+                    android:paddingRight="@dimen/dp_16"
+                    android:paddingBottom="@dimen/dp_12">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -225,7 +225,7 @@
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/default_margin"
+                            android:layout_marginStart="@dimen/dp_16"
                             android:enabled="false"
                             android:text="@string/text_clear_parameters" />
 
@@ -238,7 +238,7 @@
                 <!--View that makes a view scrollable for low-res devices, to make fab to not overlap the content-->
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/dimen_96dp"
+                    android:layout_height="@dimen/dp_96"
                     android:background="?android:attr/colorBackground" />
 
             </LinearLayout>

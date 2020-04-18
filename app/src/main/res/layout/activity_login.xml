@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:fillViewport="true"
         android:orientation="vertical"
-        android:paddingTop="48dp">
+        android:paddingTop="@dimen/dp_48">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/default_margin"
+            android:layout_marginTop="@dimen/dp_16"
             android:text="@string/app_name"
             android:textAppearance="?attr/textAppearanceHeadline5" />
 
@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginTop="@dimen/dp_8"
             android:gravity="center"
             android:text="@string/text_app_description"
             android:textAppearance="?attr/textAppearanceHeadline6"
@@ -57,9 +57,9 @@
             android:id="@+id/teamcity_url_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/login_screen_margin"
-            android:layout_marginTop="@dimen/login_screen_margin"
-            android:layout_marginRight="@dimen/login_screen_margin"
+            android:layout_marginLeft="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_24"
+            android:layout_marginRight="@dimen/dp_24"
             android:hint="@string/server_field_hint">
 
             <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
@@ -75,17 +75,17 @@
             android:id="@+id/guest_user_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="@dimen/small_margin"
-            android:layout_marginEnd="@dimen/login_screen_margin"
+            android:layout_marginStart="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_24"
             android:text="@string/text_guest_user_switch" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/user_field_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/login_screen_margin"
-            android:layout_marginRight="@dimen/login_screen_margin"
+            android:layout_marginLeft="@dimen/dp_24"
+            android:layout_marginRight="@dimen/dp_24"
             android:hint="@string/hint_user_name">
 
             <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
@@ -101,8 +101,8 @@
             android:id="@+id/password_field_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/login_screen_margin"
-            android:layout_marginRight="@dimen/login_screen_margin"
+            android:layout_marginLeft="@dimen/dp_24"
+            android:layout_marginRight="@dimen/dp_24"
             android:hint="@string/hint_password">
 
             <com.github.vase4kin.teamcityapp.login.view.EditTextNoAutofill
@@ -118,16 +118,16 @@
             android:id="@+id/disable_ssl_switch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="@dimen/small_margin"
-            android:layout_marginEnd="@dimen/login_screen_margin"
+            android:layout_marginStart="@dimen/dp_24"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_24"
             android:text="@string/text_disable_ssl_switch" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/login_screen_margin"
+            android:layout_margin="@dimen/dp_24"
             android:text="@string/text_login_button" />
 
         <ProgressBar
@@ -135,7 +135,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/login_screen_margin"
+            android:layout_marginBottom="@dimen/dp_24"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -143,9 +143,9 @@
             android:id="@+id/give_it_a_try_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/login_screen_margin"
-            android:layout_marginRight="@dimen/login_screen_margin"
-            android:layout_marginBottom="@dimen/login_screen_margin"
+            android:layout_marginLeft="@dimen/dp_24"
+            android:layout_marginRight="@dimen/dp_24"
+            android:layout_marginBottom="@dimen/dp_24"
             android:visibility="gone"
             tools:visibility="visible">
 
@@ -155,9 +155,9 @@
 
                 <ImageView
                     android:id="@+id/imageView"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_margin="@dimen/default_margin"
+                    android:layout_width="@dimen/dp_32"
+                    android:layout_height="@dimen/dp_32"
+                    android:layout_margin="@dimen/dp_16"
                     app:layout_constraintBottom_toBottomOf="@id/text"
                     app:layout_constraintEnd_toStartOf="@id/text"
                     app:layout_constraintStart_toStartOf="parent"
@@ -167,10 +167,10 @@
 
                 <TextView
                     android:id="@+id/text"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/dp_0"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/default_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
+                    android:layout_marginTop="@dimen/dp_16"
+                    android:layout_marginEnd="@dimen/dp_16"
                     android:gravity="start"
                     android:text="@string/text_try_it_out"
                     android:textAppearance="?attr/textAppearanceSubtitle1"
@@ -184,8 +184,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
-                    android:layout_marginTop="@dimen/small_margin"
-                    android:layout_marginEnd="@dimen/default_margin"
+                    android:layout_marginTop="@dimen/dp_8"
+                    android:layout_marginEnd="@dimen/dp_16"
                     android:text="@string/text_button_try_it_out"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/text" />

@@ -55,7 +55,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginStart="@dimen/dp_16"
             app:srcCompat="@drawable/ic_done_24px"
             app:tint="?attr/colorOnBackground" />
 

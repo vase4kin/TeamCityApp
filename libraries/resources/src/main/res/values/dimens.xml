@@ -15,11 +15,21 @@
   -->
 
 <resources>
-    <dimen name="default_elevation">4dp</dimen>
-    <dimen name="elevation_bottom_navigation">8dp</dimen>
-    <dimen name="default_margin">16dp</dimen>
-    <dimen name="recycler_view_horizontal_margin">0dp</dimen>
-    <dimen name="recycler_view_vertical_margin">0dp</dimen>
-    <dimen name="default_corner_radius">8dp</dimen>
-    <dimen name="dimen_96dp">96dp</dimen>
+    <dimen name="dp_0">0dp</dimen>
+    <dimen name="dp_1">1dp</dimen>
+    <dimen name="dp_2">2dp</dimen>
+    <dimen name="dp_4">4dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_12">12dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_38">38dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_96">96dp</dimen>
+
+    <dimen name="dp_recycler_view_horizontal">@dimen/dp_0</dimen>
+
+    <integer name="shimmer_length">1000</integer>
+
 </resources>

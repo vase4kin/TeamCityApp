@@ -18,7 +18,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
+    android:layout_margin="@dimen/dp_2"
     android:orientation="vertical">
 
     <TextView
@@ -34,7 +34,7 @@
         android:id="@+id/parameter_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="@dimen/dp_2"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="?attr/textAppearanceBody2"
@@ -44,6 +44,6 @@
     <include
         layout="@layout/layout_divider"
         android:layout_width="132dp"
-        android:layout_height="1dp" />
+        android:layout_height="@dimen/dp_1" />
 
 </LinearLayout>

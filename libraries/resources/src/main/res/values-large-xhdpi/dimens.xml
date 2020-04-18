@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,5 +16,5 @@
 
 <resources>
     <!--(1200x1920 - Nexus 7"(latest))-->
-    <dimen name="recycler_view_horizontal_margin">64dp</dimen>
+    <dimen name="dp_recycler_view_horizontal">64dp</dimen>
 </resources>

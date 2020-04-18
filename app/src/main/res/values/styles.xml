@@ -16,21 +16,17 @@
 
 <resources>
 
-    <style name="BaseFloatingActionButton.NotVisible">
-        <item name="android:visibility">gone</item>
-    </style>
-
     <style name="Switch">
-        <item name="android:paddingTop">@dimen/padding_switch</item>
-        <item name="android:paddingBottom">@dimen/padding_switch</item>
-        <item name="android:paddingLeft">@dimen/default_margin</item>
-        <item name="android:paddingRight">@dimen/default_margin</item>
+        <item name="android:paddingTop">@dimen/dp_12</item>
+        <item name="android:paddingBottom">@dimen/dp_12</item>
+        <item name="android:paddingLeft">@dimen/dp_16</item>
+        <item name="android:paddingRight">@dimen/dp_16</item>
         <item name="android:foreground">?attr/selectableItemBackground</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="ShimmerStyle">
-        <item name="android:layout_marginBottom">24dp</item>
+        <item name="android:layout_marginBottom">@dimen/dp_24</item>
         <item name="shimmer_animation_duration">@integer/shimmer_length</item>
         <item name="shimmer_color">?attr/colorSurface</item>
     </style>

@@ -36,7 +36,7 @@
         android:id="@+id/auth_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
@@ -45,14 +45,14 @@
         <ImageView
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginBottom="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/dp_16"
             app:srcCompat="@drawable/ic_accessible_black_24px"
             app:tint="@color/material_on_background_emphasis_medium" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/dp_16"
             android:gravity="center"
             android:text="@string/text_login_again"
             android:textAppearance="?attr/textAppearanceBody1"
@@ -70,7 +70,7 @@
         android:id="@+id/warning_build_log_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/default_margin"
+        android:layout_margin="@dimen/dp_16"
         android:gravity="center"
         android:orientation="vertical"
         android:visibility="gone"
@@ -86,7 +86,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/default_margin"
+            android:layout_marginBottom="@dimen/dp_16"
             android:gravity="center"
             android:text="@string/text_browse_build_log"
             android:textAppearance="?attr/textAppearanceBody1"
