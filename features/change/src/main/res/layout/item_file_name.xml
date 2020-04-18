@@ -27,7 +27,7 @@
             android:id="@+id/type_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/default_margin"
+            android:layout_marginStart="@dimen/dp_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/title"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,11 +35,11 @@
 
             <TextView
                 android:id="@+id/type_text"
-                android:layout_width="48dp"
+                android:layout_width="@dimen/dp_48"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/dp_4"
                 android:gravity="center"
                 android:maxLines="1"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
                 android:textAppearance="?attr/textAppearanceOverline"
                 tools:text="Added" />
 
@@ -47,12 +47,12 @@
 
         <TextView
             android:id="@id/title"
-            android:layout_width="0dp"
+            android:layout_width="@dimen/dp_0"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="@dimen/default_margin"
-            android:layout_marginBottom="8dp"
+            android:layout_marginStart="@dimen/dp_8"
+            android:layout_marginTop="@dimen/dp_8"
+            android:layout_marginEnd="@dimen/dp_16"
+            android:layout_marginBottom="@dimen/dp_8"
             android:textAppearance="?attr/textAppearanceBody2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -62,9 +62,9 @@
 
         <include
             layout="@layout/layout_divider"
-            android:layout_width="0dp"
-            android:layout_height="1dp"
-            android:layout_marginEnd="@dimen/default_margin"
+            android:layout_width="@dimen/dp_0"
+            android:layout_height="@dimen/dp_1"
+            android:layout_marginEnd="@dimen/dp_16"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/title" />
