@@ -70,6 +70,7 @@ class HomeModule {
     @Provides
     fun providesFragmentFactory(): FragmentFactory = FragmentFactoryImpl()
 
+    @HomeActivityScope
     @Provides
     fun providesAppNavigationInteractor(
         activity: HomeActivity,

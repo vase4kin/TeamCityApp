@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut
@@ -39,10 +40,13 @@ class HomeActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var sharedUserStorage: SharedUserStorage
 
+    @Inject
+    lateinit var appNavigationInteractor: AppNavigationInteractor
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-        presenter.onCreate()
+        presenter.onCreate(savedInstanceState)
     }
 
     override fun onResume() {
@@ -74,6 +78,11 @@ class HomeActivity : DaggerAppCompatActivity() {
             val tabToSelect = bundle.getSelectedTab()
             presenter.selectTab(tabToSelect)
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        appNavigationInteractor.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     private fun reinitDeps() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.home.presenter
 
+import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.app_navigation.ARG_SELECTED_TAB
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.app_navigation.BottomNavigationView
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
@@ -48,11 +50,18 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onCreate() {
-        start()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        start(savedInstanceState)
         view.initViews(this)
-        // Set title for Projects tab
-        bottomNavigationView.setTitle(R.string.projects_drawer_item)
+        // Set title for Projects tab if nothing is saved
+        if (savedInstanceState == null) {
+            bottomNavigationView.setTitle(R.string.projects_drawer_item)
+        } else {
+            val selectedTab = savedInstanceState.getInt(ARG_SELECTED_TAB)
+            AppNavigationItem.values().getOrNull(selectedTab)?.let {
+                bottomNavigationView.setTitle(it.title)
+            }
+        }
         // Load notifications
         loadNotificationsCount()
     }
@@ -118,9 +127,9 @@ class HomePresenterImpl @Inject constructor(
     /**
      * Open root projects if active user is available
      */
-    fun start() {
+    fun start(savedInstanceState: Bundle?) {
         baseUrl = dataManager.activeUser.teamcityUrl
-        bottomNavigationView.initViews(this)
+        bottomNavigationView.initViews(this, savedInstanceState)
     }
 
     /**
