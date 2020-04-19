@@ -53,8 +53,9 @@ public class ChangeFiles extends BaseObject {
             return changeType;
         }
 
-        public ChangeFile(String file) {
+        public ChangeFile(String file, String type) {
             this.file = file;
+            this.changeType = type;
         }
     }
 

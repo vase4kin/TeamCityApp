@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -360,13 +360,15 @@ class Mocks {
          * @return single change
          */
         fun singleChange(): Changes.Change {
-            val changeFiles = ChangeFiles(listOf(ChangeFiles.ChangeFile("filename!")))
+            val changeFiles = ChangeFiles(listOf(ChangeFiles.ChangeFile("filename!", "Edited")))
             return Changes.Change(
                 "21312fsd1321",
                 "john-117",
                 "20160730T003638+0300",
                 "Do you believe?",
-                changeFiles
+                changeFiles,
+                "https://google.com/",
+                "id"
             )
         }
 

@@ -96,12 +96,14 @@ public class Changes extends BaseObject implements Collectible<Changes.Change> {
             this.href = href;
         }
 
-        public Change(String version, String username, String date, String comment, ChangeFiles files) {
+        public Change(String version, String username, String date, String comment, ChangeFiles files, String webUrl, String id) {
             this.version = version;
             this.username = username;
             this.date = date;
             this.comment = comment;
             this.files = files;
+            this.webUrl = webUrl;
+            this.id = id;
         }
     }
 
