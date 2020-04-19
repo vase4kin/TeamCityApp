@@ -62,4 +62,3 @@ class ChangeTrackerImpl(
         firebaseAnalytics.logEvent(EVENT_CHANGE_CLICK_FILE_DIFF, null)
     }
 }
-
