@@ -60,6 +60,7 @@ class HomePresenterImpl @Inject constructor(
             val selectedTab = savedInstanceState.getInt(ARG_SELECTED_TAB)
             AppNavigationItem.values().getOrNull(selectedTab)?.let {
                 bottomNavigationView.setTitle(it.title)
+                onTabSelected(it.ordinal)
             }
         }
         // Load notifications
@@ -143,6 +144,12 @@ class HomePresenterImpl @Inject constructor(
         }
         val titleRes = AppNavigationItem.values()[position].title
         bottomNavigationView.setTitle(titleRes)
+        onTabSelected(position)
+        loadNotificationsCount()
+        view.dimissSnackbar()
+    }
+
+    private fun onTabSelected(position: Int) {
         when (position) {
             AppNavigationItem.FAVORITES.ordinal -> {
                 showFavoritesPrompt()
@@ -162,8 +169,6 @@ class HomePresenterImpl @Inject constructor(
             }
             else -> bottomNavigationView.hideFab()
         }
-        loadNotificationsCount()
-        view.dimissSnackbar()
     }
 
     private fun trackTabSelection(position: Int) {
