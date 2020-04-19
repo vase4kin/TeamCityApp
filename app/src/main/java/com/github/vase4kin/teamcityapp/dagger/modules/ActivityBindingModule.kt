@@ -60,6 +60,9 @@ import teamcityapp.features.about.AboutFragment
 import teamcityapp.features.about.dagger.AboutActivityScope
 import teamcityapp.features.about.dagger.AboutFragmentModule
 import teamcityapp.features.about.dagger.AboutFragmentScope
+import teamcityapp.features.change.dagger.ChangeActivityModule
+import teamcityapp.features.change.dagger.ChangeActivityScope
+import teamcityapp.features.change.view.ChangeActivity
 import teamcityapp.features.manage_accounts.dagger.ManageAccountsActivityScope
 import teamcityapp.features.manage_accounts.dagger.ManageAccountsModule
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
@@ -94,6 +97,10 @@ abstract class ActivityBindingModule {
         ]
     )
     abstract fun testDetailsActivity(): TestDetailsActivity
+
+    @ChangeActivityScope
+    @ContributesAndroidInjector(modules = [ChangeActivityModule::class])
+    abstract fun changeActivity(): ChangeActivity
 
     @CreateAccountActivityScope
     @ContributesAndroidInjector(modules = [CreateAccountModule::class])

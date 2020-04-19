@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.junit.Before
@@ -150,17 +151,73 @@ class ChangesFragmentTest {
             )
         ).check(matches(withText("21312fsd1321")))
         // Checking data
-        onView(withRecyclerView(R.id.changes_recycler_view).atPositionOnView(0, R.id.commitDate)).check(
+        onView(
+            withRecyclerView(R.id.changes_recycler_view).atPositionOnView(
+                0,
+                R.id.commitDate
+            )
+        ).check(
             matches(withText("30 Jul 16 00:36"))
         )
 
         // Clicking on change
         onView(withRecyclerView(R.id.changes_recycler_view).atPosition(0)).perform(click())
 
-        // Сhecking dialog content
-        onView(withId(R.id.md_content)).check(matches(withText("john-117 on 30 Jul 16 00:36")))
-        // Сheck files
-        onView(withText("filename!")).check(matches(isDisplayed()))
+        // Check toolbar
+        matchToolbarTitle("Change details")
+        // Check comment
+        onView(
+            withRecyclerView(R.id.recycler_view).atPositionOnView(
+                0,
+                R.id.title
+            )
+        ).check(
+            matches(withText("Do you believe?"))
+        )
+        // Check Revision
+        onView(
+            withRecyclerView(R.id.recycler_view).atPositionOnView(
+                0,
+                R.id.version
+            )
+        ).check(
+            matches(withText("21312fsd1321"))
+        )
+        // Check userName user_name
+        onView(
+            withRecyclerView(R.id.recycler_view).atPositionOnView(
+                0,
+                R.id.user_name
+            )
+        ).check(
+            matches(withText("By john-117 on 30 Jul 16 00:36"))
+        )
+        // Check files header
+        onView(
+            withRecyclerView(R.id.recycler_view).atPositionOnView(
+                1,
+                R.id.title
+            )
+        ).check(
+            matches(withText("Changed files (1)"))
+        )
+        // Check file name and type
+        onView(
+            withRecyclerView(R.id.recycler_view).atPositionOnView(
+                2,
+                R.id.title
+            )
+        ).check(
+            matches(withText("filename!"))
+        )
+        onView(
+            withRecyclerView(R.id.recycler_view).atPositionOnView(
+                2,
+                R.id.type_text
+            )
+        ).check(
+            matches(withText("Edited"))
+        )
     }
 
     @Test

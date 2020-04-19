@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@
 package com.github.vase4kin.teamcityapp.changes.view
 
 import android.app.Activity
-import android.text.TextUtils
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 import com.github.vase4kin.teamcityapp.changes.api.Changes
@@ -29,6 +28,7 @@ import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel
 import com.google.android.material.snackbar.Snackbar
 import com.mugen.Mugen
 import com.mugen.MugenCallbacks
+import teamcityapp.features.change.view.ChangeActivity
 
 /**
  * Impl of [ChangesView]
@@ -102,21 +102,21 @@ class ChangesViewImpl(
      * {@inheritDoc}
      */
     override fun onClick(change: Changes.Change) {
-        val content = change.username + " on " + change.date
-        val builder = MaterialDialog.Builder(activity)
-            .title(change.comment)
-            .content(content)
-            .positiveText(R.string.dialog_ok_title)
-        if (change.files.files.isEmpty()) {
-            builder.items(activity.getString(R.string.empty_list_files))
-        } else {
-            builder.items(change.files.files)
-        }
-        val dialog = builder.build()
-        dialog.titleView.ellipsize = TextUtils.TruncateAt.END
-        dialog.titleView.maxLines = 2
-
-        dialog.show()
+        ChangeActivity.start(
+            activity = activity as AppCompatActivity,
+            commitName = change.comment,
+            userName = change.username,
+            date = change.date,
+            changeFileNames = change.files.file.map {
+                Pair<String, String>(
+                    first = it.file,
+                    second = it.changeType
+                )
+            },
+            version = change.version,
+            webUrl = change.webUrl,
+            changeId = change.getId()
+        )
     }
 
     /**

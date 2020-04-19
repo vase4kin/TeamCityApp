@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.changes.api;
 
+import androidx.annotation.NonNull;
+
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
-import teamcityapp.libraries.api.BaseObject;
 import com.github.vase4kin.teamcityapp.utils.DateUtils;
 
 import java.util.List;
+
+import teamcityapp.libraries.api.BaseObject;
 
 /**
  * Changes
@@ -56,6 +59,7 @@ public class Changes extends BaseObject implements Collectible<Changes.Change> {
         private String version;
         private String username;
         private String date;
+        private String webUrl;
         private String comment;
         private ChangeFiles files;
 
@@ -75,6 +79,11 @@ public class Changes extends BaseObject implements Collectible<Changes.Change> {
             return DateUtils.initWithDate(date).formatStartDateToBuildTitle();
         }
 
+        @NonNull
+        public String getWebUrl() {
+            return webUrl;
+        }
+
         public String getComment() {
             return comment;
         }
@@ -87,12 +96,14 @@ public class Changes extends BaseObject implements Collectible<Changes.Change> {
             this.href = href;
         }
 
-        public Change(String version, String username, String date, String comment, ChangeFiles files) {
+        public Change(String version, String username, String date, String comment, ChangeFiles files, String webUrl, String id) {
             this.version = version;
             this.username = username;
             this.date = date;
             this.comment = comment;
             this.files = files;
+            this.webUrl = webUrl;
+            this.id = id;
         }
     }
 

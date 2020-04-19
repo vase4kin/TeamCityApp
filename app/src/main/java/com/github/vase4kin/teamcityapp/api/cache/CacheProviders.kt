@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import io.rx_cache2.LifeCache
+import io.rx_cache2.Migration
+import io.rx_cache2.SchemeMigration
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 import java.util.concurrent.TimeUnit
@@ -38,6 +40,9 @@ import java.util.concurrent.TimeUnit
 /**
  * Cache providers
  */
+@SchemeMigration(
+    value = [Migration(version = 1, evictClasses = [Changes.Change::class])]
+)
 interface CacheProviders {
 
     /**
