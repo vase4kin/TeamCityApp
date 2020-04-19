@@ -22,6 +22,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import teamcityapp.features.change.router.ChangeRouter
+import teamcityapp.features.change.tracker.ChangeTracker
 import teamcityapp.features.change.view.ChangeActivity
 import teamcityapp.features.change.view.ChangeItemsFactory
 
@@ -29,6 +30,7 @@ class ChangeViewModel(
     private val bundleData: ChangeActivity.Companion.BundleData?,
     private val router: ChangeRouter,
     private val itemsFactory: ChangeItemsFactory,
+    private val tracker: ChangeTracker,
     val adapter: GroupAdapter<GroupieViewHolder>,
     val finish: () -> Unit
 ) : LifecycleObserver {
@@ -64,6 +66,11 @@ class ChangeViewModel(
             adapter.add(changeFilesHeader)
             adapter.addAll(changeFileItems)
         }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        tracker.trackView()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

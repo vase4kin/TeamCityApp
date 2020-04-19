@@ -20,6 +20,7 @@ import com.xwray.groupie.databinding.BindableItem
 import teamcityapp.features.change.R
 import teamcityapp.features.change.databinding.ItemCommitCardBinding
 import teamcityapp.features.change.router.ChangeRouter
+import teamcityapp.features.change.tracker.ChangeTracker
 
 class ChangeDetailsItem(
     private val comment: String,
@@ -27,7 +28,8 @@ class ChangeDetailsItem(
     private val userName: String,
     private val date: String,
     private val webUrl: String,
-    private val router: ChangeRouter
+    private val router: ChangeRouter,
+    private val tracker: ChangeTracker
 ) : BindableItem<ItemCommitCardBinding>() {
 
     override fun getLayout() = R.layout.item_commit_card
@@ -41,6 +43,7 @@ class ChangeDetailsItem(
                 this@ChangeDetailsItem.userName, this@ChangeDetailsItem.date
             )
             button.setOnClickListener {
+                tracker.trackMoreDetailsClicked()
                 router.openUrl(webUrl)
             }
         }

@@ -16,12 +16,15 @@
 
 package teamcityapp.features.change.dagger
 
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
 import teamcityapp.features.change.router.ChangeRouter
 import teamcityapp.features.change.router.ChangeRouterImpl
+import teamcityapp.features.change.tracker.ChangeTracker
+import teamcityapp.features.change.tracker.ChangeTrackerImpl
 import teamcityapp.features.change.view.ARG_BUNDLE_DATA
 import teamcityapp.features.change.view.ChangeActivity
 import teamcityapp.features.change.view.ChangeItemsFactory
@@ -52,14 +55,16 @@ object ChangeActivityModule {
         activity: ChangeActivity,
         router: ChangeRouter,
         adapter: GroupAdapter<GroupieViewHolder>,
-        itemsFactory: ChangeItemsFactory
+        itemsFactory: ChangeItemsFactory,
+        tracker: ChangeTracker
     ): ChangeViewModel {
         return ChangeViewModel(
             bundleData = activity.intent.getParcelableExtra(ARG_BUNDLE_DATA),
             router = router,
             adapter = adapter,
             finish = { activity.finish() },
-            itemsFactory = itemsFactory
+            itemsFactory = itemsFactory,
+            tracker = tracker
         )
     }
 
@@ -71,7 +76,14 @@ object ChangeActivityModule {
 
     @JvmStatic
     @Provides
-    fun provideItemsFactory(router: ChangeRouter): ChangeItemsFactory {
-        return ChangeItemsFactoryImpl(router)
+    fun provideItemsFactory(router: ChangeRouter, tracker: ChangeTracker): ChangeItemsFactory {
+        return ChangeItemsFactoryImpl(router, tracker)
+    }
+
+    @ChangeActivityScope
+    @JvmStatic
+    @Provides
+    fun provideTracker(firebaseAnalytics: FirebaseAnalytics): ChangeTracker {
+        return ChangeTrackerImpl(firebaseAnalytics)
     }
 }

@@ -17,6 +17,7 @@
 package teamcityapp.features.change.view
 
 import teamcityapp.features.change.router.ChangeRouter
+import teamcityapp.features.change.tracker.ChangeTracker
 
 interface ChangeItemsFactory {
     fun createChangeDetailsCard(
@@ -35,7 +36,8 @@ interface ChangeItemsFactory {
 }
 
 class ChangeItemsFactoryImpl(
-    private val router: ChangeRouter
+    private val router: ChangeRouter,
+    private val tracker: ChangeTracker
 ) : ChangeItemsFactory {
 
     override fun createChangeDetailsCard(
@@ -51,7 +53,8 @@ class ChangeItemsFactoryImpl(
             userName = userName,
             webUrl = webUrl,
             date = date,
-            router = router
+            router = router,
+            tracker = tracker
         )
     }
 
@@ -64,7 +67,7 @@ class ChangeItemsFactoryImpl(
         changeFile: ChangeActivity.ChangeFile
     ): ChangeFileItem {
         return ChangeFileItem(
-            id = id, changeFile = changeFile, router = router
+            id = id, changeFile = changeFile, router = router, tracker = tracker
         )
     }
 }

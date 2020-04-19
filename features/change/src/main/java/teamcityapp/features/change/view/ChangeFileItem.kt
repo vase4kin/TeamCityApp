@@ -20,11 +20,13 @@ import com.xwray.groupie.databinding.BindableItem
 import teamcityapp.features.change.R
 import teamcityapp.features.change.databinding.ItemFileNameBinding
 import teamcityapp.features.change.router.ChangeRouter
+import teamcityapp.features.change.tracker.ChangeTracker
 
 class ChangeFileItem(
     private val id: String,
     private val changeFile: ChangeActivity.ChangeFile,
-    private val router: ChangeRouter
+    private val router: ChangeRouter,
+    private val tracker: ChangeTracker
 ) : BindableItem<ItemFileNameBinding>() {
 
     override fun getLayout() = R.layout.item_file_name
@@ -34,6 +36,7 @@ class ChangeFileItem(
             title.text = changeFile.fileName
             typeText.text = changeFile.type
             root.setOnClickListener {
+                tracker.trackViewFileDiffClicked()
                 router.openDiffView(id, changeFile.fileName)
             }
         }
