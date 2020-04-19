@@ -57,10 +57,6 @@ android {
         debug {
             applicationIdSuffix = ".debug"
         }
-        showcase.initWith(buildTypes.release)
-        showcase {
-            applicationIdSuffix = ".showcase"
-        }
     }
 
     flavorDimensions "default"
@@ -76,10 +72,6 @@ android {
 
     android.variantFilter { variant ->
         if (variant.buildType.name.equals('release')
-                && variant.getFlavors().get(0).name.equals('mock')) {
-            variant.setIgnore(true)
-        }
-        if (variant.buildType.name.equals('showcase')
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true)
         }
