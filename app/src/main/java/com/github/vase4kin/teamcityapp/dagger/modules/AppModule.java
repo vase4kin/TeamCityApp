@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -209,7 +209,7 @@ public class AppModule {
     @Provides
     @Singleton
     protected RxCache providesRxCache() {
-        File cacheDir = mApplication.getFilesDir();
+        File cacheDir = mApplication.getCacheDir();
         return new RxCache.Builder()
                 .persistence(cacheDir, new GsonSpeaker());
     }
