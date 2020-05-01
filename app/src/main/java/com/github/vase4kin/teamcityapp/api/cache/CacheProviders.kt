@@ -31,8 +31,7 @@ import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
 import io.rx_cache2.LifeCache
-import io.rx_cache2.Migration
-import io.rx_cache2.SchemeMigration
+import io.rx_cache2.ProviderKey
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 import java.util.concurrent.TimeUnit
@@ -40,14 +39,12 @@ import java.util.concurrent.TimeUnit
 /**
  * Cache providers
  */
-@SchemeMigration(
-    value = [Migration(version = 1, evictClasses = [Changes.Change::class])]
-)
 interface CacheProviders {
 
     /**
      * Cache build types for one day
      */
+    @ProviderKey("listBuildTypes-1-days")
     @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
     fun listBuildTypes(
         navigationNodeSingle: Single<NavigationNode>,
@@ -58,6 +55,7 @@ interface CacheProviders {
     /**
      * Cache build type for 1 day
      */
+    @ProviderKey("buildType-1-days")
     @LifeCache(duration = 1, timeUnit = TimeUnit.DAYS)
     fun buildType(
         buildTypeSingle: Single<BuildType>,
@@ -68,6 +66,7 @@ interface CacheProviders {
     /**
      * Cache branches for one minute
      */
+    @ProviderKey("listBranches-1-minute")
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     fun listBranches(
         branchesSingle: Single<Branches>,
@@ -77,6 +76,7 @@ interface CacheProviders {
     /**
      * Cache changes list for three minute
      */
+    @ProviderKey("listChanges-3-minutes")
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
     fun listChanges(
         changesSingle: Single<Changes>,
@@ -87,7 +87,8 @@ interface CacheProviders {
     /**
      * Cache single change for one hour
      */
-    @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
+    @ProviderKey("change-1-minute")
+    @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     fun change(
         changeSingle: Single<Changes.Change>,
         changeUrl: DynamicKey
@@ -96,6 +97,7 @@ interface CacheProviders {
     /**
      * Cache test list for three minute
      */
+    @ProviderKey("listTestOccurrences-3-minutes")
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
     fun listTestOccurrences(
         occurrencesSingle: Single<TestOccurrences>,
@@ -106,6 +108,7 @@ interface CacheProviders {
     /**
      * Cache single test for one hour
      */
+    @ProviderKey("testOccurrence-1-hour")
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun testOccurrence(
         testOccurrenceSingle: Single<TestOccurrence>,
@@ -115,6 +118,7 @@ interface CacheProviders {
     /**
      * Cache artifacts for one hour
      */
+    @ProviderKey("listArtifacts-1-hour")
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun listArtifacts(
         filesSingle: Single<Files>,
@@ -125,6 +129,7 @@ interface CacheProviders {
     /**
      * Cache build list for 1 minutes
      */
+    @ProviderKey("listBuilds-1-minute")
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     fun listBuilds(
         buildsSingle: Single<Builds>,
@@ -135,6 +140,7 @@ interface CacheProviders {
     /**
      * Cache build for 1 hour (we cache only builds which have finished state)
      */
+    @ProviderKey("build-1-hour")
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun build(
         buildSingle: Single<Build>,
@@ -145,6 +151,7 @@ interface CacheProviders {
     /**
      * Cache running build list for 1 minutes
      */
+    @ProviderKey("listRunningBuilds-1-minute")
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     fun listRunningBuilds(
         buildSingle: Single<Builds>,
@@ -155,6 +162,7 @@ interface CacheProviders {
     /**
      * Cache queued build list for 1 minutes
      */
+    @ProviderKey("listQueuedBuilds-1-minute")
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     fun listQueuedBuilds(
         buildSingle: Single<Builds>,
@@ -165,6 +173,7 @@ interface CacheProviders {
     /**
      * Cache snapshot dependencies build list for 1 minutes
      */
+    @ProviderKey("listSnapshotBuilds-1-minute")
     @LifeCache(duration = 1, timeUnit = TimeUnit.MINUTES)
     fun listSnapshotBuilds(
         buildSingle: Single<Builds>,
@@ -175,6 +184,7 @@ interface CacheProviders {
     /**
      * Cache agent list for 3 minutes
      */
+    @ProviderKey("listAgents-3-minutes")
     @LifeCache(duration = 3, timeUnit = TimeUnit.MINUTES)
     fun listAgents(
         agentsSingle: Single<Agents>,
@@ -182,6 +192,7 @@ interface CacheProviders {
         evictDynamicKey: EvictDynamicKey
     ): Single<Agents>
 
+    @ProviderKey("serverInfo-1-hour")
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun serverInfo(serverInfo: Single<ServerInfo>): Single<ServerInfo>
 }
