@@ -15,6 +15,6 @@ categories:
       - 'modularization'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
 template: |
-  ## Changes
+  # Release details
 
   $CHANGES
