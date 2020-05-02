@@ -20,4 +20,4 @@ jobs:
         mkdir -p app/src/prod/debug/
         cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
     - name: Build with Gradle
-      run: ./gradlew testMockDebugUnitTest testDebugUnitTest
+      run: ./gradlew assembleDebug
