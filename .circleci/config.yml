@@ -207,7 +207,13 @@ workflows:
           name: ui-tests-v28
           requires:
             - build-tests
+          branches:
+              ignore:
+                - /chore-.*/
       - coverage:
           requires:
             - ui-tests-v28
             - unit-tests
+            branches:
+              ignore:
+                - /chore-.*/
