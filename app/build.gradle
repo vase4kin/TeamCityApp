@@ -129,7 +129,7 @@ dependencies {
 
     implementation project(':features:settings')
 
-    implementation project(':features:change')
+    implementation project(':features:change-details')
 
     // Android support libraries
     implementation Libs.AndroidX.appcompat
