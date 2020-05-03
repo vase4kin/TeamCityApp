@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class AboutActivityTest {
     @Test
     fun testAboutActivityTitle() {
         activityTestRule.launchActivity(null)
-        val toolbarTitle = activityTestRule.activity.getString(R.string.about_drawer_item)
+        val toolbarTitle = activityTestRule.activity.getString(R.string.drawer_item_about)
         matchToolbarTitle(toolbarTitle)
     }
 

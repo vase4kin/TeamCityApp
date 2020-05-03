@@ -26,4 +26,5 @@ interface DrawerRouter {
     fun openManageAccounts()
     fun switchToAccount(account: UserAccount)
     fun openSettings()
+    fun openAgents()
 }

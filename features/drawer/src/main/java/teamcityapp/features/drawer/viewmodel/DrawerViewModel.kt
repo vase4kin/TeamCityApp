@@ -26,6 +26,7 @@ import teamcityapp.features.drawer.tracker.DrawerTracker
 import teamcityapp.features.drawer.view.AboutDrawerItem
 import teamcityapp.features.drawer.view.AccountDrawerItem
 import teamcityapp.features.drawer.view.AccountsDividerDrawerItem
+import teamcityapp.features.drawer.view.AgentsDrawerItem
 import teamcityapp.features.drawer.view.BaseDrawerItem
 import teamcityapp.features.drawer.view.BottomDrawerItem
 import teamcityapp.features.drawer.view.DividerDrawerItem
@@ -41,6 +42,11 @@ class DrawerViewModel(
     private val setAdapter: (items: List<BaseDrawerItem>) -> Unit,
     private val tracker: DrawerTracker
 ) {
+
+    /**
+     * FIXME: Remove it
+     */
+    private val isAgentsEnabled = false
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -84,6 +90,12 @@ class DrawerViewModel(
         list.add(ManageAccountsDrawerItem())
         // add divider
         list.add(DividerDrawerItem())
+        // add agents item
+        if (isAgentsEnabled) {
+            list.add(AgentsDrawerItem())
+            // add divider
+            list.add(DividerDrawerItem())
+        }
         // add about item
         list.add(SettingsDrawerItem())
         // add divider

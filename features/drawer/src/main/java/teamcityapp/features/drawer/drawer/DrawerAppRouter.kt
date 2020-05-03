@@ -22,4 +22,5 @@ interface DrawerAppRouter {
     fun openManageAccounts()
     fun openHomeActivity()
     fun openSettingsActivity()
+    fun openAgentsActivity()
 }

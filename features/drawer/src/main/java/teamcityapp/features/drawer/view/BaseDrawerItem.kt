@@ -38,7 +38,8 @@ enum class DrawerType(val type: Int) {
     ACCOUNTS_DIVIDER(TYPE_ACCOUNTS_DIVIDER),
     DIVIDER(TYPE_DIVIDER),
     BOTTOM(TYPE_BOTTOM),
-    SETTINGS(TYPE_MENU)
+    SETTINGS(TYPE_MENU),
+    AGENTS(TYPE_MENU)
 }
 
 class AccountDrawerItem(
@@ -61,6 +62,7 @@ private const val ID_ACCOUNTS_DIVIDER = "ID_ACCOUNTS_DIVIDER"
 private const val ID_DIVIDER = "ID_DIVIDER"
 private const val ID_BOTTOM = "ID_BOTTOM"
 private const val ID_SETTINGS = "ID_SETTINGS"
+private const val ID_AGENTS = "ID_SETTINGS"
 
 class AccountsDividerDrawerItem : BaseDrawerItem(
     ID_ACCOUNTS_DIVIDER.hashCode(),
@@ -93,10 +95,16 @@ class AboutDrawerItem : MenuDrawerItem(
     id = ID_ABOUT.hashCode(),
     type = DrawerType.ABOUT,
     imageRes = R.drawable.ic_info_outline_black_24dp,
-    stringRes = R.string.about_drawer_item)
+    stringRes = R.string.drawer_item_about)
 
 class SettingsDrawerItem : MenuDrawerItem(
     id = ID_SETTINGS.hashCode(),
     type = DrawerType.SETTINGS,
     imageRes = R.drawable.ic_settings_black_24dp,
     stringRes = R.string.drawer_item_settings)
+
+class AgentsDrawerItem : MenuDrawerItem(
+    id = ID_AGENTS.hashCode(),
+    type = DrawerType.AGENTS,
+    imageRes = R.drawable.ic_directions_railway_black_24dp,
+    stringRes = R.string.drawer_item_agents)

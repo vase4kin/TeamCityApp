@@ -65,4 +65,9 @@ class DrawerRouterImpl(
         router.openSettingsActivity()
         fragment.dismiss()
     }
+
+    override fun openAgents() {
+        router.openAgentsActivity()
+        fragment.dismiss()
+    }
 }

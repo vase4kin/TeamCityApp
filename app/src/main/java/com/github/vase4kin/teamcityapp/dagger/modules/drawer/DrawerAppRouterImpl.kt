@@ -51,4 +51,8 @@ class DrawerAppRouterImpl(
     override fun openSettingsActivity() {
         SettingsActivity.start(fragment.requireActivity())
     }
+
+    override fun openAgentsActivity() {
+        // Open agents activity
+    }
 }
