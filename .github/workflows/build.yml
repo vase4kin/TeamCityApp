@@ -32,9 +32,9 @@ jobs:
       run: ./gradlew assembleProdDebug
     
     - name: Upload build outputs
-      if: always()
+      if: success()
       uses: actions/upload-artifact@v1
       with:
         name: build-outputs
-        path: app/build/outputs
+        path: app/build/outputs/**/*.apk
     
