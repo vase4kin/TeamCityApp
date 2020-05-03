@@ -219,7 +219,7 @@ class DrawerTest {
                 R.id.title
             )
         )
-            .check(matches(withText(R.string.about_drawer_item)))
+            .check(matches(withText(R.string.drawer_item_about)))
             .perform(click())
 
         // Check about screen is being opened

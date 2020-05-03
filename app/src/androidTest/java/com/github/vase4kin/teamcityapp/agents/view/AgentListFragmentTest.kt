@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ class AgentListFragmentTest {
         // Click on build queue tab
         clickOnAgentsTab()
 
-        val toolbarTitle = context.getString(R.string.agents_drawer_item)
+        val toolbarTitle = context.getString(R.string.drawer_item_agents)
         matchHomeToolbarTitle(toolbarTitle)
     }
 
@@ -257,7 +257,7 @@ class AgentListFragmentTest {
             withChild(
                 allOf(
                     withId(R.id.bottom_navigation_small_item_title),
-                    withText(R.string.agents_drawer_item)
+                    withText(R.string.drawer_item_agents)
                 )
             )
         )
@@ -271,7 +271,7 @@ class AgentListFragmentTest {
                 withChild(
                     allOf(
                         withId(R.id.bottom_navigation_small_item_title),
-                        withText(R.string.agents_drawer_item)
+                        withText(R.string.drawer_item_agents)
                     )
                 )
             )

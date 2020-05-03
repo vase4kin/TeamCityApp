@@ -137,6 +137,10 @@ class MenuViewHolder(
                     tracker.trackOpenSettings()
                     router.openSettings()
                 }
+                DrawerType.AGENTS -> {
+                    // tracker
+                    // open agents
+                }
                 else -> {
                     // Do nothing
                 }
