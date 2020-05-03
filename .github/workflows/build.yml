@@ -23,7 +23,7 @@ jobs:
         cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
     
     - name: Build app
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleProdDebug
     
     - name: Upload build outputs
       if: always()
