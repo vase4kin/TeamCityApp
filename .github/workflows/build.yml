@@ -29,7 +29,7 @@ jobs:
         cp mock-prodDebug-google-services.json ./app/src/prod/debug/google-services.json
     
     - name: Build app with gradle
-      run: ./gradlew assembleProdDebug
+      run: ./gradlew assembleProdDebug -Dorg.gradle.jvmargs=-Xmx1536m -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false -Dorg.gradle.caching=false -Dorg.gradle.configureondemand=true -Dkotlin.compiler.execution.strategy=in-process -Dkotlin.incremental=false
     
     - name: Upload build outputs
       if: success()
