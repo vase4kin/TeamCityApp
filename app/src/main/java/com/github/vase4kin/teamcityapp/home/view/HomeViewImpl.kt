@@ -26,11 +26,11 @@ import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
+import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.utils.getThemeColor
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 

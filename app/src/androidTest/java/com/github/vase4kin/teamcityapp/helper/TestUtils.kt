@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl
 import org.hamcrest.Matcher
 import org.hamcrest.core.Is.`is`
+import teamcityapp.libraries.onboarding.OnboardingManagerImpl
 
 /**
  * Useful test utils

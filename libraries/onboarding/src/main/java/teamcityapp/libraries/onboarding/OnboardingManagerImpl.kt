@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.onboarding
+package teamcityapp.libraries.onboarding
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -23,7 +23,8 @@ import androidx.annotation.VisibleForTesting
 /**
  * Impl of [OnboardingManager]
  */
-class OnboardingManagerImpl(context: Context) : OnboardingManager {
+class OnboardingManagerImpl(context: Context) :
+    teamcityapp.libraries.onboarding.OnboardingManager {
 
     private val sharedPreferences: SharedPreferences
 

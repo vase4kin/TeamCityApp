@@ -42,10 +42,10 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl
 import com.google.android.material.elevation.ElevationOverlayProvider
 import io.supercharge.shimmerlayout.ShimmerLayout
+import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.utils.getThemeColor
 import tr.xip.errorview.ErrorView
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt

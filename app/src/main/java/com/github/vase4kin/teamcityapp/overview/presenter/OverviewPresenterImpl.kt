@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView
+import teamcityapp.libraries.onboarding.OnboardingManager
 import javax.inject.Inject
 
 /**
