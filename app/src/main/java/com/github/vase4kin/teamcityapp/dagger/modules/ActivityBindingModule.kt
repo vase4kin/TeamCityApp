@@ -33,9 +33,6 @@ import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.about.AboutRepositoryModule
 import com.github.vase4kin.teamcityapp.dagger.modules.manage_accounts.ManageAccountsRouterModule
 import com.github.vase4kin.teamcityapp.dagger.modules.test_details.TestDetailsRepositoryModule
-import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentModule
-import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentScope
-import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsActivityScope
 import com.github.vase4kin.teamcityapp.filter_builds.dagger.FilterBuildsModule
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
@@ -45,21 +42,16 @@ import com.github.vase4kin.teamcityapp.home.dagger.HomeModule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationActivityScope
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationBaseModule
-import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentModule
-import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentScope
 import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationModule
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildActivityScope
 import com.github.vase4kin.teamcityapp.runbuild.dagger.RunBuildModule
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import teamcityapp.features.about.AboutActivity
-import teamcityapp.features.about.AboutFragment
+import teamcityapp.features.about.dagger.AboutActivityBindingModule
 import teamcityapp.features.about.dagger.AboutActivityScope
-import teamcityapp.features.about.dagger.AboutFragmentModule
-import teamcityapp.features.about.dagger.AboutFragmentScope
 import teamcityapp.features.change.dagger.ChangeActivityModule
 import teamcityapp.features.change.dagger.ChangeActivityScope
 import teamcityapp.features.change.view.ChangeActivity
@@ -77,23 +69,17 @@ import teamcityapp.features.test_details.view.TestDetailsActivity
 @Module
 abstract class ActivityBindingModule {
 
-    @FavoritesFragmentScope
-    @ContributesAndroidInjector(modules = [FavoritesFragmentModule::class])
-    abstract fun favoritesFragment(): FavoritesFragment
-
     @AboutActivityScope
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(
+        modules = [
+            AboutActivityBindingModule::class, AboutRepositoryModule::class]
+    )
     abstract fun aboutActivity(): AboutActivity
-
-    @AboutFragmentScope
-    @ContributesAndroidInjector(modules = [AboutFragmentModule::class, AboutRepositoryModule::class])
-    abstract fun aboutFragment(): AboutFragment
 
     @TestDetailsActivityScope
     @ContributesAndroidInjector(
         modules = [
-            TestDetailsModule::class,
-            TestDetailsRepositoryModule::class
+            TestDetailsModule::class, TestDetailsRepositoryModule::class
         ]
     )
     abstract fun testDetailsActivity(): TestDetailsActivity
@@ -107,11 +93,19 @@ abstract class ActivityBindingModule {
     abstract fun createAccountActivity(): CreateAccountActivity
 
     @ManageAccountsActivityScope
-    @ContributesAndroidInjector(modules = [ManageAccountsModule::class, ManageAccountsRouterModule::class])
+    @ContributesAndroidInjector(
+        modules = [
+            ManageAccountsModule::class, ManageAccountsRouterModule::class
+        ]
+    )
     abstract fun accountListActivity(): ManageAccountsActivity
 
     @BuildDetailsActivityScope
-    @ContributesAndroidInjector(modules = [BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class])
+    @ContributesAndroidInjector(
+        modules = [
+            BuildDetailsModule::class, BuildDetailsFragmentsBindingModule::class
+        ]
+    )
     abstract fun buildDetailsActivity(): BuildDetailsActivity
 
     @BuildListActivityScope
@@ -128,21 +122,21 @@ abstract class ActivityBindingModule {
 
     @HomeActivityScope
     @ContributesAndroidInjector(modules = [HomeModule::class, HomeActivityBindingModule::class])
-    abstract fun rootProjectsActivity(): HomeActivity
+    abstract fun homeActivity(): HomeActivity
 
     @NavigationActivityScope
     @ContributesAndroidInjector(modules = [NavigationModule::class, NavigationBaseModule::class])
     abstract fun navigationActivity(): NavigationActivity
-
-    @NavigationFragmentScope
-    @ContributesAndroidInjector(modules = [NavigationFragmentModule::class, NavigationBaseModule::class])
-    abstract fun navigationListFragment(): NavigationListFragment
 
     @ArtifactActivityScope
     @ContributesAndroidInjector(modules = [ArtifactsActivityModule::class])
     abstract fun artifactListActivity(): ArtifactListActivity
 
     @SettingsActivityScope
-    @ContributesAndroidInjector(modules = [SettingsActivityModule::class, SettingsActivityBindingModule::class])
+    @ContributesAndroidInjector(
+        modules = [
+            SettingsActivityModule::class, SettingsActivityBindingModule::class
+        ]
+    )
     abstract fun settingsActivity(): SettingsActivity
 }

@@ -21,9 +21,16 @@ import com.github.vase4kin.teamcityapp.agents.dagger.AgentModule
 import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment
 import com.github.vase4kin.teamcityapp.buildlist.dagger.BuildListAdapterModule
 import com.github.vase4kin.teamcityapp.dagger.modules.drawer.DrawerRouterModule
+import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentModule
+import com.github.vase4kin.teamcityapp.favorites.dagger.FavoritesFragmentScope
+import com.github.vase4kin.teamcityapp.favorites.view.FavoritesFragment
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetDialogScope
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.dagger.FilterBottomSheetModule
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationBaseModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentModule
+import com.github.vase4kin.teamcityapp.navigation.dagger.NavigationFragmentScope
+import com.github.vase4kin.teamcityapp.navigation.view.NavigationListFragment
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentModule
 import com.github.vase4kin.teamcityapp.queue.dagger.BuildQueueFragmentScope
 import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
@@ -39,6 +46,14 @@ import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 @Module
 abstract class HomeActivityBindingModule {
 
+    @NavigationFragmentScope
+    @ContributesAndroidInjector(modules = [NavigationFragmentModule::class, NavigationBaseModule::class])
+    abstract fun navigationListFragment(): NavigationListFragment
+
+    @FavoritesFragmentScope
+    @ContributesAndroidInjector(modules = [FavoritesFragmentModule::class])
+    abstract fun favoritesFragment(): FavoritesFragment
+
     @RunningBuildsFragmentScope
     @ContributesAndroidInjector(modules = [RunningBuildsFragmentModule::class, BuildListAdapterModule::class])
     abstract fun runningBuildsFragment(): RunningBuildsFragment
@@ -47,10 +62,6 @@ abstract class HomeActivityBindingModule {
     @ContributesAndroidInjector(modules = [BuildQueueFragmentModule::class, BuildListAdapterModule::class])
     abstract fun buildQueueFragment(): BuildQueueFragment
 
-    @FilterBottomSheetDialogScope
-    @ContributesAndroidInjector(modules = [FilterBottomSheetModule::class])
-    abstract fun filterBottomSheetDialog(): FilterBottomSheetDialogFragment
-
     @AgentFragmentScope
     @ContributesAndroidInjector(modules = [AgentModule::class])
     abstract fun agentListFragment(): AgentListFragment
@@ -58,4 +69,8 @@ abstract class HomeActivityBindingModule {
     @DrawerBottomSheetDialogScope
     @ContributesAndroidInjector(modules = [DrawerBottomSheetDialogModule::class, DrawerRouterModule::class])
     abstract fun drawerBottomSheetDialog(): DrawerBottomSheetDialogFragment
+
+    @FilterBottomSheetDialogScope
+    @ContributesAndroidInjector(modules = [FilterBottomSheetModule::class])
+    abstract fun filterBottomSheetDialog(): FilterBottomSheetDialogFragment
 }
