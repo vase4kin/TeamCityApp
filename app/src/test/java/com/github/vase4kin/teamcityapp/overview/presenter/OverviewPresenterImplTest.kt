@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.overview.presenter
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
@@ -39,6 +38,7 @@ import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.MockitoAnnotations
+import teamcityapp.libraries.onboarding.OnboardingManager
 
 private const val HREF = "href"
 

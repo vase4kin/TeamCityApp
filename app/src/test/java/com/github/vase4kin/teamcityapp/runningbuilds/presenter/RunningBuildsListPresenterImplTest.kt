@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManager
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView
@@ -36,6 +35,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
+import teamcityapp.libraries.onboarding.OnboardingManager
 
 @RunWith(MockitoJUnitRunner::class)
 class RunningBuildsListPresenterImplTest {

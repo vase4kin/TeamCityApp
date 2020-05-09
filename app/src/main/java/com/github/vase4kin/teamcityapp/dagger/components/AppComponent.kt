@@ -23,7 +23,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
 import com.github.vase4kin.teamcityapp.remote.RemoteService
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -33,6 +32,7 @@ import dagger.android.AndroidInjector
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
+import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.storage.Storage
 import javax.inject.Named
 import javax.inject.Singleton

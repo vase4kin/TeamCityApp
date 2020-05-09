@@ -35,8 +35,6 @@ import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.crypto.CryptoManagerImpl;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager;
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManagerImpl;
 import com.github.vase4kin.teamcityapp.remote.RemoteService;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
@@ -63,6 +61,8 @@ import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import teamcityapp.libraries.cache_manager.CacheManager;
+import teamcityapp.libraries.onboarding.OnboardingManager;
+import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
 import teamcityapp.libraries.storage.Storage;
 import teamcityapp.libraries.storage.models.UserAccount;
 

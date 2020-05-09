@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.base.list.adapter.ViewLoadMore
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
+import teamcityapp.libraries.onboarding.OnboardingManager
 
 /**
  * View for handling [BuildListActivity]

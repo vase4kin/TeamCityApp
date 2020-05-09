@@ -28,7 +28,7 @@ import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterP
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.view.HomeView
-import com.github.vase4kin.teamcityapp.onboarding.OnboardingManager
+import teamcityapp.libraries.onboarding.OnboardingManager
 import javax.inject.Inject
 
 /**
