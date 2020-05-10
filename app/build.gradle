@@ -113,6 +113,7 @@ dependencies {
     implementation project(':libraries:storage-models')
     implementation project(':libraries:cache-manager')
     implementation project(':libraries:onboarding')
+    implementation project(':libraries:security')
 
     implementation project(':features:test-details:models')
     implementation project(':features:test-details:repository')
