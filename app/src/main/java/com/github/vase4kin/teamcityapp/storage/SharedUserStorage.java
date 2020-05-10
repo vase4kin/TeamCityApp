@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,13 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
-import com.github.vase4kin.teamcityapp.crypto.CryptoManager;
 import com.github.vase4kin.teamcityapp.storage.api.UsersContainer;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import teamcityapp.libraries.security.CryptoManager;
 import teamcityapp.libraries.storage.Storage;
 import teamcityapp.libraries.storage.models.UserAccount;
 
