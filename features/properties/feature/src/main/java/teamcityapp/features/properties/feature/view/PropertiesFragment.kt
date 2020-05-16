@@ -39,7 +39,8 @@ class PropertiesFragment : DaggerFragment() {
     lateinit var viewModel: PropertiesViewModel
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return DataBindingUtil.inflate<FragmentPropertiesBinding>(
