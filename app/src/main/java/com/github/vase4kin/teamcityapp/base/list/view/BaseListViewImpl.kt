@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,8 @@ abstract class BaseListViewImpl<T : BaseDataModel, RA : RecyclerView.Adapter<*>>
         errorView.setRetryListener(listener)
         swipeRefreshLayout.setOnRefreshListener(listener)
         recyclerView.layoutManager = LinearLayoutManager(activity)
+        // FIX for empty
+        mEmpty.visibility = View.GONE
     }
 
     /**

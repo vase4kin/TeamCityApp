@@ -33,12 +33,12 @@ import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
-import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import teamcityapp.features.properties.feature.view.PropertiesFragment
 
 private const val TAB_TITLE = "tabTitle"
 
@@ -53,6 +53,7 @@ class BuildDetailsViewImpl(
 
     @BindView(R.id.floating_action_button)
     lateinit var floatingActionButton: FloatingActionButton
+
     @BindView(R.id.container)
     lateinit var container: View
 
@@ -108,7 +109,7 @@ class BuildDetailsViewImpl(
         }
         fragmentAdapter.add(
             R.string.tab_parameters,
-            PropertiesFragment.newInstance(buildDetails.toBuild())
+            PropertiesFragment.create(buildDetails.toBuild().properties?.properties ?: emptyList())
         )
         val artifactsHref = buildDetails.artifactsHref
         if (artifactsHref != null) {
@@ -376,7 +377,10 @@ class BuildDetailsViewImpl(
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
-    private fun createConfirmDialog(@StringRes content: Int, @StringRes positiveText: Int): MaterialDialog {
+    private fun createConfirmDialog(
+        @StringRes content: Int,
+        @StringRes positiveText: Int
+    ): MaterialDialog {
         return createConfirmDialogBuilder(content, positiveText)
             .build()
     }
@@ -388,7 +392,10 @@ class BuildDetailsViewImpl(
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog
      */
-    private fun createConfirmDialogWithReAddCheckbox(@StringRes content: Int, @StringRes positiveText: Int): MaterialDialog {
+    private fun createConfirmDialogWithReAddCheckbox(
+        @StringRes content: Int,
+        @StringRes positiveText: Int
+    ): MaterialDialog {
         return createConfirmDialogBuilder(content, positiveText)
             .checkBoxPromptRes(R.string.text_re_add_build, false, null)
             .build()
@@ -401,7 +408,10 @@ class BuildDetailsViewImpl(
      * @param positiveText - Resource id positive dialog text
      * @return confirm dialog builder
      */
-    private fun createConfirmDialogBuilder(@StringRes content: Int, @StringRes positiveText: Int): MaterialDialog.Builder {
+    private fun createConfirmDialogBuilder(
+        @StringRes content: Int,
+        @StringRes positiveText: Int
+    ): MaterialDialog.Builder {
         return MaterialDialog.Builder(activity)
             .content(content)
             .positiveText(positiveText)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.runbuild.presenter
 import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
-import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
@@ -32,7 +31,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import java.util.*
+import teamcityapp.features.properties.repository.models.Properties
+import java.util.ArrayList
 import javax.inject.Inject
 
 /**
@@ -156,7 +156,9 @@ class RunBuildPresenterImpl @Inject constructor(
             isPersonal,
             queueToTheTop,
             cleanAllFiles,
-            Properties(mProperties),
+            Properties(
+                mProperties
+            ),
             object : LoadingListenerWithForbiddenSupport<String> {
 
                 override fun onSuccess(data: String) {

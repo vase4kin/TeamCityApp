@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.properties.api.Properties
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import retrofit2.HttpException
+import teamcityapp.features.properties.repository.models.Properties
 
 /**
  * Impl of [RunBuildInteractor]
@@ -61,7 +61,7 @@ class RunBuildInteractorImpl(
         if (agent != null) {
             build.agent = agent
         }
-        if (properties.objects.isNotEmpty()) {
+        if (properties.properties.isNotEmpty()) {
             build.properties = properties
         }
         queueBuild(build, loadingListener)

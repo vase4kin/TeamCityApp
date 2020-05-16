@@ -27,6 +27,7 @@
     <dimen name="dp_38">38dp</dimen>
     <dimen name="dp_48">48dp</dimen>
     <dimen name="dp_96">96dp</dimen>
+    <dimen name="dp_124">124dp</dimen>
 
     <dimen name="dp_recycler_view_horizontal">@dimen/dp_0</dimen>
 

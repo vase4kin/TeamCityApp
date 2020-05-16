@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,17 @@ import androidx.annotation.Nullable;
 import com.github.vase4kin.teamcityapp.agents.api.Agent;
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible;
 import com.github.vase4kin.teamcityapp.artifact.api.Artifacts;
-import teamcityapp.libraries.api.BaseObject;
 import com.github.vase4kin.teamcityapp.changes.api.Changes;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement;
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType;
-import com.github.vase4kin.teamcityapp.properties.api.Properties;
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
 import java.util.List;
+
+import teamcityapp.features.properties.repository.models.Properties;
+import teamcityapp.libraries.api.BaseObject;
 
 /**
  * Build
