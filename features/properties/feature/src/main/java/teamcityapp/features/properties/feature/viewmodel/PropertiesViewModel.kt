@@ -24,14 +24,17 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
+import teamcityapp.features.properties.feature.R
 import teamcityapp.features.properties.feature.model.InternalProperty
 import teamcityapp.features.properties.feature.view.PropertyItemFactory
 import teamcityapp.libraries.utils.EmptyViewModel
+import teamcityapp.libraries.utils.ResourcesManager
 
 class PropertiesViewModel(
     val adapter: GroupAdapter<GroupieViewHolder>,
     private val factory: PropertyItemFactory,
-    private val properties: List<InternalProperty>
+    private val properties: List<InternalProperty>,
+    private val resourcesManager: ResourcesManager
 ) : LifecycleObserver, EmptyViewModel {
 
     override val emptyVisibility = ObservableInt(View.GONE)
@@ -42,6 +45,9 @@ class PropertiesViewModel(
     fun onCreate() {
         if (properties.isEmpty()) {
             emptyVisibility.set(View.VISIBLE)
+            emptyText.set(
+                resourcesManager.getString(R.string.empty_list_message_parameters)
+            )
         } else {
             val items = properties.map {
                 factory.createPropertyItem(it)

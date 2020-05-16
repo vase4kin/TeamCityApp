@@ -16,4 +16,5 @@
 
 <resources>
     <string name="text_property_value_empty">Empty</string>
+    <string name="empty_list_message_parameters">No user defined parameters</string>
 </resources>

@@ -26,6 +26,8 @@ import teamcityapp.features.properties.feature.view.PropertiesFragment
 import teamcityapp.features.properties.feature.view.PropertyItemFactory
 import teamcityapp.features.properties.feature.view.PropertyItemFactoryImpl
 import teamcityapp.features.properties.feature.viewmodel.PropertiesViewModel
+import teamcityapp.libraries.utils.ResourcesManager
+import teamcityapp.libraries.utils.ResourcesManagerImpl
 
 @Module
 object PropertiesFragmentModule {
@@ -35,13 +37,15 @@ object PropertiesFragmentModule {
     fun providesViewModel(
         fragment: PropertiesFragment,
         adapter: GroupAdapter<GroupieViewHolder>,
-        factory: PropertyItemFactory
+        factory: PropertyItemFactory,
+        resourcesManager: ResourcesManager
     ): PropertiesViewModel {
         return PropertiesViewModel(
             adapter = adapter,
             properties = (fragment.arguments?.getParcelableArray(PropertiesFragment.ARG_PROPERTIES) as Array<InternalProperty>?
                 ?: emptyArray<InternalProperty>()).toList(),
-            factory = factory
+            factory = factory,
+            resourcesManager = resourcesManager
         )
     }
 
@@ -54,4 +58,10 @@ object PropertiesFragmentModule {
     @JvmStatic
     @Provides
     fun providesAdapter() = GroupAdapter<GroupieViewHolder>()
+
+    @JvmStatic
+    @Provides
+    fun provideResManager(fragment: PropertiesFragment): ResourcesManager {
+        return ResourcesManagerImpl(fragment.requireContext())
+    }
 }
