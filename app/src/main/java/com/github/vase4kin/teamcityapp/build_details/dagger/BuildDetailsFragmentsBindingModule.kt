@@ -26,12 +26,10 @@ import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.changes.dagger.ChangesFragmentScope
 import com.github.vase4kin.teamcityapp.changes.dagger.ChangesModule
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
+import com.github.vase4kin.teamcityapp.dagger.modules.properties.PropertiesRouterModule
 import com.github.vase4kin.teamcityapp.overview.dagger.OverviewFragmentScope
 import com.github.vase4kin.teamcityapp.overview.dagger.OverviewModule
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
-import com.github.vase4kin.teamcityapp.properties.dagger.PropertiesFragmentScope
-import com.github.vase4kin.teamcityapp.properties.dagger.PropertiesModule
-import com.github.vase4kin.teamcityapp.properties.view.PropertiesFragment
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.dagger.SnapshotDependenciesFragmentScope
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.dagger.SnapshotDependenciesModule
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
@@ -40,6 +38,9 @@ import com.github.vase4kin.teamcityapp.tests.dagger.TestsModule
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import teamcityapp.features.properties.feature.dagger.PropertiesFragmentModule
+import teamcityapp.features.properties.feature.dagger.PropertiesFragmentScope
+import teamcityapp.features.properties.feature.view.PropertiesFragment
 
 @Module
 abstract class BuildDetailsFragmentsBindingModule {
@@ -61,7 +62,7 @@ abstract class BuildDetailsFragmentsBindingModule {
     abstract fun buildLogFragment(): BuildLogFragment
 
     @PropertiesFragmentScope
-    @ContributesAndroidInjector(modules = [PropertiesModule::class])
+    @ContributesAndroidInjector(modules = [PropertiesFragmentModule::class, PropertiesRouterModule::class])
     abstract fun propertiesFragment(): PropertiesFragment
 
     @ArtifactFragmentScope

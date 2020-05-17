@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.Companion.STAT
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails.Companion.STATUS_SUCCESS
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.Companion.TEXT_NO_NUMBER
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl.Companion.TEXT_QUEUED_BUILD
-import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.`is`
@@ -42,6 +41,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.runners.MockitoJUnitRunner
+import teamcityapp.features.properties.repository.models.Properties
 
 private const val TIME_STAMP = "20160621T233008+0700"
 private const val TIME_FORMATTED = "21 Jun 16 23:30"

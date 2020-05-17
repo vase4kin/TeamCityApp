@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.properties.api.Properties
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.junit.Before
@@ -55,6 +54,7 @@ import org.junit.runner.RunWith
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.properties.repository.models.Properties
 
 private const val NAME = "name"
 private const val TIMEOUT = 5000
@@ -198,7 +198,11 @@ class PropertiesFragmentTest {
         // <! ---------------------------------------------------------------------- !>
         val intent = Intent()
         val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild(Properties(emptyList())))
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild(
+            Properties(
+                emptyList()
+            )
+        ))
         b.putString(BundleExtractorValues.NAME, NAME)
         intent.putExtras(b)
 

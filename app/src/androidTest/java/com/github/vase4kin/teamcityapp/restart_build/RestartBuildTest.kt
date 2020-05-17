@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.with
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.helper.capture
-import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -70,6 +69,7 @@ import org.mockito.Mockito.verify
 import org.mockito.Spy
 import retrofit2.HttpException
 import retrofit2.Response
+import teamcityapp.features.properties.repository.models.Properties
 
 private const val BRANCH_NAME = "refs/heads/dev"
 private const val PROPERTY_NAME = "property"
@@ -167,7 +167,10 @@ class RestartBuildTest {
         val buildToRestart = Mocks.failedBuild()
         val property = Properties.Property(PROPERTY_NAME, PROPERTY_VALUE)
         buildToRestart.branchName = BRANCH_NAME
-        buildToRestart.properties = Properties(listOf(property))
+        buildToRestart.properties =
+            Properties(
+                listOf(property)
+            )
         b.putSerializable(BundleExtractorValues.BUILD, buildToRestart)
         b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
         intent.putExtras(b)
@@ -194,8 +197,8 @@ class RestartBuildTest {
         verify(teamCityService).queueBuild(capture(buildArgumentCaptor))
         val capturedBuild = buildArgumentCaptor.value
         assertThat(capturedBuild.branchName, `is`(equalTo(BRANCH_NAME)))
-        assertThat(capturedBuild.properties!!.objects.size, `is`(equalTo(1)))
-        val capturedProperty = capturedBuild.properties!!.objects[0]
+        assertThat(capturedBuild.properties!!.properties.size, `is`(equalTo(1)))
+        val capturedProperty = capturedBuild.properties!!.properties[0]
         assertThat(capturedProperty.name, `is`(equalTo(PROPERTY_NAME)))
         assertThat(capturedProperty.value, `is`(equalTo(PROPERTY_VALUE)))
 
@@ -245,7 +248,10 @@ class RestartBuildTest {
         val buildToRestart = Mocks.failedBuild()
         val property = Properties.Property(PROPERTY_NAME, PROPERTY_VALUE)
         buildToRestart.branchName = BRANCH_NAME
-        buildToRestart.properties = Properties(listOf(property))
+        buildToRestart.properties =
+            Properties(
+                listOf(property)
+            )
         b.putSerializable(BundleExtractorValues.BUILD, buildToRestart)
         b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
         intent.putExtras(b)

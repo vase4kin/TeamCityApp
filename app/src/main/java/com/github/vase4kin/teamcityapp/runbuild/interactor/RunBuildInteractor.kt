@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.runbuild.interactor
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
-import com.github.vase4kin.teamcityapp.properties.api.Properties
+import teamcityapp.features.properties.repository.models.Properties
 
 /**
  * Forbidden code error

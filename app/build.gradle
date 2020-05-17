@@ -133,6 +133,9 @@ dependencies {
 
     implementation project(':features:change-details')
 
+    implementation project(':features:properties:models')
+    implementation project(':features:properties:feature')
+
     // Android support libraries
     implementation Libs.AndroidX.appcompat
     implementation Libs.AndroidX.cardView

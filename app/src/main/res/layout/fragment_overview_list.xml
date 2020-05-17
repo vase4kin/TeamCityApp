@@ -37,8 +37,6 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <include layout="@layout/layout_empty" />
-
     <include layout="@layout/layout_error_view" />
 
     <androidx.core.widget.NestedScrollView

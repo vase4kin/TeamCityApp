@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.runbuild.presenter
 
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
-import com.github.vase4kin.teamcityapp.properties.api.Properties
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
@@ -38,9 +37,13 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.times
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
-import java.util.*
+import teamcityapp.features.properties.repository.models.Properties
+import java.util.ArrayList
 
 /**
  * Tests for [RunBuildPresenterImpl]
@@ -148,8 +151,8 @@ class RunBuildPresenterImplTest {
             capture(queueLoadingListenerCaptor)
         )
         val capturedProperties = propertiesArgumentCaptor.value
-        assertThat(capturedProperties.objects.size, `is`(equalTo(1)))
-        val capturedProperty = capturedProperties.objects[0]
+        assertThat(capturedProperties.properties.size, `is`(equalTo(1)))
+        val capturedProperty = capturedProperties.properties[0]
         assertThat(capturedProperty.name, `is`(equalTo(PROPERTY_NAME)))
         assertThat(capturedProperty.value, `is`(equalTo(PROPERTY_VALUE)))
         val loadingListener = queueLoadingListenerCaptor.value

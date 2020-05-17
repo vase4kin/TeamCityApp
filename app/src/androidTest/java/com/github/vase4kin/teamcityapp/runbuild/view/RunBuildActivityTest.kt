@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -287,8 +287,8 @@ class RunBuildActivityTest {
         // Checking triggered build
         verify(teamCityService).queueBuild(capture(buildCaptor))
         val capturedBuild = buildCaptor.value
-        assertThat(capturedBuild.properties!!.objects.size, `is`(equalTo(1)))
-        val capturedProperty = capturedBuild.properties!!.objects[0]
+        assertThat(capturedBuild.properties!!.properties.size, `is`(equalTo(1)))
+        val capturedProperty = capturedBuild.properties!!.properties[0]
         assertThat(capturedProperty.name, `is`(equalTo(PARAMETER_NAME)))
         assertThat(capturedProperty.value, `is`(equalTo(PARAMETER_VALUE)))
         // Checking activity is finishing
