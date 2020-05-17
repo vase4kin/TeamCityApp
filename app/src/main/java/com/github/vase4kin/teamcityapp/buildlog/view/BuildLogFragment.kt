@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.buildlog.presenter.BuildLogPresenterImpl
-import dagger.android.support.AndroidSupportInjection
+import com.github.vase4kin.teamcityapp.buildlog.presenter.BuildLogViewModel
+import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 /**
  * Build log fragment
  */
-class BuildLogFragment : Fragment() {
+class BuildLogFragment : DaggerFragment() {
 
     @Inject
-    lateinit var presenter: BuildLogPresenterImpl
+    lateinit var viewModel: BuildLogViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,13 +44,7 @@ class BuildLogFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
-        presenter.onCreateViews()
-    }
-
-    override fun onDestroyView() {
-        presenter.onDestroyViews()
-        super.onDestroyView()
+        lifecycle.addObserver(viewModel)
     }
 
     companion object {

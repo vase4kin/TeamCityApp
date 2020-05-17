@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.presenter
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
@@ -23,20 +26,15 @@ import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
 import com.github.vase4kin.teamcityapp.buildlog.view.OnBuildLogLoadListener
 import javax.inject.Inject
 
-/**
- * Impl of [BuildLogPresenter]
- */
-class BuildLogPresenterImpl @Inject constructor(
+class BuildLogViewModel @Inject constructor(
     private val view: BuildLogView,
     private val buildLogUrlProvider: BuildLogUrlProvider,
     private val interactor: BuildLogInteractor,
     private val router: BuildLogRouter
-) : BuildLogPresenter, OnBuildLogLoadListener {
+) : OnBuildLogLoadListener, LifecycleObserver {
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onCreateViews() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun onCreate() {
         view.initViews(this)
         if (interactor.isSslDisabled) {
             view.showSslWarningView()
@@ -49,10 +47,8 @@ class BuildLogPresenterImpl @Inject constructor(
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onDestroyViews() {
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
         view.unBindViews()
         router.unbindCustomsTabs()
     }

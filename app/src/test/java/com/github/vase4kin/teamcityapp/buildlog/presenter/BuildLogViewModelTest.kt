@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,13 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.*
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.runners.MockitoJUnitRunner
 
 @RunWith(MockitoJUnitRunner::class)
-class BuildLogPresenterImplTest {
+class BuildLogViewModelTest {
 
     @Mock
     private lateinit var view: BuildLogView
@@ -40,12 +42,12 @@ class BuildLogPresenterImplTest {
     private lateinit var interactor: BuildLogInteractor
     @Mock
     private lateinit var router: BuildLogRouter
-    private lateinit var presenter: BuildLogPresenterImpl
+    private lateinit var presenter: BuildLogViewModel
 
     @Before
     fun setUp() {
         `when`(buildLogUrlProvider.provideUrl()).thenReturn("http://fake-teamcity-url")
-        presenter = BuildLogPresenterImpl(view, buildLogUrlProvider, interactor, router)
+        presenter = BuildLogViewModel(view, buildLogUrlProvider, interactor, router)
     }
 
     @After
@@ -57,7 +59,7 @@ class BuildLogPresenterImplTest {
     fun testHandleOnCreateViewIfDialogIsNotShown() {
         `when`(interactor.isSslDisabled).thenReturn(false)
         `when`(interactor.isAuthDialogShown).thenReturn(true)
-        presenter.onCreateViews()
+        presenter.onCreate()
         verify(view).initViews(eq(presenter))
         verify(interactor).isSslDisabled
         verify(interactor).isAuthDialogShown
@@ -68,7 +70,7 @@ class BuildLogPresenterImplTest {
     @Test
     fun testHandleOnCreateViewIfSslIsDisabled() {
         `when`(interactor.isSslDisabled).thenReturn(true)
-        presenter.onCreateViews()
+        presenter.onCreate()
         verify(view).initViews(eq(presenter))
         verify(interactor).isSslDisabled
         verify(view).showSslWarningView()
@@ -79,7 +81,7 @@ class BuildLogPresenterImplTest {
         `when`(interactor.isAuthDialogShown).thenReturn(false)
         `when`(interactor.isSslDisabled).thenReturn(false)
         `when`(interactor.isGuestUser).thenReturn(true)
-        presenter.onCreateViews()
+        presenter.onCreate()
         verify(view).initViews(eq(presenter))
         verify(interactor).isSslDisabled
         verify(interactor).isAuthDialogShown
@@ -93,7 +95,7 @@ class BuildLogPresenterImplTest {
         `when`(interactor.isGuestUser).thenReturn(false)
         `when`(interactor.isSslDisabled).thenReturn(false)
         `when`(interactor.isAuthDialogShown).thenReturn(false)
-        presenter.onCreateViews()
+        presenter.onCreate()
         verify(view).initViews(eq(presenter))
         verify(interactor).isSslDisabled
         verify(interactor).isGuestUser
@@ -103,7 +105,7 @@ class BuildLogPresenterImplTest {
 
     @Test
     fun testHandleOnDestroyView() {
-        presenter.onDestroyViews()
+        presenter.onDestroy()
         verify(view).unBindViews()
         verify(router).unbindCustomsTabs()
     }
