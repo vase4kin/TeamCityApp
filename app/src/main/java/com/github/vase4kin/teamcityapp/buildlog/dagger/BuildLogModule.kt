@@ -17,21 +17,17 @@
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
 import android.app.Activity
-import android.content.Context
-import android.os.Bundle
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
+import teamcityapp.libraries.storage.Storage
 
 @Module
 object BuildLogModule {
@@ -47,12 +43,6 @@ object BuildLogModule {
 
     @JvmStatic
     @Provides
-    fun providesBuildLogValueExtractor(fragment: BuildLogFragment): BuildLogValueExtractor {
-        return BuildLogValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
-    }
-
-    @JvmStatic
-    @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
         return BuildLogRouterImpl(fragment.activity as Activity)
     }
@@ -61,14 +51,12 @@ object BuildLogModule {
     @Provides
     fun providesBuildLogInteractor(
         fragment: BuildLogFragment,
-        sharedUserStorage: SharedUserStorage
+        storage: Storage
     ): BuildLogInteractor {
         return BuildLogInteractorImpl(
-            sharedUserStorage.activeUser,
-            fragment.requireContext().getSharedPreferences(
-                BuildLogInteractorImpl.PREF_NAME,
-                Context.MODE_PRIVATE
-            )
+            storage,
+            fragment.requireContext(),
+            fragment.arguments
         )
     }
 

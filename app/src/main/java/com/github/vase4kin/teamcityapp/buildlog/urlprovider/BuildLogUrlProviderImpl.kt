@@ -16,24 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider
 
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
-import teamcityapp.libraries.storage.models.UserAccount
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 
 /**
  * Impl of [BuildLogUrlProvider]
  */
 class BuildLogUrlProviderImpl(
-    private val valueExtractor: BuildLogValueExtractor,
-    private val userAccount: UserAccount
+    private val buildLogInteractor: BuildLogInteractor
 ) : BuildLogUrlProvider {
 
     /**
      * {@inheritDoc}
      */
     override fun provideUrl(): String {
+        val userAccount = buildLogInteractor.activeUser
         val serverUrl = String.format(
             BUILD_URL,
-            userAccount.teamcityUrl, valueExtractor.buildId
+            userAccount.teamcityUrl, buildLogInteractor.buildId
         )
         return if (userAccount.isGuestUser)
             "$serverUrl&guest=1"

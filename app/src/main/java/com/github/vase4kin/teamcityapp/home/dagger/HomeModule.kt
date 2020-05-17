@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.home.dagger
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
@@ -45,6 +44,7 @@ import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.storage.Storage
 
 @Module
 object HomeModule {
@@ -109,14 +109,12 @@ object HomeModule {
     @Provides
     fun providesBuildLogInteractor(
         activity: HomeActivity,
-        sharedUserStorage: SharedUserStorage
+        storage: Storage
     ): BuildLogInteractor {
         return BuildLogInteractorImpl(
-            sharedUserStorage.activeUser,
-            activity.getSharedPreferences(
-                BuildLogInteractorImpl.PREF_NAME,
-                Context.MODE_PRIVATE
-            )
+            storage,
+            activity,
+            activity.intent.extras
         )
     }
 
