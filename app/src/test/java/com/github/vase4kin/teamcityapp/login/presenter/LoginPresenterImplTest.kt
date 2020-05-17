@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView
-import com.github.vase4kin.teamcityapp.remote.RemoteService
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.After
@@ -40,6 +39,7 @@ import org.mockito.Mockito.verifyNoMoreInteractions
 import org.powermock.api.mockito.PowerMockito
 import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
+import teamcityapp.libraries.remote.RemoteService
 
 @RunWith(PowerMockRunner::class)
 @PrepareForTest(LoginPresenterImpl::class)

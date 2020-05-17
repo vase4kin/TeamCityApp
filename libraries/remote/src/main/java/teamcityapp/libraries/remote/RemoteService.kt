@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.remote
+package teamcityapp.libraries.remote
 
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import teamcityapp.libraries.remote.RemoteService
+interface RemoteService {
 
-class RemoteServiceImpl(
-    @Suppress("UNUSED_PARAMETER") remoteConfig: FirebaseRemoteConfig
-) : RemoteService {
+    fun isNotChurn(): Boolean
 
-    var showTryItOut: Boolean = false
-    var showTryItOutUrl: String = Mocks.URL
-
-    override fun isNotChurn(): Boolean = false
-
-    override fun showTryItOut(
+    fun showTryItOut(
         onSuccess: (showTryItOut: Boolean) -> Unit,
         onStart: () -> Unit,
         onFinish: () -> Unit
-    ) {
-        onStart()
-        onFinish()
-        onSuccess(showTryItOut)
-    }
+    )
 
-    override fun getTryItOutUrl(): String = showTryItOutUrl
+    fun getTryItOutUrl(): String
+
+    companion object {
+        const val PARAMETER_NOT_CHURN = "param_not_churn"
+        const val PARAMETER_URL_SHOW_TRY_IT_OUT = "param_url_try_it_out"
+        const val PARAMETER_SHOW_TRY_IT_OUT = "param_show_try_it_out"
+    }
 }

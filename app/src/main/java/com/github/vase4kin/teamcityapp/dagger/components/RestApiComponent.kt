@@ -24,7 +24,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.ActivityBindingModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope
-import com.github.vase4kin.teamcityapp.remote.RemoteService
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Component
@@ -33,6 +32,7 @@ import dagger.android.AndroidInjector
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.onboarding.OnboardingManager
+import teamcityapp.libraries.remote.RemoteService
 
 @UserScope
 @Component(

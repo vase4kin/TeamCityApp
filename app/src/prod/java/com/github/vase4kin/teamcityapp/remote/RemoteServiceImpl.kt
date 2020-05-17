@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ package com.github.vase4kin.teamcityapp.remote
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import io.fabric.sdk.android.Fabric
+import teamcityapp.libraries.remote.RemoteService
 
 private const val CACHE = 43200L
 
-class RemoteServiceImpl(private val remoteConfig: FirebaseRemoteConfig) : RemoteService {
+class RemoteServiceImpl(
+    private val remoteConfig: FirebaseRemoteConfig
+) : RemoteService {
 
     init {
         fetch()

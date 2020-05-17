@@ -29,9 +29,9 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationAdapter
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationView
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl
-import com.github.vase4kin.teamcityapp.remote.RemoteService
 import dagger.Module
 import dagger.Provides
+import teamcityapp.libraries.remote.RemoteService
 
 @Module
 class NavigationModule {
