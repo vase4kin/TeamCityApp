@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView
-import com.github.vase4kin.teamcityapp.remote.RemoteService
+import teamcityapp.libraries.remote.RemoteService
 import javax.inject.Inject
 
 private const val UNAUTHORIZED_STATUS_CODE = 401

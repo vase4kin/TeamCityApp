@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,6 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildTypes
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.navigation.api.Project
 import com.github.vase4kin.teamcityapp.navigation.api.Projects
-import com.github.vase4kin.teamcityapp.remote.RemoteService
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.`is`
@@ -64,6 +63,7 @@ import org.mockito.Matchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.libraries.remote.RemoteService
 
 /**
  * Tests for [HomeActivity]
