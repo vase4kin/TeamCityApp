@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
@@ -24,7 +25,6 @@ import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
 import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl
-import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl
@@ -33,9 +33,6 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.Provides
 
-/**
- * Build log module with testing support
- */
 @Module
 object BuildLogModule {
 
@@ -54,26 +51,10 @@ object BuildLogModule {
         return BuildLogValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
-    /**
-     * Provides fake html to make build log testable
-     */
-    @JvmStatic
-    @Provides
-    fun providesUrlProvider(
-        buildLogValueExtractor: BuildLogValueExtractor,
-        sharedUserStorage: SharedUserStorage
-    ): BuildLogUrlProvider {
-        return object : BuildLogUrlProvider {
-            override fun provideUrl(): String {
-                return "file:///android_asset/fake_build_log.html"
-            }
-        }
-    }
-
     @JvmStatic
     @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
-        return BuildLogRouterImpl(fragment.requireActivity())
+        return BuildLogRouterImpl(fragment.activity as Activity)
     }
 
     @JvmStatic

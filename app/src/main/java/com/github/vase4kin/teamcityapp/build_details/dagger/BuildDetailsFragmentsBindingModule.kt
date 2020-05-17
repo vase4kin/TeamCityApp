@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.changes.dagger.ChangesFragmentScope
 import com.github.vase4kin.teamcityapp.changes.dagger.ChangesModule
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
+import com.github.vase4kin.teamcityapp.dagger.modules.buildlog.BuildLogUrlProviderModule
 import com.github.vase4kin.teamcityapp.dagger.modules.properties.PropertiesRouterModule
 import com.github.vase4kin.teamcityapp.overview.dagger.OverviewFragmentScope
 import com.github.vase4kin.teamcityapp.overview.dagger.OverviewModule
@@ -58,7 +59,7 @@ abstract class BuildDetailsFragmentsBindingModule {
     abstract fun testOccurrencesFragment(): TestOccurrencesFragment
 
     @BuildLogFragmentScope
-    @ContributesAndroidInjector(modules = [BuildLogModule::class])
+    @ContributesAndroidInjector(modules = [BuildLogModule::class, BuildLogUrlProviderModule::class])
     abstract fun buildLogFragment(): BuildLogFragment
 
     @PropertiesFragmentScope
