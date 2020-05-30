@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.home.router
 
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
+
 /**
  * Router to manage [com.github.vase4kin.teamcityapp.home.view.HomeActivity] navigation
  */
@@ -27,5 +30,22 @@ interface HomeRouter {
          * TC root projects id
          */
         const val ROOT_PROJECTS_ID = "_Root"
+    }
+
+    /**
+     * Open drawer bottom sheet
+     */
+    fun openDrawer()
+}
+
+private const val TAG_DRAWER_BOTTOM_SHEET = "Tag drawer bottom sheet"
+
+class HomeRouterImpl(
+    private val activity: HomeActivity
+) : HomeRouter {
+
+    override fun openDrawer() {
+        DrawerBottomSheetDialogFragment.createInstance()
+            .show(activity.supportFragmentManager, TAG_DRAWER_BOTTOM_SHEET)
     }
 }

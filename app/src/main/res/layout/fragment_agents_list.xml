@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <!--
   ~ Copyright 2020 Andrey Tolpeev
   ~
@@ -17,11 +19,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
+    android:id="@+id/fragment_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    tools:context=".buildlist.view.BuildListActivity">
+    android:animateLayoutChanges="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolbar_container"
@@ -39,8 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:textColor="?attr/colorOnPrimarySurface"
-                android:text="@string/favorites_drawer_item" />
+                android:text="@string/drawer_item_agents"
+                android:textColor="?attr/colorOnPrimarySurface" />
 
         </com.google.android.material.appbar.MaterialToolbar>
 
@@ -49,16 +50,22 @@
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swiperefresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/my_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/item_navigation_list" />
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_agent_list" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <include
+        layout="@layout/layout_empty"
+        tools:visibility="gone" />
+
+    <include layout="@layout/layout_error_view" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/skeleton_view"
@@ -67,14 +74,10 @@
         android:visibility="gone"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/layout_skeleton_build_list" />
+        <include
+            android:id="@+id/skeleton_view_items"
+            layout="@layout/layout_skeleton_navigation_list" />
 
     </androidx.core.widget.NestedScrollView>
-
-    <include
-        layout="@layout/layout_empty"
-        tools:visibility="gone" />
-
-    <include layout="@layout/layout_error_view" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

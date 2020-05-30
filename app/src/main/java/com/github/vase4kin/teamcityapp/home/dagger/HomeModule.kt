@@ -30,6 +30,8 @@ import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
+import com.github.vase4kin.teamcityapp.home.router.HomeRouter
+import com.github.vase4kin.teamcityapp.home.router.HomeRouterImpl
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTrackerImpl
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
@@ -45,13 +47,15 @@ import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
 @Module
-class HomeModule {
+object HomeModule {
 
+    @JvmStatic
     @Provides
     fun providesRootDrawerView(activity: HomeActivity): HomeView {
         return HomeViewImpl(activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesRootDataManager(
         repository: Repository,
@@ -62,14 +66,17 @@ class HomeModule {
         return HomeDataManagerImpl(repository, sharedUserStorage, cacheManager, eventBus)
     }
 
+    @JvmStatic
     @Provides
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {
         return HomeTrackerImpl(firebaseAnalytics)
     }
 
+    @JvmStatic
     @Provides
     fun providesFragmentFactory(): FragmentFactory = FragmentFactoryImpl()
 
+    @JvmStatic
     @HomeActivityScope
     @Provides
     fun providesAppNavigationInteractor(
@@ -79,6 +86,7 @@ class HomeModule {
         return AppNavigationInteractorImpl(activity.supportFragmentManager, fragmentFactory)
     }
 
+    @JvmStatic
     @Provides
     fun providesBottomNavigationView(
         appNavigationInteractor: AppNavigationInteractor,
@@ -87,6 +95,7 @@ class HomeModule {
         return BottomNavigationViewImpl(appNavigationInteractor, activity)
     }
 
+    @JvmStatic
     @HomeActivityScope
     @Provides
     fun provideFilterProvider(): FilterProvider = FilterProvider()
@@ -96,6 +105,7 @@ class HomeModule {
     fun provideChromeTabs(activity: HomeActivity): ChromeCustomTabs =
         ChromeCustomTabsImpl(activity)
 
+    @JvmStatic
     @Provides
     fun providesBuildLogInteractor(
         activity: HomeActivity,
@@ -110,8 +120,16 @@ class HomeModule {
         )
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
         return BuildLogWebViewClient()
+    }
+
+    @JvmStatic
+    @HomeActivityScope
+    @Provides
+    fun provideHomeRouter(activity: HomeActivity): HomeRouter {
+        return HomeRouterImpl(activity)
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.favorites.presenter.FavoritesPresenterImpl
+import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import dagger.android.support.AndroidSupportInjection
+import teamcityapp.libraries.utils.initDrawer
 import javax.inject.Inject
 
 /**
@@ -48,7 +50,10 @@ import javax.inject.Inject
 class FavoritesFragment : Fragment() {
 
     @Inject
-    internal lateinit var presenter: FavoritesPresenterImpl
+    lateinit var presenter: FavoritesPresenterImpl
+
+    @Inject
+    lateinit var homeRouter: HomeRouter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_favorites, container, false)
@@ -58,6 +63,9 @@ class FavoritesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         AndroidSupportInjection.inject(this)
         presenter.onViewsCreated()
+        view.initDrawer {
+            homeRouter.openDrawer()
+        }
     }
 
     override fun onDestroyView() {

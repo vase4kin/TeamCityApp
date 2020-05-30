@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.home.presenter
 
 import android.os.Bundle
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.app_navigation.ARG_SELECTED_TAB
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
@@ -54,12 +53,9 @@ class HomePresenterImpl @Inject constructor(
         start(savedInstanceState)
         view.initViews(this)
         // Set title for Projects tab if nothing is saved
-        if (savedInstanceState == null) {
-            bottomNavigationView.setTitle(R.string.projects_drawer_item)
-        } else {
+        if (savedInstanceState != null) {
             val selectedTab = savedInstanceState.getInt(ARG_SELECTED_TAB)
             AppNavigationItem.values().getOrNull(selectedTab)?.let {
-                bottomNavigationView.setTitle(it.title)
                 onTabSelected(it.ordinal)
             }
         }
@@ -137,13 +133,10 @@ class HomePresenterImpl @Inject constructor(
      * {@inheritDoc}
      */
     override fun onTabSelected(position: Int, wasSelected: Boolean) {
-        bottomNavigationView.expandToolBar()
         trackTabSelection(position)
         if (wasSelected) {
             return
         }
-        val titleRes = AppNavigationItem.values()[position].title
-        bottomNavigationView.setTitle(titleRes)
         onTabSelected(position)
         loadNotificationsCount()
         view.dimissSnackbar()
@@ -394,12 +387,5 @@ class HomePresenterImpl @Inject constructor(
             dataManager.postAgentsFilterChangedEvent()
             view.showAgentsFilterAppliedSnackBar()
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun onDrawerClick() {
-        view.showDrawer()
     }
 }

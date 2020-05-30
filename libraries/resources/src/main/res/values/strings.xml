@@ -43,4 +43,7 @@
     <string name="value_dark_theme" translatable="false">Dark</string>
     <string name="value_auto_battery" translatable="false">Auto-battery</string>
     <string name="value_follow_system" translatable="false">System</string>
+
+    <!--Drawer-->
+    <string name="content_navigation_content_description">Navigation drawer</string>
 </resources>
