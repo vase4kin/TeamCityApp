@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,10 +65,10 @@ task generateCodeCoverageReport(type: JacocoReport) {
                            'coverage.ec'])
     }
 
-    sourceDirectories = files([javaSrc, kotlinSrc])
-    classDirectories = files([javaClasses, kotlinClasses])
+    getSourceDirectories().setFrom(files([javaSrc, kotlinSrc]))
+    getClassDirectories().setFrom(files([javaClasses, kotlinClasses]))
 
-    executionData = files(execution)
+    getExecutionData().setFrom(files(execution))
 
     doLast() {
         print "file://${reports.html.destination}/index.html"
