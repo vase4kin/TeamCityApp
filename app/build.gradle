@@ -28,7 +28,6 @@ apply plugin: 'org.jmailen.kotlinter'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
 apply from: '../scripts/jacoco.gradle'
 apply from: '../scripts/pmd.gradle'
-apply from: '../scripts/findbugs.gradle'
 
 android {
     defaultConfig {

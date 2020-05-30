@@ -158,7 +158,7 @@ object Libs {
     }
 
     object Tools {
-        const val gradleAndroid = "com.android.tools.build:gradle:3.6.1"
+        const val gradleAndroid = "com.android.tools.build:gradle:4.0.0"
         const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.21.0"
         const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
         const val googleServices = "com.google.gms:google-services:4.3.0"

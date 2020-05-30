@@ -86,8 +86,6 @@
 
     <style name="Header">
         <item name="android:id">@id/section_text</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/dp_48</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingLeft">@dimen/dp_16</item>
         <item name="android:paddingRight">@dimen/dp_16</item>
