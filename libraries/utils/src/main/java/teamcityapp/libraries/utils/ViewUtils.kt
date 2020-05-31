@@ -18,6 +18,7 @@ package teamcityapp.libraries.utils
 
 import android.content.Context
 import android.util.TypedValue
+import android.view.View
 import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
@@ -38,3 +39,14 @@ fun AppCompatActivity.initToolbar() {
 @ColorInt
 fun Context.getThemeColor(@AttrRes attribute: Int) =
     TypedValue().let { theme.resolveAttribute(attribute, it, true); it.data }
+
+fun View.initDrawer(onDrawerClick: () -> Unit) {
+    val toolBar: Toolbar? = findViewById(R.id.toolbar)
+    if (toolBar != null) {
+        toolBar.setNavigationContentDescription(R.string.content_navigation_content_description)
+        toolBar.setNavigationOnClickListener {
+            onDrawerClick()
+        }
+        toolBar.setNavigationIcon(R.drawable.ic_dehaze_black_24dp)
+    }
+}

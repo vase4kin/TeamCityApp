@@ -29,13 +29,11 @@ import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBot
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.utils.getThemeColor
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
 
 private const val TAG_BOTTOM_SHEET = "Tag filter bottom sheet"
-private const val TAG_DRAWER_BOTTOM_SHEET = "Tag drawer bottom sheet"
 private const val TIME_PROMPT_DELAY = 500
 
 /**
@@ -56,16 +54,6 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
         this.listener = listener
         snackBarParentView = activity.findViewById(android.R.id.content)
         fab = activity.findViewById(R.id.home_floating_action_button)
-        toolbar = activity.findViewById(R.id.toolbar)
-        activity.setSupportActionBar(toolbar)
-        val actionBar = activity.supportActionBar
-        actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBar?.setDisplayShowHomeEnabled(true)
-        toolbar.setNavigationContentDescription(R.string.content_navigation_content_description)
-        toolbar.setNavigationOnClickListener {
-            listener?.onDrawerClick()
-        }
-        toolbar.setNavigationIcon(R.drawable.ic_dehaze_black_24dp)
     }
 
     /**
@@ -232,13 +220,5 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
         return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
             activity.getThemeColor(R.attr.colorPrimarySurface), elevation
         )
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    override fun showDrawer() {
-        DrawerBottomSheetDialogFragment.createInstance()
-            .show(activity.supportFragmentManager, TAG_DRAWER_BOTTOM_SHEET)
     }
 }

@@ -18,14 +18,11 @@ package com.github.vase4kin.teamcityapp.app_navigation
 
 import android.os.Bundle
 import android.os.Handler
-import android.widget.TextView
-import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import teamcityapp.libraries.utils.getThemeColor
@@ -41,9 +38,7 @@ interface BottomNavigationView {
     fun showFavoritesFab()
     fun showFilterFab()
     fun hideFab()
-    fun setTitle(@StringRes title: Int)
     fun updateNotifications(tabPosition: Int, count: Int)
-    fun expandToolBar()
     fun selectTab(tabPosition: Int)
 
     interface ViewListener {
@@ -143,16 +138,8 @@ class BottomNavigationViewImpl(
 
     override fun hideFab() = fab.hide()
 
-    override fun setTitle(title: Int) {
-        activity.findViewById<TextView>(R.id.toolbar_title).text = activity.getString(title)
-    }
-
     override fun updateNotifications(tabPosition: Int, count: Int) {
         bottomNavigation.setNotification(count.toString(), tabPosition)
-    }
-
-    override fun expandToolBar() {
-        activity.findViewById<AppBarLayout>(R.id.toolbar_container).setExpanded(true, true)
     }
 
     override fun selectTab(tabPosition: Int) {
