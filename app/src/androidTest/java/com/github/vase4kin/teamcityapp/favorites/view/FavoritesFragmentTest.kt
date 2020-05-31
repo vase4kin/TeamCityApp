@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ class FavoritesFragmentTest {
         clickOnFavoritesTab()
 
         // Checking toolbar title
-        matchHomeToolbarTitle("Favorites")
+        matchHomeToolbarTitle(R.id.home_favorites_toolbar_title, R.string.favorites_drawer_item)
     }
 
     @Test
@@ -164,7 +164,7 @@ class FavoritesFragmentTest {
         onView(withText(R.string.text_info_add_action)).perform(click())
 
         // Checking toolbar title
-        matchHomeToolbarTitle("Projects")
+        matchHomeToolbarTitle(R.id.home_projects_toolbar_title, R.string.projects_drawer_item)
     }
 
     @Test
@@ -189,12 +189,17 @@ class FavoritesFragmentTest {
         onView(withText(R.string.text_view_favorites)).perform(click())
 
         // Checking toolbar title
-        matchHomeToolbarTitle("Favorites")
+        matchHomeToolbarTitle(R.id.home_favorites_toolbar_title, R.string.favorites_drawer_item)
 
         // List has item with header
         onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2))
         // Checking header 1
-        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
+        onView(
+            withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(
+                0,
+                R.id.section_text
+            )
+        )
             .check(matches(withText("Secret project")))
         // Checking adapter item 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.title))
@@ -219,7 +224,12 @@ class FavoritesFragmentTest {
         // List has item with header
         onView(withId(R.id.favorites_recycler_view)).check(hasItemsCount(2))
         // Checking header 1
-        onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(0, R.id.section_text))
+        onView(
+            withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(
+                0,
+                R.id.section_text
+            )
+        )
             .check(matches(withText("Secret project")))
         // Checking adapter item 1
         onView(withRecyclerView(R.id.favorites_recycler_view).atPositionOnView(1, R.id.title))

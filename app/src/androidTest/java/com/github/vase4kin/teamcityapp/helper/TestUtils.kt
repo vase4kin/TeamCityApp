@@ -28,7 +28,6 @@ import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import org.hamcrest.Matcher
 import org.hamcrest.core.Is.`is`
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl
@@ -143,9 +142,9 @@ class TestUtils {
         }
 
         @JvmStatic
-        fun matchHomeToolbarTitle(title: String) {
-            onView(withId(R.id.toolbar_title))
-                .check(matches(withText(title)))
+        fun matchHomeToolbarTitle(viewId: Int, titleStringId: Int) {
+            onView(withId(viewId))
+                .check(matches(withText(titleStringId)))
         }
     }
 }

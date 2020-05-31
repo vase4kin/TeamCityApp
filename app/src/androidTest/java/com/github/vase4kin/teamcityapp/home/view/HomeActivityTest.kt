@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,10 @@ class HomeActivityTest {
         activityRule.launchActivity(null)
 
         // Checking toolbar title
-        TestUtils.matchHomeToolbarTitle("Projects")
+        TestUtils.matchHomeToolbarTitle(
+            R.id.home_projects_toolbar_title,
+            R.string.projects_drawer_item
+        )
 
         // Checking projects data
         onView(withId(R.id.navigation_recycler_view)).check(TestUtils.hasItemsCount(2))

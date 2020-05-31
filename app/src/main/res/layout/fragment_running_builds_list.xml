@@ -33,7 +33,7 @@
             android:layout_height="?attr/actionBarSize">
 
             <TextView
-                android:id="@+id/toolbar_title"
+                android:id="@+id/home_running_builds_toolbar_title"
                 style="?attr/textAppearanceHeadline6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

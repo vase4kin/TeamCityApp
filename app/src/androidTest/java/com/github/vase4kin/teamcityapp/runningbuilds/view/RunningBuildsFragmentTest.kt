@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,10 @@ class RunningBuildsFragmentTest {
         clickOnRunningbuildsTab()
 
         // Checking toolbar title
-        matchHomeToolbarTitle("Running builds")
+        matchHomeToolbarTitle(
+            R.id.home_running_builds_toolbar_title,
+            R.string.running_builds_drawer_item
+        )
     }
 
     @Ignore
@@ -164,7 +167,12 @@ class RunningBuildsFragmentTest {
         // Checking header
         onView(withId(R.id.section_text)).check(matches(withText("project name - build type name")))
         // Checking adapter item
-        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.itemTitle)).check(
+        onView(
+            withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(
+                1,
+                R.id.itemTitle
+            )
+        ).check(
             matches(
                 withText("Running tests")
             )
@@ -175,7 +183,12 @@ class RunningBuildsFragmentTest {
                 R.id.itemSubTitle
             )
         ).check(matches(withText("refs/heads/master")))
-        onView(withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(1, R.id.buildNumber)).check(
+        onView(
+            withRecyclerView(R.id.running_builds_recycler_view).atPositionOnView(
+                1,
+                R.id.buildNumber
+            )
+        ).check(
             matches(
                 withText("#2458")
             )
@@ -201,8 +214,14 @@ class RunningBuildsFragmentTest {
                 hasComponent(BuildListActivity::class.java.name),
                 hasExtras(
                     allOf(
-                        hasEntry(equalTo(BundleExtractorValues.BUILD_LIST_FILTER), equalTo<Any>(null)),
-                        hasEntry(equalTo(BundleExtractorValues.ID), equalTo("Checkstyle_IdeaInspectionsPullRequest")),
+                        hasEntry(
+                            equalTo(BundleExtractorValues.BUILD_LIST_FILTER),
+                            equalTo<Any>(null)
+                        ),
+                        hasEntry(
+                            equalTo(BundleExtractorValues.ID),
+                            equalTo("Checkstyle_IdeaInspectionsPullRequest")
+                        ),
                         hasEntry(equalTo(BundleExtractorValues.NAME), equalTo("build type name"))
                     )
                 )

@@ -170,8 +170,8 @@ class AgentListFragmentTest {
         // Click on build queue tab
         clickOnAgentsTab()
 
-        val toolbarTitle = context.getString(R.string.drawer_item_agents)
-        matchHomeToolbarTitle(toolbarTitle)
+        // Check toolbar
+        matchHomeToolbarTitle(R.id.home_agents_toolbar_title, R.string.drawer_item_agents)
     }
 
     @Test
