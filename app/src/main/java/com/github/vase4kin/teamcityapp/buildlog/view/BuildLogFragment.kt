@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -42,13 +43,12 @@ class BuildLogFragment : DaggerFragment() {
         return inflater.inflate(R.layout.fragment_build_log, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         lifecycle.addObserver(viewModel)
     }
 
     companion object {
-
         fun newInstance(buildId: String): BuildLogFragment {
             val fragment = BuildLogFragment()
             val args = Bundle()

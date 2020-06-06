@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,21 +32,29 @@ import tr.xip.errorview.ErrorView
 /**
  * Impl of [BuildLogView]
  */
-class BuildLogViewImpl(private val view: View, private val client: BuildLogWebViewClient) :
-    BuildLogView, OnBuildLogViewListener {
+class BuildLogViewImpl(
+    private val view: View,
+    private val client: BuildLogWebViewClient
+) : BuildLogView, OnBuildLogViewListener {
 
     @BindView(R.id.progress_wheel)
     lateinit var progressWheel: ProgressBar
+
     @BindView(R.id.error_view)
     lateinit var errorView: ErrorView
+
     @BindView(R.id.web_view)
     lateinit var webView: WebView
+
     @BindView(R.id.auth_view)
     lateinit var authView: View
+
     @BindView(R.id.warning_build_log_view)
     lateinit var warningView: View
+
     @BindView(R.id.auth_button)
     lateinit var authButton: Button
+
     @BindView(R.id.view_build_log_button)
     lateinit var openBuildLogInBrowserButton: Button
 
