@@ -46,4 +46,7 @@
 
     <!--Drawer-->
     <string name="content_navigation_content_description">Navigation drawer</string>
+
+    <!--About/Drawer-->
+    <string name="about_app_text_privacy">Privacy policy</string>
 </resources>

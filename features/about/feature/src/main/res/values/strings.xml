@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright 2019 Andrey Tolpeev
+  ~ Copyright 2020 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@
     <string name="about_app_text_server_url">Server url</string>
     <string name="about_app_url_web">https://teamcity.app</string>
     <string name="about_app_text_email">Email</string>
-    <string name="about_app_text_privacy">Privacy policy</string>
     <string name="about_app_email">contact@teamcity.app</string>
     <string name="about_app_email_title">Questions about TeamCityApp</string>
     <string name="about_version">Version</string>
