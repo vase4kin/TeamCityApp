@@ -52,6 +52,7 @@ object BuildLogModule {
     }
 
     @JvmStatic
+    @BuildLogFragmentScope
     @Provides
     fun provideViewModel(
         fragment: BuildLogFragment,

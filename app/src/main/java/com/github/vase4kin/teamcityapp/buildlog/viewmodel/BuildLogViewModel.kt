@@ -42,11 +42,11 @@ class BuildLogViewModel(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-        initWebView()
         if (interactor.isSslDisabled) {
             sslWarningVisibility.set(View.VISIBLE)
             return
         }
+        initWebView()
         if (!interactor.isAuthDialogShown && !interactor.isGuestUser) {
             authViewVisibility.set(View.VISIBLE)
         } else {
@@ -64,7 +64,6 @@ class BuildLogViewModel(
     }
 
     private fun loadBuildLog() {
-        progressVisibility.set(View.VISIBLE)
         loadUrl(buildLogUrlProvider.provideUrl())
     }
 

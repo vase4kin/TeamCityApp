@@ -25,6 +25,7 @@ import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.observe
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel
@@ -60,8 +61,12 @@ class BuildLogFragment : DaggerFragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        lifecycle.addObserver(viewModel)
-        lifecycle.addObserver(webClient)
+        viewLifecycleOwnerLiveData.observe(this) { viewLifecycleOwner ->
+            viewLifecycleOwner.lifecycle.run {
+                addObserver(viewModel)
+                addObserver(webClient)
+            }
+        }
     }
 
     @SuppressLint("SetJavaScriptEnabled")

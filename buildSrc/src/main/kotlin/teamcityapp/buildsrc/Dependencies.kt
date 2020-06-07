@@ -61,9 +61,12 @@ object Libs {
         const val preference = "androidx.preference:preference:1.1.0"
 
         object LifeCycle {
-            private const val version = "2.2.0-rc02"
+            private const val version = "2.2.0"
             const val lifeCycle = "androidx.lifecycle:lifecycle-runtime:$version"
             const val lifeCycleCompiler = "androidx.lifecycle:lifecycle-compiler:$version"
+            const val lifeCycleLiveData = "androidx.lifecycle:lifecycle-livedata-ktx:$version"
+            const val lifeCycleViewModel = "androidx.lifecycle:lifecycle-viewmodel-ktx:$version"
+            const val lifeCycleCommonJava8 = "androidx.lifecycle:lifecycle-common-java8:$version"
         }
 
         object Test {
