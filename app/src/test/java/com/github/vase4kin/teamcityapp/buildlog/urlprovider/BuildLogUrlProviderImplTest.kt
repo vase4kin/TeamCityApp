@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider
 
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.Is.`is`
 import org.junit.Assert.assertThat
@@ -32,15 +32,17 @@ import teamcityapp.libraries.storage.models.UserAccount
 class BuildLogUrlProviderImplTest {
 
     @Mock
-    private lateinit var valueExtractor: BuildLogValueExtractor
-    @Mock
     private lateinit var userAccount: UserAccount
+
+    @Mock
+    private lateinit var buildLogInteractor: BuildLogInteractor
     private lateinit var buildLogUrlProvider: BuildLogUrlProviderImpl
 
     @Before
     fun setUp() {
-        buildLogUrlProvider = BuildLogUrlProviderImpl(valueExtractor, userAccount)
-        `when`(valueExtractor.buildId).thenReturn("1234")
+        buildLogUrlProvider = BuildLogUrlProviderImpl(buildLogInteractor)
+        `when`(buildLogInteractor.buildId).thenReturn("1234")
+        `when`(buildLogInteractor.activeUser).thenReturn(userAccount)
         `when`(userAccount.teamcityUrl).thenReturn("http://fake-url.com")
     }
 
