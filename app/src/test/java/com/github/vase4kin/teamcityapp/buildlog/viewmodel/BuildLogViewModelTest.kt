@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.presenter
+package com.github.vase4kin.teamcityapp.buildlog.viewmodel
 
+import android.view.View
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
 import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -36,10 +37,13 @@ class BuildLogViewModelTest {
 
     @Mock
     private lateinit var view: BuildLogView
+
     @Mock
     private lateinit var buildLogUrlProvider: BuildLogUrlProvider
+
     @Mock
     private lateinit var interactor: BuildLogInteractor
+
     @Mock
     private lateinit var router: BuildLogRouter
     private lateinit var presenter: BuildLogViewModel
@@ -73,7 +77,7 @@ class BuildLogViewModelTest {
         presenter.onCreate()
         verify(view).initViews(eq(presenter))
         verify(interactor).isSslDisabled
-        verify(view).showSslWarningView()
+        Assert.assertEquals(View.VISIBLE, presenter.sslWarningVisibility.get())
     }
 
     @Test
@@ -100,7 +104,7 @@ class BuildLogViewModelTest {
         verify(interactor).isSslDisabled
         verify(interactor).isGuestUser
         verify(interactor).isAuthDialogShown
-        verify(view).showAuthView()
+        Assert.assertEquals(View.VISIBLE, presenter.authViewVisibility.get())
     }
 
     @Test
@@ -127,7 +131,7 @@ class BuildLogViewModelTest {
     @Test
     fun testOnAuthButtonClick() {
         presenter.onAuthButtonClick()
-        verify(view).hideAuthView()
+        Assert.assertEquals(View.GONE, presenter.authViewVisibility.get())
         verify(interactor).setAuthDialogStatus(eq(true))
         verify(buildLogUrlProvider).provideUrl()
         verify(view).loadBuildLog(eq("http://fake-teamcity-url"))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,17 @@ package com.github.vase4kin.teamcityapp.buildlog.view
 
 import android.graphics.Bitmap
 import android.os.Handler
+import android.os.Looper
+import android.view.View
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel
 
 /**
  * Magic awesome js script to hide things user doesn't need to see
@@ -37,15 +43,16 @@ private const val SCRIPT = "$('topWrapper').style.display='none';\n" +
 /**
  * Build log web client with listener to receive client callbacks
  */
-class BuildLogWebViewClient : WebViewClient() {
+class BuildLogWebViewClient(
+    private val viewModel: BuildLogViewModel,
+    private val evaluateJs: (script: String) -> Unit
+) : WebViewClient(), LifecycleObserver {
 
-    private var listener: OnBuildLogViewListener? = null
+    private val handler = Handler(Looper.getMainLooper())
 
-    /**
-     * {@inheritDoc}
-     */
-    fun setListener(listener: OnBuildLogViewListener?) {
-        this.listener = listener
+    private val runnable: Runnable = Runnable {
+        viewModel.progressVisibility.set(View.GONE)
+        viewModel.webViewVisibility.set(View.VISIBLE)
     }
 
     /**
@@ -60,13 +67,12 @@ class BuildLogWebViewClient : WebViewClient() {
      * {@inheritDoc}
      */
     override fun onPageFinished(view: WebView?, url: String?) {
-        val listener = this.listener ?: return
-        listener.evaluateScript(SCRIPT)
+        evaluateJs(SCRIPT)
 
         // TODO: Make another proper solution for wait for js complete
-        Handler().postDelayed({
-            listener.hideProgressWheel()
-            listener.showWebView()
+        handler.postDelayed({
+            viewModel.progressVisibility.set(View.GONE)
+            viewModel.webViewVisibility.set(View.VISIBLE)
         }, BuildLogTimeouts.TIMEOUT_PAGE_LOADING)
     }
 
@@ -74,10 +80,9 @@ class BuildLogWebViewClient : WebViewClient() {
      * {@inheritDoc}
      */
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-        val listener = this.listener ?: return
-        listener.showProgressWheel()
-        listener.hideWebView()
-        listener.hideError()
+        viewModel.progressVisibility.set(View.VISIBLE)
+        viewModel.webViewVisibility.set(View.GONE)
+        viewModel.errorVisibility.set(View.GONE)
     }
 
     /**
@@ -88,10 +93,9 @@ class BuildLogWebViewClient : WebViewClient() {
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
-        val listener = this.listener ?: return
-        listener.hideProgressWheel()
-        listener.hideWebView()
-        listener.showError()
+        viewModel.progressVisibility.set(View.GONE)
+        viewModel.webViewVisibility.set(View.GONE)
+        viewModel.errorVisibility.set(View.VISIBLE)
     }
 
     /**
@@ -102,9 +106,13 @@ class BuildLogWebViewClient : WebViewClient() {
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
-        val listener = this.listener ?: return
-        listener.hideProgressWheel()
-        listener.hideWebView()
-        listener.showError()
+        viewModel.progressVisibility.set(View.GONE)
+        viewModel.webViewVisibility.set(View.GONE)
+        viewModel.errorVisibility.set(View.VISIBLE)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun removeCallbacks() {
+        handler.removeCallbacks(runnable)
     }
 }

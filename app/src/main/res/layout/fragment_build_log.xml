@@ -14,90 +14,123 @@
   ~ limitations under the License.
   -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/build_log_relative_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".buildlog.view.BuildLogFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <include layout="@layout/layout_progress_wheel" />
+    <data>
 
-    <include layout="@layout/layout_error_view" />
+        <variable
+            name="viewmodel"
+            type="com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel" />
 
-    <WebView
-        android:id="@+id/web_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:visibility="gone" />
+    </data>
 
-    <LinearLayout
-        android:id="@+id/auth_view"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/dp_16"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="gone">
+        tools:context=".buildlog.view.BuildLogFragment">
 
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="@dimen/dp_16"
-            app:srcCompat="@drawable/ic_accessible_black_24px"
-            app:tint="@color/material_on_background_emphasis_medium" />
-
-        <TextView
+        <ProgressBar
+            android:id="@+id/progress_wheel"
+            style="?android:attr/progressBarStyleLarge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_16"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="@{viewmodel.progressVisibility}"
+            tools:visibility="gone" />
+
+        <tr.xip.errorview.ErrorView
+            android:id="@+id/error_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/dp_16"
             android:gravity="center"
-            android:text="@string/text_login_again"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/material_on_background_emphasis_medium" />
+            android:visibility="gone"
+            app:ev_imageTint="@color/material_on_background_emphasis_medium"
+            app:ev_retryColor="@color/material_on_background_emphasis_medium"
+            app:ev_retryText="@string/error_view_retry_button_text"
+            app:ev_subtitle="@string/error_view_error_text"
+            app:ev_subtitleColor="@color/material_on_background_emphasis_medium"
+            app:ev_title="@string/error_view_oops_message"
+            app:ev_titleColor="@color/material_on_background_emphasis_high_type"
+            app:retryListener="@{viewmodel}" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/auth_button"
+        <WebView
+            android:id="@+id/web_view"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_button_login" />
+            android:layout_height="match_parent"
+            android:visibility="@{viewmodel.webViewVisibility}"
+            tools:visibility="gone" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/warning_build_log_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="@dimen/dp_16"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        tools:visibility="visible">
-
-        <ImageView
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="32dp"
-            app:srcCompat="@drawable/ic_warning_black_24dp"
-            app:tint="@color/material_on_background_emphasis_medium" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/dp_16"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/dp_16"
             android:gravity="center"
-            android:text="@string/text_browse_build_log"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="@color/material_on_background_emphasis_high_type" />
+            android:orientation="vertical"
+            android:visibility="@{viewmodel.authViewVisibility}"
+            tools:visibility="gone">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/view_build_log_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_browse_build_log_button" />
+            <ImageView
+                android:layout_width="@dimen/dp_96"
+                android:layout_height="@dimen/dp_96"
+                android:layout_marginBottom="@dimen/dp_16"
+                app:srcCompat="@drawable/ic_accessible_black_24px"
+                app:tint="@color/material_on_background_emphasis_medium" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_16"
+                android:gravity="center"
+                android:text="@string/text_login_again"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/material_on_background_emphasis_medium" />
 
-</FrameLayout>
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewmodel.onAuthButtonClick()}"
+                android:text="@string/text_button_login" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/warning_build_log_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/dp_16"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{viewmodel.sslWarningVisibility}"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="@dimen/dp_96"
+                android:layout_height="@dimen/dp_96"
+                android:layout_marginBottom="@dimen/dp_32"
+                app:srcCompat="@drawable/ic_warning_black_24dp"
+                app:tint="@color/material_on_background_emphasis_medium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/dp_16"
+                android:gravity="center"
+                android:text="@string/text_browse_build_log"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="@color/material_on_background_emphasis_high_type" />
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewmodel.onOpenBuildLogInBrowser()}"
+                android:text="@string/text_browse_build_log_button" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</layout>

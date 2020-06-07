@@ -21,25 +21,16 @@ import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl
+import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
+import com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel
 import dagger.Module
 import dagger.Provides
 import teamcityapp.libraries.storage.Storage
 
 @Module
 object BuildLogModule {
-
-    @JvmStatic
-    @Provides
-    fun providesBuildLogViewModel(
-        fragment: BuildLogFragment,
-        client: BuildLogWebViewClient
-    ): BuildLogView {
-        return BuildLogViewImpl(fragment.view!!, client)
-    }
 
     @JvmStatic
     @Provides
@@ -62,7 +53,27 @@ object BuildLogModule {
 
     @JvmStatic
     @Provides
-    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
-        return BuildLogWebViewClient()
+    fun provideViewModel(
+        fragment: BuildLogFragment,
+        buildLogUrlProvider: BuildLogUrlProvider,
+        interactor: BuildLogInteractor,
+        router: BuildLogRouter
+    ): BuildLogViewModel {
+        return BuildLogViewModel(
+            buildLogUrlProvider = buildLogUrlProvider,
+            interactor = interactor,
+            router = router,
+            initWebView = { fragment.initWebView() },
+            loadUrl = { fragment.loadUrl(it) }
+        )
+    }
+
+    @JvmStatic
+    @Provides
+    fun providesBuildLogWebViewClient(
+        fragment: BuildLogFragment,
+        viewModel: BuildLogViewModel
+    ): BuildLogWebViewClient {
+        return BuildLogWebViewClient(viewModel) { fragment.evaluateJs(it) }
     }
 }

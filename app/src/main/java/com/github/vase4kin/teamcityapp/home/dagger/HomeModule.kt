@@ -25,7 +25,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
@@ -116,12 +115,6 @@ object HomeModule {
             activity,
             activity.intent.extras
         )
-    }
-
-    @JvmStatic
-    @Provides
-    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
-        return BuildLogWebViewClient()
     }
 
     @JvmStatic

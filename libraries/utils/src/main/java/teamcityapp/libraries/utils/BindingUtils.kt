@@ -1,11 +1,11 @@
 /*
- * Copyright 2016 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *        http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,25 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.view
+package teamcityapp.libraries.utils
 
-/**
- * View build log listener
- */
-interface OnBuildLogLoadListener {
+import androidx.databinding.BindingAdapter
+import tr.xip.errorview.ErrorView
 
-    /**
-     * Load build log
-     */
-    fun loadBuildLog()
-
-    /**
-     * On auth button click
-     */
-    fun onAuthButtonClick()
-
-    /**
-     * Open build log in the browser
-     */
-    fun onOpenBuildLogInBrowser()
+@BindingAdapter("retryListener")
+fun setRetryListener(errorView: ErrorView, retryListener: ErrorView.RetryListener) {
+    errorView.setRetryListener(retryListener)
 }
