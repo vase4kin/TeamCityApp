@@ -72,6 +72,7 @@ class BuildLogWebViewClient(
         // TODO: Make another proper solution for wait for js complete
         handler.postDelayed({
             viewModel.progressVisibility.set(View.GONE)
+            viewModel.errorVisibility.set(View.GONE)
             viewModel.webViewVisibility.set(View.VISIBLE)
         }, BuildLogTimeouts.TIMEOUT_PAGE_LOADING)
     }
