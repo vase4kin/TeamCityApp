@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.extractor
+package com.github.vase4kin.teamcityapp.dagger.modules.buildlog
 
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
+import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
+import dagger.Module
+import dagger.Provides
 
-/**
- * Build log bundle value extractor
- */
-interface BuildLogValueExtractor : BaseValueExtractor {
+@Module
+object BuildLogUrlProviderModule {
 
-    /**
-     * @return Build id
-     */
-    val buildId: String
+    @JvmStatic
+    @Provides
+    fun providesUrlProvider(): BuildLogUrlProvider {
+        return object : BuildLogUrlProvider {
+            override fun provideUrl(): String {
+                return "file:///android_asset/fake_build_log.html"
+            }
+        }
+    }
 }

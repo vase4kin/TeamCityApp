@@ -98,6 +98,10 @@ android {
     dataBinding {
         enabled = true
     }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
 }
 
 dependencies {
@@ -144,6 +148,10 @@ dependencies {
     implementation Libs.AndroidX.preference
     implementation Libs.Google.material
     implementation Libs.AndroidX.constraintLayout
+    implementation Libs.AndroidX.LifeCycle.lifeCycle
+    implementation Libs.AndroidX.LifeCycle.lifeCycleLiveData
+    implementation Libs.AndroidX.LifeCycle.lifeCycleViewModel
+    implementation Libs.AndroidX.LifeCycle.lifeCycleCommonJava8
     // Api third party libraries
     implementation Libs.OkHttp.okhttp
     implementation Libs.OkHttp.loggingInterceptor

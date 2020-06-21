@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package com.github.vase4kin.teamcityapp.buildlog.data
+
+import teamcityapp.libraries.storage.models.UserAccount
 
 /**
  * Build log interactor
@@ -42,4 +44,18 @@ interface BuildLogInteractor {
      * @param isShown - status
      */
     fun setAuthDialogStatus(isShown: Boolean)
+
+    /**
+     * @return build log id
+     */
+    val buildId: String
+
+    /**
+     * @return active user account
+     */
+    val activeUser: UserAccount
+
+    companion object {
+        const val BUILD_ID = "buildId"
+    }
 }

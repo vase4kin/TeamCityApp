@@ -133,7 +133,9 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
             .setPromptStateChangeListener { _, _ -> listener.onPromptShown() }
         // Show prompt
         Handler(Looper.getMainLooper()).postDelayed({
-            navigationDrawerPrompt.setTarget(toolbar.getChildAt(1))
+            val top = activity.resources.getDimension(R.dimen.dp_48)
+            val left = activity.resources.getDimension(R.dimen.dp_24)
+            navigationDrawerPrompt.setTarget(left, top)
             navigationDrawerPrompt.show()
         }, TIME_PROMPT_DELAY.toLong())
     }

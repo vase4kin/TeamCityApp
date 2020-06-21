@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -67,6 +68,7 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.core.AllOf
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.Rule
@@ -238,7 +240,14 @@ class OverviewFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking error
-        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
+        onView(
+            AllOf.allOf(
+                withText(R.string.error_view_error_text),
+                ViewMatchers.withParent(isDisplayed())
+            )
+        ).check(
+            matches(isDisplayed())
+        )
     }
 
     @Test

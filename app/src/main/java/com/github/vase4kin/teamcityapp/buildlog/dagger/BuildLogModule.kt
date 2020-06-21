@@ -17,66 +17,64 @@
 package com.github.vase4kin.teamcityapp.buildlog.dagger
 
 import android.app.Activity
-import android.content.Context
-import android.os.Bundle
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractorImpl
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouterImpl
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
-import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProviderImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogViewImpl
 import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel
 import dagger.Module
 import dagger.Provides
+import teamcityapp.libraries.storage.Storage
 
 @Module
-class BuildLogModule {
+object BuildLogModule {
 
-    @Provides
-    fun providesBuildLogViewModel(fragment: BuildLogFragment, client: BuildLogWebViewClient): BuildLogView {
-        return BuildLogViewImpl(fragment.view!!, client)
-    }
-
-    @Provides
-    fun providesBuildLogValueExtractor(fragment: BuildLogFragment): BuildLogValueExtractor {
-        return BuildLogValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
-    }
-
-    @Provides
-    fun providesUrlProvider(
-        buildLogValueExtractor: BuildLogValueExtractor,
-        sharedUserStorage: SharedUserStorage
-    ): BuildLogUrlProvider {
-        return BuildLogUrlProviderImpl(buildLogValueExtractor, sharedUserStorage.activeUser)
-    }
-
+    @JvmStatic
     @Provides
     fun providesBuildLogRouter(fragment: BuildLogFragment): BuildLogRouter {
         return BuildLogRouterImpl(fragment.activity as Activity)
     }
 
+    @JvmStatic
     @Provides
     fun providesBuildLogInteractor(
         fragment: BuildLogFragment,
-        sharedUserStorage: SharedUserStorage
+        storage: Storage
     ): BuildLogInteractor {
         return BuildLogInteractorImpl(
-            sharedUserStorage.activeUser,
-            fragment.requireContext().getSharedPreferences(
-                BuildLogInteractorImpl.PREF_NAME,
-                Context.MODE_PRIVATE
-            )
+            storage,
+            fragment.requireContext(),
+            fragment.arguments
         )
     }
 
+    @JvmStatic
+    @BuildLogFragmentScope
     @Provides
-    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
-        return BuildLogWebViewClient()
+    fun provideViewModel(
+        fragment: BuildLogFragment,
+        buildLogUrlProvider: BuildLogUrlProvider,
+        interactor: BuildLogInteractor,
+        router: BuildLogRouter
+    ): BuildLogViewModel {
+        return BuildLogViewModel(
+            buildLogUrlProvider = buildLogUrlProvider,
+            interactor = interactor,
+            router = router,
+            initWebView = { fragment.initWebView() },
+            loadUrl = { fragment.loadUrl(it) }
+        )
+    }
+
+    @JvmStatic
+    @Provides
+    fun providesBuildLogWebViewClient(
+        fragment: BuildLogFragment,
+        viewModel: BuildLogViewModel
+    ): BuildLogWebViewClient {
+        return BuildLogWebViewClient(viewModel) { fragment.evaluateJs(it) }
     }
 }

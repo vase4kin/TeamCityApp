@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,69 +14,66 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.presenter
+package com.github.vase4kin.teamcityapp.buildlog.viewmodel
 
+import android.view.View
+import androidx.databinding.ObservableInt
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.router.BuildLogRouter
 import com.github.vase4kin.teamcityapp.buildlog.urlprovider.BuildLogUrlProvider
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogView
-import com.github.vase4kin.teamcityapp.buildlog.view.OnBuildLogLoadListener
-import javax.inject.Inject
+import tr.xip.errorview.ErrorView
 
-/**
- * Impl of [BuildLogPresenter]
- */
-class BuildLogPresenterImpl @Inject constructor(
-    private val view: BuildLogView,
+class BuildLogViewModel(
     private val buildLogUrlProvider: BuildLogUrlProvider,
     private val interactor: BuildLogInteractor,
-    private val router: BuildLogRouter
-) : BuildLogPresenter, OnBuildLogLoadListener {
+    private val router: BuildLogRouter,
+    private val loadUrl: (url: String) -> Unit,
+    private val initWebView: () -> Unit
+) : LifecycleObserver, ErrorView.RetryListener {
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onCreateViews() {
-        view.initViews(this)
+    val webViewVisibility = ObservableInt(View.GONE)
+    val progressVisibility = ObservableInt(View.GONE)
+    val errorVisibility = ObservableInt(View.GONE)
+    val sslWarningVisibility = ObservableInt(View.GONE)
+    val authViewVisibility = ObservableInt(View.GONE)
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
+    fun onCreate() {
         if (interactor.isSslDisabled) {
-            view.showSslWarningView()
+            sslWarningVisibility.set(View.VISIBLE)
             return
         }
+        initWebView()
         if (!interactor.isAuthDialogShown && !interactor.isGuestUser) {
-            view.showAuthView()
+            authViewVisibility.set(View.VISIBLE)
         } else {
             loadBuildLog()
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onDestroyViews() {
-        view.unBindViews()
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
         router.unbindCustomsTabs()
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun loadBuildLog() {
-        view.loadBuildLog(buildLogUrlProvider.provideUrl())
+    override fun onRetry() {
+        loadBuildLog()
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onAuthButtonClick() {
-        view.hideAuthView()
+    private fun loadBuildLog() {
+        loadUrl(buildLogUrlProvider.provideUrl())
+    }
+
+    fun onAuthButtonClick() {
+        authViewVisibility.set(View.GONE)
         interactor.setAuthDialogStatus(true)
         loadBuildLog()
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun onOpenBuildLogInBrowser() {
+    fun onOpenBuildLogInBrowser() {
         val url = buildLogUrlProvider.provideUrl()
         router.openUrl(url)
     }

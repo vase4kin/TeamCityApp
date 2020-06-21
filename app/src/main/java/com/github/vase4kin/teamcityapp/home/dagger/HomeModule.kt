@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.home.dagger
 
-import android.content.Context
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
@@ -26,7 +25,6 @@ import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactory
 import com.github.vase4kin.teamcityapp.app_navigation.FragmentFactoryImpl
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogWebViewClient
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
@@ -45,6 +43,7 @@ import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.storage.Storage
 
 @Module
 object HomeModule {
@@ -109,21 +108,13 @@ object HomeModule {
     @Provides
     fun providesBuildLogInteractor(
         activity: HomeActivity,
-        sharedUserStorage: SharedUserStorage
+        storage: Storage
     ): BuildLogInteractor {
         return BuildLogInteractorImpl(
-            sharedUserStorage.activeUser,
-            activity.getSharedPreferences(
-                BuildLogInteractorImpl.PREF_NAME,
-                Context.MODE_PRIVATE
-            )
+            storage,
+            activity,
+            activity.intent.extras
         )
-    }
-
-    @JvmStatic
-    @Provides
-    fun providesBuildLogWebViewClient(): BuildLogWebViewClient {
-        return BuildLogWebViewClient()
     }
 
     @JvmStatic

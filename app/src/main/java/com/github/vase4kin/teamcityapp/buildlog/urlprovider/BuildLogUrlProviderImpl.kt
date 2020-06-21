@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.urlprovider
 
-import com.github.vase4kin.teamcityapp.buildlog.extractor.BuildLogValueExtractor
-import teamcityapp.libraries.storage.models.UserAccount
+import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractor
 
 /**
  * Impl of [BuildLogUrlProvider]
  */
 class BuildLogUrlProviderImpl(
-    private val valueExtractor: BuildLogValueExtractor,
-    private val userAccount: UserAccount
+    private val buildLogInteractor: BuildLogInteractor
 ) : BuildLogUrlProvider {
 
     /**
      * {@inheritDoc}
      */
     override fun provideUrl(): String {
+        val userAccount = buildLogInteractor.activeUser
         val serverUrl = String.format(
             BUILD_URL,
-            userAccount.teamcityUrl, valueExtractor.buildId
+            userAccount.teamcityUrl, buildLogInteractor.buildId
         )
         return if (userAccount.isGuestUser)
             "$serverUrl&guest=1"
@@ -42,7 +41,6 @@ class BuildLogUrlProviderImpl(
     }
 
     companion object {
-
         private const val BUILD_URL = "%s/viewLog.html?buildId=%s&tab=buildLog"
     }
 }

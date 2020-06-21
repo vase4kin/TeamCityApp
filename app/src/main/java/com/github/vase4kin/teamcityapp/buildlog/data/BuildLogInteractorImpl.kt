@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,31 @@
 
 package com.github.vase4kin.teamcityapp.buildlog.data
 
-import android.content.SharedPreferences
+import android.content.Context
+import android.os.Bundle
+import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 
 /**
  * Impl of [BuildLogInteractor]
  */
 class BuildLogInteractorImpl(
-    private val userAccount: UserAccount,
-    private val sharedPreferences: SharedPreferences
+    storage: Storage,
+    context: Context,
+    private val arguments: Bundle?
 ) : BuildLogInteractor {
+
+    private val activeUserAccount = storage.activeUser
+    private val sharedPreferences = context.getSharedPreferences(
+        PREF_NAME,
+        Context.MODE_PRIVATE
+    )
 
     /**
      * {@inheritDoc}
      */
     override val isGuestUser: Boolean
-        get() = userAccount.isGuestUser
+        get() = activeUser.isGuestUser
 
     /**
      * {@inheritDoc}
@@ -43,7 +52,7 @@ class BuildLogInteractorImpl(
      * {@inheritDoc}
      */
     override val isSslDisabled: Boolean
-        get() = userAccount.isSslDisabled
+        get() = activeUserAccount.isSslDisabled
 
     /**
      * {@inheritDoc}
@@ -52,8 +61,17 @@ class BuildLogInteractorImpl(
         sharedPreferences.edit().putBoolean(KEY, isShown).apply()
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    override val buildId: String
+        get() = arguments?.getString(BuildLogInteractor.BUILD_ID) ?: ""
+
+    override val activeUser: UserAccount
+        get() = activeUserAccount
+
     companion object {
-        const val PREF_NAME = "BuildLogPrefs"
+        private const val PREF_NAME = "BuildLogPrefs"
         private const val KEY = "BuildLogDialogShown"
     }
 }

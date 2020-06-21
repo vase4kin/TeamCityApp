@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.buildlog.extractor
+package teamcityapp.libraries.utils
 
-import android.os.Bundle
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl
+import androidx.databinding.BindingAdapter
+import tr.xip.errorview.ErrorView
 
-/**
- * Impl of [BuildLogValueExtractor]
- */
-class BuildLogValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle), BuildLogValueExtractor {
-
-    /**
-     * {@inheritDoc}
-     */
-    override val buildId: String
-        get() = bundle.getString(BundleExtractorValues.BUILD_ID) ?: ""
+@BindingAdapter("retryListener")
+fun setRetryListener(errorView: ErrorView, retryListener: ErrorView.RetryListener) {
+    errorView.setRetryListener(retryListener)
 }
