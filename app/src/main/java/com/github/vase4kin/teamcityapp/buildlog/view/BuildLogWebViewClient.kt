@@ -52,6 +52,7 @@ class BuildLogWebViewClient(
 
     private val runnable: Runnable = Runnable {
         viewModel.progressVisibility.set(View.GONE)
+        viewModel.errorVisibility.set(View.GONE)
         viewModel.webViewVisibility.set(View.VISIBLE)
     }
 
@@ -70,11 +71,7 @@ class BuildLogWebViewClient(
         evaluateJs(SCRIPT)
 
         // TODO: Make another proper solution for wait for js complete
-        handler.postDelayed({
-            viewModel.progressVisibility.set(View.GONE)
-            viewModel.errorVisibility.set(View.GONE)
-            viewModel.webViewVisibility.set(View.VISIBLE)
-        }, BuildLogTimeouts.TIMEOUT_PAGE_LOADING)
+        handler.postDelayed(runnable, BuildLogTimeouts.TIMEOUT_PAGE_LOADING)
     }
 
     /**
