@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasType
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withParent
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
@@ -259,7 +260,14 @@ class ArtifactListFragmentTest {
             .perform(click())
 
         // Checking error
-        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
+        onView(
+            allOf(
+                withText(R.string.error_view_error_text),
+                withParent(isDisplayed())
+            )
+        ).check(
+            matches(isDisplayed())
+        )
     }
 
     @Test

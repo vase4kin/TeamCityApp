@@ -21,6 +21,7 @@ import android.os.Bundle
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -46,6 +47,7 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
+import org.hamcrest.core.AllOf
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -244,7 +246,14 @@ class ChangesFragmentTest {
             .perform(click())
 
         // Checking error
-        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
+        onView(
+            AllOf.allOf(
+                withText(R.string.error_view_error_text),
+                ViewMatchers.withParent(isDisplayed())
+            )
+        ).check(
+            matches(isDisplayed())
+        )
     }
 
     @Test
