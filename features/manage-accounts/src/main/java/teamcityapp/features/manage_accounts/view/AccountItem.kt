@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,7 @@ class AccountItem(
             if (userAccount.isSslDisabled) {
                 image.setImageResource(R.drawable.ic_account_alert)
                 sslDisabled.visibility = View.VISIBLE
-                sslDisabled.setOnClickListener {
-                    showSslDisabledInfoDialog()
-                }
+                sslDisabled.setOnClickListener { showSslDisabledInfoDialog() }
             } else {
                 image.setImageResource(R.drawable.ic_account)
                 sslDisabled.visibility = View.GONE

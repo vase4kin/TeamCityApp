@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,10 +42,9 @@ class ManageAccountsActivity : DaggerAppCompatActivity() {
             this,
             R.layout.activity_manage_accounts
         ).apply {
-            val injectedViewModel = viewModel
-            viewmodel = injectedViewModel
-            lifecycle.addObserver(injectedViewModel)
+            viewmodel = this@ManageAccountsActivity.viewModel
         }
+        lifecycle.addObserver(viewModel)
         initToolbar()
     }
 

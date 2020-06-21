@@ -24,6 +24,8 @@ import dagger.Provides
 import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
 import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
 import teamcityapp.features.manage_accounts.tracker.ManageAccountsTrackerImpl
+import teamcityapp.features.manage_accounts.view.AccountItemFactory
+import teamcityapp.features.manage_accounts.view.AccountItemFactoryImpl
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
 import teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel
 import teamcityapp.libraries.cache_manager.CacheManager
@@ -43,24 +45,19 @@ object ManageAccountsModule {
     @JvmStatic
     @Provides
     fun providesViewModel(
-        activity: ManageAccountsActivity,
         storage: Storage,
         router: ManageAccountsRouter,
         tracker: ManageAccountsTracker,
         cacheManager: CacheManager,
-        adapter: GroupAdapter<GroupieViewHolder>
+        adapter: GroupAdapter<GroupieViewHolder>,
+        itemsFactory: AccountItemFactory
     ): ManageAccountsViewModel {
-        val showSslDisabledInfoDialog: () -> Unit = { activity.showSslDisabledInfoDialog() }
-        val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit = {
-            activity.showRemoveAccountDialog(it)
-        }
         return ManageAccountsViewModel(
             storage,
             router,
             tracker,
-            showSslDisabledInfoDialog,
-            showRemoveAccountDialog,
             cacheManager,
+            itemsFactory,
             adapter
         )
     }
@@ -68,4 +65,21 @@ object ManageAccountsModule {
     @JvmStatic
     @Provides
     fun providesAdapter() = GroupAdapter<GroupieViewHolder>()
+
+    @JvmStatic
+    @Provides
+    fun provideAccountItemFactory(
+        tracker: ManageAccountsTracker,
+        activity: ManageAccountsActivity
+    ): AccountItemFactory {
+        val showSslDisabledInfoDialog: () -> Unit = { activity.showSslDisabledInfoDialog() }
+        val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit = {
+            activity.showRemoveAccountDialog(it)
+        }
+        return AccountItemFactoryImpl(
+            tracker = tracker,
+            showRemoveAccountDialog = showRemoveAccountDialog,
+            showSslDisabledInfoDialog = showSslDisabledInfoDialog
+        )
+    }
 }
