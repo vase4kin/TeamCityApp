@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.junit.Before
 import org.junit.Test
 import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
 import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
+import teamcityapp.features.manage_accounts.view.AccountItemFactory
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
@@ -42,6 +43,7 @@ class ManageAccountsViewModelTest {
     private val showSslDisabledInfoDialog: () -> Unit = mock()
     private val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit = mock()
     private val cacheManager: CacheManager = mock()
+    private val itemFactory: AccountItemFactory = mock()
     private val adapter: GroupAdapter<GroupieViewHolder> = mock()
     private val userAccount: UserAccount = mock()
 
@@ -53,9 +55,8 @@ class ManageAccountsViewModelTest {
             storage,
             router,
             tracker,
-            showSslDisabledInfoDialog,
-            showRemoveAccountDialog,
             cacheManager,
+            itemFactory,
             adapter
         )
     }

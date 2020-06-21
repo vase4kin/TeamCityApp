@@ -42,7 +42,7 @@ class ManageAccountsViewModel(
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
         val items: List<Group> = createItems()
-        adapter.addAll(items)
+        adapter.updateAsync(items)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
