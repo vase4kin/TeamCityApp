@@ -70,8 +70,8 @@ android {
     }
 
     android.variantFilter { variant ->
-        if (variant.buildType.name.equals('release')
-                && variant.getFlavors().get(0).name.equals('mock')) {
+        if (variant.buildType.name == 'release'
+                && variant.getFlavors().get(0).name == 'mock') {
             variant.setIgnore(true)
         }
     }
@@ -100,7 +100,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = Config.javaVersion.toString()
     }
 }
 
