@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import teamcityapp.buildsrc.Config
 import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
@@ -28,6 +29,10 @@ android {
     dataBinding {
         enabled = true
     }
+
+    kotlinOptions {
+        jvmTarget = Config.javaVersion.toString()
+    }
 }
 
 dependencies {
@@ -39,6 +44,9 @@ dependencies {
 
     implementation Libs.AndroidX.appcompat
     implementation Libs.AndroidX.LifeCycle.lifeCycle
+    implementation Libs.AndroidX.LifeCycle.lifeCycleLiveData
+    implementation Libs.AndroidX.LifeCycle.lifeCycleViewModel
+    implementation Libs.AndroidX.LifeCycle.lifeCycleCommonJava8
     implementation Libs.Google.material
     implementation Libs.Dagger.dagger
     implementation Libs.Dagger.androidSupport
@@ -52,7 +60,6 @@ dependencies {
     implementation Libs.Groupie.groupieDatabinding
     implementation Libs.AndroidX.constraintLayout
 
-    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
     kapt Libs.Dagger.compiler
     kapt Libs.Dagger.androidProcessor
 

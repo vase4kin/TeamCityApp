@@ -16,6 +16,7 @@
 
 package teamcityapp.features.properties.feature.dagger
 
+import android.os.Bundle
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
@@ -42,8 +43,7 @@ object PropertiesFragmentModule {
     ): PropertiesViewModel {
         return PropertiesViewModel(
             adapter = adapter,
-            properties = (fragment.arguments?.getParcelableArray(PropertiesFragment.ARG_PROPERTIES) as Array<InternalProperty>?
-                ?: emptyArray<InternalProperty>()).toList(),
+            properties = fragment.arguments.getInternalProperties(),
             factory = factory,
             resourcesManager = resourcesManager
         )
@@ -64,4 +64,8 @@ object PropertiesFragmentModule {
     fun provideResManager(fragment: PropertiesFragment): ResourcesManager {
         return ResourcesManagerImpl(fragment.requireContext())
     }
+}
+
+private fun Bundle?.getInternalProperties(): List<InternalProperty> {
+    return this?.getParcelableArrayList(PropertiesFragment.ARG_PROPERTIES) ?: emptyList()
 }
