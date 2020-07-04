@@ -26,7 +26,7 @@
 
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.PropertiesFragment">
@@ -43,10 +43,10 @@
             tools:listitem="@layout/item_property" />
 
         <include
-            app:viewmodel="@{viewmodel}"
             layout="@layout/layout_empty"
+            app:viewmodel="@{viewmodel}"
             tools:visibility="gone" />
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </FrameLayout>
 
 </layout>

@@ -16,12 +16,14 @@
 
 package teamcityapp.features.properties.feature.view
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.observe
 import dagger.android.support.DaggerFragment
 import teamcityapp.features.properties.feature.R
 import teamcityapp.features.properties.feature.databinding.FragmentPropertiesBinding
@@ -50,8 +52,16 @@ class PropertiesFragment : DaggerFragment() {
             false
         ).apply {
             viewmodel = this@PropertiesFragment.viewModel
-            lifecycle.addObserver(this@PropertiesFragment.viewModel)
         }.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewLifecycleOwnerLiveData.observe(this) { viewLifecycleOwner ->
+            viewLifecycleOwner.lifecycle.run {
+                addObserver(viewModel)
+            }
+        }
     }
 
     companion object {
@@ -66,9 +76,8 @@ class PropertiesFragment : DaggerFragment() {
                         it.value
                     )
                 }
-                .toTypedArray()
             val bundle = Bundle().apply {
-                putParcelableArray(ARG_PROPERTIES, internalProperties)
+                putParcelableArrayList(ARG_PROPERTIES, ArrayList(internalProperties))
             }
             return PropertiesFragment()
                 .apply {
