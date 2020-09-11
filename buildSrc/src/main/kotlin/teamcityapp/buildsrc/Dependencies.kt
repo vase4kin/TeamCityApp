@@ -20,9 +20,9 @@ import org.gradle.api.JavaVersion
 
 object Config {
     const val minSdk = 21
-    const val compileSdk = 29
-    const val targetSdk = 29
-    const val buildTools = "29.0.2"
+    const val compileSdk = 30
+    const val targetSdk = 30
+    const val buildTools = "30.0.2"
     const val versionCode = 109
     const val versionName = "1.52.1"
     const val applicationId = "com.github.vase4kin.teamcityapp"
@@ -161,7 +161,7 @@ object Libs {
     }
 
     object Tools {
-        const val gradleAndroid = "com.android.tools.build:gradle:4.0.0"
+        const val gradleAndroid = "com.android.tools.build:gradle:4.0.1"
         const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.21.0"
         const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
         const val googleServices = "com.google.gms:google-services:4.3.0"

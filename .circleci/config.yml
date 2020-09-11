@@ -24,7 +24,7 @@ jobs:
       - run:
           name: Download sdk
           command: |
-            echo y | sdkmanager "tools" "platform-tools" "build-tools;29.0.2" "extras;android;m2repository" "platforms;android-29" "emulator" --verbose
+            echo y | sdkmanager "tools" "platform-tools" "build-tools;30.0.2" "extras;android;m2repository" "platforms;android-30" "emulator" --verbose
             sdkmanager --update --verbose
       - run:
           name: Download dependencies
