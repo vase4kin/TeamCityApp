@@ -172,6 +172,7 @@ object Libs {
     }
 
     object Mockito {
+        const val mockito = "org.mockito:mockito-core:2.28.2"
         const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
         const val mockito3 = "org.mockito:mockito-core:3.1.0"
     }
