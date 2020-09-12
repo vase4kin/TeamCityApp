@@ -172,17 +172,8 @@ object Libs {
     }
 
     object Mockito {
-        const val mockito = "org.mockito:mockito-core:1.10.19"
         const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
         const val mockito3 = "org.mockito:mockito-core:3.1.0"
-    }
-
-    object PowerMock {
-        private const val version = "1.6.4"
-        const val junit4 = "org.powermock:powermock-module-junit4:$version"
-        const val junitRule = "org.powermock:powermock-module-junit4-rule:$version"
-        const val apiMockito = "org.powermock:powermock-api-mockito:$version"
-        const val classLoadingXstream = "org.powermock:powermock-classloading-xstream:$version"
     }
 
     object Groupie {

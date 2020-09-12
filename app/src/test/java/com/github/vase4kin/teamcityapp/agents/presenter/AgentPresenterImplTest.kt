@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,26 +33,33 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.junit.MockitoJUnitRunner
 import java.util.ArrayList
 
-@RunWith(PowerMockRunner::class)
+@RunWith(MockitoJUnitRunner::class)
 class AgentPresenterImplTest {
 
     @Mock
     private lateinit var data: List<Agent>
+
     @Mock
     private lateinit var loadingListener: OnLoadingListener<List<Agent>>
+
     @Mock
     private lateinit var bundle: Bundle
+
     @Mock
     private lateinit var view: BaseListView<AgentDataModel>
+
     @Mock
     private lateinit var dataManager: AgentsDataManager
+
     @Mock
     private lateinit var valueExtractor: AgentsValueExtractor
+
     @Mock
     private lateinit var tracker: ViewTracker
+
     @Mock
     private lateinit var eventBus: EventBus
     private val agent = Agent("name")

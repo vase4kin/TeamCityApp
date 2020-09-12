@@ -201,12 +201,9 @@ dependencies {
     implementation Libs.ahbottomnavigation
     // Unit tests
     testImplementation Libs.junit
-    testImplementation Libs.Mockito.mockito
+    testImplementation Libs.Mockito.mockito3
+    testImplementation Libs.Mockito.mockitoKotlin
     testImplementation Libs.hamcrestJunit
-    testImplementation Libs.PowerMock.junit4
-    testImplementation Libs.PowerMock.junitRule
-    testImplementation Libs.PowerMock.apiMockito
-    testImplementation Libs.PowerMock.classLoadingXstream
     // Ui tests
     // Core library
     androidTestImplementation Libs.AndroidX.Test.core
@@ -221,7 +218,7 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Test.Espresso.contrib
     androidTestImplementation Libs.AndroidX.Test.Espresso.web
     // Mockito
-    androidTestImplementation Libs.Mockito.mockito
+    androidTestImplementation Libs.Mockito.mockito3
     // Dex maker
     androidTestImplementation Libs.DexMaker.dexmaker
     androidTestImplementation Libs.DexMaker.dexmakerDx

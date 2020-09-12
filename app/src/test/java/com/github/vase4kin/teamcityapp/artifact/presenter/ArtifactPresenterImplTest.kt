@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,9 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.runners.MockitoJUnitRunner
 import java.util.ArrayList
 
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.Silent::class)
 class ArtifactPresenterImplTest {
 
     @Captor
