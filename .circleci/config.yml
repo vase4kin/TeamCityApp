@@ -84,7 +84,7 @@ jobs:
           <<: *general_cache_key
       - run:
           name: Run unit tests
-          command: ./gradlew testMockDebugUnitTest testDebugUnitTest
+          command: ./gradlew testMockDebugUnitTest testDebugUnitTest --max-workers 4
       - persist_to_workspace:
           root: *workspace_root
           paths:
