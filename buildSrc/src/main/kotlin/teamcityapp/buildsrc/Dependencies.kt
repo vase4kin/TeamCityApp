@@ -144,10 +144,9 @@ object Libs {
     }
 
     object DexMaker {
-        private const val version = "1.4"
-        const val dexmaker = "com.crittercism.dexmaker:dexmaker:$version"
-        const val dexmakerDx = "com.crittercism.dexmaker:dexmaker-dx:$version"
-        const val dexmakerMockito = "com.crittercism.dexmaker:dexmaker-mockito:$version"
+        private const val version = "2.28.0"
+        const val dexmaker = "com.linkedin.dexmaker:dexmaker:$version"
+        const val dexmakerMockito = "com.linkedin.dexmaker:dexmaker-mockito:$version"
     }
 
     object Kotlin {
@@ -172,7 +171,6 @@ object Libs {
     }
 
     object Mockito {
-        const val mockito = "org.mockito:mockito-core:2.28.2"
         const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
         const val mockito3 = "org.mockito:mockito-core:3.1.0"
     }
