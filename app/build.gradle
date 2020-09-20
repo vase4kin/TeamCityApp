@@ -219,6 +219,7 @@ dependencies {
     androidTestImplementation Libs.AndroidX.Test.Espresso.web
     // Mockito
     androidTestImplementation Libs.Mockito.mockito3
+    androidTestImplementation Libs.Mockito.mockitoKotlin
     // Dex maker
     androidTestImplementation Libs.DexMaker.dexmaker
     androidTestImplementation Libs.DexMaker.dexmakerMockito
