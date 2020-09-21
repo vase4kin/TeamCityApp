@@ -40,8 +40,11 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.core.AllOf.allOf
@@ -50,7 +53,6 @@ import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
@@ -59,7 +61,7 @@ class BuildQueueFragmentTest {
 
     @Rule
     @JvmField
-    var daggerRule: DaggerMockRule<RestApiComponent> =
+    val daggerRule: DaggerMockRule<RestApiComponent> =
         DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
             .addComponentDependency(
                 AppComponent::class.java,
@@ -73,7 +75,7 @@ class BuildQueueFragmentTest {
 
     @Rule
     @JvmField
-    var activityRule = CustomActivityTestRule(HomeActivity::class.java)
+    val activityRule = CustomActivityTestRule(HomeActivity::class.java)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -275,12 +277,9 @@ class BuildQueueFragmentTest {
     @Test
     fun testUserCanSeeFailureMessageForFavoritesQueueBuilds() {
         // Prepare data
-        `when`(
-            teamCityService.listQueueBuilds(
-                anyString(),
-                anyString()
-            )
-        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
+        doReturn(Single.error<Builds>(RuntimeException("smth bad happend!")))
+            .whenever(teamCityService).listQueueBuilds(any(), any())
+
         storage.addBuildTypeToFavorites("id1")
 
         activityRule.launchActivity(null)
@@ -304,12 +303,8 @@ class BuildQueueFragmentTest {
     @Test
     fun testUserCanSeeFailureMessageForAllQueueBuilds() {
         // Prepare data
-        `when`(
-            teamCityService.listQueueBuilds(
-                anyString(),
-                anyString()
-            )
-        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
+        doReturn(Single.error<Builds>(RuntimeException("smth bad happend!")))
+            .whenever(teamCityService).listQueueBuilds(any(), any())
         storage.addBuildTypeToFavorites("id1")
 
         activityRule.launchActivity(null)
@@ -324,14 +319,8 @@ class BuildQueueFragmentTest {
 
     @Test
     fun testUserCanSeeEmptyDataMessageIfBuildQueueIsEmpty() {
-        `when`(teamCityService.listQueueBuilds(anyString(), anyString())).thenReturn(
-            Single.just(
-                Builds(
-                    0,
-                    emptyList()
-                )
-            )
-        )
+        doReturn(Single.just<Builds>(Builds(0, emptyList())))
+            .whenever(teamCityService).listQueueBuilds(any(), any())
 
         activityRule.launchActivity(null)
 

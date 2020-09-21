@@ -20,9 +20,9 @@ import org.gradle.api.JavaVersion
 
 object Config {
     const val minSdk = 21
-    const val compileSdk = 29
-    const val targetSdk = 29
-    const val buildTools = "29.0.2"
+    const val compileSdk = 30
+    const val targetSdk = 30
+    const val buildTools = "30.0.2"
     const val versionCode = 109
     const val versionName = "1.52.1"
     const val applicationId = "com.github.vase4kin.teamcityapp"
@@ -144,10 +144,9 @@ object Libs {
     }
 
     object DexMaker {
-        private const val version = "1.4"
-        const val dexmaker = "com.crittercism.dexmaker:dexmaker:$version"
-        const val dexmakerDx = "com.crittercism.dexmaker:dexmaker-dx:$version"
-        const val dexmakerMockito = "com.crittercism.dexmaker:dexmaker-mockito:$version"
+        private const val version = "2.28.0"
+        const val dexmaker = "com.linkedin.dexmaker:dexmaker:$version"
+        const val dexmakerMockito = "com.linkedin.dexmaker:dexmaker-mockito:$version"
     }
 
     object Kotlin {
@@ -161,7 +160,7 @@ object Libs {
     }
 
     object Tools {
-        const val gradleAndroid = "com.android.tools.build:gradle:4.0.0"
+        const val gradleAndroid = "com.android.tools.build:gradle:4.0.1"
         const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.21.0"
         const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
         const val googleServices = "com.google.gms:google-services:4.3.0"
@@ -172,17 +171,8 @@ object Libs {
     }
 
     object Mockito {
-        const val mockito = "org.mockito:mockito-core:1.10.19"
         const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
         const val mockito3 = "org.mockito:mockito-core:3.1.0"
-    }
-
-    object PowerMock {
-        private const val version = "1.6.4"
-        const val junit4 = "org.powermock:powermock-module-junit4:$version"
-        const val junitRule = "org.powermock:powermock-module-junit4-rule:$version"
-        const val apiMockito = "org.powermock:powermock-api-mockito:$version"
-        const val classLoadingXstream = "org.powermock:powermock-classloading-xstream:$version"
     }
 
     object Groupie {

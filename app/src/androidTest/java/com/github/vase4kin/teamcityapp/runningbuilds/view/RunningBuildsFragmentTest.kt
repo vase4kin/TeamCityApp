@@ -49,8 +49,11 @@ import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.with
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchHomeToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.equalTo
@@ -61,7 +64,6 @@ import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
@@ -70,7 +72,7 @@ class RunningBuildsFragmentTest {
 
     @Rule
     @JvmField
-    var daggerMockRule: DaggerMockRule<RestApiComponent> =
+    val daggerMockRule: DaggerMockRule<RestApiComponent> =
         DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
             .addComponentDependency(
                 AppComponent::class.java,
@@ -84,7 +86,7 @@ class RunningBuildsFragmentTest {
 
     @Rule
     @JvmField
-    var activityRule = CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -232,12 +234,9 @@ class RunningBuildsFragmentTest {
     @Test
     fun testUserCanSeeFailureMessageIfSmthHappendsOnRunningBuildsLoading() {
         storage.addBuildTypeToFavorites("id")
-        `when`(
-            teamCityService.listRunningBuilds(
-                anyString(),
-                anyString()
-            )
-        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
+
+        doReturn(Single.error<Builds>(RuntimeException("smth bad happend!")))
+            .whenever(teamCityService).listRunningBuilds(any(), any())
 
         activityRule.launchActivity(null)
 
@@ -253,14 +252,8 @@ class RunningBuildsFragmentTest {
 
     @Test
     fun testUserCanSeeEmptyDataMessageIfRunningBuildListIsEmpty() {
-        `when`(teamCityService.listRunningBuilds(anyString(), anyString())).thenReturn(
-            Single.just(
-                Builds(
-                    0,
-                    emptyList()
-                )
-            )
-        )
+        doReturn(Single.just<Builds>(Builds(0, emptyList())))
+            .whenever(teamCityService).listRunningBuilds(any(), any())
 
         activityRule.launchActivity(null)
 

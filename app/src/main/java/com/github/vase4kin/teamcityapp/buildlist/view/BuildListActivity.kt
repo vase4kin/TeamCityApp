@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,9 @@ class BuildListActivity : DaggerAppCompatActivity() {
         // Move that logic to presenter
         if (resultCode != Activity.RESULT_OK) return
         if (requestCode == RunBuildActivity.REQUEST_CODE) {
-            presenter.onRunBuildActivityResult(data!!.getStringExtra(RunBuildRouter.EXTRA_HREF))
+            presenter.onRunBuildActivityResult(
+                data?.getStringExtra(RunBuildRouter.EXTRA_HREF) ?: ""
+            )
         } else if (requestCode == FilterBuildsActivity.REQUEST_CODE) {
             presenter.onFilterBuildsActivityResult(data!!.getSerializableExtra(FilterBuildsRouter.EXTRA_FILTER) as BuildListFilter)
         }

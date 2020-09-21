@@ -21,6 +21,7 @@ import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView
 import com.github.vase4kin.teamcityapp.utils.eq
+import com.nhaarman.mockitokotlin2.whenever
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -31,10 +32,10 @@ import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
-import org.powermock.modules.junit4.PowerMockRunner
+import org.mockito.junit.MockitoJUnitRunner
 import teamcityapp.libraries.onboarding.OnboardingManager
 
-@RunWith(PowerMockRunner::class)
+@RunWith(MockitoJUnitRunner.Silent::class)
 class OverviewPresenterCardLogicTest {
 
     @Mock
@@ -57,9 +58,9 @@ class OverviewPresenterCardLogicTest {
     @Before
     fun setUp() {
         presenter = OverviewPresenterImpl(view, interactor, tracker, onboardingManager)
-        `when`(interactor.buildDetails).thenReturn(buildDetails)
-        `when`(buildDetails.statusText).thenReturn(STATUS_TEXT)
-        `when`(buildDetails.statusIcon).thenReturn(STATUS_ICON)
+        whenever(interactor.buildDetails).thenReturn(buildDetails)
+        whenever(buildDetails.statusText).thenReturn(STATUS_TEXT)
+        whenever(buildDetails.statusIcon).thenReturn(STATUS_ICON)
     }
 
     @Test

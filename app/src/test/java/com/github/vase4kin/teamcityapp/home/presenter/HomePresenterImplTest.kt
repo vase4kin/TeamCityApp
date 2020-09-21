@@ -31,11 +31,10 @@ import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
-import org.mockito.runners.MockitoJUnitRunner
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.storage.models.UserAccount
 
-@RunWith(MockitoJUnitRunner::class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.Silent::class)
 class HomePresenterImplTest {
 
     @Captor
