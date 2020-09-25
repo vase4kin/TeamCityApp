@@ -41,7 +41,9 @@ class HomePresenterImpl @Inject constructor(
     private val onboardingManager: OnboardingManager,
     private val bottomNavigationView: BottomNavigationView,
     private val filterProvider: FilterProvider
-) : HomePresenter, BottomNavigationView.ViewListener, HomeView.ViewListener,
+) : HomePresenter,
+    BottomNavigationView.ViewListener,
+    HomeView.ViewListener,
     HomeDataManager.Listener {
 
     private var baseUrl: String? = null
@@ -322,27 +324,33 @@ class HomePresenterImpl @Inject constructor(
     private fun loadAgentsCount() {
         val currentFilter = filterProvider.agentsFilter
         if (currentFilter === Filter.AGENTS_CONNECTED) {
-            dataManager.loadAgentsCount(object : OnLoadingListener<Int> {
-                override fun onSuccess(data: Int) {
-                    bottomNavigationView.updateNotifications(
-                        AppNavigationItem.AGENTS.ordinal,
-                        data
-                    )
-                }
+            dataManager.loadAgentsCount(
+                object : OnLoadingListener<Int> {
+                    override fun onSuccess(data: Int) {
+                        bottomNavigationView.updateNotifications(
+                            AppNavigationItem.AGENTS.ordinal,
+                            data
+                        )
+                    }
 
-                override fun onFail(errorMessage: String) {}
-            }, false)
+                    override fun onFail(errorMessage: String) {}
+                },
+                false
+            )
         } else if (currentFilter === Filter.AGENTS_DISCONNECTED) {
-            dataManager.loadAgentsCount(object : OnLoadingListener<Int> {
-                override fun onSuccess(data: Int) {
-                    bottomNavigationView.updateNotifications(
-                        AppNavigationItem.AGENTS.ordinal,
-                        data
-                    )
-                }
+            dataManager.loadAgentsCount(
+                object : OnLoadingListener<Int> {
+                    override fun onSuccess(data: Int) {
+                        bottomNavigationView.updateNotifications(
+                            AppNavigationItem.AGENTS.ordinal,
+                            data
+                        )
+                    }
 
-                override fun onFail(errorMessage: String) {}
-            }, true)
+                    override fun onFail(errorMessage: String) {}
+                },
+                true
+            )
         }
     }
 

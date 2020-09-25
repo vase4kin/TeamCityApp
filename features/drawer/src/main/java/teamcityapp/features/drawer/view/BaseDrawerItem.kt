@@ -44,7 +44,8 @@ enum class DrawerType(val type: Int) {
 
 class AccountDrawerItem(
     val account: UserAccount
-) : BaseDrawerItem(account.hashCode(),
+) : BaseDrawerItem(
+    account.hashCode(),
     DrawerType.ACCOUNT
 )
 
@@ -83,28 +84,33 @@ class NewAccountDrawerItem : MenuDrawerItem(
     id = ID_NEW_ACCOUNT.hashCode(),
     type = DrawerType.NEW_ACCOUNT,
     imageRes = R.drawable.ic_accounts_add,
-    stringRes = R.string.text_add_account)
+    stringRes = R.string.text_add_account
+)
 
 class ManageAccountsDrawerItem : MenuDrawerItem(
     id = ID_MANAGE_ACCOUNTS.hashCode(),
     type = DrawerType.MANAGE_ACCOUNTS,
     imageRes = R.drawable.ic_accounts,
-    stringRes = R.string.text_manage_accounts)
+    stringRes = R.string.text_manage_accounts
+)
 
 class AboutDrawerItem : MenuDrawerItem(
     id = ID_ABOUT.hashCode(),
     type = DrawerType.ABOUT,
     imageRes = R.drawable.ic_info_outline_black_24dp,
-    stringRes = R.string.drawer_item_about)
+    stringRes = R.string.drawer_item_about
+)
 
 class SettingsDrawerItem : MenuDrawerItem(
     id = ID_SETTINGS.hashCode(),
     type = DrawerType.SETTINGS,
     imageRes = R.drawable.ic_settings_black_24dp,
-    stringRes = R.string.drawer_item_settings)
+    stringRes = R.string.drawer_item_settings
+)
 
 class AgentsDrawerItem : MenuDrawerItem(
     id = ID_AGENTS.hashCode(),
     type = DrawerType.AGENTS,
     imageRes = R.drawable.ic_directions_railway_black_24dp,
-    stringRes = R.string.drawer_item_agents)
+    stringRes = R.string.drawer_item_agents
+)

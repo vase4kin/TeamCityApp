@@ -168,7 +168,7 @@ object Libs {
         const val googleServices = "com.google.gms:google-services:4.3.0"
         const val jacoco = "org.jacoco:org.jacoco.core:0.8.1"
         const val firebasePerf = "com.google.firebase:perf-plugin:1.3.1"
-        const val kotlinter = "org.jmailen.gradle:kotlinter-gradle:2.1.1"
+        const val kotlinter = "org.jmailen.gradle:kotlinter-gradle:3.2.0"
         const val crashlytics = "com.google.firebase:firebase-crashlytics-gradle:2.3.0"
     }
 

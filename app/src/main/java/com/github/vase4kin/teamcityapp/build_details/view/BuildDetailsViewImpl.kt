@@ -93,7 +93,8 @@ class BuildDetailsViewImpl(
         val testsHref = buildDetails.testsHref
         if (testsHref != null) {
             fragmentAdapter.add(
-                R.string.tab_tests, TestOccurrencesFragment.newInstance(
+                R.string.tab_tests,
+                TestOccurrencesFragment.newInstance(
                     testsHref,
                     buildDetails.passedTestCount,
                     buildDetails.failedTestCount,

@@ -41,13 +41,16 @@ class RemoteServiceImpl(
         onFinish: () -> Unit
     ) {
         onStart()
-        getData(onFetchSuccess = {
-            val showTryItOut = remoteConfig.getBoolean(RemoteService.PARAMETER_SHOW_TRY_IT_OUT)
-            onFinish()
-            onSuccess(showTryItOut)
-        }, onFetchFailed = {
-            onFinish()
-        })
+        getData(
+            onFetchSuccess = {
+                val showTryItOut = remoteConfig.getBoolean(RemoteService.PARAMETER_SHOW_TRY_IT_OUT)
+                onFinish()
+                onSuccess(showTryItOut)
+            },
+            onFetchFailed = {
+                onFinish()
+            }
+        )
     }
 
     override fun getTryItOutUrl(): String {

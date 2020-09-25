@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class ArtifactAdapter
  *
  * @param viewHolderFactories - view holder factories from DI
  */
-    (viewHolderFactories: Map<Int, ViewHolderFactory<ArtifactDataModel>>) :
+(viewHolderFactories: Map<Int, ViewHolderFactory<ArtifactDataModel>>) :
     BaseAdapter<ArtifactDataModel>(viewHolderFactories) {
 
     private var onClickListener: OnArtifactPresenterListener? = null

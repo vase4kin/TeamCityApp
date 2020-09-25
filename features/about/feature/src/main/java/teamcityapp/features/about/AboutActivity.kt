@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ import teamcityapp.libraries.utils.initToolbar
 /**
  * About activity
  */
-class AboutActivity : DaggerAppCompatActivity(),
+class AboutActivity :
+    DaggerAppCompatActivity(),
     AboutActivityLoadingListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {

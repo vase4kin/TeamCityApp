@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,5 +22,6 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImp
 
 interface SnapshotDependenciesValueExtractor : BaseValueExtractor
 
-class SnapshotDependenciesValueExtractorImpl(bundle: Bundle) : BaseValueExtractorImpl(bundle),
+class SnapshotDependenciesValueExtractorImpl(bundle: Bundle) :
+    BaseValueExtractorImpl(bundle),
     SnapshotDependenciesValueExtractor

@@ -51,7 +51,9 @@ constructor(
     dataManager,
     tracker,
     valueExtractor
-), BuildListPresenter, OnBuildListPresenterListener {
+),
+    BuildListPresenter,
+    OnBuildListPresenterListener {
 
     @VisibleForTesting
     internal var isLoadMoreLoading = false
@@ -159,18 +161,21 @@ constructor(
         val queuedBuildHref = this.queuedBuildHref ?: return
         tracker.trackUserWantsToSeeQueuedBuildDetails()
         view.showBuildLoadingProgress()
-        buildInteractor.loadBuild(queuedBuildHref, object : OnLoadingListener<Build> {
-            override fun onSuccess(data: Build) {
-                view.hideBuildLoadingProgress()
-                val buildTypeName = valueExtractor.name
-                router.openBuildPage(data, buildTypeName)
-            }
+        buildInteractor.loadBuild(
+            queuedBuildHref,
+            object : OnLoadingListener<Build> {
+                override fun onSuccess(data: Build) {
+                    view.hideBuildLoadingProgress()
+                    val buildTypeName = valueExtractor.name
+                    router.openBuildPage(data, buildTypeName)
+                }
 
-            override fun onFail(errorMessage: String) {
-                view.hideBuildLoadingProgress()
-                view.showOpeningBuildErrorSnackBar()
+                override fun onFail(errorMessage: String) {
+                    view.hideBuildLoadingProgress()
+                    view.showOpeningBuildErrorSnackBar()
+                }
             }
-        })
+        )
     }
 
     /**

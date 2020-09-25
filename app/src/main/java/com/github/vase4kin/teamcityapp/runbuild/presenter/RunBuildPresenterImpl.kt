@@ -182,7 +182,8 @@ class RunBuildPresenterImpl @Inject constructor(
                     mView.showForbiddenErrorSnackbar()
                     mTracker.trackUserRunBuildFailedForbidden()
                 }
-            })
+            }
+        )
     }
 
     /**

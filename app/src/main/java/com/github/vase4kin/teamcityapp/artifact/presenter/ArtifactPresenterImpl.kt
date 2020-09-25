@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,10 @@ class ArtifactPresenterImpl @Inject constructor(
     dataManager,
     tracker,
     valueExtractor
-), ArtifactPresenter, OnArtifactPresenterListener, OnArtifactEventListener {
+),
+    ArtifactPresenter,
+    OnArtifactPresenterListener,
+    OnArtifactEventListener {
 
     @VisibleForTesting
     var fileName: String? = null
@@ -186,7 +189,8 @@ class ArtifactPresenterImpl @Inject constructor(
                             view.dismissProgressDialog()
                             showRetryDownloadArtifactSnackBar()
                         }
-                    })
+                    }
+                )
             }
         }
     }
@@ -225,6 +229,7 @@ class ArtifactPresenterImpl @Inject constructor(
                 override fun onDenied() {
                     view.showPermissionsDeniedDialog()
                 }
-            })
+            }
+        )
     }
 }

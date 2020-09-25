@@ -87,11 +87,9 @@ subprojects {
                 kotlinter {
                     ignoreFailures = false
                     indentSize = 4
-                    continuationIndentSize = 4
                     reporters = ["html"]
                     experimentalRules = false
                     disabledRules = ["no-wildcard-imports", "import-ordering"]
-                    fileBatchSize = 30
                 }
 
                 lintOptions {

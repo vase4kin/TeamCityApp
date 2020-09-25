@@ -26,7 +26,8 @@ import teamcityapp.features.settings.tracker.SettingsTracker
 import teamcityapp.libraries.utils.applyThemeFromSettings
 import javax.inject.Inject
 
-class SettingsFragment : PreferenceFragmentCompat(),
+class SettingsFragment :
+    PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject

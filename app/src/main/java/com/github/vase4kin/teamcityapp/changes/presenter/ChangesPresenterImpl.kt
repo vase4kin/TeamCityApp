@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,12 +104,15 @@ class ChangesPresenterImpl @Inject constructor(
      */
     override fun onViewsCreated() {
         super.onViewsCreated()
-        dataManager.loadTabTitle(valueExtractor.url, object : OnLoadingListener<Int> {
-            override fun onSuccess(data: Int) {
-                dataManager.postChangeTabTitleEvent(data)
-            }
+        dataManager.loadTabTitle(
+            valueExtractor.url,
+            object : OnLoadingListener<Int> {
+                override fun onSuccess(data: Int) {
+                    dataManager.postChangeTabTitleEvent(data)
+                }
 
-            override fun onFail(errorMessage: String) {}
-        })
+                override fun onFail(errorMessage: String) {}
+            }
+        )
     }
 }

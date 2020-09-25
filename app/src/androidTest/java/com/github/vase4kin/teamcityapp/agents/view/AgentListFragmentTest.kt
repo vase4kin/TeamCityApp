@@ -122,7 +122,8 @@ class AgentListFragmentTest {
                 withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
                     0,
                     R.id.title
-                ), isDisplayed()
+                ),
+                isDisplayed()
             )
         )
             .check(matches(withText("agent 1")))

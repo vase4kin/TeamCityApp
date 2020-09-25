@@ -43,6 +43,7 @@ class AccountItemFactoryImpl(
             },
             showRemoveAccountDialog = {
                 showRemoveAccountDialog { onAccountRemove() }
-            })
+            }
+        )
     }
 }
