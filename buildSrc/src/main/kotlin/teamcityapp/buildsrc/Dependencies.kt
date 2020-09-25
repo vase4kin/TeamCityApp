@@ -91,9 +91,9 @@ object Libs {
     object Google {
         const val material = "com.google.android.material:material:1.2.1"
 
-        const val firebaseCore = "com.google.firebase:firebase-core:17.2.3"
-        const val firebaseConfig = "com.google.firebase:firebase-config:19.1.3"
-        const val firebasePerf = "com.google.firebase:firebase-perf:19.0.5"
+        const val firebaseCore = "com.google.firebase:firebase-core:17.5.0"
+        const val firebaseConfig = "com.google.firebase:firebase-config:19.2.0"
+        const val firebasePerf = "com.google.firebase:firebase-perf:19.0.8"
         const val crashlytics =  "com.google.firebase:firebase-crashlytics:17.2.1"
         const val analytics =  "com.google.firebase:firebase-analytics:17.5.0"
 
