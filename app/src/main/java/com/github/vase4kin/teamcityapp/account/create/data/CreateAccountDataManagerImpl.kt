@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package com.github.vase4kin.teamcityapp.account.create.data
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
-import com.crashlytics.android.Crashlytics
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.AUTHORIZATION
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Credentials
@@ -176,7 +176,7 @@ class CreateAccountDataManagerImpl(
                                 try {
                                     message = response.body()!!.source().readUtf8()
                                 } catch (exception: IOException) {
-                                    Crashlytics.logException(exception)
+                                    FirebaseCrashlytics.getInstance().recordException(exception)
                                     message = response.message()
                                 }
                             } else {

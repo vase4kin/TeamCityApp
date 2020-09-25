@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp
 import android.app.Application
 import android.text.TextUtils
 import androidx.annotation.VisibleForTesting
-import com.crashlytics.android.Crashlytics
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.DaggerAppComponent
 import com.github.vase4kin.teamcityapp.dagger.components.DaggerRestApiComponent
@@ -29,7 +28,6 @@ import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasAndroidInjector
-import io.fabric.sdk.android.Fabric
 import teamcityapp.libraries.utils.applyThemeFromSettings
 import javax.inject.Inject
 
@@ -48,11 +46,6 @@ class TeamCityApplication : Application(), HasAndroidInjector {
 
     override fun onCreate() {
         super.onCreate()
-
-        // #=============== Fabric ================#//
-        if (!BuildConfig.DEBUG) {
-            Fabric.with(this, Crashlytics())
-        }
 
         // #=============== Dagger ================#//
         // app injector init
