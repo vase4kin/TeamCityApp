@@ -39,11 +39,11 @@ object Libs {
     const val materialTapTargetPrompt = "uk.co.samuelwall:material-tap-target-prompt:2.14.0"
     const val conceal = "com.facebook.conceal:conceal:1.1.3@aar"
     const val jodaTime = "joda-time:joda-time:2.8.1"
-    const val mugen = "com.vinaysshenoy:mugen:1.0.2"
+    const val mugen = "com.vinaysshenoy:mugen:1.0.3"
     const val fragNav = "com.ncapdevi:frag-nav:3.3.0"
     const val ahbottomnavigation = "com.aurelhubert:ahbottomnavigation:2.3.4"
 
-    const val junit = "junit:junit:4.12"
+    const val junit = "junit:junit:4.13"
     const val hamcrestJunit = "org.hamcrest:hamcrest-junit:2.0.0.0"
     const val daggerMock = "com.github.fabioCollini:DaggerMock:0.8.5"
     const val conditionwatcher = "com.azimolabs.conditionwatcher:conditionwatcher:0.2"
@@ -51,14 +51,14 @@ object Libs {
     const val crashlytics = "com.crashlytics.sdk.android:crashlytics:2.6.8@aar"
 
     object AndroidX {
-        const val appcompat = "androidx.appcompat:appcompat:1.1.0"
+        const val appcompat = "androidx.appcompat:appcompat:1.2.0"
         const val cardView = "androidx.cardview:cardview:1.0.0"
         const val legacySupport = "androidx.legacy:legacy-support-v13:1.0.0"
         const val recyclerView = "androidx.recyclerview:recyclerview:1.0.0"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
         const val constraintLayout = "com.android.support.constraint:constraint-layout:1.1.3"
-        const val preference = "androidx.preference:preference:1.1.0"
+        const val preference = "androidx.preference:preference:1.1.1"
 
         object LifeCycle {
             private const val version = "2.2.0"
@@ -71,7 +71,7 @@ object Libs {
 
         object Test {
 
-            private const val version = "1.2.0"
+            private const val version = "1.3.0"
             const val core = "androidx.test:core:$version"
             const val runner = "androidx.test:runner:$version"
             const val rules = "androidx.test:rules:$version"
@@ -79,7 +79,7 @@ object Libs {
             const val extJunit = "androidx.test.ext:junit:1.1.1"
 
             object Espresso {
-                private const val version = "3.2.0"
+                private const val version = "3.3.0"
                 const val core = "androidx.test.espresso:espresso-core:$version"
                 const val intents = "androidx.test.espresso:espresso-intents:$version"
                 const val contrib = "androidx.test.espresso:espresso-contrib:$version"
@@ -121,7 +121,7 @@ object Libs {
     }
 
     object RxJava {
-        const val rxJava = "io.reactivex.rxjava2:rxjava:2.2.14"
+        const val rxJava = "io.reactivex.rxjava2:rxjava:2.2.19"
         const val rxAndroid = "io.reactivex.rxjava2:rxandroid:2.1.1"
         const val rxjava_kotlin = "io.reactivex.rxjava2:rxkotlin:2.4.0"
     }
@@ -132,7 +132,7 @@ object Libs {
     }
 
     object Dagger {
-        private const val version = "2.27"
+        private const val version = "2.29.1"
         const val dagger = "com.google.dagger:dagger:$version"
         const val androidSupport = "com.google.dagger:dagger-android-support:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
@@ -152,7 +152,7 @@ object Libs {
     }
 
     object Kotlin {
-        private const val version = "1.3.70"
+        private const val version = "1.4.10"
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
 
         object Tools {
@@ -163,7 +163,7 @@ object Libs {
 
     object Tools {
         const val gradleAndroid = "com.android.tools.build:gradle:4.0.1"
-        const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.21.0"
+        const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.33.0"
         const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
         const val googleServices = "com.google.gms:google-services:4.3.0"
         const val jacoco = "org.jacoco:org.jacoco.core:0.8.1"
