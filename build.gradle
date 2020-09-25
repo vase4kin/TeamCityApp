@@ -36,7 +36,7 @@ buildscript {
         classpath Libs.Tools.firebasePerf
         classpath Libs.Tools.jacoco
         classpath Libs.Tools.kotlinter
-        classpath Libs.Tools.fabric
+        classpath Libs.Tools.crashlytics
         classpath Libs.Kotlin.Tools.gradlePlugin
         classpath Libs.Kotlin.Tools.extensions
         classpath Libs.Google.Tools.openSourceLicensesPlugin

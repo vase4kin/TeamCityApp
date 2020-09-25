@@ -16,9 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.remote
 
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import io.fabric.sdk.android.Fabric
 import teamcityapp.libraries.remote.RemoteService
 
 private const val CACHE = 43200L
@@ -83,8 +82,8 @@ class RemoteServiceImpl(
     }
 
     private fun logException(exception: Exception?) {
-        if (exception != null && Fabric.isInitialized()) {
-            Crashlytics.logException(exception)
+        if (exception != null) {
+            FirebaseCrashlytics.getInstance().recordException(exception)
         }
     }
 }
