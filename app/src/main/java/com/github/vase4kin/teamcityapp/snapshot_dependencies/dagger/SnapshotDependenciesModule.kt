@@ -85,7 +85,7 @@ object SnapshotDependenciesModule {
     ): RunningBuildListView {
         // Add text
         return object : RunningBuildsListViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.requireActivity(),
             R.string.empty_list_message_builds,
             adapter,

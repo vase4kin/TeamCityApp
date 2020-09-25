@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,36 +79,40 @@ class CreateAccountPresenterImpl @Inject constructor(
             view.showNewAccountExistErrorMessage()
             view.dismissProgressDialog()
         } else {
-            dataManager.authUser(object : CustomOnLoadingListener<String> {
-                override fun onSuccess(url: String) {
-                    dataManager.saveNewUserAccount(
-                        url,
-                        userName,
-                        password,
-                        isSslDisabled,
-                        object : OnLoadingListener<String> {
-                            override fun onSuccess(serverUrl: String) {
-                                dataManager.initTeamCityService(serverUrl)
-                                tracker.trackUserLoginSuccess(!isSslDisabled)
-                                view.dismissProgressDialog()
-                                view.finish()
-                                router.startRootProjectActivityWhenNewAccountIsCreated()
-                            }
+            dataManager.authUser(
+                object : CustomOnLoadingListener<String> {
+                    override fun onSuccess(url: String) {
+                        dataManager.saveNewUserAccount(
+                            url,
+                            userName,
+                            password,
+                            isSslDisabled,
+                            object : OnLoadingListener<String> {
+                                override fun onSuccess(serverUrl: String) {
+                                    dataManager.initTeamCityService(serverUrl)
+                                    tracker.trackUserLoginSuccess(!isSslDisabled)
+                                    view.dismissProgressDialog()
+                                    view.finish()
+                                    router.startRootProjectActivityWhenNewAccountIsCreated()
+                                }
 
-                            override fun onFail(errorMessage: String) {
-                                view.showCouldNotSaveUserError()
-                                view.dismissProgressDialog()
-                                tracker.trackUserDataSaveFailed()
+                                override fun onFail(errorMessage: String) {
+                                    view.showCouldNotSaveUserError()
+                                    view.dismissProgressDialog()
+                                    tracker.trackUserDataSaveFailed()
+                                }
                             }
-                        })
-                }
+                        )
+                    }
 
-                override fun onFail(code: Int, errorMessage: String) {
-                    view.showError(errorMessage)
-                    view.dismissProgressDialog()
-                    tracker.trackUserLoginFailed(errorMessage)
-                }
-            }, url, userName, password, isSslDisabled, false)
+                    override fun onFail(code: Int, errorMessage: String) {
+                        view.showError(errorMessage)
+                        view.dismissProgressDialog()
+                        tracker.trackUserLoginFailed(errorMessage)
+                    }
+                },
+                url, userName, password, isSslDisabled, false
+            )
         }
     }
 
@@ -126,22 +130,25 @@ class CreateAccountPresenterImpl @Inject constructor(
             view.showNewAccountExistErrorMessage()
             view.dismissProgressDialog()
         } else {
-            dataManager.authGuestUser(object : CustomOnLoadingListener<String> {
-                override fun onSuccess(url: String) {
-                    dataManager.saveGuestUserAccount(url, isSslDisabled)
-                    dataManager.initTeamCityService(url)
-                    tracker.trackGuestUserLoginSuccess(!isSslDisabled)
-                    view.dismissProgressDialog()
-                    view.finish()
-                    router.startRootProjectActivityWhenNewAccountIsCreated()
-                }
+            dataManager.authGuestUser(
+                object : CustomOnLoadingListener<String> {
+                    override fun onSuccess(url: String) {
+                        dataManager.saveGuestUserAccount(url, isSslDisabled)
+                        dataManager.initTeamCityService(url)
+                        tracker.trackGuestUserLoginSuccess(!isSslDisabled)
+                        view.dismissProgressDialog()
+                        view.finish()
+                        router.startRootProjectActivityWhenNewAccountIsCreated()
+                    }
 
-                override fun onFail(statusCode: Int, errorMessage: String) {
-                    view.showError(errorMessage)
-                    view.dismissProgressDialog()
-                    tracker.trackGuestUserLoginFailed(errorMessage)
-                }
-            }, url, isSslDisabled, false)
+                    override fun onFail(statusCode: Int, errorMessage: String) {
+                        view.showError(errorMessage)
+                        view.dismissProgressDialog()
+                        tracker.trackGuestUserLoginFailed(errorMessage)
+                    }
+                },
+                url, isSslDisabled, false
+            )
         }
     }
 

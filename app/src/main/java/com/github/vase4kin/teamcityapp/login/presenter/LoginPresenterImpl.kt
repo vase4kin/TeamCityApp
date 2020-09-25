@@ -51,15 +51,19 @@ class LoginPresenterImpl @Inject constructor(
 
     @VisibleForTesting
     internal fun showTryItOut() {
-        remoteService.showTryItOut(onStart = {
-            view.showTryItOutLoading()
-        }, onFinish = {
-            view.hideTryItOutLoading()
-        }, onSuccess = { showTryItOut ->
-            if (showTryItOut) {
-                view.showTryItOut()
+        remoteService.showTryItOut(
+            onStart = {
+                view.showTryItOutLoading()
+            },
+            onFinish = {
+                view.hideTryItOutLoading()
+            },
+            onSuccess = { showTryItOut ->
+                if (showTryItOut) {
+                    view.showTryItOut()
+                }
             }
-        })
+        )
     }
 
     /**
@@ -175,78 +179,85 @@ class LoginPresenterImpl @Inject constructor(
         checkSecureConnection: Boolean = false
     ) {
         view.showProgressDialog()
-        dataManager.authUser(object : CustomOnLoadingListener<String> {
-            override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
-                view.dismissProgressDialog()
-                dataManager.saveNewUserAccount(
-                    serverUrl,
-                    userName,
-                    password,
-                    isSslDisabled,
-                    object : OnLoadingListener<String> {
-                        override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
-                            dataManager.initTeamCityService(serverUrl)
-                            router.openProjectsRootPageForFirstStart()
-                            tracker.trackUserLoginSuccess(!isSslDisabled)
-                            view.close()
-                            clearLoginInfo()
-                        }
+        dataManager.authUser(
+            object : CustomOnLoadingListener<String> {
+                override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
+                    view.dismissProgressDialog()
+                    dataManager.saveNewUserAccount(
+                        serverUrl,
+                        userName,
+                        password,
+                        isSslDisabled,
+                        object : OnLoadingListener<String> {
+                            override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
+                                dataManager.initTeamCityService(serverUrl)
+                                router.openProjectsRootPageForFirstStart()
+                                tracker.trackUserLoginSuccess(!isSslDisabled)
+                                view.close()
+                                clearLoginInfo()
+                            }
 
-                        override fun onFail(errorMessage: String) {
-                            view.dismissProgressDialog()
-                            view.showCouldNotSaveUserError()
-                            tracker.trackUserDataSaveFailed()
-                            view.hideKeyboard()
-                            clearLoginInfo()
+                            override fun onFail(errorMessage: String) {
+                                view.dismissProgressDialog()
+                                view.showCouldNotSaveUserError()
+                                tracker.trackUserDataSaveFailed()
+                                view.hideKeyboard()
+                                clearLoginInfo()
+                            }
                         }
-                    })
-            }
-
-            override fun onFail(statusCode: Int, errorMessage: String) {
-                view.dismissProgressDialog()
-                tracker.trackUserLoginFailed(errorMessage)
-                view.hideKeyboard()
-                if (statusCode == CreateAccountDataManager.ERROR_CODE_HTTP_NOT_SECURE) {
-                    view.showNotSecureConnectionDialog(false)
-                } else {
-                    view.showError(errorMessage)
-                    clearLoginInfo()
+                    )
                 }
-            }
-        }, serverUrl, userName, password, isSslDisabled, checkSecureConnection)
+
+                override fun onFail(statusCode: Int, errorMessage: String) {
+                    view.dismissProgressDialog()
+                    tracker.trackUserLoginFailed(errorMessage)
+                    view.hideKeyboard()
+                    if (statusCode == CreateAccountDataManager.ERROR_CODE_HTTP_NOT_SECURE) {
+                        view.showNotSecureConnectionDialog(false)
+                    } else {
+                        view.showError(errorMessage)
+                        clearLoginInfo()
+                    }
+                }
+            },
+            serverUrl, userName, password, isSslDisabled, checkSecureConnection
+        )
     }
 
     @VisibleForTesting
     internal fun authGuestUser(serverUrl: String, isSslDisabled: Boolean, checkSecureConnection: Boolean = false) {
         view.showProgressDialog()
-        dataManager.authGuestUser(object : CustomOnLoadingListener<String> {
-            override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
-                view.dismissProgressDialog()
-                dataManager.saveGuestUserAccount(serverUrl, isSslDisabled)
-                dataManager.initTeamCityService(serverUrl)
-                router.openProjectsRootPageForFirstStart()
-                tracker.trackGuestUserLoginSuccess(!isSslDisabled)
-                view.close()
-                clearLoginInfo()
-            }
+        dataManager.authGuestUser(
+            object : CustomOnLoadingListener<String> {
+                override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") serverUrl: String) {
+                    view.dismissProgressDialog()
+                    dataManager.saveGuestUserAccount(serverUrl, isSslDisabled)
+                    dataManager.initTeamCityService(serverUrl)
+                    router.openProjectsRootPageForFirstStart()
+                    tracker.trackGuestUserLoginSuccess(!isSslDisabled)
+                    view.close()
+                    clearLoginInfo()
+                }
 
-            override fun onFail(statusCode: Int, errorMessage: String) {
-                view.dismissProgressDialog()
-                tracker.trackGuestUserLoginFailed(errorMessage)
-                view.hideKeyboard()
-                when (statusCode) {
-                    UNAUTHORIZED_STATUS_CODE -> {
-                        view.showUnauthorizedInfoDialog()
-                        clearLoginInfo()
-                    }
-                    CreateAccountDataManager.ERROR_CODE_HTTP_NOT_SECURE -> view.showNotSecureConnectionDialog(true)
-                    else -> {
-                        view.showError(errorMessage)
-                        clearLoginInfo()
+                override fun onFail(statusCode: Int, errorMessage: String) {
+                    view.dismissProgressDialog()
+                    tracker.trackGuestUserLoginFailed(errorMessage)
+                    view.hideKeyboard()
+                    when (statusCode) {
+                        UNAUTHORIZED_STATUS_CODE -> {
+                            view.showUnauthorizedInfoDialog()
+                            clearLoginInfo()
+                        }
+                        CreateAccountDataManager.ERROR_CODE_HTTP_NOT_SECURE -> view.showNotSecureConnectionDialog(true)
+                        else -> {
+                            view.showError(errorMessage)
+                            clearLoginInfo()
+                        }
                     }
                 }
-            }
-        }, serverUrl, isSslDisabled, checkSecureConnection)
+            },
+            serverUrl, isSslDisabled, checkSecureConnection
+        )
     }
 
     private fun clearLoginInfo() {

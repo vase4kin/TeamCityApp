@@ -167,78 +167,86 @@ class AboutFragment : MaterialAboutFragment() {
                     null
                 )
             )
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_found_issue)
-                .subText(R.string.about_app_subtext_found_issue)
-                .icon(
-                    getTintedDrawable(
-                        requireContext(),
-                        R.drawable.ic_question_answer_black_24dp,
-                        R.color.material_on_surface_emphasis_medium
+            .addItem(
+                MaterialAboutActionItem.Builder()
+                    .text(R.string.about_app_text_found_issue)
+                    .subText(R.string.about_app_subtext_found_issue)
+                    .icon(
+                        getTintedDrawable(
+                            requireContext(),
+                            R.drawable.ic_question_answer_black_24dp,
+                            R.color.material_on_surface_emphasis_medium
+                        )
                     )
-                )
-                .setOnClickAction {
-                    val url = getString(R.string.about_app_url_found_issue)
-                    openUrl(url)
-                }
-                .build())
+                    .setOnClickAction {
+                        val url = getString(R.string.about_app_url_found_issue)
+                        openUrl(url)
+                    }
+                    .build()
+            )
 
         val miscCardBuilder = MaterialAboutCard.Builder()
         miscCardBuilder.title(R.string.about_app_text_dev)
             .cardColor(getBackgroundColor(requireActivity()))
         miscCardBuilder
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_source_code)
-                .icon(
-                    getTintedDrawable(
-                        requireContext(),
-                        R.drawable.ic_github_circle,
-                        R.color.material_on_surface_emphasis_medium
-                    )
-                )
-                .setOnClickAction {
-                    val url = getString(R.string.about_app_url_source_code)
-                    openUrl(url)
-                }
-                .build())
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_libraries)
-                .icon(
-                    getTintedDrawable(
-                        requireContext(),
-                        R.drawable.ic_github_circle,
-                        R.color.material_on_surface_emphasis_medium
-                    )
-                )
-                .setOnClickAction {
-                    OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_app_text_libraries))
-                    startActivity(
-                        Intent(
+            .addItem(
+                MaterialAboutActionItem.Builder()
+                    .text(R.string.about_app_text_source_code)
+                    .icon(
+                        getTintedDrawable(
                             requireContext(),
-                            OssLicensesMenuActivity::class.java
+                            R.drawable.ic_github_circle,
+                            R.color.material_on_surface_emphasis_medium
                         )
                     )
-                }
-                .build())
+                    .setOnClickAction {
+                        val url = getString(R.string.about_app_url_source_code)
+                        openUrl(url)
+                    }
+                    .build()
+            )
+            .addItem(
+                MaterialAboutActionItem.Builder()
+                    .text(R.string.about_app_text_libraries)
+                    .icon(
+                        getTintedDrawable(
+                            requireContext(),
+                            R.drawable.ic_github_circle,
+                            R.color.material_on_surface_emphasis_medium
+                        )
+                    )
+                    .setOnClickAction {
+                        OssLicensesMenuActivity.setActivityTitle(getString(R.string.about_app_text_libraries))
+                        startActivity(
+                            Intent(
+                                requireContext(),
+                                OssLicensesMenuActivity::class.java
+                            )
+                        )
+                    }
+                    .build()
+            )
 
         val authorCardBuilder = MaterialAboutCard.Builder()
         authorCardBuilder.title(R.string.about_app_text_contacts)
             .cardColor(getBackgroundColor(requireActivity()))
-        authorCardBuilder.addItem(MaterialAboutActionItem.Builder()
-            .text(R.string.about_app_text_web)
-            .subText(R.string.about_app_url_web)
-            .icon(
-                getTintedDrawable(
-                    requireContext(),
-                    R.drawable.ic_web_black_24dp,
-                    R.color.material_on_surface_emphasis_medium
+        authorCardBuilder.addItem(
+            MaterialAboutActionItem.Builder()
+                .text(R.string.about_app_text_web)
+                .subText(R.string.about_app_url_web)
+                .icon(
+                    getTintedDrawable(
+                        requireContext(),
+                        R.drawable.ic_web_black_24dp,
+                        R.color.material_on_surface_emphasis_medium
+                    )
                 )
-            )
-            .setOnClickAction {
-                val url = getString(R.string.about_app_url_web)
-                openUrl(url)
-            }
-            .build())
+                .setOnClickAction {
+                    val url = getString(R.string.about_app_url_web)
+                    openUrl(url)
+                }
+                .build()
+        )
             .addItem(
                 ConvenienceBuilder.createEmailItem(
                     activity,
@@ -253,20 +261,22 @@ class AboutFragment : MaterialAboutFragment() {
                     getString(R.string.about_app_email_title)
                 )
             )
-            .addItem(MaterialAboutActionItem.Builder()
-                .text(R.string.about_app_text_privacy)
-                .icon(
-                    getTintedDrawable(
-                        requireContext(),
-                        R.drawable.ic_web_black_24dp,
-                        R.color.material_on_surface_emphasis_medium
+            .addItem(
+                MaterialAboutActionItem.Builder()
+                    .text(R.string.about_app_text_privacy)
+                    .icon(
+                        getTintedDrawable(
+                            requireContext(),
+                            R.drawable.ic_web_black_24dp,
+                            R.color.material_on_surface_emphasis_medium
+                        )
                     )
-                )
-                .setOnClickAction {
-                    val url = getString(R.string.about_app_url_privacy)
-                    openUrl(url)
-                }
-                .build())
+                    .setOnClickAction {
+                        val url = getString(R.string.about_app_url_privacy)
+                        openUrl(url)
+                    }
+                    .build()
+            )
         return if (serverCard == null) {
             MaterialAboutList(
                 appCardBuilder.build(),

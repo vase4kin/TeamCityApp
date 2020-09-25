@@ -449,13 +449,16 @@ class OverviewViewImpl(
             .setCaptureTouchEventOutsidePrompt(true)
             .setPromptStateChangeListener { _, _ -> listener.onPromptShown() }
         // Show prompt
-        Handler(Looper.getMainLooper()).postDelayed({
-            val child = toolbar.getChildAt(3)
-            if (child is ActionMenuView) {
-                promptBuilder.setTarget(child.getChildAt(child.childCount - 1))
-            }
-            promptBuilder.show()
-        }, TIMEOUT_PROMPT.toLong())
+        Handler(Looper.getMainLooper()).postDelayed(
+            {
+                val child = toolbar.getChildAt(3)
+                if (child is ActionMenuView) {
+                    promptBuilder.setTarget(child.getChildAt(child.childCount - 1))
+                }
+                promptBuilder.show()
+            },
+            TIMEOUT_PROMPT.toLong()
+        )
     }
 
     private fun getBackgroundColor(): Int {

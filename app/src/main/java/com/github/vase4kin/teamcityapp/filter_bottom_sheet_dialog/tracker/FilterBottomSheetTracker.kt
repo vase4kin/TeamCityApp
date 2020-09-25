@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,18 +45,21 @@ class FilterBottomSheetTrackerImpl @Inject constructor(
     override fun trackRunningBuildsFilterSelected(filter: Filter) {
         firebaseAnalytics.logEvent(
             FilterBottomSheetTracker.EVENT_FILTER_RUNNING_BUILDS_SELECTED,
-            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
+            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) }
+        )
     }
 
     override fun trackAgentsFilterSelected(filter: Filter) {
         firebaseAnalytics.logEvent(
             FilterBottomSheetTracker.EVENT_FILTER_AGENTS_SELECTED,
-            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
+            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) }
+        )
     }
 
     override fun trackQueuedBuildsFilterSelected(filter: Filter) {
         firebaseAnalytics.logEvent(
             FilterBottomSheetTracker.EVENT_FILTER_QUEUED_BUILDS_SELECTED,
-            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) })
+            Bundle().apply { putString(FilterBottomSheetTracker.ARG_FILTER, filter.toString()) }
+        )
     }
 }

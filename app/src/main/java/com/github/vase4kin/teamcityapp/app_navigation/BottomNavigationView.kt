@@ -116,10 +116,13 @@ class BottomNavigationViewImpl(
         bottomNavigation.isBehaviorTranslationEnabled = false
 
         bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
-            Handler(activity.mainLooper).postDelayed({
-                interactor.switchTab(position)
-                listener.onTabSelected(position, wasSelected)
-            }, DELAY)
+            Handler(activity.mainLooper).postDelayed(
+                {
+                    interactor.switchTab(position)
+                    listener.onTabSelected(position, wasSelected)
+                },
+                DELAY
+            )
             true
         }
     }

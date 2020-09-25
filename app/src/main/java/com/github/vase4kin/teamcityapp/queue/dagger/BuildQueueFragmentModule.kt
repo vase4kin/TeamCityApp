@@ -57,7 +57,7 @@ class BuildQueueFragmentModule {
         filterProvider: FilterProvider
     ): RunningBuildListView {
         return BuildQueueViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.activity as Activity,
             R.string.empty_list_message_build_queue,
             adapter,

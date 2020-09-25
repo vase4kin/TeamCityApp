@@ -165,7 +165,8 @@ class DrawerTest {
                     BundleMatchers.hasEntry(
                         CoreMatchers.equalTo(
                             BundleExtractorValues.IS_REQUIRED_TO_RELOAD
-                        ), CoreMatchers.equalTo(true)
+                        ),
+                        CoreMatchers.equalTo(true)
                     )
                 )
             )

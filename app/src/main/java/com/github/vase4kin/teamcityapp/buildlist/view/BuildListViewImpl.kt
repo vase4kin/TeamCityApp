@@ -59,7 +59,8 @@ open class BuildListViewImpl(
     activity,
     emptyMessage,
     adapter
-), BuildListView {
+),
+    BuildListView {
 
     @BindString(R.string.text_queued_header)
     lateinit var queuedHeaderText: String
@@ -422,7 +423,7 @@ open class BuildListViewImpl(
      *
      * @param dataModel
      * @return List<SimpleSectionedRecyclerViewAdapter.Section>
-    </SimpleSectionedRecyclerViewAdapter.Section> */
+     </SimpleSectionedRecyclerViewAdapter.Section> */
     private fun initSections(dataModel: BuildListDataModel): ArrayList<SimpleSectionedRecyclerViewAdapter.Section> {
         val sections = ArrayList<SimpleSectionedRecyclerViewAdapter.Section>()
 

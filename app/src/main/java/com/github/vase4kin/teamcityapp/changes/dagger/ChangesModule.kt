@@ -51,7 +51,7 @@ object ChangesModule {
     @JvmStatic
     @Provides
     fun providesChangesView(fragment: ChangesFragment, changesAdapter: ChangesAdapter): ChangesView {
-        return ChangesViewImpl(fragment.view!!, fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter)
+        return ChangesViewImpl(fragment.requireView(), fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter)
     }
 
     @JvmStatic

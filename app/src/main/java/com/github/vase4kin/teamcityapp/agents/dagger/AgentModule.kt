@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class AgentModule {
         filterProvider: FilterProvider
     ): BaseListView<AgentDataModel> {
         return AgentViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.activity as Activity,
             R.string.empty_list_message_agents,
             adapter,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,8 @@ class SplashActivityTest {
     @JvmField
     @Rule
     val activityRule: CustomIntentsTestRule<teamcityapp.features.splash.view.SplashActivity> = CustomIntentsTestRule(
-        teamcityapp.features.splash.view.SplashActivity::class.java)
+        teamcityapp.features.splash.view.SplashActivity::class.java
+    )
 
     @Before
     fun setUp() {

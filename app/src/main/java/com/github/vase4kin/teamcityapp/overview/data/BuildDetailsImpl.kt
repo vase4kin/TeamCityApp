@@ -311,10 +311,12 @@ class BuildDetailsImpl(private val build: Build) : BuildDetails {
      */
     override fun isTriggeredByUser(userName: String): Boolean {
         val triggered = build.triggered
-        return (triggered != null &&
-            triggered.isUser &&
-            triggered.user != null &&
-            userName == triggered.user.username)
+        return (
+            triggered != null &&
+                triggered.isUser &&
+                triggered.user != null &&
+                userName == triggered.user.username
+            )
     }
 
     /**

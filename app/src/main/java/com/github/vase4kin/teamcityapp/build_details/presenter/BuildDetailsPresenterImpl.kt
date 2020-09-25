@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,9 @@ class BuildDetailsPresenterImpl @Inject constructor(
     private val runBuildInteractor: RunBuildInteractor,
     private val buildInteractor: BuildInteractor
 ) : BaseTabsPresenterImpl<BuildDetailsView, BuildDetailsInteractor, BuildDetailsTracker>(view, tracker, dataManager),
-    BuildDetailsPresenter, OnBuildDetailsEventsListener, OnBuildDetailsViewListener {
+    BuildDetailsPresenter,
+    OnBuildDetailsEventsListener,
+    OnBuildDetailsViewListener {
 
     /**
      * Queued build href
@@ -162,28 +164,31 @@ class BuildDetailsPresenterImpl @Inject constructor(
     override fun onConfirmCancelingBuild(isReAddToTheQueue: Boolean) {
         tracker.trackUserConfirmedCancel(isReAddToTheQueue)
         showProgress()
-        interactor.cancelBuild(object : LoadingListenerWithForbiddenSupport<Build> {
-            override fun onForbiddenError() {
-                tracker.trackUserGetsForbiddenErrorOnBuildCancel()
-                hideProgress()
-                showForbiddenToCancelBuildSnackBar()
-            }
+        interactor.cancelBuild(
+            object : LoadingListenerWithForbiddenSupport<Build> {
+                override fun onForbiddenError() {
+                    tracker.trackUserGetsForbiddenErrorOnBuildCancel()
+                    hideProgress()
+                    showForbiddenToCancelBuildSnackBar()
+                }
 
-            override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") build: Build) {
-                tracker.trackUserCanceledBuildSuccessfully()
-                hideProgress()
-                showBuildIsCancelledSnackBar()
-                val buildTypeName = interactor.getBuildTypeName()
-                router.reopenBuildTabsActivity(build, buildTypeName)
-            }
+                override fun onSuccess(@Suppress("PARAMETER_NAME_CHANGED_ON_OVERRIDE") build: Build) {
+                    tracker.trackUserCanceledBuildSuccessfully()
+                    hideProgress()
+                    showBuildIsCancelledSnackBar()
+                    val buildTypeName = interactor.getBuildTypeName()
+                    router.reopenBuildTabsActivity(build, buildTypeName)
+                }
 
-            override fun onFail(errorMessage: String) {
-                tracker.trackUserGetsServerErrorOnBuildCancel()
-                hideProgress()
-                showBuildIsCancelledErrorSnackBar()
-                interactor.postRefreshOverViewDataEvent()
-            }
-        }, isReAddToTheQueue)
+                override fun onFail(errorMessage: String) {
+                    tracker.trackUserGetsServerErrorOnBuildCancel()
+                    hideProgress()
+                    showBuildIsCancelledErrorSnackBar()
+                    interactor.postRefreshOverViewDataEvent()
+                }
+            },
+            isReAddToTheQueue
+        )
     }
 
     /**
@@ -193,26 +198,29 @@ class BuildDetailsPresenterImpl @Inject constructor(
         val properties = interactor.getBuildDetails().properties
         val branchName = interactor.getBuildDetails().branchName
         view.showRestartingBuildProgressDialog()
-        runBuildInteractor.queueBuild(branchName, properties, object : LoadingListenerWithForbiddenSupport<String> {
-            override fun onForbiddenError() {
-                tracker.trackUserGetsForbiddenErrorOnBuildRestart()
-                view.hideRestartingBuildProgressDialog()
-                view.showForbiddenToRestartBuildSnackBar()
-            }
+        runBuildInteractor.queueBuild(
+            branchName, properties,
+            object : LoadingListenerWithForbiddenSupport<String> {
+                override fun onForbiddenError() {
+                    tracker.trackUserGetsForbiddenErrorOnBuildRestart()
+                    view.hideRestartingBuildProgressDialog()
+                    view.showForbiddenToRestartBuildSnackBar()
+                }
 
-            override fun onSuccess(data: String) {
-                this@BuildDetailsPresenterImpl.queuedBuildHref = data
-                tracker.trackUserRestartedBuildSuccessfully()
-                view.hideRestartingBuildProgressDialog()
-                view.showBuildRestartSuccessSnackBar()
-            }
+                override fun onSuccess(data: String) {
+                    this@BuildDetailsPresenterImpl.queuedBuildHref = data
+                    tracker.trackUserRestartedBuildSuccessfully()
+                    view.hideRestartingBuildProgressDialog()
+                    view.showBuildRestartSuccessSnackBar()
+                }
 
-            override fun onFail(errorMessage: String) {
-                tracker.trackUserGetsServerErrorOnBuildRestart()
-                view.hideRestartingBuildProgressDialog()
-                view.showBuildRestartErrorSnackBar()
+                override fun onFail(errorMessage: String) {
+                    tracker.trackUserGetsServerErrorOnBuildRestart()
+                    view.hideRestartingBuildProgressDialog()
+                    view.showBuildRestartErrorSnackBar()
+                }
             }
-        })
+        )
     }
 
     /**
@@ -221,20 +229,23 @@ class BuildDetailsPresenterImpl @Inject constructor(
     override fun onShowQueuedBuild() {
         view.showBuildLoadingProgress()
         val queuedBuildHref = this@BuildDetailsPresenterImpl.queuedBuildHref ?: return
-        buildInteractor.loadBuild(queuedBuildHref, object : OnLoadingListener<Build> {
-            override fun onSuccess(queuedBuild: Build) {
-                tracker.trackUserWantsToSeeQueuedBuildDetails()
-                view.hideBuildLoadingProgress()
-                val buildTypeName = interactor.getBuildTypeName()
-                router.reopenBuildTabsActivity(queuedBuild, buildTypeName)
-            }
+        buildInteractor.loadBuild(
+            queuedBuildHref,
+            object : OnLoadingListener<Build> {
+                override fun onSuccess(queuedBuild: Build) {
+                    tracker.trackUserWantsToSeeQueuedBuildDetails()
+                    view.hideBuildLoadingProgress()
+                    val buildTypeName = interactor.getBuildTypeName()
+                    router.reopenBuildTabsActivity(queuedBuild, buildTypeName)
+                }
 
-            override fun onFail(errorMessage: String) {
-                tracker.trackUserFailedToSeeQueuedBuildDetails()
-                view.hideBuildLoadingProgress()
-                view.showOpeningBuildErrorSnackBar()
+                override fun onFail(errorMessage: String) {
+                    tracker.trackUserFailedToSeeQueuedBuildDetails()
+                    view.hideBuildLoadingProgress()
+                    view.showOpeningBuildErrorSnackBar()
+                }
             }
-        })
+        )
     }
 
     /**

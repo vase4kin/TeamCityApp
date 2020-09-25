@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,13 @@ object DrawerActivityStartUtils {
      */
     fun startActivity(launchIntent: Intent?, activity: Activity, drawerTimeOut: Int) {
         if (launchIntent != null) {
-            Handler().postDelayed({
-                activity.startActivity(launchIntent)
-                activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
-            }, drawerTimeOut.toLong())
+            Handler().postDelayed(
+                {
+                    activity.startActivity(launchIntent)
+                    activity.overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
+                },
+                drawerTimeOut.toLong()
+            )
         }
     }
 }

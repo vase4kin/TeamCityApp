@@ -72,7 +72,8 @@ abstract class ActivityBindingModule {
     @AboutActivityScope
     @ContributesAndroidInjector(
         modules = [
-            AboutActivityBindingModule::class, AboutRepositoryModule::class]
+            AboutActivityBindingModule::class, AboutRepositoryModule::class
+        ]
     )
     abstract fun aboutActivity(): AboutActivity
 

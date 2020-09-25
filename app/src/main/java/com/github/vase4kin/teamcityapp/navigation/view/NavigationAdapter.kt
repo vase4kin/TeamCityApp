@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,11 +52,14 @@ class NavigationAdapter(
             }
         }
         if (holder is RateTheAppViewHolder) {
-            holder.setListeners(View.OnClickListener {
-                onClickListener?.onRateCancelButtonClick()
-            }, View.OnClickListener {
-                onClickListener?.onRateNowButtonClick()
-            })
+            holder.setListeners(
+                View.OnClickListener {
+                    onClickListener?.onRateCancelButtonClick()
+                },
+                View.OnClickListener {
+                    onClickListener?.onRateNowButtonClick()
+                }
+            )
         }
     }
 

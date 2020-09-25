@@ -218,7 +218,8 @@ class CreateAccountDataManagerImpl(
                     // On data save fail
                     listener.onFail("")
                 }
-            })
+            }
+        )
     }
 
     /**

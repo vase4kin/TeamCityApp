@@ -42,7 +42,8 @@ import teamcityapp.libraries.remote.RemoteService
         UrlFormatterModule::class,
         ActivityBindingModule::class,
         AppActivityBindingModule::class,
-        AndroidInjectionModule::class]
+        AndroidInjectionModule::class
+    ]
 )
 interface RestApiComponent : AndroidInjector<TeamCityApplication> {
 

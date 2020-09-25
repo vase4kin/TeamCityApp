@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,9 @@ class TestsPresenterImpl @Inject constructor(
     dataManager,
     tracker,
     valueExtractor
-), TestsPresenter, OnTestsPresenterListener {
+),
+    TestsPresenter,
+    OnTestsPresenterListener {
 
     @VisibleForTesting
     var isLoadMoreLoading = false
@@ -111,13 +113,16 @@ class TestsPresenterImpl @Inject constructor(
      */
     override fun onViewsCreated() {
         super.onViewsCreated()
-        dataManager.loadTestDetails(valueExtractor.url, object : OnLoadingListener<Int> {
-            override fun onSuccess(data: Int) {
-                dataManager.postChangeTabTitleEvent(data)
-            }
+        dataManager.loadTestDetails(
+            valueExtractor.url,
+            object : OnLoadingListener<Int> {
+                override fun onSuccess(data: Int) {
+                    dataManager.postChangeTabTitleEvent(data)
+                }
 
-            override fun onFail(errorMessage: String) {}
-        })
+                override fun onFail(errorMessage: String) {}
+            }
+        )
         view.invalidateOptionsMenu()
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,6 +74,7 @@ class HomeTrackerImpl(firebaseAnalytics: FirebaseAnalytics) : BaseFirebaseTracke
     override fun trackTabSelected(navigationItem: AppNavigationItem) {
         firebaseAnalytics.logEvent(
             HomeTracker.EVENT_USER_SELECTS_TAB,
-            Bundle().apply { putString(HomeTracker.ARG_TAB, navigationItem.toString()) })
+            Bundle().apply { putString(HomeTracker.ARG_TAB, navigationItem.toString()) }
+        )
     }
 }

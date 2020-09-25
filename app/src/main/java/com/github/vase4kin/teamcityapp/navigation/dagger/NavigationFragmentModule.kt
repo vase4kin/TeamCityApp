@@ -40,7 +40,7 @@ class NavigationFragmentModule {
     @Provides
     fun providesNavigationView(fragment: NavigationListFragment, adapter: NavigationAdapter): NavigationView {
         return NavigationViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.requireActivity(),
             R.string.empty_list_message_projects_or_build_types,
             adapter

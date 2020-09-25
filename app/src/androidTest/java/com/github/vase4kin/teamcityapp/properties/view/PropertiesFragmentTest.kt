@@ -198,11 +198,14 @@ class PropertiesFragmentTest {
         // <! ---------------------------------------------------------------------- !>
         val intent = Intent()
         val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild(
-            Properties(
-                emptyList()
+        b.putSerializable(
+            BundleExtractorValues.BUILD,
+            Mocks.successBuild(
+                Properties(
+                    emptyList()
+                )
             )
-        ))
+        )
         b.putString(BundleExtractorValues.NAME, NAME)
         intent.putExtras(b)
 
