@@ -48,7 +48,7 @@ class BottomSheetDialogFragment :
         // Injecting presenter
         DaggerBottomSheetComponent.builder()
             .bottomSheetModule(BottomSheetModule(view, this))
-            .appComponent((activity!!.application as TeamCityApplication).appInjector)
+            .appComponent((requireActivity().application as TeamCityApplication).appInjector)
             .build()
             .inject(this)
 

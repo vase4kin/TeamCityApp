@@ -54,7 +54,7 @@ object FavoritesFragmentModule {
         adapter: SimpleSectionedRecyclerViewAdapter<NavigationAdapter>
     ): FavoritesView {
         return FavoritesViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.requireActivity(),
             R.string.empty_list_message_favorites,
             adapter

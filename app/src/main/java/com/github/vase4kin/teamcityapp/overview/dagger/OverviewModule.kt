@@ -62,7 +62,7 @@ object OverviewModule {
     @JvmStatic
     @Provides
     fun providesBaseListView(adapter: OverviewAdapter, fragment: OverviewFragment): OverviewView {
-        return OverviewViewImpl(fragment.view!!, fragment.activity as AppCompatActivity, adapter)
+        return OverviewViewImpl(fragment.requireView(), fragment.activity as AppCompatActivity, adapter)
     }
 
     @JvmStatic

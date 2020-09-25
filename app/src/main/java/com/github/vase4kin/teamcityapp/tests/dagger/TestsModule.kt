@@ -65,7 +65,7 @@ object TestsModule {
         fragment: TestOccurrencesFragment
     ): TestsView {
         return TestsViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.requireActivity(),
             testsValueExtractor,
             R.string.empty_passed_tests,

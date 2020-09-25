@@ -64,7 +64,7 @@ object ArtifactsFragmentModule {
         adapter: ArtifactAdapter
     ): ArtifactView {
         return ArtifactViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.requireActivity(),
             R.string.empty_list_message_artifacts,
             adapter

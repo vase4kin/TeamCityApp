@@ -60,7 +60,7 @@ class RunningBuildsFragmentModule {
         filterProvider: FilterProvider
     ): RunningBuildListView {
         return RunningBuildsListViewImpl(
-            fragment.view!!,
+            fragment.requireView(),
             fragment.requireActivity(),
             R.string.empty_list_message_running_builds,
             adapter,
