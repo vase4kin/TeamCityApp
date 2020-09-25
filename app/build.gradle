@@ -21,7 +21,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
+apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'com.github.ben-manes.versions'
 apply plugin: 'org.jmailen.kotlinter'
@@ -231,9 +231,8 @@ dependencies {
     androidTestImplementation Libs.Google.material
     androidTestImplementation Libs.AndroidX.recyclerView
     // Crashlytics
-    implementation(Libs.crashlytics) {
-        transitive = true
-    }
+    implementation(Libs.Google.crashlytics)
+    implementation(Libs.Google.analytics)
 
     implementation Libs.Kotlin.stdlib
 }
