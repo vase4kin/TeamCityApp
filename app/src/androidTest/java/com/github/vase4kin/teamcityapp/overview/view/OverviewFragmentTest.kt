@@ -35,6 +35,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import com.azimolabs.conditionwatcher.ConditionWatcher
 import com.azimolabs.conditionwatcher.Instruction
@@ -832,6 +833,7 @@ class OverviewFragmentTest {
         verify(teamCityService).listBuildTypes(eq("projectId"))
     }
 
+    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.M)
     @Test
     fun testUserCanSeeSuccessRestartBuildOnboardingForSuccessBuild() {
         // Prepare mocks
