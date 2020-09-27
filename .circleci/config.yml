@@ -96,7 +96,7 @@ jobs:
     parameters:
       devicemodel:
         description: "Device name to execute tests on"
-        default: "Nexus5,version=21,locale=en,orientation=portrait"
+        default: "Nexus6,version=21,locale=en,orientation=portrait"
         type: string
     steps:
       - *attach_workspace
