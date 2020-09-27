@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
+import com.github.vase4kin.teamcityapp.utils.AnimationUtils
 import java.util.UUID
 
 /**
@@ -51,7 +52,7 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
      * {@inheritDoc}
      */
     override fun isRunning(position: Int): Boolean {
-        return buildDetailsList[position].isRunning
+        return AnimationUtils.isAnimationOn && buildDetailsList[position].isRunning
     }
 
     /**
