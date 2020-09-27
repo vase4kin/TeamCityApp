@@ -96,7 +96,7 @@ jobs:
     parameters:
       devicemodel:
         description: "Device name to execute tests on"
-        default: "Nexus5X,version=23,locale=en,orientation=portrait"
+        default: "sailfish,version=28,locale=en,orientation=portrait"
         type: string
     steps:
       - *attach_workspace
@@ -185,6 +185,15 @@ workflows:
       - unit-tests:
           requires:
             - build-tests
+      - ui-tests:
+          name: ui-tests-v23
+          devicemodel: Nexus5X,version=23,locale=en,orientation=portrait
+          requires:
+            - build-tests
+          filters:
+            branches:
+              only:
+                - /release-.*/
       - ui-tests:
           name: ui-tests-v24
           devicemodel: lucye,version=24,locale=en,orientation=portrait
