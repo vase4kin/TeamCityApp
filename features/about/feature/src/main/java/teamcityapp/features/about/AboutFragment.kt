@@ -73,8 +73,6 @@ class AboutFragment : MaterialAboutFragment() {
 
     override fun getMaterialAboutList(context: Context): MaterialAboutList = MaterialAboutList()
 
-    override fun getTheme(): Int = R.style.AppTheme_MaterialAboutActivity_Fragment
-
     private fun loadServerInfo() {
         repository.serverInfo().subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
