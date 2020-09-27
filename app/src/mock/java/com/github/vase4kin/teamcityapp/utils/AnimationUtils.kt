@@ -16,9 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.utils
 
+import android.os.Build
+
 /**
  * Helper animation utils to help to control progress indicator animation for UI tests (API 23)
  */
 object AnimationUtils {
-    const val isAnimationOn: Boolean = false
+    val isAnimationOn: Boolean = Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP
 }
