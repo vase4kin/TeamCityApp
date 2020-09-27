@@ -833,7 +833,7 @@ class OverviewFragmentTest {
         verify(teamCityService).listBuildTypes(eq("projectId"))
     }
 
-    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.M)
+    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.N)
     @Test
     fun testUserCanSeeSuccessRestartBuildOnboardingForSuccessBuild() {
         // Prepare mocks
