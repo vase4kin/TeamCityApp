@@ -96,7 +96,7 @@ jobs:
     parameters:
       devicemodel:
         description: "Device name to execute tests on"
-        default: "athene,version=23,locale=en,orientation=portrait"
+        default: "Nexus5X,version=23,locale=en,orientation=portrait"
         type: string
     steps:
       - *attach_workspace
