@@ -22,5 +22,5 @@ import android.os.Build
  * Helper animation utils to help to control progress indicator animation for UI tests (API 23)
  */
 object AnimationUtils {
-    val isAnimationOn: Boolean = Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP
+    val isAnimationOn: Boolean = Build.VERSION.SDK_INT > Build.VERSION_CODES.M
 }
