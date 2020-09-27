@@ -152,6 +152,7 @@ dependencies {
     implementation Libs.AndroidX.LifeCycle.lifeCycleLiveData
     implementation Libs.AndroidX.LifeCycle.lifeCycleViewModel
     implementation Libs.AndroidX.LifeCycle.lifeCycleCommonJava8
+    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
     // Api third party libraries
     implementation Libs.OkHttp.okhttp
     implementation Libs.OkHttp.loggingInterceptor
