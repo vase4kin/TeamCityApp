@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.overview.data
 import android.content.Context
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
+import com.github.vase4kin.teamcityapp.utils.AnimationUtils
 
 /**
  * Impl of [OverviewDataModel]
@@ -45,7 +46,7 @@ class OverviewDataModelImpl(
      * {@inheritDoc}
      */
     override fun isRunning(position: Int): Boolean {
-        return getIcon(position) == R.drawable.ic_spinner
+        return AnimationUtils.isAnimationOn && getIcon(position) == R.drawable.ic_spinner
     }
 
     /**
