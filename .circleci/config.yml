@@ -96,7 +96,7 @@ jobs:
     parameters:
       devicemodel:
         description: "Device name to execute tests on"
-        default: "sailfish,version=28,locale=en,orientation=portrait"
+        default: "hammerhead,version=23,locale=en,orientation=portrait"
         type: string
     steps:
       - *attach_workspace
