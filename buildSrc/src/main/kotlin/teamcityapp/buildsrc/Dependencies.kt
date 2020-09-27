@@ -32,16 +32,16 @@ object Config {
 object Libs {
 
     const val errorView = "tr.xip.errorview:library:3.0.0"
-    const val aboutLibrary = "com.github.daniel-stoneuk:material-about-library:2.4.2"
+    const val aboutLibrary = "com.github.daniel-stoneuk:material-about-library:3.1.2"
     const val dialogs = "com.afollestad.material-dialogs:core:0.9.6.0"
     const val shimmerlayout = "io.supercharge:shimmerlayout:2.1.0"
     const val eventBus = "org.greenrobot:eventbus:3.0.0"
-    const val materialTapTargetPrompt = "uk.co.samuelwall:material-tap-target-prompt:2.14.0"
+    const val materialTapTargetPrompt = "uk.co.samuelwall:material-tap-target-prompt:3.0.0"
     const val conceal = "com.facebook.conceal:conceal:1.1.3@aar"
     const val jodaTime = "joda-time:joda-time:2.8.1"
     const val mugen = "com.vinaysshenoy:mugen:1.0.3"
     const val fragNav = "com.ncapdevi:frag-nav:3.3.0"
-    const val ahbottomnavigation = "com.aurelhubert:ahbottomnavigation:2.3.4"
+    const val ahbottomnavigation = "com.aurelhubert:ahbottomnavigation:2.3.4" // FIXME: Use material bottom navigation
 
     const val junit = "junit:junit:4.13"
     const val hamcrestJunit = "org.hamcrest:hamcrest-junit:2.0.0.0"
@@ -57,7 +57,7 @@ object Libs {
         const val recyclerView = "androidx.recyclerview:recyclerview:1.0.0"
         const val annotationn = "androidx.annotation:annotation:1.0.2"
         const val browser = "androidx.browser:browser:1.0.0"
-        const val constraintLayout = "com.android.support.constraint:constraint-layout:1.1.3"
+        const val constraintLayout = "androidx.constraintlayout:constraintlayout:2.0.0"
         const val preference = "androidx.preference:preference:1.1.1"
 
         object LifeCycle {
