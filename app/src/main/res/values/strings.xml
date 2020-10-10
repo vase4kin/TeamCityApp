@@ -24,6 +24,10 @@
     <string name="running_builds_drawer_item">Running builds</string>
     <string name="build_queue_drawer_item">Build queue</string>
 
+    <!--Home navigation-->
+    <string name="home_navigation_builds">Builds</string>
+    <string name="home_navigation_queue">Queue</string>
+
     <!--Activity titles-->
     <string name="title_activity_build_list">Builds</string>
     <string name="title_activity_build">Build</string>

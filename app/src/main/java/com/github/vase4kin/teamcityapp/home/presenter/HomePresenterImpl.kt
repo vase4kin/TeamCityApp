@@ -58,7 +58,7 @@ class HomePresenterImpl @Inject constructor(
         if (savedInstanceState != null) {
             val selectedTab = savedInstanceState.getInt(ARG_SELECTED_TAB)
             AppNavigationItem.values().getOrNull(selectedTab)?.let {
-                onTabSelected(it.ordinal)
+                onTabSelected(it)
             }
         }
         // Load notifications
@@ -134,31 +134,31 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onTabSelected(position: Int, wasSelected: Boolean) {
-        trackTabSelection(position)
+    override fun onTabSelected(navItem: AppNavigationItem, wasSelected: Boolean) {
+        trackTabSelection(navItem)
         if (wasSelected) {
             return
         }
-        onTabSelected(position)
+        onTabSelected(navItem)
         loadNotificationsCount()
         view.dimissSnackbar()
     }
 
-    private fun onTabSelected(position: Int) {
-        when (position) {
-            AppNavigationItem.FAVORITES.ordinal -> {
+    private fun onTabSelected(navItem: AppNavigationItem) {
+        when (navItem) {
+            AppNavigationItem.FAVORITES -> {
                 showFavoritesPrompt()
                 bottomNavigationView.showFavoritesFab()
             }
-            AppNavigationItem.RUNNING_BUILDS.ordinal -> {
+            AppNavigationItem.RUNNING_BUILDS -> {
                 showRunningBuildsFilterPrompt()
                 bottomNavigationView.showFilterFab()
             }
-            AppNavigationItem.BUILD_QUEUE.ordinal -> {
+            AppNavigationItem.BUILD_QUEUE -> {
                 showBuildQueueFilterPrompt()
                 bottomNavigationView.showFilterFab()
             }
-            AppNavigationItem.AGENTS.ordinal -> {
+            AppNavigationItem.AGENTS -> {
                 showAgentsFilterPrompt()
                 bottomNavigationView.showFilterFab()
             }
@@ -166,8 +166,7 @@ class HomePresenterImpl @Inject constructor(
         }
     }
 
-    private fun trackTabSelection(position: Int) {
-        val navItem = AppNavigationItem.values()[position]
+    private fun trackTabSelection(navItem: AppNavigationItem) {
         tracker.trackTabSelected(navItem)
     }
 
@@ -226,23 +225,24 @@ class HomePresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onFilterTabsClicked(position: Int) {
-        when (position) {
-            AppNavigationItem.RUNNING_BUILDS.ordinal -> {
+    override fun onFilterTabsClicked(navItem: AppNavigationItem) {
+        when (navItem) {
+            AppNavigationItem.RUNNING_BUILDS -> {
                 val filter = filterProvider.runningBuildsFilter
                 view.showFilterBottomSheet(filter)
                 tracker.trackUserClicksOnRunningBuildsFilterFab()
             }
-            AppNavigationItem.BUILD_QUEUE.ordinal -> {
+            AppNavigationItem.BUILD_QUEUE -> {
                 val filter = filterProvider.queuedBuildsFilter
                 view.showFilterBottomSheet(filter)
                 tracker.trackUserClicksOnBuildsQueueFilterFab()
             }
-            AppNavigationItem.AGENTS.ordinal -> {
+            AppNavigationItem.AGENTS -> {
                 val filter = filterProvider.agentsFilter
                 view.showFilterBottomSheet(filter)
                 tracker.trackUserClicksOnAgentsFilterFab()
             }
+            else -> Unit
         }
     }
 
