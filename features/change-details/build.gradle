@@ -25,8 +25,8 @@ apply plugin: 'org.jmailen.kotlinter'
 apply from: '../../scripts/jacoco.gradle'
 
 android {
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding true
     }
 }
 

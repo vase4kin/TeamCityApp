@@ -95,12 +95,12 @@ android {
 
     // Fixing crash in androidTest
     // java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;
-    dataBinding {
-        enabled = true
+    buildFeatures {
+        dataBinding true
     }
 
     kotlinOptions {
-        jvmTarget = Config.javaVersion.toString()
+        jvmTarget = Config.KotlinOptions.jvmTarget
     }
 }
 

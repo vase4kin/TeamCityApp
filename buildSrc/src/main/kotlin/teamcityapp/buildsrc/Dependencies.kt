@@ -27,6 +27,10 @@ object Config {
     const val versionName = "1.52.3"
     const val applicationId = "com.github.vase4kin.teamcityapp"
     val javaVersion = JavaVersion.VERSION_1_8
+
+    object KotlinOptions {
+        const val jvmTarget = "1.8"
+    }
 }
 
 object Libs {
@@ -162,7 +166,7 @@ object Libs {
     }
 
     object Tools {
-        const val gradleAndroid = "com.android.tools.build:gradle:4.0.1"
+        const val gradleAndroid = "com.android.tools.build:gradle:4.1.0"
         const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.33.0"
         const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
         const val googleServices = "com.google.gms:google-services:4.3.0"
