@@ -46,7 +46,7 @@ class DrawerViewModel(
     /**
      * FIXME: Remove it
      */
-    private val isAgentsEnabled = false
+    private val isAgentsEnabled = true
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 

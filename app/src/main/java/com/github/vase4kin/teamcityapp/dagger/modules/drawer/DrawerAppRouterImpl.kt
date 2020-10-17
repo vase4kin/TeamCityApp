@@ -16,9 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules.drawer
 
+import android.content.Intent
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import teamcityapp.features.about.AboutActivity
+import teamcityapp.features.agents.AgentsActivity
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
@@ -53,6 +55,7 @@ class DrawerAppRouterImpl(
     }
 
     override fun openAgentsActivity() {
-        // Open agents activity
+        val intent = Intent(fragment.requireActivity(), AgentsActivity::class.java)
+        fragment.requireActivity().startActivity(intent)
     }
 }

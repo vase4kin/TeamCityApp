@@ -140,6 +140,7 @@ class MenuViewHolder(
                 DrawerType.AGENTS -> {
                     // tracker
                     // open agents
+                    router.openAgents()
                 }
                 else -> {
                     // Do nothing

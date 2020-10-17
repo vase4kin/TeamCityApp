@@ -27,6 +27,17 @@ object Config {
     const val versionName = "1.52.3"
     const val applicationId = "com.github.vase4kin.teamcityapp"
     val javaVersion = JavaVersion.VERSION_1_8
+
+    object KotlinOptions {
+        const val jvmTarget = "1.8"
+        val freeCompilerArgs =
+            listOf("-Xallow-jvm-ir-dependencies", "-Xskip-prerelease-check")
+    }
+
+    object ComposeOptions {
+        const val kotlinCompilerVersion = Libs.Kotlin.version
+        const val kotlinCompilerExtensionVersion = Libs.AndroidX.Compose.version
+    }
 }
 
 object Libs {
@@ -41,7 +52,8 @@ object Libs {
     const val jodaTime = "joda-time:joda-time:2.8.1"
     const val mugen = "com.vinaysshenoy:mugen:1.0.3"
     const val fragNav = "com.ncapdevi:frag-nav:3.3.0"
-    const val ahbottomnavigation = "com.aurelhubert:ahbottomnavigation:2.3.4" // FIXME: Use material bottom navigation
+    const val ahbottomnavigation =
+        "com.aurelhubert:ahbottomnavigation:2.3.4" // FIXME: Use material bottom navigation
 
     const val junit = "junit:junit:4.13"
     const val hamcrestJunit = "org.hamcrest:hamcrest-junit:2.0.0.0"
@@ -69,6 +81,17 @@ object Libs {
             const val lifeCycleCommonJava8 = "androidx.lifecycle:lifecycle-common-java8:$version"
         }
 
+        object Compose {
+            const val version = "1.0.0-alpha04"
+            const val ui = "androidx.compose.ui:ui:$version"
+            const val tooling = "androidx.ui:ui-tooling:$version"
+            const val foundation = "androidx.compose.foundation:foundation:$version"
+            const val material = "androidx.compose.material:material:$version"
+            const val materialIconsCore = "androidx.compose.material:material-icons-core:$version"
+            const val materialIconsExtended =
+                "androidx.compose.material:material-icons-extended:$version"
+        }
+
         object Test {
 
             private const val version = "1.3.0"
@@ -94,8 +117,8 @@ object Libs {
         const val firebaseCore = "com.google.firebase:firebase-core:17.5.0"
         const val firebaseConfig = "com.google.firebase:firebase-config:19.2.0"
         const val firebasePerf = "com.google.firebase:firebase-perf:19.0.8"
-        const val crashlytics =  "com.google.firebase:firebase-crashlytics:17.2.1"
-        const val analytics =  "com.google.firebase:firebase-analytics:17.5.0"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics:17.2.1"
+        const val analytics = "com.google.firebase:firebase-analytics:17.5.0"
 
         const val openSourceLicensesLibrary =
             "com.google.android.gms:play-services-oss-licenses:17.0.0"
@@ -152,7 +175,7 @@ object Libs {
     }
 
     object Kotlin {
-        private const val version = "1.4.10"
+        const val version = "1.4.10"
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
 
         object Tools {
@@ -162,7 +185,7 @@ object Libs {
     }
 
     object Tools {
-        const val gradleAndroid = "com.android.tools.build:gradle:4.0.1"
+        const val gradleAndroid = "com.android.tools.build:gradle:4.2.0-alpha13"
         const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.33.0"
         const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
         const val googleServices = "com.google.gms:google-services:4.3.0"
