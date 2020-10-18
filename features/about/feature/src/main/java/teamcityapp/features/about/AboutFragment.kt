@@ -150,7 +150,7 @@ class AboutFragment : MaterialAboutFragment() {
                         R.color.material_on_surface_emphasis_medium
                     )
                 )
-                .subText(BuildConfig.VERSION_NAME)
+                .subText(BuildConfig.VERSION)
                 .build()
         )
             .addItem(
