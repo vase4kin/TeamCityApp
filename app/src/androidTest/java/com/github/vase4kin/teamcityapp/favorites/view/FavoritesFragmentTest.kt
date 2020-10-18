@@ -21,7 +21,6 @@ import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withChild
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -44,7 +43,6 @@ import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
-import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -256,29 +254,11 @@ class FavoritesFragmentTest {
     }
 
     private fun clickOnFavoritesTab() {
-        onView(
-            withChild(
-                allOf(
-                    withId(R.id.bottom_navigation_small_item_title),
-                    withText(R.string.favorites_drawer_item)
-                )
-            )
-        )
+        onView(withId(R.id.favorites))
             .perform(click())
     }
 
     private fun checkFavoritesTabBadgeCount(count: String) {
-        onView(
-            allOf(
-                withChild(allOf(withId(R.id.bottom_navigation_notification), withText(count))),
-                withChild(
-                    allOf(
-                        withId(R.id.bottom_navigation_small_item_title),
-                        withText(R.string.favorites_drawer_item)
-                    )
-                )
-            )
-        )
-            .check(matches(isDisplayed()))
+        //FIXME
     }
 }
