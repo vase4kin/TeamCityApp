@@ -259,6 +259,6 @@ class FavoritesFragmentTest {
     }
 
     private fun checkFavoritesTabBadgeCount(count: String) {
-        //FIXME
+        // FIXME
     }
 }
