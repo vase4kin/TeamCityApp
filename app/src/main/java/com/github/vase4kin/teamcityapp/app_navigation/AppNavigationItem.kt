@@ -25,6 +25,4 @@ enum class AppNavigationItem(@IdRes val id: Int) {
     RUNNING_BUILDS(R.id.running_builds),
     BUILD_QUEUE(R.id.build_queue),
     AGENTS(R.id.agents);
-
-    fun getIdByPosition(position: Int): Int? = values().getOrNull(position)?.id
 }
