@@ -199,7 +199,6 @@ dependencies {
     implementation Libs.Google.firebasePerf
     // Bottom nav libries
     implementation Libs.fragNav
-    implementation Libs.ahbottomnavigation
     // Unit tests
     testImplementation Libs.junit
     testImplementation Libs.Mockito.mockito3

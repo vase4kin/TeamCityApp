@@ -18,12 +18,8 @@ package com.github.vase4kin.teamcityapp.app_navigation
 
 import android.os.Bundle
 import android.os.Handler
-import androidx.core.content.ContextCompat
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import teamcityapp.libraries.utils.getThemeColor
 
@@ -42,9 +38,9 @@ interface BottomNavigationView {
     fun selectTab(tabPosition: Int)
 
     interface ViewListener {
-        fun onTabSelected(position: Int, wasSelected: Boolean)
+        fun onTabSelected(navItem: AppNavigationItem, wasSelected: Boolean)
         fun onFavoritesFabClicked()
-        fun onFilterTabsClicked(position: Int)
+        fun onFilterTabsClicked(navItem: AppNavigationItem)
     }
 }
 
@@ -54,7 +50,7 @@ class BottomNavigationViewImpl(
 ) : BottomNavigationView {
 
     private lateinit var fab: FloatingActionButton
-    private lateinit var bottomNavigation: AHBottomNavigation
+    private lateinit var navigation: com.google.android.material.bottomnavigation.BottomNavigationView
 
     private lateinit var listener: BottomNavigationView.ViewListener
 
@@ -70,71 +66,48 @@ class BottomNavigationViewImpl(
     }
 
     private fun initViews() {
-        bottomNavigation = activity.findViewById(R.id.bottom_navigation)
+        navigation = activity.findViewById(R.id.navigation)
         fab = activity.findViewById(R.id.home_floating_action_button)
     }
 
     private fun initFab() {
         fab.setOnClickListener {
-            when (val currentItem = bottomNavigation.currentItem) {
-                AppNavigationItem.FAVORITES.ordinal -> listener.onFavoritesFabClicked()
-                AppNavigationItem.BUILD_QUEUE.ordinal, AppNavigationItem.RUNNING_BUILDS.ordinal, AppNavigationItem.AGENTS.ordinal -> listener.onFilterTabsClicked(
-                    currentItem
-                )
+            when (val currentItem = navigation.selectedItemId) {
+                R.id.favorites -> listener.onFavoritesFabClicked()
+                R.id.build_queue, R.id.running_builds, R.id.agents -> {
+                    AppNavigationItem.values().find { it.id == currentItem }?.let {
+                        listener.onFilterTabsClicked(it)
+                    }
+                }
             }
         }
     }
 
     private fun initBottomNavView() {
-        bottomNavigation.removeAllItems()
-
-        // Add bottom nav items
-        for (itemApp: AppNavigationItem in AppNavigationItem.values()) {
-            val bottomNavItem =
-                AHBottomNavigationItem(
-                    itemApp.title,
-                    itemApp.icon,
-                    R.color.material_on_primary_emphasis_high_type
-                )
-            bottomNavigation.addItem(bottomNavItem)
-        }
-
-        val elevation =
-            activity.resources.getDimension(R.dimen.dp_8)
-        val backgroundColor = ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
-            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
-        )
-        // Set bottom nav settings
-        bottomNavigation.defaultBackgroundColor = backgroundColor
-        bottomNavigation.accentColor =
-            activity.getThemeColor(R.attr.colorOnPrimary)
-        bottomNavigation.inactiveColor =
-            ContextCompat.getColor(activity, R.color.material_on_primary_emphasis_medium)
-        bottomNavigation.setNotificationBackgroundColor(
-            activity.getThemeColor(R.attr.colorSecondary)
-        )
-        bottomNavigation.isBehaviorTranslationEnabled = false
-
-        bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
-            Handler(activity.mainLooper).postDelayed(
-                {
-                    interactor.switchTab(position)
-                    listener.onTabSelected(position, wasSelected)
-                },
-                DELAY
-            )
+        navigation.setOnNavigationItemSelectedListener { item ->
+            AppNavigationItem.values().find { it.id == item.itemId }?.let {
+                selectTabInternal(it, item.isChecked)
+            }
             true
         }
     }
 
+    private fun selectTabInternal(navItem: AppNavigationItem, isSelected: Boolean) {
+        Handler(activity.mainLooper).postDelayed(
+            {
+                interactor.switchTab(navItem.ordinal)
+                listener.onTabSelected(navItem, isSelected)
+            },
+            DELAY
+        )
+    }
+
     override fun showFavoritesFab() = fab.run {
-        hide()
         setImageResource(R.drawable.ic_add_black_24dp)
         show()
     }
 
     override fun showFilterFab() = fab.run {
-        hide()
         setImageResource(R.drawable.ic_filter_list_white_24px)
         show()
     }
@@ -142,10 +115,22 @@ class BottomNavigationViewImpl(
     override fun hideFab() = fab.hide()
 
     override fun updateNotifications(tabPosition: Int, count: Int) {
-        bottomNavigation.setNotification(count.toString(), tabPosition)
+        getAppNavItemByPosition(tabPosition)?.let {
+            val menuItemId = it.id
+            val badgeDrawable = navigation.getOrCreateBadge(menuItemId)
+            badgeDrawable.backgroundColor = activity.getThemeColor(R.attr.colorSecondary)
+            badgeDrawable.badgeTextColor = activity.getThemeColor(R.attr.colorOnPrimarySurface)
+            badgeDrawable.isVisible = true
+            badgeDrawable.number = count
+        }
     }
 
     override fun selectTab(tabPosition: Int) {
-        bottomNavigation.currentItem = tabPosition
+        getAppNavItemByPosition(tabPosition)?.let {
+            navigation.selectedItemId = it.id
+        }
     }
+
+    private fun getAppNavItemByPosition(position: Int): AppNavigationItem? =
+        AppNavigationItem.values().getOrNull(position)
 }
