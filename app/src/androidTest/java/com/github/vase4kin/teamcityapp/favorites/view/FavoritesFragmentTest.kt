@@ -45,6 +45,7 @@ import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.junit.Before
 import org.junit.BeforeClass
+import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,6 +53,7 @@ import org.mockito.Matchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
+@Ignore("https://github.com/vase4kin/TeamCityApp/issues/362")
 @RunWith(AndroidJUnit4::class)
 class FavoritesFragmentTest {
 

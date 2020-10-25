@@ -66,6 +66,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
+@Ignore("https://github.com/vase4kin/TeamCityApp/issues/362")
 @RunWith(AndroidJUnit4::class)
 class RunningBuildsFragmentTest {
 
