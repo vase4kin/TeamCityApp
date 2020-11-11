@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +16,11 @@
 
 package teamcityapp.features.about.repository.models
 
-data class ServerInfo(val version: String, val webUrl: String)
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class ServerInfo(
+    val version: String,
+    val webUrl: String
+) : Parcelable
