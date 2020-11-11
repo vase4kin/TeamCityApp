@@ -29,12 +29,7 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutList
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.elevation.ElevationOverlayProvider
 import dagger.android.support.AndroidSupportInjection
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import teamcityapp.features.about.repository.AboutRepository
+import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.utils.getThemeColor
 import teamcityapp.libraries.utils.getTintedDrawable
@@ -42,58 +37,47 @@ import javax.inject.Inject
 
 class AboutFragment : MaterialAboutFragment() {
 
-    @Inject
-    lateinit var repository: AboutRepository
+    companion object {
+
+        private const val ARG_SERVER_INFO = "arg_server_info"
+
+        fun create(serverInfo: ServerInfo?): AboutFragment {
+            return AboutFragment().also {
+                it.arguments = Bundle().apply {
+                    putParcelable(ARG_SERVER_INFO, serverInfo)
+                }
+            }
+        }
+    }
 
     @Inject
     lateinit var chromeCustomTabs: ChromeCustomTabs
 
-    private var listener: AboutActivityLoadingListener? = null
-    private val subscriptions: CompositeDisposable = CompositeDisposable()
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         AndroidSupportInjection.inject(this)
-        if (context is AboutActivityLoadingListener) {
-            listener = context
-        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         chromeCustomTabs.initCustomsTabs()
-        loadServerInfo()
     }
 
     override fun onDestroyView() {
-        subscriptions.clear()
         chromeCustomTabs.unbindCustomsTabs()
         super.onDestroyView()
     }
 
-    override fun getMaterialAboutList(context: Context): MaterialAboutList = MaterialAboutList()
+    override fun getMaterialAboutList(context: Context): MaterialAboutList = loadList()
 
-    private fun loadServerInfo() {
-        repository.serverInfo().subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { listener?.showLoader() }
-            .doFinally { listener?.hideLoader() }
-            .subscribeBy(
-                onSuccess = {
-                    val serverInfo = createServerInfoCard(it.version, it.webUrl)
-                    val materialAboutList = createMaterialAboutList(requireActivity(), serverInfo)
-                    list.cards.clear()
-                    list.cards.addAll(materialAboutList.cards)
-                    refreshMaterialAboutList()
-                },
-                onError = {
-                    val materialAboutList = createMaterialAboutList(requireActivity())
-                    list.cards.clear()
-                    list.cards.addAll(materialAboutList.cards)
-                    refreshMaterialAboutList()
-                }
-            )
-            .addTo(subscriptions)
+    private fun loadList(): MaterialAboutList {
+        val serverInfo: ServerInfo? = arguments?.getParcelable(ARG_SERVER_INFO)
+        val serverInfoCard = if (serverInfo == null) {
+            null
+        } else {
+            createServerInfoCard(serverInfo.version, serverInfo.webUrl)
+        }
+        return createMaterialAboutList(requireActivity(), serverInfoCard)
     }
 
     private fun createServerInfoCard(
