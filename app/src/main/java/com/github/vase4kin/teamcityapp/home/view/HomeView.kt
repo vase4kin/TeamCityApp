@@ -85,6 +85,8 @@ interface HomeView {
      */
     fun showAgentsFilterPrompt(onPromptShown: () -> Unit)
 
+    fun unbindResources()
+
     interface ViewListener {
         fun onFavoritesSnackBarActionClicked()
     }

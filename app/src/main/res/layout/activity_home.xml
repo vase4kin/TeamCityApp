@@ -32,10 +32,10 @@
         android:id="@+id/home_floating_action_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dp_16"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_72"
         android:visibility="gone"
-        app:layout_anchor="@id/navigation"
-        app:layout_anchorGravity="right"
         tools:src="@drawable/ic_favorite_white_24dp"
         tools:visibility="visible" />
 
@@ -45,7 +45,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:labelVisibilityMode="labeled"
-        app:layout_insetEdge="bottom"
         app:menu="@menu/menu_bottom_navigation" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

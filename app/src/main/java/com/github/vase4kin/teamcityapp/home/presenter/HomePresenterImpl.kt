@@ -70,6 +70,7 @@ class HomePresenterImpl @Inject constructor(
      */
     override fun onDestroy() {
         dataManager.unsubscribe()
+        view.unbindResources()
     }
 
     /**
