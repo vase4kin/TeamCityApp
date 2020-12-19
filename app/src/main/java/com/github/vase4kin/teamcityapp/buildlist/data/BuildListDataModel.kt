@@ -120,4 +120,8 @@ interface BuildListDataModel :
      * @return {true} if build is queued
      */
     fun isQueued(position: Int): Boolean
+
+    fun isSuccess(position: Int): Boolean
+
+    fun isFailed(position: Int): Boolean
 }
