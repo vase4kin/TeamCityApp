@@ -121,7 +121,15 @@ interface BuildListDataModel :
      */
     fun isQueued(position: Int): Boolean
 
+    /**
+     * @param position - Adapter position
+     * @return {true} if build is success
+     */
     fun isSuccess(position: Int): Boolean
 
+    /**
+     * @param position - Adapter position
+     * @return {true} if build is failed
+     */
     fun isFailed(position: Int): Boolean
 }

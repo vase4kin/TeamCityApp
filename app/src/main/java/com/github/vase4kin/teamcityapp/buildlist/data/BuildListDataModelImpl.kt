@@ -168,10 +168,16 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
         return buildDetailsList[position].isQueued
     }
 
+    /**
+     * {@inheritDoc}
+     */
     override fun isSuccess(position: Int): Boolean {
         return buildDetailsList[position].isSuccess
     }
 
+    /**
+     * {@inheritDoc}
+     */
     override fun isFailed(position: Int): Boolean {
         return buildDetailsList[position].isFailed
     }
