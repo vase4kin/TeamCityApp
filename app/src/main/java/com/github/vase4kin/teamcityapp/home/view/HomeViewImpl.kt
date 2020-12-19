@@ -17,11 +17,14 @@
 package com.github.vase4kin.teamcityapp.home.view
 
 import android.content.res.ColorStateList
+import android.graphics.Point
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
@@ -41,18 +44,21 @@ private const val TIME_PROMPT_DELAY = 500
  */
 class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
 
-    private lateinit var snackBarParentView: View
+    private lateinit var parentView: View
     private lateinit var fab: FloatingActionButton
     private lateinit var toolbar: Toolbar
     private var snackbar: Snackbar? = null
     private var listener: HomeView.ViewListener? = null
+
+    private val handler = Handler(Looper.getMainLooper())
+    private val runnables = mutableListOf<Runnable>()
 
     /**
      * {@inheritDoc}
      */
     override fun initViews(listener: HomeView.ViewListener?) {
         this.listener = listener
-        snackBarParentView = activity.findViewById(android.R.id.content)
+        parentView = activity.findViewById(android.R.id.content)
         fab = activity.findViewById(R.id.home_floating_action_button)
     }
 
@@ -61,7 +67,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showFavoritesInfoSnackbar() {
         this.snackbar = Snackbar.make(
-            snackBarParentView,
+            parentView,
             R.string.text_info_add,
             Snackbar.LENGTH_LONG
         )
@@ -95,7 +101,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showFilterAppliedSnackBar() {
         this.snackbar = Snackbar.make(
-            snackBarParentView,
+            parentView,
             R.string.text_filters_applied,
             Snackbar.LENGTH_LONG
         )
@@ -108,7 +114,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      */
     override fun showAgentsFilterAppliedSnackBar() {
         this.snackbar = Snackbar.make(
-            snackBarParentView,
+            parentView,
             R.string.text_agents_filters_applied,
             Snackbar.LENGTH_LONG
         )
@@ -132,15 +138,34 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
             .setCaptureTouchEventOutsidePrompt(true)
             .setPromptStateChangeListener { _, _ -> listener.onPromptShown() }
         // Show prompt
-        Handler(Looper.getMainLooper()).postDelayed(
-            {
-                val top = activity.resources.getDimension(R.dimen.dp_48)
-                val left = activity.resources.getDimension(R.dimen.dp_24)
-                navigationDrawerPrompt.setTarget(left, top)
-                navigationDrawerPrompt.show()
-            },
+        val runnable = Runnable {
+            val navigationDrawerLocationOnScreen = getNavigationDrawerLocationOnScreen()
+            navigationDrawerPrompt.setTarget(
+                navigationDrawerLocationOnScreen.x.toFloat(),
+                navigationDrawerLocationOnScreen.y.toFloat()
+            )
+            navigationDrawerPrompt.show()
+        }.also {
+            runnables.add(it)
+        }
+        handler.postDelayed(
+            runnable,
             TIME_PROMPT_DELAY.toLong()
         )
+    }
+
+    private fun getNavigationDrawerLocationOnScreen(): Point {
+        val centerOfDrawerImage = activity.resources.getDimensionPixelSize(R.dimen.dp_24)
+        val statusBarInsetsTop = getSystemWindowInsets().top
+        val top = statusBarInsetsTop + centerOfDrawerImage
+        return Point(centerOfDrawerImage, top)
+    }
+
+    private fun getSystemWindowInsets(): Insets {
+        val result = kotlin.runCatching {
+            ViewCompat.getRootWindowInsets(parentView)?.systemWindowInsets ?: Insets.NONE
+        }
+        return result.getOrNull() ?: Insets.NONE
     }
 
     /**
@@ -217,6 +242,13 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
                     onPromptShown()
                 }
             }.show()
+    }
+
+    override fun unbindResources() {
+        runnables.forEach {
+            handler.removeCallbacks(it)
+        }
+        runnables.clear()
     }
 
     private fun getBackgroundColor(): Int {
