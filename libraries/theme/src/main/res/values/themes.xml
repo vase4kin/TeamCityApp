@@ -84,6 +84,9 @@
         <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
         <item name="recyclerViewStyle">@style/RecyclerView</item>
+        <item name="bottomNavigationStyle">
+            @style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface
+        </item>
     </style>
 
     <style name="Base.Theme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
