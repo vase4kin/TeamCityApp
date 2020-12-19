@@ -122,6 +122,7 @@ class BottomNavigationViewImpl(
             badgeDrawable.badgeTextColor = activity.getThemeColor(R.attr.colorOnPrimarySurface)
             badgeDrawable.isVisible = true
             badgeDrawable.number = count
+            badgeDrawable.verticalOffset = activity.resources.getDimensionPixelOffset(R.dimen.dp_4)
         }
     }
 
