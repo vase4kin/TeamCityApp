@@ -24,8 +24,8 @@
     <color name="green_200">#03dac6</color> <!--Color secondary (light)-->
     <color name="green_500">#018786</color> <!--Color secondary variant (light)-->
 
-    <color name="cyan_200">#80DEEA</color> <!--Color secondary (light)-->
-    <color name="cyan_500">#00BCD4</color> <!--Color secondary variant (light)-->
+    <color name="cyan_200">#80DEEA</color> <!--Color secondary (dark)-->
+    <color name="cyan_500">#00BCD4</color> <!--Color secondary variant (dark)-->
 
     <color name="red_200">#cf6679</color> <!--Color error (dark)-->
     <color name="red_600">#b00020</color> <!--Color error (light)-->
@@ -41,5 +41,8 @@
 
     <!--Custom colors-->
     <color name="grey_100">#f5f5f5</color>
+    <color name="green_600">#00897b</color>
+    <color name="cyan_900">#00acc1</color>
+    <color name="pink_900">#d81b60</color>
 
 </resources>

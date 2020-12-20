@@ -31,5 +31,8 @@
         <item name="colorOnError">@color/black_900</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">false</item>
         <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
+        <!--Custom attrs-->
+        <item name="colorSuccessState">@color/cyan_900</item>
+        <item name="colorFailedState">@color/pink_900</item>
     </style>
 </resources>

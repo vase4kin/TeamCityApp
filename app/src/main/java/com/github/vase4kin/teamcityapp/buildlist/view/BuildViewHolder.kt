@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,21 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.view
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.core.widget.ImageViewCompat
 import butterknife.BindView
 import butterknife.ButterKnife
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseViewHolder
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
+import teamcityapp.libraries.utils.getThemeColor
 
 /**
  * Changes single item view holder
@@ -40,16 +44,22 @@ class BuildViewHolder(parent: ViewGroup) : BaseViewHolder<BuildListDataModel>(
 ) {
     @BindView(R.id.branchName)
     lateinit var branchName: TextView
+
     @BindView(R.id.buildStatus)
     lateinit var buildStatus: TextView
+
     @BindView(R.id.buildStatusImage)
     lateinit var buildStatusImage: ImageView
+
     @BindView(R.id.buildNumber)
     lateinit var buildNumber: TextView
+
     @BindView(R.id.isPersonal)
     lateinit var isPersonalImage: View
+
     @BindView(R.id.isPinned)
     lateinit var isPinnedImage: View
+
     @BindView(R.id.buildStatusProgress)
     lateinit var buildStatusProgress: ProgressBar
 
@@ -66,6 +76,32 @@ class BuildViewHolder(parent: ViewGroup) : BaseViewHolder<BuildListDataModel>(
             buildStatusImage.visibility = View.VISIBLE
             val iconImageRes = dataModel.getBuildStatusIcon(position)
             buildStatusImage.setImageResource(iconImageRes)
+            when {
+                dataModel.isSuccess(position) -> {
+                    val color = itemView.context.getThemeColor(R.attr.colorSuccessState)
+                    ImageViewCompat.setImageTintList(
+                        buildStatusImage,
+                        ColorStateList.valueOf(color)
+                    )
+                }
+                dataModel.isFailed(position) -> {
+                    val color = itemView.context.getThemeColor(R.attr.colorFailedState)
+                    ImageViewCompat.setImageTintList(
+                        buildStatusImage,
+                        ColorStateList.valueOf(color)
+                    )
+                }
+                else -> {
+                    val color = ContextCompat.getColor(
+                        itemView.context,
+                        R.color.material_on_surface_emphasis_high_type
+                    )
+                    ImageViewCompat.setImageTintList(
+                        buildStatusImage,
+                        ColorStateList.valueOf(color)
+                    )
+                }
+            }
         }
         buildStatus.text = dataModel.getStatusText(position)
         val buildNumber = dataModel.getBuildNumber(position)
