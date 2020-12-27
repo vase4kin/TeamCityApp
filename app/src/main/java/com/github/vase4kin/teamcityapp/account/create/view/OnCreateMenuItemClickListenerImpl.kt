@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,38 +16,32 @@
 
 package com.github.vase4kin.teamcityapp.account.create.view
 
-import android.view.MenuItem
-import android.widget.Switch
+import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
-import com.github.vase4kin.teamcityapp.R
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class OnCreateMenuItemClickListenerImpl(
     private val onValidateListener: OnValidateListener,
     private val serverUrl: TextView,
     private val userName: TextView,
     private val password: TextView,
-    private val guestUserSwitch: Switch,
-    private val disableSslSwitch: Switch
-) : Toolbar.OnMenuItemClickListener {
+    private val guestUserSwitch: SwitchMaterial,
+    private val disableSslSwitch: SwitchMaterial
+) : View.OnClickListener {
 
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_create) {
-            if (guestUserSwitch.isChecked) {
-                onValidateListener.validateGuestUserData(
-                    serverUrl.text.toString().trim(),
-                    disableSslSwitch.isChecked
-                )
-            } else {
-                onValidateListener.validateUserData(
-                    serverUrl.text.toString().trim(),
-                    userName.text.toString().trim(),
-                    password.text.toString().trim(),
-                    disableSslSwitch.isChecked
-                )
-            }
-            return true
+    override fun onClick(v: View?) {
+        if (guestUserSwitch.isChecked) {
+            onValidateListener.validateGuestUserData(
+                serverUrl.text.toString().trim(),
+                disableSslSwitch.isChecked
+            )
+        } else {
+            onValidateListener.validateUserData(
+                serverUrl.text.toString().trim(),
+                userName.text.toString().trim(),
+                password.text.toString().trim(),
+                disableSslSwitch.isChecked
+            )
         }
-        return false
     }
 }

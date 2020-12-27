@@ -21,38 +21,55 @@ import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.EditText
-import android.widget.Switch
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
+import com.github.razir.progressbutton.attachTextChangeAnimator
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.github.vase4kin.teamcityapp.R
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
+import teamcityapp.libraries.utils.getThemeColor
 
 class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView {
 
     @BindView(R.id.toolbar)
     lateinit var toolbar: Toolbar
+
     @BindView(R.id.teamcity_url)
     lateinit var serverUrl: EditText
+
     @BindView(R.id.teamcity_url_wrapper)
     lateinit var urlInputLayout: TextInputLayout
+
     @BindView(R.id.user_field_wrapper)
     lateinit var userNameInputLayout: TextInputLayout
+
     @BindView(R.id.password_field_wrapper)
     lateinit var passwordInputLayout: TextInputLayout
+
     @BindView(R.id.user_name)
     lateinit var userName: EditText
+
     @BindView(R.id.password)
     lateinit var password: EditText
+
     @BindView(R.id.guest_user_switch)
-    lateinit var guestUserSwitch: Switch
+    lateinit var guestUserSwitch: SwitchMaterial
+
     @BindView(R.id.disable_ssl_switch)
-    lateinit var disableSslSwitch: Switch
+    lateinit var disableSslSwitch: SwitchMaterial
+
+    @BindView(R.id.btn_login)
+    lateinit var fab: ExtendedFloatingActionButton
 
     private lateinit var unbinder: Unbinder
-    private lateinit var progressDialog: MaterialDialog
     private lateinit var discardDialog: MaterialDialog
 
     /**
@@ -99,6 +116,9 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
                 listener.onDisableSslSwitchClick()
             }
         }
+
+        (activity as AppCompatActivity).bindProgressButton(fab)
+        fab.attachTextChangeAnimator()
     }
 
     /**
@@ -182,7 +202,6 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      * {@inheritDoc}
      */
     override fun onDestroyView() {
-        dismissAllDialogsOnDestroy()
         unbinder.unbind()
     }
 
@@ -190,14 +209,19 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      * {@inheritDoc}
      */
     override fun showProgressDialog() {
-        progressDialog.show()
+        fab.showProgress {
+            buttonTextRes = R.string.adding_new_account_dialog_title
+            progressColor = activity.getThemeColor(R.attr.colorOnPrimary)
+        }
+        fab.isEnabled = false
     }
 
     /**
      * {@inheritDoc}
      */
     override fun dismissProgressDialog() {
-        progressDialog.dismiss()
+        fab.hideProgress(R.string.add_new_account_dialog_title)
+        fab.isEnabled = true
     }
 
     /**
@@ -233,8 +257,8 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
         toolbar.setNavigationContentDescription(R.string.navigate_up)
         toolbar.setNavigationIcon(R.drawable.ic_close_black_24dp)
         toolbar.setNavigationOnClickListener(OnToolBarNavigationListenerImpl(listener))
-        toolbar.inflateMenu(R.menu.menu_create_account_dialog)
-        toolbar.setOnMenuItemClickListener(
+
+        fab.setOnClickListener(
             OnCreateMenuItemClickListenerImpl(
                 listener,
                 serverUrl,
@@ -250,16 +274,6 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      * Init dialogs
      */
     private fun initDialogs() {
-        progressDialog = MaterialDialog.Builder(activity)
-            .title(R.string.progress_dialog_title)
-            .content(R.string.progress_dialog_content)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
-
         discardDialog = MaterialDialog.Builder(activity)
             .content(R.string.discard_dialog_content)
             .positiveText(R.string.discard_dialog_positive_button_text)
@@ -293,17 +307,5 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
             .autoDismiss(false)
             .cancelable(false)
             .show()
-    }
-
-    /**
-     * Dismiss all dialogs on destroy
-     */
-    private fun dismissAllDialogsOnDestroy() {
-        if (::progressDialog.isInitialized && progressDialog.isShowing) {
-            progressDialog.dismiss()
-        }
-        if (::discardDialog.isInitialized && discardDialog.isShowing) {
-            discardDialog.dismiss()
-        }
     }
 }

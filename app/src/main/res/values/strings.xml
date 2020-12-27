@@ -49,6 +49,7 @@
 
     <!--create new account dialog-->
     <string name="add_new_account_dialog_title">Add user account</string>
+    <string name="adding_new_account_dialog_title">Adding user account..</string>
     <string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
     <string name="add_new_account_dialog_create_account_button_text">Add</string>
 

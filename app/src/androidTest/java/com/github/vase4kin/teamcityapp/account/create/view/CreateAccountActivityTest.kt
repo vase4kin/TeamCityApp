@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ class CreateAccountActivityTest {
 
         onView(withId(R.id.teamcity_url)).perform(typeText(inputUrl), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
 
         intended(
             allOf(
@@ -218,7 +218,7 @@ class CreateAccountActivityTest {
         onView(withId(R.id.disable_ssl_switch)).perform(click())
         onView(withText(R.string.warning_ssl_dialog_content)).check(matches(isDisplayed()))
         onView(withText(R.string.dialog_ok_title)).perform(click())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
 
         intended(
             allOf(
@@ -304,7 +304,7 @@ class CreateAccountActivityTest {
 
         onView(withId(R.id.teamcity_url)).perform(typeText(URL), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
         onView(withText(containsString("Client Error"))).check(matches(isDisplayed()))
     }
 

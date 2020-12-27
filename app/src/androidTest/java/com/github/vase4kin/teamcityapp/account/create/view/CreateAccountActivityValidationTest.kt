@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ class CreateAccountActivityValidationTest {
     fun testUserCanNotCreateGuestUserAccountWithEmptyUrl() {
         onView(withId(R.id.teamcity_url)).perform(clearText(), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
         onView(withText(R.string.server_cannot_be_empty)).check(matches(isDisplayed()))
     }
 
@@ -114,7 +114,7 @@ class CreateAccountActivityValidationTest {
             closeSoftKeyboard()
         )
         onView(withId(R.id.guest_user_switch)).perform(click())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
         onView(withText(R.string.server_correct_url)).check(matches(isDisplayed()))
     }
 
@@ -122,7 +122,7 @@ class CreateAccountActivityValidationTest {
     fun testUserCanNotCreateGuestUserAccountIfTheSameAccountExist() {
         onView(withId(R.id.teamcity_url)).perform(typeText(INPUT_URL), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
         onView(withText(R.string.add_new_account_dialog_account_exist_error_message)).check(
             matches(
                 isDisplayed()
@@ -175,14 +175,14 @@ class CreateAccountActivityValidationTest {
 
     @Test
     fun testUserCanNotCreateAccountWithEmptyUserName() {
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
         onView(withText(R.string.server_user_name_cannot_be_empty)).check(matches(isDisplayed()))
     }
 
     @Test
     fun testUserCanNotCreateAccountWithEmptyPasswordName() {
         onView(withId(R.id.user_name)).perform(typeText("user"), closeSoftKeyboard())
-        onView(withId(R.id.action_create)).perform(click())
+        onView(withId(R.id.btn_login)).perform(click())
         onView(withText(R.string.server_password_cannot_be_empty)).check(matches(isDisplayed()))
     }
 
