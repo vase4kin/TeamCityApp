@@ -427,7 +427,7 @@ open class BuildListViewImpl(
      *
      * @param dataModel
      * @return List<SimpleSectionedRecyclerViewAdapter.Section>
-    </SimpleSectionedRecyclerViewAdapter.Section> */
+     </SimpleSectionedRecyclerViewAdapter.Section> */
     private fun initSections(dataModel: BuildListDataModel): ArrayList<SimpleSectionedRecyclerViewAdapter.Section> {
         val sections = ArrayList<SimpleSectionedRecyclerViewAdapter.Section>()
 
