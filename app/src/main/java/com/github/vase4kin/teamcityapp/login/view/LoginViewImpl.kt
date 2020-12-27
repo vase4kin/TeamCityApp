@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.login.view
 
-import android.app.Activity
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -24,46 +23,62 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
-import android.widget.Switch
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
+import com.github.razir.progressbutton.attachTextChangeAnimator
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.github.vase4kin.teamcityapp.R
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
+import teamcityapp.libraries.utils.getThemeColor
 
-class LoginViewImpl(private val activity: Activity) : LoginView {
+class LoginViewImpl(private val activity: AppCompatActivity) : LoginView {
 
     @BindView(R.id.teamcity_url)
     lateinit var serverUrl: EditText
+
     @BindView(R.id.teamcity_url_wrapper)
     lateinit var serverUrlWrapperLayout: TextInputLayout
+
     @BindView(R.id.user_field_wrapper)
     lateinit var userNameWrapperLayout: TextInputLayout
+
     @BindView(R.id.user_name)
     lateinit var userName: EditText
+
     @BindView(R.id.password_field_wrapper)
     lateinit var passwordWrapperLayout: TextInputLayout
+
     @BindView(R.id.password)
     lateinit var password: EditText
+
     @BindView(R.id.guest_user_switch)
-    lateinit var guestUserSwitch: Switch
+    lateinit var guestUserSwitch: SwitchMaterial
+
     @BindView(R.id.disable_ssl_switch)
-    lateinit var disableSslSwitch: Switch
+    lateinit var disableSslSwitch: SwitchMaterial
+
     @BindView(R.id.btn_login)
     lateinit var loginButton: Button
+
     @BindView(R.id.give_it_a_try_view)
     lateinit var tryItOutTextView: View
+
     @BindView(R.id.give_it_a_try_progress)
     lateinit var progressBar: ProgressBar
+
     @BindView(R.id.btn_try_it_out)
     lateinit var tryItOutTextButton: MaterialButton
 
     private lateinit var unbinder: Unbinder
-    private lateinit var progressDialog: MaterialDialog
 
     private var listener: LoginView.ViewListener? = null
 
@@ -74,14 +89,6 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
         unbinder = ButterKnife.bind(this, activity)
 
         this.listener = listener
-
-        progressDialog = MaterialDialog.Builder(activity)
-            .content(R.string.text_progress_bar_loading)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
 
         password.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -116,6 +123,9 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
         }
 
         tryItOutTextButton.setOnClickListener { listener.onTryItOutTextClick() }
+
+        activity.bindProgressButton(loginButton)
+        loginButton.attachTextChangeAnimator()
     }
 
     /**
@@ -171,14 +181,19 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      * {@inheritDoc}
      */
     override fun showProgressDialog() {
-        progressDialog.show()
+        loginButton.showProgress {
+            buttonTextRes = R.string.text_progress_bar_loading
+            progressColor = activity.getThemeColor(R.attr.colorOnPrimary)
+        }
+        loginButton.isEnabled = false
     }
 
     /**
      * {@inheritDoc}
      */
     override fun dismissProgressDialog() {
-        progressDialog.dismiss()
+        loginButton.hideProgress(R.string.text_login_button)
+        loginButton.isEnabled = true
     }
 
     /**
@@ -186,7 +201,6 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      */
     override fun unbindViews() {
         listener = null
-        dismissAllDialogsOnDestroy()
         unbinder.unbind()
     }
 
@@ -355,14 +369,5 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
     private fun setError(@StringRes errorMessage: Int) {
         val errorMessageString = activity.getString(errorMessage)
         serverUrlWrapperLayout.error = errorMessageString
-    }
-
-    /**
-     * Dismiss all dialogs on destroy
-     */
-    private fun dismissAllDialogsOnDestroy() {
-        if (::progressDialog.isInitialized && progressDialog.isShowing) {
-            progressDialog.dismiss()
-        }
     }
 }

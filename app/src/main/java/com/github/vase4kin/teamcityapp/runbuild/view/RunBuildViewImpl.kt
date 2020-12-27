@@ -30,11 +30,16 @@ import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.Unbinder
 import com.afollestad.materialdialogs.MaterialDialog
+import com.github.razir.progressbutton.attachTextChangeAnimator
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import teamcityapp.libraries.utils.getThemeColor
 
 /**
  * Impl of [RunBuildView]
@@ -66,7 +71,6 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
     @BindView(R.id.container_parameters)
     lateinit var parametersContainer: ViewGroup
 
-    private lateinit var progressDialog: MaterialDialog
     private lateinit var agentSelectionDialog: MaterialDialog
     private lateinit var addParameterDialog: MaterialDialog
     private lateinit var unbinder: Unbinder
@@ -114,14 +118,6 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
             )
         }
 
-        progressDialog = MaterialDialog.Builder(activity)
-            .content(R.string.text_queueing_build)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
-
         addParameterDialog = MaterialDialog.Builder(activity)
             .autoDismiss(false)
             .title(R.string.title_add_parameter)
@@ -156,20 +152,28 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
             .negativeText(R.string.text_cancel_button)
             .onNegative { dialog, _ -> dialog.dismiss() }
             .build()
+
+        activity.bindProgressButton(queueBuildFab)
+        queueBuildFab.attachTextChangeAnimator()
     }
 
     /**
      * {@inheritDoc}
      */
     override fun showQueuingBuildProgress() {
-        progressDialog.show()
+        queueBuildFab.showProgress {
+            progressColor = activity.getThemeColor(R.attr.colorOnPrimary)
+            buttonTextRes = R.string.text_queueing_build
+        }
+        queueBuildFab.isEnabled = false
     }
 
     /**
      * {@inheritDoc}
      */
     override fun hideQueuingBuildProgress() {
-        progressDialog.dismiss()
+        queueBuildFab.hideProgress(R.string.title_run_build)
+        queueBuildFab.isEnabled = true
     }
 
     /**

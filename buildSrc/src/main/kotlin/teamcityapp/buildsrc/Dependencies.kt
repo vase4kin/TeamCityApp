@@ -45,6 +45,7 @@ object Libs {
     const val jodaTime = "joda-time:joda-time:2.8.1"
     const val mugen = "com.vinaysshenoy:mugen:1.0.3"
     const val fragNav = "com.ncapdevi:frag-nav:3.3.0"
+    const val progressButton = "com.github.razir.progressbutton:progressbutton:2.1.0"
 
     const val junit = "junit:junit:4.13"
     const val hamcrestJunit = "org.hamcrest:hamcrest-junit:2.0.0.0"

@@ -164,6 +164,7 @@ dependencies {
     // Views
     implementation Libs.errorView
     implementation Libs.Groupie.groupie
+    implementation Libs.progressButton
     // View injection
     implementation Libs.ButterKnife.butterKnife
     annotationProcessor Libs.ButterKnife.butterKnifeCompiler

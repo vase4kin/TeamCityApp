@@ -29,7 +29,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import butterknife.BindString
 import butterknife.BindView
-import com.afollestad.materialdialogs.MaterialDialog
+import com.github.razir.progressbutton.attachTextChangeAnimator
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
@@ -64,9 +67,9 @@ open class BuildListViewImpl(
 
     @BindString(R.string.text_queued_header)
     lateinit var queuedHeaderText: String
+
     @BindView(R.id.floating_action_button)
     lateinit var floatingActionButton: ExtendedFloatingActionButton
-    private lateinit var progressDialog: MaterialDialog
     private lateinit var sections: ArrayList<SimpleSectionedRecyclerViewAdapter.Section>
     private lateinit var dataModel: BuildListDataModel
     private var filtersAppliedSnackBar: Snackbar? = null
@@ -100,13 +103,9 @@ open class BuildListViewImpl(
         super.initViews(listener)
         floatingActionButton.visibility = View.GONE
         floatingActionButton.setOnClickListener { this.listener?.onRunBuildFabClick() }
-        progressDialog = MaterialDialog.Builder(activity)
-            .content(R.string.text_opening_build)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
+
+        (activity as AppCompatActivity).bindProgressButton(floatingActionButton)
+        floatingActionButton.attachTextChangeAnimator()
     }
 
     /**
@@ -267,14 +266,19 @@ open class BuildListViewImpl(
      * {@inheritDoc}
      */
     override fun showBuildLoadingProgress() {
-        progressDialog.show()
+        floatingActionButton.showProgress {
+            progressColor = activity.getThemeColor(R.attr.colorOnPrimary)
+            buttonTextRes = R.string.text_opening_build
+        }
+        floatingActionButton.isEnabled = false
     }
 
     /**
      * {@inheritDoc}
      */
     override fun hideBuildLoadingProgress() {
-        progressDialog.dismiss()
+        floatingActionButton.hideProgress(R.string.title_run_build)
+        floatingActionButton.isEnabled = true
     }
 
     /**
@@ -423,7 +427,7 @@ open class BuildListViewImpl(
      *
      * @param dataModel
      * @return List<SimpleSectionedRecyclerViewAdapter.Section>
-     </SimpleSectionedRecyclerViewAdapter.Section> */
+    </SimpleSectionedRecyclerViewAdapter.Section> */
     private fun initSections(dataModel: BuildListDataModel): ArrayList<SimpleSectionedRecyclerViewAdapter.Section> {
         val sections = ArrayList<SimpleSectionedRecyclerViewAdapter.Section>()
 
