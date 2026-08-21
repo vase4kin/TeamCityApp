@@ -38,6 +38,11 @@
         <item name="android:elevation">@dimen/dp_0</item>
     </style>
 
+    <style name="AppBarLayout" parent="@style/Widget.MaterialComponents.AppBarLayout.PrimarySurface">
+        <item name="android:fitsSystemWindows">true</item>
+        <item name="statusBarForeground">@color/app_bar_status_bar_foreground</item>
+    </style>
+
     <style name="TabLayout" parent="@style/Widget.MaterialComponents.TabLayout.PrimarySurface">
         <item name="tabIndicator">@drawable/tabs_rounded_line_indicator</item>
         <item name="android:background">@null</item>

@@ -17,24 +17,26 @@
 apply plugin: 'jacoco'
 
 jacoco {
-    toolVersion = "0.8.5"
-    reportsDir = file("$buildDir/coverage")
+    toolVersion = "0.8.14"
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     jacoco.includeNoLocationClasses = true
     jacoco.excludes = ['jdk.internal.*']
 }
 
-task generateCodeCoverageReport(type: JacocoReport) {
+tasks.register('generateCodeCoverageReport', JacocoReport) {
     group = "code quality"
 
     description = "Generate Jacoco coverage reports"
 
     reports {
-        xml.enabled = true
-        html.enabled = true
-        html.destination file("${rootProject.buildDir}/coverage-report")
+        xml.required = true
+        xml.outputLocation = layout.buildDirectory.file(
+                "coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml"
+        )
+        html.required = true
+        html.outputLocation = rootProject.layout.buildDirectory.dir("coverage-report")
     }
 
     def javaClasses = []
@@ -57,8 +59,8 @@ task generateCodeCoverageReport(type: JacocoReport) {
     rootProject.subprojects.each { proj ->
         javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/debug", excludes: fileFilter)
         kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/debug", excludes: fileFilter)
-        javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/mockDebug", excludes: fileFilter) // Support testMockDebugUnitTest
-        kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/mockDebug", excludes: fileFilter)  // Support testMockDebugUnitTest
+        javaClasses   << fileTree(dir: "$proj.buildDir/intermediates/javac/mockDebug", excludes: fileFilter)
+        kotlinClasses << fileTree(dir: "$proj.buildDir/tmp/kotlin-classes/mockDebug", excludes: fileFilter)
         javaSrc       << "$proj.projectDir/src/main/java"
         kotlinSrc     << "$proj.projectDir/src/main/kotlin"
         execution     << fileTree(dir: proj.buildDir,
@@ -71,7 +73,7 @@ task generateCodeCoverageReport(type: JacocoReport) {
 
     getExecutionData().setFrom(files(execution))
 
-    doLast() {
-        print "file://${reports.html.destination}/index.html"
+    doLast {
+        print "file://${reports.html.outputLocation.get().asFile}/index.html"
     }
 }

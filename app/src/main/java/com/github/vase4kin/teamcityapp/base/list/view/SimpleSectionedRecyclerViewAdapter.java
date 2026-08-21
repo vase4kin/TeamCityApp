@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.base.list.view;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
 import android.util.SparseArray;
@@ -109,15 +110,16 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     }
 
     @Override
+    @SuppressLint("RecyclerView") // This wrapper translates positions before delegating to the base adapter.
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder sectionViewHolder, int position) {
         if (isSectionHeaderPosition(position)) {
             ((SectionViewHolder) sectionViewHolder).title.setText(mSections.get(position).title);
-            final int buildTypeUnderSectionPosition = sectionedPositionToPosition(position + 1);
             ((SectionViewHolder) sectionViewHolder).title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (listener != null) {
-                        listener.onSectionClick(buildTypeUnderSectionPosition);
+                    final int adapterPosition = sectionViewHolder.getAdapterPosition();
+                    if (listener != null && adapterPosition != RecyclerView.NO_POSITION) {
+                        listener.onSectionClick(sectionedPositionToPosition(adapterPosition + 1));
                     }
                 }
             });

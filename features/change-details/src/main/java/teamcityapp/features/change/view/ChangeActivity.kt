@@ -22,7 +22,7 @@ import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import dagger.android.support.DaggerAppCompatActivity
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import teamcityapp.features.change.R
 import teamcityapp.features.change.databinding.ActivityChangeBinding
 import teamcityapp.features.change.viewmodel.ChangeViewModel

@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.artifact.dagger
 
 import android.os.Bundle
+import android.os.Environment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager
@@ -49,10 +50,13 @@ class ArtifactsActivityModule {
 
     @Provides
     fun providesArtifactDataManager(
+        activity: ArtifactListActivity,
         repository: Repository,
         eventBus: EventBus
     ): ArtifactDataManager {
-        return ArtifactDataManagerImpl(repository, eventBus)
+        val downloadDirectory =
+            activity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) ?: activity.filesDir
+        return ArtifactDataManagerImpl(repository, eventBus, downloadDirectory)
     }
 
     @Provides

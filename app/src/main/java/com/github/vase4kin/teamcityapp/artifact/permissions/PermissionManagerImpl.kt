@@ -16,61 +16,35 @@
 
 package com.github.vase4kin.teamcityapp.artifact.permissions
 
-import android.Manifest
-import android.annotation.TargetApi
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 
 /**
  * Impl of [PermissionManager]
  */
-class PermissionManagerImpl(private val activity: AppCompatActivity) : PermissionManager {
+class PermissionManagerImpl(@Suppress("UNUSED_PARAMETER") activity: AppCompatActivity) : PermissionManager {
 
     /**
      * {@inheritDoc}
      */
     override val isWriteStoragePermissionsGranted: Boolean
-        get() = ActivityCompat.checkSelfPermission(
-            activity,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ) == PackageManager.PERMISSION_GRANTED
+        get() = true
 
     /**
      * {@inheritDoc}
      */
     override val isInstallPackagesPermissionGranted: Boolean
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity.packageManager.canRequestPackageInstalls()
-        } else {
-            true
-        }
+        get() = true
 
     /**
      * {@inheritDoc}
      */
-    override fun requestWriteStoragePermissions() {
-        ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            PermissionManager.PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
-        )
-    }
+    override fun requestWriteStoragePermissions() = Unit
 
     /**
      * {@inheritDoc}
      */
-    @TargetApi(Build.VERSION_CODES.O)
-    override fun requestInstallPackagesPermission() {
-        val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES)
-        val packageUri = Uri.parse("package:" + activity.packageName)
-        intent.data = packageUri
-        activity.startActivity(intent)
-    }
+    override fun requestInstallPackagesPermission() = Unit
 
     /**
      * {@inheritDoc}

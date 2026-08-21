@@ -22,23 +22,16 @@ import teamcityapp.buildsrc.Config
 buildscript {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url "https://plugins.gradle.org/m2/" }
-        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath Libs.Tools.gradleAndroid
-        classpath Libs.Tools.gradleversions
-        classpath Libs.Tools.androidAapt
         classpath Libs.Tools.googleServices
         classpath Libs.Tools.firebasePerf
-        classpath Libs.Tools.jacoco
-        classpath Libs.Tools.kotlinter
         classpath Libs.Tools.crashlytics
         classpath Libs.Kotlin.Tools.gradlePlugin
-        classpath Libs.Kotlin.Tools.extensions
         classpath Libs.Google.Tools.openSourceLicensesPlugin
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -49,71 +42,51 @@ buildscript {
 allprojects {
     repositories {
         google()
-        jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
-        maven { url "https://maven.fabric.io/public" }
     }
 }
 
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty('android')) {
+def configureAndroidProject = { project ->
+    project.android {
+        compileSdk Config.compileSdk
 
-            apply plugin: 'org.jmailen.kotlinter'
+        defaultConfig {
+            minSdk Config.minSdk
+            targetSdk Config.targetSdk
+            testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+            testInstrumentationRunnerArgument "notAnnotation", "org.junit.Ignore"
+        }
 
-            android {
-                buildToolsVersion Config.buildTools
-                compileSdkVersion Config.compileSdk
+        compileOptions {
+            sourceCompatibility Config.javaVersion
+            targetCompatibility Config.javaVersion
+        }
 
-                defaultConfig {
-                    minSdkVersion Config.minSdk
-                    targetSdkVersion Config.targetSdk
-                    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-                }
+        lint {
+            disable 'InvalidPackage'
+            xmlReport = false
+            abortOnError = true
+            htmlOutput = project.file("${project.buildDir}/reports/lint-report/lint-report.html")
+        }
+    }
 
-                buildTypes {
-                    release {}
-                    debug {
-                        testCoverageEnabled true
-                    }
-                }
-
-                compileOptions {
-                    sourceCompatibility Config.javaVersion
-                    targetCompatibility Config.javaVersion
-                }
-
-                kotlinter {
-                    ignoreFailures = false
-                    indentSize = 4
-                    reporters = ["html"]
-                    experimentalRules = false
-                    disabledRules = ["no-wildcard-imports", "import-ordering"]
-                }
-
-                lintOptions {
-                    disable 'InvalidPackage'
-                    xmlReport false
-                    abortOnError true
-                    htmlOutput file("$buildDir/reports/lint-report/lint-report.html")
-                }
-
-                testOptions {
-                    unitTests {
-                        all {
-                            jvmArgs '-noverify'
-                            testLogging {
-                                events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-                            }
-                        }
-                    }
-                }
-            }
+    project.plugins.withId('org.jetbrains.kotlin.android') {
+        project.android.kotlinOptions {
+            jvmTarget = Config.KotlinOptions.jvmTarget
         }
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+subprojects { project ->
+    project.plugins.withId('com.android.application') {
+        configureAndroidProject(project)
+    }
+    project.plugins.withId('com.android.library') {
+        configureAndroidProject(project)
+    }
+}
+
+tasks.register('clean', Delete) {
+    delete rootProject.layout.buildDirectory
 }

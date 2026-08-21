@@ -18,9 +18,10 @@ import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'org.jmailen.kotlinter'
-apply from: '../../../scripts/jacoco.gradle'
+
+android {
+    namespace 'teamcityapp.features.about.repository'
+}
 
 dependencies {
     implementation project(':features:about:models')

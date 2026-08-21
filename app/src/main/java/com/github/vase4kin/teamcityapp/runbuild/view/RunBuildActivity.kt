@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.runbuild.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import com.github.vase4kin.teamcityapp.runbuild.presenter.RunBuildPresenterImpl
@@ -36,6 +37,13 @@ class RunBuildActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_run_build)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.onBackPressed()
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            }
+        })
         presenter.onCreate()
     }
 
@@ -52,11 +60,6 @@ class RunBuildActivity : DaggerAppCompatActivity() {
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.hold, R.anim.slide_out_bottom)
-    }
-
-    override fun onBackPressed() {
-        presenter.onBackPressed()
-        super.onBackPressed()
     }
 
     companion object {

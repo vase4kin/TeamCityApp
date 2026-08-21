@@ -15,8 +15,10 @@
  */
 
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.ben-manes.versions'
-apply from: '../../../scripts/jacoco.gradle'
+
+android {
+    namespace 'teamcityapp.features.test_details.repository.models'
+}
 
 dependencies {
     implementation project(':libraries:api')
