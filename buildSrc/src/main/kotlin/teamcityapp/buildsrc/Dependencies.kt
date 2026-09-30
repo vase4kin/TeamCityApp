@@ -22,8 +22,8 @@ object Config {
     const val minSdk = 21
     const val compileSdk = 36
     const val targetSdk = 36
-    const val versionCode = 115
-    const val versionName = "1.52.6"
+    const val versionCode = 116
+    const val versionName = "1.52.7"
     const val applicationId = "com.github.vase4kin.teamcityapp"
     val javaVersion = JavaVersion.VERSION_17
 
