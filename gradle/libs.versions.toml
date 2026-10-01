@@ -23,7 +23,6 @@ aboutLibrary = { module = "com.github.daniel-stoneuk:material-about-library", ve
 shimmerlayout = { module = "io.supercharge:shimmerlayout", version = "2.1.0" }
 eventBus = { module = "org.greenrobot:eventbus", version = "3.0.0" }
 materialTapTargetPrompt = { module = "uk.co.samuelwall:material-tap-target-prompt", version = "3.0.0" }
-conceal = { module = "com.facebook.conceal:conceal", version = "1.1.3" }
 jodaTime = { module = "joda-time:joda-time", version = "2.8.1" }
 mugen = { module = "com.vinaysshenoy:mugen", version = "1.0.3" }
 fragNav = { module = "com.github.ncapdevi:fragnav", version = "3.1.0" }

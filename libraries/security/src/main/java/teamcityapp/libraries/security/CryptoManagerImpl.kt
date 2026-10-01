@@ -16,58 +16,83 @@
 
 package teamcityapp.libraries.security
 
-import com.facebook.crypto.Crypto
-import com.facebook.crypto.Entity
-import com.facebook.crypto.exception.CryptoInitializationException
-import com.facebook.crypto.exception.KeyChainException
-
+import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyProperties
 import java.io.IOException
-import java.util.Arrays
+import java.security.GeneralSecurityException
+import java.security.KeyStore
+import javax.crypto.Cipher
+import javax.crypto.KeyGenerator
+import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
 
-/**
- * Impl of [CryptoManager]
- */
-class CryptoManagerImpl(private val crypto: Crypto) : CryptoManager {
+/** Encrypts account passwords with an app-owned Android Keystore key. */
+class CryptoManagerImpl : CryptoManager {
 
-    private val passwordEntity = Entity.create("password")
-    private val empty = "EncryptionFailed".toByteArray()
+    // Invalid UTF-8 cannot be a password supplied through the String API.
+    private val failed = byteArrayOf(-1, -2, -1)
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun encrypt(password: String): ByteArray {
-        if (!crypto.isAvailable) return empty
-        return try {
-            crypto.encrypt(password.toByteArray(), passwordEntity)
-        } catch (e: KeyChainException) {
-            empty
-        } catch (e: CryptoInitializationException) {
-            empty
-        } catch (e: IOException) {
-            empty
-        }
+    override fun encrypt(password: String): ByteArray = try {
+        val cipher = Cipher.getInstance(TRANSFORMATION)
+        cipher.init(Cipher.ENCRYPT_MODE, getOrCreateKey())
+        val iv = cipher.iv
+        val ciphertext = cipher.doFinal(password.toByteArray(Charsets.UTF_8))
+        FORMAT + iv + ciphertext
+    } catch (e: GeneralSecurityException) {
+        failed
+    } catch (e: IOException) {
+        failed
     }
 
-    /**
-     * {@inheritDoc}
-     */
     override fun decrypt(password: ByteArray): ByteArray {
-        if (!crypto.isAvailable) return empty
+        if (!isCurrentFormat(password)) return failed
         return try {
-            crypto.decrypt(password, passwordEntity)
-        } catch (e: KeyChainException) {
-            empty
-        } catch (e: CryptoInitializationException) {
-            empty
+            val ivStart = FORMAT.size
+            val iv = password.copyOfRange(ivStart, ivStart + IV_SIZE)
+            val ciphertext = password.copyOfRange(ivStart + IV_SIZE, password.size)
+            val cipher = Cipher.getInstance(TRANSFORMATION)
+            cipher.init(Cipher.DECRYPT_MODE, getOrCreateKey(), GCMParameterSpec(TAG_BITS, iv))
+            cipher.doFinal(ciphertext)
+        } catch (e: GeneralSecurityException) {
+            failed
         } catch (e: IOException) {
-            empty
+            failed
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun isFailed(result: ByteArray): Boolean {
-        return Arrays.equals(empty, result)
+    override fun isFailed(result: ByteArray): Boolean = result.contentEquals(failed)
+
+    private fun isCurrentFormat(password: ByteArray): Boolean =
+        password.size >= FORMAT.size + IV_SIZE + TAG_BITS / 8 &&
+            password.copyOfRange(0, FORMAT.size).contentEquals(FORMAT)
+
+    @Synchronized
+    private fun getOrCreateKey(): SecretKey {
+        val keyStore = KeyStore.getInstance(KEYSTORE)
+        keyStore.load(null)
+        val existing = keyStore.getKey(KEY_ALIAS, null)
+        if (existing != null) return existing as SecretKey
+
+        val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, KEYSTORE)
+        generator.init(
+            KeyGenParameterSpec.Builder(
+                KEY_ALIAS,
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
+            )
+                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                .setKeySize(256)
+                .build()
+        )
+        return generator.generateKey()
+    }
+
+    private companion object {
+        const val KEYSTORE = "AndroidKeyStore"
+        const val KEY_ALIAS = "teamcityapp_account_password_v1"
+        const val TRANSFORMATION = "AES/GCM/NoPadding"
+        const val IV_SIZE = 12
+        const val TAG_BITS = 128
+        val FORMAT = "TeamCityAppPassword\u0001".toByteArray(Charsets.US_ASCII)
     }
 }
