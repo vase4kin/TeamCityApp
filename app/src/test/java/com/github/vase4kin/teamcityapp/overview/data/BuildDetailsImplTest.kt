@@ -40,7 +40,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import org.mockito.runners.MockitoJUnitRunner
+import org.mockito.junit.MockitoJUnitRunner
 import teamcityapp.features.properties.repository.models.Properties
 
 private const val TIME_STAMP = "20160621T233008+0700"

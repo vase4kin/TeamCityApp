@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.runners.MockitoJUnitRunner
+import org.mockito.junit.MockitoJUnitRunner
 
 private const val URL = "/app/rest/builds/id:993171/artifacts/content/stdlib-docs.zip"
 private const val FILE_NAME = "stdlib-docs.zip"

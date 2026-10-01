@@ -18,11 +18,13 @@ package com.github.vase4kin.teamcityapp.build_details.view
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.CheckBox
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import butterknife.BindView
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
@@ -35,6 +37,8 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
 import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
+import com.github.vase4kin.teamcityapp.utils.createProgressDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
@@ -62,15 +66,15 @@ class BuildDetailsViewImpl(
 
     private var tabTitle: String? = null
     private lateinit var overviewTabTitle: String
-    private lateinit var stoppingBuildProgressDialog: MaterialDialog
-    private lateinit var removingBuildFromQueueProgressDialog: MaterialDialog
-    private lateinit var restartingBuildProgressDialog: MaterialDialog
-    private lateinit var openingBuildProgressDialog: MaterialDialog
-    private lateinit var youAreAboutToStopBuildDialog: MaterialDialog
-    private lateinit var youAreAboutToRestartBuildDialog: MaterialDialog
-    private lateinit var youAreAboutToStopNotYoursBuildDialog: MaterialDialog
-    private lateinit var youAreAboutToRemoveBuildFromQueueDialog: MaterialDialog
-    private lateinit var youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog: MaterialDialog
+    private lateinit var stoppingBuildProgressDialog: AlertDialog
+    private lateinit var removingBuildFromQueueProgressDialog: AlertDialog
+    private lateinit var restartingBuildProgressDialog: AlertDialog
+    private lateinit var openingBuildProgressDialog: AlertDialog
+    private lateinit var youAreAboutToStopBuildDialog: AlertDialog
+    private lateinit var youAreAboutToRestartBuildDialog: AlertDialog
+    private lateinit var youAreAboutToStopNotYoursBuildDialog: AlertDialog
+    private lateinit var youAreAboutToRemoveBuildFromQueueDialog: AlertDialog
+    private lateinit var youAreAboutToRemoveBuildFromQueueTriggeredByNotyouDialog: AlertDialog
 
     /**
      * {@inheritDoc}
@@ -180,12 +184,10 @@ class BuildDetailsViewImpl(
             R.string.text_remove_build_from_queue_2,
             R.string.text_remove_from_queue_button
         )
-        youAreAboutToRestartBuildDialog = createConfirmDialogBuilder(
+        youAreAboutToRestartBuildDialog = createConfirmDialog(
             R.string.text_restart_the_build,
             R.string.text_restart_button
-        )
-            .onPositive { _, _ -> onBuildDetailsViewListener?.onConfirmRestartBuild() }
-            .build()
+        ) { onBuildDetailsViewListener?.onConfirmRestartBuild() }
     }
 
     /**
@@ -380,65 +382,32 @@ class BuildDetailsViewImpl(
      */
     private fun createConfirmDialog(
         @StringRes content: Int,
-        @StringRes positiveText: Int
-    ): MaterialDialog {
-        return createConfirmDialogBuilder(content, positiveText)
-            .build()
+        @StringRes positiveText: Int,
+        withReAddCheckbox: Boolean = false,
+        onConfirm: (Boolean) -> Unit = { reAdd ->
+            onBuildDetailsViewListener?.onConfirmCancelingBuild(reAdd)
+        }
+    ): AlertDialog {
+        val checkbox = if (withReAddCheckbox) {
+            LayoutInflater.from(activity).inflate(R.layout.dialog_readd_build, null) as CheckBox
+        } else {
+            null
+        }
+        return MaterialAlertDialogBuilder(activity)
+            .setMessage(content)
+            .apply { if (checkbox != null) setView(checkbox) }
+            .setPositiveButton(positiveText) { _, _ -> onConfirm(checkbox?.isChecked == true) }
+            .setNegativeButton(R.string.text_cancel_button, null)
+            .create()
     }
 
-    /**
-     * Create stopping build confirm dialog with re-add build to queue checkbox
-     *
-     * @param content - Resource id content message
-     * @param positiveText - Resource id positive dialog text
-     * @return confirm dialog
-     */
     private fun createConfirmDialogWithReAddCheckbox(
         @StringRes content: Int,
         @StringRes positiveText: Int
-    ): MaterialDialog {
-        return createConfirmDialogBuilder(content, positiveText)
-            .checkBoxPromptRes(R.string.text_re_add_build, false, null)
-            .build()
-    }
+    ): AlertDialog = createConfirmDialog(content, positiveText, withReAddCheckbox = true)
 
-    /**
-     * Create cancel build confirm dialog builder
-     *
-     * @param content - Resource id content message
-     * @param positiveText - Resource id positive dialog text
-     * @return confirm dialog builder
-     */
-    private fun createConfirmDialogBuilder(
-        @StringRes content: Int,
-        @StringRes positiveText: Int
-    ): MaterialDialog.Builder {
-        return MaterialDialog.Builder(activity)
-            .content(content)
-            .positiveText(positiveText)
-            .onPositive { dialog, _ ->
-                onBuildDetailsViewListener?.onConfirmCancelingBuild(
-                    dialog.isPromptCheckBoxChecked
-                )
-            }
-            .negativeText(R.string.text_cancel_button)
-    }
-
-    /**
-     * Create progress dialog with custom content message
-     *
-     * @param content - resource id message
-     * @return progress dialog
-     */
-    private fun createProgressDialogWithContent(@StringRes content: Int): MaterialDialog {
-        val progressDialog = MaterialDialog.Builder(activity)
-            .content(content)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
-        return progressDialog
+    private fun createProgressDialogWithContent(@StringRes content: Int): AlertDialog {
+        return createProgressDialog(activity, content)
     }
 
     /**

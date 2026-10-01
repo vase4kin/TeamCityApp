@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.remote
 
+import com.github.vase4kin.teamcityapp.BuildConfig
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import teamcityapp.libraries.remote.RemoteService
@@ -71,12 +72,12 @@ class RemoteServiceImpl(
 
     private fun fetch() {
         var cacheExpiration = CACHE
-        if (remoteConfig.info.configSettings.isDeveloperModeEnabled) {
+        if (BuildConfig.DEBUG) {
             cacheExpiration = 0
         }
         remoteConfig.fetch(cacheExpiration).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                remoteConfig.activateFetched()
+                remoteConfig.activate()
             } else {
                 val exception = task.exception
                 logException(exception)

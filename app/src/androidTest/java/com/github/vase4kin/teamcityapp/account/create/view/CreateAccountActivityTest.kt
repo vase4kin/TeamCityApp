@@ -35,8 +35,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
@@ -50,6 +50,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -71,11 +72,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
-import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.doAnswer
 import org.mockito.Spy
+import org.mockito.kotlin.any
 import javax.inject.Named
 
 /**
@@ -145,8 +146,8 @@ class CreateAccountActivityTest {
         app.restApiInjector.sharedUserStorage().clearAll()
         app.restApiInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive("$URL/server", false)
-        `when`(clientBase.newCall(Matchers.any(Request::class.java))).thenReturn(call)
-        `when`(unsafeOkHttpClient.newCall(Matchers.any(Request::class.java))).thenReturn(call)
+        `when`(clientBase.newCall(any<Request>())).thenReturn(call)
+        `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
         activityRule.launchActivity(null)
     }
 
@@ -166,7 +167,7 @@ class CreateAccountActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         onView(withId(R.id.teamcity_url)).perform(typeText(inputUrl), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
@@ -211,7 +212,7 @@ class CreateAccountActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         onView(withId(R.id.teamcity_url)).perform(typeText(inputUrl), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
@@ -259,7 +260,7 @@ class CreateAccountActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         onView(withId(R.id.teamcity_url)).perform(typeText(inputUrl), closeSoftKeyboard())
         onView(withId(R.id.user_name)).perform(typeText("user"), pressImeActionButton())
@@ -300,9 +301,9 @@ class CreateAccountActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
-        onView(withId(R.id.teamcity_url)).perform(typeText(URL), closeSoftKeyboard())
+        onView(withId(R.id.teamcity_url)).perform(typeText(inputUrl), closeSoftKeyboard())
         onView(withId(R.id.guest_user_switch)).perform(click())
         onView(withId(R.id.action_create)).perform(click())
         onView(withText(containsString("Client Error"))).check(matches(isDisplayed()))

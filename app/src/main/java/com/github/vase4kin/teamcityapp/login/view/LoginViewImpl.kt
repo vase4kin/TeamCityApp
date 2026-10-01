@@ -26,13 +26,15 @@ import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Switch
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.core.text.HtmlCompat
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.utils.createProgressDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 
 class LoginViewImpl(private val activity: Activity) : LoginView {
@@ -63,7 +65,7 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
     lateinit var tryItOutTextButton: MaterialButton
 
     private lateinit var unbinder: Unbinder
-    private lateinit var progressDialog: MaterialDialog
+    private lateinit var progressDialog: AlertDialog
 
     private var listener: LoginView.ViewListener? = null
 
@@ -75,13 +77,7 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
 
         this.listener = listener
 
-        progressDialog = MaterialDialog.Builder(activity)
-            .content(R.string.text_progress_bar_loading)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
+        progressDialog = createProgressDialog(activity, R.string.text_progress_bar_loading)
 
         password.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -244,10 +240,10 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      * {@inheritDoc}
      */
     override fun showUnauthorizedInfoDialog() {
-        MaterialDialog.Builder(activity)
-            .title(R.string.info_unauthorized_dialog_title)
-            .content(R.string.info_unauthorized_dialog_content)
-            .positiveText(R.string.dialog_ok_title)
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.info_unauthorized_dialog_title)
+            .setMessage(R.string.info_unauthorized_dialog_content)
+            .setPositiveButton(R.string.dialog_ok_title, null)
             .show()
     }
 
@@ -257,22 +253,16 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
     override fun showTryItOutDialog(url: String) {
         val content = activity.getString(R.string.info_try_it_out_dialog_content, url)
         val formattedContent = HtmlCompat.fromHtml(content, HtmlCompat.FROM_HTML_MODE_COMPACT)
-        MaterialDialog.Builder(activity)
-            .title(R.string.info_try_it_out_title)
-            .content(formattedContent)
-            .positiveText(R.string.dialog_try_it_out_title)
-            .negativeText(R.string.warning_ssl_dialog_negative)
-            .onPositive { dialog, _ ->
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.info_try_it_out_title)
+            .setMessage(formattedContent)
+            .setPositiveButton(R.string.dialog_try_it_out_title) { _, _ ->
                 listener?.onTryItOutActionClick()
-                dialog.dismiss()
             }
-            .onNegative { dialog, _ ->
+            .setNegativeButton(R.string.warning_ssl_dialog_negative) { _, _ ->
                 listener?.onDeclineTryItOutActionClick()
-                dialog.dismiss()
             }
-            .canceledOnTouchOutside(false)
-            .autoDismiss(false)
-            .cancelable(false)
+            .setCancelable(false)
             .show()
     }
 
@@ -280,22 +270,16 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      * {@inheritDoc}
      */
     override fun showDisableSslWarningDialog() {
-        MaterialDialog.Builder(activity)
-            .title(R.string.warning_ssl_dialog_title)
-            .content(R.string.warning_ssl_dialog_content)
-            .positiveText(R.string.dialog_ok_title)
-            .negativeText(R.string.warning_ssl_dialog_negative)
-            .onPositive { dialog, _ ->
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.warning_ssl_dialog_title)
+            .setMessage(R.string.warning_ssl_dialog_content)
+            .setPositiveButton(R.string.dialog_ok_title) { _, _ ->
                 disableSslSwitch.isChecked = true
-                dialog.dismiss()
             }
-            .onNegative { dialog, _ ->
+            .setNegativeButton(R.string.warning_ssl_dialog_negative) { _, _ ->
                 disableSslSwitch.isChecked = false
-                dialog.dismiss()
             }
-            .canceledOnTouchOutside(false)
-            .autoDismiss(false)
-            .cancelable(false)
+            .setCancelable(false)
             .show()
     }
 
@@ -303,22 +287,16 @@ class LoginViewImpl(private val activity: Activity) : LoginView {
      * {@inheritDoc}
      */
     override fun showNotSecureConnectionDialog(isGuest: Boolean) {
-        MaterialDialog.Builder(activity)
-            .title(R.string.warning_ssl_dialog_title)
-            .content(R.string.server_not_secure_http)
-            .positiveText(R.string.dialog_ok_title)
-            .negativeText(R.string.warning_ssl_dialog_negative)
-            .onPositive { dialog, _ ->
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.warning_ssl_dialog_title)
+            .setMessage(R.string.server_not_secure_http)
+            .setPositiveButton(R.string.dialog_ok_title) { _, _ ->
                 listener?.onAcceptNotSecureConnectionClick(isGuest)
-                dialog.dismiss()
             }
-            .onNegative { dialog, _ ->
+            .setNegativeButton(R.string.warning_ssl_dialog_negative) { _, _ ->
                 listener?.onCancelNotSecureConnectionClick()
-                dialog.dismiss()
             }
-            .canceledOnTouchOutside(false)
-            .autoDismiss(false)
-            .cancelable(false)
+            .setCancelable(false)
             .show()
     }
 

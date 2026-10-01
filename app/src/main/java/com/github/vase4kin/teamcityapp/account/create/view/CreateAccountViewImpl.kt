@@ -23,11 +23,13 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.Switch
 import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.utils.createProgressDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputLayout
 
 class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView {
@@ -52,8 +54,8 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
     lateinit var disableSslSwitch: Switch
 
     private lateinit var unbinder: Unbinder
-    private lateinit var progressDialog: MaterialDialog
-    private lateinit var discardDialog: MaterialDialog
+    private lateinit var progressDialog: AlertDialog
+    private lateinit var discardDialog: AlertDialog
 
     /**
      * {@inheritDoc}
@@ -250,48 +252,30 @@ class CreateAccountViewImpl(private val activity: Activity) : CreateAccountView 
      * Init dialogs
      */
     private fun initDialogs() {
-        progressDialog = MaterialDialog.Builder(activity)
-            .title(R.string.progress_dialog_title)
-            .content(R.string.progress_dialog_content)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
+        progressDialog = createProgressDialog(activity, R.string.progress_dialog_content)
+        progressDialog.setTitle(R.string.progress_dialog_title)
 
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
-
-        discardDialog = MaterialDialog.Builder(activity)
-            .content(R.string.discard_dialog_content)
-            .positiveText(R.string.discard_dialog_positive_button_text)
-            .callback(object : MaterialDialog.ButtonCallback() {
-                override fun onPositive(dialog: MaterialDialog?) {
-                    finish()
-                }
-            })
-            .negativeText(R.string.discard_dialog_negative_button_text)
-            .build()
+        discardDialog = MaterialAlertDialogBuilder(activity)
+            .setMessage(R.string.discard_dialog_content)
+            .setPositiveButton(R.string.discard_dialog_positive_button_text) { _, _ -> finish() }
+            .setNegativeButton(R.string.discard_dialog_negative_button_text, null)
+            .create()
     }
 
     /**
      * {@inheritDoc}
      */
     override fun showDisableSslWarningDialog() {
-        MaterialDialog.Builder(activity)
-            .title(R.string.warning_ssl_dialog_title)
-            .content(R.string.warning_ssl_dialog_content)
-            .positiveText(R.string.dialog_ok_title)
-            .negativeText(R.string.warning_ssl_dialog_negative)
-            .onPositive { dialog, which ->
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.warning_ssl_dialog_title)
+            .setMessage(R.string.warning_ssl_dialog_content)
+            .setPositiveButton(R.string.dialog_ok_title) { _, _ ->
                 disableSslSwitch.isChecked = true
-                dialog.dismiss()
             }
-            .onNegative { dialog, which ->
+            .setNegativeButton(R.string.warning_ssl_dialog_negative) { _, _ ->
                 disableSslSwitch.isChecked = false
-                dialog.dismiss()
             }
-            .canceledOnTouchOutside(false)
-            .autoDismiss(false)
-            .cancelable(false)
+            .setCancelable(false)
             .show()
     }
 

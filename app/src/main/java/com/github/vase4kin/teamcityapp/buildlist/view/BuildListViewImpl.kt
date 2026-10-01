@@ -26,16 +26,17 @@ import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import butterknife.BindString
 import butterknife.BindView
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.data.OnBuildListPresenterListener
+import com.github.vase4kin.teamcityapp.utils.createProgressDialog
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -66,7 +67,7 @@ open class BuildListViewImpl(
     lateinit var queuedHeaderText: String
     @BindView(R.id.floating_action_button)
     lateinit var floatingActionButton: ExtendedFloatingActionButton
-    private lateinit var progressDialog: MaterialDialog
+    private lateinit var progressDialog: AlertDialog
     private lateinit var sections: ArrayList<SimpleSectionedRecyclerViewAdapter.Section>
     private lateinit var dataModel: BuildListDataModel
     private var filtersAppliedSnackBar: Snackbar? = null
@@ -100,13 +101,7 @@ open class BuildListViewImpl(
         super.initViews(listener)
         floatingActionButton.visibility = View.GONE
         floatingActionButton.setOnClickListener { this.listener?.onRunBuildFabClick() }
-        progressDialog = MaterialDialog.Builder(activity)
-            .content(R.string.text_opening_build)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
+        progressDialog = createProgressDialog(activity, R.string.text_opening_build)
     }
 
     /**

@@ -45,7 +45,7 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
         /*
             Setup Chrome Custom Tabs
          */
-        customTabsServiceConnection = object : CustomTabsServiceConnection() {
+        val connection = object : CustomTabsServiceConnection() {
             override fun onCustomTabsServiceConnected(
                 componentName: ComponentName,
                 customTabsClient: CustomTabsClient
@@ -62,11 +62,12 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
                 client = null
             }
         }
+        customTabsServiceConnection = connection
 
         CustomTabsClient.bindCustomTabsService(
             activity,
             CUSTOM_TAB_PACKAGE_NAME,
-            customTabsServiceConnection
+            connection
         )
 
         customTabsIntent = CustomTabsIntent.Builder(customTabsSession)

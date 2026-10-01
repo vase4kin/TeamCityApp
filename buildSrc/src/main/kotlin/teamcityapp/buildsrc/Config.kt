@@ -19,7 +19,7 @@ package teamcityapp.buildsrc
 import org.gradle.api.JavaVersion
 
 object Config {
-    const val minSdk = 21
+    const val minSdk = 24
     const val compileSdk = 36
     const val targetSdk = 36
     const val versionCode = 116

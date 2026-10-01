@@ -26,7 +26,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import okio.Okio
+import okio.buffer
+import okio.sink
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -66,7 +67,7 @@ class ArtifactDataManagerImpl(
                 val downloadedFile = java.io.File(
                     downloadDirectory, name
                 )
-                val sink = Okio.buffer(Okio.sink(downloadedFile))
+                val sink = downloadedFile.sink().buffer()
                 sink.writeAll(response.source())
                 sink.close()
                 downloadedFile

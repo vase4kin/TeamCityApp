@@ -80,11 +80,11 @@ class CreateAccountDataManagerImpl(
         return getClient(isSslDisabled).newBuilder().authenticator { _, response ->
             val credential = Credentials.basic(userName, password)
 
-            if (credential == response.request().header(AUTHORIZATION)) {
+            if (credential == response.request.header(AUTHORIZATION)) {
                 return@authenticator null // If we already failed with these credentials, don't retry.
             }
 
-            response.request().newBuilder()
+            response.request.newBuilder()
                 .header(AUTHORIZATION, credential)
                 .build()
         }.build()
@@ -172,17 +172,13 @@ class CreateAccountDataManagerImpl(
                             handler.post { listener.onSuccess(formattedServerUrl) }
                         } else {
                             var message: String
-                            if (response.body() != null && response.body()!!.source() != null) {
-                                try {
-                                    message = response.body()!!.source().readUtf8()
-                                } catch (exception: IOException) {
-                                    FirebaseCrashlytics.getInstance().recordException(exception)
-                                    message = response.message()
-                                }
-                            } else {
-                                message = response.message()
+                            try {
+                                message = response.body.source().readUtf8().ifBlank { response.message }
+                            } catch (exception: IOException) {
+                                FirebaseCrashlytics.getInstance().recordException(exception)
+                                message = response.message
                             }
-                            handler.post { listener.onFail(response.code(), message) }
+                            handler.post { listener.onFail(response.code, message) }
                         }
                     }
                 })

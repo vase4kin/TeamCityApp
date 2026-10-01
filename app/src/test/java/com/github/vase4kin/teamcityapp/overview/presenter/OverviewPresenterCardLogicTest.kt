@@ -21,12 +21,12 @@ import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView
 import com.github.vase4kin.teamcityapp.utils.eq
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.whenever
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Matchers.anyInt
-import org.mockito.Matchers.anyString
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.never

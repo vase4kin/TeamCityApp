@@ -51,8 +51,8 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchHomeToolb
 import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
 import org.hamcrest.CoreMatchers.equalTo
