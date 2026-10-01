@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -29,30 +28,30 @@ android {
 }
 
 dependencies {
-    implementation project(':features:test-details:repository')
-    implementation project(':features:test-details:models')
-    implementation project(':libraries:utils')
-    implementation project(':libraries:api')
-    implementation project(':libraries:resources')
-    implementation project(':libraries:theme')
+    implementation projects.features.testDetails.repository
+    implementation projects.features.testDetails.models
+    implementation projects.libraries.utils
+    implementation projects.libraries.api
+    implementation projects.libraries.resources
+    implementation projects.libraries.theme
 
-    implementation Libs.AndroidX.appcompat
-    implementation Libs.AndroidX.LifeCycle.lifeCycle
-    implementation Libs.Google.material
-    implementation Libs.Dagger.dagger
-    implementation Libs.Dagger.androidSupport
-    implementation Libs.RxJava.rxJava
-    implementation Libs.RxJava.rxAndroid
-    implementation Libs.RxJava.rxjava_kotlin
-    implementation Libs.Google.firebaseCore
-    implementation Libs.Kotlin.stdlib
-    implementation Libs.errorView
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.lifecycle.lifeCycle
+    implementation libs.google.material
+    implementation libs.dagger.dagger
+    implementation libs.dagger.androidSupport
+    implementation libs.rxjava.rxJava
+    implementation libs.rxjava.rxAndroid
+    implementation libs.rxjava.rxjava.kotlin
+    implementation libs.google.firebaseCore
+    implementation libs.kotlin.stdlib
+    implementation libs.errorView
 
-    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
-    kapt Libs.Dagger.compiler
-    kapt Libs.Dagger.androidProcessor
+    kapt libs.androidx.lifecycle.lifeCycleCompiler
+    kapt libs.dagger.compiler
+    kapt libs.dagger.androidProcessor
 
-    testImplementation Libs.junit
-    testImplementation Libs.Mockito.mockito3
-    testImplementation Libs.Mockito.mockitoKotlin
+    testImplementation libs.junit
+    testImplementation libs.mockito.mockito3
+    testImplementation libs.mockito.mockitoKotlin
 }

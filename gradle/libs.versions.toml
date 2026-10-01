@@ -1,0 +1,100 @@
+# Dependency and plugin versions. Keep runtime versions unchanged during catalog migrations.
+[versions]
+androidx-lifecycle = "2.2.0"
+androidx-test = "1.6.1"
+espresso = "3.6.1"
+okhttp = "3.9.0"
+retrofit = "2.4.0"
+dagger = "2.57.2"
+butterknife = "10.2.1"
+dexmaker = "2.28.6"
+kotlin = "2.2.21"
+groupie = "2.7.1"
+android-gradle = "9.4.0"
+google-services = "4.4.3"
+firebase-perf-plugin = "2.0.2"
+crashlytics-plugin = "3.0.6"
+oss-licenses-plugin = "0.10.9"
+
+[libraries]
+errorView = { module = "com.github.xiprox:ErrorView", version = "3.0.0" }
+aboutLibrary = { module = "com.github.daniel-stoneuk:material-about-library", version = "3.1.2" }
+dialogs = { module = "com.afollestad.material-dialogs:core", version = "0.9.6.0" }
+shimmerlayout = { module = "io.supercharge:shimmerlayout", version = "2.1.0" }
+eventBus = { module = "org.greenrobot:eventbus", version = "3.0.0" }
+materialTapTargetPrompt = { module = "uk.co.samuelwall:material-tap-target-prompt", version = "3.0.0" }
+conceal = { module = "com.facebook.conceal:conceal", version = "1.1.3" }
+jodaTime = { module = "joda-time:joda-time", version = "2.8.1" }
+mugen = { module = "com.vinaysshenoy:mugen", version = "1.0.3" }
+fragNav = { module = "com.github.ncapdevi:fragnav", version = "3.1.0" }
+junit = { module = "junit:junit", version = "4.13" }
+hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
+daggerMock = { module = "com.github.fabioCollini:DaggerMock", version = "0.8.5" }
+androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
+androidx-cardView = { module = "androidx.cardview:cardview", version = "1.0.0" }
+androidx-legacySupport = { module = "androidx.legacy:legacy-support-v13", version = "1.0.0" }
+androidx-recyclerView = { module = "androidx.recyclerview:recyclerview", version = "1.0.0" }
+androidx-annotationn = { module = "androidx.annotation:annotation", version = "1.0.2" }
+androidx-browser = { module = "androidx.browser:browser", version = "1.0.0" }
+androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.0.0" }
+androidx-preference = { module = "androidx.preference:preference", version = "1.1.1" }
+androidx-lifecycle-lifeCycle = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-lifeCycleCompiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-lifeCycleLiveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-lifeCycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
+androidx-lifecycle-lifeCycleCommonJava8 = { module = "androidx.lifecycle:lifecycle-common-java8", version.ref = "androidx-lifecycle" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidx-test" }
+androidx-test-runner = { module = "androidx.test:runner", version = "1.6.2" }
+androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test" }
+androidx-test-orchestrator = { module = "androidx.test:orchestrator", version.ref = "androidx-test" }
+androidx-test-extJunit = { module = "androidx.test.ext:junit", version = "1.2.1" }
+androidx-test-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso" }
+androidx-test-espresso-intents = { module = "androidx.test.espresso:espresso-intents", version.ref = "espresso" }
+androidx-test-espresso-contrib = { module = "androidx.test.espresso:espresso-contrib", version.ref = "espresso" }
+androidx-test-espresso-web = { module = "androidx.test.espresso:espresso-web", version.ref = "espresso" }
+google-material = { module = "com.google.android.material:material", version = "1.2.1" }
+google-firebaseCore = { module = "com.google.firebase:firebase-core", version = "17.5.0" }
+google-firebaseConfig = { module = "com.google.firebase:firebase-config", version = "19.2.0" }
+google-firebasePerf = { module = "com.google.firebase:firebase-perf", version = "19.0.8" }
+google-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version = "17.2.1" }
+google-analytics = { module = "com.google.firebase:firebase-analytics", version = "17.5.0" }
+google-openSourceLicensesLibrary = { module = "com.google.android.gms:play-services-oss-licenses", version = "17.0.0" }
+google-tools-openSourceLicensesPlugin = { module = "com.google.android.gms:oss-licenses-plugin", version.ref = "oss-licenses-plugin" }
+okhttp-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
+retrofit-retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-retrofitRxjavaAdapter = { module = "com.squareup.retrofit2:adapter-rxjava2", version.ref = "retrofit" }
+retrofit-gsonConverter = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+rxjava-rxJava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.19" }
+rxjava-rxAndroid = { module = "io.reactivex.rxjava2:rxandroid", version = "2.1.1" }
+rxjava-rxjava-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version = "2.4.0" }
+rxcache-rxCache = { module = "com.github.VictorAlbertos.RxCache:runtime", version = "1.8.3-2.x" }
+rxcache-jolyglot = { module = "com.github.VictorAlbertos.Jolyglot:gson", version = "0.0.4" }
+dagger-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
+dagger-androidSupport = { module = "com.google.dagger:dagger-android-support", version.ref = "dagger" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
+dagger-androidProcessor = { module = "com.google.dagger:dagger-android-processor", version.ref = "dagger" }
+butterknife-butterKnife = { module = "com.jakewharton:butterknife", version.ref = "butterknife" }
+butterknife-butterKnifeCompiler = { module = "com.jakewharton:butterknife-compiler", version.ref = "butterknife" }
+dexmaker-dexmakerMockito = { module = "com.linkedin.dexmaker:dexmaker-mockito", version.ref = "dexmaker" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
+kotlin-tools-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+tools-gradleAndroid = { module = "com.android.tools.build:gradle", version.ref = "android-gradle" }
+tools-googleServices = { module = "com.google.gms:google-services", version.ref = "google-services" }
+tools-firebasePerf = { module = "com.google.firebase:perf-plugin", version.ref = "firebase-perf-plugin" }
+tools-crashlytics = { module = "com.google.firebase:firebase-crashlytics-gradle", version.ref = "crashlytics-plugin" }
+mockito-mockitoKotlin = { module = "com.nhaarman.mockitokotlin2:mockito-kotlin", version = "2.2.0" }
+mockito-mockito3 = { module = "org.mockito:mockito-core", version = "3.1.0" }
+groupie-groupie = { module = "com.github.lisawray.groupie:groupie", version.ref = "groupie" }
+groupie-groupieDatabinding = { module = "com.github.lisawray.groupie:groupie-databinding", version.ref = "groupie" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "android-gradle" }
+android-library = { id = "com.android.library", version.ref = "android-gradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+firebase-performance = { id = "com.google.firebase.firebase-perf", version.ref = "firebase-perf-plugin" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics-plugin" }
+google-oss-licenses = { id = "com.google.android.gms.oss-licenses-plugin", version.ref = "oss-licenses-plugin" }

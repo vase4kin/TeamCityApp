@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -24,7 +23,7 @@ android {
 }
 
 dependencies {
-    implementation project(':features:about:models')
-    implementation Libs.RxJava.rxJava
-    implementation Libs.Kotlin.stdlib
+    implementation projects.features.about.models
+    implementation libs.rxjava.rxJava
+    implementation libs.kotlin.stdlib
 }

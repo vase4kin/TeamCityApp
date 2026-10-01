@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -24,6 +23,9 @@ android {
 }
 
 dependencies {
-    implementation Libs.conceal
-    implementation Libs.Kotlin.stdlib
+    implementation(libs.conceal) {
+        artifact { type = 'aar' }
+        transitive = false
+    }
+    implementation libs.kotlin.stdlib
 }

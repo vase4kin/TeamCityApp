@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 
@@ -23,6 +22,6 @@ android {
 }
 
 dependencies {
-    implementation project(':libraries:api')
-    implementation Libs.AndroidX.annotationn
+    implementation projects.libraries.api
+    implementation libs.androidx.annotationn
 }

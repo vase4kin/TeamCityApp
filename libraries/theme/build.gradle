@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 
@@ -23,6 +22,6 @@ android {
 }
 
 dependencies {
-    implementation project(':libraries:resources')
-    implementation Libs.Google.material
+    implementation projects.libraries.resources
+    implementation libs.google.material
 }

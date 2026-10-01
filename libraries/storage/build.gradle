@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -24,6 +23,6 @@ android {
 }
 
 dependencies {
-    implementation project(':libraries:storage-models')
-    implementation Libs.Kotlin.stdlib
+    implementation projects.libraries.storageModels
+    implementation libs.kotlin.stdlib
 }
