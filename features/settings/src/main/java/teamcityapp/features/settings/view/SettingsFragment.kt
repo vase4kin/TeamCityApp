@@ -16,16 +16,16 @@
 
 package teamcityapp.features.settings.view
 
-import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.preference.PreferenceFragmentCompat
-import dagger.android.support.AndroidSupportInjection
 import teamcityapp.features.settings.R
 import teamcityapp.features.settings.tracker.SettingsTracker
 import teamcityapp.libraries.utils.applyThemeFromSettings
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class SettingsFragment :
     PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -68,10 +68,5 @@ class SettingsFragment :
                 }
             )
         }
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 }

@@ -21,13 +21,15 @@ import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Manages first login screen
  */
-class LoginActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class LoginActivity : AppCompatActivity() {
 
     /**
      * Injected presenter

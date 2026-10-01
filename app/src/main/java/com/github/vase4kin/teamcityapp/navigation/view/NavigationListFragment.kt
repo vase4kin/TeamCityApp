@@ -25,17 +25,22 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.navigation.presenter.NavigationPresenterImpl
-import dagger.android.support.AndroidSupportInjection
 import teamcityapp.libraries.utils.initDrawer
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Named
 import javax.inject.Inject
 
 /**
  * Navigation fragment to handle first projects screen for [com.github.vase4kin.teamcityapp.home.view.HomeActivity]
  */
+@AndroidEntryPoint
 class NavigationListFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: NavigationPresenterImpl
+    @Named("NavigationListFragment")
+    lateinit var presenterProvider: javax.inject.Provider<NavigationPresenterImpl>
+
+    private lateinit var presenter: NavigationPresenterImpl
 
     @Inject
     lateinit var homeRouter: HomeRouter
@@ -50,7 +55,7 @@ class NavigationListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
         view.initDrawer {
             homeRouter.openDrawer()

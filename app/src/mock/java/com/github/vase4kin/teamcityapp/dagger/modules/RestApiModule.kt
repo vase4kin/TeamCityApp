@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope
+import dagger.hilt.migration.DisableInstallInCheck
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -30,6 +31,7 @@ import javax.inject.Named
 /**
  * Mocked rest api module
  */
+@DisableInstallInCheck
 @Module
 open class RestApiModule(@Suppress("UNUSED_PARAMETER") baseUrl: String) {
 

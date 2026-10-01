@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-
+apply plugin: 'com.google.dagger.hilt.android'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
@@ -43,11 +43,12 @@ dependencies {
     implementation libs.androidx.appcompat
     implementation libs.androidx.constraintLayout
     implementation libs.dagger.dagger
-    implementation libs.dagger.androidSupport
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
     implementation libs.kotlin.stdlib
     implementation libs.groupie.groupie
     implementation libs.groupie.groupieDatabinding
 
     kapt libs.dagger.compiler
-    kapt libs.dagger.androidProcessor
+
 }

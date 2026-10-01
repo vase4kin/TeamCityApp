@@ -22,16 +22,19 @@ import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.tests.presenter.TestsPresenterImpl
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Fragment to manage build tests
  */
+@AndroidEntryPoint
 class TestOccurrencesFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: TestsPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<TestsPresenterImpl>
+
+    private lateinit var presenter: TestsPresenterImpl
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_list, container, false)
@@ -39,7 +42,7 @@ class TestOccurrencesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         setHasOptionsMenu(true)
         presenter.onViewsCreated()
     }

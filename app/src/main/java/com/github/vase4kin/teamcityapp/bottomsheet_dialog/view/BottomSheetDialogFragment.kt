@@ -22,21 +22,22 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger.BottomSheetModule
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.dagger.DaggerBottomSheetComponent
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.presenter.BottomSheetPresenterImpl
 
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Bottom sheet dialog
  */
+@AndroidEntryPoint
 class BottomSheetDialogFragment :
     com.google.android.material.bottomsheet.BottomSheetDialogFragment() {
 
     @Inject
-    lateinit var presenter: BottomSheetPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<BottomSheetPresenterImpl>
+
+    private lateinit var presenter: BottomSheetPresenterImpl
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,15 +46,13 @@ class BottomSheetDialogFragment :
     ): View? {
         val view = View.inflate(context, R.layout.dialog_bottom_sheet, null)
 
-        // Injecting presenter
-        DaggerBottomSheetComponent.builder()
-            .bottomSheetModule(BottomSheetModule(view, this))
-            .appComponent((requireActivity().application as TeamCityApplication).appInjector)
-            .build()
-            .inject(this)
-
-        presenter.handleOnCreateView()
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        presenter = presenterProvider.get()
+        presenter.handleOnCreateView()
     }
 
     override fun onDestroyView() {
@@ -62,6 +61,10 @@ class BottomSheetDialogFragment :
     }
 
     companion object {
+
+        internal const val ARG_TITLE = "arg_title"
+        internal const val ARG_DESCRIPTION = "arg_description"
+        internal const val ARG_BOTTOM_SHEET_TYPE = "arg_bottom_sheet_type"
 
         fun createBottomSheetDialog(
             title: String,
@@ -78,9 +81,9 @@ class BottomSheetDialogFragment :
         ): BottomSheetDialogFragment {
             val bottomSheetDialogFragment = BottomSheetDialogFragment()
             val bundle = Bundle()
-            bundle.putString(BottomSheetModule.ARG_TITLE, title)
-            bundle.putStringArray(BottomSheetModule.ARG_DESCRIPTION, descriptions)
-            bundle.putInt(BottomSheetModule.ARG_BOTTOM_SHEET_TYPE, menuType)
+            bundle.putString(ARG_TITLE, title)
+            bundle.putStringArray(ARG_DESCRIPTION, descriptions)
+            bundle.putInt(ARG_BOTTOM_SHEET_TYPE, menuType)
             bottomSheetDialogFragment.arguments = bundle
             return bottomSheetDialogFragment
         }

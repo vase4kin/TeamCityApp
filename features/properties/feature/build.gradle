@@ -16,6 +16,7 @@
 
 import teamcityapp.buildsrc.Config
 
+apply plugin: 'com.google.dagger.hilt.android'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
@@ -47,7 +48,8 @@ dependencies {
     implementation libs.androidx.lifecycle.lifeCycleCommonJava8
     implementation libs.google.material
     implementation libs.dagger.dagger
-    implementation libs.dagger.androidSupport
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
     implementation libs.rxjava.rxJava
     implementation libs.rxjava.rxAndroid
     implementation libs.rxjava.rxjava.kotlin
@@ -60,7 +62,6 @@ dependencies {
     implementation libs.androidx.constraintLayout
 
     kapt libs.dagger.compiler
-    kapt libs.dagger.androidProcessor
 
     testImplementation libs.junit
     testImplementation libs.mockito.mockitoCore

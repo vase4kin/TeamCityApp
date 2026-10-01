@@ -26,13 +26,14 @@ import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.tracker.FilterBottomSheetTracker
 import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
-import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Bottom sheet dialog
  */
+@AndroidEntryPoint
 class FilterBottomSheetDialogFragment :
     com.google.android.material.bottomsheet.BottomSheetDialogFragment() {
 
@@ -42,11 +43,6 @@ class FilterBottomSheetDialogFragment :
     lateinit var eventBus: EventBus
     @Inject
     lateinit var bottomSheetTracker: FilterBottomSheetTracker
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        AndroidSupportInjection.inject(this)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

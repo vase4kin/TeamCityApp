@@ -22,7 +22,7 @@
 
         <variable
             name="vm"
-            type="teamcityapp.features.test_details.viewmodel.TestDetailsViewModel" />
+            type="teamcityapp.features.test_details.stateholder.TestDetailsStateHolder" />
 
     </data>
 

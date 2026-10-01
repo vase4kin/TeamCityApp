@@ -1,40 +1,33 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package teamcityapp.features.manage_accounts.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
+import android.app.Activity
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.GroupieViewHolder
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.android.scopes.ActivityScoped
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import javax.inject.Named
 import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
 import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
 import teamcityapp.features.manage_accounts.tracker.ManageAccountsTrackerImpl
 import teamcityapp.features.manage_accounts.view.AccountItemFactory
 import teamcityapp.features.manage_accounts.view.AccountItemFactoryImpl
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
-import teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel
+import teamcityapp.features.manage_accounts.stateholder.ManageAccountsStateHolder
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.storage.Storage
 
 @Module
+@InstallIn(ActivityComponent::class)
 object ManageAccountsModule {
 
-    @JvmStatic
+    @Provides
+    fun provideOwner(owner: Activity): ManageAccountsActivity = owner.requireScreenOwner<ManageAccountsActivity>()
+
     @Provides
     fun providesViewFirebaseTracker(firebaseAnalytics: FirebaseAnalytics): ManageAccountsTracker {
         return ManageAccountsTrackerImpl(
@@ -42,17 +35,17 @@ object ManageAccountsModule {
         )
     }
 
-    @JvmStatic
     @Provides
-    fun providesViewModel(
+    @ActivityScoped
+    fun providesStateHolder(
         storage: Storage,
         router: ManageAccountsRouter,
         tracker: ManageAccountsTracker,
         cacheManager: CacheManager,
-        adapter: GroupAdapter<GroupieViewHolder>,
+        @Named("ManageAccountsActivity") adapter: GroupAdapter<GroupieViewHolder>,
         itemsFactory: AccountItemFactory
-    ): ManageAccountsViewModel {
-        return ManageAccountsViewModel(
+    ): ManageAccountsStateHolder {
+        return ManageAccountsStateHolder(
             storage,
             router,
             tracker,
@@ -62,11 +55,10 @@ object ManageAccountsModule {
         )
     }
 
-    @JvmStatic
     @Provides
-    fun providesAdapter() = GroupAdapter<GroupieViewHolder>()
+    @Named("ManageAccountsActivity")
+    fun providesAdapter(): GroupAdapter<GroupieViewHolder> = GroupAdapter<GroupieViewHolder>()
 
-    @JvmStatic
     @Provides
     fun provideAccountItemFactory(
         tracker: ManageAccountsTracker,

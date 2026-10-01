@@ -1,0 +1,243 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.manage_accounts.dagger;
+import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+
+import androidx.annotation.VisibleForTesting;
+
+import com.github.vase4kin.teamcityapp.BuildConfig;
+import com.github.vase4kin.teamcityapp.R;
+import com.github.vase4kin.teamcityapp.TeamCityApplication;
+import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
+import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
+import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
+import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
+import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
+import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
+
+import org.greenrobot.eventbus.EventBus;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+import javax.inject.Named;
+import javax.inject.Singleton;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import dagger.Module;
+import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.Provides;
+import io.rx_cache2.internal.RxCache;
+import io.victoralbertos.jolyglot.GsonSpeaker;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import teamcityapp.libraries.cache_manager.CacheManager;
+import teamcityapp.libraries.onboarding.OnboardingManager;
+import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
+import teamcityapp.libraries.remote.RemoteService;
+import teamcityapp.libraries.security.CryptoManager;
+import teamcityapp.libraries.security.CryptoManagerImpl;
+import teamcityapp.libraries.storage.Storage;
+import teamcityapp.libraries.storage.models.UserAccount;
+
+/**
+ * Todo: Convert to Kotlin
+ */
+@Module
+@dagger.hilt.migration.DisableInstallInCheck
+public class ManageAccountsActivityTestAppModule {
+
+    private static final int CONNECTION_TIMEOUT = 10;
+    private static final int READ_TIMEOUT = 30;
+    private static final int WRITE_TIMEOUT = 10;
+
+    public static final String CLIENT_BASE = "base";
+    public static final String CLIENT_BASE_UNSAFE = "base_unsafe";
+    public static final String CLIENT_AUTH = "auth";
+
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected Context provideContext(@ApplicationContext Context context) {
+        return context;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected SharedUserStorage provideSharedUserStorage(@ApplicationContext Context context, CryptoManager cryptoManager) {
+        return SharedUserStorage.init(context, cryptoManager);
+    }
+
+    @Provides
+    @Singleton
+    protected Storage provideStorage(SharedUserStorage sharedUserStorage) {
+        return sharedUserStorage;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Named(CLIENT_AUTH)
+    @Provides
+    protected OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
+                                                  @Named(CLIENT_BASE) OkHttpClient baseOkHttpClient,
+                                                  @Named(CLIENT_BASE_UNSAFE) OkHttpClient unsafeBaseOkHttpClient) {
+        UserAccount userAccount = sharedUserStorage.getActiveUser();
+        OkHttpClient client = userAccount.isSslDisabled() ? unsafeBaseOkHttpClient : baseOkHttpClient;
+        if (userAccount.isGuestUser()) {
+            return client.newBuilder()
+                    .addInterceptor(new GuestUserAuthInterceptor())
+                    .build();
+        } else {
+            return client.newBuilder()
+                    .authenticator(new TeamCityAuthenticator(userAccount))
+                    .build();
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Named(CLIENT_BASE_UNSAFE)
+    @Singleton
+    @Provides
+    protected OkHttpClient providesUnsafeBaseHttpClient(@Named(CLIENT_BASE) OkHttpClient baseOkHttpClient) {
+        final TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @SuppressLint("TrustAllX509TrustManager")
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @SuppressLint("TrustAllX509TrustManager")
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return new java.security.cert.X509Certificate[]{};
+                    }
+                }
+        };
+
+        // Install the all-trusting trust manager
+        try {
+            final SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            // Create an ssl socket factory with our all-trusting manager
+            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+            return baseOkHttpClient.newBuilder()
+                    .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier((hostname, session) -> true)
+                    .build();
+        } catch (Exception e) {
+            return baseOkHttpClient;
+        }
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Named(CLIENT_BASE)
+    @Singleton
+    @Provides
+    protected OkHttpClient providesBaseHttpClient() {
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+                .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
+        // TODO: Use DI separated modules for debug and release which will be holding this interceptor
+        if (BuildConfig.DEBUG) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            clientBuilder.addInterceptor(loggingInterceptor);
+        }
+        return clientBuilder.build();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected EventBus providesEventBus() {
+        return EventBus.getDefault();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected CryptoManager providesCryptoManager() {
+        return new CryptoManagerImpl();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected CacheProviders provideCacheProviders(RxCache rxCache) {
+        return rxCache.using(CacheProviders.class);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected RxCache providesRxCache(@ApplicationContext Context context) {
+        File cacheDir = context.getCacheDir();
+        return new RxCache.Builder()
+                .persistence(cacheDir, new GsonSpeaker());
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected FirebaseAnalytics providesFirebaseAnalytics(@ApplicationContext Context context) {
+        return FirebaseAnalytics.getInstance(context);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected OnboardingManager providesOnboardingManager(@ApplicationContext Context context) {
+        return new OnboardingManagerImpl(context);
+    }
+
+    @Singleton
+    @Provides
+    protected FirebaseRemoteConfig providesRemoteConfig() {
+        FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
+        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
+                .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
+                .build();
+        firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
+        return firebaseRemoteConfig;
+    }
+
+    @Singleton
+    @Provides
+    protected RemoteService provicesRemoteService(FirebaseRemoteConfig remoteConfig) {
+        return new RemoteServiceImpl(remoteConfig);
+    }
+
+
+}

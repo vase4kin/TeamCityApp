@@ -23,13 +23,15 @@ import androidx.activity.OnBackPressedCallback
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.filter_builds.presenter.FilterBuildsPresenterImpl
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Activity to manage builds filtering logic
  */
-class FilterBuildsActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class FilterBuildsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var presenter: FilterBuildsPresenterImpl

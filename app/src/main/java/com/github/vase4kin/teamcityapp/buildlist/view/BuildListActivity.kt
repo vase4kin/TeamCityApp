@@ -30,14 +30,16 @@ import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Activity to manage build list
  */
-class BuildListActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class BuildListActivity : AppCompatActivity() {
 
     @Inject
     lateinit var presenter: BuildListPresenterImpl<BuildListView, BuildListDataManager>

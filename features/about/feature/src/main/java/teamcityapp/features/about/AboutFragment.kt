@@ -28,13 +28,15 @@ import com.danielstone.materialaboutlibrary.model.MaterialAboutCard
 import com.danielstone.materialaboutlibrary.model.MaterialAboutList
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.google.android.material.elevation.ElevationOverlayProvider
-import dagger.android.support.AndroidSupportInjection
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.utils.getThemeColor
 import teamcityapp.libraries.utils.getTintedDrawable
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Named
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AboutFragment : MaterialAboutFragment() {
 
     companion object {
@@ -51,12 +53,8 @@ class AboutFragment : MaterialAboutFragment() {
     }
 
     @Inject
+    @Named("AboutFragment")
     lateinit var chromeCustomTabs: ChromeCustomTabs
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        AndroidSupportInjection.inject(this)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

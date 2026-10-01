@@ -22,16 +22,20 @@ import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.navigation.presenter.NavigationPresenterImpl
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Named
 import javax.inject.Inject
 
 /**
  * Activity to manage navigation between projects and build types
  */
-class NavigationActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class NavigationActivity : AppCompatActivity() {
 
     @Inject
+    @Named("NavigationActivity")
     lateinit var presenter: NavigationPresenterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {

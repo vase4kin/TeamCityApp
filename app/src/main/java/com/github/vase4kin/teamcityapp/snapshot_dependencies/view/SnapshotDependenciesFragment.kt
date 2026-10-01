@@ -24,16 +24,19 @@ import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.presenter.SnapshotDependenciesPresenterImpl
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Snapshot dependencies build lust fragment
  */
+@AndroidEntryPoint
 class SnapshotDependenciesFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: SnapshotDependenciesPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<SnapshotDependenciesPresenterImpl>
+
+    private lateinit var presenter: SnapshotDependenciesPresenterImpl
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_snapshot_dependencies, container, false)
@@ -41,7 +44,7 @@ class SnapshotDependenciesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
     }
 

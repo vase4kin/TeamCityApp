@@ -40,17 +40,20 @@ import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.queue.presenter.QueueBuildsListPresenterImpl
-import dagger.android.support.AndroidSupportInjection
 import teamcityapp.libraries.utils.initDrawer
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Screen for favorite build types
  */
+@AndroidEntryPoint
 class BuildQueueFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: QueueBuildsListPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<QueueBuildsListPresenterImpl>
+
+    private lateinit var presenter: QueueBuildsListPresenterImpl
 
     @Inject
     lateinit var homeRouter: HomeRouter
@@ -61,7 +64,7 @@ class BuildQueueFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
         view.initDrawer {
             homeRouter.openDrawer()

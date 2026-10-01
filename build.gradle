@@ -26,6 +26,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
+        classpath libs.hilt.gradlePlugin
         classpath libs.tools.gradleAndroid
         classpath libs.tools.googleServices
         classpath libs.tools.firebasePerf

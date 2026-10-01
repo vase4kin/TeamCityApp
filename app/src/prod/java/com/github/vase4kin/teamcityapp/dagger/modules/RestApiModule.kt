@@ -23,6 +23,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope
+import dagger.hilt.migration.DisableInstallInCheck
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -31,6 +32,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
 
+@DisableInstallInCheck
 @Module
 class RestApiModule(private val baseUrl: String) {
 

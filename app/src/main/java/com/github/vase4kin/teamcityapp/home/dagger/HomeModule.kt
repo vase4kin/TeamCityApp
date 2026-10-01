@@ -1,21 +1,7 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.vase4kin.teamcityapp.home.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
+import android.app.Activity
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractorImpl
@@ -28,6 +14,7 @@ import com.github.vase4kin.teamcityapp.buildlog.data.BuildLogInteractorImpl
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManagerImpl
+import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
 import com.github.vase4kin.teamcityapp.home.router.HomeRouterImpl
 import com.github.vase4kin.teamcityapp.home.tracker.HomeTracker
@@ -39,22 +26,29 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.scopes.ActivityScoped
+import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.storage.Storage
 
 @Module
+@InstallIn(ActivityComponent::class)
 object HomeModule {
 
-    @JvmStatic
+    @Provides
+    fun provideOwner(owner: Activity): HomeActivity = owner.requireScreenOwner<HomeActivity>()
+
     @Provides
     fun providesRootDrawerView(activity: HomeActivity): HomeView {
         return HomeViewImpl(activity)
     }
 
-    @JvmStatic
     @Provides
     fun providesRootDataManager(
         repository: Repository,
@@ -65,19 +59,16 @@ object HomeModule {
         return HomeDataManagerImpl(repository, sharedUserStorage, cacheManager, eventBus)
     }
 
-    @JvmStatic
     @Provides
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {
         return HomeTrackerImpl(firebaseAnalytics)
     }
 
-    @JvmStatic
     @Provides
     fun providesFragmentFactory(): FragmentFactory = FragmentFactoryImpl()
 
-    @JvmStatic
-    @HomeActivityScope
     @Provides
+    @ActivityScoped
     fun providesAppNavigationInteractor(
         activity: HomeActivity,
         fragmentFactory: FragmentFactory
@@ -85,7 +76,6 @@ object HomeModule {
         return AppNavigationInteractorImpl(activity.supportFragmentManager, fragmentFactory)
     }
 
-    @JvmStatic
     @Provides
     fun providesBottomNavigationView(
         appNavigationInteractor: AppNavigationInteractor,
@@ -94,22 +84,19 @@ object HomeModule {
         return BottomNavigationViewImpl(appNavigationInteractor, activity)
     }
 
-    @JvmStatic
-    @HomeActivityScope
     @Provides
+    @ActivityScoped
     fun provideFilterProvider(): FilterProvider = FilterProvider()
 
-    @HomeActivityScope
     @Provides
+    @Named("HomeActivity")
+    @ActivityScoped
     fun provideChromeTabs(activity: HomeActivity): ChromeCustomTabs =
         ChromeCustomTabsImpl(activity)
 
-    @JvmStatic
     @Provides
-    fun providesBuildLogInteractor(
-        activity: HomeActivity,
-        storage: Storage
-    ): BuildLogInteractor {
+    @Named("HomeActivity")
+    fun providesBuildLogInteractor(activity: HomeActivity, storage: Storage): BuildLogInteractor {
         return BuildLogInteractorImpl(
             storage,
             activity,
@@ -117,10 +104,29 @@ object HomeModule {
         )
     }
 
-    @JvmStatic
-    @HomeActivityScope
     @Provides
+    @ActivityScoped
     fun provideHomeRouter(activity: HomeActivity): HomeRouter {
         return HomeRouterImpl(activity)
     }
+
+    @Provides
+    fun provideHomePresenterImpl(
+        view: HomeView,
+        dataManager: HomeDataManager,
+        tracker: HomeTracker,
+        @Named("HomeActivity") interactor: BuildLogInteractor,
+        onboardingManager: OnboardingManager,
+        bottomNavigationView: BottomNavigationView,
+        filterProvider: FilterProvider
+    ): HomePresenterImpl =
+        HomePresenterImpl(
+            view,
+            dataManager,
+            tracker,
+            interactor,
+            onboardingManager,
+            bottomNavigationView,
+            filterProvider
+        )
 }

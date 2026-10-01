@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-
 import teamcityapp.buildsrc.Config
 
+apply plugin: 'com.google.dagger.hilt.android'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -45,7 +45,8 @@ dependencies {
     implementation libs.google.material
     implementation libs.google.openSourceLicensesLibrary
     implementation libs.dagger.dagger
-    implementation libs.dagger.androidSupport
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
     implementation libs.rxjava.rxJava
     implementation libs.rxjava.rxAndroid
     implementation libs.rxjava.rxjava.kotlin
@@ -53,5 +54,5 @@ dependencies {
     implementation libs.aboutLibrary
 
     kapt libs.dagger.compiler
-    kapt libs.dagger.androidProcessor
+
 }

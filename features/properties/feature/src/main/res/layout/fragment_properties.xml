@@ -21,8 +21,8 @@
     <data>
 
         <variable
-            name="viewmodel"
-            type="teamcityapp.features.properties.feature.viewmodel.PropertiesViewModel" />
+            name="stateHolder"
+            type="teamcityapp.features.properties.feature.stateholder.PropertiesStateHolder" />
 
     </data>
 
@@ -36,15 +36,15 @@
             android:id="@+id/properties_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{viewmodel.dataVisibility}"
+            android:visibility="@{stateHolder.dataVisibility}"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:setAdapter="@{viewmodel.adapter}"
+            app:setAdapter="@{stateHolder.adapter}"
             tools:itemCount="3"
             tools:listitem="@layout/item_property" />
 
         <include
             layout="@layout/layout_empty"
-            app:viewmodel="@{viewmodel}"
+            app:stateHolder="@{stateHolder}"
             tools:visibility="gone" />
 
     </FrameLayout>

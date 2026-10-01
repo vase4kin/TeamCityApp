@@ -1,29 +1,20 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.vase4kin.teamcityapp.snapshot_dependencies.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.SimpleSectionedRecyclerViewAdapter
+import com.github.vase4kin.teamcityapp.base.list.view.ViewHolderFactory
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractorImpl
+import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListAdapter
+import com.github.vase4kin.teamcityapp.buildlist.view.BuildsViewHolderFactory
+import com.github.vase4kin.teamcityapp.buildlist.view.LoadMoreViewHolderFactory
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildListView
 import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsListViewImpl
@@ -31,6 +22,7 @@ import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDepen
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesInteractorImpl
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesValueExtractor
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.model.SnapshotDependenciesValueExtractorImpl
+import com.github.vase4kin.teamcityapp.snapshot_dependencies.presenter.SnapshotDependenciesPresenterImpl
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.SnapshotDependenciesRouter
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.SnapshotDependenciesRouterImpl
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.tracker.SnapshotDependenciesTracker
@@ -40,35 +32,40 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
+import dagger.multibindings.IntKey
+import dagger.multibindings.IntoMap
+import javax.inject.Named
 
 @Module
+@InstallIn(FragmentComponent::class)
 object SnapshotDependenciesModule {
 
-    @JvmStatic
+    @Provides
+    fun provideOwner(owner: Fragment): SnapshotDependenciesFragment = owner.requireScreenOwner<SnapshotDependenciesFragment>()
+
     @Provides
     fun providesBuildListRouter(fragment: SnapshotDependenciesFragment): SnapshotDependenciesRouter {
         return SnapshotDependenciesRouterImpl(fragment.requireActivity())
     }
 
-    @JvmStatic
     @Provides
     fun providesBuildListValueExtractor(fragment: SnapshotDependenciesFragment): SnapshotDependenciesValueExtractor {
         return SnapshotDependenciesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
     }
 
-    @JvmStatic
     @Provides
+    @Named("SnapshotDependenciesFragment")
     fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
         return BuildInteractorImpl(teamCityService)
     }
 
-    @JvmStatic
     @Provides
     fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): SnapshotDependenciesTracker {
         return SnapshotDependenciesTrackerImpl(firebaseAnalytics)
     }
 
-    @JvmStatic
     @Provides
     fun providesBuildListDataManager(
         repository: Repository,
@@ -77,11 +74,11 @@ object SnapshotDependenciesModule {
         return SnapshotDependenciesInteractorImpl(repository, storage)
     }
 
-    @JvmStatic
     @Provides
+    @Named("SnapshotDependenciesFragment")
     fun providesBuildListView(
         fragment: SnapshotDependenciesFragment,
-        adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>
+        @Named("SnapshotDependenciesFragment") adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>
     ): RunningBuildListView {
         // Add text
         return object : RunningBuildsListViewImpl(
@@ -98,10 +95,49 @@ object SnapshotDependenciesModule {
     }
 
     @Provides
+    @Named("SnapshotDependenciesFragment")
     fun providesSimpleSectionedRecyclerViewAdapter(
         fragment: SnapshotDependenciesFragment,
-        adapter: BuildListAdapter
+        @Named("SnapshotDependenciesFragment") adapter: BuildListAdapter
     ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
         return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
     }
+
+    @Provides
+    @Named("SnapshotDependenciesFragment")
+    fun providesBuildListAdapter(@Named("SnapshotDependenciesFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter {
+        return BuildListAdapter(viewHolderFactories)
+    }
+
+    @Provides
+    @Named("SnapshotDependenciesFragment")
+    @IntoMap
+    @IntKey(BaseListView.TYPE_LOAD_MORE)
+    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
+        return LoadMoreViewHolderFactory()
+    }
+
+    @Provides
+    @Named("SnapshotDependenciesFragment")
+    @IntoMap
+    @IntKey(BaseListView.TYPE_DEFAULT)
+    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
+        return BuildsViewHolderFactory()
+    }
+
+    @Provides
+    fun provideSnapshotDependenciesPresenterImpl(
+        @Named("SnapshotDependenciesFragment") view: RunningBuildListView,
+        dataManager: SnapshotDependenciesInteractor,
+        tracker: SnapshotDependenciesTracker,
+        valueExtractor: SnapshotDependenciesValueExtractor,
+        router: SnapshotDependenciesRouter
+    ): SnapshotDependenciesPresenterImpl =
+        SnapshotDependenciesPresenterImpl(
+            view,
+            dataManager,
+            tracker,
+            valueExtractor,
+            router
+        )
 }

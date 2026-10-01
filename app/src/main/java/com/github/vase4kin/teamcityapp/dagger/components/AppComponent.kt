@@ -16,18 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.dagger.components
 
-import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
-import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
-import dagger.Component
-import dagger.android.AndroidInjectionModule
-import dagger.android.AndroidInjector
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
@@ -35,11 +32,10 @@ import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.remote.RemoteService
 import teamcityapp.libraries.storage.Storage
 import javax.inject.Named
-import javax.inject.Singleton
 
-@Singleton
-@Component(modules = [AppModule::class, AndroidInjectionModule::class, AppActivityBindingModule::class])
-interface AppComponent : AndroidInjector<TeamCityApplication> {
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface AppComponent {
 
     fun sharedUserStorage(): SharedUserStorage
 

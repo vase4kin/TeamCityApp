@@ -24,16 +24,19 @@ import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.changes.presenter.ChangesPresenterImpl
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Fragment to manage changes
  */
+@AndroidEntryPoint
 class ChangesFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: ChangesPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<ChangesPresenterImpl>
+
+    private lateinit var presenter: ChangesPresenterImpl
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_list, container, false)
@@ -41,7 +44,7 @@ class ChangesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
     }
 

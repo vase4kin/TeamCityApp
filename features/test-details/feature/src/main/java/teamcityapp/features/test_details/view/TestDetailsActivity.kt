@@ -22,19 +22,21 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.features.test_details.R
 import teamcityapp.features.test_details.databinding.ActivityShowTestDetailsBinding
-import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
+import teamcityapp.features.test_details.stateholder.TestDetailsStateHolder
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Activity to manage test details
  */
-class TestDetailsActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class TestDetailsActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var viewModel: TestDetailsViewModel
+    lateinit var stateHolder: TestDetailsStateHolder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +44,9 @@ class TestDetailsActivity : DaggerAppCompatActivity() {
             this,
             R.layout.activity_show_test_details
         ).apply {
-            vm = viewModel
+            vm = stateHolder
         }
-        lifecycle.addObserver(viewModel)
+        lifecycle.addObserver(stateHolder)
     }
 
     override fun finish() {

@@ -21,8 +21,8 @@
     <data>
 
         <variable
-            name="viewmodel"
-            type="teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel" />
+            name="stateHolder"
+            type="teamcityapp.features.manage_accounts.stateholder.ManageAccountsStateHolder" />
 
     </data>
 
@@ -49,7 +49,7 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:setAdapter="@{viewmodel.adapter}"
+            app:setAdapter="@{stateHolder.adapter}"
             tools:itemCount="3"
             tools:listitem="@layout/item_user_account_list" />
 
@@ -60,7 +60,7 @@
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="@dimen/dp_16"
             android:layout_marginBottom="@dimen/dp_40"
-            android:onClick="@{() -> viewmodel.onFabClick()}"
+            android:onClick="@{() -> stateHolder.onFabClick()}"
             app:srcCompat="@drawable/ic_add_black_24dp" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

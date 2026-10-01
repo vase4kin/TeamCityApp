@@ -22,13 +22,15 @@ import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Create account activity
  */
-class CreateAccountActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class CreateAccountActivity : AppCompatActivity() {
 
     @Inject
     lateinit var presenter: CreateAccountPresenterImpl

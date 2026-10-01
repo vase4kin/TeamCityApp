@@ -42,6 +42,7 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
      * {@inheritDoc}
      */
     override fun initCustomsTabs() {
+        if (customTabsServiceConnection != null) return
         /*
             Setup Chrome Custom Tabs
          */
@@ -62,13 +63,12 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
                 client = null
             }
         }
-        customTabsServiceConnection = connection
-
-        CustomTabsClient.bindCustomTabsService(
+        val bound = CustomTabsClient.bindCustomTabsService(
             activity,
             CUSTOM_TAB_PACKAGE_NAME,
             connection
         )
+        if (bound) customTabsServiceConnection = connection
 
         customTabsIntent = CustomTabsIntent.Builder(customTabsSession)
             .setToolbarColor(activity.getThemeColor(R.attr.colorPrimarySurface))
@@ -84,9 +84,11 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
      */
     override fun unbindCustomsTabs() {
         val customTabsServiceConnection = this.customTabsServiceConnection ?: return
+        this.customTabsServiceConnection = null
         activity.unbindService(customTabsServiceConnection)
         client = null
         customTabsSession = null
+        customTabsIntent = null
     }
 
     /**

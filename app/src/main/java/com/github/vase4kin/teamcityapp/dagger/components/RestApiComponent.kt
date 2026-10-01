@@ -16,19 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.dagger.components
 
-import com.github.vase4kin.teamcityapp.TeamCityApplication
 import com.github.vase4kin.teamcityapp.account.create.dagger.UrlFormatterModule
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.modules.ActivityBindingModule
-import com.github.vase4kin.teamcityapp.dagger.modules.AppActivityBindingModule
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Component
-import dagger.android.AndroidInjectionModule
-import dagger.android.AndroidInjector
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.onboarding.OnboardingManager
@@ -40,12 +35,9 @@ import teamcityapp.libraries.remote.RemoteService
     modules = [
         RestApiModule::class,
         UrlFormatterModule::class,
-        ActivityBindingModule::class,
-        AppActivityBindingModule::class,
-        AndroidInjectionModule::class
     ]
 )
-interface RestApiComponent : AndroidInjector<TeamCityApplication> {
+interface RestApiComponent {
 
     fun teamCityService(): TeamCityService
 
