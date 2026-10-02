@@ -15,8 +15,9 @@ the requested behavior or an explicitly requested migration slice.
   RxCache, and SharedPreferences. Java and Kotlin coexist.
 - Compose, Material 3, Coroutines/Flow, Room, DataStore, WorkManager, and
   Navigation 3 are target technologies, not descriptions of current code.
-- Builds use Groovy Gradle files, a version catalog, type-safe project accessors,
-  `buildSrc` SDK/application settings, and JDK 17.
+- Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
+  an included `build-logic` build for conventions and SDK/application settings,
+  and JDK 17.
 - The app has `mock` and `prod` flavors, and `debug` and `release` build types.
   `mockRelease` is disabled.
 
@@ -28,13 +29,15 @@ the requested behavior or an explicitly requested migration slice.
   `feature` modules; others are single modules. Follow the owning feature's layout.
 - `libraries/`: shared API, storage, models, resources, theme, networking helpers,
   security, utilities, and other reusable components.
-- `buildSrc/src/main/kotlin/teamcityapp/buildsrc/Dependencies.kt`: SDK settings
-  and application version.
+- `build-logic/src/main/kotlin/Config.kt`: SDK/JVM settings and application version.
+- `build-logic/`: included Kotlin build containing Android application/library,
+  Java-only library, Hilt/kapt, Data Binding, and aggregate coverage conventions.
+  All Android modules apply these conventions; `buildSrc` has been retired.
 - `gradle/libs.versions.toml`: dependency and plugin versions/coordinates.
-- `settings.gradle`: included modules. `build.gradle` and module `build.gradle`
-  files contain Groovy build configuration.
+- `settings.gradle.kts`: included modules, plugin resolution, and dependency
+  repositories. Root and module `build.gradle.kts` files use Kotlin DSL.
 - `.github/workflows/build.yml`: build, lint, unit test, instrumentation, and
-  coverage CI. `scripts/` contains shared Gradle scripts.
+  coverage CI. `scripts/` contains R8 verification preparation/documentation.
 
 ## Target architecture
 
@@ -99,18 +102,26 @@ the requested behavior or an explicitly requested migration slice.
 
 ## Build and dependencies
 
-- The current build uses the version catalog at `gradle/libs.versions.toml` and
-  type-safe project accessors. Kotlin DSL and reusable convention plugins in
-  `build-logic` remain targets. Migrate those deliberately.
+- The build uses Kotlin DSL, the version catalog at `gradle/libs.versions.toml`,
+  type-safe project accessors, and convention plugins in `build-logic`. Modules
+  apply `teamcityapp.android.application`, `teamcityapp.android.library`, or
+  `teamcityapp.android.library.java`, plus optional Hilt/kapt and Data Binding
+  conventions. The app applies the aggregate coverage convention. Keep shared
+  configuration in these plugins rather than root cross-project callbacks.
+  See `build-logic/README.md`.
 - Keep dependency/plugin versions in the catalog; keep SDK/application settings
-  in `Dependencies.kt`. Do not scatter versions through module build files.
+  in `Config.kt`. Do not scatter versions through module build files.
 - Kotlin Android modules use kapt for Hilt/Dagger processing of Kotlin and Java
   sources. Do not also register the Dagger compiler with `annotationProcessor`.
-- Add modules to `settings.gradle`, give Android modules a namespace, and declare
+- Add modules to `settings.gradle.kts`, give Android modules a namespace, and declare
   only the dependencies they need.
-- Use existing Groovy build files for unrelated changes. For a build migration,
-  update the affected modules and verification commands together; keep
-  convention plugins additive and reusable.
+- Use Kotlin DSL for build changes. Keep feature dependencies, namespaces,
+  flavors, signing, and packaging in the owning module. Declare repositories
+  in settings and plugin versions in the catalog. Update affected modules and
+  verification commands together; keep convention plugins reusable.
+- External Kotlin, kapt, and the legacy Android DSL remain in use. Preserve
+  `android.builtInKotlin=false` and `android.newDsl=false` until their migration
+  is explicitly in scope.
 - Use JDK 17. Be explicit about the variant when running app tasks.
 
 ## Testing and verification
@@ -126,6 +137,7 @@ the requested behavior or an explicitly requested migration slice.
   are absent:
   `cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json`
   and `cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json`.
+- Convention-plugin verification: `./gradlew :build-logic:test` (JDK 17).
 - Common tasks: `./gradlew assembleMockDebug`,
   `./gradlew :app:testMockDebugUnitTest`, `./gradlew testMockDebugUnitTest`,
   and `./gradlew lintMockDebug`. CI also runs `testDebugUnitTest` for modules

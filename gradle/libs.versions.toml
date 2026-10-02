@@ -1,5 +1,6 @@
 # Dependency and plugin versions. Keep runtime versions unchanged during catalog migrations.
 [versions]
+jacoco = "0.8.14"
 androidx-lifecycle = "2.11.0"
 androidx-test = "1.7.0"
 espresso = "3.7.0"

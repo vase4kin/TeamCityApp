@@ -129,7 +129,7 @@ jobs:
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
       - name: Run unit tests
-        run: ./gradlew testMockDebugUnitTest testDebugUnitTest --stacktrace
+        run: ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest --stacktrace
 
       - name: Archive unit-test coverage data
         if: always()
