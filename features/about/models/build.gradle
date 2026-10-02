@@ -20,6 +20,10 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-parcelize'
 
 android {
+    defaultConfig {
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
     namespace 'teamcityapp.features.about.repository.models'
 }
 

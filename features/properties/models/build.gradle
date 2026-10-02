@@ -17,6 +17,10 @@
 apply plugin: 'com.android.library'
 
 android {
+    defaultConfig {
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
     namespace 'teamcityapp.features.properties.repository.models'
 }
 

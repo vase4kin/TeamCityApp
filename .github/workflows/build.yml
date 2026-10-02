@@ -44,6 +44,19 @@ jobs:
       - name: Build application and test APKs
         run: ./gradlew assembleMockDebug assembleMockDebugAndroidTest assembleMockDebugUnitTest --stacktrace
 
+      - name: Build minified application and R8 smoke-test APKs
+        run: |
+          python3 scripts/prepare-r8-verification.py
+          ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest --stacktrace
+
+      - name: Upload R8 diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: r8-diagnostics
+          path: app/build/outputs/mapping/prodR8Verification
+          if-no-files-found: warn
+
       - name: Upload test APKs
         uses: actions/upload-artifact@v7
         with:
@@ -220,6 +233,32 @@ jobs:
           branch: ${{ github.head_ref || github.ref_name }}
           link: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
           name: TeamCityApp ${{ matrix.label }} at ${{ github.sha }}
+
+      - name: Run minified R8 smoke tests with Marathon Cloud
+        if: env.RUN_MARATHON_TEST == 'true' && matrix.label == 'android-14'
+        uses: MarathonLabs/action-test@1.0.14
+        with:
+          apiKey: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
+          version: "1.0.64"
+          application: app/build/outputs/apk/prod/r8Verification/app-prod-r8Verification.apk
+          testApplication: app/build/outputs/apk/androidTest/prod/r8Verification/app-prod-r8Verification-androidTest.apk
+          platform: android
+          device: phone
+          osVersion: "14"
+          systemImage: google_apis
+          wait: true
+          output: app/build/github-actions/marathon/r8
+          branch: ${{ github.head_ref || github.ref_name }}
+          link: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
+          name: TeamCityApp R8 smoke tests at ${{ github.sha }}
+
+      - name: Upload R8 smoke-test artifacts
+        if: env.RUN_MARATHON_TEST == 'true' && matrix.label == 'android-14' && always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: marathon-cloud-r8
+          path: app/build/github-actions/marathon/r8
+          if-no-files-found: warn
 
       - name: Upload Marathon Cloud artifacts
         if: env.RUN_MARATHON_TEST == 'true' && always()
