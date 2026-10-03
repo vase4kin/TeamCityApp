@@ -36,7 +36,8 @@ dependencies {
     implementation projects.libraries.utils
     implementation projects.libraries.api
 
-    implementation libs.google.firebaseCore
+    implementation platform(libs.google.firebaseBom)
+    implementation libs.google.analytics
     implementation libs.google.material
     implementation libs.androidx.appcompat
     implementation libs.androidx.constraintLayout
@@ -46,13 +47,12 @@ dependencies {
     implementation libs.kotlin.stdlib
     implementation libs.groupie.groupie
     implementation libs.groupie.groupieDatabinding
-    implementation libs.dialogs
 
     kapt libs.androidx.lifecycle.lifeCycleCompiler
     kapt libs.dagger.compiler
     kapt libs.dagger.androidProcessor
 
     testImplementation libs.junit
-    testImplementation libs.mockito.mockito3
+    testImplementation libs.mockito.mockitoCore
     testImplementation libs.mockito.mockitoKotlin
 }

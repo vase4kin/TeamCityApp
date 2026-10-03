@@ -24,7 +24,7 @@ import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.whenever
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore

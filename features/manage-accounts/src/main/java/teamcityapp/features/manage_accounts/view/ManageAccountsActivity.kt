@@ -20,7 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import com.afollestad.materialdialogs.MaterialDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.android.support.DaggerAppCompatActivity
 import teamcityapp.features.manage_accounts.R
 import teamcityapp.features.manage_accounts.databinding.ActivityManageAccountsBinding
@@ -52,16 +52,10 @@ class ManageAccountsActivity : DaggerAppCompatActivity() {
      * Show account ssl disabled dialog
      */
     fun showSslDisabledInfoDialog() {
-        MaterialDialog.Builder(this)
-            .title(R.string.warning_ssl_dialog_title)
-            .content(R.string.warning_ssl_dialog_content)
-            .positiveText(R.string.dialog_ok_title)
-            .callback(object : MaterialDialog.ButtonCallback() {
-                override fun onPositive(dialog: MaterialDialog?) {
-                    dialog?.dismiss()
-                }
-            })
-            .build()
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.warning_ssl_dialog_title)
+            .setMessage(R.string.warning_ssl_dialog_content)
+            .setPositiveButton(R.string.dialog_ok_title, null)
             .show()
     }
 
@@ -69,16 +63,12 @@ class ManageAccountsActivity : DaggerAppCompatActivity() {
      * Show account remove dialog
      */
     fun showRemoveAccountDialog(onAccountRemove: () -> Unit) {
-        MaterialDialog.Builder(this)
-            .content(R.string.dialog_remove_not_active_account_positive_content_text)
-            .positiveText(R.string.dialog_remove_active_account_positive_button_text)
-            .callback(object : MaterialDialog.ButtonCallback() {
-                override fun onPositive(dialog: MaterialDialog?) {
-                    onAccountRemove()
-                }
-            })
-            .negativeText(R.string.dialog_remove_active_account_positive_negative_text)
-            .build()
+        MaterialAlertDialogBuilder(this)
+            .setMessage(R.string.dialog_remove_not_active_account_positive_content_text)
+            .setPositiveButton(R.string.dialog_remove_active_account_positive_button_text) { _, _ ->
+                onAccountRemove()
+            }
+            .setNegativeButton(R.string.dialog_remove_active_account_positive_negative_text, null)
             .show()
     }
 

@@ -20,13 +20,14 @@ import android.view.View
 import android.widget.Switch
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.appcompat.app.AlertDialog
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.Unbinder
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
 /**
@@ -46,7 +47,7 @@ class FilterBuildsViewImpl(private val activity: FilterBuildsActivity) : FilterB
     lateinit var pinnedSwitcherDivider: View
     lateinit var unbinder: Unbinder
 
-    private lateinit var filterChooser: MaterialDialog
+    private lateinit var filterChooser: AlertDialog
 
     private var selectedFilter = FilterBuildsView.FILTER_NONE
 
@@ -80,19 +81,18 @@ class FilterBuildsViewImpl(private val activity: FilterBuildsActivity) : FilterB
             )
         }
 
-        filterChooser = MaterialDialog.Builder(activity)
-            .title(R.string.title_filter_chooser_dialog)
-            .items(R.array.build_filters)
-            .itemsCallback { _, _, position, text ->
+        filterChooser = MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.title_filter_chooser_dialog)
+            .setItems(R.array.build_filters) { _, position ->
                 if (position == FilterBuildsView.FILTER_QUEUED) {
                     listener.onQueuedFilterSelected()
                 } else {
                     listener.onOtherFiltersSelected()
                 }
-                selectedFilterStatus.text = text
+                selectedFilterStatus.text = activity.resources.getTextArray(R.array.build_filters)[position]
                 selectedFilter = position
             }
-            .build()
+            .create()
     }
 
     /**

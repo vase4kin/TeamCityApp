@@ -33,8 +33,9 @@ import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Observable
 import io.reactivex.Single
-import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.http.Body
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -128,7 +129,7 @@ open class FakeTeamCityServiceImpl : TeamCityService {
     }
 
     override fun downloadFile(@Url url: String): Single<ResponseBody> {
-        return Single.just(ResponseBody.create(MediaType.parse("text"), "text"))
+        return Single.just("text".toResponseBody("text/plain".toMediaType()))
     }
 
     override fun listTestOccurrences(@Url url: String): Single<TestOccurrences> {

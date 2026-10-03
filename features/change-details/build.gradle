@@ -37,7 +37,8 @@ dependencies {
     implementation projects.libraries.storageModels
     implementation projects.libraries.api
 
-    implementation libs.google.firebaseCore
+    implementation platform(libs.google.firebaseBom)
+    implementation libs.google.analytics
     implementation libs.google.material
     implementation libs.androidx.appcompat
     implementation libs.androidx.constraintLayout

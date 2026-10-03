@@ -29,7 +29,8 @@ dependencies {
     implementation projects.libraries.resources
 
     implementation libs.google.material
-    implementation libs.google.firebaseCore
+    implementation platform(libs.google.firebaseBom)
+    implementation libs.google.analytics
     implementation libs.androidx.preference
     implementation libs.kotlin.stdlib
     implementation libs.dagger.dagger

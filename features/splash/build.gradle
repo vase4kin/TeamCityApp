@@ -38,6 +38,6 @@ dependencies {
     kapt libs.dagger.androidProcessor
 
     testImplementation libs.junit
-    testImplementation libs.mockito.mockito3
+    testImplementation libs.mockito.mockitoCore
     testImplementation libs.mockito.mockitoKotlin
 }

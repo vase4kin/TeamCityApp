@@ -32,12 +32,12 @@ class TeamCityAuthenticator(private val userAccount: UserAccount) : okhttp3.Auth
      */
     override fun authenticate(route: Route?, response: Response): Request? {
         // by default do three attempts
-        if (response.request().header(AUTHORIZATION) != null) {
+        if (response.request.header(AUTHORIZATION) != null) {
             return null // Give up, we've already attempted to authenticate.
         }
         // Use user credentials
         val credential = Credentials.basic(userAccount.userName, userAccount.passwordAsString)
-        return response.request().newBuilder()
+        return response.request.newBuilder()
             .header(AUTHORIZATION, credential)
             .build()
     }

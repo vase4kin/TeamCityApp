@@ -233,10 +233,10 @@ public class AppModule {
     protected FirebaseRemoteConfig providesRemoteConfig() {
         FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
         FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setDeveloperModeEnabled(BuildConfig.DEBUG)
+                .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
                 .build();
-        firebaseRemoteConfig.setConfigSettings(configSettings);
-        firebaseRemoteConfig.setDefaults(R.xml.remote_config_defaults);
+        firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
+        firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
         return firebaseRemoteConfig;
     }
 

@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.view
 
+import android.content.DialogInterface
 import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
@@ -24,14 +25,16 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.OnClick
 import butterknife.Unbinder
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.view.OnToolBarNavigationListenerImpl
+import com.github.vase4kin.teamcityapp.utils.createProgressDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
@@ -66,9 +69,9 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
     @BindView(R.id.container_parameters)
     lateinit var parametersContainer: ViewGroup
 
-    private lateinit var progressDialog: MaterialDialog
-    private lateinit var agentSelectionDialog: MaterialDialog
-    private lateinit var addParameterDialog: MaterialDialog
+    private lateinit var progressDialog: AlertDialog
+    private lateinit var agentSelectionDialog: AlertDialog
+    private lateinit var addParameterDialog: AlertDialog
     private lateinit var unbinder: Unbinder
 
     private var listener: RunBuildView.ViewListener? = null
@@ -114,48 +117,36 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
             )
         }
 
-        progressDialog = MaterialDialog.Builder(activity)
-            .content(R.string.text_queueing_build)
-            .progress(true, 0)
-            .autoDismiss(false)
-            .build()
-        progressDialog.setCancelable(false)
-        progressDialog.setCanceledOnTouchOutside(false)
+        progressDialog = createProgressDialog(activity, R.string.text_queueing_build)
 
-        addParameterDialog = MaterialDialog.Builder(activity)
-            .autoDismiss(false)
-            .title(R.string.title_add_parameter)
-            .customView(R.layout.layout_dialog_add_parameter, true)
-            .positiveText(R.string.text_add_parameter_button)
-            .onPositive { dialog, _ ->
-                val view = dialog.customView
-                if (view != null) {
-                    // TODO: Move logic presenter
-                    val parameterNameEditText = view.findViewById<EditText>(R.id.parameter_name)
-                    val parameterValueEditText = view.findViewById<EditText>(R.id.parameter_value)
-                    val parameterNameWrapper =
-                        view.findViewById<TextInputLayout>(R.id.parameter_name_wrapper)
-                    val parameterName = parameterNameEditText.text.toString()
-                    if (TextUtils.isEmpty(parameterName)) {
-                        val errorMessage =
-                            view.resources.getString(R.string.text_error_parameter_name)
-                        parameterNameWrapper.error = errorMessage
-                        return@onPositive
-                    }
-                    listener.onParameterAdded(
-                        parameterNameEditText.text.toString(),
-                        parameterValueEditText.text.toString()
-                    )
-                    parameterNameWrapper.error = null
-                    parameterNameEditText.setText("")
-                    parameterValueEditText.setText("")
-                    parameterNameEditText.requestFocus()
-                    dialog.dismiss()
+        val parameterView = LayoutInflater.from(activity).inflate(R.layout.layout_dialog_add_parameter, null)
+        addParameterDialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.title_add_parameter)
+            .setView(parameterView)
+            .setPositiveButton(R.string.text_add_parameter_button, null)
+            .setNegativeButton(R.string.text_cancel_button, null)
+            .create()
+        addParameterDialog.setOnShowListener {
+            addParameterDialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener positiveClick@{
+                // TODO: Move logic presenter
+                val parameterNameEditText = parameterView.findViewById<EditText>(R.id.parameter_name)
+                val parameterValueEditText = parameterView.findViewById<EditText>(R.id.parameter_value)
+                val parameterNameWrapper =
+                    parameterView.findViewById<TextInputLayout>(R.id.parameter_name_wrapper)
+                val parameterName = parameterNameEditText.text.toString()
+                if (TextUtils.isEmpty(parameterName)) {
+                    parameterNameWrapper.error =
+                        parameterView.resources.getString(R.string.text_error_parameter_name)
+                    return@positiveClick
                 }
+                listener.onParameterAdded(parameterName, parameterValueEditText.text.toString())
+                parameterNameWrapper.error = null
+                parameterNameEditText.setText("")
+                parameterValueEditText.setText("")
+                parameterNameEditText.requestFocus()
+                addParameterDialog.dismiss()
             }
-            .negativeText(R.string.text_cancel_button)
-            .onNegative { dialog, _ -> dialog.dismiss() }
-            .build()
+        }
     }
 
     /**
@@ -227,14 +218,13 @@ class RunBuildViewImpl(private val activity: RunBuildActivity) : RunBuildView {
     }
 
     override fun setAgentListDialogWithAgentsList(agents: List<String>) {
-        agentSelectionDialog = MaterialDialog.Builder(activity)
-            .title(R.string.title_agent_chooser_dialog)
-            .items(agents)
-            .itemsCallback { _, _, position, text ->
+        agentSelectionDialog = MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.title_agent_chooser_dialog)
+            .setItems(agents.toTypedArray()) { _, position ->
                 listener?.onAgentSelected(position)
-                selectedAgent.text = text
+                selectedAgent.text = agents[position]
             }
-            .build()
+            .create()
     }
 
     /**

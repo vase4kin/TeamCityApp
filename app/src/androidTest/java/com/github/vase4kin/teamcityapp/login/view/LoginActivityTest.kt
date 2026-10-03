@@ -35,8 +35,8 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
@@ -45,6 +45,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl
 import it.cosenonjaviste.daggermock.DaggerMockRule
@@ -66,10 +67,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
-import org.mockito.Matchers
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.doAnswer
+import org.mockito.kotlin.any
 import teamcityapp.libraries.security.CryptoManager
 import java.io.IOException
 import javax.inject.Named
@@ -123,8 +124,8 @@ class LoginActivityTest {
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
         app.appInjector.sharedUserStorage().clearAll()
-        `when`(okHttpClient.newCall(Matchers.any(Request::class.java))).thenReturn(call)
-        `when`(unsafeOkHttpClient.newCall(Matchers.any(Request::class.java))).thenReturn(call)
+        `when`(okHttpClient.newCall(any<Request>())).thenReturn(call)
+        `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
     }
 
     private val inputUrl = URL.replace("https://", "")
@@ -149,7 +150,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -198,7 +199,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -249,7 +250,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -292,7 +293,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -335,7 +336,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -379,7 +380,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -406,7 +407,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -435,7 +436,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         activityRule.launchActivity(null)
 
@@ -519,7 +520,7 @@ class LoginActivityTest {
                     .build()
             )
             null
-        }.`when`(call).enqueue(callbackArgumentCaptor.capture())
+        }.`when`(call).enqueue(capture(callbackArgumentCaptor))
 
         setTryItOutValue(true)
         setTryItOutValueUrl(urlWithPath)

@@ -17,12 +17,12 @@
 package com.github.vase4kin.teamcityapp.artifact.view
 
 import android.app.Activity
-import android.graphics.Color
+import android.content.DialogInterface
 import android.view.View
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
-import com.afollestad.materialdialogs.MaterialDialog
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel
@@ -30,6 +30,8 @@ import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment
+import com.github.vase4kin.teamcityapp.utils.createProgressDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 private const val TAG_BOTTOM_SHEET = "Tag bottom sheet"
 
@@ -44,7 +46,7 @@ class ArtifactViewImpl(
 ) : BaseListViewImpl<ArtifactDataModel, ArtifactAdapter>(view, activity, emptyMessage, adapter),
     ArtifactView {
 
-    lateinit var progressDialog: MaterialDialog
+    lateinit var progressDialog: AlertDialog
     private var listener: OnArtifactPresenterListener? = null
 
     /**
@@ -59,20 +61,12 @@ class ArtifactViewImpl(
      */
     override fun initViews(listener: BaseListView.ViewListener) {
         super.initViews(listener)
-        progressDialog = MaterialDialog.Builder(activity)
-            .title(R.string.download_artifact_dialog_title)
-            .content(R.string.progress_dialog_content)
-            .progress(true, 0)
-            .widgetColor(Color.GRAY)
-            .autoDismiss(false)
-            .negativeText(R.string.text_cancel_button)
-            .callback(object : MaterialDialog.ButtonCallback() {
-                override fun onNegative(dialog: MaterialDialog?) {
-                    progressDialog.dismiss()
-                }
-            })
-            .build()
-        progressDialog.setCanceledOnTouchOutside(false)
+        progressDialog = createProgressDialog(activity, R.string.progress_dialog_content, cancelable = true)
+        progressDialog.setTitle(R.string.download_artifact_dialog_title)
+        progressDialog.setButton(
+            DialogInterface.BUTTON_NEGATIVE,
+            activity.getText(R.string.text_cancel_button)
+        ) { dialog, _ -> dialog.dismiss() }
     }
 
     /**
@@ -166,11 +160,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showPermissionsDeniedDialog() {
-        MaterialDialog.Builder(activity)
-            .title(R.string.permissions_dialog_title)
-            .content(R.string.permissions_dialog_text_no_permissions)
-            .widgetColor(Color.GRAY)
-            .positiveText(R.string.dialog_ok_title)
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.permissions_dialog_title)
+            .setMessage(R.string.permissions_dialog_text_no_permissions)
+            .setPositiveButton(R.string.dialog_ok_title, null)
             .show()
     }
 
@@ -178,12 +171,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showPermissionsInfoDialog(onPermissionsDialogListener: OnPermissionsDialogListener) {
-        MaterialDialog.Builder(activity)
-            .title(R.string.permissions_dialog_title)
-            .content(R.string.permissions_dialog_content)
-            .widgetColor(Color.GRAY)
-            .positiveText(R.string.dialog_ok_title)
-            .onPositive { _, _ -> onPermissionsDialogListener.onAllow() }
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.permissions_dialog_title)
+            .setMessage(R.string.permissions_dialog_content)
+            .setPositiveButton(R.string.dialog_ok_title) { _, _ -> onPermissionsDialogListener.onAllow() }
             .show()
     }
 
@@ -191,12 +182,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showInstallPackagesPermissionsInfoDialog(onPermissionsDialogListener: OnPermissionsDialogListener) {
-        MaterialDialog.Builder(activity)
-            .title(R.string.permissions_dialog_title)
-            .content(R.string.permissions_install_packages_dialog_content)
-            .widgetColor(Color.GRAY)
-            .positiveText(R.string.dialog_ok_title)
-            .onPositive { _, _ -> onPermissionsDialogListener.onAllow() }
+        MaterialAlertDialogBuilder(activity)
+            .setTitle(R.string.permissions_dialog_title)
+            .setMessage(R.string.permissions_install_packages_dialog_content)
+            .setPositiveButton(R.string.dialog_ok_title) { _, _ -> onPermissionsDialogListener.onAllow() }
             .show()
     }
 }
