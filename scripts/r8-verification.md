@@ -30,11 +30,14 @@ reflection/decoding, RxCache disk restoration, EventBus subscribers, Joda timezo
 resources, and login screen startup. Retrofit responses are supplied by a local
 interceptor; no TeamCity server is needed.
 
-CI builds these APKs and runs them on Android OS version 17 in the R8 entry of
-the Marathon Cloud matrix, in parallel with mock instrumentation tests and with
-the same required `MARATHON_CLOUD_API_TOKEN` secret. Each matrix entry invokes
-Marathon once with its matching application and test APKs. R8 smoke tests do
-not collect coverage.
+CI always builds the minified verification application. It also builds the R8
+test APK and runs it on Android OS version 17 when the full UI suite is selected:
+on default-branch pushes or manual dispatch with **Run UI tests** checked and
+`suite: full`. Ordinary PR validation and sampled mock instrumentation runs omit
+R8 test APK compilation and paid R8 execution. The full Marathon matrix runs R8
+in parallel with mock instrumentation and requires `MARATHON_CLOUD_API_TOKEN`.
+Each matrix entry invokes Marathon once with its matching application and test
+APKs. R8 smoke tests do not collect coverage.
 Mappings and R8 diagnostics are uploaded as `r8-diagnostics`.
 
 Keep JSON field names stable for existing server payloads and saved accounts.

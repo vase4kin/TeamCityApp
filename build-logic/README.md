@@ -96,18 +96,50 @@ the same job uploads its XML directly to Codecov. Unit-test coverage runs on
 every branch, and its upload does not wait for APK builds or instrumentation
 tests. The report artifact includes XML and HTML.
 
-Both mock debug and minified production verification APKs and their test APKs
-are always built and uploaded. Marathon runs on every CI invocation, without
-an enable/disable variable or branch-name policy.
-The Marathon matrix runs mock instrumentation and minified R8 smoke tests in
-two parallel jobs, both on Android OS version 17 with the `google_apis` image.
-Each job downloads only its matching app and test APK artifact and invokes
-Marathon once. They wait for both APK builds and require the
-`MARATHON_CLOUD_API_TOKEN` secret. Fork PRs do not receive this secret and cannot
-run Marathon successfully.
+Both mock debug and minified production verification applications are built on
+every invocation. PR validation (including semantic `chore:` and `chore(scope):`
+titles) runs no paid UI tests. PR comments do not trigger CI. A push to the
+default branch (`dev`) runs both full UI suites after merging; this is not a
+pre-merge gate. Manual dispatch runs UI tests only when **Run UI tests** is
+checked, including on a chore PR's branch. Select the PR's head branch in the
+Run workflow branch dropdown. There are no repository enable/disable variables.
 
-The mock APK build passes `-PinstrumentationCoverage` and runs
-`:app:prepareInstrumentationCoverageInputs`.
+Manual dispatch supports four suite choices:
+
+| Suite | Selection | Marathon jobs |
+| --- | --- | --- |
+| `full` (default) | All instrumentation tests and all R8 smoke tests | Two parallel jobs |
+| `smoke` | Five explicit core-flow instrumentation tests | Mock instrumentation only |
+| `single` | `test_name` in `package.TestClass#testMethod` form | Mock instrumentation only |
+| `random` | One test from the maintained eight-test eligible pool | Mock instrumentation only |
+
+`scripts/marathon-tests.json` defines the smoke and random catalogs. Smoke covers
+login startup, guest-account creation, project loading, build loading, and
+settings injection/recreation. Random also includes three other screen
+injection/recreation tests. Change these catalogs to adjust the subsets; the
+Python checks reject missing or ignored tests. Single mode supports the current
+non-ignored Kotlin JUnit4 instrumentation tests, including tests outside these
+catalogs. Its source preflight does not support inherited or parameterized test
+selectors.
+
+Random selection uses a SHA-256 seed and a sorted eligible list. By default the
+seed contains the commit SHA, workflow run ID, and run attempt; supply
+`random_seed` to repeat a selection on the same revision. The job summary and
+`ui-test-selection` artifact record the suite, selected tests, and seed. A
+Marathon YAML allowlist uses exact fully-qualified test names. JUnit verification
+rejects zero successful tests, skipped selections, missing selected tests, and
+unexpected tests. R8 verification requires at least five successful tests.
+
+All Marathon jobs use Android OS version 17 with the `google_apis` image and CLI
+1.0.64. Each job downloads its matching APK artifact and invokes Marathon once.
+They wait for the APK builds and require `MARATHON_CLOUD_API_TOKEN`. Ordinary PR
+runs omit test APK compilation, test APK uploads, and instrumentation coverage
+preparation. Sampled runs omit the R8 test APK and paid R8 execution. Superseded
+PR validation is cancelled; manual and default-branch runs have unique
+concurrency groups so a later run does not cancel their UI tests.
+
+When UI tests are requested, the mock APK build passes
+`-PinstrumentationCoverage` and runs `:app:prepareInstrumentationCoverageInputs`.
 Only the debug application is instrumented; minified R8 and release builds keep
 their existing configuration. The task uses the tested app variant's scoped
 class artifacts, including its transformed dependency JARs, so library class IDs
@@ -116,19 +148,27 @@ catalog-pinned JaCoCo CLI in
 `app/build/coverage/instrumentation-inputs/instrumentation-coverage-inputs.zip`.
 It does not run unit tests or generate a coverage report.
 
-Both Marathon runs use CLI 1.0.64. The mock run passes `--code-coverage true`
-and converts its downloaded `.ec`/`.exec` files (including device
-archives) into JaCoCo XML using `scripts/generate-instrumentation-coverage.py`.
-Missing execution data or mismatched classes fail the job rather than upload
-an empty or inaccurate report. Report generation needs Java 17, without Gradle
-or compilation on the Marathon runner. The minified R8 run disables coverage
-collection and skips the coverage-input download and report generation.
+The mock run collects device coverage and converts downloaded `.ec`/`.exec`
+files (including device archives) into JaCoCo XML using
+`scripts/generate-instrumentation-coverage.py`. Missing execution data or
+mismatched classes fail the job rather than upload an empty or inaccurate
+report. Report generation needs Java 17, without Gradle or compilation on the
+Marathon runner. The minified R8 run disables coverage collection and skips the
+coverage-input download and report generation.
 
-Unit and instrumentation reports upload independently with the `unit` and
-`instrumentation` Codecov flags and the same PR head/commit SHA. Codecov merges
-all uploads into the commit's overall coverage, with separate flag views.
-Both flags join the total and disable carryforward. There is no fixed
-upload-count requirement, and the PR comment updates as reports arrive.
+Unit and full instrumentation reports upload independently with the `unit` and
+`instrumentation` Codecov flags and the same PR head/commit SHA. Both flags join
+the total and enable carryforward. When only unit coverage is uploaded, Codecov
+updates it and retains the last available instrumentation baseline. Both suites
+must have a complete initial upload before they can be carried forward; retained
+coverage represents an earlier run, not proof that current code passed UI tests.
+Carried-forward flags are shown in the PR comment. There is no fixed upload-count
+requirement, and the comment updates as reports arrive.
+
+Smoke, single, and random runs save instrumentation XML and raw Marathon results
+as artifacts but do not upload instrumentation coverage to Codecov. This avoids
+replacing a full-suite baseline with a partial report: carryforward applies to
+an absent flag, not missing tests within a newly uploaded report for that flag.
 Instrumentation XML is saved as the `instrumentation-coverage` artifact.
 
 Gradle task-output caching and parallel module execution are enabled in
