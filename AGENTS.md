@@ -164,7 +164,8 @@ the requested behavior or an explicitly requested migration slice.
 
 ### Commit & PR Titles
 
-**Conventional Commits** format is enforced by a GitHub Actions workflow on every PR:
+Use **Conventional Commits** for every commit message and PR title. Release Please
+uses these messages to decide whether an application release is needed:
 
 ```css
 <type>[optional scope][!]: <description>
@@ -173,19 +174,31 @@ the requested behavior or an explicitly requested migration slice.
 Use the same format for commit messages and PR titles. Only these commit types are allowed:
 
 - `feat` — a releasable addition or intentional change to the deployed
-  application, UI, runtime behavior, or delivery pipeline.
+  application, UI, runtime behavior, or application release delivery.
 - `fix` — a releasable correction to the deployed application, UI, runtime
-  behavior, or delivery pipeline.
-- `chore` — work that does not change the deployed application or release
-  behavior, such as documentation, tests, internal tooling, or repository
-  housekeeping.
+  behavior, or application release delivery.
+- `chore` — work that does not affect the shipped application or application
+  release behavior, including documentation, tests, CI validation, build tooling,
+  and repository housekeeping.
 
 Use the optional scope to describe the affected area or work category. Labels
 such as `docs`, `ci`, `style`, `test`, `build`, `refactor`, and `perf` are
-scopes, not commit types. If a UI, application, or pipeline change requires a
-redeploy or should create a release, it must be `feat` or `fix`, even when its
-scope is `style`, `ci`, or another non-product label. Use `chore(<scope>)` only
-when the change should not create an application release.
+scopes, not commit types. Choose the type from the effect on the shipped app
+and its release behavior, not the file location or the need to rerun a workflow.
+Use `feat` or `fix` when the change should create an application release.
+
+CI validation changes that only improve speed, caching, job scheduling, lint,
+test execution, or coverage reporting must use `chore(ci)` in both commit
+messages and PR titles. Build tooling changes that preserve the shipped app and
+release behavior use `chore(build)`. Changes to production deployment or the
+shipped artifact can still require `feat` or `fix`; the `ci` or `build` scope
+alone does not decide the type.
+
+Before committing or opening/updating a PR, check whether the change affects the
+shipped app or application releases and keep the commit and PR types aligned.
+Non-release chores must not use `!`, `BREAKING CHANGE`, or `Release-As` markers,
+which can trigger a release despite a `chore` type. Apply this rule to all future
+changes, including follow-up fixes to CI validation and internal tooling.
 
 Examples:
 
@@ -193,6 +206,8 @@ Examples:
 feat(ui): add dark mode toggle
 fix(zoom): prevent pinch zoom from exceeding bounds
 fix(ci): restore production deployment
+chore(ci): shorten Android validation pipeline
+chore(build): optimize Gradle caching without changing app artifacts
 chore(docs): document family-data validation
 chore(test): reorganize parser fixtures
 ```
