@@ -1,0 +1,58 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id("teamcityapp.android.library")
+    id("teamcityapp.android.hilt")
+    id("teamcityapp.android.data-binding")
+    id("org.jetbrains.kotlin.plugin.parcelize")
+}
+
+android {
+    namespace = "teamcityapp.features.properties.feature"
+}
+
+dependencies {
+    implementation(projects.features.properties.models)
+    implementation(projects.libraries.api)
+    implementation(projects.libraries.resources)
+    implementation(projects.libraries.theme)
+    implementation(projects.libraries.utils)
+
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.lifeCycle)
+    implementation(libs.androidx.lifecycle.lifeCycleLiveData)
+    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+    implementation(libs.androidx.lifecycle.lifeCycleCommonJava8)
+    implementation(libs.google.material)
+    implementation(libs.dagger.dagger)
+    implementation(libs.rxjava.rxJava)
+    implementation(libs.rxjava.rxAndroid)
+    implementation(libs.rxjava.rxjava.kotlin)
+    implementation(platform(libs.google.firebaseBom))
+    implementation(libs.google.analytics)
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.errorView)
+    implementation(libs.groupie.groupie)
+    implementation(libs.groupie.groupieDatabinding)
+    implementation(libs.androidx.constraintLayout)
+
+    kapt(libs.dagger.compiler)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.mockitoCore)
+    testImplementation(libs.mockito.mockitoKotlin)
+}
