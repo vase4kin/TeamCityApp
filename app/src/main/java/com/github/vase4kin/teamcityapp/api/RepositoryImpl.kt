@@ -105,6 +105,10 @@ class RepositoryImpl(
      * {@inheritDoc}
      */
     override fun listBuilds(id: String, locator: String, update: Boolean): Single<Builds> {
+        if (id.isBlank()) {
+            // RxCache rejects an empty group before callers can subscribe to the result.
+            return Single.error(IllegalArgumentException("Build type ID is missing"))
+        }
         return cacheProviders.listBuilds(
             teamCityService.listBuilds(id, locator),
             DynamicKeyGroup(locator, id),
