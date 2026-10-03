@@ -71,7 +71,7 @@ Use JDK 17 and the repository wrapper:
 ```shell
 ./gradlew :build-logic:test
 ./gradlew assembleMockDebug assembleMockDebugAndroidTest testMockDebugUnitTest testDebugUnitTest lintMockDebug
-./gradlew :app:generateCodeCoverageReport
+./gradlew testMockDebugUnitTest testDebugUnitTest :app:generateCodeCoverageReport
 python3 scripts/prepare-r8-verification.py
 ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest
 ```
@@ -81,3 +81,22 @@ Functional tests use isolated Kotlin DSL builds to verify module overrides,
 Hilt dependency registration, Data Binding, Java-only modules, and aggregate
 coverage inputs/exclusions/output paths. Focused tests preserve the R8 report
 count guard. CI runs these tests alongside the app and feature unit tests.
+
+## CI execution and caching
+
+CI starts application APK builds, lint, and unit tests independently. The unit-test
+invocation also generates aggregate coverage after the test and compilation tasks;
+the Coverage job downloads that report and uploads it to Codecov without starting
+Gradle or rebuilding classes. The report artifact still includes XML and HTML.
+
+Both mock debug and minified production verification APKs are always built. Test
+APKs and their upload run only when `ENABLE_MARATHON_TESTS` is `true`, the branch
+does not start with `chore-`, and a pull request originates in this repository.
+The Marathon job uses the APK job's policy output so preparation and execution
+stay aligned. Pausing Marathon therefore skips instrumentation compilation too.
+
+Gradle task-output caching and parallel module execution are enabled in
+`gradle.properties`. CI uses the enhanced Gradle cache provider for fallback
+restoration and separate job caches. Default-branch builds and same-repository
+PRs save caches; fork PRs only read them. The first run after switching providers
+can start cold, while subsequent runs of the same PR can reuse compiled outputs.
