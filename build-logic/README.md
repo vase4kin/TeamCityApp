@@ -5,12 +5,12 @@ shared Android configuration and replaces the former buildSrc and root callbacks
 
 | Plugin | Configuration |
 | --- | --- |
-| `teamcityapp.android.application` | Android application and Kotlin plugins, shared SDK/Java/Kotlin targets, lint, and instrumentation defaults |
+| `teamcityapp.android.application` | Android application and Kotlin plugins, shared SDK/Java/Kotlin targets, lint, unit-test coverage, and instrumentation defaults |
 | `teamcityapp.android.library` | Android library and Kotlin plugins, the same shared defaults |
 | `teamcityapp.android.library.java` | Android library defaults without Kotlin or kapt; use for Java/resource-only modules |
 | `teamcityapp.android.hilt` | Hilt and kapt plugins, Hilt runtime and kapt compiler dependencies |
 | `teamcityapp.android.data-binding` | Data Binding for Android application/library modules |
-| `teamcityapp.android.coverage` | App aggregate debug coverage, JaCoCo agent configuration, and CI report locations |
+| `teamcityapp.android.coverage` | App aggregate debug coverage and CI report locations |
 
 Apply an application or library convention before the optional Hilt convention:
 
@@ -55,10 +55,13 @@ mockRelease. `-Pr8Verification` adds the debug-signed minified verification buil
 uses its isolated instrumentation sources, disables mapping uploads, and checks
 that connected runs execute at least five smoke tests.
 
-`teamcityapp.android.coverage` replaces the applied JaCoCo script. It preserves
-`generateCodeCoverageReport`, debug/mockDebug class inputs, generated-class
-exclusions, and existing execution-data inputs. When compilation/tests and reporting
-are requested together, the report runs after those producers. Reporting alone
+`teamcityapp.android.base` enables JaCoCo on unit-test tasks in every Android
+module. `teamcityapp.android.coverage` aggregates their execution data using
+`generateCodeCoverageReport`. It uses transformed debug/mockDebug classes when
+Hilt or Firebase modifies bytecode, and compiler outputs otherwise, preserving
+generated-class exclusions. It reads current AGP unit-test coverage outputs
+and legacy JaCoCo execution files. When compilation/tests and reporting are
+requested together, the report runs after those producers. Reporting alone
 can still use restored CI files without triggering builds or tests. XML is written to
 `app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml`;
 HTML is written to `build/coverage-report`. The unused legacy PMD script has
@@ -84,16 +87,21 @@ count guard. CI runs these tests alongside the app and feature unit tests.
 
 ## CI execution and caching
 
-CI starts application APK builds, lint, and unit tests independently. The unit-test
-invocation also generates aggregate coverage after the test and compilation tasks;
+CI starts `Build` (mock debug), `Build minified` (production R8 verification),
+`Checks` (lint), and `Unit tests` independently. The unit-test invocation also
+generates aggregate coverage after the test and compilation tasks;
 the Coverage job downloads that report and uploads it to Codecov without starting
-Gradle or rebuilding classes. The report artifact still includes XML and HTML.
+Gradle or rebuilding classes. Unit-test coverage runs on every branch, even
+when Marathon is paused, and its upload does not wait for APK builds or
+instrumentation tests. The report artifact includes XML and HTML.
 
 Both mock debug and minified production verification APKs are always built. Test
 APKs and their upload run only when `ENABLE_MARATHON_TESTS` is `true`, the branch
 does not start with `chore-`, and a pull request originates in this repository.
-The Marathon job uses the APK job's policy output so preparation and execution
-stay aligned. Pausing Marathon therefore skips instrumentation compilation too.
+The Marathon job waits for both APK jobs and downloads their separate mock
+and R8 test artifacts, using the mock build's policy output so preparation
+and execution stay aligned. Pausing Marathon therefore skips instrumentation
+compilation too.
 
 Gradle task-output caching and parallel module execution are enabled in
 `gradle.properties`. CI uses the enhanced Gradle cache provider for fallback
