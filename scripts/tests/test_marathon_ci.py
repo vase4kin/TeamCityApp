@@ -126,10 +126,13 @@ class ChangedSelectionTest(unittest.TestCase):
     def select(self, *paths):
         return ci.changed_selection(list(paths), self.catalog, self.available, self.index, self.mapping)
 
-    def test_ci_changes_still_run_smoke_even_with_documentation(self):
-        result = self.select("README.md", "build-logic/README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py")
-        self.assertEqual(set(result["tests"]), self.smoke)
+    def test_ci_only_changes_skip_ui_tests_even_with_documentation(self):
+        result = self.select("README.md", "build-logic/README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py", "scripts/tests/test_marathon_ci.py", "scripts/marathon-tests.json", "codecov.yml")
+        self.assertEqual(result["tests"], [])
         self.assertEqual(result["fallback_paths"], [])
+
+    def test_repository_housekeeping_selects_no_ui_tests(self):
+        self.assertEqual(self.select(".gitignore", "LICENSE", "res/screenshots/feature-graphic.png")["tests"], [])
 
     def test_documentation_only_and_empty_diffs_select_no_tests(self):
         for paths in ((), ("README.md",), ("README.md", "build-logic/README.md")):
@@ -139,13 +142,13 @@ class ChangedSelectionTest(unittest.TestCase):
                 self.assertEqual(result["changed_files"], list(paths))
                 self.assertEqual(result["fallback_paths"], [])
 
-    def test_documentation_does_not_suppress_tests_for_code_changes(self):
+    def test_ci_and_documentation_do_not_suppress_tests_for_code_changes(self):
         path = "app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt"
-        self.assertEqual(self.select("README.md", path)["tests"], self.select(path)["tests"])
+        self.assertEqual(self.select("README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py", path)["tests"], self.select(path)["tests"])
 
-    def test_changed_policy_outputs_skip_documentation_and_empty_diffs(self):
+    def test_changed_policy_outputs_skip_ci_documentation_and_empty_diffs(self):
         for name in ("pull_request", "workflow_dispatch"):
-            for paths in ([], ["README.md"], ["README.md", "build-logic/README.md"]):
+            for paths in ([], ["README.md"], ["README.md", "build-logic/README.md"], [".github/workflows/build.yml"], ["build-logic/README.md", "scripts/marathon-ci.py", "scripts/tests/test_marathon_ci.py"]):
                 with self.subTest(name=name, paths=paths), tempfile.TemporaryDirectory() as directory:
                     root = Path(directory)
                     event = root / "event.json"
@@ -159,7 +162,7 @@ class ChangedSelectionTest(unittest.TestCase):
                     self.assertEqual(outputs["collect_coverage"], "false")
                     self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
                     self.assertFalse((root / "selection").exists())
-                    self.assertIn("Only Markdown documentation changed or the diff is empty", (root / "summary").read_text())
+                    self.assertIn("No application, Android test, or build inputs changed", (root / "summary").read_text())
                     for path in paths:
                         self.assertIn(json.dumps(path), (root / "summary").read_text())
 
@@ -208,7 +211,7 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertEqual(result["fallback_paths"], [])
 
     def test_shared_unmapped_and_helper_changes_broaden_mock_selection(self):
-        for path in ("libraries/storage/src/main/java/Store.kt", "app/src/main/java/com/github/vase4kin/teamcityapp/storage/SharedUserStorage.kt", "app/src/main/res/values/strings.xml", "app/src/main/java/com/github/vase4kin/teamcityapp/new_feature/View.kt", "app/src/androidTest/java/com/github/vase4kin/teamcityapp/helper/HiltApiTestRule.kt", "build-logic/src/main/kotlin/AndroidBaseConventionPlugin.kt"):
+        for path in ("libraries/storage/src/main/java/Store.kt", "app/src/main/java/com/github/vase4kin/teamcityapp/storage/SharedUserStorage.kt", "app/src/main/res/values/strings.xml", "app/src/main/java/com/github/vase4kin/teamcityapp/new_feature/View.kt", "app/src/androidTest/java/com/github/vase4kin/teamcityapp/helper/HiltApiTestRule.kt", "build-logic/src/main/kotlin/AndroidBaseConventionPlugin.kt", "gradle/libs.versions.toml", "gradle/wrapper/gradle-wrapper.properties", "build.gradle.kts", "settings.gradle.kts", "gradle.properties", "gradlew", "gradlew.bat", "mock-mockDebug-google-services.json", "mock-prodDebug-google-services.json"):
             with self.subTest(path=path):
                 result = self.select(path)
                 self.assertEqual(set(result["tests"]), self.available)

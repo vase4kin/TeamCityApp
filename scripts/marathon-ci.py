@@ -46,7 +46,7 @@ def policy(event_name, ref, event):
         repository = event.get("repository", {}).get("full_name")
         if head_repo != repository:
             return {"run": False, "suite": "none", "reason": "Fork PR has no Marathon API secret"}
-        return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for non-documentation PR changes"}
+        return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for application or Android build changes"}
     return {"run": False, "suite": "none", "reason": "No UI policy for this event"}
 
 
@@ -96,10 +96,18 @@ def changed_paths(root, event_name, event):
     return [path for path in result.stdout.decode().split("\0") if path]
 
 
+def ui_test_input(path):
+    # CI scripts and workflows are checked without launching Android devices.
+    return not path.endswith(".md") and (
+        path.startswith(("app/", "features/", "libraries/", "build-logic/", "gradle/"))
+        or path in ("build.gradle.kts", "settings.gradle.kts", "gradle.properties", "gradlew", "gradlew.bat", "mock-mockDebug-google-services.json", "mock-prodDebug-google-services.json")
+    )
+
+
 def changed_selection(paths, catalog, available, index, mapping):
-    # Documentation and empty diffs need no device validation. Other changes
-    # include smoke and collect eligible methods dynamically from test classes.
-    if not any(not path.endswith(".md") for path in paths):
+    # Only application, Android test, and build inputs need device validation.
+    inputs = [path for path in paths if ui_test_input(path)]
+    if not inputs:
         return {"suite": "changed", "tests": [], "seed": "", "changed_files": paths, "features": [], "fallback_paths": []}
     smoke = selection("smoke", catalog, available)["tests"]
     selected = set(smoke)
@@ -114,9 +122,7 @@ def changed_selection(paths, catalog, available, index, mapping):
             found.update(test for test in available if fnmatch.fnmatchcase(test, pattern))
         return found
 
-    for path in paths:
-        if path.endswith(".md"):
-            continue
+    for path in inputs:
         if path in index and index[path]:
             selected.update(index[path])
             continue
@@ -137,7 +143,7 @@ def changed_selection(paths, catalog, available, index, mapping):
         if resolved:
             selected.update(resolved)
             owners.update(matches)
-        elif path.startswith(("app/", "features/", "libraries/", "build-logic/", "gradle/")) or path in ("build.gradle.kts", "settings.gradle.kts", "gradle.properties"):
+        else:
             # Shared/unmapped application inputs can affect any instrumentation test.
             fallback.append(path)
     if fallback:
@@ -241,7 +247,7 @@ def main():
                 paths = changed_paths(ROOT, os.environ["GITHUB_EVENT_NAME"], event)
                 selected = changed_selection(paths, catalog, available, index, mapping)
                 if not selected["tests"]:
-                    decision = {"run": False, "suite": "none", "reason": "Only Markdown documentation changed or the diff is empty"}
+                    decision = {"run": False, "suite": "none", "reason": "No application, Android test, or build inputs changed"}
             except (subprocess.CalledProcessError, KeyError):
                 # Missing comparison history must not silently omit affected tests.
                 selected = {"suite": "changed", "tests": sorted(available), "seed": "", "fallback_reason": "Could not compare the base and head; selecting all mock instrumentation tests"}
