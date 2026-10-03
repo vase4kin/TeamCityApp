@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.login.view
 
 import android.os.Build
 import android.view.View
-import androidx.annotation.RequiresApi
+import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.equalTo
@@ -36,7 +36,7 @@ class EditTextNoAutofillTest {
             EditTextNoAutofill(InstrumentationRegistry.getInstrumentation().targetContext)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.O)
     @Test
     fun testGetAutofillType() {
         assertThat(editTextNoAutofill.autofillType, `is`(equalTo(View.AUTOFILL_TYPE_NONE)))
