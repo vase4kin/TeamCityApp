@@ -30,7 +30,7 @@ class MarathonPolicyTest(unittest.TestCase):
         event = {"repository": {"full_name": "owner/app"}, "pull_request": {"head": {"repo": {"full_name": "fork/app"}}}}
         self.assertFalse(ci.policy("pull_request", "refs/pull/1/merge", event)["run"])
 
-    def test_default_branch_push_always_runs_both_full_suites(self):
+    def test_default_branch_push_is_eligible_for_full_validation(self):
         event = {"repository": {"default_branch": "dev"}, "head_commit": {"message": "chore(ci): update checks"}}
         self.assertEqual(ci.policy("push", "refs/heads/dev", event)["suite"], "full")
         self.assertFalse(ci.policy("push", "refs/heads/feature", event)["run"])
@@ -239,6 +239,14 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertIn("base...head", run.call_args.args[0])
         self.assertIn("--no-renames", run.call_args.args[0])
 
+    def test_push_diff_uses_before_and_after_tips_and_keeps_both_rename_paths(self):
+        event = {"before": "old-tip", "after": "new-tip"}
+        completed = subprocess.CompletedProcess([], 0, stdout=b"app/old/View.kt\0docs/View.md\0")
+        with patch.object(ci.subprocess, "run", return_value=completed) as run:
+            self.assertEqual(ci.changed_paths(ROOT, "push", event), ["app/old/View.kt", "docs/View.md"])
+        self.assertIn("old-tip..new-tip", run.call_args.args[0])
+        self.assertIn("--no-renames", run.call_args.args[0])
+
     def test_explicit_smoke_command_collects_no_device_coverage(self):
         events = [
             ("workflow_dispatch", "refs/heads/example", {"inputs": {"run_ui_tests": "true", "suite": "smoke"}}),
@@ -269,6 +277,64 @@ class ChangedSelectionTest(unittest.TestCase):
             self.assertEqual(set(selected["tests"]), self.available)
             self.assertIn("fallback_reason", selected)
             self.assertIn("collect_coverage=false", (root / "output").read_text())
+
+
+class DefaultBranchPushTest(unittest.TestCase):
+    def run_policy(self, payload, paths=None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "event.json").write_text(json.dumps({"repository": {"default_branch": "dev"}, **payload}))
+            env = dict(os.environ, GITHUB_EVENT_PATH=str(root / "event.json"), GITHUB_EVENT_NAME="push", GITHUB_REF="refs/heads/dev", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+            with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch("sys.stdout", new_callable=io.StringIO):
+                if paths is None:
+                    ci.main()
+                else:
+                    with patch.object(ci, "changed_paths", return_value=paths):
+                        ci.main()
+            outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+            selection_file = root / "selection/selection.json"
+            selected = json.loads(selection_file.read_text()) if selection_file.exists() else None
+            return outputs, selected, (root / "summary").read_text(), (root / "selection/filter.yaml").exists()
+
+    def test_merging_this_ci_only_pr_skips_both_ui_suites(self):
+        paths = ["build-logic/README.md", "scripts/marathon-ci.py", "scripts/tests/test_marathon_ci.py", ".github/workflows/build.yml"]
+        outputs, selected, summary, _ = self.run_policy({"before": "old-tip", "after": "new-tip"}, paths)
+        self.assertEqual(outputs["run_ui_tests"], "false")
+        self.assertEqual(outputs["suite"], "none")
+        self.assertEqual(outputs["collect_coverage"], "false")
+        self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+        self.assertIsNone(selected)
+        self.assertIn("No application, Android test, or build inputs changed", summary)
+        self.assertIn("scripts/marathon-ci.py", summary)
+
+    def test_empty_push_skips_both_ui_suites(self):
+        outputs, selected, _, _ = self.run_policy({"before": "same-tip", "after": "same-tip"}, [])
+        self.assertEqual(outputs["run_ui_tests"], "false")
+        self.assertEqual(outputs["collect_coverage"], "false")
+        self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+        self.assertIsNone(selected)
+
+    def test_android_changes_across_a_push_run_both_full_suites(self):
+        # The CI-only tip must not hide Android changes earlier in the push.
+        paths = ["scripts/marathon-ci.py", "app/src/main/res/values/strings.xml"]
+        outputs, selected, _, has_filter = self.run_policy({"before": "old-tip", "after": "new-tip"}, paths)
+        self.assertEqual(outputs["run_ui_tests"], "true")
+        self.assertEqual(outputs["suite"], "full")
+        self.assertEqual(outputs["collect_coverage"], "true")
+        self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation", "r8"])
+        self.assertEqual(selected["tests"], [])
+        self.assertTrue(any(ci.ui_test_input(path) for path in selected["changed_files"]))
+        self.assertFalse(has_filter)
+
+    def test_unavailable_push_history_keeps_full_validation(self):
+        for payload in ({}, {"before": "missing-base", "after": "HEAD"}, {"before": "0" * 40, "after": "HEAD"}):
+            with self.subTest(payload=payload):
+                outputs, selected, _, _ = self.run_policy(payload)
+                self.assertEqual(outputs["run_ui_tests"], "true")
+                self.assertEqual(outputs["suite"], "full")
+                self.assertEqual(outputs["collect_coverage"], "true")
+                self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation", "r8"])
+                self.assertIn("fallback_reason", selected)
 
 
 class MarathonResultTest(unittest.TestCase):

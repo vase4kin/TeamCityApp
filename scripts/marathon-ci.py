@@ -32,7 +32,7 @@ R8 = {
 def policy(event_name, ref, event):
     default_branch = event.get("repository", {}).get("default_branch", "dev")
     if event_name == "push" and ref == f"refs/heads/{default_branch}":
-        return {"run": True, "suite": "full", "reason": "Full validation after a default-branch push"}
+        return {"run": True, "suite": "full", "reason": "Full validation for application or Android build changes pushed to the default branch"}
     if event_name == "workflow_dispatch":
         inputs = event.get("inputs", {})
         enabled = inputs.get("run_ui_tests", False) in (True, "true")
@@ -82,15 +82,20 @@ def source_tests(root):
 
 
 def changed_paths(root, event_name, event):
-    """Compare the complete PR branch, including both sides of renamed paths."""
+    """Compare the complete PR branch or push, retaining both rename paths."""
     if event_name == "pull_request":
         pr = event["pull_request"]
         base, head = pr["base"]["sha"], pr["head"]["sha"]
+        comparison = f"{base}...{head}"
+    elif event_name == "push":
+        # Compare the old and new branch tips, including every commit in a push.
+        # A merge-base diff would miss removals when a branch is force-pushed.
+        comparison = f"{event['before']}..{event['after']}"
     else:
         base = "origin/" + event.get("repository", {}).get("default_branch", "dev")
-        head = "HEAD"
+        comparison = f"{base}...HEAD"
     result = subprocess.run(
-        ["git", "diff", "--name-only", "--no-renames", "-z", f"{base}...{head}"],
+        ["git", "diff", "--name-only", "--no-renames", "-z", comparison],
         cwd=root, capture_output=True, check=True,
     )
     return [path for path in result.stdout.decode().split("\0") if path]
@@ -241,16 +246,22 @@ def main():
         catalog = json.loads((ROOT / "scripts/marathon-tests.json").read_text())
         index = source_test_index(ROOT)
         available = set().union(*index.values())
-        if decision["suite"] == "changed":
+        if decision["suite"] == "changed" or os.environ["GITHUB_EVENT_NAME"] == "push":
             mapping = json.loads((ROOT / "scripts/marathon-changes.json").read_text())
             try:
                 paths = changed_paths(ROOT, os.environ["GITHUB_EVENT_NAME"], event)
-                selected = changed_selection(paths, catalog, available, index, mapping)
-                if not selected["tests"]:
+                if decision["suite"] == "full":
+                    selected = {**selection("full", catalog, available), "changed_files": paths}
+                else:
+                    selected = changed_selection(paths, catalog, available, index, mapping)
+                if not any(ui_test_input(path) for path in paths):
                     decision = {"run": False, "suite": "none", "reason": "No application, Android test, or build inputs changed"}
             except (subprocess.CalledProcessError, KeyError):
                 # Missing comparison history must not silently omit affected tests.
-                selected = {"suite": "changed", "tests": sorted(available), "seed": "", "fallback_reason": "Could not compare the base and head; selecting all mock instrumentation tests"}
+                if decision["suite"] == "full":
+                    selected = {**selection("full", catalog, available), "fallback_reason": "Could not compare the push before and after commits; running both full UI suites"}
+                else:
+                    selected = {"suite": "changed", "tests": sorted(available), "seed": "", "fallback_reason": "Could not compare the base and head; selecting all mock instrumentation tests"}
         else:
             selected = selection(decision["suite"], catalog, available, inputs.get("test_name", ""), seed)
         if decision["run"]:
