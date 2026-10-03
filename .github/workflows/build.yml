@@ -231,6 +231,9 @@ jobs:
 
   coverage:
     name: Coverage
+    permissions:
+      contents: read
+      id-token: write
     needs:
       - unit-tests
       - marathon-tests
@@ -292,4 +295,4 @@ jobs:
         with:
           files: app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml
           fail_ci_if_error: true
-          token: ${{ secrets.CODECOV_TOKEN }}
+          use_oidc: true
