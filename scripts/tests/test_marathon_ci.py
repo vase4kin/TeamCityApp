@@ -1,4 +1,5 @@
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -17,7 +18,7 @@ spec.loader.exec_module(ci)
 
 
 class MarathonPolicyTest(unittest.TestCase):
-    def test_every_same_repository_pr_runs_changed_and_smoke(self):
+    def test_same_repository_pr_is_eligible_for_changed_selection_regardless_of_title(self):
         for title in ("chore: update docs", "chore(ci): tune CI", "fix: correct login", "feat: add screen"):
             for action in ("opened", "synchronize", "reopened"):
                 with self.subTest(title=title, action=action):
@@ -125,10 +126,59 @@ class ChangedSelectionTest(unittest.TestCase):
     def select(self, *paths):
         return ci.changed_selection(list(paths), self.catalog, self.available, self.index, self.mapping)
 
-    def test_docs_and_ci_only_changes_still_run_smoke(self):
+    def test_ci_changes_still_run_smoke_even_with_documentation(self):
         result = self.select("README.md", "build-logic/README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py")
         self.assertEqual(set(result["tests"]), self.smoke)
         self.assertEqual(result["fallback_paths"], [])
+
+    def test_documentation_only_and_empty_diffs_select_no_tests(self):
+        for paths in ((), ("README.md",), ("README.md", "build-logic/README.md")):
+            with self.subTest(paths=paths):
+                result = self.select(*paths)
+                self.assertEqual(result["tests"], [])
+                self.assertEqual(result["changed_files"], list(paths))
+                self.assertEqual(result["fallback_paths"], [])
+
+    def test_documentation_does_not_suppress_tests_for_code_changes(self):
+        path = "app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt"
+        self.assertEqual(self.select("README.md", path)["tests"], self.select(path)["tests"])
+
+    def test_changed_policy_outputs_skip_documentation_and_empty_diffs(self):
+        for name in ("pull_request", "workflow_dispatch"):
+            for paths in ([], ["README.md"], ["README.md", "build-logic/README.md"]):
+                with self.subTest(name=name, paths=paths), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    event = root / "event.json"
+                    event.write_text(json.dumps({"repository": {"full_name": "owner/app"}, "pull_request": {"head": {"repo": {"full_name": "owner/app"}}}}))
+                    env = dict(os.environ, GITHUB_EVENT_PATH=str(event), GITHUB_EVENT_NAME=name, GITHUB_REF="refs/pull/1/merge", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+                    with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch.object(ci, "changed_paths", return_value=paths), patch("sys.stdout", new_callable=io.StringIO):
+                        ci.main()
+                    outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+                    self.assertEqual(outputs["run_ui_tests"], "false")
+                    self.assertEqual(outputs["suite"], "none")
+                    self.assertEqual(outputs["collect_coverage"], "false")
+                    self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+                    self.assertFalse((root / "selection").exists())
+                    self.assertIn("Only Markdown documentation changed or the diff is empty", (root / "summary").read_text())
+                    for path in paths:
+                        self.assertIn(json.dumps(path), (root / "summary").read_text())
+
+    def test_changed_policy_keeps_smoke_for_code_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event = root / "event.json"
+            event.write_text(json.dumps({"pull_request": {}}))
+            env = dict(os.environ, GITHUB_EVENT_PATH=str(event), GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/1/merge", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+            paths = ["README.md", "app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt"]
+            with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch.object(ci, "changed_paths", return_value=paths), patch("sys.stdout", new_callable=io.StringIO):
+                ci.main()
+            outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+            self.assertEqual(outputs["run_ui_tests"], "true")
+            self.assertEqual(outputs["suite"], "changed")
+            self.assertEqual(outputs["collect_coverage"], "false")
+            self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation"])
+            selected = json.loads((root / "selection/selection.json").read_text())
+            self.assertEqual(selected["tests"], self.select(*paths)["tests"])
 
     def test_build_log_sources_resources_and_mock_data_select_screen_and_lifecycle(self):
         expected = self.smoke | {
@@ -186,9 +236,8 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertIn("base...head", run.call_args.args[0])
         self.assertIn("--no-renames", run.call_args.args[0])
 
-    def test_default_and_smoke_commands_collect_no_device_coverage(self):
+    def test_explicit_smoke_command_collects_no_device_coverage(self):
         events = [
-            ("pull_request", "refs/pull/1/merge", {"pull_request": {"base": {"sha": "HEAD"}, "head": {"sha": "HEAD"}}}),
             ("workflow_dispatch", "refs/heads/example", {"inputs": {"run_ui_tests": "true", "suite": "smoke"}}),
         ]
         with tempfile.TemporaryDirectory() as directory:

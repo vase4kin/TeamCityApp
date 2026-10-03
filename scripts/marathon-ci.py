@@ -46,7 +46,7 @@ def policy(event_name, ref, event):
         repository = event.get("repository", {}).get("full_name")
         if head_repo != repository:
             return {"run": False, "suite": "none", "reason": "Fork PR has no Marathon API secret"}
-        return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for every PR"}
+        return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for non-documentation PR changes"}
     return {"run": False, "suite": "none", "reason": "No UI policy for this event"}
 
 
@@ -97,7 +97,10 @@ def changed_paths(root, event_name, event):
 
 
 def changed_selection(paths, catalog, available, index, mapping):
-    # Always include smoke; collect eligible methods dynamically from test classes.
+    # Documentation and empty diffs need no device validation. Other changes
+    # include smoke and collect eligible methods dynamically from test classes.
+    if not any(not path.endswith(".md") for path in paths):
+        return {"suite": "changed", "tests": [], "seed": "", "changed_files": paths, "features": [], "fallback_paths": []}
     smoke = selection("smoke", catalog, available)["tests"]
     selected = set(smoke)
     fallback = []
@@ -223,10 +226,7 @@ def main():
         return
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
     decision = policy(os.environ["GITHUB_EVENT_NAME"], os.environ["GITHUB_REF"], event)
-    collect_coverage = decision["suite"] in ("full", "single", "random")
-    mock = dict(MOCK, coverage=collect_coverage)
-    matrix = {"include": [mock, R8] if decision["suite"] == "full" else [mock]}
-    summary = f"UI tests: {decision['suite']} — {decision['reason']}\n"
+    selected = None
     if decision["run"]:
         inputs = event.get("inputs", {})
         seed = inputs.get("random_seed", "").strip() or ":".join(
@@ -236,17 +236,24 @@ def main():
         index = source_test_index(ROOT)
         available = set().union(*index.values())
         if decision["suite"] == "changed":
-            selection("smoke", catalog, available)
             mapping = json.loads((ROOT / "scripts/marathon-changes.json").read_text())
             try:
                 paths = changed_paths(ROOT, os.environ["GITHUB_EVENT_NAME"], event)
                 selected = changed_selection(paths, catalog, available, index, mapping)
+                if not selected["tests"]:
+                    decision = {"run": False, "suite": "none", "reason": "Only Markdown documentation changed or the diff is empty"}
             except (subprocess.CalledProcessError, KeyError):
                 # Missing comparison history must not silently omit affected tests.
                 selected = {"suite": "changed", "tests": sorted(available), "seed": "", "fallback_reason": "Could not compare the base and head; selecting all mock instrumentation tests"}
         else:
             selected = selection(decision["suite"], catalog, available, inputs.get("test_name", ""), seed)
-        write_selection(args.selection_dir, selected)
+        if decision["run"]:
+            write_selection(args.selection_dir, selected)
+    collect_coverage = decision["run"] and decision["suite"] in ("full", "single", "random")
+    mock = dict(MOCK, coverage=collect_coverage)
+    matrix = {"include": ([mock, R8] if decision["suite"] == "full" else [mock]) if decision["run"] else []}
+    summary = f"UI tests: {decision['suite']} — {decision['reason']}\n"
+    if selected is not None:
         summary += "\n" + json.dumps(selected, indent=2) + "\n"
     print(summary)
     with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:
