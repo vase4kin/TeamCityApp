@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -30,24 +29,24 @@ android {
 }
 
 dependencies {
-    implementation project(':libraries:resources')
-    implementation project(':libraries:theme')
-    implementation project(':libraries:utils')
-    implementation project(':libraries:chrome-tabs')
-    implementation project(':libraries:storage')
-    implementation project(':libraries:storage-models')
-    implementation project(':libraries:api')
+    implementation projects.libraries.resources
+    implementation projects.libraries.theme
+    implementation projects.libraries.utils
+    implementation projects.libraries.chromeTabs
+    implementation projects.libraries.storage
+    implementation projects.libraries.storageModels
+    implementation projects.libraries.api
 
-    implementation Libs.Google.firebaseCore
-    implementation Libs.Google.material
-    implementation Libs.AndroidX.appcompat
-    implementation Libs.AndroidX.constraintLayout
-    implementation Libs.Dagger.dagger
-    implementation Libs.Dagger.androidSupport
-    implementation Libs.Kotlin.stdlib
-    implementation Libs.Groupie.groupie
-    implementation Libs.Groupie.groupieDatabinding
+    implementation libs.google.firebaseCore
+    implementation libs.google.material
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.constraintLayout
+    implementation libs.dagger.dagger
+    implementation libs.dagger.androidSupport
+    implementation libs.kotlin.stdlib
+    implementation libs.groupie.groupie
+    implementation libs.groupie.groupieDatabinding
 
-    kapt Libs.Dagger.compiler
-    kapt Libs.Dagger.androidProcessor
+    kapt libs.dagger.compiler
+    kapt libs.dagger.androidProcessor
 }

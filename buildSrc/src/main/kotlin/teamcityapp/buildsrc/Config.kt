@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright 2020 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
+package teamcityapp.buildsrc
 
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+import org.gradle.api.JavaVersion
 
-android {
-    namespace 'teamcityapp.features.test_details.repository'
-}
+object Config {
+    const val minSdk = 21
+    const val compileSdk = 36
+    const val targetSdk = 36
+    const val versionCode = 116
+    const val versionName = "1.52.7"
+    const val applicationId = "com.github.vase4kin.teamcityapp"
+    val javaVersion = JavaVersion.VERSION_17
 
-dependencies {
-    implementation projects.features.testDetails.models
-    implementation libs.rxjava.rxJava
-    implementation libs.kotlin.stdlib
+    object KotlinOptions {
+        const val jvmTarget = "17"
+    }
 }

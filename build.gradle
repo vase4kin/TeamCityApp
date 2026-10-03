@@ -16,7 +16,6 @@
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-import teamcityapp.buildsrc.Libs
 import teamcityapp.buildsrc.Config
 
 buildscript {
@@ -27,12 +26,12 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath Libs.Tools.gradleAndroid
-        classpath Libs.Tools.googleServices
-        classpath Libs.Tools.firebasePerf
-        classpath Libs.Tools.crashlytics
-        classpath Libs.Kotlin.Tools.gradlePlugin
-        classpath Libs.Google.Tools.openSourceLicensesPlugin
+        classpath libs.tools.gradleAndroid
+        classpath libs.tools.googleServices
+        classpath libs.tools.firebasePerf
+        classpath libs.tools.crashlytics
+        classpath libs.kotlin.tools.gradlePlugin
+        classpath libs.google.tools.openSourceLicensesPlugin
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 import teamcityapp.buildsrc.Config
 
 apply plugin: 'com.android.application'
@@ -108,133 +107,136 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation project(':libraries:utils')
-    implementation project(':libraries:api')
-    implementation project(':libraries:resources')
-    implementation project(':libraries:theme')
-    implementation project(':libraries:chrome-tabs')
-    implementation project(':libraries:storage')
-    implementation project(':libraries:storage-models')
-    implementation project(':libraries:cache-manager')
-    implementation project(':libraries:onboarding')
-    implementation project(':libraries:security')
-    implementation project(':libraries:remote')
+    implementation projects.libraries.utils
+    implementation projects.libraries.api
+    implementation projects.libraries.resources
+    implementation projects.libraries.theme
+    implementation projects.libraries.chromeTabs
+    implementation projects.libraries.storage
+    implementation projects.libraries.storageModels
+    implementation projects.libraries.cacheManager
+    implementation projects.libraries.onboarding
+    implementation projects.libraries.security
+    implementation projects.libraries.remote
 
-    implementation project(':features:test-details:models')
-    implementation project(':features:test-details:repository')
-    implementation project(':features:test-details:feature')
+    implementation projects.features.testDetails.models
+    implementation projects.features.testDetails.repository
+    implementation projects.features.testDetails.feature
 
-    implementation project(':features:splash')
+    implementation projects.features.splash
 
-    implementation project(':features:about:models')
-    implementation project(':features:about:repository')
-    implementation project(':features:about:feature')
+    implementation projects.features.about.models
+    implementation projects.features.about.repository
+    implementation projects.features.about.feature
 
-    implementation project(':features:manage-accounts')
+    implementation projects.features.manageAccounts
 
-    implementation project(':features:drawer')
+    implementation projects.features.drawer
 
-    implementation project(':features:settings')
+    implementation projects.features.settings
 
-    implementation project(':features:change-details')
+    implementation projects.features.changeDetails
 
-    implementation project(':features:properties:models')
-    implementation project(':features:properties:feature')
+    implementation projects.features.properties.models
+    implementation projects.features.properties.feature
 
     // Android support libraries
-    implementation Libs.AndroidX.appcompat
-    implementation Libs.AndroidX.cardView
-    implementation Libs.AndroidX.legacySupport
-    implementation Libs.AndroidX.recyclerView
-    implementation Libs.AndroidX.preference
-    implementation Libs.Google.material
-    implementation Libs.AndroidX.constraintLayout
-    implementation Libs.AndroidX.LifeCycle.lifeCycle
-    implementation Libs.AndroidX.LifeCycle.lifeCycleLiveData
-    implementation Libs.AndroidX.LifeCycle.lifeCycleViewModel
-    implementation Libs.AndroidX.LifeCycle.lifeCycleCommonJava8
-    kapt Libs.AndroidX.LifeCycle.lifeCycleCompiler
+    implementation libs.androidx.appcompat
+    implementation libs.androidx.cardView
+    implementation libs.androidx.legacySupport
+    implementation libs.androidx.recyclerView
+    implementation libs.androidx.preference
+    implementation libs.google.material
+    implementation libs.androidx.constraintLayout
+    implementation libs.androidx.lifecycle.lifeCycle
+    implementation libs.androidx.lifecycle.lifeCycleLiveData
+    implementation libs.androidx.lifecycle.lifeCycleViewModel
+    implementation libs.androidx.lifecycle.lifeCycleCommonJava8
+    kapt libs.androidx.lifecycle.lifeCycleCompiler
     // Api third party libraries
-    implementation Libs.OkHttp.okhttp
-    implementation Libs.OkHttp.loggingInterceptor
-    implementation Libs.Retrofit.retrofit
-    implementation Libs.Retrofit.gsonConverter
-    implementation Libs.Retrofit.retrofitRxjavaAdapter
+    implementation libs.okhttp.okhttp
+    implementation libs.okhttp.loggingInterceptor
+    implementation libs.retrofit.retrofit
+    implementation libs.retrofit.gsonConverter
+    implementation libs.retrofit.retrofitRxjavaAdapter
     // Dialogs
-    implementation Libs.dialogs
+    implementation libs.dialogs
     // Views
-    implementation Libs.errorView
-    implementation Libs.Groupie.groupie
+    implementation libs.errorView
+    implementation libs.groupie.groupie
     // View injection
-    implementation Libs.ButterKnife.butterKnife
-    annotationProcessor Libs.ButterKnife.butterKnifeCompiler
-    kapt Libs.ButterKnife.butterKnifeCompiler
+    implementation libs.butterknife.butterKnife
+    annotationProcessor libs.butterknife.butterKnifeCompiler
+    kapt libs.butterknife.butterKnifeCompiler
     // Event bus
-    implementation Libs.eventBus
+    implementation libs.eventBus
     // Others
-    implementation Libs.jodaTime
-    implementation Libs.mugen
-    implementation Libs.shimmerlayout
-    implementation Libs.aboutLibrary
+    implementation libs.jodaTime
+    implementation libs.mugen
+    implementation libs.shimmerlayout
+    implementation libs.aboutLibrary
     // Onboarding
-    implementation Libs.materialTapTargetPrompt
+    implementation libs.materialTapTargetPrompt
     // Dagger
-    implementation Libs.Dagger.dagger
-    annotationProcessor Libs.Dagger.compiler
-    kapt Libs.Dagger.compiler
-    implementation Libs.Dagger.androidSupport
-    annotationProcessor Libs.Dagger.androidProcessor
-    kapt Libs.Dagger.androidProcessor
+    implementation libs.dagger.dagger
+    annotationProcessor libs.dagger.compiler
+    kapt libs.dagger.compiler
+    implementation libs.dagger.androidSupport
+    annotationProcessor libs.dagger.androidProcessor
+    kapt libs.dagger.androidProcessor
     // Rx
-    implementation Libs.RxJava.rxJava
-    implementation Libs.RxJava.rxAndroid
-    implementation Libs.RxJava.rxjava_kotlin
+    implementation libs.rxjava.rxJava
+    implementation libs.rxjava.rxAndroid
+    implementation libs.rxjava.rxjava.kotlin
     // Rx cache
-    implementation Libs.RxCache.rxCache
-    implementation Libs.RxCache.jolyglot
+    implementation libs.rxcache.rxCache
+    implementation libs.rxcache.jolyglot
     // Encryption
-    implementation Libs.conceal
+    implementation(libs.conceal) {
+        artifact { type = 'aar' }
+        transitive = false
+    }
     // Firebase
-    implementation Libs.Google.firebaseCore
-    implementation Libs.Google.firebaseConfig
-    implementation Libs.Google.firebasePerf
-    implementation Libs.Google.openSourceLicensesLibrary
+    implementation libs.google.firebaseCore
+    implementation libs.google.firebaseConfig
+    implementation libs.google.firebasePerf
+    implementation libs.google.openSourceLicensesLibrary
     // Bottom nav libries
-    implementation Libs.fragNav
+    implementation libs.fragNav
     // Unit tests
-    testImplementation Libs.junit
-    testImplementation Libs.Mockito.mockito3
-    testImplementation Libs.Mockito.mockitoKotlin
-    testImplementation Libs.hamcrestJunit
+    testImplementation libs.junit
+    testImplementation libs.mockito.mockito3
+    testImplementation libs.mockito.mockitoKotlin
+    testImplementation libs.hamcrestJunit
     // Ui tests
     // Core library
-    androidTestImplementation Libs.AndroidX.Test.core
+    androidTestImplementation libs.androidx.test.core
     // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation Libs.AndroidX.Test.runner
-    androidTestImplementation Libs.AndroidX.Test.rules
-    androidTestUtil Libs.AndroidX.Test.orchestrator
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.test.rules
+    androidTestUtil libs.androidx.test.orchestrator
     // Assertions
-    androidTestImplementation Libs.AndroidX.Test.extJunit
+    androidTestImplementation libs.androidx.test.extJunit
     // Espresso dependenciesd
-    androidTestImplementation Libs.AndroidX.Test.Espresso.core
-    androidTestImplementation Libs.AndroidX.Test.Espresso.intents
-    androidTestImplementation Libs.AndroidX.Test.Espresso.contrib
-    androidTestImplementation Libs.AndroidX.Test.Espresso.web
+    androidTestImplementation libs.androidx.test.espresso.core
+    androidTestImplementation libs.androidx.test.espresso.intents
+    androidTestImplementation libs.androidx.test.espresso.contrib
+    androidTestImplementation libs.androidx.test.espresso.web
     // Mockito
-    androidTestImplementation Libs.Mockito.mockito3
-    androidTestImplementation Libs.Mockito.mockitoKotlin
+    androidTestImplementation libs.mockito.mockito3
+    androidTestImplementation libs.mockito.mockitoKotlin
     // DexMaker Mockito support includes DexMaker transitively.
-    androidTestImplementation Libs.DexMaker.dexmakerMockito
+    androidTestImplementation libs.dexmaker.dexmakerMockito
     // Dagger mock
-    androidTestImplementation Libs.daggerMock
+    androidTestImplementation libs.daggerMock
     // Resolve conflits between apks
-    androidTestImplementation Libs.Google.material
-    androidTestImplementation Libs.AndroidX.recyclerView
+    androidTestImplementation libs.google.material
+    androidTestImplementation libs.androidx.recyclerView
     // Crashlytics
-    implementation(Libs.Google.crashlytics)
-    implementation(Libs.Google.analytics)
+    implementation(libs.google.crashlytics)
+    implementation(libs.google.analytics)
 
-    implementation Libs.Kotlin.stdlib
+    implementation libs.kotlin.stdlib
 }
 
 apply plugin: 'com.google.gms.google-services'

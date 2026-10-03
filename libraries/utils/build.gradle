@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -29,12 +28,12 @@ android {
 }
 
 dependencies {
-    implementation project(':libraries:resources')
-    implementation project(':libraries:theme')
+    implementation projects.libraries.resources
+    implementation projects.libraries.theme
 
-    implementation Libs.AndroidX.appcompat
-    implementation Libs.Google.material
-    implementation Libs.AndroidX.preference
-    implementation Libs.errorView
-    implementation Libs.Kotlin.stdlib
+    implementation libs.androidx.appcompat
+    implementation libs.google.material
+    implementation libs.androidx.preference
+    implementation libs.errorView
+    implementation libs.kotlin.stdlib
 }

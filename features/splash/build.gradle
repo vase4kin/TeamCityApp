@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
@@ -25,20 +24,20 @@ android {
 }
 
 dependencies {
-    implementation project(':libraries:storage')
-    implementation project(':libraries:resources')
-    implementation project(':libraries:theme')
+    implementation projects.libraries.storage
+    implementation projects.libraries.resources
+    implementation projects.libraries.theme
 
-    implementation Libs.Google.material
-    implementation Libs.AndroidX.appcompat
-    implementation Libs.Dagger.dagger
-    implementation Libs.Dagger.androidSupport
-    implementation Libs.Kotlin.stdlib
+    implementation libs.google.material
+    implementation libs.androidx.appcompat
+    implementation libs.dagger.dagger
+    implementation libs.dagger.androidSupport
+    implementation libs.kotlin.stdlib
 
-    kapt Libs.Dagger.compiler
-    kapt Libs.Dagger.androidProcessor
+    kapt libs.dagger.compiler
+    kapt libs.dagger.androidProcessor
 
-    testImplementation Libs.junit
-    testImplementation Libs.Mockito.mockito3
-    testImplementation Libs.Mockito.mockitoKotlin
+    testImplementation libs.junit
+    testImplementation libs.mockito.mockito3
+    testImplementation libs.mockito.mockitoKotlin
 }
