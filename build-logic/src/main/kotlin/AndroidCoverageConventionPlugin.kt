@@ -1,10 +1,17 @@
 package teamcityapp.buildlogic
 
+import com.android.build.api.artifact.ScopedArtifact
+import com.android.build.api.variant.ApplicationAndroidComponentsExtension
+import com.android.build.api.variant.ScopedArtifacts
 import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.file.Directory
 import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.Classpath
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
@@ -92,7 +99,7 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 isCanBeResolved = true
             }
             dependencies.add(jacocoCli.name, "org.jacoco:org.jacoco.cli:$jacocoVersion:nodeps")
-            tasks.register("prepareInstrumentationCoverageInputs", Zip::class.java) {
+            val instrumentationInputs = tasks.register("prepareInstrumentationCoverageInputs", InstrumentationCoverageInputs::class.java) {
                 group = "code quality"
                 description = "Export matching classes, sources and JaCoCo CLI for Marathon coverage"
                 archiveFileName.set("instrumentation-coverage-inputs.zip")
@@ -100,7 +107,25 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 duplicatesStrategy = DuplicatesStrategy.EXCLUDE
                 // Read outputs after the APK producers without running tests or a report.
                 mustRunAfter(tasks.matching { it.name == "assembleMockDebugAndroidTest" })
-                from(provider { coverageReport.get().classDirectories }) {
+                // The app's dependency transforms can differ from each library's own
+                // outputs. Prefer the bytecode actually consumed by the tested variant.
+                from(classJars.map { jars -> jars.map { zipTree(it) } }) {
+                    into("classes")
+                    include("com/github/vase4kin/teamcityapp/**/*.class", "teamcityapp/**/*.class")
+                    exclude("**/R.class", "**/R\$*.class", "**/BR.class", "**/BuildConfig.*", "**/dagger/**")
+                }
+                from(classDirectories) {
+                    into("classes")
+                    include("com/github/vase4kin/teamcityapp/**/*.class", "teamcityapp/**/*.class")
+                    exclude("**/R.class", "**/R\$*.class", "**/BR.class", "**/BuildConfig.*", "**/dagger/**")
+                }
+                from(provider {
+                    if (!pluginManager.hasPlugin("com.android.application")) {
+                        coverageReport.get().classDirectories
+                    } else {
+                        emptyList<Any>()
+                    }
+                }) {
                     into("classes")
                     include("**/*.class")
                 }
@@ -110,7 +135,32 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                     rename { "jacococli.jar" }
                 }
             }
+            pluginManager.withPlugin("com.android.application") {
+                extensions.getByType(ApplicationAndroidComponentsExtension::class.java)
+                    .onVariants { variant ->
+                        if (variant.name == "mockDebug") {
+                            variant.artifacts.forScope(ScopedArtifacts.Scope.ALL)
+                                .use(instrumentationInputs)
+                                .toGet(ScopedArtifact.CLASSES,
+                                    InstrumentationCoverageInputs::classJars,
+                                    InstrumentationCoverageInputs::classDirectories)
+                        }
+                    }
+            }
         }
+    }
+}
+
+abstract class InstrumentationCoverageInputs : Zip() {
+    @get:Classpath
+    abstract val classJars: ListProperty<RegularFile>
+
+    @get:Classpath
+    abstract val classDirectories: ListProperty<Directory>
+
+    init {
+        classJars.convention(emptyList())
+        classDirectories.convention(emptyList())
     }
 }
 

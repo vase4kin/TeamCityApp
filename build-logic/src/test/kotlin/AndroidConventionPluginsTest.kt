@@ -62,8 +62,8 @@ class AndroidConventionPluginsTest {
         )
         listOf(
             "app/build/intermediates/javac/mockDebug/classes/OriginalApp.class",
-            "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/App.class",
-            "library/build/tmp/kotlin-classes/debug/Library.class",
+            "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/com/github/vase4kin/teamcityapp/App.class",
+            "library/build/tmp/kotlin-classes/debug/teamcityapp/sample/Library.class",
             "library/build/tmp/kotlin-classes/debug/R.class",
             "library/build/tmp/kotlin-classes/debug/dagger/Generated.class",
             "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/androidx/databinding/DataBindingComponent.class",
@@ -79,6 +79,11 @@ class AndroidConventionPluginsTest {
                 writeText("fixture")
             }
         }
+        java.util.zip.ZipOutputStream(File(appDir, "runtime-library.jar").outputStream()).use { archive ->
+            archive.putNextEntry(java.util.zip.ZipEntry("teamcityapp/sample/Library.class"))
+            archive.write("runtime bytecode".toByteArray())
+            archive.closeEntry()
+        }
         File(appDir, "build.gradle.kts").writeText(
             """
             import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
@@ -92,6 +97,10 @@ class AndroidConventionPluginsTest {
                 check(dependencies.single().version == "0.8.14")
                 dependencies.clear()
                 dependencies.add(project.dependencies.create(files("jacococli.jar")))
+            }
+            tasks.named<teamcityapp.buildlogic.InstrumentationCoverageInputs>("prepareInstrumentationCoverageInputs") {
+                classJars.add(layout.projectDirectory.file("runtime-library.jar"))
+                classDirectories.add(layout.projectDirectory.dir("build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs"))
             }
             val sampleTest = tasks.register<Test>("sampleTest")
             tasks.register("transformMockDebugClassesWithAsm")
@@ -116,10 +125,12 @@ class AndroidConventionPluginsTest {
                     check(inputs.archiveFileName.get() == "instrumentation-coverage-inputs.zip")
                     check(!gradle.taskGraph.hasTask(":app:generateCodeCoverageReport"))
                     java.util.zip.ZipFile(inputs.archiveFile.get().asFile).use { archive ->
-                        check(archive.getEntry("classes/App.class") != null)
+                        check(archive.getEntry("classes/com/github/vase4kin/teamcityapp/App.class") != null)
                         check(archive.getEntry("classes/OriginalApp.class") == null)
                         check(archive.getEntry("tools/jacococli.jar") != null)
                         check(archive.getEntry("sources/example/App.java") != null)
+                        val runtimeClass = archive.getEntry("classes/teamcityapp/sample/Library.class")
+                        check(archive.getInputStream(runtimeClass).reader().readText() == "runtime bytecode")
                     }
                     check(report.sourceDirectories.files.contains(rootProject.file("library/src/main/java")))
                     check(report.reports.xml.outputLocation.get().asFile == layout.buildDirectory.file(
