@@ -97,9 +97,10 @@ every branch, and its upload does not wait for APK builds or instrumentation
 tests. The report artifact includes XML and HTML.
 
 Both mock debug and minified production verification applications are built on
-every invocation. Same-repository PR validation, including chores, runs
-changed-feature instrumentation tests plus the five-test smoke suite unless the
-diff is empty or contains only Markdown documentation. PR comments
+every invocation. Same-repository PR validation runs changed-feature
+instrumentation tests plus the five-test smoke suite when application, Android
+test, or build inputs change. Documentation, CI-only, housekeeping, and empty
+diffs skip UI tests. PR comments
 do not trigger CI. Fork PRs cannot receive the Marathon secret and skip paid UI
 tests. A push to the default branch (`dev`) runs both full UI suites after merging;
 this is not a pre-merge gate.
@@ -114,11 +115,14 @@ including both paths of renames and deleted files. Manual changed runs compare
 with the default branch. It discovers current non-ignored methods from changed
 test classes and selects feature tests by source-folder/package conventions.
 `scripts/marathon-changes.json` maps resource paths and cross-package tests, such
-as build-log lifecycle tests under Hilt. Empty and Markdown-only diffs skip
-instrumentation, including smoke tests, and produce no selection artifact. Other
-changes always include smoke tests, and selections are deduplicated. CI-only
-changes run smoke only. Explicit manual suite overrides still run regardless of
-the changed files. Shared
+as build-log lifecycle tests under Hilt. Device validation is limited to
+non-Markdown files under `app/`, `features/`, `libraries/`, `build-logic/`, and
+`gradle/`, plus root Gradle build/settings/properties files, wrapper scripts, and
+mock Google Services configurations. Changes only to documentation, workflows,
+CI scripts and their Python tests, or other repository files skip instrumentation,
+including smoke tests, and produce no selection artifact. Relevant changes
+always include smoke tests, and selections are deduplicated. Explicit manual
+suite overrides still run regardless of the changed files. Shared
 or unmapped application inputs, or an unavailable diff baseline, broaden the
 selection to all eligible mock instrumentation tests. This still uses the changed
 suite, without R8 execution or device coverage. The selection artifact and job
