@@ -1,0 +1,17 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "simple",
+  "include-component-in-tag": false,
+  "bootstrap-sha": "9af715729fdc40427ce0d09f7a5998fd3733caeb",
+  "packages": {
+    ".": {
+      "component": "teamcityapp",
+      "extra-files": [
+        {
+          "type": "generic",
+          "path": "build-logic/src/main/kotlin/Config.kt"
+        }
+      ]
+    }
+  }
+}
