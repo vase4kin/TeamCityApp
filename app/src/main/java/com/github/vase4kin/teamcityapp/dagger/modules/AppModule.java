@@ -21,11 +21,6 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import com.facebook.android.crypto.keychain.AndroidConceal;
-import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
-import com.facebook.crypto.Crypto;
-import com.facebook.crypto.CryptoConfig;
-import com.facebook.crypto.keychain.KeyChain;
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.TeamCityApplication;
@@ -193,9 +188,7 @@ public class AppModule {
     @Provides
     @Singleton
     protected CryptoManager providesCryptoManager() {
-        KeyChain keyChain = new SharedPrefsBackedKeyChain(mApplication.getApplicationContext(), CryptoConfig.KEY_256);
-        Crypto crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
-        return new CryptoManagerImpl(crypto);
+        return new CryptoManagerImpl();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

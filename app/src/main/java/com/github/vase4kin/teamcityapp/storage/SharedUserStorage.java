@@ -37,7 +37,7 @@ import teamcityapp.libraries.storage.models.UserAccount;
  */
 public class SharedUserStorage implements Collectible<UserAccount>, Storage {
 
-    private static final String SHARED_PREF_NAME = "UserAccounts";
+    private static final String SHARED_PREF_NAME = "UserAccountsKeystoreV1";
     private Context mContext;
     private CryptoManager mCryptoManager;
 

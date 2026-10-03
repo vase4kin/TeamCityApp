@@ -194,11 +194,6 @@ dependencies {
     // Rx cache
     implementation libs.rxcache.rxCache
     implementation libs.rxcache.jolyglot
-    // Encryption
-    implementation(libs.conceal) {
-        artifact { type = 'aar' }
-        transitive = false
-    }
     // Firebase
     implementation platform(libs.google.firebaseBom)
     implementation libs.google.analytics

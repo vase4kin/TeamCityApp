@@ -23,9 +23,7 @@ android {
 }
 
 dependencies {
-    implementation(libs.conceal) {
-        artifact { type = 'aar' }
-        transitive = false
-    }
     implementation libs.kotlin.stdlib
+    androidTestImplementation libs.androidx.test.runner
+    androidTestImplementation libs.androidx.test.extJunit
 }
