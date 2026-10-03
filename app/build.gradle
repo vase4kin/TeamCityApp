@@ -52,14 +52,35 @@ android {
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled true
+            shrinkResources true
         }
         debug {
             applicationIdSuffix = ".debug"
         }
+        // Opt-in, release-equivalent APK for R8 runtime checks without release credentials.
+        if (project.hasProperty('r8Verification')) {
+            r8Verification {
+                initWith release
+                signingConfig signingConfigs.debug
+                applicationIdSuffix = ".r8"
+                matchingFallbacks = ['release']
+                proguardFile 'src/r8Verification/proguard-rules.pro'
+                firebaseCrashlytics {
+                    mappingFileUploadEnabled false
+                }
+            }
+        }
+    }
+
+    if (project.hasProperty('r8Verification')) {
+        testBuildType 'r8Verification'
+        sourceSets.androidTest.setRoot('src/r8VerificationTest')
     }
 
     defaultConfig {
-        testInstrumentationRunner "com.github.vase4kin.teamcityapp.helper.HiltTestRunner"
+        testInstrumentationRunner project.hasProperty('r8Verification')
+                ? "androidx.test.runner.AndroidJUnitRunner"
+                : "com.github.vase4kin.teamcityapp.helper.HiltTestRunner"
     }
 
     flavorDimensions "default"
@@ -211,32 +232,40 @@ dependencies {
     testImplementation libs.mockito.mockitoCore
     testImplementation libs.mockito.mockitoKotlin
     testImplementation libs.hamcrestJunit
-    // Ui tests
-    // Core library
-    androidTestImplementation libs.androidx.test.core
-    // AndroidJUnitRunner and JUnit Rules
-    androidTestImplementation libs.androidx.test.runner
-    androidTestImplementation libs.androidx.test.rules
-    androidTestUtil libs.androidx.test.orchestrator
-    // Assertions
-    androidTestImplementation libs.androidx.test.extJunit
-    // Espresso dependenciesd
-    androidTestImplementation libs.androidx.test.espresso.core
-    androidTestImplementation libs.androidx.test.espresso.intents
-    androidTestImplementation(libs.androidx.test.espresso.contrib) {
-        // Its accessibility dependency brings protobuf-lite 3.0.1, which shadows Firebase's runtime.
-        exclude group: 'com.google.protobuf', module: 'protobuf-lite'
+    if (project.hasProperty('r8Verification')) {
+        androidTestImplementation libs.androidx.test.core
+        androidTestImplementation libs.androidx.test.runner
+        androidTestImplementation libs.androidx.test.rules
+        androidTestImplementation libs.androidx.test.extJunit
+        androidTestUtil libs.androidx.test.orchestrator
+    } else {
+        // Ui tests
+        // Core library
+        androidTestImplementation libs.androidx.test.core
+        // AndroidJUnitRunner and JUnit Rules
+        androidTestImplementation libs.androidx.test.runner
+        androidTestImplementation libs.androidx.test.rules
+        androidTestUtil libs.androidx.test.orchestrator
+        // Assertions
+        androidTestImplementation libs.androidx.test.extJunit
+        // Espresso dependenciesd
+        androidTestImplementation libs.androidx.test.espresso.core
+        androidTestImplementation libs.androidx.test.espresso.intents
+        androidTestImplementation(libs.androidx.test.espresso.contrib) {
+            // Its accessibility dependency brings protobuf-lite 3.0.1, which shadows Firebase's runtime.
+            exclude group: 'com.google.protobuf', module: 'protobuf-lite'
+        }
+        androidTestImplementation libs.androidx.test.espresso.web
+        // Mockito
+        androidTestImplementation libs.mockito.mockitoAndroid
+        androidTestImplementation libs.mockito.mockitoKotlin
+        // Dagger mock
+        androidTestImplementation libs.hilt.testing
+        kaptAndroidTest libs.hilt.compiler
+        // Resolve conflits between apks
+        androidTestImplementation libs.google.material
+        androidTestImplementation libs.androidx.recyclerView
     }
-    androidTestImplementation libs.androidx.test.espresso.web
-    // Mockito
-    androidTestImplementation libs.mockito.mockitoAndroid
-    androidTestImplementation libs.mockito.mockitoKotlin
-    // Dagger mock
-    androidTestImplementation libs.hilt.testing
-    kaptAndroidTest libs.hilt.compiler
-    // Resolve conflits between apks
-    androidTestImplementation libs.google.material
-    androidTestImplementation libs.androidx.recyclerView
     // Crashlytics
     implementation(libs.google.crashlytics)
 
@@ -258,6 +287,26 @@ tasks.withType(JavaCompile).configureEach {
             options.annotationProcessorPath = files(options.annotationProcessorPath.filter {
                 !it.name.contains('butterknife-compiler')
             })
+        }
+    }
+}
+
+if (project.hasProperty('r8Verification')) {
+    // Instrumentation startup crashes can otherwise appear as successful zero-test runs.
+    tasks.configureEach { task ->
+        if (task.name == 'connectedProdR8VerificationAndroidTest') {
+            task.doLast {
+                def reports = fileTree(layout.buildDirectory.dir(
+                        'outputs/androidTest-results/connected/r8verification/flavors/prod')) {
+                    include '**/TEST-*.xml'
+                }
+                def testCount = reports.files.sum {
+                    new groovy.xml.XmlSlurper().parse(it).@tests.toInteger()
+                } ?: 0
+                if (testCount < 5) {
+                    throw new GradleException("Expected at least 5 R8 smoke tests, but ran ${testCount}.")
+                }
+            }
         }
     }
 }
