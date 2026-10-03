@@ -1,8 +1,11 @@
 package teamcityapp.buildlogic
 
+import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.file.DuplicatesStrategy
+import org.gradle.api.tasks.bundling.Zip
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
@@ -13,7 +16,16 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
             configureUnitTestCoverage()
-            tasks.register("generateCodeCoverageReport", JacocoReport::class.java) {
+            val jacocoVersion = extensions.getByType(VersionCatalogsExtension::class.java)
+                .named("libs").findVersion("jacoco").get().requiredVersion
+            pluginManager.withPlugin("com.android.application") {
+                extensions.configure(BaseExtension::class.java) {
+                    jacoco.version = jacocoVersion
+                    buildTypes.getByName("debug").enableAndroidTestCoverage =
+                        providers.gradleProperty("instrumentationCoverage").isPresent
+                }
+            }
+            val coverageReport = tasks.register("generateCodeCoverageReport", JacocoReport::class.java) {
                 group = "code quality"
                 description = "Generate Jacoco coverage reports"
                 reports {
@@ -65,7 +77,7 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 executionData.setFrom(rootProject.subprojects.map { module ->
                     module.fileTree(module.layout.buildDirectory) {
                         include(
-                            "jacoco/*.exec", "coverage.ec",
+                            "jacoco/*.exec",
                             "outputs/unit_test_code_coverage/debugUnitTest/*.exec",
                             "outputs/unit_test_code_coverage/mockDebugUnitTest/*.exec"
                         )
@@ -73,6 +85,29 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 })
                 doLast {
                     logger.lifecycle("file://${reports.html.outputLocation.get().asFile}/index.html")
+                }
+            }
+            val jacocoCli = configurations.create("jacocoCli") {
+                isCanBeConsumed = false
+                isCanBeResolved = true
+            }
+            dependencies.add(jacocoCli.name, "org.jacoco:org.jacoco.cli:$jacocoVersion:nodeps")
+            tasks.register("prepareInstrumentationCoverageInputs", Zip::class.java) {
+                group = "code quality"
+                description = "Export matching classes, sources and JaCoCo CLI for Marathon coverage"
+                archiveFileName.set("instrumentation-coverage-inputs.zip")
+                destinationDirectory.set(layout.buildDirectory.dir("coverage/instrumentation-inputs"))
+                duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+                // Read outputs after the APK producers without running tests or a report.
+                mustRunAfter(tasks.matching { it.name == "assembleMockDebugAndroidTest" })
+                from(provider { coverageReport.get().classDirectories }) {
+                    into("classes")
+                    include("**/*.class")
+                }
+                from(provider { coverageReport.get().sourceDirectories }) { into("sources") }
+                from(jacocoCli) {
+                    into("tools")
+                    rename { "jacococli.jar" }
                 }
             }
         }

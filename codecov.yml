@@ -5,4 +5,12 @@ coverage:
       default:
         target: 1%
 comment:
-  behavior: new
+  behavior: default
+# Both reports join the commit total; skipped instrumentation is not carried forward.
+flags:
+  unit:
+    joined: true
+    carryforward: false
+  instrumentation:
+    joined: true
+    carryforward: false

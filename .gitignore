@@ -33,3 +33,6 @@ app/**/google-services.json
 app/prod/release
 
 .kotlin
+
+# Python verification scripts
+__pycache__/

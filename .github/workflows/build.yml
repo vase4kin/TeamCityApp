@@ -63,7 +63,7 @@ jobs:
         run: |
           tasks=(:app:assembleMockDebug)
           if [[ "$RUN_MARATHON_TESTS" == 'true' ]]; then
-            tasks+=(:app:assembleMockDebugAndroidTest)
+            tasks=(-PinstrumentationCoverage "${tasks[@]}" :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs)
           fi
           ./gradlew "${tasks[@]}" --stacktrace
 
@@ -73,6 +73,14 @@ jobs:
         with:
           name: mock-test-apks
           path: app/build/outputs/apk
+          if-no-files-found: error
+
+      - name: Upload instrumentation coverage inputs
+        if: env.RUN_MARATHON_TESTS == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: instrumentation-coverage-inputs
+          path: app/build/coverage/instrumentation-inputs/instrumentation-coverage-inputs.zip
           if-no-files-found: error
 
   build-minified:
@@ -190,7 +198,9 @@ jobs:
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
       - name: Run unit tests and generate coverage
-        run: ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest :app:generateCodeCoverageReport --stacktrace
+        run: |
+          python3 -m unittest discover -s scripts/tests
+          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest :app:generateCodeCoverageReport --stacktrace
 
       - name: Upload unit-test results
         if: always()
@@ -212,6 +222,9 @@ jobs:
 
   marathon-tests:
     name: Marathon Cloud (${{ matrix.label }})
+    permissions:
+      contents: read
+      id-token: write
     needs: [build, build-minified]
     # Paused by default; set ENABLE_MARATHON_TESTS to 'true' to build and run test APKs.
     if: needs.build.outputs.marathon-enabled == 'true'
@@ -269,23 +282,29 @@ jobs:
             exit 1
           fi
 
+      - name: Set up Marathon Cloud CLI
+        if: env.RUN_MARATHON_TEST == 'true'
+        uses: MarathonLabs/setup-marathon-cloud@2.0.1
+        with:
+          version: "1.0.64"
+
       - name: Run instrumentation tests with Marathon Cloud
         if: env.RUN_MARATHON_TEST == 'true'
-        uses: MarathonLabs/action-test@1.0.14
-        with:
-          apiKey: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
-          version: "1.0.64"
-          application: app/build/outputs/apk/mock/debug/app-mock-debug.apk
-          testApplication: app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
-          platform: android
-          device: phone
-          osVersion: ${{ matrix.os-version }}
-          systemImage: google_apis
-          wait: true
-          output: app/build/github-actions/marathon/${{ matrix.label }}
-          branch: ${{ github.head_ref || github.ref_name }}
-          link: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-          name: TeamCityApp ${{ matrix.label }} at ${{ github.sha }}
+        env:
+          MARATHON_CLOUD_API_KEY: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
+          MARATHON_OS_VERSION: ${{ matrix.os-version }}
+          MARATHON_LABEL: ${{ matrix.label }}
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          marathon-cloud run android \
+            --application app/build/outputs/apk/mock/debug/app-mock-debug.apk \
+            --test-application app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk \
+            --device phone --os-version "$MARATHON_OS_VERSION" --system-image google_apis \
+            --wait true --code-coverage true --no-progress-bars \
+            --output "app/build/github-actions/marathon/$MARATHON_LABEL" \
+            --branch "$HEAD_BRANCH" \
+            --link "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}" \
+            --name "TeamCityApp $MARATHON_LABEL at ${{ github.sha }}"
 
       - name: Run minified R8 smoke tests with Marathon Cloud
         if: env.RUN_MARATHON_TEST == 'true' && matrix.label == 'android-14'
@@ -312,6 +331,51 @@ jobs:
           name: marathon-cloud-r8
           path: app/build/github-actions/marathon/r8
           if-no-files-found: warn
+
+      - name: Set up Java for coverage
+        if: env.RUN_MARATHON_TEST == 'true'
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download instrumentation coverage inputs
+        if: env.RUN_MARATHON_TEST == 'true'
+        uses: actions/download-artifact@v7
+        with:
+          name: instrumentation-coverage-inputs
+          path: instrumentation-coverage-input
+
+      - name: Generate instrumentation coverage report
+        if: env.RUN_MARATHON_TEST == 'true'
+        env:
+          MARATHON_LABEL: ${{ matrix.label }}
+        run: |
+          unzip -q instrumentation-coverage-input/instrumentation-coverage-inputs.zip -d instrumentation-coverage-input
+          python3 scripts/generate-instrumentation-coverage.py \
+            --inputs instrumentation-coverage-input \
+            --execution-data "app/build/github-actions/marathon/$MARATHON_LABEL" \
+            --output "app/build/coverage/instrumentation/$MARATHON_LABEL.xml"
+
+      - name: Upload instrumentation coverage report
+        if: env.RUN_MARATHON_TEST == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: instrumentation-coverage-${{ matrix.label }}
+          path: app/build/coverage/instrumentation/${{ matrix.label }}.xml
+          if-no-files-found: error
+
+      - name: Upload instrumentation coverage to Codecov
+        if: env.RUN_MARATHON_TEST == 'true'
+        uses: codecov/codecov-action@v7
+        with:
+          files: app/build/coverage/instrumentation/${{ matrix.label }}.xml
+          disable_search: true
+          flags: instrumentation
+          name: instrumentation-${{ matrix.label }}
+          override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          fail_ci_if_error: true
+          use_oidc: true
 
       - name: Upload Marathon Cloud artifacts
         if: env.RUN_MARATHON_TEST == 'true' && always()
@@ -346,5 +410,9 @@ jobs:
         uses: codecov/codecov-action@v7
         with:
           files: coverage-input/app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml
+          disable_search: true
+          flags: unit
+          name: unit
+          override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
           fail_ci_if_error: true
           use_oidc: true

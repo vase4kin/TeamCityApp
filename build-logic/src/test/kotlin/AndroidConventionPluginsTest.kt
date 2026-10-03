@@ -67,6 +67,8 @@ class AndroidConventionPluginsTest {
             "library/build/tmp/kotlin-classes/debug/R.class",
             "library/build/tmp/kotlin-classes/debug/dagger/Generated.class",
             "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/androidx/databinding/DataBindingComponent.class",
+            "app/jacococli.jar",
+            "app/src/main/java/example/App.java",
             "app/build/jacoco/sampleTest.exec",
             "library/build/coverage.ec",
             "library/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
@@ -86,6 +88,11 @@ class AndroidConventionPluginsTest {
             plugins {
                 id("teamcityapp.android.coverage")
             }
+            configurations.named("jacocoCli") {
+                check(dependencies.single().version == "0.8.14")
+                dependencies.clear()
+                dependencies.add(project.dependencies.create(files("jacococli.jar")))
+            }
             val sampleTest = tasks.register<Test>("sampleTest")
             tasks.register("transformMockDebugClassesWithAsm")
             tasks.register("verifyConventions") {
@@ -101,7 +108,19 @@ class AndroidConventionPluginsTest {
                     check(orderedTasks.contains(":app:transformMockDebugClassesWithAsm"))
                     check(orderedTasks.contains(":library:compileDebugKotlin"))
                     check(!gradle.taskGraph.hasTask(":app:sampleTest"))
-                    check(report.executionData.files.map { it.name }.toSet() == setOf("sampleTest.exec", "coverage.ec", "testDebugUnitTest.exec"))
+                    check(report.executionData.files.map { it.name }.toSet() == setOf("sampleTest.exec", "testDebugUnitTest.exec"))
+                    val inputs = tasks.named<org.gradle.api.tasks.bundling.Zip>("prepareInstrumentationCoverageInputs").get()
+                    check(!inputs.taskDependencies.getDependencies(inputs).contains(report))
+                    check(inputs.source.files.map { it.name }.containsAll(listOf("App.class", "Library.class")))
+                    check(inputs.source.files.none { it.extension in listOf("ec", "exec") })
+                    check(inputs.archiveFileName.get() == "instrumentation-coverage-inputs.zip")
+                    check(!gradle.taskGraph.hasTask(":app:generateCodeCoverageReport"))
+                    java.util.zip.ZipFile(inputs.archiveFile.get().asFile).use { archive ->
+                        check(archive.getEntry("classes/App.class") != null)
+                        check(archive.getEntry("classes/OriginalApp.class") == null)
+                        check(archive.getEntry("tools/jacococli.jar") != null)
+                        check(archive.getEntry("sources/example/App.java") != null)
+                    }
                     check(report.sourceDirectories.files.contains(rootProject.file("library/src/main/java")))
                     check(report.reports.xml.outputLocation.get().asFile == layout.buildDirectory.file(
                         "coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml"
@@ -113,7 +132,31 @@ class AndroidConventionPluginsTest {
             }
             """.trimIndent()
         )
-        verify(projectDir, ":app:verifyConventions")
+        verify(projectDir, ":app:verifyConventions", ":app:prepareInstrumentationCoverageInputs")
+    }
+
+    @Test
+    fun `instrumentation coverage is opt-in for debug and preserves release builds`() {
+        val projectDir = createProject("instrumentation-coverage")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            plugins {
+                id("teamcityapp.android.application")
+                id("teamcityapp.android.coverage")
+            }
+            android { namespace = "teamcityapp.conventiontest" }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(android.buildTypes.getByName("debug").enableAndroidTestCoverage ==
+                        providers.gradleProperty("instrumentationCoverage").isPresent)
+                    check(!android.buildTypes.getByName("release").enableAndroidTestCoverage)
+                    check(android.jacoco.version == "0.8.14")
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+        verify(projectDir, "verifyConventions", "-PinstrumentationCoverage")
     }
 
     private fun verifyConventions(kind: String) {
@@ -205,11 +248,11 @@ class AndroidConventionPluginsTest {
         return projectDir
     }
 
-    private fun verify(projectDir: File, task: String = "verifyConventions") {
+    private fun verify(projectDir: File, task: String = "verifyConventions", vararg arguments: String) {
         val result = GradleRunner.create()
             .withProjectDir(projectDir)
             .withPluginClasspath()
-            .withArguments(task, "--stacktrace")
+            .withArguments(*arguments, task, "--stacktrace")
             .build()
         assertEquals(TaskOutcome.SUCCESS, result.task(if (task.startsWith(":")) task else ":$task")?.outcome)
     }
