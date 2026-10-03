@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 class AndroidBaseConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
+        configureUnitTestCoverage()
         listOf("com.android.application", "com.android.library").forEach { pluginId ->
             pluginManager.withPlugin(pluginId) {
                 extensions.configure(BaseExtension::class.java) {

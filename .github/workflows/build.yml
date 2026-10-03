@@ -6,17 +6,122 @@ on:
       - dev
   pull_request:
   workflow_dispatch:
+    inputs:
+      run_ui_tests:
+        description: Override changed + smoke with the selected UI suite
+        type: boolean
+        default: false
+      suite:
+        description: UI suite override (otherwise changed + smoke runs)
+        type: choice
+        default: full
+        options: [full, smoke, single, random]
+      test_name:
+        description: 'Single suite: package.TestClass#testMethod'
+        type: string
+        default: ''
+      random_seed:
+        description: 'Random suite: optional seed to repeat a selection'
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Cancel superseded PR validation, but preserve every manual/default-branch UI run.
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build-tests:
-    name: Build test APKs
+  test-policy:
+    name: Test policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run_ui_tests: ${{ steps.policy.outputs.run_ui_tests }}
+      suite: ${{ steps.policy.outputs.suite }}
+      collect_coverage: ${{ steps.policy.outputs.collect_coverage }}
+      matrix: ${{ steps.policy.outputs.matrix }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          # The changed suite compares the complete PR branch with its merge base.
+          fetch-depth: 0
+
+      - name: Select UI test policy and suite
+        id: policy
+        run: python3 scripts/marathon-ci.py policy --selection-dir marathon-selection
+
+      - name: Upload UI test selection
+        if: steps.policy.outputs.run_ui_tests == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-test-selection
+          path: marathon-selection
+          if-no-files-found: error
+
+  build:
+    name: Build
+    needs: test-policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: enhanced
+          # Same-repository PR reruns can reuse their compiled task outputs.
+          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+
+      - name: Copy mock Google services configuration
+        run: |
+          mkdir -p app/src/mock/debug app/src/prod/debug
+          cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
+          cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
+
+      - name: Build mock application
+        if: needs.test-policy.outputs.run_ui_tests != 'true'
+        run: ./gradlew :app:assembleMockDebug --stacktrace
+
+      - name: Build mock application and instrumentation APK without coverage
+        if: needs.test-policy.outputs.run_ui_tests == 'true' && needs.test-policy.outputs.collect_coverage != 'true'
+        run: ./gradlew :app:assembleMockDebug :app:assembleMockDebugAndroidTest --stacktrace
+
+      - name: Build mock application and instrumentation APK with coverage
+        if: needs.test-policy.outputs.run_ui_tests == 'true' && needs.test-policy.outputs.collect_coverage == 'true'
+        run: |
+          ./gradlew -PinstrumentationCoverage :app:assembleMockDebug :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs --stacktrace
+
+      - name: Upload mock test APKs
+        if: needs.test-policy.outputs.run_ui_tests == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: mock-test-apks
+          path: app/build/outputs/apk
+          if-no-files-found: error
+
+      - name: Upload instrumentation coverage inputs
+        if: needs.test-policy.outputs.collect_coverage == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: instrumentation-coverage-inputs
+          path: app/build/coverage/instrumentation-inputs/instrumentation-coverage-inputs.zip
+          if-no-files-found: error
+
+  build-minified:
+    name: Build minified
+    needs: test-policy
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -33,21 +138,20 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          cache-provider: basic
+          cache-provider: enhanced
+          # Same-repository PR reruns can reuse their compiled task outputs.
+          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
 
-      - name: Copy mock Google services configuration
-        run: |
-          mkdir -p app/src/mock/debug app/src/prod/debug
-          cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
-          cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
+      - name: Prepare R8 verification configuration
+        run: python3 scripts/prepare-r8-verification.py
 
-      - name: Build application and test APKs
-        run: ./gradlew assembleMockDebug assembleMockDebugAndroidTest assembleMockDebugUnitTest --stacktrace
+      - name: Build minified application
+        if: needs.test-policy.outputs.suite != 'full'
+        run: ./gradlew -Pr8Verification :app:assembleProdR8Verification --stacktrace
 
-      - name: Build minified application and R8 smoke-test APKs
-        run: |
-          python3 scripts/prepare-r8-verification.py
-          ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest --stacktrace
+      - name: Build minified application and R8 smoke-test APK
+        if: needs.test-policy.outputs.suite == 'full'
+        run: ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest --stacktrace
 
       - name: Upload R8 diagnostics
         if: always()
@@ -57,15 +161,16 @@ jobs:
           path: app/build/outputs/mapping/prodR8Verification
           if-no-files-found: warn
 
-      - name: Upload test APKs
+      - name: Upload R8 test APKs
+        if: needs.test-policy.outputs.suite == 'full'
         uses: actions/upload-artifact@v7
         with:
-          name: test-apks
+          name: r8-test-apks
           path: app/build/outputs/apk
           if-no-files-found: error
 
   checks:
-    name: Static checks
+    name: Checks
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -82,7 +187,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          cache-provider: basic
+          cache-provider: enhanced
+          # Same-repository PR reruns can reuse their compiled task outputs.
+          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
 
       - name: Copy mock Google services configuration
         run: |
@@ -90,7 +197,7 @@ jobs:
           cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
-      - name: Run static checks
+      - name: Run checks
         run: ./gradlew lintMockDebug --stacktrace
 
       - name: Upload check reports
@@ -103,7 +210,9 @@ jobs:
 
   unit-tests:
     name: Unit tests
-    needs: build-tests
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -120,7 +229,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          cache-provider: basic
+          cache-provider: enhanced
+          # Same-repository PR reruns can reuse their compiled task outputs.
+          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
 
       - name: Copy mock Google services configuration
         run: |
@@ -128,19 +239,10 @@ jobs:
           cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
-      - name: Run unit tests
-        run: ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest --stacktrace
-
-      - name: Archive unit-test coverage data
-        if: always()
+      - name: Run unit tests and generate coverage
         run: |
-          # JaCoCo needs compiled classes as well as execution data on the coverage runner.
-          find . -type f \( \
-            -path '*/build/jacoco/*.exec' -o \
-            -path '*/build/intermediates/javac/*/*.class' -o \
-            -path '*/build/tmp/kotlin-classes/*/*.class' \
-          \) -print > unit-test-coverage-files.txt
-          tar -czf unit-test-coverage.tar.gz --files-from unit-test-coverage-files.txt
+          python3 -m unittest discover -s scripts/tests
+          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest :app:generateCodeCoverageReport --stacktrace
 
       - name: Upload unit-test results
         if: always()
@@ -149,175 +251,6 @@ jobs:
           name: unit-test-results
           path: '**/build/test-results/**/*.xml'
           if-no-files-found: warn
-
-      - name: Upload unit-test coverage data
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: unit-test-coverage
-          path: unit-test-coverage.tar.gz
-          if-no-files-found: error
-
-  marathon-tests:
-    name: Marathon Cloud (${{ matrix.label }})
-    needs: build-tests
-    # Paused by default; set the repository variable ENABLE_MARATHON_TESTS to 'true' to resume.
-    if: >-
-      ${{
-        vars.ENABLE_MARATHON_TESTS == 'true' &&
-        !startsWith(github.head_ref || github.ref_name, 'chore-') &&
-        (github.event_name != 'pull_request' ||
-        github.event.pull_request.head.repo.full_name == github.repository)
-      }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - label: android-14
-            os-version: "14"
-            release-only: false
-          - label: android-13
-            os-version: "13"
-            release-only: false
-          - label: android-12
-            os-version: "12"
-            release-only: true
-          - label: android-11
-            os-version: "11"
-            release-only: true
-          - label: android-10
-            os-version: "10"
-            release-only: true
-    env:
-      RUN_MARATHON_TEST: >-
-        ${{ matrix.release-only == false || startsWith(github.head_ref || github.ref_name, 'release-') }}
-
-    steps:
-      - name: Check out repository
-        if: env.RUN_MARATHON_TEST == 'true'
-        uses: actions/checkout@v7
-
-      - name: Download test APKs
-        if: env.RUN_MARATHON_TEST == 'true'
-        uses: actions/download-artifact@v7
-        with:
-          name: test-apks
-          path: app/build/outputs/apk
-
-      - name: Verify Marathon Cloud API token
-        if: env.RUN_MARATHON_TEST == 'true'
-        env:
-          MARATHON_CLOUD_API_TOKEN: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
-        run: |
-          if [[ -z "$MARATHON_CLOUD_API_TOKEN" ]]; then
-            echo "MARATHON_CLOUD_API_TOKEN secret is required." >&2
-            exit 1
-          fi
-
-      - name: Run instrumentation tests with Marathon Cloud
-        if: env.RUN_MARATHON_TEST == 'true'
-        uses: MarathonLabs/action-test@1.0.14
-        with:
-          apiKey: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
-          version: "1.0.64"
-          application: app/build/outputs/apk/mock/debug/app-mock-debug.apk
-          testApplication: app/build/outputs/apk/androidTest/mock/debug/app-mock-debug-androidTest.apk
-          platform: android
-          device: phone
-          osVersion: ${{ matrix.os-version }}
-          systemImage: google_apis
-          wait: true
-          output: app/build/github-actions/marathon/${{ matrix.label }}
-          branch: ${{ github.head_ref || github.ref_name }}
-          link: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-          name: TeamCityApp ${{ matrix.label }} at ${{ github.sha }}
-
-      - name: Run minified R8 smoke tests with Marathon Cloud
-        if: env.RUN_MARATHON_TEST == 'true' && matrix.label == 'android-14'
-        uses: MarathonLabs/action-test@1.0.14
-        with:
-          apiKey: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
-          version: "1.0.64"
-          application: app/build/outputs/apk/prod/r8Verification/app-prod-r8Verification.apk
-          testApplication: app/build/outputs/apk/androidTest/prod/r8Verification/app-prod-r8Verification-androidTest.apk
-          platform: android
-          device: phone
-          osVersion: "14"
-          systemImage: google_apis
-          wait: true
-          output: app/build/github-actions/marathon/r8
-          branch: ${{ github.head_ref || github.ref_name }}
-          link: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-          name: TeamCityApp R8 smoke tests at ${{ github.sha }}
-
-      - name: Upload R8 smoke-test artifacts
-        if: env.RUN_MARATHON_TEST == 'true' && matrix.label == 'android-14' && always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: marathon-cloud-r8
-          path: app/build/github-actions/marathon/r8
-          if-no-files-found: warn
-
-      - name: Upload Marathon Cloud artifacts
-        if: env.RUN_MARATHON_TEST == 'true' && always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: marathon-cloud-${{ matrix.label }}
-          path: app/build/github-actions/marathon/${{ matrix.label }}
-          if-no-files-found: warn
-
-  coverage:
-    name: Coverage
-    permissions:
-      contents: read
-      id-token: write
-    needs:
-      - unit-tests
-      - marathon-tests
-    if: >-
-      ${{
-        !cancelled() &&
-        needs.unit-tests.result == 'success' &&
-        (needs.marathon-tests.result == 'success' || needs.marathon-tests.result == 'skipped') &&
-        !startsWith(github.head_ref || github.ref_name, 'chore-')
-      }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
-        with:
-          cache-provider: basic
-
-      - name: Copy mock Google services configuration
-        run: |
-          mkdir -p app/src/mock/debug app/src/prod/debug
-          cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
-          cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
-
-      - name: Download unit-test coverage data
-        uses: actions/download-artifact@v7
-        with:
-          name: unit-test-coverage
-          path: coverage-input/unit
-
-      - name: Restore coverage data
-        run: tar -xzf coverage-input/unit/unit-test-coverage.tar.gz
-
-      - name: Generate coverage report
-        run: ./gradlew :app:generateCodeCoverageReport --stacktrace
 
       - name: Upload coverage report
         if: always()
@@ -329,9 +262,141 @@ jobs:
             build/coverage-report
           if-no-files-found: warn
 
-      - name: Upload coverage to Codecov
+      - name: Upload unit coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           files: app/build/coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml
+          disable_search: true
+          flags: unit
+          name: unit
+          override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
           fail_ci_if_error: true
           use_oidc: true
+
+  marathon-tests:
+    name: Marathon Cloud (${{ matrix.label }})
+    permissions:
+      contents: read
+      id-token: write
+    needs: [test-policy, build, build-minified]
+    if: needs.test-policy.outputs.run_ui_tests == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.test-policy.outputs.matrix) }}
+    env:
+      MARATHON_OS_VERSION: "17"
+      MARATHON_LABEL: ${{ matrix.label }}
+      MARATHON_SUITE: ${{ needs.test-policy.outputs.suite }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Download UI test selection
+        uses: actions/download-artifact@v7
+        with:
+          name: ui-test-selection
+          path: marathon-selection
+
+      - name: Download test APKs
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: app/build/outputs/apk
+
+      - name: Verify Marathon Cloud API token
+        env:
+          MARATHON_CLOUD_API_TOKEN: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
+        run: |
+          if [[ -z "$MARATHON_CLOUD_API_TOKEN" ]]; then
+            echo "MARATHON_CLOUD_API_TOKEN secret is required." >&2
+            exit 1
+          fi
+
+      - name: Set up Marathon Cloud CLI
+        uses: MarathonLabs/setup-marathon-cloud@2.0.1
+        with:
+          version: "1.0.64"
+
+      - name: Run tests with Marathon Cloud
+        env:
+          MARATHON_CLOUD_API_KEY: ${{ secrets.MARATHON_CLOUD_API_TOKEN }}
+          MARATHON_APPLICATION: ${{ matrix.application }}
+          MARATHON_TEST_APPLICATION: ${{ matrix.test-application }}
+          MARATHON_COVERAGE: ${{ matrix.coverage }}
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: |
+          filter_args=()
+          if [[ "$MARATHON_LABEL" == "instrumentation" && "$MARATHON_SUITE" != "full" ]]; then
+            filter_args=(--filter-file marathon-selection/filter.yaml)
+          fi
+          marathon-cloud run android \
+            "${filter_args[@]}" \
+            --application "$MARATHON_APPLICATION" \
+            --test-application "$MARATHON_TEST_APPLICATION" \
+            --device phone --os-version "$MARATHON_OS_VERSION" --system-image google_apis \
+            --wait true --code-coverage "$MARATHON_COVERAGE" --no-progress-bars \
+            --output "app/build/github-actions/marathon/$MARATHON_LABEL" \
+            --branch "$HEAD_BRANCH" \
+            --link "${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}" \
+            --name "TeamCityApp $MARATHON_LABEL at ${{ github.sha }}"
+
+      - name: Verify selected tests ran successfully
+        run: |
+          python3 scripts/marathon-ci.py verify \
+            --results "app/build/github-actions/marathon/$MARATHON_LABEL" \
+            --selection marathon-selection/selection.json --label "$MARATHON_LABEL"
+
+      - name: Set up Java for coverage
+        if: matrix.coverage
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Download instrumentation coverage inputs
+        if: matrix.coverage
+        uses: actions/download-artifact@v7
+        with:
+          name: instrumentation-coverage-inputs
+          path: instrumentation-coverage-input
+
+      - name: Generate instrumentation coverage report
+        if: matrix.coverage
+        run: |
+          unzip -q instrumentation-coverage-input/instrumentation-coverage-inputs.zip -d instrumentation-coverage-input
+          python3 scripts/generate-instrumentation-coverage.py \
+            --inputs instrumentation-coverage-input \
+            --execution-data "app/build/github-actions/marathon/$MARATHON_LABEL" \
+            --output "app/build/coverage/instrumentation/$MARATHON_LABEL.xml"
+
+      - name: Upload instrumentation coverage report
+        if: matrix.coverage
+        uses: actions/upload-artifact@v7
+        with:
+          name: instrumentation-coverage
+          path: app/build/coverage/instrumentation/${{ matrix.label }}.xml
+          if-no-files-found: error
+
+      - name: Upload instrumentation coverage to Codecov
+        # Sampled runs must not replace the full-suite carryforward baseline.
+        if: matrix.coverage && needs.test-policy.outputs.suite == 'full'
+        uses: codecov/codecov-action@v7
+        with:
+          files: app/build/coverage/instrumentation/${{ matrix.label }}.xml
+          disable_search: true
+          flags: instrumentation
+          name: instrumentation
+          override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          fail_ci_if_error: true
+          use_oidc: true
+
+      - name: Upload Marathon Cloud artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: marathon-cloud-${{ matrix.label }}
+          path: app/build/github-actions/marathon/${{ matrix.label }}
+          if-no-files-found: warn

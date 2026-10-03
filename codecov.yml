@@ -5,4 +5,13 @@ coverage:
       default:
         target: 1%
 comment:
-  behavior: new
+  behavior: default
+  show_carryforward_flags: true
+# Keep the latest complete report for each suite when that suite is not uploaded.
+flags:
+  unit:
+    joined: true
+    carryforward: true
+  instrumentation:
+    joined: true
+    carryforward: true

@@ -1,0 +1,23 @@
+{
+  "buildlog": {
+    "paths": ["app/src/*/res/layout/*build_log*", "app/src/mock/assets/*build_log*"],
+    "tests": ["com.github.vase4kin.teamcityapp.hilt.BuildLogViewLifecycleTest#*"]
+  },
+  "home": {
+    "paths": ["app/src/*/res/layout/activity_home.xml", "app/src/*/res/layout/*projects*"],
+    "tests": ["com.github.vase4kin.teamcityapp.hilt.PresenterReplacementTest#homeDisposesOldPresenterBeforeAccountReload"]
+  },
+  "buildlist": {"paths": ["app/src/*/res/layout/*build_list*"]},
+  "login": {"paths": ["app/src/*/res/layout/activity_login.xml"]},
+  "account": {"paths": ["app/src/*/res/layout/*create_account*"]},
+  "overview": {"paths": ["app/src/*/res/layout/*overview*"]},
+  "changes": {"paths": ["app/src/*/res/layout/*changes*"]},
+  "artifact": {"paths": ["app/src/*/res/layout/*artifact*"]},
+  "snapshot_dependencies": {"paths": ["app/src/*/res/layout/*snapshot_dependencies*"]},
+  "filter_builds": {"paths": ["app/src/*/res/layout/*branch_filter*"]},
+  "about": {"tests": ["com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#aboutInjectsAndRecreates"]},
+  "change-details": {"tests": ["com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#changeDetailsInjectsAndRecreates"]},
+  "test-details": {"tests": ["com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#testDetailsInjectsAndRecreates"]},
+  "test_details": {"tests": ["com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#testDetailsInjectsAndRecreates"]},
+  "settings": {"tests": ["com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#settingsInjectsAndRecreates"]}
+}
