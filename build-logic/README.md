@@ -97,14 +97,18 @@ every branch, and its upload does not wait for APK builds or instrumentation
 tests. The report artifact includes XML and HTML.
 
 Both mock debug and minified production verification applications are built on
-every invocation. Same-repository PR validation runs changed-feature
-instrumentation tests plus the five-test smoke suite when application, Android
-test, or build inputs change. Documentation, CI-only, housekeeping, and empty
-diffs skip UI tests. PR comments
+every invocation. PR titles beginning with `chore:` or `chore(scope):` skip all
+automatic UI tests, even when Android inputs change. Other same-repository PRs
+run changed-feature instrumentation tests plus the five-test smoke suite when
+application, Android test, or build inputs change. Documentation, CI-only,
+housekeeping, and empty diffs skip UI tests. Title edits re-evaluate the policy.
+Body-only edits run ordinary validation but do not launch more UI tests or cancel
+ongoing validation. PR comments
 do not trigger CI. Fork PRs cannot receive the Marathon secret and skip paid UI
-tests. A push to the default branch (`dev`) runs both full UI suites when the push
-changes application, Android test, or build inputs. Documentation and CI-only
-merges skip both suites. This is not a pre-merge gate.
+tests. A push to the default branch (`dev`) runs both full UI suites when Android
+inputs change unless every incoming commit has a valid chore subject. This skips
+chore squash merges and multiple chore commits, but a mixed `feat`/`fix`/`chore`
+push still runs both suites. This is not a pre-merge gate.
 
 Manual dispatch defaults to changed + smoke. Check **Override changed + smoke
 with the selected UI suite** to run one of the existing four manual choices.
@@ -115,7 +119,11 @@ The policy job compares the entire PR head with its base using a merge-base diff
 including both paths of renames and deleted files. Default-branch pushes compare
 the event's `before` and `after` tips directly, covering every commit in a push
 and changes removed by a force push. Manual changed runs compare with the default
-branch. It discovers current non-ignored methods from changed
+branch. Push classification reads every commit subject between the event tips;
+it does not classify a whole push by its final commit. Force pushes affecting
+Android inputs preserve full validation because they can also remove app changes.
+Invalid chore prefixes and breaking-change markers (`chore!:`) do not qualify for
+the chore exemption. It discovers current non-ignored methods from changed
 test classes and selects feature tests by source-folder/package conventions.
 `scripts/marathon-changes.json` maps resource paths and cross-package tests, such
 as build-log lifecycle tests under Hilt. Device validation is limited to
@@ -124,8 +132,9 @@ non-Markdown files under `app/`, `features/`, `libraries/`, `build-logic/`, and
 mock Google Services configurations. Changes only to documentation, workflows,
 CI scripts and their Python tests, or other repository files skip instrumentation,
 including smoke tests, and produce no selection artifact. Relevant changes
-always include smoke tests, and selections are deduplicated. Explicit manual
-suite overrides still run regardless of the changed files. Shared
+always include smoke tests when the chore exemption does not apply, and selections
+are deduplicated. Explicit manual suite overrides still run regardless of chore
+titles or changed files. Shared
 or unmapped application inputs, or an unavailable PR/manual diff baseline, broaden
 the selection to all eligible mock instrumentation tests. An unavailable push
 baseline (including a newly created branch) preserves both full UI suites.

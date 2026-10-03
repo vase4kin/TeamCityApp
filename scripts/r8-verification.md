@@ -32,7 +32,8 @@ interceptor; no TeamCity server is needed.
 
 CI always builds the minified verification application. It also builds the R8
 test APK and runs it on Android OS version 17 when the full UI suite is selected:
-on default-branch pushes affecting application, Android test, or build inputs,
+on default-branch pushes affecting application, Android test, or build inputs
+unless every incoming commit is a valid chore (force pushes still run),
 or manual dispatch with the suite override checked and
 `suite: full`. Changed + smoke PR validation and sampled mock instrumentation runs omit
 R8 test APK compilation and paid R8 execution. The full Marathon matrix runs R8
