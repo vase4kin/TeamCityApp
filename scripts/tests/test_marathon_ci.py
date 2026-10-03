@@ -1,4 +1,5 @@
 import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -17,7 +18,7 @@ spec.loader.exec_module(ci)
 
 
 class MarathonPolicyTest(unittest.TestCase):
-    def test_every_same_repository_pr_runs_changed_and_smoke(self):
+    def test_same_repository_pr_is_eligible_for_changed_selection_regardless_of_title(self):
         for title in ("chore: update docs", "chore(ci): tune CI", "fix: correct login", "feat: add screen"):
             for action in ("opened", "synchronize", "reopened"):
                 with self.subTest(title=title, action=action):
@@ -29,7 +30,7 @@ class MarathonPolicyTest(unittest.TestCase):
         event = {"repository": {"full_name": "owner/app"}, "pull_request": {"head": {"repo": {"full_name": "fork/app"}}}}
         self.assertFalse(ci.policy("pull_request", "refs/pull/1/merge", event)["run"])
 
-    def test_default_branch_push_always_runs_both_full_suites(self):
+    def test_default_branch_push_is_eligible_for_full_validation(self):
         event = {"repository": {"default_branch": "dev"}, "head_commit": {"message": "chore(ci): update checks"}}
         self.assertEqual(ci.policy("push", "refs/heads/dev", event)["suite"], "full")
         self.assertFalse(ci.policy("push", "refs/heads/feature", event)["run"])
@@ -125,10 +126,62 @@ class ChangedSelectionTest(unittest.TestCase):
     def select(self, *paths):
         return ci.changed_selection(list(paths), self.catalog, self.available, self.index, self.mapping)
 
-    def test_docs_and_ci_only_changes_still_run_smoke(self):
-        result = self.select("README.md", "build-logic/README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py")
-        self.assertEqual(set(result["tests"]), self.smoke)
+    def test_ci_only_changes_skip_ui_tests_even_with_documentation(self):
+        result = self.select("README.md", "build-logic/README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py", "scripts/tests/test_marathon_ci.py", "scripts/marathon-tests.json", "codecov.yml")
+        self.assertEqual(result["tests"], [])
         self.assertEqual(result["fallback_paths"], [])
+
+    def test_repository_housekeeping_selects_no_ui_tests(self):
+        self.assertEqual(self.select(".gitignore", "LICENSE", "res/screenshots/feature-graphic.png")["tests"], [])
+
+    def test_documentation_only_and_empty_diffs_select_no_tests(self):
+        for paths in ((), ("README.md",), ("README.md", "build-logic/README.md")):
+            with self.subTest(paths=paths):
+                result = self.select(*paths)
+                self.assertEqual(result["tests"], [])
+                self.assertEqual(result["changed_files"], list(paths))
+                self.assertEqual(result["fallback_paths"], [])
+
+    def test_ci_and_documentation_do_not_suppress_tests_for_code_changes(self):
+        path = "app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt"
+        self.assertEqual(self.select("README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py", path)["tests"], self.select(path)["tests"])
+
+    def test_changed_policy_outputs_skip_ci_documentation_and_empty_diffs(self):
+        for name in ("pull_request", "workflow_dispatch"):
+            for paths in ([], ["README.md"], ["README.md", "build-logic/README.md"], [".github/workflows/build.yml"], ["build-logic/README.md", "scripts/marathon-ci.py", "scripts/tests/test_marathon_ci.py"]):
+                with self.subTest(name=name, paths=paths), tempfile.TemporaryDirectory() as directory:
+                    root = Path(directory)
+                    event = root / "event.json"
+                    event.write_text(json.dumps({"repository": {"full_name": "owner/app"}, "pull_request": {"head": {"repo": {"full_name": "owner/app"}}}}))
+                    env = dict(os.environ, GITHUB_EVENT_PATH=str(event), GITHUB_EVENT_NAME=name, GITHUB_REF="refs/pull/1/merge", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+                    with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch.object(ci, "changed_paths", return_value=paths), patch("sys.stdout", new_callable=io.StringIO):
+                        ci.main()
+                    outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+                    self.assertEqual(outputs["run_ui_tests"], "false")
+                    self.assertEqual(outputs["suite"], "none")
+                    self.assertEqual(outputs["collect_coverage"], "false")
+                    self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+                    self.assertFalse((root / "selection").exists())
+                    self.assertIn("No application, Android test, or build inputs changed", (root / "summary").read_text())
+                    for path in paths:
+                        self.assertIn(json.dumps(path), (root / "summary").read_text())
+
+    def test_changed_policy_keeps_smoke_for_code_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event = root / "event.json"
+            event.write_text(json.dumps({"pull_request": {}}))
+            env = dict(os.environ, GITHUB_EVENT_PATH=str(event), GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/1/merge", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+            paths = ["README.md", "app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt"]
+            with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch.object(ci, "changed_paths", return_value=paths), patch("sys.stdout", new_callable=io.StringIO):
+                ci.main()
+            outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+            self.assertEqual(outputs["run_ui_tests"], "true")
+            self.assertEqual(outputs["suite"], "changed")
+            self.assertEqual(outputs["collect_coverage"], "false")
+            self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation"])
+            selected = json.loads((root / "selection/selection.json").read_text())
+            self.assertEqual(selected["tests"], self.select(*paths)["tests"])
 
     def test_build_log_sources_resources_and_mock_data_select_screen_and_lifecycle(self):
         expected = self.smoke | {
@@ -158,7 +211,7 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertEqual(result["fallback_paths"], [])
 
     def test_shared_unmapped_and_helper_changes_broaden_mock_selection(self):
-        for path in ("libraries/storage/src/main/java/Store.kt", "app/src/main/java/com/github/vase4kin/teamcityapp/storage/SharedUserStorage.kt", "app/src/main/res/values/strings.xml", "app/src/main/java/com/github/vase4kin/teamcityapp/new_feature/View.kt", "app/src/androidTest/java/com/github/vase4kin/teamcityapp/helper/HiltApiTestRule.kt", "build-logic/src/main/kotlin/AndroidBaseConventionPlugin.kt"):
+        for path in ("libraries/storage/src/main/java/Store.kt", "app/src/main/java/com/github/vase4kin/teamcityapp/storage/SharedUserStorage.kt", "app/src/main/res/values/strings.xml", "app/src/main/java/com/github/vase4kin/teamcityapp/new_feature/View.kt", "app/src/androidTest/java/com/github/vase4kin/teamcityapp/helper/HiltApiTestRule.kt", "build-logic/src/main/kotlin/AndroidBaseConventionPlugin.kt", "gradle/libs.versions.toml", "gradle/wrapper/gradle-wrapper.properties", "build.gradle.kts", "settings.gradle.kts", "gradle.properties", "gradlew", "gradlew.bat", "mock-mockDebug-google-services.json", "mock-prodDebug-google-services.json"):
             with self.subTest(path=path):
                 result = self.select(path)
                 self.assertEqual(set(result["tests"]), self.available)
@@ -186,9 +239,16 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertIn("base...head", run.call_args.args[0])
         self.assertIn("--no-renames", run.call_args.args[0])
 
-    def test_default_and_smoke_commands_collect_no_device_coverage(self):
+    def test_push_diff_uses_before_and_after_tips_and_keeps_both_rename_paths(self):
+        event = {"before": "old-tip", "after": "new-tip"}
+        completed = subprocess.CompletedProcess([], 0, stdout=b"app/old/View.kt\0docs/View.md\0")
+        with patch.object(ci.subprocess, "run", return_value=completed) as run:
+            self.assertEqual(ci.changed_paths(ROOT, "push", event), ["app/old/View.kt", "docs/View.md"])
+        self.assertIn("old-tip..new-tip", run.call_args.args[0])
+        self.assertIn("--no-renames", run.call_args.args[0])
+
+    def test_explicit_smoke_command_collects_no_device_coverage(self):
         events = [
-            ("pull_request", "refs/pull/1/merge", {"pull_request": {"base": {"sha": "HEAD"}, "head": {"sha": "HEAD"}}}),
             ("workflow_dispatch", "refs/heads/example", {"inputs": {"run_ui_tests": "true", "suite": "smoke"}}),
         ]
         with tempfile.TemporaryDirectory() as directory:
@@ -217,6 +277,64 @@ class ChangedSelectionTest(unittest.TestCase):
             self.assertEqual(set(selected["tests"]), self.available)
             self.assertIn("fallback_reason", selected)
             self.assertIn("collect_coverage=false", (root / "output").read_text())
+
+
+class DefaultBranchPushTest(unittest.TestCase):
+    def run_policy(self, payload, paths=None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "event.json").write_text(json.dumps({"repository": {"default_branch": "dev"}, **payload}))
+            env = dict(os.environ, GITHUB_EVENT_PATH=str(root / "event.json"), GITHUB_EVENT_NAME="push", GITHUB_REF="refs/heads/dev", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+            with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch("sys.stdout", new_callable=io.StringIO):
+                if paths is None:
+                    ci.main()
+                else:
+                    with patch.object(ci, "changed_paths", return_value=paths):
+                        ci.main()
+            outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+            selection_file = root / "selection/selection.json"
+            selected = json.loads(selection_file.read_text()) if selection_file.exists() else None
+            return outputs, selected, (root / "summary").read_text(), (root / "selection/filter.yaml").exists()
+
+    def test_merging_this_ci_only_pr_skips_both_ui_suites(self):
+        paths = ["build-logic/README.md", "scripts/marathon-ci.py", "scripts/tests/test_marathon_ci.py", ".github/workflows/build.yml"]
+        outputs, selected, summary, _ = self.run_policy({"before": "old-tip", "after": "new-tip"}, paths)
+        self.assertEqual(outputs["run_ui_tests"], "false")
+        self.assertEqual(outputs["suite"], "none")
+        self.assertEqual(outputs["collect_coverage"], "false")
+        self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+        self.assertIsNone(selected)
+        self.assertIn("No application, Android test, or build inputs changed", summary)
+        self.assertIn("scripts/marathon-ci.py", summary)
+
+    def test_empty_push_skips_both_ui_suites(self):
+        outputs, selected, _, _ = self.run_policy({"before": "same-tip", "after": "same-tip"}, [])
+        self.assertEqual(outputs["run_ui_tests"], "false")
+        self.assertEqual(outputs["collect_coverage"], "false")
+        self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+        self.assertIsNone(selected)
+
+    def test_android_changes_across_a_push_run_both_full_suites(self):
+        # The CI-only tip must not hide Android changes earlier in the push.
+        paths = ["scripts/marathon-ci.py", "app/src/main/res/values/strings.xml"]
+        outputs, selected, _, has_filter = self.run_policy({"before": "old-tip", "after": "new-tip"}, paths)
+        self.assertEqual(outputs["run_ui_tests"], "true")
+        self.assertEqual(outputs["suite"], "full")
+        self.assertEqual(outputs["collect_coverage"], "true")
+        self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation", "r8"])
+        self.assertEqual(selected["tests"], [])
+        self.assertTrue(any(ci.ui_test_input(path) for path in selected["changed_files"]))
+        self.assertFalse(has_filter)
+
+    def test_unavailable_push_history_keeps_full_validation(self):
+        for payload in ({}, {"before": "missing-base", "after": "HEAD"}, {"before": "0" * 40, "after": "HEAD"}):
+            with self.subTest(payload=payload):
+                outputs, selected, _, _ = self.run_policy(payload)
+                self.assertEqual(outputs["run_ui_tests"], "true")
+                self.assertEqual(outputs["suite"], "full")
+                self.assertEqual(outputs["collect_coverage"], "true")
+                self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation", "r8"])
+                self.assertIn("fallback_reason", selected)
 
 
 class MarathonResultTest(unittest.TestCase):

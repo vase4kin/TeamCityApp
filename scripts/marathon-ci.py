@@ -32,7 +32,7 @@ R8 = {
 def policy(event_name, ref, event):
     default_branch = event.get("repository", {}).get("default_branch", "dev")
     if event_name == "push" and ref == f"refs/heads/{default_branch}":
-        return {"run": True, "suite": "full", "reason": "Full validation after a default-branch push"}
+        return {"run": True, "suite": "full", "reason": "Full validation for application or Android build changes pushed to the default branch"}
     if event_name == "workflow_dispatch":
         inputs = event.get("inputs", {})
         enabled = inputs.get("run_ui_tests", False) in (True, "true")
@@ -46,7 +46,7 @@ def policy(event_name, ref, event):
         repository = event.get("repository", {}).get("full_name")
         if head_repo != repository:
             return {"run": False, "suite": "none", "reason": "Fork PR has no Marathon API secret"}
-        return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for every PR"}
+        return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for application or Android build changes"}
     return {"run": False, "suite": "none", "reason": "No UI policy for this event"}
 
 
@@ -82,22 +82,38 @@ def source_tests(root):
 
 
 def changed_paths(root, event_name, event):
-    """Compare the complete PR branch, including both sides of renamed paths."""
+    """Compare the complete PR branch or push, retaining both rename paths."""
     if event_name == "pull_request":
         pr = event["pull_request"]
         base, head = pr["base"]["sha"], pr["head"]["sha"]
+        comparison = f"{base}...{head}"
+    elif event_name == "push":
+        # Compare the old and new branch tips, including every commit in a push.
+        # A merge-base diff would miss removals when a branch is force-pushed.
+        comparison = f"{event['before']}..{event['after']}"
     else:
         base = "origin/" + event.get("repository", {}).get("default_branch", "dev")
-        head = "HEAD"
+        comparison = f"{base}...HEAD"
     result = subprocess.run(
-        ["git", "diff", "--name-only", "--no-renames", "-z", f"{base}...{head}"],
+        ["git", "diff", "--name-only", "--no-renames", "-z", comparison],
         cwd=root, capture_output=True, check=True,
     )
     return [path for path in result.stdout.decode().split("\0") if path]
 
 
+def ui_test_input(path):
+    # CI scripts and workflows are checked without launching Android devices.
+    return not path.endswith(".md") and (
+        path.startswith(("app/", "features/", "libraries/", "build-logic/", "gradle/"))
+        or path in ("build.gradle.kts", "settings.gradle.kts", "gradle.properties", "gradlew", "gradlew.bat", "mock-mockDebug-google-services.json", "mock-prodDebug-google-services.json")
+    )
+
+
 def changed_selection(paths, catalog, available, index, mapping):
-    # Always include smoke; collect eligible methods dynamically from test classes.
+    # Only application, Android test, and build inputs need device validation.
+    inputs = [path for path in paths if ui_test_input(path)]
+    if not inputs:
+        return {"suite": "changed", "tests": [], "seed": "", "changed_files": paths, "features": [], "fallback_paths": []}
     smoke = selection("smoke", catalog, available)["tests"]
     selected = set(smoke)
     fallback = []
@@ -111,9 +127,7 @@ def changed_selection(paths, catalog, available, index, mapping):
             found.update(test for test in available if fnmatch.fnmatchcase(test, pattern))
         return found
 
-    for path in paths:
-        if path.endswith(".md"):
-            continue
+    for path in inputs:
         if path in index and index[path]:
             selected.update(index[path])
             continue
@@ -134,7 +148,7 @@ def changed_selection(paths, catalog, available, index, mapping):
         if resolved:
             selected.update(resolved)
             owners.update(matches)
-        elif path.startswith(("app/", "features/", "libraries/", "build-logic/", "gradle/")) or path in ("build.gradle.kts", "settings.gradle.kts", "gradle.properties"):
+        else:
             # Shared/unmapped application inputs can affect any instrumentation test.
             fallback.append(path)
     if fallback:
@@ -223,10 +237,7 @@ def main():
         return
     event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text())
     decision = policy(os.environ["GITHUB_EVENT_NAME"], os.environ["GITHUB_REF"], event)
-    collect_coverage = decision["suite"] in ("full", "single", "random")
-    mock = dict(MOCK, coverage=collect_coverage)
-    matrix = {"include": [mock, R8] if decision["suite"] == "full" else [mock]}
-    summary = f"UI tests: {decision['suite']} — {decision['reason']}\n"
+    selected = None
     if decision["run"]:
         inputs = event.get("inputs", {})
         seed = inputs.get("random_seed", "").strip() or ":".join(
@@ -235,18 +246,31 @@ def main():
         catalog = json.loads((ROOT / "scripts/marathon-tests.json").read_text())
         index = source_test_index(ROOT)
         available = set().union(*index.values())
-        if decision["suite"] == "changed":
-            selection("smoke", catalog, available)
+        if decision["suite"] == "changed" or os.environ["GITHUB_EVENT_NAME"] == "push":
             mapping = json.loads((ROOT / "scripts/marathon-changes.json").read_text())
             try:
                 paths = changed_paths(ROOT, os.environ["GITHUB_EVENT_NAME"], event)
-                selected = changed_selection(paths, catalog, available, index, mapping)
+                if decision["suite"] == "full":
+                    selected = {**selection("full", catalog, available), "changed_files": paths}
+                else:
+                    selected = changed_selection(paths, catalog, available, index, mapping)
+                if not any(ui_test_input(path) for path in paths):
+                    decision = {"run": False, "suite": "none", "reason": "No application, Android test, or build inputs changed"}
             except (subprocess.CalledProcessError, KeyError):
                 # Missing comparison history must not silently omit affected tests.
-                selected = {"suite": "changed", "tests": sorted(available), "seed": "", "fallback_reason": "Could not compare the base and head; selecting all mock instrumentation tests"}
+                if decision["suite"] == "full":
+                    selected = {**selection("full", catalog, available), "fallback_reason": "Could not compare the push before and after commits; running both full UI suites"}
+                else:
+                    selected = {"suite": "changed", "tests": sorted(available), "seed": "", "fallback_reason": "Could not compare the base and head; selecting all mock instrumentation tests"}
         else:
             selected = selection(decision["suite"], catalog, available, inputs.get("test_name", ""), seed)
-        write_selection(args.selection_dir, selected)
+        if decision["run"]:
+            write_selection(args.selection_dir, selected)
+    collect_coverage = decision["run"] and decision["suite"] in ("full", "single", "random")
+    mock = dict(MOCK, coverage=collect_coverage)
+    matrix = {"include": ([mock, R8] if decision["suite"] == "full" else [mock]) if decision["run"] else []}
+    summary = f"UI tests: {decision['suite']} — {decision['reason']}\n"
+    if selected is not None:
         summary += "\n" + json.dumps(selected, indent=2) + "\n"
     print(summary)
     with Path(os.environ["GITHUB_OUTPUT"]).open("a") as output:

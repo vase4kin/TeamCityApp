@@ -47,7 +47,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
-          # The changed suite compares the complete PR branch with its merge base.
+          # Compare the complete PR branch or the push's before/after commits.
           fetch-depth: 0
 
       - name: Select UI test policy and suite
