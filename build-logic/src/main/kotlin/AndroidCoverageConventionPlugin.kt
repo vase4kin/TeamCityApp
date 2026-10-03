@@ -12,17 +12,7 @@ import org.gradle.testing.jacoco.tasks.JacocoReport
 class AndroidCoverageConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target) {
-            pluginManager.apply("jacoco")
-            val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
-            extensions.configure(JacocoPluginExtension::class.java) {
-                toolVersion = libs.findVersion("jacoco").get().requiredVersion
-            }
-            tasks.withType(Test::class.java).configureEach {
-                extensions.configure(JacocoTaskExtension::class.java) {
-                    isIncludeNoLocationClasses = true
-                    excludes = listOf("jdk.internal.*")
-                }
-            }
+            configureUnitTestCoverage()
             tasks.register("generateCodeCoverageReport", JacocoReport::class.java) {
                 group = "code quality"
                 description = "Generate Jacoco coverage reports"
@@ -38,34 +28,68 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 // requested in the same build, read their outputs only after they finish.
                 rootProject.subprojects.forEach { module ->
                     mustRunAfter(module.tasks.matching {
-                        it is Test || it.name.matches(Regex("compile(Debug|MockDebug)(JavaWithJavac|Kotlin)"))
+                        it is Test || it.name.matches(Regex("(compile(Debug|MockDebug)(JavaWithJavac|Kotlin)|transform(Debug|MockDebug)ClassesWithAsm)"))
                     })
                 }
                 val filters = listOf(
                     "**/R.class", "**/R\$*.class", "**/BR.class", "**/BR\$*.class",
-                    "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*", "**/dagger/**"
+                    "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*",
+                    "androidx/databinding/**", "**/dagger/**"
                 )
                 sourceDirectories.setFrom(rootProject.subprojects.flatMap { module ->
                     listOf(module.file("src/main/java"), module.file("src/main/kotlin"))
                 })
-                classDirectories.setFrom(rootProject.subprojects.flatMap { module ->
-                    listOf("debug", "mockDebug").flatMap { variant ->
-                        listOf("intermediates/javac/$variant", "tmp/kotlin-classes/$variant").map { path ->
-                            module.fileTree(module.layout.buildDirectory.dir(path)) {
-                                exclude(filters)
+                // Hilt/Firebase transform bytecode before unit tests run. Analyse the
+                // same classes so JaCoCo IDs match, falling back for untransformed modules.
+                classDirectories.setFrom(provider {
+                    rootProject.subprojects.flatMap { module ->
+                        listOf("debug", "mockDebug").flatMap { variant ->
+                            val capitalizedVariant = variant.replaceFirstChar { it.uppercase() }
+                            val transformed = module.layout.buildDirectory.dir(
+                                "intermediates/classes/$variant/transform${capitalizedVariant}ClassesWithAsm/dirs"
+                            ).get().asFile
+                            val paths = if (transformed.isDirectory) {
+                                listOf(transformed)
+                            } else {
+                                listOf(
+                                    module.layout.buildDirectory.dir("intermediates/javac/$variant").get().asFile,
+                                    module.layout.buildDirectory.dir("tmp/kotlin-classes/$variant").get().asFile
+                                )
+                            }
+                            paths.map { directory ->
+                                module.fileTree(directory) { exclude(filters) }
                             }
                         }
                     }
                 })
                 executionData.setFrom(rootProject.subprojects.map { module ->
                     module.fileTree(module.layout.buildDirectory) {
-                        include("jacoco/*.exec", "coverage.ec")
+                        include(
+                            "jacoco/*.exec", "coverage.ec",
+                            "outputs/unit_test_code_coverage/debugUnitTest/*.exec",
+                            "outputs/unit_test_code_coverage/mockDebugUnitTest/*.exec"
+                        )
                     }
                 })
                 doLast {
                     logger.lifecycle("file://${reports.html.outputLocation.get().asFile}/index.html")
                 }
             }
+        }
+    }
+}
+
+/** Collect execution data from every Android module, without instrumenting app APKs. */
+internal fun Project.configureUnitTestCoverage() {
+    pluginManager.apply("jacoco")
+    val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")
+    extensions.configure(JacocoPluginExtension::class.java) {
+        toolVersion = libs.findVersion("jacoco").get().requiredVersion
+    }
+    tasks.withType(Test::class.java).configureEach {
+        extensions.configure(JacocoTaskExtension::class.java) {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
         }
     }
 }

@@ -42,6 +42,7 @@ class AndroidConventionPluginsTest {
                     check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
                     check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
                     check(android.defaultConfig.consumerProguardFiles.single().name == "consumer-rules.pro")
+                    check(plugins.hasPlugin("jacoco"))
                     check(!plugins.hasPlugin("org.jetbrains.kotlin.android"))
                     check(!plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
                 }
@@ -60,12 +61,16 @@ class AndroidConventionPluginsTest {
             "tasks.register(\"compileDebugKotlin\")"
         )
         listOf(
-            "app/build/intermediates/javac/mockDebug/classes/App.class",
+            "app/build/intermediates/javac/mockDebug/classes/OriginalApp.class",
+            "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/App.class",
             "library/build/tmp/kotlin-classes/debug/Library.class",
             "library/build/tmp/kotlin-classes/debug/R.class",
             "library/build/tmp/kotlin-classes/debug/dagger/Generated.class",
+            "app/build/intermediates/classes/mockDebug/transformMockDebugClassesWithAsm/dirs/androidx/databinding/DataBindingComponent.class",
             "app/build/jacoco/sampleTest.exec",
-            "library/build/coverage.ec"
+            "library/build/coverage.ec",
+            "library/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec",
+            "library/build/outputs/unit_test_code_coverage/releaseUnitTest/testReleaseUnitTest.exec"
         ).forEach { path ->
             File(projectDir, path).apply {
                 parentFile.mkdirs()
@@ -82,6 +87,7 @@ class AndroidConventionPluginsTest {
                 id("teamcityapp.android.coverage")
             }
             val sampleTest = tasks.register<Test>("sampleTest")
+            tasks.register("transformMockDebugClassesWithAsm")
             tasks.register("verifyConventions") {
                 doLast {
                     val agent = sampleTest.get().extensions.getByType<JacocoTaskExtension>()
@@ -92,9 +98,10 @@ class AndroidConventionPluginsTest {
                     check(report.classDirectories.files.map { it.name }.toSet() == setOf("App.class", "Library.class"))
                     val orderedTasks = report.mustRunAfter.getDependencies(report).map { it.path }
                     check(orderedTasks.contains(":app:sampleTest"))
+                    check(orderedTasks.contains(":app:transformMockDebugClassesWithAsm"))
                     check(orderedTasks.contains(":library:compileDebugKotlin"))
                     check(!gradle.taskGraph.hasTask(":app:sampleTest"))
-                    check(report.executionData.files.map { it.name }.toSet() == setOf("sampleTest.exec", "coverage.ec"))
+                    check(report.executionData.files.map { it.name }.toSet() == setOf("sampleTest.exec", "coverage.ec", "testDebugUnitTest.exec"))
                     check(report.sourceDirectories.files.contains(rootProject.file("library/src/main/java")))
                     check(report.reports.xml.outputLocation.get().asFile == layout.buildDirectory.file(
                         "coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml"
@@ -138,6 +145,12 @@ class AndroidConventionPluginsTest {
 
             tasks.register("verifyConventions") {
                 doLast {
+                    check(plugins.hasPlugin("jacoco"))
+                    val agent = tasks.named<Test>("testDebugUnitTest").get()
+                        .extensions.getByType<org.gradle.testing.jacoco.plugins.JacocoTaskExtension>()
+                    check(agent.isIncludeNoLocationClasses)
+                    check(agent.excludes == listOf("jdk.internal.*"))
+                    check(project.extensions.getByType<org.gradle.testing.jacoco.plugins.JacocoPluginExtension>().toolVersion == "0.8.14")
                     check(android.compileSdkVersion == "android-35")
                     check(android.defaultConfig.minSdkVersion?.apiLevel == 26)
                     check(android.defaultConfig.testInstrumentationRunner == "teamcityapp.CustomRunner")

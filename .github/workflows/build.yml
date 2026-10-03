@@ -25,8 +25,8 @@ env:
     }}
 
 jobs:
-  build-tests:
-    name: Build application APKs
+  build:
+    name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
@@ -67,6 +67,36 @@ jobs:
           fi
           ./gradlew "${tasks[@]}" --stacktrace
 
+      - name: Upload mock test APKs
+        if: env.RUN_MARATHON_TESTS == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: mock-test-apks
+          path: app/build/outputs/apk
+          if-no-files-found: error
+
+  build-minified:
+    name: Build minified
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: enhanced
+          # Same-repository PR reruns can reuse their compiled task outputs.
+          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+
       - name: Build minified application and optional R8 smoke-test APK
         run: |
           python3 scripts/prepare-r8-verification.py
@@ -84,16 +114,16 @@ jobs:
           path: app/build/outputs/mapping/prodR8Verification
           if-no-files-found: warn
 
-      - name: Upload test APKs
+      - name: Upload R8 test APKs
         if: env.RUN_MARATHON_TESTS == 'true'
         uses: actions/upload-artifact@v7
         with:
-          name: test-apks
+          name: r8-test-apks
           path: app/build/outputs/apk
           if-no-files-found: error
 
   checks:
-    name: Static checks
+    name: Checks
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -120,7 +150,7 @@ jobs:
           cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
-      - name: Run static checks
+      - name: Run checks
         run: ./gradlew lintMockDebug --stacktrace
 
       - name: Upload check reports
@@ -160,14 +190,7 @@ jobs:
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
       - name: Run unit tests and generate coverage
-        run: |
-          tasks=(:build-logic:test testMockDebugUnitTest testDebugUnitTest)
-          if [[ "$HEAD_BRANCH" != chore-* ]]; then
-            tasks+=(:app:generateCodeCoverageReport)
-          fi
-          ./gradlew "${tasks[@]}" --stacktrace
-        env:
-          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        run: ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest :app:generateCodeCoverageReport --stacktrace
 
       - name: Upload unit-test results
         if: always()
@@ -178,7 +201,7 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload coverage report
-        if: always() && !startsWith(github.head_ref || github.ref_name, 'chore-')
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: coverage-report
@@ -189,9 +212,9 @@ jobs:
 
   marathon-tests:
     name: Marathon Cloud (${{ matrix.label }})
-    needs: build-tests
+    needs: [build, build-minified]
     # Paused by default; set ENABLE_MARATHON_TESTS to 'true' to build and run test APKs.
-    if: needs.build-tests.outputs.marathon-enabled == 'true'
+    if: needs.build.outputs.marathon-enabled == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
@@ -222,11 +245,18 @@ jobs:
         if: env.RUN_MARATHON_TEST == 'true'
         uses: actions/checkout@v7
 
-      - name: Download test APKs
+      - name: Download mock test APKs
         if: env.RUN_MARATHON_TEST == 'true'
         uses: actions/download-artifact@v7
         with:
-          name: test-apks
+          name: mock-test-apks
+          path: app/build/outputs/apk
+
+      - name: Download R8 test APKs
+        if: env.RUN_MARATHON_TEST == 'true' && matrix.label == 'android-14'
+        uses: actions/download-artifact@v7
+        with:
+          name: r8-test-apks
           path: app/build/outputs/apk
 
       - name: Verify Marathon Cloud API token
@@ -296,16 +326,8 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    needs:
-      - unit-tests
-      - marathon-tests
-    if: >-
-      ${{
-        !cancelled() &&
-        needs.unit-tests.result == 'success' &&
-        (needs.marathon-tests.result == 'success' || needs.marathon-tests.result == 'skipped') &&
-        !startsWith(github.head_ref || github.ref_name, 'chore-')
-      }}
+    needs: unit-tests
+    if: ${{ !cancelled() && needs.unit-tests.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
