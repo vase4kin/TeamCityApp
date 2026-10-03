@@ -24,17 +24,20 @@ import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.presenter.AgentPresenterImpl
 import com.github.vase4kin.teamcityapp.home.router.HomeRouter
-import dagger.android.support.AndroidSupportInjection
 import teamcityapp.libraries.utils.initDrawer
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Manages single agents tab
  */
+@AndroidEntryPoint
 class AgentListFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: AgentPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<AgentPresenterImpl>
+
+    private lateinit var presenter: AgentPresenterImpl
 
     @Inject
     lateinit var homeRouter: HomeRouter
@@ -49,7 +52,7 @@ class AgentListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
         view.initDrawer {
             homeRouter.openDrawer()

@@ -21,8 +21,8 @@
     <data>
 
         <variable
-            name="viewmodel"
-            type="teamcityapp.features.change.viewmodel.ChangeViewModel" />
+            name="stateHolder"
+            type="teamcityapp.features.change.stateholder.ChangeStateHolder" />
 
     </data>
 
@@ -41,7 +41,7 @@
                 android:layout_height="?attr/actionBarSize"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:navigationIcon="@drawable/ic_close_black_24dp"
-                app:setNavigationOnClickListener="@{() -> viewmodel.finish.invoke()}"
+                app:setNavigationOnClickListener="@{() -> stateHolder.finish.invoke()}"
                 app:title="@string/title_activity" />
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -52,7 +52,7 @@
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:setAdapter="@{viewmodel.adapter}"
+            app:setAdapter="@{stateHolder.adapter}"
             tools:itemCount="3"
             tools:listitem="@layout/item_commit_card" />
 

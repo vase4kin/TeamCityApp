@@ -28,16 +28,19 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.overview.presenter.OverviewPresenterImpl
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Fragment to handle Build overview screen
  */
+@AndroidEntryPoint
 class OverviewFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: OverviewPresenterImpl
+    lateinit var presenterProvider: javax.inject.Provider<OverviewPresenterImpl>
+
+    private lateinit var presenter: OverviewPresenterImpl
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_overview_list, container, false)
@@ -45,7 +48,7 @@ class OverviewFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         setHasOptionsMenu(true)
         presenter.onCreate()
     }

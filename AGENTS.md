@@ -10,11 +10,13 @@ the requested behavior or an explicitly requested migration slice.
 
 - TeamCityApp is a native Android client for JetBrains TeamCity.
 - The app currently uses multiple activities and fragments, XML layouts, Data Binding,
-  presenters and ViewModels, RxJava 2, Dagger 2 with `dagger.android`, Retrofit/Gson,
+  presenters and legacy state holders, RxJava 2, Hilt for Android screen injection,
+  a separate Dagger account API graph, Retrofit/Gson,
   RxCache, and SharedPreferences. Java and Kotlin coexist.
-- Compose, Material 3, Hilt, Coroutines/Flow, Room, DataStore, WorkManager, and
+- Compose, Material 3, Coroutines/Flow, Room, DataStore, WorkManager, and
   Navigation 3 are target technologies, not descriptions of current code.
-- Builds use Groovy Gradle files, `buildSrc` dependency constants, and JDK 17.
+- Builds use Groovy Gradle files, a version catalog, type-safe project accessors,
+  `buildSrc` SDK/application settings, and JDK 17.
 - The app has `mock` and `prod` flavors, and `debug` and `release` build types.
   `mockRelease` is disabled.
 
@@ -26,8 +28,9 @@ the requested behavior or an explicitly requested migration slice.
   `feature` modules; others are single modules. Follow the owning feature's layout.
 - `libraries/`: shared API, storage, models, resources, theme, networking helpers,
   security, utilities, and other reusable components.
-- `buildSrc/src/main/kotlin/teamcityapp/buildsrc/Dependencies.kt`: SDK settings,
-  application version, and dependency/plugin coordinates.
+- `buildSrc/src/main/kotlin/teamcityapp/buildsrc/Dependencies.kt`: SDK settings
+  and application version.
+- `gradle/libs.versions.toml`: dependency and plugin versions/coordinates.
 - `settings.gradle`: included modules. `build.gradle` and module `build.gradle`
   files contain Groovy build configuration.
 - `.github/workflows/build.yml`: build, lint, unit test, instrumentation, and
@@ -66,9 +69,23 @@ the requested behavior or an explicitly requested migration slice.
 - Keep network and persistence access behind existing repository, data manager,
   or storage interfaces while old implementations remain. Do not add direct
   Retrofit or SharedPreferences access to UI code.
-- Existing screens still use Dagger, RxJava, XML, and Data Binding. Keep them
+- Existing screens use Hilt, RxJava, XML, and Data Binding. Keep them
   working until their migration slice is implemented and verified. Use explicit
   adapters at old/new boundaries instead of mixing state systems inside a screen.
+- Hilt screen modules are installed in every Activity/Fragment component. Use
+  `requireScreenOwner` for concrete owner bindings; these are runtime ownership
+  checks, not isolated screen graphs. Keep screen dependencies in their owning
+  screen and qualify shared types when several screens provide them.
+- Legacy `*StateHolder` classes are ordinary lifecycle observers, not Jetpack
+  ViewModels. They are scoped to their screen component and may hold UI callbacks.
+  Do not promote them to retained ViewModels while they capture Activities,
+  Fragments, adapters, or view callbacks. A Jetpack migration must move UI effects
+  to the view, use `@HiltViewModel`, and retrieve instances through `ViewModelProvider`.
+- API dependencies come from `ApiSession`, which initializes lazily and rebuilds
+  on account/authentication changes. Clear the session when logging out. Access
+  account storage through Hilt rather than through the account API graph.
+- Match resource acquisition and cleanup to the same lifecycle. View resources
+  must reinitialize after `onDestroyView`; dispose presenters before replacing them.
 - Keep UI rendering separate from data loading and business operations even
   before a screen is moved to Compose.
 - Follow local Kotlin/Java naming and formatting conventions. Prefer immutable
@@ -82,12 +99,13 @@ the requested behavior or an explicitly requested migration slice.
 
 ## Build and dependencies
 
-- The target build uses Kotlin DSL, a version catalog at `gradle/libs.versions.toml`,
-  type-safe project accessors, and reusable convention plugins in `build-logic`.
-  Migrate build infrastructure deliberately rather than pretending it exists.
-- Until the catalog is established, put shared dependency versions and plugin
-  coordinates in `Dependencies.kt`; do not scatter new versions through module
-  build files. After migration, use the catalog as the source of truth.
+- The current build uses the version catalog at `gradle/libs.versions.toml` and
+  type-safe project accessors. Kotlin DSL and reusable convention plugins in
+  `build-logic` remain targets. Migrate those deliberately.
+- Keep dependency/plugin versions in the catalog; keep SDK/application settings
+  in `Dependencies.kt`. Do not scatter versions through module build files.
+- Kotlin Android modules use kapt for Hilt/Dagger processing of Kotlin and Java
+  sources. Do not also register the Dagger compiler with `annotationProcessor`.
 - Add modules to `settings.gradle`, give Android modules a namespace, and declare
   only the dependencies they need.
 - Use existing Groovy build files for unrelated changes. For a build migration,

@@ -21,6 +21,9 @@ package com.github.vase4kin.teamcityapp.buildlog.router
  */
 interface BuildLogRouter {
 
+    /** Bind Custom Tabs for the current view lifetime. */
+    fun initCustomsTabs()
+
     /**
      * Open url in the web browser
      *

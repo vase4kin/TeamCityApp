@@ -32,17 +32,22 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
-import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import okhttp3.OkHttpClient
 import org.hamcrest.Matchers.not
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.UninstallModules
+import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityValidationTestAppModule
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -53,31 +58,33 @@ import org.mockito.Mockito.`when`
 /**
  * Validation tests for [CreateAccountActivity]
  */
+@UninstallModules(AppModule::class)
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class CreateAccountActivityValidationTest {
 
     @JvmField
-    @Rule
-    val daggerRule: DaggerMockRule<RestApiComponent> =
-        DaggerMockRule(RestApiComponent::class.java, RestApiModule(URL))
-            .addComponentDependency(
-                AppComponent::class.java,
-                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-            )
-            .set { restApiComponent ->
-                val app =
-                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-                app.setRestApiInjector(restApiComponent)
-            }
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
     @JvmField
-    @Rule
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule)
+
+    @JvmField
+    @Rule(order = 3)
     val activityRule: CustomActivityTestRule<CreateAccountActivity> =
         CustomActivityTestRule(CreateAccountActivity::class.java)
 
+    @BindValue
     @Mock
     lateinit var storage: SharedUserStorage
 
+    @BindValue
     @Mock
     lateinit var client: OkHttpClient
 
@@ -201,4 +208,8 @@ class CreateAccountActivityValidationTest {
         onView(withId(R.id.user_field_wrapper)).check(matches(isDisplayed()))
         onView(withId(R.id.password_field_wrapper)).check(matches(isDisplayed()))
     }
+
+    @Module(includes = [CreateAccountActivityValidationTestAppModule::class])
+    @InstallIn(SingletonComponent::class)
+    object TestBindings
 }

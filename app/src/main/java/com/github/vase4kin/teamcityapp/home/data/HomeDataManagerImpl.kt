@@ -122,6 +122,7 @@ class HomeDataManagerImpl(
     override fun unsubscribe() {
         runningBuildsDataManager.unsubscribe()
         queuedBuildsDataManager.unsubscribe()
+        agentsDataManager.unsubscribe()
     }
 
     /**

@@ -30,11 +30,11 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import org.hamcrest.Matchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -44,23 +44,24 @@ import org.junit.runner.RunWith
 /**
  * Validation tests for [LoginActivity]
  */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class LoginActivityValidationTest {
 
     @JvmField
-    @Rule
-    val daggerRule: DaggerMockRule<AppComponent> = DaggerMockRule(
-        AppComponent::class.java,
-        AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-    )
-        .set { appComponent ->
-            val app =
-                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-            app.setAppInjector(appComponent)
-        }
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
     @JvmField
-    @Rule
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule)
+
+    @JvmField
+    @Rule(order = 3)
     val activityRule: CustomActivityTestRule<LoginActivity> =
         CustomActivityTestRule(LoginActivity::class.java)
 

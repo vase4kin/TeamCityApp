@@ -29,18 +29,14 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
-import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -48,7 +44,9 @@ import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import okhttp3.ResponseBody
 import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
@@ -72,24 +70,23 @@ private const val NAME = "name"
 /**
  * Tests for cancel build feature
  */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class CancelBuildTest {
 
-    @Rule
     @JvmField
-    var daggerRule: DaggerMockRule<RestApiComponent> =
-        DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-            .addComponentDependency(
-                AppComponent::class.java,
-                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-            )
-            .set { restApiComponent ->
-                val app =
-                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-                app.setRestApiInjector(restApiComponent)
-            }
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
-    @Rule
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @Rule(order = 3)
     @JvmField
     var activityRule: CustomActivityTestRule<BuildDetailsActivity> =
         CustomActivityTestRule(BuildDetailsActivity::class.java)
@@ -117,9 +114,9 @@ class CancelBuildTest {
     @Before
     fun setUp() {
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        app.restApiInjector.sharedUserStorage().clearAll()
-        app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().clearAll()
+        app.appInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 
@@ -137,8 +134,8 @@ class CancelBuildTest {
         ).thenReturn(Single.just(Mocks.queuedBuild2()))
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        app.restApiInjector.sharedUserStorage().saveUserAccountAndSetItAsActive(
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().saveUserAccountAndSetItAsActive(
             Mocks.URL,
             "code-lover",
             "123456",
@@ -379,8 +376,8 @@ class CancelBuildTest {
         ).thenReturn(Single.just(Mocks.failedBuild()))
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        app.restApiInjector.sharedUserStorage().saveUserAccountAndSetItAsActive(
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().saveUserAccountAndSetItAsActive(
             Mocks.URL,
             "code-lover",
             "123456",

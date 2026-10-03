@@ -23,7 +23,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.TeamCityApplication;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
 import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
 import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
@@ -47,6 +46,9 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import dagger.Module;
+import dagger.hilt.InstallIn;
+import dagger.hilt.components.SingletonComponent;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.Provides;
 import io.rx_cache2.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
@@ -65,6 +67,7 @@ import teamcityapp.libraries.storage.models.UserAccount;
  * Todo: Convert to Kotlin
  */
 @Module
+@InstallIn(SingletonComponent.class)
 public class AppModule {
 
     private static final int CONNECTION_TIMEOUT = 10;
@@ -75,24 +78,19 @@ public class AppModule {
     public static final String CLIENT_BASE_UNSAFE = "base_unsafe";
     public static final String CLIENT_AUTH = "auth";
 
-    private TeamCityApplication mApplication;
 
-    public AppModule(TeamCityApplication application) {
-        mApplication = application;
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    @Provides
+    @Singleton
+    protected Context provideContext(@ApplicationContext Context context) {
+        return context;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected Context provideContext() {
-        return mApplication.getApplicationContext();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    @Provides
-    @Singleton
-    protected SharedUserStorage provideSharedUserStorage(CryptoManager cryptoManager) {
-        return SharedUserStorage.init(mApplication.getApplicationContext(), cryptoManager);
+    protected SharedUserStorage provideSharedUserStorage(@ApplicationContext Context context, CryptoManager cryptoManager) {
+        return SharedUserStorage.init(context, cryptoManager);
     }
 
     @Provides
@@ -201,8 +199,8 @@ public class AppModule {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected RxCache providesRxCache() {
-        File cacheDir = mApplication.getCacheDir();
+    protected RxCache providesRxCache(@ApplicationContext Context context) {
+        File cacheDir = context.getCacheDir();
         return new RxCache.Builder()
                 .persistence(cacheDir, new GsonSpeaker());
     }
@@ -210,15 +208,15 @@ public class AppModule {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected FirebaseAnalytics providesFirebaseAnalytics() {
-        return FirebaseAnalytics.getInstance(mApplication.getApplicationContext());
+    protected FirebaseAnalytics providesFirebaseAnalytics(@ApplicationContext Context context) {
+        return FirebaseAnalytics.getInstance(context);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected OnboardingManager providesOnboardingManager() {
-        return new OnboardingManagerImpl(mApplication.getApplicationContext());
+    protected OnboardingManager providesOnboardingManager(@ApplicationContext Context context) {
+        return new OnboardingManagerImpl(context);
     }
 
     @Singleton

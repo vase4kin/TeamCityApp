@@ -20,13 +20,12 @@ import android.app.Activity
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 
-class BuildLogRouterImpl(activity: Activity) : BuildLogRouter {
+class BuildLogRouterImpl(private val chromeCustomTabs: ChromeCustomTabs) : BuildLogRouter {
 
-    private val chromeCustomTabs: ChromeCustomTabs
+    constructor(activity: Activity) : this(ChromeCustomTabsImpl(activity))
 
-    init {
-        this.chromeCustomTabs = ChromeCustomTabsImpl(activity)
-        this.chromeCustomTabs.initCustomsTabs()
+    override fun initCustomsTabs() {
+        chromeCustomTabs.initCustomsTabs()
     }
 
     /**

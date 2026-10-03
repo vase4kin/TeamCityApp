@@ -19,13 +19,15 @@ package teamcityapp.features.settings.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.features.settings.R
 import teamcityapp.features.settings.tracker.SettingsTracker
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class SettingsActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class SettingsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var tracker: SettingsTracker

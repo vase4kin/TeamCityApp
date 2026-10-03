@@ -20,21 +20,27 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut
 import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import dagger.android.AndroidInjection
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.features.drawer.utils.DrawerActivityStartUtils
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Provider
 import javax.inject.Inject
 
-class HomeActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class HomeActivity : AppCompatActivity() {
 
     @Inject
+    lateinit var presenterProvider: Provider<HomePresenterImpl>
+
+    private var presenterResumed = false
+
     lateinit var presenter: HomePresenterImpl
 
     @Inject
@@ -45,6 +51,7 @@ class HomeActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter = presenterProvider.get()
         setContentView(R.layout.activity_home)
         presenter.onCreate(savedInstanceState)
     }
@@ -52,15 +59,19 @@ class HomeActivity : DaggerAppCompatActivity() {
     override fun onResume() {
         super.onResume()
         presenter.onResume()
+        presenterResumed = true
     }
 
     override fun onPause() {
         super.onPause()
-        presenter.onPause()
+        if (presenterResumed) {
+            presenter.onPause()
+            presenterResumed = false
+        }
     }
 
     override fun onDestroy() {
-        presenter.onDestroy()
+        disposePresenter()
         super.onDestroy()
     }
 
@@ -70,8 +81,13 @@ class HomeActivity : DaggerAppCompatActivity() {
         val bundle = intent.extras ?: return
         val isRequiredToReload = bundle.isRequiredToReload()
         if (isRequiredToReload) {
+            val resumePresenter = presenterResumed
             reinitDeps()
             presenter.restartMatrix()
+            if (resumePresenter) {
+                presenter.onResume()
+                presenterResumed = true
+            }
         }
         val isTabSelected = bundle.isTabSelected()
         if (isTabSelected) {
@@ -86,10 +102,19 @@ class HomeActivity : DaggerAppCompatActivity() {
     }
 
     private fun reinitDeps() {
-        (this.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(
+        disposePresenter()
+        (this.applicationContext as TeamCityApplicationBase).buildRestApiInjectorWithBaseUrl(
             sharedUserStorage.activeUser.teamcityUrl
         )
-        AndroidInjection.inject(this)
+        presenter = presenterProvider.get()
+    }
+
+    private fun disposePresenter() {
+        if (presenterResumed) {
+            presenter.onPause()
+            presenterResumed = false
+        }
+        presenter.onDestroy()
     }
 
     companion object {

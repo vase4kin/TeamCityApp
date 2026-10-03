@@ -16,6 +16,7 @@
 
 import teamcityapp.buildsrc.Config
 
+apply plugin: 'com.google.dagger.hilt.android'
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -55,6 +56,10 @@ android {
         debug {
             applicationIdSuffix = ".debug"
         }
+    }
+
+    defaultConfig {
+        testInstrumentationRunner "com.github.vase4kin.teamcityapp.helper.HiltTestRunner"
     }
 
     flavorDimensions "default"
@@ -105,6 +110,7 @@ android {
 
     testOptions {
         execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        animationsDisabled true
     }
 }
 
@@ -169,7 +175,6 @@ dependencies {
     implementation libs.groupie.groupie
     // View injection
     implementation libs.butterknife.butterKnife
-    annotationProcessor libs.butterknife.butterKnifeCompiler
     kapt libs.butterknife.butterKnifeCompiler
     // Event bus
     implementation libs.eventBus
@@ -182,11 +187,10 @@ dependencies {
     implementation libs.materialTapTargetPrompt
     // Dagger
     implementation libs.dagger.dagger
-    annotationProcessor libs.dagger.compiler
     kapt libs.dagger.compiler
-    implementation libs.dagger.androidSupport
-    annotationProcessor libs.dagger.androidProcessor
-    kapt libs.dagger.androidProcessor
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
+
     // Rx
     implementation libs.rxjava.rxJava
     implementation libs.rxjava.rxAndroid
@@ -228,7 +232,8 @@ dependencies {
     androidTestImplementation libs.mockito.mockitoAndroid
     androidTestImplementation libs.mockito.mockitoKotlin
     // Dagger mock
-    androidTestImplementation libs.daggerMock
+    androidTestImplementation libs.hilt.testing
+    kaptAndroidTest libs.hilt.compiler
     // Resolve conflits between apks
     androidTestImplementation libs.google.material
     androidTestImplementation libs.androidx.recyclerView
@@ -239,3 +244,20 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+// Kapt processes both Kotlin and Java sources. Keep Android's javac tasks from
+// loading these processors again (ButterKnife's scanner uses JDK internals).
+tasks.withType(JavaCompile).configureEach {
+    if (name.endsWith('JavaWithJavac')) {
+        doFirst {
+            options.annotationProcessorPath = files()
+        }
+    } else if (name.startsWith('hiltJavaCompile')) {
+        doFirst {
+            // Hilt inherits the kapt processor path but does not process view bindings.
+            options.annotationProcessorPath = files(options.annotationProcessorPath.filter {
+                !it.name.contains('butterknife-compiler')
+            })
+        }
+    }
+}

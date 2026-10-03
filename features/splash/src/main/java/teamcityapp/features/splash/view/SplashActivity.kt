@@ -17,14 +17,16 @@
 package teamcityapp.features.splash.view
 
 import android.os.Bundle
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.features.splash.presenter.SplashPresenterImpl
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Activity to handle splash screen
  */
-class SplashActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class SplashActivity : AppCompatActivity() {
 
     @Inject
     lateinit var presenter: SplashPresenterImpl

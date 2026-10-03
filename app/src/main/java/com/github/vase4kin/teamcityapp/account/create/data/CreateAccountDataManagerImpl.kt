@@ -20,7 +20,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.AUTHORIZATION
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -229,6 +229,6 @@ class CreateAccountDataManagerImpl(
      * {@inheritDoc}
      */
     override fun initTeamCityService(url: String) {
-        (context.applicationContext as TeamCityApplication).buildRestApiInjectorWithBaseUrl(url)
+        (context.applicationContext as TeamCityApplicationBase).buildRestApiInjectorWithBaseUrl(url)
     }
 }

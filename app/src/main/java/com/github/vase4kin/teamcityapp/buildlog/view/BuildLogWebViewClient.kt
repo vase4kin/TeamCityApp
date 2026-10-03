@@ -28,7 +28,7 @@ import android.webkit.WebViewClient
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel
+import com.github.vase4kin.teamcityapp.buildlog.stateholder.BuildLogStateHolder
 
 /**
  * Magic awesome js script to hide things user doesn't need to see
@@ -44,16 +44,16 @@ private const val SCRIPT = "$('topWrapper').style.display='none';\n" +
  * Build log web client with listener to receive client callbacks
  */
 class BuildLogWebViewClient(
-    private val viewModel: BuildLogViewModel,
+    private val stateHolder: BuildLogStateHolder,
     private val evaluateJs: (script: String) -> Unit
 ) : WebViewClient(), LifecycleObserver {
 
     private val handler = Handler(Looper.getMainLooper())
 
     private val runnable: Runnable = Runnable {
-        viewModel.progressVisibility.set(View.GONE)
-        viewModel.errorVisibility.set(View.GONE)
-        viewModel.webViewVisibility.set(View.VISIBLE)
+        stateHolder.progressVisibility.set(View.GONE)
+        stateHolder.errorVisibility.set(View.GONE)
+        stateHolder.webViewVisibility.set(View.VISIBLE)
     }
 
     /**
@@ -78,9 +78,9 @@ class BuildLogWebViewClient(
      * {@inheritDoc}
      */
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-        viewModel.progressVisibility.set(View.VISIBLE)
-        viewModel.webViewVisibility.set(View.GONE)
-        viewModel.errorVisibility.set(View.GONE)
+        stateHolder.progressVisibility.set(View.VISIBLE)
+        stateHolder.webViewVisibility.set(View.GONE)
+        stateHolder.errorVisibility.set(View.GONE)
     }
 
     /**
@@ -91,9 +91,9 @@ class BuildLogWebViewClient(
         request: WebResourceRequest?,
         error: WebResourceError?
     ) {
-        viewModel.progressVisibility.set(View.GONE)
-        viewModel.webViewVisibility.set(View.GONE)
-        viewModel.errorVisibility.set(View.VISIBLE)
+        stateHolder.progressVisibility.set(View.GONE)
+        stateHolder.webViewVisibility.set(View.GONE)
+        stateHolder.errorVisibility.set(View.VISIBLE)
     }
 
     /**
@@ -104,9 +104,9 @@ class BuildLogWebViewClient(
         request: WebResourceRequest?,
         errorResponse: WebResourceResponse?
     ) {
-        viewModel.progressVisibility.set(View.GONE)
-        viewModel.webViewVisibility.set(View.GONE)
-        viewModel.errorVisibility.set(View.VISIBLE)
+        stateHolder.progressVisibility.set(View.GONE)
+        stateHolder.webViewVisibility.set(View.GONE)
+        stateHolder.errorVisibility.set(View.VISIBLE)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)

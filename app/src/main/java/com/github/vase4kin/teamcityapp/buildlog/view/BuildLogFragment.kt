@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.buildlog.view
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,21 +24,22 @@ import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.observe
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.buildlog.viewmodel.BuildLogViewModel
+import com.github.vase4kin.teamcityapp.buildlog.stateholder.BuildLogStateHolder
 import com.github.vase4kin.teamcityapp.databinding.FragmentBuildLogBinding
-import dagger.android.support.DaggerFragment
+import androidx.fragment.app.Fragment
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Build log fragment
  */
-class BuildLogFragment : DaggerFragment() {
+@AndroidEntryPoint
+class BuildLogFragment : Fragment() {
 
     @Inject
-    lateinit var viewModel: BuildLogViewModel
+    lateinit var stateHolder: BuildLogStateHolder
 
     @Inject
     lateinit var webClient: BuildLogWebViewClient
@@ -55,18 +55,14 @@ class BuildLogFragment : DaggerFragment() {
             container,
             false
         ).apply {
-            viewmodel = this@BuildLogFragment.viewModel
+            stateHolder = this@BuildLogFragment.stateHolder
         }.root
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        viewLifecycleOwnerLiveData.observe(this) { viewLifecycleOwner ->
-            viewLifecycleOwner.lifecycle.run {
-                addObserver(viewModel)
-                addObserver(webClient)
-            }
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewLifecycleOwner.lifecycle.addObserver(stateHolder)
+        viewLifecycleOwner.lifecycle.addObserver(webClient)
     }
 
     @SuppressLint("SetJavaScriptEnabled")

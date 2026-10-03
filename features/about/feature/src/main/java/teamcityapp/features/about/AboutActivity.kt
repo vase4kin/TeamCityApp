@@ -20,7 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
@@ -29,12 +29,14 @@ import io.reactivex.schedulers.Schedulers
 import teamcityapp.features.about.repository.AboutRepository
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * About activity
  */
-class AboutActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class AboutActivity : AppCompatActivity() {
 
     @Inject
     lateinit var repository: AboutRepository

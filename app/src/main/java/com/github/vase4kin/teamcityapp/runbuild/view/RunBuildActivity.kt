@@ -23,13 +23,15 @@ import androidx.activity.OnBackPressedCallback
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import com.github.vase4kin.teamcityapp.runbuild.presenter.RunBuildPresenterImpl
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Run build activity
  */
-class RunBuildActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class RunBuildActivity : AppCompatActivity() {
 
     @Inject
     lateinit var presenter: RunBuildPresenterImpl

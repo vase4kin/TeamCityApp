@@ -26,15 +26,15 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.login.view.LoginActivity
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.Ignore
@@ -45,23 +45,24 @@ import org.junit.runner.RunWith
 /**
  * Tests for [SplashActivity]
  */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class SplashActivityTest {
 
     @JvmField
-    @Rule
-    val daggerRule: DaggerMockRule<AppComponent> = DaggerMockRule(
-        AppComponent::class.java,
-        AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-    )
-        .set { appComponent ->
-            val app =
-                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-            app.setAppInjector(appComponent)
-        }
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
     @JvmField
-    @Rule
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule)
+
+    @JvmField
+    @Rule(order = 3)
     val activityRule: CustomIntentsTestRule<teamcityapp.features.splash.view.SplashActivity> = CustomIntentsTestRule(
         teamcityapp.features.splash.view.SplashActivity::class.java
     )
@@ -69,7 +70,7 @@ class SplashActivityTest {
     @Before
     fun setUp() {
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().clearAll()
     }
 
@@ -81,7 +82,7 @@ class SplashActivityTest {
     fun testUserNavigatesToRootProjectsActivityIgnored() {
         // Prepate data
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
 
         // Launch activity
@@ -122,7 +123,7 @@ class SplashActivityTest {
     fun testUserNavigatesToRootProjectsActivity() {
         // Prepate data
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
 
         // Launch activity

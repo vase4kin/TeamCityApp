@@ -19,8 +19,10 @@ package com.github.vase4kin.teamcityapp.account.create.dagger
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatterImpl
 import dagger.Binds
+import dagger.hilt.migration.DisableInstallInCheck
 import dagger.Module
 
+@DisableInstallInCheck
 @Module
 abstract class UrlFormatterModule {
 

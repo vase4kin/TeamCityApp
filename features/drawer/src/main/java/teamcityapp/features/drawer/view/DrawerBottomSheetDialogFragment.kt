@@ -16,7 +16,6 @@
 
 package teamcityapp.features.drawer.view
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,21 +23,22 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import dagger.android.support.AndroidSupportInjection
 import teamcityapp.features.drawer.R
-import teamcityapp.features.drawer.viewmodel.DrawerViewModel
+import teamcityapp.features.drawer.stateholder.DrawerStateHolder
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Bottom sheet dialog
  */
+@AndroidEntryPoint
 class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     @Inject
     lateinit var drawerAdapter: DrawerAdapter
 
     @Inject
-    lateinit var viewModel: DrawerViewModel
+    lateinit var stateHolder: DrawerStateHolder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,16 +50,16 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.onViewCreated()
+        stateHolder.onViewCreated()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.onResume()
+        stateHolder.onResume()
     }
 
     override fun onDestroyView() {
-        viewModel.onDestroyView()
+        stateHolder.onDestroyView()
         super.onDestroyView()
     }
 
@@ -71,11 +71,6 @@ class DrawerBottomSheetDialogFragment : BottomSheetDialogFragment() {
         drawerAdapter.list.clear()
         drawerAdapter.list.addAll(list)
         recyclerView.invalidate()
-    }
-
-    override fun onAttach(context: Context) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
     }
 
     companion object {

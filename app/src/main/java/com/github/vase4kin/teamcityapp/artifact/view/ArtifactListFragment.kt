@@ -25,13 +25,18 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import dagger.android.support.AndroidSupportInjection
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Named
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class ArtifactListFragment : Fragment() {
 
     @Inject
-    lateinit var presenter: ArtifactPresenterImpl
+    @Named("ArtifactListFragment")
+    lateinit var presenterProvider: javax.inject.Provider<ArtifactPresenterImpl>
+
+    private lateinit var presenter: ArtifactPresenterImpl
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_list, container, false)
@@ -39,7 +44,7 @@ class ArtifactListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AndroidSupportInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
         // Setting the main container different id to determine correct view to replace
         view.findViewById<View>(R.id.fragment_list).id = R.id.artifact_fragment_list

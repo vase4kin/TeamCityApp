@@ -1,0 +1,110 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.manage_accounts.stateholder
+
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import teamcityapp.features.manage_accounts.router.ManageAccountsRouter
+import teamcityapp.features.manage_accounts.tracker.ManageAccountsTracker
+import teamcityapp.features.manage_accounts.view.AccountItemFactory
+import teamcityapp.libraries.cache_manager.CacheManager
+import teamcityapp.libraries.storage.Storage
+import teamcityapp.libraries.storage.models.UserAccount
+
+class ManageAccountsStateHolderTest {
+
+    private val storage: Storage = mock()
+    private val router: ManageAccountsRouter = mock()
+    private val tracker: ManageAccountsTracker = mock()
+    private val showSslDisabledInfoDialog: () -> Unit = mock()
+    private val showRemoveAccountDialog: (onAccountRemove: () -> Unit) -> Unit = mock()
+    private val cacheManager: CacheManager = mock()
+    private val itemFactory: AccountItemFactory = mock()
+    private val adapter: GroupAdapter<GroupieViewHolder> = mock()
+    private val userAccount: UserAccount = mock()
+
+    private lateinit var stateHolder: ManageAccountsStateHolder
+
+    @Before
+    fun setUp() {
+        stateHolder = ManageAccountsStateHolder(
+            storage,
+            router,
+            tracker,
+            cacheManager,
+            itemFactory,
+            adapter
+        )
+    }
+
+    @After
+    fun tearDown() {
+        verifyNoMoreInteractions(
+            storage,
+            router,
+            tracker,
+            showSslDisabledInfoDialog,
+            showRemoveAccountDialog,
+            cacheManager,
+            adapter
+        )
+    }
+
+    @Test
+    fun testOnAccountRemove_OnlyOneAccount() {
+        doAnswer { listOf(userAccount) }.whenever(storage).userAccounts
+        stateHolder.onAccountRemove(userAccount).invoke()
+        verify(storage).userAccounts
+        verify(tracker).trackAccountRemove()
+        verify(storage).removeUserAccount(userAccount)
+        verify(cacheManager).evictAllCache()
+        verify(router).openLogin()
+    }
+
+    @Test
+    fun testOnAccountRemove_AccountIsActive() {
+        whenever(userAccount.isActive).thenReturn(true)
+        doAnswer { listOf(userAccount, mock()) }.whenever(storage).userAccounts
+        stateHolder.onAccountRemove(userAccount).invoke()
+        verify(storage).userAccounts
+        verify(tracker).trackAccountRemove()
+        verify(storage).removeUserAccount(userAccount)
+        verify(storage).setOtherUserActive()
+        verify(router).openHome()
+    }
+
+    @Test
+    fun testOnAccountRemove_AccountIsNotActive() {
+        whenever(userAccount.isActive).thenReturn(false)
+        doAnswer { listOf(userAccount, mock(), mock()) }.whenever(storage).userAccounts
+        stateHolder.onAccountRemove(userAccount).invoke()
+        verify(storage, times(2)).userAccounts
+        verify(tracker).trackAccountRemove()
+        verify(storage).removeUserAccount(userAccount)
+        verify(adapter).updateAsync(any())
+    }
+}

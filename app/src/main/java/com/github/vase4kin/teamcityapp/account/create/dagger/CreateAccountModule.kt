@@ -1,26 +1,13 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.vase4kin.teamcityapp.account.create.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
+import android.app.Activity
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModelImpl
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
+import com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouterImpl
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker
@@ -34,20 +21,25 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
-import okhttp3.OkHttpClient
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Named
+import okhttp3.OkHttpClient
 
 @Module
+@InstallIn(ActivityComponent::class)
 object CreateAccountModule {
 
-    @JvmStatic
+    @Provides
+    fun provideOwner(owner: Activity): CreateAccountActivity = owner.requireScreenOwner<CreateAccountActivity>()
+
     @Provides
     fun providesCreateAccountView(activity: CreateAccountActivity): CreateAccountView {
         return CreateAccountViewImpl(activity)
     }
 
-    @JvmStatic
     @Provides
+    @Named("CreateAccountActivity")
     fun providesCreateAccountDataManager(
         activity: CreateAccountActivity,
         @Named(CLIENT_BASE) okHttpClient: OkHttpClient,
@@ -58,21 +50,27 @@ object CreateAccountModule {
         return CreateAccountDataManagerImpl(activity, okHttpClient, unsafeOkHttpClient, sharedUserStorage, urlFormatter)
     }
 
-    @JvmStatic
     @Provides
     fun providesCreateAccountDataModel(sharedUserStorage: SharedUserStorage): CreateAccountDataModel {
         return CreateAccountDataModelImpl(sharedUserStorage)
     }
 
-    @JvmStatic
     @Provides
     fun providesCreateAccountRouter(activity: CreateAccountActivity): CreateAccountRouter {
         return CreateAccountRouterImpl(activity)
     }
 
-    @JvmStatic
     @Provides
     fun providesFirebaseCreateAccountTracker(firebaseAnalytics: FirebaseAnalytics): CreateAccountTracker {
         return CreateAccountTrackerImpl(firebaseAnalytics)
     }
+
+    @Provides
+    fun provideCreateAccountPresenterImpl(
+        view: CreateAccountView,
+        @Named("CreateAccountActivity") dataManager: CreateAccountDataManager,
+        dataModel: CreateAccountDataModel,
+        router: CreateAccountRouter,
+        tracker: CreateAccountTracker
+    ): CreateAccountPresenterImpl = CreateAccountPresenterImpl(view, dataManager, dataModel, router, tracker)
 }

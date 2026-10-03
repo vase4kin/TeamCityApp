@@ -35,10 +35,9 @@ import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
@@ -48,7 +47,9 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -60,6 +61,12 @@ import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.AllOf.allOf
+import dagger.hilt.android.testing.BindValue
+import dagger.hilt.android.testing.UninstallModules
+import com.github.vase4kin.teamcityapp.login.dagger.LoginActivityTestAppModule
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -78,23 +85,25 @@ import javax.inject.Named
 /**
  * Tests for [LoginActivity] with mocked internet connection
  */
+@UninstallModules(AppModule::class)
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class LoginActivityTest {
 
     @JvmField
-    @Rule
-    val daggerRule: DaggerMockRule<AppComponent> = DaggerMockRule(
-        AppComponent::class.java,
-        AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-    )
-        .set { appComponent ->
-            val app =
-                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-            app.setAppInjector(appComponent)
-        }
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
     @JvmField
-    @Rule
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule)
+
+    @JvmField
+    @Rule(order = 3)
     val activityRule: CustomIntentsTestRule<LoginActivity> =
         CustomIntentsTestRule(LoginActivity::class.java)
 
@@ -102,17 +111,21 @@ class LoginActivityTest {
     lateinit var callbackArgumentCaptor: ArgumentCaptor<Callback>
 
     @field:Named(CLIENT_BASE)
+    @BindValue
     @Mock
     lateinit var okHttpClient: OkHttpClient
 
     @field:Named(CLIENT_BASE_UNSAFE)
+    @BindValue
     @Mock
     lateinit var unsafeOkHttpClient: OkHttpClient
 
     @field:Named(CLIENT_AUTH)
+    @BindValue
     @Mock
     lateinit var clientAuth: OkHttpClient
 
+    @BindValue
     @Mock
     lateinit var cryptoManager: CryptoManager
 
@@ -122,7 +135,7 @@ class LoginActivityTest {
     @Before
     fun setUp() {
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().clearAll()
         `when`(okHttpClient.newCall(any<Request>())).thenReturn(call)
         `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
@@ -174,8 +187,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(savedUrl))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(false))
@@ -226,8 +239,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(savedUrl))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(true))
@@ -270,8 +283,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(URL))
     }
@@ -313,8 +326,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasGuestAccountWithUrl(URL), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(URL))
     }
@@ -357,8 +370,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasAccountWithUrl(URL, "user"), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(URL))
     }
@@ -465,8 +478,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(savedUrl))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(false))
@@ -546,8 +559,8 @@ class LoginActivityTest {
         )
 
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-        val storageUtils = app.restApiInjector.sharedUserStorage()
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        val storageUtils = app.appInjector.sharedUserStorage()
         assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(savedUrl))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(false))
@@ -555,15 +568,19 @@ class LoginActivityTest {
 
     private fun setTryItOutValue(value: Boolean) {
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         val remoteService = app.appInjector.remoteService() as RemoteServiceImpl
         remoteService.showTryItOut = value
     }
 
     private fun setTryItOutValueUrl(value: String) {
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         val remoteService = app.appInjector.remoteService() as RemoteServiceImpl
         remoteService.showTryItOutUrl = value
     }
+
+    @Module(includes = [LoginActivityTestAppModule::class])
+    @InstallIn(SingletonComponent::class)
+    object TestBindings
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-
+apply plugin: 'com.google.dagger.hilt.android'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -34,8 +34,9 @@ dependencies {
     implementation libs.androidx.preference
     implementation libs.kotlin.stdlib
     implementation libs.dagger.dagger
-    implementation libs.dagger.androidSupport
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
 
     kapt libs.dagger.compiler
-    kapt libs.dagger.androidProcessor
+
 }

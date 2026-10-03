@@ -1,29 +1,16 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.vase4kin.teamcityapp.agents.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractorImpl
+import com.github.vase4kin.teamcityapp.agents.presenter.AgentPresenterImpl
 import com.github.vase4kin.teamcityapp.agents.view.AgentListFragment
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewHolderFactory
 import com.github.vase4kin.teamcityapp.agents.view.AgentViewImpl
@@ -35,12 +22,19 @@ import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 
 @Module
-class AgentModule {
+@InstallIn(FragmentComponent::class)
+object AgentModule {
+
+    @Provides
+    fun provideOwner(owner: Fragment): AgentListFragment = owner.requireScreenOwner<AgentListFragment>()
 
     @Provides
     fun providesAgentsDataManager(repository: Repository, eventBus: EventBus): AgentsDataManager {
@@ -55,7 +49,7 @@ class AgentModule {
     ): BaseListView<AgentDataModel> {
         return AgentViewImpl(
             fragment.requireView(),
-            fragment.activity as Activity,
+            fragment.requireActivity(),
             R.string.empty_list_message_agents,
             adapter,
             filterProvider
@@ -68,6 +62,7 @@ class AgentModule {
     }
 
     @Provides
+    @Named("AgentListFragment")
     fun providesViewTracker(): ViewTracker {
         return ViewTracker.STUB
     }
@@ -77,10 +72,20 @@ class AgentModule {
         return AgentsAdapter(viewHolderFactories)
     }
 
+    @Provides
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    @Provides
     fun providesAgentViewHolderFactory(): ViewHolderFactory<AgentDataModel> {
         return AgentViewHolderFactory()
     }
+
+    @Provides
+    fun provideAgentPresenterImpl(
+        view: BaseListView<AgentDataModel>,
+        dataManager: AgentsDataManager,
+        @Named("AgentListFragment") tracker: ViewTracker,
+        valueExtractor: AgentsValueExtractor,
+        filterProvider: FilterProvider,
+        eventBus: EventBus
+    ): AgentPresenterImpl = AgentPresenterImpl(view, dataManager, tracker, valueExtractor, filterProvider, eventBus)
 }

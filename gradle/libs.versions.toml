@@ -18,6 +18,10 @@ crashlytics-plugin = "3.0.6"
 oss-licenses-plugin = "0.10.9"
 
 [libraries]
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
+hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "dagger" }
+hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
 errorView = { module = "com.github.xiprox:ErrorView", version = "3.0.0" }
 aboutLibrary = { module = "com.github.daniel-stoneuk:material-about-library", version = "3.1.2" }
 shimmerlayout = { module = "io.supercharge:shimmerlayout", version = "2.1.0" }
@@ -28,7 +32,6 @@ mugen = { module = "com.vinaysshenoy:mugen", version = "1.0.3" }
 fragNav = { module = "com.github.ncapdevi:fragnav", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
-daggerMock = { module = "com.github.fabioCollini:DaggerMock", version = "0.8.5" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 androidx-cardView = { module = "androidx.cardview:cardview", version = "1.0.0" }
 androidx-legacySupport = { module = "androidx.legacy:legacy-support-v13", version = "1.0.0" }
@@ -70,9 +73,7 @@ rxjava-rxjava-kotlin = { module = "io.reactivex.rxjava2:rxkotlin", version = "2.
 rxcache-rxCache = { module = "com.github.VictorAlbertos.RxCache:runtime", version = "1.8.3-2.x" }
 rxcache-jolyglot = { module = "com.github.VictorAlbertos.Jolyglot:gson", version = "0.0.4" }
 dagger-dagger = { module = "com.google.dagger:dagger", version.ref = "dagger" }
-dagger-androidSupport = { module = "com.google.dagger:dagger-android-support", version.ref = "dagger" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "dagger" }
-dagger-androidProcessor = { module = "com.google.dagger:dagger-android-processor", version.ref = "dagger" }
 butterknife-butterKnife = { module = "com.jakewharton:butterknife", version.ref = "butterknife" }
 butterknife-butterKnifeCompiler = { module = "com.jakewharton:butterknife-compiler", version.ref = "butterknife" }
 mockito-mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockito" }

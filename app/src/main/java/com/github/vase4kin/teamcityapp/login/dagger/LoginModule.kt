@@ -1,26 +1,13 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.github.vase4kin.teamcityapp.login.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
+import android.app.Activity
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
+import com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.router.LoginRouterImpl
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
@@ -32,20 +19,26 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
-import okhttp3.OkHttpClient
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Named
+import okhttp3.OkHttpClient
+import teamcityapp.libraries.remote.RemoteService
 
 @Module
+@InstallIn(ActivityComponent::class)
 object LoginModule {
 
-    @JvmStatic
+    @Provides
+    fun provideOwner(owner: Activity): LoginActivity = owner.requireScreenOwner<LoginActivity>()
+
     @Provides
     fun providesLoginView(activity: LoginActivity): LoginView {
         return LoginViewImpl(activity)
     }
 
-    @JvmStatic
     @Provides
+    @Named("LoginActivity")
     fun providesCreateAccountDataManager(
         activity: LoginActivity,
         @Named(CLIENT_BASE) baseOkHttpClient: OkHttpClient,
@@ -58,15 +51,22 @@ object LoginModule {
         )
     }
 
-    @JvmStatic
     @Provides
     fun providesLoginRouter(activity: LoginActivity): LoginRouter {
         return LoginRouterImpl(activity)
     }
 
-    @JvmStatic
     @Provides
     fun providesFirebaseLoginTracker(firebaseAnalytics: FirebaseAnalytics): LoginTracker {
         return LoginTrackerImpl(firebaseAnalytics)
     }
+
+    @Provides
+    fun provideLoginPresenterImpl(
+        view: LoginView,
+        @Named("LoginActivity") dataManager: CreateAccountDataManager,
+        router: LoginRouter,
+        tracker: LoginTracker,
+        remoteService: RemoteService
+    ): LoginPresenterImpl = LoginPresenterImpl(view, dataManager, router, tracker, remoteService)
 }

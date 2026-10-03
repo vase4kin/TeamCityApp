@@ -26,14 +26,10 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.TeamCityApplication
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.dagger.components.AppComponent
-import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
-import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -43,7 +39,9 @@ import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import com.github.vase4kin.teamcityapp.navigation.api.Project
 import com.github.vase4kin.teamcityapp.navigation.api.Projects
 import io.reactivex.Single
-import it.cosenonjaviste.daggermock.DaggerMockRule
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.Before
@@ -58,25 +56,24 @@ import org.mockito.Spy
 /**
  * Tests for [HomeActivity]
  */
+@HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class HomeActivityTest {
 
     @JvmField
-    @Rule
-    val daggerRule: DaggerMockRule<RestApiComponent> =
-        DaggerMockRule(RestApiComponent::class.java, RestApiModule(Mocks.URL))
-            .addComponentDependency(
-                AppComponent::class.java,
-                AppModule(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication)
-            )
-            .set { restApiComponent ->
-                val app =
-                    InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
-                app.setRestApiInjector(restApiComponent)
-            }
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
 
     @JvmField
-    @Rule
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
     val activityRule: CustomIntentsTestRule<HomeActivity> =
         CustomIntentsTestRule(HomeActivity::class.java)
 
@@ -94,9 +91,9 @@ class HomeActivityTest {
     @Before
     fun setUp() {
         val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplication
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().clearAll()
-        app.restApiInjector.sharedUserStorage()
+        app.appInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-
+apply plugin: 'com.google.dagger.hilt.android'
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -24,6 +24,7 @@ android {
 }
 
 dependencies {
+    implementation projects.libraries.utils
     implementation projects.libraries.storage
     implementation projects.libraries.resources
     implementation projects.libraries.theme
@@ -31,11 +32,11 @@ dependencies {
     implementation libs.google.material
     implementation libs.androidx.appcompat
     implementation libs.dagger.dagger
-    implementation libs.dagger.androidSupport
+    implementation libs.hilt.android
+    kapt libs.hilt.compiler
     implementation libs.kotlin.stdlib
 
     kapt libs.dagger.compiler
-    kapt libs.dagger.androidProcessor
 
     testImplementation libs.junit
     testImplementation libs.mockito.mockitoCore

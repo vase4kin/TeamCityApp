@@ -24,15 +24,20 @@ import com.github.vase4kin.teamcityapp.artifact.extractor.ArtifactValueExtractor
 import com.github.vase4kin.teamcityapp.artifact.presenter.ArtifactPresenterImpl
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Named
 import javax.inject.Inject
 
-class ArtifactListActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class ArtifactListActivity : AppCompatActivity() {
 
     @Inject
+    @Named("ArtifactListActivity")
     lateinit var valueExtractor: ArtifactValueExtractor
     @Inject
+    @Named("ArtifactListActivity")
     lateinit var presenter: ArtifactPresenterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {

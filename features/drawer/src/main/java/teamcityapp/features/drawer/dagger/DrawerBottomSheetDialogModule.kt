@@ -1,26 +1,16 @@
-/*
- * Copyright 2020 Andrey Tolpeev
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package teamcityapp.features.drawer.dagger
 
+import teamcityapp.libraries.utils.requireScreenOwner
+import androidx.fragment.app.Fragment
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
+import dagger.hilt.android.scopes.FragmentScoped
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
+import javax.inject.Named
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.drawer.DrawerRouter
 import teamcityapp.features.drawer.drawer.DrawerRouterImpl
@@ -40,25 +30,29 @@ import teamcityapp.features.drawer.view.TYPE_ACCOUNTS_DIVIDER
 import teamcityapp.features.drawer.view.TYPE_BOTTOM
 import teamcityapp.features.drawer.view.TYPE_DIVIDER
 import teamcityapp.features.drawer.view.TYPE_MENU
-import teamcityapp.features.drawer.viewmodel.DrawerViewModel
+import teamcityapp.features.drawer.stateholder.DrawerStateHolder
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 import teamcityapp.libraries.storage.Storage
 
 @Module
+@InstallIn(FragmentComponent::class)
 object DrawerBottomSheetDialogModule {
 
-    @JvmStatic
     @Provides
-    fun providesViewModel(
+    fun provideOwner(owner: Fragment): DrawerBottomSheetDialogFragment = owner.requireScreenOwner<DrawerBottomSheetDialogFragment>()
+
+    @Provides
+    @FragmentScoped
+    fun providesStateHolder(
         fragment: DrawerBottomSheetDialogFragment,
         storage: Storage,
-        chromeCustomTabs: ChromeCustomTabs,
+        @Named("HomeActivity") chromeCustomTabs: ChromeCustomTabs,
         tracker: DrawerTracker
-    ): DrawerViewModel {
+    ): DrawerStateHolder {
         val setAdapter: (items: List<BaseDrawerItem>) -> Unit = {
             fragment.setAdapter(it)
         }
-        return DrawerViewModel(
+        return DrawerStateHolder(
             storage,
             chromeCustomTabs,
             setAdapter,
@@ -66,13 +60,12 @@ object DrawerBottomSheetDialogModule {
         )
     }
 
-    @JvmStatic
-    @DrawerBottomSheetDialogScope
     @Provides
+    @FragmentScoped
     fun providesRouter(
         fragment: DrawerBottomSheetDialogFragment,
         storage: Storage,
-        chromeCustomTabs: ChromeCustomTabs,
+        @Named("HomeActivity") chromeCustomTabs: ChromeCustomTabs,
         router: DrawerAppRouter
     ): DrawerRouter {
         return DrawerRouterImpl(
@@ -83,40 +76,33 @@ object DrawerBottomSheetDialogModule {
         )
     }
 
-    @JvmStatic
     @Provides
-    fun providesAdapter(
-        viewHolderFactories: Map<Int, @JvmSuppressWildcards BaseDrawerViewHolderFactory>
-    ): DrawerAdapter {
+    fun providesAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards BaseDrawerViewHolderFactory>): DrawerAdapter {
         return DrawerAdapter(mutableListOf(), viewHolderFactories)
     }
 
-    @JvmStatic
     @Provides
     fun providesTracker(firebaseAnalytics: FirebaseAnalytics): DrawerTracker {
         return DrawerTrackerImpl(firebaseAnalytics)
     }
 
-    @JvmStatic
+    @Provides
     @IntoMap
     @IntKey(TYPE_ACCOUNTS_DIVIDER)
-    @Provides
     fun providesAccountsDividerViewHolderFactory(): BaseDrawerViewHolderFactory {
         return AccountsDividerViewHolderFactory()
     }
 
-    @JvmStatic
+    @Provides
     @IntoMap
     @IntKey(TYPE_DIVIDER)
-    @Provides
     fun providesDividerViewHolderFactory(): BaseDrawerViewHolderFactory {
         return DividerViewHolderFactory()
     }
 
-    @JvmStatic
+    @Provides
     @IntoMap
     @IntKey(TYPE_BOTTOM)
-    @Provides
     fun providesBottomViewHolderFactory(
         router: DrawerRouter,
         tracker: DrawerTracker
@@ -124,10 +110,9 @@ object DrawerBottomSheetDialogModule {
         return BottomViewHolderFactory(router, tracker)
     }
 
-    @JvmStatic
+    @Provides
     @IntoMap
     @IntKey(TYPE_MENU)
-    @Provides
     fun providesMenuViewHolderFactory(
         router: DrawerRouter,
         tracker: DrawerTracker
@@ -135,10 +120,9 @@ object DrawerBottomSheetDialogModule {
         return MenuViewHolderFactory(router, tracker)
     }
 
-    @JvmStatic
+    @Provides
     @IntoMap
     @IntKey(TYPE_ACCOUNT)
-    @Provides
     fun providesAccountViewHolderFactory(
         router: DrawerRouter,
         tracker: DrawerTracker

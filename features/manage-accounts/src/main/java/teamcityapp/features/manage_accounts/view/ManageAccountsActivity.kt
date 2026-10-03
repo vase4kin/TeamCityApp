@@ -21,20 +21,22 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.features.manage_accounts.R
 import teamcityapp.features.manage_accounts.databinding.ActivityManageAccountsBinding
-import teamcityapp.features.manage_accounts.viewmodel.ManageAccountsViewModel
+import teamcityapp.features.manage_accounts.stateholder.ManageAccountsStateHolder
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * Manages account list
  */
-class ManageAccountsActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class ManageAccountsActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var viewModel: ManageAccountsViewModel
+    lateinit var stateHolder: ManageAccountsStateHolder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +44,9 @@ class ManageAccountsActivity : DaggerAppCompatActivity() {
             this,
             R.layout.activity_manage_accounts
         ).apply {
-            viewmodel = this@ManageAccountsActivity.viewModel
+            stateHolder = this@ManageAccountsActivity.stateHolder
         }
-        lifecycle.addObserver(viewModel)
+        lifecycle.addObserver(stateHolder)
         initToolbar()
     }
 

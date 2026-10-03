@@ -24,21 +24,22 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
-import dagger.android.support.DaggerFragment
 import teamcityapp.features.properties.feature.R
 import teamcityapp.features.properties.feature.databinding.FragmentPropertiesBinding
 import teamcityapp.features.properties.feature.model.InternalProperty
-import teamcityapp.features.properties.feature.viewmodel.PropertiesViewModel
+import teamcityapp.features.properties.feature.stateholder.PropertiesStateHolder
 import teamcityapp.features.properties.repository.models.Properties
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass.
  */
-class PropertiesFragment : DaggerFragment() {
+@AndroidEntryPoint
+class PropertiesFragment : Fragment() {
 
     @Inject
-    lateinit var viewModel: PropertiesViewModel
+    lateinit var stateHolder: PropertiesStateHolder
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +52,7 @@ class PropertiesFragment : DaggerFragment() {
             container,
             false
         ).apply {
-            viewmodel = this@PropertiesFragment.viewModel
+            stateHolder = this@PropertiesFragment.stateHolder
         }.root
     }
 
@@ -59,7 +60,7 @@ class PropertiesFragment : DaggerFragment() {
         super.onAttach(context)
         viewLifecycleOwnerLiveData.observe(this) { viewLifecycleOwner ->
             viewLifecycleOwner.lifecycle.run {
-                addObserver(viewModel)
+                addObserver(stateHolder)
             }
         }
     }

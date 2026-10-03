@@ -21,19 +21,20 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.parcelize.Parcelize
 import teamcityapp.features.change.R
 import teamcityapp.features.change.databinding.ActivityChangeBinding
-import teamcityapp.features.change.viewmodel.ChangeViewModel
+import teamcityapp.features.change.stateholder.ChangeStateHolder
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 const val ARG_BUNDLE_DATA = "ARG_BUNDLE_DATA"
 
-class ChangeActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class ChangeActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var viewModel: ChangeViewModel
+    lateinit var stateHolder: ChangeStateHolder
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +43,8 @@ class ChangeActivity : DaggerAppCompatActivity() {
             R.layout.activity_change
         )
             .apply {
-                viewmodel = this@ChangeActivity.viewModel
-                lifecycle.addObserver(this@ChangeActivity.viewModel)
+                stateHolder = this@ChangeActivity.stateHolder
+                lifecycle.addObserver(this@ChangeActivity.stateHolder)
             }
     }
 

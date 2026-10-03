@@ -24,39 +24,50 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenterImpl
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import dagger.android.AndroidInjection
-import dagger.android.support.DaggerAppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import teamcityapp.libraries.utils.initToolbar
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Provider
 import javax.inject.Inject
 
 /**
  * Activity to manage build details info
  */
-class BuildDetailsActivity : DaggerAppCompatActivity() {
+@AndroidEntryPoint
+class BuildDetailsActivity : AppCompatActivity() {
 
     @Inject
+    lateinit var presenterProvider: Provider<BuildDetailsPresenterImpl>
+
+    private var presenterResumed = false
+
     lateinit var presenter: BuildDetailsPresenterImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        presenter = presenterProvider.get()
         setContentView(R.layout.activity_build)
         initToolbar()
         presenter.onViewsCreated()
     }
 
     override fun onDestroy() {
-        presenter.onViewsDestroyed()
+        disposePresenter()
         super.onDestroy()
     }
 
     override fun onResume() {
         super.onResume()
         presenter.onResume()
+        presenterResumed = true
     }
 
     override fun onPause() {
         super.onPause()
-        presenter.onPause()
+        if (presenterResumed) {
+            presenter.onPause()
+            presenterResumed = false
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -71,9 +82,15 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        val resumePresenter = presenterResumed
+        disposePresenter()
         setIntent(intent)
-        AndroidInjection.inject(this)
+        presenter = presenterProvider.get()
         presenter.onViewsCreated()
+        if (resumePresenter) {
+            presenter.onResume()
+            presenterResumed = true
+        }
     }
 
     override fun finish() {
@@ -90,6 +107,14 @@ class BuildDetailsActivity : DaggerAppCompatActivity() {
             return
         }
         super.applyOverrideConfiguration(overrideConfiguration)
+    }
+
+    private fun disposePresenter() {
+        if (presenterResumed) {
+            presenter.onPause()
+            presenterResumed = false
+        }
+        presenter.onViewsDestroyed()
     }
 
     companion object {
