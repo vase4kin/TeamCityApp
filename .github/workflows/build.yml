@@ -14,29 +14,12 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Keep APK preparation and execution behind the same instrumentation policy.
-env:
-  RUN_MARATHON_TESTS: >-
-    ${{
-      vars.ENABLE_MARATHON_TESTS == 'true' &&
-      !startsWith(github.head_ref || github.ref_name, 'chore-') &&
-      (github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository)
-    }}
-
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    outputs:
-      marathon-enabled: ${{ steps.test-policy.outputs.marathon-enabled }}
-
     steps:
-      - name: Resolve instrumentation policy
-        id: test-policy
-        run: echo "marathon-enabled=$RUN_MARATHON_TESTS" >> "$GITHUB_OUTPUT"
-
       - name: Check out repository
         uses: actions/checkout@v7
 
@@ -59,16 +42,11 @@ jobs:
           cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
-      - name: Build mock application and optional instrumentation APK
+      - name: Build mock application and instrumentation APK
         run: |
-          tasks=(:app:assembleMockDebug)
-          if [[ "$RUN_MARATHON_TESTS" == 'true' ]]; then
-            tasks=(-PinstrumentationCoverage "${tasks[@]}" :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs)
-          fi
-          ./gradlew "${tasks[@]}" --stacktrace
+          ./gradlew -PinstrumentationCoverage :app:assembleMockDebug :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs --stacktrace
 
       - name: Upload mock test APKs
-        if: env.RUN_MARATHON_TESTS == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: mock-test-apks
@@ -76,7 +54,6 @@ jobs:
           if-no-files-found: error
 
       - name: Upload instrumentation coverage inputs
-        if: env.RUN_MARATHON_TESTS == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: instrumentation-coverage-inputs
@@ -105,14 +82,10 @@ jobs:
           # Same-repository PR reruns can reuse their compiled task outputs.
           cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
 
-      - name: Build minified application and optional R8 smoke-test APK
+      - name: Build minified application and R8 smoke-test APK
         run: |
           python3 scripts/prepare-r8-verification.py
-          tasks=(:app:assembleProdR8Verification)
-          if [[ "$RUN_MARATHON_TESTS" == 'true' ]]; then
-            tasks+=(:app:assembleProdR8VerificationAndroidTest)
-          fi
-          ./gradlew -Pr8Verification "${tasks[@]}" --stacktrace
+          ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest --stacktrace
 
       - name: Upload R8 diagnostics
         if: always()
@@ -123,7 +96,6 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload R8 test APKs
-        if: env.RUN_MARATHON_TESTS == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: r8-test-apks
@@ -240,8 +212,6 @@ jobs:
       contents: read
       id-token: write
     needs: [build, build-minified]
-    # Paused by default; set ENABLE_MARATHON_TESTS to 'true' to build and run test APKs.
-    if: needs.build.outputs.marathon-enabled == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     strategy:
