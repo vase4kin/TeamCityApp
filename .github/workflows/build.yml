@@ -121,7 +121,12 @@ jobs:
       - name: Archive unit-test coverage data
         if: always()
         run: |
-          find . -path '*/build/jacoco/*.exec' -type f -print > unit-test-coverage-files.txt
+          # JaCoCo needs compiled classes as well as execution data on the coverage runner.
+          find . -type f \( \
+            -path '*/build/jacoco/*.exec' -o \
+            -path '*/build/intermediates/javac/*/*.class' -o \
+            -path '*/build/tmp/kotlin-classes/*/*.class' \
+          \) -print > unit-test-coverage-files.txt
           tar -czf unit-test-coverage.tar.gz --files-from unit-test-coverage-files.txt
 
       - name: Upload unit-test results
