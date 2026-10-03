@@ -21,7 +21,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-    Copyright 2016 Andrey Tolpeev
+    Copyright 2026 Andrey Tolpeev
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
