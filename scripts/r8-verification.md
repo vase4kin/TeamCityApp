@@ -32,8 +32,9 @@ interceptor; no TeamCity server is needed.
 
 CI builds these APKs and runs them on Android OS version 17 in the R8 entry of
 the Marathon Cloud matrix, in parallel with mock instrumentation tests and with
-the same fork/branch restrictions. Each matrix entry invokes Marathon once with
-its matching application and test APKs. R8 smoke tests do not collect coverage.
+the same required `MARATHON_CLOUD_API_TOKEN` secret. Each matrix entry invokes
+Marathon once with its matching application and test APKs. R8 smoke tests do
+not collect coverage.
 Mappings and R8 diagnostics are uploaded as `r8-diagnostics`.
 
 Keep JSON field names stable for existing server payloads and saved accounts.

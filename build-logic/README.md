@@ -93,21 +93,21 @@ CI starts `Build` (mock debug), `Build minified` (production R8 verification),
 `Checks` (lint), and `Unit tests` independently. The unit-test invocation also
 generates aggregate coverage after the test and compilation tasks;
 the same job uploads its XML directly to Codecov. Unit-test coverage runs on
-every branch, even when Marathon is paused, and its upload does not wait for
-APK builds or instrumentation tests. The report artifact includes XML and HTML.
+every branch, and its upload does not wait for APK builds or instrumentation
+tests. The report artifact includes XML and HTML.
 
-Both mock debug and minified production verification APKs are always built. Test
-APKs and their upload run only when `ENABLE_MARATHON_TESTS` is `true`, the branch
-does not start with `chore-`, and a pull request originates in this repository.
+Both mock debug and minified production verification APKs and their test APKs
+are always built and uploaded. Marathon runs on every CI invocation, without
+an enable/disable variable or branch-name policy.
 The Marathon matrix runs mock instrumentation and minified R8 smoke tests in
 two parallel jobs, both on Android OS version 17 with the `google_apis` image.
 Each job downloads only its matching app and test APK artifact and invokes
-Marathon once. They wait for both APK builds and use the mock build's policy
-output so preparation and execution stay aligned. Pausing Marathon therefore
-skips instrumentation compilation too.
+Marathon once. They wait for both APK builds and require the
+`MARATHON_CLOUD_API_TOKEN` secret. Fork PRs do not receive this secret and cannot
+run Marathon successfully.
 
-When Marathon is enabled, the mock APK build also passes
-`-PinstrumentationCoverage` and runs `:app:prepareInstrumentationCoverageInputs`.
+The mock APK build passes `-PinstrumentationCoverage` and runs
+`:app:prepareInstrumentationCoverageInputs`.
 Only the debug application is instrumented; minified R8 and release builds keep
 their existing configuration. The task exports matching uninstrumented classes,
 source files, and the catalog-pinned JaCoCo CLI in
@@ -125,10 +125,9 @@ collection and skips the coverage-input download and report generation.
 Unit and instrumentation reports upload independently with the `unit` and
 `instrumentation` Codecov flags and the same PR head/commit SHA. Codecov merges
 all uploads into the commit's overall coverage, with separate flag views.
-Both flags join the total and disable carryforward; when Marathon is skipped,
-only that commit's unit coverage is reported. There is no fixed upload-count
-requirement, and the PR comment updates as reports arrive. Instrumentation XML
-is saved as the `instrumentation-coverage` artifact.
+Both flags join the total and disable carryforward. There is no fixed
+upload-count requirement, and the PR comment updates as reports arrive.
+Instrumentation XML is saved as the `instrumentation-coverage` artifact.
 
 Gradle task-output caching and parallel module execution are enabled in
 `gradle.properties`. CI uses the enhanced Gradle cache provider for fallback
