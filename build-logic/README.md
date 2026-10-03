@@ -109,8 +109,10 @@ run Marathon successfully.
 The mock APK build passes `-PinstrumentationCoverage` and runs
 `:app:prepareInstrumentationCoverageInputs`.
 Only the debug application is instrumented; minified R8 and release builds keep
-their existing configuration. The task exports matching uninstrumented classes,
-source files, and the catalog-pinned JaCoCo CLI in
+their existing configuration. The task uses the tested app variant's scoped
+class artifacts, including its transformed dependency JARs, so library class IDs
+match the APK. It exports those uninstrumented classes, source files, and the
+catalog-pinned JaCoCo CLI in
 `app/build/coverage/instrumentation-inputs/instrumentation-coverage-inputs.zip`.
 It does not run unit tests or generate a coverage report.
 
