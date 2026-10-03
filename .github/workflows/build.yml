@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       run_ui_tests:
-        description: Run UI tests (including chore PR branches)
+        description: Override changed + smoke with the selected UI suite
         type: boolean
         default: false
       suite:
-        description: UI suite (used when Run UI tests is checked)
+        description: UI suite override (otherwise changed + smoke runs)
         type: choice
         default: full
         options: [full, smoke, single, random]
@@ -41,10 +41,14 @@ jobs:
     outputs:
       run_ui_tests: ${{ steps.policy.outputs.run_ui_tests }}
       suite: ${{ steps.policy.outputs.suite }}
+      collect_coverage: ${{ steps.policy.outputs.collect_coverage }}
       matrix: ${{ steps.policy.outputs.matrix }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          # The changed suite compares the complete PR branch with its merge base.
+          fetch-depth: 0
 
       - name: Select UI test policy and suite
         id: policy
@@ -90,8 +94,12 @@ jobs:
         if: needs.test-policy.outputs.run_ui_tests != 'true'
         run: ./gradlew :app:assembleMockDebug --stacktrace
 
-      - name: Build mock application and instrumentation APK
-        if: needs.test-policy.outputs.run_ui_tests == 'true'
+      - name: Build mock application and instrumentation APK without coverage
+        if: needs.test-policy.outputs.run_ui_tests == 'true' && needs.test-policy.outputs.collect_coverage != 'true'
+        run: ./gradlew :app:assembleMockDebug :app:assembleMockDebugAndroidTest --stacktrace
+
+      - name: Build mock application and instrumentation APK with coverage
+        if: needs.test-policy.outputs.run_ui_tests == 'true' && needs.test-policy.outputs.collect_coverage == 'true'
         run: |
           ./gradlew -PinstrumentationCoverage :app:assembleMockDebug :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs --stacktrace
 
@@ -104,7 +112,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload instrumentation coverage inputs
-        if: needs.test-policy.outputs.run_ui_tests == 'true'
+        if: needs.test-policy.outputs.collect_coverage == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: instrumentation-coverage-inputs

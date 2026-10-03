@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,18 +17,17 @@ spec.loader.exec_module(ci)
 
 
 class MarathonPolicyTest(unittest.TestCase):
-    def test_prs_never_launch_paid_tests_automatically(self):
+    def test_every_same_repository_pr_runs_changed_and_smoke(self):
         for title in ("chore: update docs", "chore(ci): tune CI", "fix: correct login", "feat: add screen"):
             for action in ("opened", "synchronize", "reopened"):
                 with self.subTest(title=title, action=action):
                     result = ci.policy("pull_request", "refs/pull/389/merge", {"action": action, "pull_request": {"title": title}})
-                    self.assertFalse(result["run"])
-                    self.assertEqual(result["suite"], "none")
+                    self.assertTrue(result["run"])
+                    self.assertEqual(result["suite"], "changed")
 
-    def test_only_semantic_chore_type_is_identified_as_chore(self):
-        for title, chore in (("chore(ci): update checks", True), ("chore: cleanup", True), ("chore!: change", True), ("choreography: change", False)):
-            result = ci.policy("pull_request", "refs/pull/1/merge", {"pull_request": {"title": title}})
-            self.assertEqual(result["reason"].startswith("Chore PR"), chore)
+    def test_fork_prs_skip_paid_tests_because_the_secret_is_unavailable(self):
+        event = {"repository": {"full_name": "owner/app"}, "pull_request": {"head": {"repo": {"full_name": "fork/app"}}}}
+        self.assertFalse(ci.policy("pull_request", "refs/pull/1/merge", event)["run"])
 
     def test_default_branch_push_always_runs_both_full_suites(self):
         event = {"repository": {"default_branch": "dev"}, "head_commit": {"message": "chore(ci): update checks"}}
@@ -42,9 +42,11 @@ class MarathonPolicyTest(unittest.TestCase):
                 self.assertTrue(result["run"])
                 self.assertEqual(result["suite"], suite)
 
-    def test_dispatch_is_opt_in(self):
+    def test_dispatch_without_override_runs_changed_and_smoke(self):
         for inputs in ({}, {"run_ui_tests": False}, {"run_ui_tests": "false", "suite": "full"}):
-            self.assertFalse(ci.policy("workflow_dispatch", "refs/heads/dev", {"inputs": inputs})["run"])
+            result = ci.policy("workflow_dispatch", "refs/heads/dev", {"inputs": inputs})
+            self.assertTrue(result["run"])
+            self.assertEqual(result["suite"], "changed")
         with self.assertRaisesRegex(ValueError, "Unknown UI suite"):
             ci.policy("workflow_dispatch", "refs/heads/dev", {"inputs": {"run_ui_tests": True, "suite": "typo"}})
 
@@ -104,11 +106,117 @@ class MarathonSelectionTest(unittest.TestCase):
             subprocess.run([sys.executable, str(SCRIPT), "policy", "--selection-dir", str(root / "selection")], env=env, check=True, capture_output=True)
             outputs = dict(line.split("=", 1) for line in (root / "outputs").read_text().splitlines())
             self.assertEqual(outputs["run_ui_tests"], "true")
+            self.assertEqual(outputs["collect_coverage"], "true")
             self.assertEqual([job["label"] for job in json.loads(outputs["matrix"])["include"]], ["instrumentation"])
             selected = json.loads((root / "selection/selection.json").read_text())
             self.assertEqual(selected["seed"], "repeat-me")
             self.assertIn(json.dumps(selected["tests"][0]), (root / "selection/filter.yaml").read_text())
             self.assertIn(selected["tests"][0], (root / "summary").read_text())
+
+
+class ChangedSelectionTest(unittest.TestCase):
+    def setUp(self):
+        self.catalog = json.loads((ROOT / "scripts/marathon-tests.json").read_text())
+        self.mapping = json.loads((ROOT / "scripts/marathon-changes.json").read_text())
+        self.index = ci.source_test_index(ROOT)
+        self.available = set().union(*self.index.values())
+        self.smoke = set(self.catalog["smoke"])
+
+    def select(self, *paths):
+        return ci.changed_selection(list(paths), self.catalog, self.available, self.index, self.mapping)
+
+    def test_docs_and_ci_only_changes_still_run_smoke(self):
+        result = self.select("README.md", "build-logic/README.md", ".github/workflows/build.yml", "scripts/marathon-ci.py")
+        self.assertEqual(set(result["tests"]), self.smoke)
+        self.assertEqual(result["fallback_paths"], [])
+
+    def test_build_log_sources_resources_and_mock_data_select_screen_and_lifecycle(self):
+        expected = self.smoke | {
+            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragmentTest#testUserCanSeeBuildLog",
+            "com.github.vase4kin.teamcityapp.hilt.BuildLogViewLifecycleTest#sameFragmentCanCreateAndDestroyItsViewRepeatedly",
+        }
+        for path in ("app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt", "app/src/main/res/layout/fragment_build_log.xml", "app/src/mock/assets/fake_build_log.html"):
+            with self.subTest(path=path):
+                result = self.select(path)
+                self.assertEqual(set(result["tests"]), expected)
+                self.assertEqual(result["fallback_paths"], [])
+
+    def test_changed_test_file_selects_every_active_method_in_that_class(self):
+        path = "app/src/androidTest/java/com/github/vase4kin/teamcityapp/buildlist/view/BuildListActivityTest.kt"
+        self.assertEqual(set(self.select(path)["tests"]), self.smoke | self.index[path])
+
+    def test_new_methods_enter_changed_selection_without_catalog_updates(self):
+        path = "app/src/androidTest/java/example/NewFeatureTest.kt"
+        methods = {"example.NewFeatureTest#first", "example.NewFeatureTest#second"}
+        result = ci.changed_selection([path], self.catalog, self.available | methods, {**self.index, path: methods}, self.mapping)
+        self.assertEqual(set(result["tests"]), self.smoke | methods)
+
+    def test_migrated_module_includes_cross_package_injection_tests(self):
+        result = self.select("features/about/feature/src/main/java/teamcityapp/features/about/AboutActivity.kt")
+        self.assertIn("com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#aboutInjectsAndRecreates", result["tests"])
+        self.assertTrue(any("AboutActivityTest#" in test for test in result["tests"]))
+        self.assertEqual(result["fallback_paths"], [])
+
+    def test_shared_unmapped_and_helper_changes_broaden_mock_selection(self):
+        for path in ("libraries/storage/src/main/java/Store.kt", "app/src/main/java/com/github/vase4kin/teamcityapp/storage/SharedUserStorage.kt", "app/src/main/res/values/strings.xml", "app/src/main/java/com/github/vase4kin/teamcityapp/new_feature/View.kt", "app/src/androidTest/java/com/github/vase4kin/teamcityapp/helper/HiltApiTestRule.kt", "build-logic/src/main/kotlin/AndroidBaseConventionPlugin.kt"):
+            with self.subTest(path=path):
+                result = self.select(path)
+                self.assertEqual(set(result["tests"]), self.available)
+                self.assertEqual(result["suite"], "changed")
+                self.assertEqual(result["fallback_paths"], [path])
+
+    def test_combining_changes_deduplicates_smoke_and_feature_tests(self):
+        paths = ("app/src/main/java/com/github/vase4kin/teamcityapp/home/view/HomeActivity.kt", "app/src/main/res/layout/activity_home.xml")
+        result = self.select(*paths)
+        self.assertEqual(len(result["tests"]), len(set(result["tests"])))
+        self.assertTrue(self.smoke <= set(result["tests"]))
+        self.assertIn("com.github.vase4kin.teamcityapp.hilt.PresenterReplacementTest#homeDisposesOldPresenterBeforeAccountReload", result["tests"])
+
+    def test_mapping_exceptions_reference_current_tests(self):
+        for owner, rule in self.mapping.items():
+            for pattern in rule.get("tests", []):
+                with self.subTest(owner=owner, pattern=pattern):
+                    self.assertTrue(any(ci.fnmatch.fnmatchcase(test, pattern) for test in self.available))
+
+    def test_pr_diff_uses_complete_branch_and_keeps_both_rename_paths(self):
+        event = {"pull_request": {"base": {"sha": "base"}, "head": {"sha": "head"}}}
+        completed = subprocess.CompletedProcess([], 0, stdout=b"old/View.kt\0new/View.kt\0")
+        with patch.object(ci.subprocess, "run", return_value=completed) as run:
+            self.assertEqual(ci.changed_paths(ROOT, "pull_request", event), ["old/View.kt", "new/View.kt"])
+        self.assertIn("base...head", run.call_args.args[0])
+        self.assertIn("--no-renames", run.call_args.args[0])
+
+    def test_default_and_smoke_commands_collect_no_device_coverage(self):
+        events = [
+            ("pull_request", "refs/pull/1/merge", {"pull_request": {"base": {"sha": "HEAD"}, "head": {"sha": "HEAD"}}}),
+            ("workflow_dispatch", "refs/heads/example", {"inputs": {"run_ui_tests": "true", "suite": "smoke"}}),
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for i, (name, ref, payload) in enumerate(events):
+                event = root / f"event-{i}.json"
+                event.write_text(json.dumps(payload))
+                env = dict(os.environ, GITHUB_EVENT_PATH=str(event), GITHUB_EVENT_NAME=name, GITHUB_REF=ref, GITHUB_OUTPUT=str(root / f"output-{i}"), GITHUB_STEP_SUMMARY=str(root / f"summary-{i}"))
+                subprocess.run([sys.executable, str(SCRIPT), "policy", "--selection-dir", str(root / f"selection-{i}")], env=env, check=True, capture_output=True)
+                outputs = dict(line.split("=", 1) for line in (root / f"output-{i}").read_text().splitlines())
+                matrix = json.loads(outputs["matrix"])["include"]
+                self.assertEqual(outputs["collect_coverage"], "false")
+                self.assertEqual(len(matrix), 1)
+                self.assertFalse(matrix[0]["coverage"])
+                selected = json.loads((root / f"selection-{i}/selection.json").read_text())
+                self.assertEqual(set(selected["tests"]), self.smoke)
+
+    def test_missing_diff_baseline_broadens_selection_without_enabling_coverage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            event = root / "event.json"
+            event.write_text(json.dumps({"pull_request": {"base": {"sha": "missing-base"}, "head": {"sha": "HEAD"}}}))
+            env = dict(os.environ, GITHUB_EVENT_PATH=str(event), GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/1/merge", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+            subprocess.run([sys.executable, str(SCRIPT), "policy", "--selection-dir", str(root / "selection")], env=env, check=True, capture_output=True)
+            selected = json.loads((root / "selection/selection.json").read_text())
+            self.assertEqual(set(selected["tests"]), self.available)
+            self.assertIn("fallback_reason", selected)
+            self.assertIn("collect_coverage=false", (root / "output").read_text())
 
 
 class MarathonResultTest(unittest.TestCase):
