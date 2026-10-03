@@ -161,3 +161,38 @@ the requested behavior or an explicitly requested migration slice.
   Create a GitButler oplog snapshot before reorganizing multiple commits or branches.
 - Do not push or open a pull request unless requested. When asked to ship, use
   `but pr new` for a new draft PR or update the existing branch/PR with GitButler.
+
+### Commit & PR Titles
+
+**Conventional Commits** format is enforced by a GitHub Actions workflow on every PR:
+
+```css
+<type>[optional scope][!]: <description>
+```
+
+Use the same format for commit messages and PR titles. Only these commit types are allowed:
+
+- `feat` — a releasable addition or intentional change to the deployed
+  application, UI, runtime behavior, or delivery pipeline.
+- `fix` — a releasable correction to the deployed application, UI, runtime
+  behavior, or delivery pipeline.
+- `chore` — work that does not change the deployed application or release
+  behavior, such as documentation, tests, internal tooling, or repository
+  housekeeping.
+
+Use the optional scope to describe the affected area or work category. Labels
+such as `docs`, `ci`, `style`, `test`, `build`, `refactor`, and `perf` are
+scopes, not commit types. If a UI, application, or pipeline change requires a
+redeploy or should create a release, it must be `feat` or `fix`, even when its
+scope is `style`, `ci`, or another non-product label. Use `chore(<scope>)` only
+when the change should not create an application release.
+
+Examples:
+
+```scss
+feat(ui): add dark mode toggle
+fix(zoom): prevent pinch zoom from exceeding bounds
+fix(ci): restore production deployment
+chore(docs): document family-data validation
+chore(test): reorganize parser fixtures
+```
