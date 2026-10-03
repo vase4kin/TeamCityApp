@@ -102,8 +102,9 @@ instrumentation tests plus the five-test smoke suite when application, Android
 test, or build inputs change. Documentation, CI-only, housekeeping, and empty
 diffs skip UI tests. PR comments
 do not trigger CI. Fork PRs cannot receive the Marathon secret and skip paid UI
-tests. A push to the default branch (`dev`) runs both full UI suites after merging;
-this is not a pre-merge gate.
+tests. A push to the default branch (`dev`) runs both full UI suites when the push
+changes application, Android test, or build inputs. Documentation and CI-only
+merges skip both suites. This is not a pre-merge gate.
 
 Manual dispatch defaults to changed + smoke. Check **Override changed + smoke
 with the selected UI suite** to run one of the existing four manual choices.
@@ -111,8 +112,10 @@ Select the PR's head branch in the Run workflow branch dropdown. There are no
 repository enable/disable variables.
 
 The policy job compares the entire PR head with its base using a merge-base diff,
-including both paths of renames and deleted files. Manual changed runs compare
-with the default branch. It discovers current non-ignored methods from changed
+including both paths of renames and deleted files. Default-branch pushes compare
+the event's `before` and `after` tips directly, covering every commit in a push
+and changes removed by a force push. Manual changed runs compare with the default
+branch. It discovers current non-ignored methods from changed
 test classes and selects feature tests by source-folder/package conventions.
 `scripts/marathon-changes.json` maps resource paths and cross-package tests, such
 as build-log lifecycle tests under Hilt. Device validation is limited to
@@ -123,8 +126,10 @@ CI scripts and their Python tests, or other repository files skip instrumentatio
 including smoke tests, and produce no selection artifact. Relevant changes
 always include smoke tests, and selections are deduplicated. Explicit manual
 suite overrides still run regardless of the changed files. Shared
-or unmapped application inputs, or an unavailable diff baseline, broaden the
-selection to all eligible mock instrumentation tests. This still uses the changed
+or unmapped application inputs, or an unavailable PR/manual diff baseline, broaden
+the selection to all eligible mock instrumentation tests. An unavailable push
+baseline (including a newly created branch) preserves both full UI suites.
+PR/manual fallback still uses the changed
 suite, without R8 execution or device coverage. The selection artifact and job
 summary record changed files, matched features, and fallback paths/reasons.
 
