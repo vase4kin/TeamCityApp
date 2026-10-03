@@ -97,14 +97,30 @@ every branch, and its upload does not wait for APK builds or instrumentation
 tests. The report artifact includes XML and HTML.
 
 Both mock debug and minified production verification applications are built on
-every invocation. PR validation (including semantic `chore:` and `chore(scope):`
-titles) runs no paid UI tests. PR comments do not trigger CI. A push to the
-default branch (`dev`) runs both full UI suites after merging; this is not a
-pre-merge gate. Manual dispatch runs UI tests only when **Run UI tests** is
-checked, including on a chore PR's branch. Select the PR's head branch in the
-Run workflow branch dropdown. There are no repository enable/disable variables.
+every invocation. Every same-repository PR validation, including chores, runs
+changed-feature instrumentation tests plus the five-test smoke suite. PR comments
+do not trigger CI. Fork PRs cannot receive the Marathon secret and skip paid UI
+tests. A push to the default branch (`dev`) runs both full UI suites after merging;
+this is not a pre-merge gate.
 
-Manual dispatch supports four suite choices:
+Manual dispatch defaults to changed + smoke. Check **Override changed + smoke
+with the selected UI suite** to run one of the existing four manual choices.
+Select the PR's head branch in the Run workflow branch dropdown. There are no
+repository enable/disable variables.
+
+The policy job compares the entire PR head with its base using a merge-base diff,
+including both paths of renames and deleted files. Manual changed runs compare
+with the default branch. It discovers current non-ignored methods from changed
+test classes and selects feature tests by source-folder/package conventions.
+`scripts/marathon-changes.json` maps resource paths and cross-package tests, such
+as build-log lifecycle tests under Hilt. Smoke tests are always included and
+selections are deduplicated. Documentation/CI-only changes run smoke only. Shared
+or unmapped application inputs, or an unavailable diff baseline, broaden the
+selection to all eligible mock instrumentation tests. This still uses the changed
+suite, without R8 execution or device coverage. The selection artifact and job
+summary record changed files, matched features, and fallback paths/reasons.
+
+Manual overrides support four suite choices:
 
 | Suite | Selection | Marathon jobs |
 | --- | --- | --- |
@@ -132,13 +148,14 @@ unexpected tests. R8 verification requires at least five successful tests.
 
 All Marathon jobs use Android OS version 17 with the `google_apis` image and CLI
 1.0.64. Each job downloads its matching APK artifact and invokes Marathon once.
-They wait for the APK builds and require `MARATHON_CLOUD_API_TOKEN`. Ordinary PR
-runs omit test APK compilation, test APK uploads, and instrumentation coverage
-preparation. Sampled runs omit the R8 test APK and paid R8 execution. Superseded
+They wait for the APK builds and require `MARATHON_CLOUD_API_TOKEN`. Changed and
+smoke runs build the mock application and test APK without device instrumentation,
+coverage-input preparation, or coverage reporting/upload. Non-full runs omit the
+R8 test APK and paid R8 execution. Superseded
 PR validation is cancelled; manual and default-branch runs have unique
 concurrency groups so a later run does not cancel their UI tests.
 
-When UI tests are requested, the mock APK build passes
+For full, single, or random runs, the mock APK build passes
 `-PinstrumentationCoverage` and runs `:app:prepareInstrumentationCoverageInputs`.
 Only the debug application is instrumented; minified R8 and release builds keep
 their existing configuration. The task uses the tested app variant's scoped
@@ -148,8 +165,8 @@ catalog-pinned JaCoCo CLI in
 `app/build/coverage/instrumentation-inputs/instrumentation-coverage-inputs.zip`.
 It does not run unit tests or generate a coverage report.
 
-The mock run collects device coverage and converts downloaded `.ec`/`.exec`
-files (including device archives) into JaCoCo XML using
+Full, single, and random mock runs collect device coverage and convert downloaded
+`.ec`/`.exec` files (including device archives) into JaCoCo XML using
 `scripts/generate-instrumentation-coverage.py`. Missing execution data or
 mismatched classes fail the job rather than upload an empty or inaccurate
 report. Report generation needs Java 17, without Gradle or compilation on the
@@ -165,7 +182,8 @@ coverage represents an earlier run, not proof that current code passed UI tests.
 Carried-forward flags are shown in the PR comment. There is no fixed upload-count
 requirement, and the comment updates as reports arrive.
 
-Smoke, single, and random runs save instrumentation XML and raw Marathon results
+Changed and smoke runs save raw Marathon results without collecting or uploading
+instrumentation coverage. Single and random runs also save instrumentation XML
 as artifacts but do not upload instrumentation coverage to Codecov. This avoids
 replacing a full-suite baseline with a partial report: carryforward applies to
 an absent flag, not missing tests within a newly uploaded report for that flag.
