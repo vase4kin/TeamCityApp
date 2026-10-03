@@ -5,6 +5,7 @@ on:
     branches:
       - dev
   pull_request:
+    types: [opened, synchronize, reopened, edited]
   workflow_dispatch:
     inputs:
       run_ui_tests:
@@ -31,7 +32,7 @@ permissions:
 concurrency:
   # Cancel superseded PR validation, but preserve every manual/default-branch UI run.
   group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && (github.event.action != 'edited' || github.event.changes.title != null) }}
 
 jobs:
   test-policy:

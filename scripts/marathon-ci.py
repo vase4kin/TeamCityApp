@@ -46,8 +46,24 @@ def policy(event_name, ref, event):
         repository = event.get("repository", {}).get("full_name")
         if head_repo != repository:
             return {"run": False, "suite": "none", "reason": "Fork PR has no Marathon API secret"}
+        if is_chore(pr.get("title", "")):
+            return {"run": False, "suite": "none", "reason": "Chore PR skips automatic UI tests"}
+        if event.get("action") == "edited" and set(event.get("changes", {})) == {"body"}:
+            return {"run": False, "suite": "none", "reason": "PR body edit needs no additional UI run"}
         return {"run": True, "suite": "changed", "reason": "Changed-feature and smoke validation for application or Android build changes"}
     return {"run": False, "suite": "none", "reason": "No UI policy for this event"}
+
+
+def is_chore(title):
+    return bool(re.match(r"^chore(?:\([^()\r\n]+\))?:\s+\S", title.strip()))
+
+
+def push_commit_subjects(root, event):
+    result = subprocess.run(
+        ["git", "log", "--format=%s", f"{event['before']}..{event['after']}"],
+        cwd=root, capture_output=True, check=True,
+    )
+    return result.stdout.decode().splitlines()
 
 
 def source_test_index(root):
@@ -256,6 +272,13 @@ def main():
                     selected = changed_selection(paths, catalog, available, index, mapping)
                 if not any(ui_test_input(path) for path in paths):
                     decision = {"run": False, "suite": "none", "reason": "No application, Android test, or build inputs changed"}
+                elif decision["suite"] == "full" and not event.get("forced", False):
+                    # Check every incoming commit, not just the last subject.
+                    # Force pushes can also remove app changes from old history.
+                    subjects = push_commit_subjects(ROOT, event)
+                    selected["commit_subjects"] = subjects
+                    if subjects and all(is_chore(subject) for subject in subjects):
+                        decision = {"run": False, "suite": "none", "reason": "Push contains only chore commits; skipping automatic UI tests"}
             except (subprocess.CalledProcessError, KeyError):
                 # Missing comparison history must not silently omit affected tests.
                 if decision["suite"] == "full":

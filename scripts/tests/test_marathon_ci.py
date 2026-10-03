@@ -18,8 +18,16 @@ spec.loader.exec_module(ci)
 
 
 class MarathonPolicyTest(unittest.TestCase):
-    def test_same_repository_pr_is_eligible_for_changed_selection_regardless_of_title(self):
-        for title in ("chore: update docs", "chore(ci): tune CI", "fix: correct login", "feat: add screen"):
+    def test_chore_pr_titles_skip_automatic_ui_tests(self):
+        for title in ("chore: update docs", "chore(ci): tune CI", "chore(build): update Android tooling"):
+            for action in ("opened", "synchronize", "reopened", "edited"):
+                with self.subTest(title=title, action=action):
+                    result = ci.policy("pull_request", "refs/pull/1/merge", {"action": action, "pull_request": {"title": title}})
+                    self.assertFalse(result["run"])
+                    self.assertEqual(result["suite"], "none")
+
+    def test_non_chore_prs_are_eligible_for_changed_selection(self):
+        for title in ("fix: correct login", "feat: add screen", "choreographer: add screen", "chore update docs", "chore:", "chore(ci)!: breaking app change"):
             for action in ("opened", "synchronize", "reopened"):
                 with self.subTest(title=title, action=action):
                     result = ci.policy("pull_request", "refs/pull/389/merge", {"action": action, "pull_request": {"title": title}})
@@ -29,6 +37,12 @@ class MarathonPolicyTest(unittest.TestCase):
     def test_fork_prs_skip_paid_tests_because_the_secret_is_unavailable(self):
         event = {"repository": {"full_name": "owner/app"}, "pull_request": {"head": {"repo": {"full_name": "fork/app"}}}}
         self.assertFalse(ci.policy("pull_request", "refs/pull/1/merge", event)["run"])
+
+    def test_title_edits_reselect_ui_policy_but_body_only_edits_do_not_rerun_ui(self):
+        for title, changes, expected in (("chore: update docs", {"title": {"from": "fix: correct login"}}, False), ("fix: correct login", {"title": {"from": "chore: update docs"}}, True), ("fix: correct login", {"body": {"from": "old body"}}, False), ("fix: correct login", {"title": {}, "body": {}}, True)):
+            with self.subTest(title=title, changes=changes):
+                event = {"action": "edited", "changes": changes, "pull_request": {"title": title}}
+                self.assertEqual(ci.policy("pull_request", "refs/pull/1/merge", event)["run"], expected)
 
     def test_default_branch_push_is_eligible_for_full_validation(self):
         event = {"repository": {"default_branch": "dev"}, "head_commit": {"message": "chore(ci): update checks"}}
@@ -42,6 +56,21 @@ class MarathonPolicyTest(unittest.TestCase):
                 result = ci.policy("workflow_dispatch", "refs/heads/codex/optimize-ci", event)
                 self.assertTrue(result["run"])
                 self.assertEqual(result["suite"], suite)
+
+    def test_chore_pr_command_skips_all_instrumentation_even_with_app_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "event.json").write_text(json.dumps({"pull_request": {"title": "chore(build): update Android tooling"}}))
+            env = dict(os.environ, GITHUB_EVENT_PATH=str(root / "event.json"), GITHUB_EVENT_NAME="pull_request", GITHUB_REF="refs/pull/1/merge", GITHUB_OUTPUT=str(root / "output"), GITHUB_STEP_SUMMARY=str(root / "summary"))
+            with patch.dict(os.environ, env), patch.object(sys, "argv", [str(SCRIPT), "policy", "--selection-dir", str(root / "selection")]), patch.object(ci, "changed_paths") as compare, patch("sys.stdout", new_callable=io.StringIO):
+                ci.main()
+            compare.assert_not_called()
+            outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
+            self.assertEqual(outputs["run_ui_tests"], "false")
+            self.assertEqual(outputs["suite"], "none")
+            self.assertEqual(outputs["collect_coverage"], "false")
+            self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+            self.assertFalse((root / "selection").exists())
 
     def test_dispatch_without_override_runs_changed_and_smoke(self):
         for inputs in ({}, {"run_ui_tests": False}, {"run_ui_tests": "false", "suite": "full"}):
@@ -280,7 +309,7 @@ class ChangedSelectionTest(unittest.TestCase):
 
 
 class DefaultBranchPushTest(unittest.TestCase):
-    def run_policy(self, payload, paths=None):
+    def run_policy(self, payload, paths=None, subjects=("fix: update app",), subject_error=None):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "event.json").write_text(json.dumps({"repository": {"default_branch": "dev"}, **payload}))
@@ -289,7 +318,7 @@ class DefaultBranchPushTest(unittest.TestCase):
                 if paths is None:
                     ci.main()
                 else:
-                    with patch.object(ci, "changed_paths", return_value=paths):
+                    with patch.object(ci, "changed_paths", return_value=paths), patch.object(ci, "push_commit_subjects", return_value=list(subjects), side_effect=subject_error):
                         ci.main()
             outputs = dict(line.split("=", 1) for line in (root / "output").read_text().splitlines())
             selection_file = root / "selection/selection.json"
@@ -325,6 +354,47 @@ class DefaultBranchPushTest(unittest.TestCase):
         self.assertEqual(selected["tests"], [])
         self.assertTrue(any(ci.ui_test_input(path) for path in selected["changed_files"]))
         self.assertFalse(has_filter)
+
+    def test_chore_merge_or_multiple_chore_commits_skip_both_full_suites(self):
+        for subjects in (("chore(build): update tooling (#1)",), ("chore: update docs", "chore(build): update tooling")):
+            with self.subTest(subjects=subjects):
+                outputs, selected, summary, _ = self.run_policy({"before": "old-tip", "after": "new-tip"}, ["build-logic/src/main/kotlin/Config.kt"], subjects)
+                self.assertEqual(outputs["run_ui_tests"], "false")
+                self.assertEqual(outputs["suite"], "none")
+                self.assertEqual(outputs["collect_coverage"], "false")
+                self.assertEqual(json.loads(outputs["matrix"]), {"include": []})
+                self.assertIsNone(selected)
+                self.assertIn("Push contains only chore commits", summary)
+
+    def test_mixed_push_or_invalid_chore_prefix_preserves_full_validation(self):
+        for subjects in (("fix: correct login", "chore: update docs"), ("feat: add screen", "chore(ci): tune CI"), ("choreographer: update app",), ("chore!: breaking app change",), ()):
+            with self.subTest(subjects=subjects):
+                outputs, selected, _, _ = self.run_policy({"before": "old-tip", "after": "new-tip"}, ["app/src/main/res/values/strings.xml"], subjects)
+                self.assertEqual(outputs["run_ui_tests"], "true")
+                self.assertEqual(outputs["suite"], "full")
+                self.assertEqual(outputs["collect_coverage"], "true")
+                self.assertEqual(len(json.loads(outputs["matrix"])["include"]), 2)
+
+    def test_forced_push_does_not_hide_removed_app_changes_with_a_chore_subject(self):
+        outputs, _, _, _ = self.run_policy({"before": "old-tip", "after": "new-tip", "forced": True}, ["app/src/main/res/values/strings.xml"], ("chore: update docs",))
+        self.assertEqual(outputs["run_ui_tests"], "true")
+        self.assertEqual(outputs["suite"], "full")
+
+    def test_unavailable_commit_subjects_preserve_full_validation(self):
+        error = subprocess.CalledProcessError(128, ["git", "log"])
+        outputs, selected, _, _ = self.run_policy({"before": "old-tip", "after": "new-tip"}, ["app/src/main/res/values/strings.xml"], subject_error=error)
+        self.assertEqual(outputs["run_ui_tests"], "true")
+        self.assertEqual(outputs["collect_coverage"], "true")
+        self.assertEqual(len(json.loads(outputs["matrix"])["include"]), 2)
+        self.assertIn("fallback_reason", selected)
+
+    def test_push_subjects_include_every_commit_between_event_tips(self):
+        event = {"before": "old-tip", "after": "new-tip"}
+        completed = subprocess.CompletedProcess([], 0, stdout=b"chore: update docs\nfix: correct login\n")
+        with patch.object(ci.subprocess, "run", return_value=completed) as run:
+            self.assertEqual(ci.push_commit_subjects(ROOT, event), ["chore: update docs", "fix: correct login"])
+        self.assertIn("old-tip..new-tip", run.call_args.args[0])
+        self.assertIn("--format=%s", run.call_args.args[0])
 
     def test_unavailable_push_history_keeps_full_validation(self):
         for payload in ({}, {"before": "missing-base", "after": "HEAD"}, {"before": "0" * 40, "after": "HEAD"}):
