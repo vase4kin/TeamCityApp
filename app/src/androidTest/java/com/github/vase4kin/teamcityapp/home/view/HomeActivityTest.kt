@@ -16,6 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.home.view
 
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -42,6 +44,8 @@ import com.github.vase4kin.teamcityapp.navigation.api.Project
 import com.github.vase4kin.teamcityapp.navigation.api.Projects
 import io.reactivex.Single
 import it.cosenonjaviste.daggermock.DaggerMockRule
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -151,5 +155,21 @@ class HomeActivityTest {
             .check(matches(withText("Contains a lof of projects")))
         onView(withRecyclerView(R.id.navigation_recycler_view).atPositionOnView(1, R.id.title))
             .check(matches(withText("Build and run tests")))
+    }
+
+    @Test
+    fun testToolbarDoesNotOverlapStatusBar() {
+        activityRule.launchActivity(null)
+
+        onView(withId(R.id.toolbar)).check { view, noViewFoundException ->
+            noViewFoundException?.let { throw it }
+            val statusBarInset = ViewCompat.getRootWindowInsets(view)
+                ?.getInsets(WindowInsetsCompat.Type.statusBars())
+                ?.top ?: 0
+            val location = IntArray(2)
+            view.getLocationInWindow(location)
+
+            assertThat(location[1], greaterThanOrEqualTo(statusBarInset))
+        }
     }
 }

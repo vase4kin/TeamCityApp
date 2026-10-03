@@ -17,7 +17,7 @@
 package teamcityapp.features.properties.feature.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class InternalProperty(

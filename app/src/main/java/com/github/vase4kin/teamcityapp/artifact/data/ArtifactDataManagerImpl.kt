@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.data
 
-import android.os.Environment
 import android.webkit.MimeTypeMap
 import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -39,7 +38,8 @@ private const val LOCATOR = "browseArchives:true"
  */
 class ArtifactDataManagerImpl(
     private val repository: Repository,
-    private val eventBus: EventBus
+    private val eventBus: EventBus,
+    private val downloadDirectory: java.io.File
 ) : BaseListRxDataManagerImpl<Files, File>(), ArtifactDataManager {
 
     private var listener: OnArtifactEventListener? = null
@@ -64,7 +64,7 @@ class ArtifactDataManagerImpl(
             .subscribeOn(Schedulers.io())
             .map { response ->
                 val downloadedFile = java.io.File(
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), name
+                    downloadDirectory, name
                 )
                 val sink = Okio.buffer(Okio.sink(downloadedFile))
                 sink.writeAll(response.source())

@@ -20,22 +20,21 @@ import org.gradle.api.JavaVersion
 
 object Config {
     const val minSdk = 21
-    const val compileSdk = 30
-    const val targetSdk = 30
-    const val buildTools = "30.0.2"
-    const val versionCode = 112
-    const val versionName = "1.52.4"
+    const val compileSdk = 36
+    const val targetSdk = 36
+    const val versionCode = 115
+    const val versionName = "1.52.6"
     const val applicationId = "com.github.vase4kin.teamcityapp"
-    val javaVersion = JavaVersion.VERSION_1_8
+    val javaVersion = JavaVersion.VERSION_17
 
     object KotlinOptions {
-        const val jvmTarget = "1.8"
+        const val jvmTarget = "17"
     }
 }
 
 object Libs {
 
-    const val errorView = "tr.xip.errorview:library:3.0.0"
+    const val errorView = "com.github.xiprox:ErrorView:3.0.0"
     const val aboutLibrary = "com.github.daniel-stoneuk:material-about-library:3.1.2"
     const val dialogs = "com.afollestad.material-dialogs:core:0.9.6.0"
     const val shimmerlayout = "io.supercharge:shimmerlayout:2.1.0"
@@ -44,17 +43,16 @@ object Libs {
     const val conceal = "com.facebook.conceal:conceal:1.1.3@aar"
     const val jodaTime = "joda-time:joda-time:2.8.1"
     const val mugen = "com.vinaysshenoy:mugen:1.0.3"
-    const val fragNav = "com.ncapdevi:frag-nav:3.3.0"
+    const val fragNav = "com.github.ncapdevi:fragnav:3.1.0"
 
     const val junit = "junit:junit:4.13"
     const val hamcrestJunit = "org.hamcrest:hamcrest-junit:2.0.0.0"
     const val daggerMock = "com.github.fabioCollini:DaggerMock:0.8.5"
-    const val conditionwatcher = "com.azimolabs.conditionwatcher:conditionwatcher:0.2"
 
     const val crashlytics = "com.crashlytics.sdk.android:crashlytics:2.6.8@aar"
 
     object AndroidX {
-        const val appcompat = "androidx.appcompat:appcompat:1.2.0"
+        const val appcompat = "androidx.appcompat:appcompat:1.6.1"
         const val cardView = "androidx.cardview:cardview:1.0.0"
         const val legacySupport = "androidx.legacy:legacy-support-v13:1.0.0"
         const val recyclerView = "androidx.recyclerview:recyclerview:1.0.0"
@@ -74,15 +72,16 @@ object Libs {
 
         object Test {
 
-            private const val version = "1.3.0"
+            private const val version = "1.6.1"
             const val core = "androidx.test:core:$version"
-            const val runner = "androidx.test:runner:$version"
+            const val runner = "androidx.test:runner:1.6.2"
             const val rules = "androidx.test:rules:$version"
+            const val orchestrator = "androidx.test:orchestrator:$version"
 
-            const val extJunit = "androidx.test.ext:junit:1.1.1"
+            const val extJunit = "androidx.test.ext:junit:1.2.1"
 
             object Espresso {
-                private const val version = "3.3.0"
+                private const val version = "3.6.1"
                 const val core = "androidx.test.espresso:espresso-core:$version"
                 const val intents = "androidx.test.espresso:espresso-intents:$version"
                 const val contrib = "androidx.test.espresso:espresso-contrib:$version"
@@ -106,7 +105,7 @@ object Libs {
         const val databindingCompiler = "com.android.databinding:compiler:3.1.4"
 
         object Tools {
-            const val openSourceLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.10.2"
+        const val openSourceLicensesPlugin = "com.google.android.gms:oss-licenses-plugin:0.10.9"
         }
     }
 
@@ -135,7 +134,7 @@ object Libs {
     }
 
     object Dagger {
-        private const val version = "2.29.1"
+        private const val version = "2.57.2"
         const val dagger = "com.google.dagger:dagger:$version"
         const val androidSupport = "com.google.dagger:dagger-android-support:$version"
         const val compiler = "com.google.dagger:dagger-compiler:$version"
@@ -149,30 +148,24 @@ object Libs {
     }
 
     object DexMaker {
-        private const val version = "2.28.0"
-        const val dexmaker = "com.linkedin.dexmaker:dexmaker:$version"
+        private const val version = "2.28.6"
         const val dexmakerMockito = "com.linkedin.dexmaker:dexmaker-mockito:$version"
     }
 
     object Kotlin {
-        private const val version = "1.4.10"
+        private const val version = "2.2.21"
         const val stdlib = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$version"
 
         object Tools {
             const val gradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$version"
-            const val extensions = "org.jetbrains.kotlin:kotlin-android-extensions:$version"
         }
     }
 
     object Tools {
-        const val gradleAndroid = "com.android.tools.build:gradle:4.1.1"
-        const val gradleversions = "com.github.ben-manes:gradle-versions-plugin:0.33.0"
-        const val androidAapt = "com.neenbedankt.gradle.plugins:android-apt:1.8"
-        const val googleServices = "com.google.gms:google-services:4.3.0"
-        const val jacoco = "org.jacoco:org.jacoco.core:0.8.1"
-        const val firebasePerf = "com.google.firebase:perf-plugin:1.3.1"
-        const val kotlinter = "org.jmailen.gradle:kotlinter-gradle:3.2.0"
-        const val crashlytics = "com.google.firebase:firebase-crashlytics-gradle:2.3.0"
+        const val gradleAndroid = "com.android.tools.build:gradle:9.4.0"
+        const val googleServices = "com.google.gms:google-services:4.4.3"
+        const val firebasePerf = "com.google.firebase:perf-plugin:2.0.2"
+        const val crashlytics = "com.google.firebase:firebase-crashlytics-gradle:3.0.6"
     }
 
     object Mockito {
@@ -181,8 +174,8 @@ object Libs {
     }
 
     object Groupie {
-        private const val version = "2.7.0"
-        const val groupie = "com.xwray:groupie:$version"
-        const val groupieDatabinding = "com.xwray:groupie-databinding:$version"
+        private const val version = "2.7.1"
+        const val groupie = "com.github.lisawray.groupie:groupie:$version"
+        const val groupieDatabinding = "com.github.lisawray.groupie:groupie-databinding:$version"
     }
 }

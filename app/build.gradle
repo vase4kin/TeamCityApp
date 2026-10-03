@@ -19,22 +19,23 @@ import teamcityapp.buildsrc.Config
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.google.firebase.firebase-perf'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'org.jmailen.kotlinter'
 apply plugin: 'com.google.android.gms.oss-licenses-plugin'
-apply from: '../scripts/jacoco.gradle'
-apply from: '../scripts/pmd.gradle'
+apply from: "$rootDir/scripts/jacoco.gradle"
 
 android {
+    namespace 'com.github.vase4kin.teamcityapp'
+
     defaultConfig {
         applicationId Config.applicationId
         versionCode Config.versionCode
         versionName Config.versionName
         vectorDrawables.useSupportLibrary = true
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     signingConfigs {
@@ -49,8 +50,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            zipAlignEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             minifyEnabled true
         }
         debug {
@@ -76,31 +76,32 @@ android {
         }
     }
 
-    dexOptions {
-        jumboMode true
-    }
-
-    packagingOptions {
-        // Exclude AndroidX version files
-        exclude 'META-INF/*.version'
-        // Exclude consumer proguard files
-        exclude 'META-INF/proguard/*'
-        // Exclude the Firebase/Fabric/other random properties files
-        exclude '/*.properties'
-        exclude 'fabric/*.properties'
-        exclude 'META-INF/*.properties'
-        // More than one file was found with OS independent path 'META-INF/*.kotlin_module'
-        exclude 'META-INF/*.kotlin_module'
+    packaging {
+        resources {
+            // Exclude AndroidX version files
+            excludes += ['META-INF/*.version']
+            // Exclude consumer proguard files
+            excludes += ['META-INF/proguard/*']
+            // Exclude the Firebase/Fabric/other random properties files
+            excludes += ['/*.properties', 'fabric/*.properties', 'META-INF/*.properties']
+            // More than one file was found with OS independent path 'META-INF/*.kotlin_module'
+            excludes += ['META-INF/*.kotlin_module']
+        }
     }
 
     // Fixing crash in androidTest
     // java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;java.lang.NoClassDefFoundError: Failed resolution of: Landroidx/databinding/DataBinderMapperImpl;
     buildFeatures {
+        buildConfig true
         dataBinding true
     }
 
     kotlinOptions {
         jvmTarget = Config.KotlinOptions.jvmTarget
+    }
+
+    testOptions {
+        execution 'ANDROIDX_TEST_ORCHESTRATOR'
     }
 }
 
@@ -197,6 +198,7 @@ dependencies {
     implementation Libs.Google.firebaseCore
     implementation Libs.Google.firebaseConfig
     implementation Libs.Google.firebasePerf
+    implementation Libs.Google.openSourceLicensesLibrary
     // Bottom nav libries
     implementation Libs.fragNav
     // Unit tests
@@ -210,6 +212,7 @@ dependencies {
     // AndroidJUnitRunner and JUnit Rules
     androidTestImplementation Libs.AndroidX.Test.runner
     androidTestImplementation Libs.AndroidX.Test.rules
+    androidTestUtil Libs.AndroidX.Test.orchestrator
     // Assertions
     androidTestImplementation Libs.AndroidX.Test.extJunit
     // Espresso dependenciesd
@@ -220,13 +223,10 @@ dependencies {
     // Mockito
     androidTestImplementation Libs.Mockito.mockito3
     androidTestImplementation Libs.Mockito.mockitoKotlin
-    // Dex maker
-    androidTestImplementation Libs.DexMaker.dexmaker
+    // DexMaker Mockito support includes DexMaker transitively.
     androidTestImplementation Libs.DexMaker.dexmakerMockito
     // Dagger mock
     androidTestImplementation Libs.daggerMock
-    // Condition watcher
-    androidTestImplementation Libs.conditionwatcher
     // Resolve conflits between apks
     androidTestImplementation Libs.Google.material
     androidTestImplementation Libs.AndroidX.recyclerView

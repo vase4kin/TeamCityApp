@@ -20,13 +20,15 @@ import teamcityapp.buildsrc.Libs
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'com.github.ben-manes.versions'
-apply plugin: 'org.jmailen.kotlinter'
-apply from: '../../../scripts/jacoco.gradle'
 
 android {
+    namespace 'teamcityapp.features.about'
+
+    buildFeatures {
+        buildConfig true
+    }
+
     defaultConfig {
         buildConfigField 'String', 'VERSION', "\"$Config.versionName\""
     }

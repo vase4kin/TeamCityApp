@@ -196,7 +196,7 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
                 } else {
                     val newValues = ArrayList<String>()
                     for (branch in branches) {
-                        if (branch.toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        if (branch.lowercase().contains(constraint.toString().lowercase())) {
                             newValues.add(branch)
                         }
                     }

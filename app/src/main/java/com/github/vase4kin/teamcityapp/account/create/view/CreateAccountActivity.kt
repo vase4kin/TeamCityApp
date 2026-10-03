@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.account.create.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl
 import dagger.android.support.DaggerAppCompatActivity
@@ -35,6 +36,11 @@ class CreateAccountActivity : DaggerAppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_account)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                presenter.finish()
+            }
+        })
         presenter.handleOnCreateView()
     }
 
@@ -46,10 +52,6 @@ class CreateAccountActivity : DaggerAppCompatActivity() {
     override fun onResume() {
         super.onResume()
         presenter.handleOnResume()
-    }
-
-    override fun onBackPressed() {
-        presenter.finish()
     }
 
     companion object {

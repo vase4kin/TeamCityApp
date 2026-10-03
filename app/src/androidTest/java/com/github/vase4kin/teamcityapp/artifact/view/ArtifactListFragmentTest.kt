@@ -35,7 +35,6 @@ import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
-import androidx.test.rule.GrantPermissionRule
 import com.azimolabs.conditionwatcher.ConditionWatcher
 import com.azimolabs.conditionwatcher.Instruction
 import com.github.vase4kin.teamcityapp.R
@@ -98,11 +97,6 @@ class ArtifactListFragmentTest {
     @Rule
     val activityRule: CustomIntentsTestRule<BuildDetailsActivity> =
         CustomIntentsTestRule(BuildDetailsActivity::class.java)
-
-    @JvmField
-    @Rule
-    val grantPermissionRule: GrantPermissionRule =
-        GrantPermissionRule.grant("android.permission.WRITE_EXTERNAL_STORAGE")
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -692,6 +686,7 @@ class ArtifactListFragmentTest {
     }
 
     @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.O)
+    @Ignore("The app no longer requests install unknown apps permission")
     @Test
     fun testUserBeingAskedToGrantAllowInstallPackagesPermissions() {
         // Prepare mocks

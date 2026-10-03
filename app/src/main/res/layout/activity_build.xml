@@ -30,6 +30,7 @@
             android:id="@id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Toolbar.Primary"
             app:layout_scrollFlags="scroll|enterAlways|snap" />
 
         <com.google.android.material.tabs.TabLayout
@@ -50,6 +51,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"
+        android:layout_marginEnd="@dimen/dp_16"
+        android:layout_marginBottom="@dimen/dp_40"
         android:visibility="gone"
         tools:src="@drawable/ic_add_black_24dp" />
 

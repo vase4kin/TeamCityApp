@@ -15,7 +15,10 @@
   -->
 
 <paths>
-    <external-path
-        name="external_files"
+    <external-files-path
+        name="downloaded_artifacts"
+        path="Download/" />
+    <files-path
+        name="downloaded_artifacts_internal"
         path="." />
 </paths>

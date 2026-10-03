@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Andrey Tolpeev
+ * Copyright (C) 2016 Azimo
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-import teamcityapp.buildsrc.Libs
+package com.azimolabs.conditionwatcher;
 
-apply plugin: 'com.android.library'
+import android.os.Bundle;
 
-android {
-    namespace 'teamcityapp.libraries.theme'
-}
+/** Describes the condition that {@link ConditionWatcher} should poll. */
+public abstract class Instruction {
 
-dependencies {
-    implementation project(':libraries:resources')
-    implementation Libs.Google.material
+    private Bundle dataContainer = new Bundle();
+
+    public final void setData(Bundle dataContainer) {
+        this.dataContainer = dataContainer;
+    }
+
+    public final Bundle getDataContainer() {
+        return dataContainer;
+    }
+
+    public abstract String getDescription();
+
+    public abstract boolean checkCondition();
 }

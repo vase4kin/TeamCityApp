@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/license-Apache_2.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Circle CI](https://circleci.com/gh/vase4kin/TeamCityApp/tree/dev.svg?style=shield)](https://circleci.com/gh/vase4kin/TeamCityApp/tree/dev)
+[![CI](https://github.com/vase4kin/TeamCityApp/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/vase4kin/TeamCityApp/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/vase4kin/TeamCityApp/branch/dev/graph/badge.svg)](https://codecov.io/gh/vase4kin/TeamCityApp)
 [![Release](https://img.shields.io/badge/release-1.52.4-blue.svg)](https://github.com/vase4kin/TeamCityApp/releases/latest)
 
