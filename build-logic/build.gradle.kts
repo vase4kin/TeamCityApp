@@ -9,6 +9,7 @@ kotlin {
 dependencies {
     implementation(libs.tools.gradleAndroid)
     implementation(libs.kotlin.tools.gradlePlugin)
+    implementation(libs.kotlin.compose.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)
     testImplementation(gradleTestKit())
     testImplementation(libs.junit)
@@ -39,6 +40,10 @@ gradlePlugin {
         register("androidHilt") {
             id = "teamcityapp.android.hilt"
             implementationClass = "teamcityapp.buildlogic.AndroidHiltConventionPlugin"
+        }
+        register("androidCompose") {
+            id = "teamcityapp.android.compose"
+            implementationClass = "teamcityapp.buildlogic.AndroidComposeConventionPlugin"
         }
         register("androidDataBinding") {
             id = "teamcityapp.android.data-binding"

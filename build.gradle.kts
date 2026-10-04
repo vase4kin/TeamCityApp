@@ -21,6 +21,7 @@ plugins {
     id("teamcityapp.android.hilt") apply false
     id("teamcityapp.android.data-binding") apply false
     id("teamcityapp.android.coverage") apply false
+    id("teamcityapp.android.compose") apply false
     alias(libs.plugins.google.services) apply false
     alias(libs.plugins.firebase.performance) apply false
     alias(libs.plugins.firebase.crashlytics) apply false

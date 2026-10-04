@@ -18,16 +18,20 @@ package teamcityapp.features.test_details.view
 
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import teamcityapp.features.test_details.R
-import teamcityapp.features.test_details.databinding.ActivityShowTestDetailsBinding
-import teamcityapp.features.test_details.stateholder.TestDetailsStateHolder
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
+import teamcityapp.features.test_details.R
+import teamcityapp.features.test_details.viewmodel.TEST_URL_KEY
+import teamcityapp.features.test_details.viewmodel.TestDetailsUiState
+import teamcityapp.features.test_details.viewmodel.TestDetailsViewModel
+import teamcityapp.libraries.theme.TeamCityTheme
 
 /**
  * Activity to manage test details
@@ -35,18 +39,20 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TestDetailsActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var stateHolder: TestDetailsStateHolder
+    private val viewModel: TestDetailsViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        DataBindingUtil.setContentView<ActivityShowTestDetailsBinding>(
-            this,
-            R.layout.activity_show_test_details
-        ).apply {
-            vm = stateHolder
+        setContent {
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            LaunchedEffect(state) {
+                if (state == TestDetailsUiState.InvalidInput) {
+                    Toast.makeText(this@TestDetailsActivity, R.string.error_view_error_text, Toast.LENGTH_LONG).show()
+                    finish()
+                }
+            }
+            TeamCityTheme { TestDetailsScreen(state, viewModel::retry, ::finish) }
         }
-        lifecycle.addObserver(stateHolder)
     }
 
     override fun finish() {
@@ -54,24 +60,9 @@ class TestDetailsActivity : AppCompatActivity() {
         overridePendingTransition(R.anim.hold, R.anim.slide_out_bottom)
     }
 
-    fun showErrorToast() {
-        Toast.makeText(this, R.string.error_view_error_text, Toast.LENGTH_LONG).show()
-    }
-
-    /**
-     * Workaround appcompat-1.1.0 bug https://issuetracker.google.com/issues/141132133
-     * TODO: Remove when bug is fixed
-     */
-    override fun applyOverrideConfiguration(overrideConfiguration: Configuration?) {
-        if (android.os.Build.VERSION.SDK_INT in android.os.Build.VERSION_CODES.LOLLIPOP..android.os.Build.VERSION_CODES.LOLLIPOP_MR1) {
-            return
-        }
-        super.applyOverrideConfiguration(overrideConfiguration)
-    }
-
     companion object {
 
-        const val ARG_TEST_URL = "arg_test_url"
+        const val ARG_TEST_URL = TEST_URL_KEY
 
         /**
          * Open failed test activity

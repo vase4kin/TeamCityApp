@@ -16,4 +16,5 @@
 
 <resources>
     <string name="app_name">Theme</string>
+    <string name="action_close">Close</string>
 </resources>

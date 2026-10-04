@@ -17,7 +17,7 @@
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
-    id("teamcityapp.android.data-binding")
+    id("teamcityapp.android.compose")
 }
 
 android {
@@ -26,27 +26,28 @@ android {
 
 dependencies {
     implementation(projects.features.testDetails.repository)
-    implementation(projects.features.testDetails.models)
     implementation(projects.libraries.utils)
-    implementation(projects.libraries.api)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
 
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.lifecycle.lifeCycle)
     implementation(libs.google.material)
     implementation(libs.dagger.dagger)
-    implementation(libs.rxjava.rxJava)
-    implementation(libs.rxjava.rxAndroid)
-    implementation(libs.rxjava.rxjava.kotlin)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
     implementation(libs.kotlin.stdlib)
-    implementation(libs.errorView)
 
-    kapt(libs.androidx.lifecycle.lifeCycleCompiler)
     kapt(libs.dagger.compiler)
 
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+    implementation(libs.androidx.lifecycle.savedState)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.coroutines.android)
+
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.mockito.mockitoKotlin)

@@ -203,6 +203,8 @@ dependencies {
     kapt(libs.dagger.compiler)
 
     // Rx
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.rx2)
     implementation(libs.rxjava.rxJava)
     implementation(libs.rxjava.rxAndroid)
     implementation(libs.rxjava.rxjava.kotlin)
@@ -218,6 +220,7 @@ dependencies {
     // Bottom nav libries
     implementation(libs.fragNav)
     // Unit tests
+    testImplementation(libs.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.mockito.mockitoKotlin)
@@ -250,6 +253,8 @@ dependencies {
         androidTestImplementation(libs.mockito.mockitoAndroid)
         androidTestImplementation(libs.mockito.mockitoKotlin)
         // Dagger mock
+        androidTestImplementation(platform(libs.compose.bom))
+        androidTestImplementation(libs.compose.ui.testJunit4)
         androidTestImplementation(libs.hilt.testing)
         kaptAndroidTest(libs.hilt.compiler)
         // Resolve conflits between apks

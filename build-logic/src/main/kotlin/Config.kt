@@ -20,7 +20,7 @@ import org.gradle.api.JavaVersion
 
 object Config {
     const val minSdk = 24
-    const val compileSdk = 36
+    const val compileSdk = 37
     const val targetSdk = 36
     const val versionName = "1.52.8" // x-release-please-version
     val versionCode = androidVersionCode(versionName)

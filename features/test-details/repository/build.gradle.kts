@@ -23,7 +23,5 @@ android {
 }
 
 dependencies {
-    implementation(projects.features.testDetails.models)
-    implementation(libs.rxjava.rxJava)
     implementation(libs.kotlin.stdlib)
 }
