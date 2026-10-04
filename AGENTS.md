@@ -13,9 +13,10 @@ the requested behavior or an explicitly requested migration slice.
   presenters and legacy state holders, RxJava 2, Hilt for Android screen injection,
   a separate Dagger account API graph, Retrofit/Gson,
   RxCache, and SharedPreferences. Java and Kotlin coexist.
-- Test Details uses Compose, Material 3, a Hilt ViewModel, and Coroutines/Flow.
-  Other screens remain legacy.
-- Room, DataStore, WorkManager, Navigation 3, a single-activity shell, and broader Compose
+- Test Details and Settings use Compose, Material 3, Hilt ViewModels, and
+  Coroutines/Flow. Settings persists theme preferences through DataStore with
+  a migration from the previous SharedPreferences key. Other screens remain legacy.
+- Room, WorkManager, Navigation 3, a single-activity shell, and broader Compose
   migration remain target architecture.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
   an included `build-logic` build for conventions and SDK/application settings,
