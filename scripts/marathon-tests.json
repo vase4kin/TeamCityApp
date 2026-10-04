@@ -1,13 +1,13 @@
 {
   "smoke": [
-    "teamcityapp.features.splash.view.SplashActivityTest#testUserNavigatesToLoginActivity",
+    "teamcityapp.features.splash.impl.SplashActivityTest#noAccountsOpensLoginExactlyOnceAndFinishesSplash",
     "com.github.vase4kin.teamcityapp.login.view.LoginActivityTest#testUserCanCreateGuestUserAccountWithCorrectUrl",
     "com.github.vase4kin.teamcityapp.home.view.HomeActivityTest#testUserCanSeeProjectsData",
     "com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivityTest#testUserCanSeeSuccessFullyLoadedBuilds",
     "com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#settingsInjectsAndRecreates"
   ],
   "random": [
-    "teamcityapp.features.splash.view.SplashActivityTest#testUserNavigatesToLoginActivity",
+    "teamcityapp.features.splash.impl.SplashActivityTest#noAccountsOpensLoginExactlyOnceAndFinishesSplash",
     "com.github.vase4kin.teamcityapp.login.view.LoginActivityTest#testUserCanCreateGuestUserAccountWithCorrectUrl",
     "com.github.vase4kin.teamcityapp.home.view.HomeActivityTest#testUserCanSeeProjectsData",
     "com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivityTest#testUserCanSeeSuccessFullyLoadedBuilds",

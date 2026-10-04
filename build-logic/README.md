@@ -39,14 +39,18 @@ Compose modules also apply `teamcityapp.android.compose` after the Android
 convention and declare their own activity, lifecycle, and coroutine dependencies.
 The shared Compose theme and screen shell live in `libraries/theme`. The app
 also applies the Compose convention to compile its instrumentation test content.
-About uses `features/about/api` and `features/about/impl`, with Kotlin sources under
-`src/main/kotlin` and local tests under `src/test/kotlin`. Its UI tests remain in
-the app instrumentation APK. Shared store-launch behavior is owned by the
-`libraries/app-rating` contract and Hilt implementation. Shared qualified coroutine
+All modules under `features/` use `api`/`impl`: About, Properties, Test Details,
+Change Details, Settings, Manage Accounts, Drawer, and Splash. Kotlin sources live
+under `src/main/kotlin`, local tests under `src/test/kotlin`, and integration tests
+under the app's `src/androidTest/kotlin` in the Marathon instrumentation APK.
+Shared store-launch behavior is owned by the `libraries/app-rating` contract and
+Hilt implementation. Shared qualified coroutine
 dispatchers are provided once by `libraries/coroutines` in Hilt's singleton graph.
-About's API owns contracts/models; private strings and drawables live in its
-implementation. The app repository implements the About API directly, keeping
-RxCache/await conversion in repository code and only bindings in DI modules.
+Feature APIs own contracts/models; private strings and drawables live in their
+implementations. Shared resources belong in `libraries/resources`. App repository
+adapters keep RxCache/coroutine conversion and account-storage behavior in data
+implementation files, with only bindings in DI modules. `libraries/app-theme`
+owns the theme preference's DataStore migration and application observer.
 The selected Compose dependency versions require compile SDK 37; the minimum and target SDK settings remain in `Config.kt`.
 
 `teamcityapp.android.base` is an internal plugin that registers shared defaults
@@ -241,14 +245,17 @@ Compose conventions. It supplies Robolectric, Roborazzi, Compose test APIs, and
 an Android test host without requiring an emulator or a Hilt application. Test
 stateless screens with fixture state; retain behavior and integration tests.
 
-About covers all three states in light/dark themes, phone/tablet layouts, and
-large text. Compact content captures include the bottom of the scrollable screen.
+Every feature implementation covers all distinct UI states in light/dark themes,
+phone/tablet layouts, and large text. Compact content captures include the bottom
+of scrollable screens and lists. Keep lifecycle, cancellation, retry, state
+retention, and interaction tests separate from the deterministic screen goldens.
 Tests fix Android API 35, English (US), mdpi density, font scale, and the loading
 animation frame. Add corresponding cases whenever a screen or state is added.
 
 With JDK 17:
 
 ```sh
+./gradlew verifyRoborazziDebug
 ./gradlew :features:about:impl:verifyRoborazziDebug
 ./gradlew :features:about:impl:recordRoborazziDebug --tests '*AboutScreenScreenshotTest'
 ```
