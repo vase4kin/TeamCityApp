@@ -184,8 +184,9 @@ Marathon YAML allowlist uses exact fully-qualified test names. JUnit verificatio
 rejects zero successful tests, skipped selections, missing selected tests, and
 unexpected tests. R8 verification requires at least five successful tests.
 
-All Marathon jobs use Android OS version 17 with the `google_apis` image and CLI
-1.0.64. Each job downloads its matching APK artifact and invokes Marathon once.
+All Marathon jobs use ARM64 emulators on Android OS version 17 with the
+`google_apis` image and CLI 1.0.65. Each job downloads its matching APK artifact
+and invokes Marathon once.
 They wait for the APK builds and require `MARATHON_CLOUD_API_TOKEN`. Changed and
 smoke runs build the mock application and test APK without device instrumentation,
 coverage-input preparation, or coverage reporting/upload. Non-full runs omit the

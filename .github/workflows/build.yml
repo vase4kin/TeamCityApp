@@ -329,7 +329,7 @@ jobs:
       - name: Set up Marathon Cloud CLI
         uses: MarathonLabs/setup-marathon-cloud@2.0.1
         with:
-          version: "1.0.64"
+          version: "1.0.65"
 
       - name: Run tests with Marathon Cloud
         env:
@@ -348,6 +348,7 @@ jobs:
             --application "$MARATHON_APPLICATION" \
             --test-application "$MARATHON_TEST_APPLICATION" \
             --device phone --os-version "$MARATHON_OS_VERSION" --system-image google_apis \
+            --arch arm64 \
             --wait true --code-coverage "$MARATHON_COVERAGE" --no-progress-bars \
             --output "app/build/github-actions/marathon/$MARATHON_LABEL" \
             --branch "$HEAD_BRANCH" \
