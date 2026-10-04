@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.home.router
 
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
+import teamcityapp.features.drawer.api.navigation.DrawerNavigation
 
 /**
  * Router to manage [com.github.vase4kin.teamcityapp.home.view.HomeActivity] navigation
@@ -38,14 +38,12 @@ interface HomeRouter {
     fun openDrawer()
 }
 
-private const val TAG_DRAWER_BOTTOM_SHEET = "Tag drawer bottom sheet"
-
 class HomeRouterImpl(
-    private val activity: HomeActivity
+    private val activity: HomeActivity,
+    private val drawerNavigation: DrawerNavigation
 ) : HomeRouter {
 
     override fun openDrawer() {
-        DrawerBottomSheetDialogFragment.createInstance()
-            .show(activity.supportFragmentManager, TAG_DRAWER_BOTTOM_SHEET)
+        drawerNavigation.open(activity.supportFragmentManager)
     }
 }

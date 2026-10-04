@@ -161,7 +161,8 @@ dependencies {
     implementation(projects.features.manageAccounts.api)
     implementation(projects.features.manageAccounts.impl)
 
-    implementation(projects.features.drawer)
+    implementation(projects.features.drawer.api)
+    implementation(projects.features.drawer.impl)
 
     implementation(projects.features.settings.api)
     implementation(projects.features.settings.impl)

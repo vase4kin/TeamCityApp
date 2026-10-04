@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.home.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
@@ -26,12 +27,11 @@ import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.drawer.view.DrawerTimeOut
 import com.github.vase4kin.teamcityapp.home.presenter.HomePresenterImpl
+import com.github.vase4kin.teamcityapp.home.router.DrawerActivityStartUtils
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import androidx.appcompat.app.AppCompatActivity
-import teamcityapp.features.drawer.utils.DrawerActivityStartUtils
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Provider
 import javax.inject.Inject
+import javax.inject.Provider
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
@@ -163,14 +163,8 @@ class HomeActivity : AppCompatActivity() {
     }
 }
 
-private fun Bundle.isRequiredToReload(): Boolean {
-    return this.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false)
-}
+private fun Bundle.isRequiredToReload(): Boolean = this.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false)
 
-private fun Bundle.isTabSelected(): Boolean {
-    return this.containsKey(HomeActivity.ARG_TAB)
-}
+private fun Bundle.isTabSelected(): Boolean = this.containsKey(HomeActivity.ARG_TAB)
 
-private fun Bundle.getSelectedTab(): AppNavigationItem {
-    return AppNavigationItem.values()[this.getInt(HomeActivity.ARG_TAB, 0)]
-}
+private fun Bundle.getSelectedTab(): AppNavigationItem = AppNavigationItem.values()[this.getInt(HomeActivity.ARG_TAB, 0)]

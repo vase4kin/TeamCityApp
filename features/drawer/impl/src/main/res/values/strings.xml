@@ -1,0 +1,33 @@
+<!--
+  ~ Copyright 2020 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <!--new drawer-->
+    <string name="text_menu_accounts">Accounts</string>
+    <string name="text_rate_the_app">Rate the app</string>
+    <string name="text_divider">•</string>
+    <string name="text_add_account">Add another account</string>
+    <string name="text_manage_accounts">Manage accounts</string>
+    <string name="drawer_loading">Loading accounts</string>
+    <string name="drawer_load_error">Accounts could not be loaded.</string>
+    <string name="drawer_switch_error">The account could not be switched.</string>
+    <string name="drawer_missing_account">This account is no longer available.</string>
+    <string name="drawer_switching">Switching account</string>
+    <string name="drawer_retry">Try again</string>
+    <string name="drawer_dismiss">Dismiss</string>
+    <string name="drawer_active_account">Active account</string>
+    <string name="drawer_ssl_disabled">SSL verification disabled</string>
+</resources>
