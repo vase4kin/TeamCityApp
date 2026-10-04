@@ -45,11 +45,6 @@ open class TeamCityApplicationBase : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // Custom Hilt test applications create their graph in HiltAndroidRule.
-        if (this is TeamCityApplication) {
-            val baseUrl = appInjector.sharedUserStorage().activeUser.teamcityUrl
-            if (baseUrl.isNotEmpty()) buildRestApiInjectorWithBaseUrl(baseUrl)
-        }
         applyThemeFromSettings()
     }
 
