@@ -42,7 +42,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import teamcityapp.features.properties.feature.view.PropertiesFragment
+import teamcityapp.features.properties.api.PropertiesNavigation
+import teamcityapp.features.properties.api.Property
 
 private const val TAB_TITLE = "tabTitle"
 
@@ -52,7 +53,8 @@ private const val TAB_TITLE = "tabTitle"
 class BuildDetailsViewImpl(
     view: View,
     activity: AppCompatActivity,
-    valueExtractor: BaseValueExtractor
+    valueExtractor: BaseValueExtractor,
+    private val propertiesNavigation: PropertiesNavigation
 ) : BaseTabsViewModelImpl(view, activity), BuildDetailsView {
 
     @BindView(R.id.floating_action_button)
@@ -114,7 +116,7 @@ class BuildDetailsViewImpl(
         }
         fragmentAdapter.add(
             R.string.tab_parameters,
-            PropertiesFragment.create(buildDetails.toBuild().properties?.properties ?: emptyList())
+            propertiesNavigation.create(buildDetails.toBuild().properties?.properties.orEmpty().map { Property(it.name, it.value) })
         )
         val artifactsHref = buildDetails.artifactsHref
         if (artifactsHref != null) {

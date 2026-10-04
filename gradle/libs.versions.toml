@@ -57,6 +57,7 @@ mugen = { module = "com.vinaysshenoy:mugen", version = "1.0.3" }
 fragNav = { module = "com.github.ncapdevi:fragnav", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
+androidx-fragment = { module = "androidx.fragment:fragment", version = "1.5.4" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 androidx-cardView = { module = "androidx.cardview:cardview", version = "1.0.0" }
 androidx-legacySupport = { module = "androidx.legacy:legacy-support-v13", version = "1.0.0" }
