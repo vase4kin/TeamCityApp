@@ -42,8 +42,8 @@ cross-project Android configuration.
 
 Compose modules apply `teamcityapp.android.compose` after their application/library
 convention. Compose dependency versions use the shared BOM; the compiler plugin
-uses the catalog Kotlin version. Compile SDK 37 supports the existing Lifecycle
-2.11 Compose integration; target SDK remains 36 and minimum SDK remains 24.
+uses the catalog Kotlin version. Compile, target, and minimum SDK are all 37.
+The application requires API 37 or newer.
 
 Dependency/plugin versions, including JaCoCo, come from `gradle/libs.versions.toml`.
 The included build imports that catalog explicitly. Main build repositories are
