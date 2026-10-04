@@ -17,6 +17,15 @@
 package com.github.vase4kin.teamcityapp
 
 import dagger.hilt.android.HiltAndroidApp
+import com.github.vase4kin.teamcityapp.settings.SettingsThemeObserver
+import javax.inject.Inject
 
 @HiltAndroidApp
-class TeamCityApplication : TeamCityApplicationBase()
+class TeamCityApplication : TeamCityApplicationBase() {
+    @Inject lateinit var themeObserver: SettingsThemeObserver
+
+    override fun onCreate() {
+        super.onCreate()
+        themeObserver.start()
+    }
+}

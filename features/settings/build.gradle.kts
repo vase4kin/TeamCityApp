@@ -17,6 +17,7 @@
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
+    id("teamcityapp.android.compose")
 }
 
 android {
@@ -25,13 +26,24 @@ android {
 
 dependencies {
     implementation(projects.libraries.theme)
+    implementation(projects.libraries.settings)
     implementation(projects.libraries.utils)
     implementation(projects.libraries.resources)
 
     implementation(libs.google.material)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
-    implementation(libs.androidx.preference)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
+    implementation(libs.androidx.lifecycle.runtimeCompose)
+    implementation(libs.coroutines.android)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.mockitoCore)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
     implementation(libs.kotlin.stdlib)
     implementation(libs.dagger.dagger)
 

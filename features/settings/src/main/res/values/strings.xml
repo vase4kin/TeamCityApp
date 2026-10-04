@@ -17,4 +17,6 @@
 <resources>
     <string name="title_theme">Theme</string>
     <string name="title_general">General</string>
+    <string name="settings_load_error">Unable to load settings</string>
+    <string name="settings_save_error">Unable to save theme. Please try again.</string>
 </resources>
