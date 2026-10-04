@@ -8,6 +8,7 @@ import dagger.hilt.android.components.FragmentComponent
 import teamcityapp.features.about.api.navigation.AboutNavigation
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsNavigation
 import teamcityapp.features.settings.api.navigation.SettingsNavigation
 
 @Module
@@ -15,5 +16,5 @@ import teamcityapp.features.settings.api.navigation.SettingsNavigation
 object DrawerRouterModule {
 
     @Provides
-    fun providesAppRouter(fragment: DrawerBottomSheetDialogFragment, aboutNavigation: AboutNavigation, settingsNavigation: SettingsNavigation): DrawerAppRouter = DrawerAppRouterImpl(fragment, aboutNavigation, settingsNavigation)
+    fun providesAppRouter(fragment: DrawerBottomSheetDialogFragment, aboutNavigation: AboutNavigation, settingsNavigation: SettingsNavigation, manageAccountsNavigation: ManageAccountsNavigation): DrawerAppRouter = DrawerAppRouterImpl(fragment, aboutNavigation, settingsNavigation, manageAccountsNavigation)
 }

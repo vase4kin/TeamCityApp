@@ -54,7 +54,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Spy
 import teamcityapp.features.about.impl.AboutActivity
-import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
 import teamcityapp.features.settings.impl.SettingsActivity
 
 /**

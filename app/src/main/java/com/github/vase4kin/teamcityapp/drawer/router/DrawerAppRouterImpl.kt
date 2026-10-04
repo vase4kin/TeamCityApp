@@ -21,13 +21,14 @@ import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import teamcityapp.features.about.api.navigation.AboutNavigation
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
-import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsNavigation
 import teamcityapp.features.settings.api.navigation.SettingsNavigation
 
 class DrawerAppRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment,
     private val aboutNavigation: AboutNavigation,
-    private val settingsNavigation: SettingsNavigation
+    private val settingsNavigation: SettingsNavigation,
+    private val manageAccountsNavigation: ManageAccountsNavigation
 ) : DrawerAppRouter {
 
     override fun openAboutScreen() {
@@ -41,7 +42,7 @@ class DrawerAppRouterImpl(
     }
 
     override fun openManageAccounts() {
-        ManageAccountsActivity.start(fragment.requireActivity())
+        manageAccountsNavigation.open(fragment.requireActivity())
     }
 
     override fun openHomeActivity() {

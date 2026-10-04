@@ -17,6 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.change_details.impl.ChangeDetailsActivity
+import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
 import teamcityapp.features.settings.impl.SettingsActivity
 import teamcityapp.features.test_details.impl.TestDetailsActivity
 import teamcityapp.features.test_details.impl.TestDetailsViewModel
@@ -85,6 +86,15 @@ class HiltMigrationSmokeTest {
     @Test
     fun settingsInjectsAndRecreates() {
         ActivityScenario.launch<SettingsActivity>(Intent(app, SettingsActivity::class.java)).use {
+            assertEquals(Lifecycle.State.RESUMED, it.state)
+            it.recreate()
+            assertEquals(Lifecycle.State.RESUMED, it.state)
+        }
+    }
+
+    @Test
+    fun manageAccountsInjectsAndRecreates() {
+        ActivityScenario.launch<ManageAccountsActivity>(Intent(app, ManageAccountsActivity::class.java)).use {
             assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)
