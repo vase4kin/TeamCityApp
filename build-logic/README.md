@@ -9,6 +9,7 @@ shared Android configuration and replaces the former buildSrc and root callbacks
 | `teamcityapp.android.library` | Android library and Kotlin plugins, the same shared defaults |
 | `teamcityapp.android.library.java` | Android library defaults without Kotlin or kapt; use for Java/resource-only modules |
 | `teamcityapp.android.hilt` | Hilt and kapt plugins, Hilt runtime and kapt compiler dependencies |
+| `teamcityapp.android.compose` | Kotlin Compose compiler, Compose build feature, Material 3, shared BOM, and preview tooling |
 | `teamcityapp.android.data-binding` | Data Binding for Android application/library modules |
 | `teamcityapp.android.coverage` | App aggregate debug coverage and CI report locations |
 
@@ -38,6 +39,11 @@ before Android is applied. SDK/JVM defaults and app version settings live in
 `src/main/kotlin/Config.kt`. Both the app and About feature use that same app
 version. The root build declares plugins without applying them and has no
 cross-project Android configuration.
+
+Compose modules apply `teamcityapp.android.compose` after their application/library
+convention. Compose dependency versions use the shared BOM; the compiler plugin
+uses the catalog Kotlin version. Compile SDK 37 supports the existing Lifecycle
+2.11 Compose integration; target SDK remains 36 and minimum SDK remains 24.
 
 Dependency/plugin versions, including JaCoCo, come from `gradle/libs.versions.toml`.
 The included build imports that catalog explicitly. Main build repositories are
@@ -83,7 +89,7 @@ python3 scripts/prepare-r8-verification.py
 
 Prepare debug Google Services files as described in AGENTS.md before app builds.
 Functional tests use isolated Kotlin DSL builds to verify module overrides,
-Hilt dependency registration, Data Binding, Java-only modules, and aggregate
+Hilt dependency registration, Compose setup, Data Binding, Java-only modules, and aggregate
 coverage inputs/exclusions/output paths. Focused tests preserve the R8 report
 count guard. CI runs these tests alongside the app and feature unit tests.
 
