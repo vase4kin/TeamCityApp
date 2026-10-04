@@ -39,7 +39,7 @@ class AndroidConventionPluginsTest {
             tasks.register("verifyConventions") {
                 doLast {
                     check(android.compileSdkVersion in setOf("android-37", "android-37.0")) { android.compileSdkVersion.orEmpty() }
-                    check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
+                    check(android.defaultConfig.minSdkVersion?.apiLevel == 37)
                     check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
                     check(android.defaultConfig.consumerProguardFiles.single().name == "consumer-rules.pro")
                     check(plugins.hasPlugin("jacoco"))
@@ -213,8 +213,8 @@ class AndroidConventionPluginsTest {
             pluginManager.apply("teamcityapp.android.data-binding")
 
             check(android.compileSdkVersion in setOf("android-37", "android-37.0")) { android.compileSdkVersion.orEmpty() }
-            check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
-            check(android.defaultConfig.targetSdkVersion?.apiLevel == 36)
+            check(android.defaultConfig.minSdkVersion?.apiLevel == 37)
+            check(android.defaultConfig.targetSdkVersion?.apiLevel == 37)
 
             android {
                 namespace = "teamcityapp.conventiontest"
