@@ -31,7 +31,8 @@ resources, and login screen startup. Retrofit responses are supplied by a local
 interceptor; no TeamCity server is needed.
 
 CI always builds the minified verification application. It also builds the R8
-test APK and runs it on Android OS version 17 when the full UI suite is selected:
+test APK and runs it on an ARM64 Android OS version 17 emulator when the full UI
+suite is selected:
 on default-branch pushes affecting application, Android test, or build inputs
 unless every incoming commit is a valid chore (force pushes still run),
 or manual dispatch with the suite override checked and
