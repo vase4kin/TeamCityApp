@@ -2,6 +2,7 @@ package com.github.vase4kin.teamcityapp.dagger
 
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertThrows
 import org.junit.Test
@@ -23,7 +24,10 @@ class ApiSessionTest {
     @Test
     fun initializesLazilyAndReusesSameAccountGraph() {
         `when`(storage.activeUser).thenReturn(account())
+        assertEquals(0, graphs.size)
+        org.mockito.Mockito.verifyNoInteractions(storage)
         val graph = session.requireGraph()
+        assertEquals(1, graphs.size)
         `when`(storage.activeUser).thenReturn(account())
         assertSame(graph, session.requireGraph())
     }
