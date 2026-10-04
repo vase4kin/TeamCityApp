@@ -25,6 +25,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.libraries.appRating)
     implementation(projects.libraries.storage)
     implementation(projects.libraries.storageModels)
     implementation(projects.libraries.resources)
@@ -40,7 +41,6 @@ dependencies {
     implementation(libs.androidx.constraintLayout)
     implementation(libs.dagger.dagger)
     implementation(libs.kotlin.stdlib)
-    implementation(libs.aboutLibrary)
     implementation(libs.rxjava.rxJava)
     implementation(libs.rxjava.rxAndroid)
     implementation(libs.rxjava.rxjava.kotlin)

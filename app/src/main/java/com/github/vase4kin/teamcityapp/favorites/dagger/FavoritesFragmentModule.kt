@@ -26,6 +26,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFacto
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
+import teamcityapp.libraries.app_rating.AppRating
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,8 +57,8 @@ object FavoritesFragmentModule {
 
     @Provides
     @Named("FavoritesFragment")
-    fun providesNavigationRouter(fragment: FavoritesFragment): NavigationRouter {
-        return NavigationRouterImpl(fragment.requireActivity())
+    fun providesNavigationRouter(fragment: FavoritesFragment, appRating: AppRating): NavigationRouter {
+        return NavigationRouterImpl(fragment.requireActivity(), appRating)
     }
 
     @Provides

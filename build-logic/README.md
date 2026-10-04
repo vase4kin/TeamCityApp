@@ -9,6 +9,8 @@ shared Android configuration and replaces the former buildSrc and root callbacks
 | `teamcityapp.android.library` | Android library and Kotlin plugins, the same shared defaults |
 | `teamcityapp.android.library.java` | Android library defaults without Kotlin or kapt; use for Java/resource-only modules |
 | `teamcityapp.android.hilt` | Hilt and kapt plugins, Hilt runtime and kapt compiler dependencies |
+| `teamcityapp.android.compose` | Compose compiler, Compose BOM, Material 3, previews, and debug tooling |
+| `teamcityapp.android.screenshot` | Local Robolectric/Roborazzi Compose tests, Android resources, and baseline/report paths |
 | `teamcityapp.android.data-binding` | Data Binding for Android application/library modules |
 | `teamcityapp.android.coverage` | App aggregate debug coverage and CI report locations |
 
@@ -32,6 +34,20 @@ in addition to Hilt still declare their Dagger runtime/compiler dependencies.
 The convention does not add `annotationProcessor` dependencies. Modules needing
 Parcelize apply `org.jetbrains.kotlin.plugin.parcelize`; the utils module applies
 kapt for Data Binding without Hilt.
+
+Compose modules also apply `teamcityapp.android.compose` after the Android
+convention and declare their own activity, lifecycle, and coroutine dependencies.
+The shared Compose theme and screen shell live in `libraries/theme`. The app
+also applies the Compose convention to compile its instrumentation test content.
+About uses `features/about/api` and `features/about/impl`, with Kotlin sources under
+`src/main/kotlin` and local tests under `src/test/kotlin`. Its UI tests remain in
+the app instrumentation APK. Shared store-launch behavior is owned by the
+`libraries/app-rating` contract and Hilt implementation. Shared qualified coroutine
+dispatchers are provided once by `libraries/coroutines` in Hilt's singleton graph.
+About's API owns contracts/models; private strings and drawables live in its
+implementation. The app repository implements the About API directly, keeping
+RxCache/await conversion in repository code and only bindings in DI modules.
+The selected Compose dependency versions require compile SDK 37; the minimum and target SDK settings remain in `Config.kt`.
 
 `teamcityapp.android.base` is an internal plugin that registers shared defaults
 before Android is applied. SDK/JVM defaults and app version settings live in
@@ -216,3 +232,30 @@ Gradle task-output caching and parallel module execution are enabled in
 restoration and separate job caches. Default-branch builds and same-repository
 PRs save caches; fork PRs only read them. The first run after switching providers
 can start cold, while subsequent runs of the same PR can reuse compiled outputs.
+
+## Compose golden tests
+
+Compose UI owners apply `teamcityapp.android.screenshot` after the Android and
+Compose conventions. It supplies Robolectric, Roborazzi, Compose test APIs, and
+an Android test host without requiring an emulator or a Hilt application. Test
+stateless screens with fixture state; retain behavior and integration tests.
+
+About covers all three states in light/dark themes, phone/tablet layouts, and
+large text. Compact content captures include the bottom of the scrollable screen.
+Tests fix Android API 35, English (US), mdpi density, font scale, and the loading
+animation frame. Add corresponding cases whenever a screen or state is added.
+
+With JDK 17:
+
+```sh
+./gradlew :features:about:impl:verifyRoborazziDebug
+./gradlew :features:about:impl:recordRoborazziDebug --tests '*AboutScreenScreenshotTest'
+```
+
+Normal unit tests verify by default. Record only intentional changes, inspect the
+PNG differences, then verify again. Commit baselines in the owning module's
+`src/test/screenshots/debug/` with the UI changes they document. Each variant has
+its own directory to avoid parallel test-task conflicts. Differences and HTML
+reports go to `build/outputs/roborazzi` and `build/reports/roborazzi`; CI uploads
+both and verifies all participating debug modules via `verifyRoborazziDebug`.
+Dependency versions belong in the version catalog, as for runtime dependencies.

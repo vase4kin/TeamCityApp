@@ -24,6 +24,7 @@ import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewHolderFacto
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationViewImpl
 import com.github.vase4kin.teamcityapp.navigation.view.RateTheAppViewHolderFactory
 import com.google.firebase.analytics.FirebaseAnalytics
+import teamcityapp.libraries.app_rating.AppRating
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -62,8 +63,8 @@ object NavigationModule {
 
     @Provides
     @Named("NavigationActivity")
-    fun providesNavigationRouter(activity: NavigationActivity): NavigationRouter {
-        return NavigationRouterImpl(activity)
+    fun providesNavigationRouter(activity: NavigationActivity, appRating: AppRating): NavigationRouter {
+        return NavigationRouterImpl(activity, appRating)
     }
 
     @Provides

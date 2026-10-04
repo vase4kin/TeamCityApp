@@ -16,7 +16,7 @@
 
 package teamcityapp.features.drawer.drawer
 
-import com.danielstone.materialaboutlibrary.ConvenienceBuilder
+import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.features.drawer.R
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
@@ -27,7 +27,8 @@ class DrawerRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment,
     private val storage: Storage,
     private val chromeCustomTabs: ChromeCustomTabs,
-    private val router: DrawerAppRouter
+    private val router: DrawerAppRouter,
+    private val appRating: AppRating
 ) :
     DrawerRouter {
 
@@ -37,8 +38,7 @@ class DrawerRouterImpl(
     }
 
     override fun openRateTheApp() {
-        ConvenienceBuilder.createRateOnClickAction(fragment.requireActivity())
-            .onClick()
+        appRating.open(fragment.requireActivity())
     }
 
     override fun openAbout() {

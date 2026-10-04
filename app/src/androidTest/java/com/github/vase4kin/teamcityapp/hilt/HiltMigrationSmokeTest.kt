@@ -15,7 +15,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.about.AboutActivity
+import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.change.view.ARG_BUNDLE_DATA
 import teamcityapp.features.change.view.ChangeActivity
 import teamcityapp.features.settings.view.SettingsActivity

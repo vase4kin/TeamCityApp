@@ -7,6 +7,12 @@
     <init>();
 }
 
+# Gson reflects these models; preserve JSON keys and class names stored by RxCache.
+-keep class teamcityapp.features.about.repository.models.** {
+    !static !transient <fields>;
+    <init>();
+}
+
 # RxCache creates this interface with a Proxy and reflects its annotated methods.
 -keep interface com.github.vase4kin.teamcityapp.api.cache.CacheProviders { *; }
 # Its own disk envelope is also serialized with Gson, including generic data.

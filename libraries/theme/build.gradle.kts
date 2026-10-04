@@ -15,7 +15,8 @@
  */
 
 plugins {
-    id("teamcityapp.android.library.java")
+    id("teamcityapp.android.library")
+    id("teamcityapp.android.compose")
 }
 
 android {

@@ -17,14 +17,38 @@ firebase-bom = "34.19.0"
 firebase-perf-plugin = "2.0.2"
 crashlytics-plugin = "3.0.6"
 oss-licenses-plugin = "0.10.9"
+compose-bom = "2026.09.00"
+androidx-activity = "1.12.3"
+coroutines = "1.10.2"
+turbine = "1.2.0"
+androidx-hilt = "1.4.0"
+roborazzi = "1.76.0"
+robolectric = "4.17"
 
 [libraries]
+roborazzi-gradlePlugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
+roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
+compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
+compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+compose-ui-testManifest = { module = "androidx.compose.ui:ui-test-manifest" }
+androidx-hilt-viewModelCompose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "androidx-hilt" }
+compose-ui-testJunit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+kotlin-compose-gradlePlugin = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
+androidx-lifecycle-runtimeCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
+coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger" }
 hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "dagger" }
 hilt-gradlePlugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "dagger" }
 errorView = { module = "com.github.xiprox:ErrorView", version = "3.0.0" }
-aboutLibrary = { module = "com.github.daniel-stoneuk:material-about-library", version = "3.1.2" }
 shimmerlayout = { module = "io.supercharge:shimmerlayout", version = "2.1.0" }
 eventBus = { module = "org.greenrobot:eventbus", version = "3.0.0" }
 materialTapTargetPrompt = { module = "uk.co.samuelwall:material-tap-target-prompt", version = "3.0.0" }

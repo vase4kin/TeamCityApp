@@ -38,7 +38,7 @@ class AndroidConventionPluginsTest {
             }
             tasks.register("verifyConventions") {
                 doLast {
-                    check(android.compileSdkVersion == "android-36")
+                    check(android.compileSdkVersion == "android-37.0") { "Compile SDK: ${'$'}{android.compileSdkVersion}" }
                     check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
                     check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
                     check(android.defaultConfig.consumerProguardFiles.single().name == "consumer-rules.pro")
@@ -184,7 +184,7 @@ class AndroidConventionPluginsTest {
             pluginManager.apply("teamcityapp.android.hilt")
             pluginManager.apply("teamcityapp.android.data-binding")
 
-            check(android.compileSdkVersion == "android-36")
+            check(android.compileSdkVersion == "android-37.0") { "Compile SDK: ${'$'}{android.compileSdkVersion}" }
             check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
             check(android.defaultConfig.targetSdkVersion?.apiLevel == 36)
 
@@ -224,6 +224,71 @@ class AndroidConventionPluginsTest {
                     check(configurations.getByName("kapt").dependencies.count {
                         it.group == "com.google.dagger" && it.name == "hilt-compiler"
                     } == 1)
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
+    @Test
+    fun `Compose convention configures compiler and dependencies without duplication`() {
+        val projectDir = createProject("compose-library")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            plugins {
+                id("teamcityapp.android.library")
+                id("teamcityapp.android.compose")
+            }
+            pluginManager.apply("teamcityapp.android.compose")
+            android { namespace = "teamcityapp.conventiontest" }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(android.buildFeatures.compose == true)
+                    check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
+                    check(!plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
+                    val implementation = configurations.getByName("implementation").dependencies
+                    check(implementation.count { it.name == "compose-bom" } == 1)
+                    check(implementation.count { it.name == "material3" } == 1)
+                    check(implementation.count { it.name == "ui-tooling-preview" } == 1)
+                    check(configurations.getByName("debugImplementation").dependencies.count {
+                        it.name == "ui-tooling"
+                    } == 1)
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
+    @Test
+    fun `screenshot convention configures resource tests and tracked baselines`() {
+        val projectDir = createProject("screenshot-library")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            import io.github.takahirom.roborazzi.RoborazziExtension
+            plugins {
+                id("teamcityapp.android.library")
+                id("teamcityapp.android.compose")
+                id("teamcityapp.android.screenshot")
+            }
+            android { namespace = "teamcityapp.conventiontest" }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(android.testOptions.unitTests.isIncludeAndroidResources)
+                    check(tasks.findByName("verifyRoborazziDebug") != null)
+                    check(tasks.findByName("recordRoborazziDebug") != null)
+                    val screenshots = project.extensions.getByType<RoborazziExtension>()
+                    check(screenshots.outputDir.get().asFile == file("src/test/screenshots"))
+                    check(screenshots.separateOutputDirs.get())
+                    check(screenshots.compare.outputDir.get().asFile == file("build/outputs/roborazzi"))
+                    val testDependencies = configurations.getByName("testImplementation").dependencies
+                    check(testDependencies.any { it.name == "robolectric" })
+                    check(testDependencies.any { it.name == "roborazzi" })
+                    check(testDependencies.any { it.name == "ui-test-junit4" })
+                    check(configurations.getByName("debugImplementation").dependencies.any {
+                        it.name == "ui-test-manifest"
+                    })
                 }
             }
             """.trimIndent()

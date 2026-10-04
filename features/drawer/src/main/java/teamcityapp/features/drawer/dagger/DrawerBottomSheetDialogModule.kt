@@ -3,6 +3,7 @@ package teamcityapp.features.drawer.dagger
 import teamcityapp.libraries.utils.requireScreenOwner
 import androidx.fragment.app.Fragment
 import com.google.firebase.analytics.FirebaseAnalytics
+import teamcityapp.libraries.app_rating.AppRating
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -66,13 +67,15 @@ object DrawerBottomSheetDialogModule {
         fragment: DrawerBottomSheetDialogFragment,
         storage: Storage,
         @Named("HomeActivity") chromeCustomTabs: ChromeCustomTabs,
-        router: DrawerAppRouter
+        router: DrawerAppRouter,
+        appRating: AppRating
     ): DrawerRouter {
         return DrawerRouterImpl(
             fragment,
             storage,
             chromeCustomTabs,
-            router
+            router,
+            appRating
         )
     }
 
