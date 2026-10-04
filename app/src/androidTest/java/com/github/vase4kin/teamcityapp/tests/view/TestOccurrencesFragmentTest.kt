@@ -58,7 +58,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.test_details.view.TestDetailsActivity
+import teamcityapp.features.test_details.impl.TestDetailsActivity
+import teamcityapp.features.test_details.impl.TestDetailsViewModel
 
 private const val BUILD_TYPE_NAME = "name"
 
@@ -176,7 +177,7 @@ class TestOccurrencesFragmentTest {
                 hasComponent(TestDetailsActivity::class.java.name),
                 hasExtras(
                     hasEntry(
-                        equalTo(TestDetailsActivity.ARG_TEST_URL),
+                        equalTo(TestDetailsViewModel.ARG_TEST_URL),
                         equalTo("/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)")
                     )
                 )

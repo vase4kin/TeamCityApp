@@ -1,6 +1,7 @@
 package com.github.vase4kin.teamcityapp.tests.dagger
 
 import teamcityapp.libraries.utils.requireScreenOwner
+import teamcityapp.features.test_details.api.TestDetailsNavigation
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
@@ -65,8 +66,8 @@ object TestsModule {
     }
 
     @Provides
-    fun providesTestsRouter(fragment: TestOccurrencesFragment): TestsRouter {
-        return TestsRouterImpl(fragment.requireActivity())
+    fun providesTestsRouter(fragment: TestOccurrencesFragment, navigation: TestDetailsNavigation): TestsRouter {
+        return TestsRouterImpl(fragment.requireActivity(), navigation)
     }
 
     @Provides

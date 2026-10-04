@@ -34,6 +34,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.resources.R as SharedR
@@ -56,10 +58,15 @@ fun TeamCityScreen(
     title: String,
     onClose: () -> Unit,
     navigation: ScreenNavigation = ScreenNavigation.Close,
+    appBarHeight: Dp = TopAppBarDefaults.TopAppBarExpandedHeight,
+    titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    titleStartPadding: Dp = 0.dp,
+    appBarColors: TopAppBarColors? = null,
+    containerColor: Color = MaterialTheme.colorScheme.background,
     content: @Composable (Modifier) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val colors = if (LocalDarkTheme.current) TopAppBarDefaults.topAppBarColors()
+    val colors = appBarColors ?: if (LocalDarkTheme.current) TopAppBarDefaults.topAppBarColors()
     else TopAppBarDefaults.topAppBarColors(
         containerColor = MaterialTheme.colorScheme.primary,
         scrolledContainerColor = MaterialTheme.colorScheme.primary,
@@ -72,10 +79,12 @@ fun TeamCityScreen(
     )
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        containerColor = containerColor,
         topBar = {
             TopAppBar(
                 modifier = if (LocalDarkTheme.current) Modifier else Modifier.shadow(4.dp, clip = false),
-                title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                title = { Text(title, modifier = Modifier.padding(start = titleStartPadding), style = titleStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                expandedHeight = appBarHeight,
                 navigationIcon = {
                     TooltipBox(
                         positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
@@ -101,8 +110,8 @@ fun TeamCityScreen(
 }
 
 @Composable
-fun LoadingContent(modifier: Modifier = Modifier) {
-    Box(modifier, contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+fun LoadingContent(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.primary) {
+    Box(modifier, contentAlignment = Alignment.Center) { CircularProgressIndicator(color = color) }
 }
 
 @Composable

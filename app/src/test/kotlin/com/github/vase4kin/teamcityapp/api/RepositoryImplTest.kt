@@ -18,6 +18,11 @@ package com.github.vase4kin.teamcityapp.api
 
 import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
+import teamcityapp.features.test_details.repository.models.TestOccurrence
+import io.rx_cache2.DynamicKey
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.argumentCaptor
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
 import kotlinx.coroutines.CoroutineStart
@@ -121,4 +126,54 @@ class RepositoryImplTest {
         verify(teamCityService).serverInfo()
     }
 
+    @Test fun testDetailsUsesFormattedAccountUrlAndCachedDetails() = runTest {
+        val upstream = Single.just(TestOccurrence("network"))
+        `when`(urlFormatter.formatBasicUrl("/test")).thenReturn("/guestAuth/test")
+        `when`(teamCityService.testOccurrence("/guestAuth/test")).thenReturn(upstream)
+        `when`(cacheProviders.testOccurrence(eq(upstream), any<DynamicKey>()))
+            .thenReturn(Single.just(TestOccurrence("cached <tag> & text")))
+        assertEquals("cached <tag> & text", repository.testDetails("/test"))
+        val key = argumentCaptor<DynamicKey>()
+        verify(cacheProviders).testOccurrence(eq(upstream), key.capture())
+        assertEquals("/test", key.firstValue.dynamicKey)
+    }
+
+    @Test fun cancelingTestDetailsDisposesCachedRequest() = runTest {
+        val upstream = Single.never<TestOccurrence>()
+        val pending = SingleSubject.create<TestOccurrence>()
+        `when`(urlFormatter.formatBasicUrl("/test")).thenReturn("/guestAuth/test")
+        `when`(teamCityService.testOccurrence("/guestAuth/test")).thenReturn(upstream)
+        `when`(cacheProviders.testOccurrence(eq(upstream), any<DynamicKey>())).thenReturn(pending)
+        val job = launch { repository.testDetails("/test"); fail("Canceled request must not return") }
+        runCurrent()
+        assertTrue(pending.hasObservers())
+        job.cancel()
+        runCurrent()
+        assertFalse(pending.hasObservers())
+        pending.onSuccess(TestOccurrence("late"))
+        assertTrue(job.isCancelled)
+    }
+
+    @Test fun missingTestDetailsMapsToEmptyAndErrorsReachCaller() = runTest {
+        val upstream = Single.never<TestOccurrence>()
+        `when`(urlFormatter.formatBasicUrl("/test")).thenReturn("/guestAuth/test")
+        `when`(teamCityService.testOccurrence("/guestAuth/test")).thenReturn(upstream)
+        `when`(cacheProviders.testOccurrence(eq(upstream), any<DynamicKey>()))
+            .thenReturn(Single.just(TestOccurrence()), Single.error(IllegalStateException("offline")))
+        assertEquals("", repository.testDetails("/test"))
+        try { repository.testDetails("/test"); fail("Expected error") }
+        catch (error: IllegalStateException) { assertEquals("offline", error.message) }
+    }
+    @Test fun testDetailsStartsOnInjectedDispatcher() = runTest {
+        val queuedRepository = RepositoryImpl(teamCityService, cacheProviders, urlFormatter, StandardTestDispatcher(testScheduler))
+        val upstream = Single.just(TestOccurrence("details"))
+        `when`(urlFormatter.formatBasicUrl("/test")).thenReturn("/guestAuth/test")
+        `when`(teamCityService.testOccurrence("/guestAuth/test")).thenReturn(upstream)
+        `when`(cacheProviders.testOccurrence(eq(upstream), any<DynamicKey>())).thenReturn(upstream)
+        val job = launch(start = CoroutineStart.UNDISPATCHED) { assertEquals("details", queuedRepository.testDetails("/test")) }
+        verifyNoInteractions(teamCityService, cacheProviders)
+        runCurrent()
+        job.join()
+        verify(teamCityService).testOccurrence("/guestAuth/test")
+    }
 }
