@@ -9,7 +9,9 @@ kotlin {
 dependencies {
     implementation(libs.tools.gradleAndroid)
     implementation(libs.kotlin.tools.gradlePlugin)
+    implementation(libs.kotlin.compose.gradlePlugin)
     implementation(libs.hilt.gradlePlugin)
+    implementation(libs.roborazzi.gradlePlugin)
     testImplementation(gradleTestKit())
     testImplementation(libs.junit)
 }
@@ -43,6 +45,14 @@ gradlePlugin {
         register("androidDataBinding") {
             id = "teamcityapp.android.data-binding"
             implementationClass = "teamcityapp.buildlogic.AndroidDataBindingConventionPlugin"
+        }
+        register("androidScreenshot") {
+            id = "teamcityapp.android.screenshot"
+            implementationClass = "teamcityapp.buildlogic.AndroidScreenshotConventionPlugin"
+        }
+        register("androidCompose") {
+            id = "teamcityapp.android.compose"
+            implementationClass = "teamcityapp.buildlogic.AndroidComposeConventionPlugin"
         }
     }
 }

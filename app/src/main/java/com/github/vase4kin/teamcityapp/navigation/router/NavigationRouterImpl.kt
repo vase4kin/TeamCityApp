@@ -17,14 +17,14 @@
 package com.github.vase4kin.teamcityapp.navigation.router
 
 import android.app.Activity
-import com.danielstone.materialaboutlibrary.ConvenienceBuilder
+import teamcityapp.libraries.app_rating.AppRating
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 
 /**
  * Impl of [NavigationRouter]
  */
-class NavigationRouterImpl(private val activity: Activity) : NavigationRouter {
+class NavigationRouterImpl(private val activity: Activity, private val appRating: AppRating) : NavigationRouter {
 
     /**
      * {@inheritDoc}
@@ -41,6 +41,6 @@ class NavigationRouterImpl(private val activity: Activity) : NavigationRouter {
     }
 
     override fun openRateTheApp() {
-        ConvenienceBuilder.createRateOnClickAction(activity).onClick()
+        appRating.open(activity)
     }
 }

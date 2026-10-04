@@ -243,7 +243,7 @@ jobs:
       - name: Run unit tests and generate coverage
         run: |
           python3 -m unittest discover -s scripts/tests
-          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest :app:generateCodeCoverageReport --stacktrace
+          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest verifyRoborazziDebug :app:generateCodeCoverageReport --stacktrace
 
       - name: Upload unit-test results
         if: always()
@@ -251,6 +251,16 @@ jobs:
         with:
           name: unit-test-results
           path: '**/build/test-results/**/*.xml'
+          if-no-files-found: warn
+
+      - name: Upload screenshot reports and comparisons
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshot-reports
+          path: |
+            **/build/reports/roborazzi
+            **/build/outputs/roborazzi
           if-no-files-found: warn
 
       - name: Upload coverage report

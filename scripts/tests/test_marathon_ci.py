@@ -234,7 +234,7 @@ class ChangedSelectionTest(unittest.TestCase):
         self.assertEqual(set(result["tests"]), self.smoke | methods)
 
     def test_migrated_module_includes_cross_package_injection_tests(self):
-        result = self.select("features/about/feature/src/main/java/teamcityapp/features/about/AboutActivity.kt")
+        result = self.select("features/about/impl/src/main/kotlin/teamcityapp/features/about/impl/AboutActivity.kt")
         self.assertIn("com.github.vase4kin.teamcityapp.hilt.HiltMigrationSmokeTest#aboutInjectsAndRecreates", result["tests"])
         self.assertTrue(any("AboutActivityTest#" in test for test in result["tests"]))
         self.assertEqual(result["fallback_paths"], [])

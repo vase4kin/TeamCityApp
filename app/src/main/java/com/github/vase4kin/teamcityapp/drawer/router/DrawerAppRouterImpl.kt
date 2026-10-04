@@ -18,18 +18,19 @@ package com.github.vase4kin.teamcityapp.drawer.router
 
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import teamcityapp.features.about.AboutActivity
+import teamcityapp.features.about.api.navigation.AboutNavigation
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
 import teamcityapp.features.settings.view.SettingsActivity
 
 class DrawerAppRouterImpl(
-    private val fragment: DrawerBottomSheetDialogFragment
+    private val fragment: DrawerBottomSheetDialogFragment,
+    private val aboutNavigation: AboutNavigation
 ) : DrawerAppRouter {
 
     override fun openAboutScreen() {
-        AboutActivity.start(fragment.requireActivity())
+        aboutNavigation.open(fragment.requireActivity())
     }
 
     override fun openNewAccount() {

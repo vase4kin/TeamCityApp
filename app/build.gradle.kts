@@ -20,6 +20,8 @@ import teamcityapp.buildlogic.verifyR8SmokeTestReports
 
 plugins {
     id("teamcityapp.android.application")
+    id("teamcityapp.android.compose")
+    id("org.jetbrains.kotlin.plugin.parcelize")
     id("teamcityapp.android.hilt")
     id("teamcityapp.android.data-binding")
     id("teamcityapp.android.coverage")
@@ -131,6 +133,7 @@ dependencies {
     implementation(fileTree("libs") { include("*.jar") })
 
     implementation(projects.libraries.utils)
+    implementation(projects.libraries.coroutines)
     implementation(projects.libraries.api)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
@@ -148,9 +151,9 @@ dependencies {
 
     implementation(projects.features.splash)
 
-    implementation(projects.features.about.models)
-    implementation(projects.features.about.repository)
-    implementation(projects.features.about.feature)
+    implementation(projects.features.about.api)
+    implementation(projects.features.about.impl)
+    implementation(projects.libraries.appRating)
 
     implementation(projects.features.manageAccounts)
 
@@ -195,7 +198,6 @@ dependencies {
     implementation(libs.jodaTime)
     implementation(libs.mugen)
     implementation(libs.shimmerlayout)
-    implementation(libs.aboutLibrary)
     // Onboarding
     implementation(libs.materialTapTargetPrompt)
     // Dagger
@@ -203,6 +205,8 @@ dependencies {
     kapt(libs.dagger.compiler)
 
     // Rx
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.rx2)
     implementation(libs.rxjava.rxJava)
     implementation(libs.rxjava.rxAndroid)
     implementation(libs.rxjava.rxjava.kotlin)
@@ -218,10 +222,12 @@ dependencies {
     // Bottom nav libries
     implementation(libs.fragNav)
     // Unit tests
+    testImplementation(libs.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)
     testImplementation(libs.mockito.mockitoKotlin)
     testImplementation(libs.hamcrestJunit)
+    debugImplementation(libs.compose.ui.testManifest)
     if (r8VerificationEnabled) {
         androidTestImplementation(libs.androidx.test.core)
         androidTestImplementation(libs.androidx.test.runner)
@@ -250,6 +256,8 @@ dependencies {
         androidTestImplementation(libs.mockito.mockitoAndroid)
         androidTestImplementation(libs.mockito.mockitoKotlin)
         // Dagger mock
+        androidTestImplementation(platform(libs.compose.bom))
+        androidTestImplementation(libs.compose.ui.testJunit4)
         androidTestImplementation(libs.hilt.testing)
         kaptAndroidTest(libs.hilt.compiler)
         // Resolve conflits between apks
@@ -260,6 +268,15 @@ dependencies {
     implementation(libs.google.crashlytics)
 
     implementation(libs.kotlin.stdlib)
+}
+
+// setRoot redirects Android's Java folders; external Kotlin has its own source set.
+if (r8VerificationEnabled) {
+    extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
+        sourceSets.getByName("androidTest").kotlin.setSrcDirs(
+            listOf("src/r8VerificationTest/java", "src/r8VerificationTest/kotlin")
+        )
+    }
 }
 
 // Kapt processes both Kotlin and Java sources. Avoid loading the processors again.
