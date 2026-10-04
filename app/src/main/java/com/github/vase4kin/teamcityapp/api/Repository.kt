@@ -29,12 +29,14 @@ import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import io.reactivex.Single
 import okhttp3.ResponseBody
 import teamcityapp.features.about.repository.AboutRepository
-import teamcityapp.features.test_details.repository.TestDetailsRepository
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Repository to manage api
  */
-interface Repository : TestDetailsRepository, AboutRepository {
+interface Repository : AboutRepository {
+
+    fun testOccurrence(url: String): Single<TestOccurrence>
 
     /**
      * List agents (cache's supported)

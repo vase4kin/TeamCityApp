@@ -38,7 +38,7 @@ class AndroidConventionPluginsTest {
             }
             tasks.register("verifyConventions") {
                 doLast {
-                    check(android.compileSdkVersion == "android-36")
+                    check(android.compileSdkVersion in setOf("android-37", "android-37.0")) { android.compileSdkVersion.orEmpty() }
                     check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
                     check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
                     check(android.defaultConfig.consumerProguardFiles.single().name == "consumer-rules.pro")
@@ -170,6 +170,34 @@ class AndroidConventionPluginsTest {
         verify(projectDir, "verifyConventions", "-PinstrumentationCoverage")
     }
 
+    @Test
+    fun `Compose convention enables compiler and shared BOM without data binding`() {
+        val projectDir = createProject("compose-library")
+        File(projectDir, "build.gradle.kts").writeText(
+            """
+            plugins {
+                id("teamcityapp.android.library")
+                id("teamcityapp.android.compose")
+            }
+            android { namespace = "teamcityapp.conventiontest" }
+            tasks.register("verifyConventions") {
+                doLast {
+                    check(android.buildFeatures.compose == true)
+                    check(android.buildFeatures.dataBinding != true)
+                    check(plugins.hasPlugin("org.jetbrains.kotlin.plugin.compose"))
+                    check(configurations.getByName("implementation").dependencies.any {
+                        it.group == "androidx.compose" && it.name == "compose-bom"
+                    })
+                    check(configurations.getByName("debugImplementation").dependencies.any {
+                        it.group == "androidx.compose.ui" && it.name == "ui-tooling"
+                    })
+                }
+            }
+            """.trimIndent()
+        )
+        verify(projectDir)
+    }
+
     private fun verifyConventions(kind: String) {
         val projectDir = createProject(kind)
         File(projectDir, "build.gradle.kts").writeText(
@@ -184,7 +212,7 @@ class AndroidConventionPluginsTest {
             pluginManager.apply("teamcityapp.android.hilt")
             pluginManager.apply("teamcityapp.android.data-binding")
 
-            check(android.compileSdkVersion == "android-36")
+            check(android.compileSdkVersion in setOf("android-37", "android-37.0")) { android.compileSdkVersion.orEmpty() }
             check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
             check(android.defaultConfig.targetSdkVersion?.apiLevel == 36)
 
