@@ -134,6 +134,7 @@ dependencies {
     implementation(projects.libraries.api)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
+    implementation(projects.libraries.settings)
     implementation(projects.libraries.chromeTabs)
     implementation(projects.libraries.storage)
     implementation(projects.libraries.storageModels)
@@ -253,6 +254,7 @@ dependencies {
         androidTestImplementation(libs.mockito.mockitoAndroid)
         androidTestImplementation(libs.mockito.mockitoKotlin)
         // Dagger mock
+        androidTestImplementation(libs.datastore.preferences)
         androidTestImplementation(platform(libs.compose.bom))
         androidTestImplementation(libs.compose.ui.testJunit4)
         androidTestImplementation(libs.hilt.testing)

@@ -15,9 +15,17 @@ class HiltApiTestRule(
     private val hilt: HiltAndroidRule,
     private val service: () -> TeamCityService = { FakeTeamCityServiceImpl() }
 ) : ExternalResource() {
+    private var themeObserver: com.github.vase4kin.teamcityapp.settings.SettingsThemeObserver? = null
+
+    override fun after() {
+        themeObserver?.stop()
+        themeObserver = null
+    }
+
     override fun before() {
         hilt.inject()
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        themeObserver = app.appInjector.settingsThemeObserver().also { it.start() }
         app.setApiGraphFactoryForTesting { baseUrl ->
             DaggerRestApiComponent.builder()
                 .appComponent(app.appInjector)

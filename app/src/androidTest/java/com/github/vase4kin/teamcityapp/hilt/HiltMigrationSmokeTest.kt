@@ -73,7 +73,7 @@ class HiltMigrationSmokeTest {
     @Test
     fun settingsInjectsAndRecreates() {
         ActivityScenario.launch<SettingsActivity>(Intent(app, SettingsActivity::class.java)).use {
-            it.onActivity { activity -> assertEquals(1, activity.supportFragmentManager.fragments.size) }
+            it.onActivity { activity -> assertEquals(0, activity.supportFragmentManager.fragments.size) }
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)
         }

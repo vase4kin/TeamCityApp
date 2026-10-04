@@ -41,6 +41,10 @@ interface AppComponent {
 
     fun storage(): Storage
 
+    fun settingsRepository(): teamcityapp.libraries.settings.SettingsRepository
+
+    fun settingsThemeObserver(): com.github.vase4kin.teamcityapp.settings.SettingsThemeObserver
+
     @Named(CLIENT_BASE)
     fun baseOkHttpClient(): OkHttpClient
 

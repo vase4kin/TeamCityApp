@@ -21,6 +21,7 @@ oss-licenses-plugin = "0.10.9"
 compose-bom = "2026.09.00"
 androidx-activity = "1.12.3"
 coroutines = "1.10.2"
+datastore = "1.2.1"
 turbine = "1.2.0"
 
 [libraries]
@@ -40,6 +41,7 @@ coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", ve
 coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "coroutines" }
 coroutines-rx2 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-rx2", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger" }

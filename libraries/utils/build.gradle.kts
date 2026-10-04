@@ -27,6 +27,7 @@ android {
 dependencies {
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
+    implementation(projects.libraries.settings)
 
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
