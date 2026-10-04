@@ -22,11 +22,12 @@ import teamcityapp.features.about.api.navigation.AboutNavigation
 import teamcityapp.features.drawer.drawer.DrawerAppRouter
 import teamcityapp.features.drawer.view.DrawerBottomSheetDialogFragment
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
-import teamcityapp.features.settings.view.SettingsActivity
+import teamcityapp.features.settings.api.navigation.SettingsNavigation
 
 class DrawerAppRouterImpl(
     private val fragment: DrawerBottomSheetDialogFragment,
-    private val aboutNavigation: AboutNavigation
+    private val aboutNavigation: AboutNavigation,
+    private val settingsNavigation: SettingsNavigation
 ) : DrawerAppRouter {
 
     override fun openAboutScreen() {
@@ -50,7 +51,7 @@ class DrawerAppRouterImpl(
     }
 
     override fun openSettingsActivity() {
-        SettingsActivity.start(fragment.requireActivity())
+        settingsNavigation.open(fragment.requireActivity())
     }
 
     override fun openAgentsActivity() {

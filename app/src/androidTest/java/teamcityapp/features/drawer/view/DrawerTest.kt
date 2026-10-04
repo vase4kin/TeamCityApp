@@ -55,7 +55,7 @@ import org.junit.runner.RunWith
 import org.mockito.Spy
 import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
-import teamcityapp.features.settings.view.SettingsActivity
+import teamcityapp.features.settings.impl.SettingsActivity
 
 /**
  * Tests for Drawer

@@ -162,7 +162,9 @@ dependencies {
 
     implementation(projects.features.drawer)
 
-    implementation(projects.features.settings)
+    implementation(projects.features.settings.api)
+    implementation(projects.features.settings.impl)
+    implementation(projects.libraries.appTheme)
 
     implementation(projects.features.changeDetails.api)
     implementation(projects.features.changeDetails.impl)
@@ -175,7 +177,6 @@ dependencies {
     implementation(libs.androidx.cardView)
     implementation(libs.androidx.legacySupport)
     implementation(libs.androidx.recyclerView)
-    implementation(libs.androidx.preference)
     implementation(libs.google.material)
     implementation(libs.androidx.constraintLayout)
     implementation(libs.androidx.lifecycle.lifeCycle)
