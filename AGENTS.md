@@ -13,8 +13,10 @@ the requested behavior or an explicitly requested migration slice.
   presenters and legacy state holders, RxJava 2, Hilt for Android screen injection,
   a separate Dagger account API graph, Retrofit/Gson,
   RxCache, and SharedPreferences. Java and Kotlin coexist.
-- Compose, Material 3, Coroutines/Flow, Room, DataStore, WorkManager, and
-  Navigation 3 are target technologies, not descriptions of current code.
+- Test Details uses Compose, Material 3, a Hilt ViewModel, and Coroutines/Flow.
+  Other screens remain legacy.
+- Room, DataStore, WorkManager, Navigation 3, a single-activity shell, and broader Compose
+  migration remain target architecture.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
   an included `build-logic` build for conventions and SDK/application settings,
   and JDK 17.
@@ -72,7 +74,7 @@ the requested behavior or an explicitly requested migration slice.
 - Keep network and persistence access behind existing repository, data manager,
   or storage interfaces while old implementations remain. Do not add direct
   Retrofit or SharedPreferences access to UI code.
-- Existing screens use Hilt, RxJava, XML, and Data Binding. Keep them
+- Unmigrated screens use Hilt, RxJava, XML, and Data Binding. Keep them
   working until their migration slice is implemented and verified. Use explicit
   adapters at old/new boundaries instead of mixing state systems inside a screen.
 - Hilt screen modules are installed in every Activity/Fragment component. Use
@@ -106,7 +108,8 @@ the requested behavior or an explicitly requested migration slice.
   type-safe project accessors, and convention plugins in `build-logic`. Modules
   apply `teamcityapp.android.application`, `teamcityapp.android.library`, or
   `teamcityapp.android.library.java`, plus optional Hilt/kapt and Data Binding
-  conventions. The app applies the aggregate coverage convention. Keep shared
+  conventions. Compose modules also apply `teamcityapp.android.compose`. The app
+  applies the aggregate coverage convention. Keep shared
   configuration in these plugins rather than root cross-project callbacks.
   See `build-logic/README.md`.
 - Keep dependency/plugin versions in the catalog; keep SDK/application settings
