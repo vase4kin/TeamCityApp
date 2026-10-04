@@ -160,7 +160,8 @@ dependencies {
 
     implementation(projects.features.settings)
 
-    implementation(projects.features.changeDetails)
+    implementation(projects.features.changeDetails.api)
+    implementation(projects.features.changeDetails.impl)
 
     implementation(projects.features.properties.api)
     implementation(projects.features.properties.impl)

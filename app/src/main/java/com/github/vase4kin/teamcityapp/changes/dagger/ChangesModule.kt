@@ -1,5 +1,6 @@
 package com.github.vase4kin.teamcityapp.changes.dagger
 
+import teamcityapp.features.change_details.api.ChangeDetailsNavigation
 import teamcityapp.libraries.utils.requireScreenOwner
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -44,9 +45,10 @@ object ChangesModule {
     @Provides
     fun providesChangesView(
         fragment: ChangesFragment,
-        changesAdapter: ChangesAdapter
+        changesAdapter: ChangesAdapter,
+        changeDetailsNavigation: ChangeDetailsNavigation
     ): ChangesView {
-        return ChangesViewImpl(fragment.requireView(), fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter)
+        return ChangesViewImpl(fragment.requireView(), fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter, changeDetailsNavigation)
     }
 
     @Provides

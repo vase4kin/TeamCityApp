@@ -40,3 +40,15 @@ files receive trailing-whitespace and final-newline checks; XML text and Data Bi
 expressions are preserved. Markdown keeps intentional hard breaks. Generated output,
 IDE metadata, and `local.properties` are excluded. The usual Android Gradle
 configuration requirements still apply.
+
+## Android Studio
+
+Install the Ktlint plugin and configure it under Settings > Tools > KtLint.
+Use the same ktlint ruleset version as the catalog: **1.8.0**. The IDE plugin's
+version number is separate from its ktlint ruleset version.
+
+Select Distract free mode and enable formatting on save or after IDE reformat.
+The plugin reads the repository's `.editorconfig`, including `android_studio`
+style. Android Studio's built-in formatter can produce different output; running
+ktlint afterward brings it into line with CI. Run `./gradlew spotlessCheck` to
+verify the result before committing.
