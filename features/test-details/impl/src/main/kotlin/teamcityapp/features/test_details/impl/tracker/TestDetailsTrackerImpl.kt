@@ -1,5 +1,5 @@
 /*
- * Copyright 2026 Andrey Tolpeev
+ * Copyright 2019 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.impl.router
+/* Updated for Compose in 2026. */
 
-interface TestDetailsRouter {
-    fun close()
-    fun closeInvalidInput()
+package teamcityapp.features.test_details.impl.tracker
+
+import com.google.firebase.analytics.FirebaseAnalytics
+import javax.inject.Inject
+
+class TestDetailsTrackerImpl @Inject constructor(
+    private val analytics: FirebaseAnalytics,
+) : TestDetailsTracker {
+    override fun trackView() {
+        analytics.logEvent("screen_test_details", null)
+    }
 }

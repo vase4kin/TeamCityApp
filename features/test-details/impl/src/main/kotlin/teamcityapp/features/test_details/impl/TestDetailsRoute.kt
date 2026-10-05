@@ -26,7 +26,7 @@ import teamcityapp.features.test_details.impl.router.TestDetailsRouter
 @Composable
 internal fun TestDetailsRoute(router: TestDetailsRouter, viewModel: TestDetailsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LaunchedEffect(router) { router.trackView() }
+    LaunchedEffect(viewModel) { viewModel.onScreenViewed() }
     LaunchedEffect(state) {
         if (state == TestDetailsUiState.InvalidInput) router.closeInvalidInput()
     }

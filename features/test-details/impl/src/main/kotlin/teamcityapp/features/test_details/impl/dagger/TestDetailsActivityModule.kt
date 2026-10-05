@@ -17,7 +17,6 @@
 package teamcityapp.features.test_details.impl.dagger
 
 import android.app.Activity
-import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +31,6 @@ import teamcityapp.libraries.utils.requireScreenOwner
 @InstallIn(ActivityComponent::class)
 object TestDetailsActivityModule {
     @Provides @ActivityScoped
-    fun router(activity: Activity, analytics: FirebaseAnalytics): TestDetailsRouter =
-        TestDetailsRouterImpl(activity.requireScreenOwner<TestDetailsActivity>(), analytics)
+    fun router(activity: Activity): TestDetailsRouter =
+        TestDetailsRouterImpl(activity.requireScreenOwner<TestDetailsActivity>())
 }

@@ -28,6 +28,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import teamcityapp.features.test_details.api.TestDetailsRepository
+import teamcityapp.features.test_details.impl.tracker.TestDetailsTracker
 import androidx.lifecycle.SavedStateHandle
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,13 +37,47 @@ class TestDetailsViewModelTest {
     private val store = ViewModelStore()
     private val info = "Test details <tag> & literal text"
     private val content = TestDetailsUiState.Content(info)
+    private var trackedViews = 0
+    private val tracker = object : TestDetailsTracker {
+        override fun trackView() { trackedViews++ }
+    }
 
     @Before fun setUp() = Dispatchers.setMain(dispatcher)
     @After fun tearDown() { store.clear(); Dispatchers.resetMain() }
 
     private fun viewModel(load: suspend () -> String) = TestDetailsViewModel(SavedStateHandle(mapOf(TestDetailsViewModel.ARG_TEST_URL to "/test")), object : TestDetailsRepository {
         override suspend fun testDetails(url: String) = load()
-    }).also { store.put("details", it) }
+    }, tracker).also { store.put("details", it) }
+
+    @Test fun screenEntryTracksWithoutStartingALoad() = runTest(dispatcher) {
+        var calls = 0
+        val vm = viewModel { calls++; info }
+        runCurrent()
+        assertEquals(0, trackedViews)
+        vm.onScreenViewed()
+        assertEquals(1, trackedViews)
+        assertEquals(0, calls)
+    }
+
+    @Test fun screenReentryTracksWithTheRetainedViewModel() = runTest(dispatcher) {
+        var calls = 0
+        val vm = viewModel { calls++; info }
+        vm.onScreenViewed()
+        vm.state.test {
+            assertEquals(TestDetailsUiState.Loading, awaitItem())
+            assertEquals(content, awaitItem())
+        }
+        runCurrent()
+        assertEquals(1, trackedViews)
+        vm.onScreenViewed()
+        vm.state.test {
+            assertEquals(content, awaitItem())
+            runCurrent()
+            expectNoEvents()
+        }
+        assertEquals(2, trackedViews)
+        assertEquals(1, calls)
+    }
 
     @Test fun loadingStartsOnlyWhenStateIsCollected() = runTest(dispatcher) {
         var calls = 0
@@ -55,6 +90,7 @@ class TestDetailsViewModelTest {
             assertEquals(content, awaitItem())
         }
         assertEquals(1, calls)
+        assertEquals(0, trackedViews)
     }
 
     @Test fun completedContentIsReusedOnReturn() = runTest(dispatcher) {
@@ -173,7 +209,9 @@ class TestDetailsViewModelTest {
     @Test fun missingUrlNeverCallsRepository() = runTest(dispatcher) {
         val vm = TestDetailsViewModel(SavedStateHandle(), object : TestDetailsRepository {
             override suspend fun testDetails(url: String): String = error("Missing URL must not load")
-        }).also { store.put("details", it) }
+        }, tracker).also { store.put("details", it) }
+        vm.onScreenViewed()
+        assertEquals(1, trackedViews)
         vm.state.test {
             assertEquals(TestDetailsUiState.InvalidInput, awaitItem())
             runCurrent()
@@ -201,6 +239,7 @@ class TestDetailsViewModelTest {
             expectNoEvents()
         }
         assertEquals(2, calls)
+        assertEquals(0, trackedViews)
     }
 
     @Test fun retryCanFailAgainThenRecover() = runTest(dispatcher) {

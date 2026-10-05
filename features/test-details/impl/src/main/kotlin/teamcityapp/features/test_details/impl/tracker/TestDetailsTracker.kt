@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.impl.router
+package teamcityapp.features.test_details.impl.tracker
 
-interface TestDetailsRouter {
-    fun close()
-    fun closeInvalidInput()
+interface TestDetailsTracker {
+    fun trackView()
 }

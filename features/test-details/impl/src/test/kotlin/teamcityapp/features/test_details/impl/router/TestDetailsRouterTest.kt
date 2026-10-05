@@ -18,11 +18,9 @@ package teamcityapp.features.test_details.impl.router
 
 import android.app.Activity
 import android.app.Application
-import com.google.firebase.analytics.FirebaseAnalytics
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.*
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -33,24 +31,17 @@ import org.robolectric.shadows.ShadowToast
 class TestDetailsRouterTest {
     @Test fun closeFinishesTheUiOwner() {
         Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            TestDetailsRouterImpl(controller.get(), mock(FirebaseAnalytics::class.java)).close()
+            TestDetailsRouterImpl(controller.get()).close()
             assertTrue(controller.get().isFinishing)
         }
     }
 
     @Test fun invalidInputShowsTheExistingMessageAndCloses() {
         Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            TestDetailsRouterImpl(controller.get(), mock(FirebaseAnalytics::class.java)).closeInvalidInput()
+            TestDetailsRouterImpl(controller.get()).closeInvalidInput()
             assertEquals("There's an error loading the page", ShadowToast.getTextOfLatestToast())
             assertTrue(controller.get().isFinishing)
         }
     }
 
-    @Test fun tracksTheExistingScreenEvent() {
-        val analytics = mock(FirebaseAnalytics::class.java)
-        val activity = mock(Activity::class.java)
-        TestDetailsRouterImpl(activity, analytics).trackView()
-        verify(analytics).logEvent("screen_test_details", null)
-        verifyNoInteractions(activity)
-    }
 }

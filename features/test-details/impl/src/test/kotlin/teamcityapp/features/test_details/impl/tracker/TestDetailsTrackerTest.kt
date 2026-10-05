@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.impl.router
+package teamcityapp.features.test_details.impl.tracker
 
-interface TestDetailsRouter {
-    fun close()
-    fun closeInvalidInput()
+import com.google.firebase.analytics.FirebaseAnalytics
+import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.verifyNoMoreInteractions
+
+class TestDetailsTrackerTest {
+    @Test fun tracksTheExistingScreenEvent() {
+        val analytics = mock(FirebaseAnalytics::class.java)
+        TestDetailsTrackerImpl(analytics).trackView()
+        verify(analytics).logEvent("screen_test_details", null)
+        verifyNoMoreInteractions(analytics)
+    }
 }

@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.test_details.impl.router
+package teamcityapp.features.test_details.impl.dagger
 
-interface TestDetailsRouter {
-    fun close()
-    fun closeInvalidInput()
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.scopes.ViewModelScoped
+import teamcityapp.features.test_details.impl.tracker.TestDetailsTracker
+import teamcityapp.features.test_details.impl.tracker.TestDetailsTrackerImpl
+
+@Module
+@InstallIn(ViewModelComponent::class)
+abstract class TestDetailsTrackerModule {
+    @Binds
+    @ViewModelScoped
+    abstract fun tracker(implementation: TestDetailsTrackerImpl): TestDetailsTracker
 }

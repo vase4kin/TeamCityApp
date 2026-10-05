@@ -26,6 +26,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.test_details.api.TestDetailsRepository
+import teamcityapp.features.test_details.impl.tracker.TestDetailsTracker
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,6 +34,7 @@ import javax.inject.Inject
 class TestDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
     repository: TestDetailsRepository,
+    private val tracker: TestDetailsTracker,
 ) : ViewModel() {
     private val url = savedState.get<String>(ARG_TEST_URL).orEmpty()
     private val retries = MutableStateFlow(0)
@@ -58,6 +60,10 @@ class TestDetailsViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 0),
         if (url.isEmpty()) TestDetailsUiState.InvalidInput else TestDetailsUiState.Loading,
     )
+
+    fun onScreenViewed() {
+        tracker.trackView()
+    }
 
     fun retry() {
         if (state.value != TestDetailsUiState.Error) return

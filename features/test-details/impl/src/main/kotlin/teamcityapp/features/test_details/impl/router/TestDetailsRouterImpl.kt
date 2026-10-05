@@ -20,11 +20,9 @@ package teamcityapp.features.test_details.impl.router
 
 import android.app.Activity
 import android.widget.Toast
-import com.google.firebase.analytics.FirebaseAnalytics
 import teamcityapp.libraries.resources.R
 
-class TestDetailsRouterImpl(private val activity: Activity, private val analytics: FirebaseAnalytics) : TestDetailsRouter {
-    override fun trackView() { analytics.logEvent("screen_test_details", null) }
+class TestDetailsRouterImpl(private val activity: Activity) : TestDetailsRouter {
     override fun close() = activity.finish()
     override fun closeInvalidInput() {
         Toast.makeText(activity, R.string.error_view_error_text, Toast.LENGTH_LONG).show()
