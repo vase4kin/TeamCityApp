@@ -283,6 +283,7 @@ jobs:
           override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
           fail_ci_if_error: true
           use_oidc: true
+          use_pypi: true
 
   marathon-tests:
     name: Marathon Cloud (${{ matrix.label }})
@@ -404,6 +405,7 @@ jobs:
           override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
           fail_ci_if_error: true
           use_oidc: true
+          use_pypi: true
 
       - name: Upload Marathon Cloud artifacts
         if: always()
