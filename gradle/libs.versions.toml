@@ -9,6 +9,9 @@ okhttp = "5.4.0"
 retrofit = "3.0.0"
 dagger = "2.60.1"
 butterknife = "10.2.1"
+spotless = "8.10.3"
+ktlint = "1.7.1"
+google-java-format = "1.24.0"
 kotlin = "2.4.20"
 groupie = "2.7.1"
 android-gradle = "9.4.1"
@@ -115,6 +118,7 @@ groupie-groupie = { module = "com.github.lisawray.groupie:groupie", version.ref 
 groupie-groupieDatabinding = { module = "com.github.lisawray.groupie:groupie-databinding", version.ref = "groupie" }
 
 [plugins]
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 android-application = { id = "com.android.application", version.ref = "android-gradle" }
 android-library = { id = "com.android.library", version.ref = "android-gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }

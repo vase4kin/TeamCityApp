@@ -178,6 +178,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          # Spotless compares against the PR base, including stacked PRs.
+          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v6
@@ -197,6 +200,11 @@ jobs:
           mkdir -p app/src/mock/debug app/src/prod/debug
           cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
+
+      - name: Check changed-file formatting
+        env:
+          SPOTLESS_BASE: ${{ github.event.pull_request.base.sha || github.event.before || 'HEAD~1' }}
+        run: ./gradlew spotlessCheck "-PspotlessBase=$SPOTLESS_BASE" --stacktrace
 
       - name: Run checks
         run: ./gradlew lintMockDebug --stacktrace
