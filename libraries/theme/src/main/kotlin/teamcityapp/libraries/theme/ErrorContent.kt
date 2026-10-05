@@ -16,48 +16,48 @@
 
 package teamcityapp.libraries.theme
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.PlatformTextStyle
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import teamcityapp.libraries.resources.R as SharedR
 
-/** Compose replacement for the legacy error widget, retaining its visual resource. */
+/** Shared Compose error state using the app's Material color roles and type scale. */
 @Composable
 fun ErrorContent(modifier: Modifier = Modifier, onRetry: () -> Unit) {
-    val dark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val primary = if (dark) Color.White.copy(alpha = 0.87f) else Color.Black.copy(alpha = 0.87f)
-    val secondary = if (dark) Color.White.copy(alpha = 0.7f) else Color.Black.copy(alpha = 0.6f)
     Box(modifier, contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            val painter = painterResource(tr.xip.errorview.R.drawable.error_view_cloud)
-            Icon(painter, null, tint = if (dark) Color.White else secondary)
-            Text(stringResource(SharedR.string.error_view_oops_message), Modifier.padding(top = 16.dp),
-                color = primary, style = TextStyle(fontSize = 18.sp, platformStyle = PlatformTextStyle(includeFontPadding = true)))
-            Text(stringResource(SharedR.string.error_view_error_text), Modifier.padding(top = 8.dp),
-                color = secondary, textAlign = TextAlign.Center,
-                style = TextStyle(fontSize = 14.sp, platformStyle = PlatformTextStyle(includeFontPadding = true)))
-            Box(Modifier.padding(top = 16.dp).clickable(role = Role.Button, onClick = onRetry)
-                .sizeIn(minWidth = 48.dp, minHeight = 48.dp), contentAlignment = Alignment.Center) {
-                Text(stringResource(SharedR.string.error_view_retry_button_text), Modifier.padding(8.dp),
-                    color = secondary, style = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold,
-                        platformStyle = PlatformTextStyle(includeFontPadding = true)))
+            Icon(
+                painter = painterResource(tr.xip.errorview.R.drawable.error_view_cloud),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = stringResource(SharedR.string.error_view_oops_message),
+                modifier = Modifier.padding(top = TeamCityDimensions.contentPadding),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(SharedR.string.error_view_error_text),
+                modifier = Modifier.padding(top = TeamCityDimensions.smallSpacing),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(
+                onClick = onRetry,
+                modifier = Modifier.padding(top = TeamCityDimensions.contentPadding),
+            ) {
+                Text(stringResource(SharedR.string.error_view_retry_button_text))
             }
         }
     }

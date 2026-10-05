@@ -18,10 +18,6 @@ package teamcityapp.features.test_details.impl.navigation
 
 import android.app.Activity
 import android.content.Intent
-import dagger.Binds
-import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import teamcityapp.features.test_details.api.TestDetailsNavigation
 import teamcityapp.features.test_details.impl.TestDetailsActivity
 import teamcityapp.features.test_details.impl.TestDetailsViewModel
@@ -33,10 +29,4 @@ class TestDetailsNavigationImpl @Inject constructor() : TestDetailsNavigation {
             .putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
         activity.overridePendingTransition(teamcityapp.libraries.utils.R.anim.slide_in_bottom, teamcityapp.libraries.utils.R.anim.hold)
     }
-}
-
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class TestDetailsNavigationModule {
-    @Binds abstract fun navigation(implementation: TestDetailsNavigationImpl): TestDetailsNavigation
 }

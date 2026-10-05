@@ -17,6 +17,14 @@
 package teamcityapp.features.test_details.impl
 
 import android.app.Application
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.*
@@ -60,4 +68,32 @@ class TestDetailsScreenTest {
         compose.onNodeWithText("No test details").assertIsDisplayed()
         compose.onNodeWithText("TRY AGAIN").assertDoesNotExist()
     }
+    @Test fun contentUsesProvidedColorsAndTypography() {
+        compose.setContent {
+            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
+                TestDetailsScreen(TestDetailsUiState.Content("Theme-aware output"), {}, {})
+            }
+        }
+        assertThemeText("Theme-aware output", 22, Color.Red)
+    }
+
+    @Test fun errorUsesProvidedColorsAndTypography() {
+        compose.setContent {
+            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyMedium = TextStyle(fontSize = 18.sp))) {
+                TestDetailsScreen(TestDetailsUiState.Error, {}, {})
+            }
+        }
+        val message = org.robolectric.RuntimeEnvironment.getApplication()
+            .getString(teamcityapp.libraries.resources.R.string.error_view_error_text)
+        assertThemeText(message, 18, Color.Blue)
+    }
+
+    private fun assertThemeText(text: String, fontSize: Int, color: Color) {
+        val results = mutableListOf<TextLayoutResult>()
+        compose.onAllNodesWithText(text, useUnmergedTree = true)[0]
+            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+        assertEquals(fontSize.sp, results.single().layoutInput.style.fontSize)
+        assertEquals(color, results.single().layoutInput.style.color)
+    }
+
 }
