@@ -26,6 +26,7 @@ import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 import teamcityapp.features.about.api.AboutServerInfo
 import teamcityapp.features.about.repository.models.ServerInfo
 
@@ -71,5 +72,37 @@ class FakeRepositoryImplTest {
         } catch (actual: IllegalStateException) {
             assertEquals(error.message, actual.message)
         }
+    }
+    @Test fun testDetailsIsMappedOnInjectedDispatcher() = runTest {
+        val service = mock(TeamCityService::class.java)
+        `when`(service.testOccurrence("/test")).thenReturn(Single.just(TestOccurrence("<tag> & raw text")))
+        val repository = FakeRepositoryImpl(service, StandardTestDispatcher(testScheduler))
+        val job = launch(start = CoroutineStart.UNDISPATCHED) { assertEquals("<tag> & raw text", repository.testDetails("/test")) }
+        verifyNoInteractions(service)
+        runCurrent()
+        job.join()
+        verify(service).testOccurrence("/test")
+    }
+
+    @Test fun cancelingTestDetailsDisposesRxSubscription() = runTest {
+        val service = mock(TeamCityService::class.java)
+        val pending = SingleSubject.create<TestOccurrence>()
+        `when`(service.testOccurrence("/test")).thenReturn(pending)
+        val repository = FakeRepositoryImpl(service, StandardTestDispatcher(testScheduler))
+        val job = launch { repository.testDetails("/test"); fail("Canceled request must not return") }
+        runCurrent()
+        assertTrue(pending.hasObservers())
+        job.cancel()
+        runCurrent()
+        assertFalse(pending.hasObservers())
+    }
+
+    @Test fun missingDetailsAreEmptyAndFailuresReachCaller() = runTest {
+        val service = mock(TeamCityService::class.java)
+        `when`(service.testOccurrence("/test")).thenReturn(Single.just(TestOccurrence()), Single.error(IllegalStateException("offline")))
+        val repository = FakeRepositoryImpl(service, UnconfinedTestDispatcher(testScheduler))
+        assertEquals("", repository.testDetails("/test"))
+        try { repository.testDetails("/test"); fail("Expected error") }
+        catch (error: IllegalStateException) { assertEquals("offline", error.message) }
     }
 }

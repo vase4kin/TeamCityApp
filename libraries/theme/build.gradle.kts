@@ -26,4 +26,5 @@ android {
 dependencies {
     implementation(projects.libraries.resources)
     implementation(libs.google.material)
+    implementation(libs.errorView)
 }

@@ -130,6 +130,11 @@ class FakeRepositoryImpl(
         return teamCityService.cancelBuild(url, buildCancelRequest)
     }
 
+    override suspend fun testDetails(url: String): String = withContext(ioDispatcher) {
+        // Coroutine cancellation disposes the existing RxCache/API subscription.
+        testOccurrence(url).await().details.orEmpty()
+    }
+
     override suspend fun serverInfo(): AboutServerInfo = withContext(ioDispatcher) {
         teamCityService.serverInfo().await().let { AboutServerInfo(it.version, it.webUrl) }
     }

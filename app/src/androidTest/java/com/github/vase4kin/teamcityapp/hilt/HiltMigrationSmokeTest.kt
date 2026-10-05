@@ -19,7 +19,8 @@ import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.change.view.ARG_BUNDLE_DATA
 import teamcityapp.features.change.view.ChangeActivity
 import teamcityapp.features.settings.view.SettingsActivity
-import teamcityapp.features.test_details.view.TestDetailsActivity
+import teamcityapp.features.test_details.impl.TestDetailsActivity
+import teamcityapp.features.test_details.impl.TestDetailsViewModel
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -62,7 +63,7 @@ class HiltMigrationSmokeTest {
     @Test
     fun testDetailsInjectsAndRecreates() {
         val intent = Intent(app, TestDetailsActivity::class.java)
-            .putExtra(TestDetailsActivity.ARG_TEST_URL, "/app/rest/testOccurrences/id:123")
+            .putExtra(TestDetailsViewModel.ARG_TEST_URL, "/app/rest/testOccurrences/id:123")
         ActivityScenario.launch<TestDetailsActivity>(intent).use {
             assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()

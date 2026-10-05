@@ -243,6 +243,11 @@ class RepositoryImpl(
     /**
      * {@inheritDoc}
      */
+    override suspend fun testDetails(url: String): String = withContext(ioDispatcher) {
+        // Coroutine cancellation disposes the existing RxCache/API subscription.
+        testOccurrence(url).await().details.orEmpty()
+    }
+
     override suspend fun serverInfo(): AboutServerInfo = withContext(ioDispatcher) {
         // Preserve RxCache and cancel its subscription when the coroutine is canceled.
         cacheProviders.serverInfo(teamCityService.serverInfo()).await().let {

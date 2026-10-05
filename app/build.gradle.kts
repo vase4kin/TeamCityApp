@@ -145,9 +145,8 @@ dependencies {
     implementation(projects.libraries.security)
     implementation(projects.libraries.remote)
 
-    implementation(projects.features.testDetails.models)
-    implementation(projects.features.testDetails.repository)
-    implementation(projects.features.testDetails.feature)
+    implementation(projects.features.testDetails.api)
+    implementation(projects.features.testDetails.impl)
 
     implementation(projects.features.splash)
 

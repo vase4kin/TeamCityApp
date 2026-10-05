@@ -17,17 +17,17 @@
 package com.github.vase4kin.teamcityapp.tests.router
 
 import android.app.Activity
-import teamcityapp.features.test_details.view.TestDetailsActivity
+import teamcityapp.features.test_details.api.TestDetailsNavigation
 
 /**
  * Impl of [TestsRouter]
  */
-class TestsRouterImpl(private val activity: Activity) : TestsRouter {
+class TestsRouterImpl(private val activity: Activity, private val navigation: TestDetailsNavigation) : TestsRouter {
 
     /**
      * {@inheritDoc}
      */
     override fun openFailedTest(url: String) {
-        TestDetailsActivity.openFailedTest(url, activity)
+        navigation.open(activity, url)
     }
 }
