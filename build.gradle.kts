@@ -15,6 +15,7 @@
  */
 
 plugins {
+    alias(libs.plugins.spotless)
     id("teamcityapp.android.application") apply false
     id("teamcityapp.android.library") apply false
     id("teamcityapp.android.library.java") apply false
@@ -27,6 +28,74 @@ plugins {
     alias(libs.plugins.google.oss.licenses) apply false
 }
 
-tasks.register<Delete>("clean") {
+tasks.named<Delete>("clean") {
     delete(layout.buildDirectory)
+}
+
+// A single repository-wide target also covers the separate build-logic build.
+// Explicit source globs include Kotlin still living under legacy java roots.
+val formattingExclusions = listOf(
+    "**/build/**", "**/.gradle/**", "**/.kotlin/**", "**/.git/**", "**/.idea/**",
+    "**/bin/**", "**/gen/**", "**/out/**", "**/__pycache__/**", "**/node_modules/**"
+)
+
+// Locally, format only uncommitted files. CI supplies the PR's base commit.
+val formattingBase = providers.gradleProperty("spotlessBase").orElse("HEAD")
+
+spotless {
+    ratchetFrom(formattingBase.get())
+    encoding("UTF-8")
+    lineEndings = com.diffplug.spotless.LineEnding.UNIX
+    kotlin {
+        target(
+            fileTree(rootDir) {
+                include("**/src/**/*.kt")
+                exclude(formattingExclusions)
+            }
+        )
+        ktlint(libs.versions.ktlint.get())
+    }
+    kotlinGradle {
+        target(
+            fileTree(rootDir) {
+                include("**/*.gradle.kts")
+                exclude(formattingExclusions)
+            }
+        )
+        ktlint(libs.versions.ktlint.get())
+    }
+    java {
+        target(
+            fileTree(rootDir) {
+                include("**/src/**/*.java")
+                exclude(formattingExclusions)
+            }
+        )
+        // 1.24.0 runs on the project's JDK 17; newer engines require JDK 21.
+        googleJavaFormat(libs.versions.google.java.format.get()).aosp()
+    }
+    format("xml") {
+        target(
+            fileTree(rootDir) {
+                include("**/src/**/*.xml")
+                exclude(formattingExclusions)
+            }
+        )
+        // Preserve resource text and Data Binding expressions.
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format("misc") {
+        target(
+            fileTree(rootDir) {
+                include(
+                    "**/*.yml", "**/*.yaml", "**/*.toml", "**/*.properties", "**/*.pro",
+                    "**/*.py", "**/*.sh", "**/.gitignore", ".editorconfig", ".gitattributes"
+                )
+                exclude(formattingExclusions + "**/local.properties")
+            }
+        )
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
