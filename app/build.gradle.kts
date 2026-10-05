@@ -163,8 +163,8 @@ dependencies {
 
     implementation(projects.features.changeDetails)
 
-    implementation(projects.features.properties.models)
-    implementation(projects.features.properties.feature)
+    implementation(projects.features.properties.api)
+    implementation(projects.features.properties.impl)
 
     // Android support libraries
     implementation(libs.androidx.appcompat)

@@ -44,12 +44,9 @@ enum class ScreenNavigation { Back, Close }
 
 @Composable
 fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val primary = colorResource(if (darkTheme) SharedR.color.indigo_200 else SharedR.color.blue_500)
-    val onPrimary = colorResource(SharedR.color.white_50)
-    val colors = if (darkTheme) darkColorScheme(primary = primary, onPrimary = onPrimary, secondary = Color(0xFFA5D6A7))
-    else lightColorScheme(primary = primary, onPrimary = onPrimary, secondary = Color(0xFF2E7D32))
+    val colors = if (darkTheme) DarkColorScheme else LightColorScheme
     CompositionLocalProvider(LocalDarkTheme provides darkTheme) {
-        MaterialTheme(colorScheme = colors, content = content)
+        MaterialTheme(colorScheme = colors, typography = TeamCityTypography, content = content)
     }
 }
 

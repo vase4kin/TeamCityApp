@@ -1,6 +1,7 @@
 package com.github.vase4kin.teamcityapp.build_details.dagger
 
 import teamcityapp.libraries.utils.requireScreenOwner
+import teamcityapp.features.properties.api.PropertiesNavigation
 import android.app.Activity
 import android.view.View
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -41,12 +42,14 @@ object BuildDetailsModule {
     @Provides
     fun providesBuildTabsView(
         activity: BuildDetailsActivity,
-        @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor
+        @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
+        propertiesNavigation: PropertiesNavigation
     ): BuildDetailsView {
         return BuildDetailsViewImpl(
             activity.findViewById<View>(android.R.id.content),
             activity,
-            valueExtractor
+            valueExtractor,
+            propertiesNavigation
         )
     }
 

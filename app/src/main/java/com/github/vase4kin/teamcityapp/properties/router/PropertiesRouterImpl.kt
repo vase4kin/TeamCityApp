@@ -19,8 +19,8 @@ package com.github.vase4kin.teamcityapp.properties.router
 import androidx.appcompat.app.AppCompatActivity
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory
 import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment
-import teamcityapp.features.properties.feature.router.PropertiesRouter
-import teamcityapp.features.properties.feature.view.PropertiesFragment
+import teamcityapp.features.properties.impl.router.PropertiesRouter
+import teamcityapp.features.properties.impl.PropertiesFragment
 
 class PropertiesRouterImpl(
     private val fragment: PropertiesFragment
