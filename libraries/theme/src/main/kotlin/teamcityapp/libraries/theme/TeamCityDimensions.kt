@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.properties.impl.navigation
+package teamcityapp.libraries.theme
 
-import teamcityapp.features.properties.api.PropertiesNavigation
-import teamcityapp.features.properties.api.Property
-import teamcityapp.features.properties.impl.PropertiesFragment
-import javax.inject.Inject
+import androidx.compose.ui.unit.dp
 
-class PropertiesNavigationImpl @Inject constructor() : PropertiesNavigation {
-    override fun create(properties: List<Property>) = PropertiesFragment.create(properties)
+/** Shared layout dimensions in dp; text sizes belong to MaterialTheme.typography in sp. */
+object TeamCityDimensions {
+    val extraSmallSpacing = 4.dp
+    val smallSpacing = 8.dp
+    val contentPadding = 16.dp
+    val sectionSpacing = 24.dp
+    val iconSize = 24.dp
+    val minimumTouchTarget = 48.dp
+    val leadingContentWidth = 56.dp
+    val paneMaxWidth = 640.dp
+    val emptyStateIconSize = 124.dp
 }

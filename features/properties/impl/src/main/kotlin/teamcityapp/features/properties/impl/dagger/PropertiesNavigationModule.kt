@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.properties.impl.navigation
+package teamcityapp.features.properties.impl.dagger
 
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import teamcityapp.features.properties.api.PropertiesNavigation
-import teamcityapp.features.properties.api.Property
-import teamcityapp.features.properties.impl.PropertiesFragment
-import javax.inject.Inject
+import teamcityapp.features.properties.impl.navigation.PropertiesNavigationImpl
 
-class PropertiesNavigationImpl @Inject constructor() : PropertiesNavigation {
-    override fun create(properties: List<Property>) = PropertiesFragment.create(properties)
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class PropertiesNavigationModule {
+    @Binds
+    abstract fun navigation(implementation: PropertiesNavigationImpl): PropertiesNavigation
 }

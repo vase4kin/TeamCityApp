@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.properties.impl.navigation
+package teamcityapp.libraries.theme
 
-import teamcityapp.features.properties.api.PropertiesNavigation
-import teamcityapp.features.properties.api.Property
-import teamcityapp.features.properties.impl.PropertiesFragment
-import javax.inject.Inject
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.ui.graphics.Color
 
-class PropertiesNavigationImpl @Inject constructor() : PropertiesNavigation {
-    override fun create(properties: List<Property>) = PropertiesFragment.create(properties)
-}
+internal val LightColorScheme = lightColorScheme(
+    primary = Color(0xFF2196F3),
+    onPrimary = Color.White,
+    secondary = Color(0xFF2E7D32),
+)
+
+internal val DarkColorScheme = darkColorScheme(
+    primary = Color(0xFF9FA8DA),
+    onPrimary = Color.White,
+    secondary = Color(0xFFA5D6A7),
+)

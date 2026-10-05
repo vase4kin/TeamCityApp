@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.properties.impl.navigation
+package teamcityapp.libraries.theme
 
-import teamcityapp.features.properties.api.PropertiesNavigation
-import teamcityapp.features.properties.api.Property
-import teamcityapp.features.properties.impl.PropertiesFragment
-import javax.inject.Inject
+import androidx.compose.material3.Typography
 
-class PropertiesNavigationImpl @Inject constructor() : PropertiesNavigation {
-    override fun create(properties: List<Property>) = PropertiesFragment.create(properties)
-}
+// Keep the Material 3 type scale in one place for all Compose screens and components.
+internal val TeamCityTypography = Typography()
