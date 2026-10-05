@@ -20,8 +20,8 @@ import android.os.Bundle
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,8 +34,10 @@ class BaseValueExtractorImplTest {
 
     @Mock
     private lateinit var build: Build
+
     @Mock
     private lateinit var bundle: Bundle
+
     @Mock
     private lateinit var filter: BuildListFilter
     private lateinit var valueExtractor: BaseValueExtractorImpl

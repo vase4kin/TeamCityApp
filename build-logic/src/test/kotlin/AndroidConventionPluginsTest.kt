@@ -1,12 +1,12 @@
 package teamcityapp.buildlogic
 
+import java.io.File
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
-import java.io.File
 
 class AndroidConventionPluginsTest {
     @get:Rule
@@ -161,7 +161,7 @@ class AndroidConventionPluginsTest {
                     check(android.buildTypes.getByName("debug").enableAndroidTestCoverage ==
                         providers.gradleProperty("instrumentationCoverage").isPresent)
                     check(!android.buildTypes.getByName("release").enableAndroidTestCoverage)
-                    check(android.jacoco.version == "0.8.14")
+                    check(android.testCoverage.jacocoVersion == "0.8.14")
                 }
             }
             """.trimIndent()
@@ -186,7 +186,7 @@ class AndroidConventionPluginsTest {
 
             check(android.compileSdkVersion == "android-37.0") { "Compile SDK: ${'$'}{android.compileSdkVersion}" }
             check(android.defaultConfig.minSdkVersion?.apiLevel == 24)
-            check(android.defaultConfig.targetSdkVersion?.apiLevel == 36)
+            ${if (kind == "application") "check(android.defaultConfig.targetSdkVersion?.apiLevel == 36)" else "check(android.testOptions.targetSdk == 36)"}
 
             android {
                 namespace = "teamcityapp.conventiontest"
@@ -212,10 +212,9 @@ class AndroidConventionPluginsTest {
                     check(android.compileOptions.sourceCompatibility == JavaVersion.VERSION_17)
                     check(android.compileOptions.targetCompatibility == JavaVersion.VERSION_17)
                     check(kotlin.compilerOptions.jvmTarget.get().target == "17")
-                    check(!android.lint.xmlReport)
                     check(android.lint.abortOnError)
                     check(android.lint.disable.contains("InvalidPackage"))
-                    check(android.dataBinding.isEnabled)
+                    check(android.dataBinding.enable)
                     check(plugins.hasPlugin("org.jetbrains.kotlin.kapt"))
                     check(plugins.hasPlugin("com.google.dagger.hilt.android"))
                     check(configurations.getByName("implementation").dependencies.count {

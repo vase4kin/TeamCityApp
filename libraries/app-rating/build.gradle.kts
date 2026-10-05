@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
 }
 
-android {
+extensions.configure<LibraryExtension> {
     namespace = "teamcityapp.libraries.app_rating"
 }

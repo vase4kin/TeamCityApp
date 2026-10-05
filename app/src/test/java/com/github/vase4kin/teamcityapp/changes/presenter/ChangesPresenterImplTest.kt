@@ -26,8 +26,8 @@ import com.github.vase4kin.teamcityapp.utils.any
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
 import com.mugen.MugenCallbacks
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -42,18 +42,25 @@ class ChangesPresenterImplTest {
 
     @Captor
     private lateinit var onLoadMoreListenerArgumentCaptor: ArgumentCaptor<MugenCallbacks>
+
     @Captor
     private lateinit var onChangesLoadingListener: ArgumentCaptor<OnLoadingListener<List<Changes.Change>>>
+
     @Captor
     private lateinit var onLoadingListenerArgumentCaptor: ArgumentCaptor<OnLoadingListener<Int>>
+
     @Mock
     private lateinit var loadingListener: OnLoadingListener<List<Changes.Change>>
+
     @Mock
     private lateinit var view: ChangesView
+
     @Mock
     internal lateinit var dataManager: ChangesDataManager
+
     @Mock
     internal lateinit var tracker: ViewTracker
+
     @Mock
     internal lateinit var valueExtractor: ChangesValueExtractor
     private lateinit var presenter: ChangesPresenterImpl

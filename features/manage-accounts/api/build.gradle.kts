@@ -14,5 +14,7 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.LibraryExtension
+
 plugins { id("teamcityapp.android.library") }
-android { namespace = "teamcityapp.features.manage_accounts.api" }
+extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.manage_accounts.api" }

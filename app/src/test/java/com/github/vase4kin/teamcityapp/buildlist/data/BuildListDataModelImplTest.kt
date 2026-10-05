@@ -19,21 +19,22 @@ package com.github.vase4kin.teamcityapp.buildlist.data
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetailsImpl
+import java.util.ArrayList
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
-import java.util.ArrayList
 
 @RunWith(MockitoJUnitRunner::class)
 class BuildListDataModelImplTest {
 
     @Mock
     private lateinit var build: Build
+
     @Mock
     private lateinit var buildDetails: BuildDetails
     private lateinit var dataModel: BuildListDataModelImpl

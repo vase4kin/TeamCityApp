@@ -18,9 +18,9 @@ package com.github.vase4kin.teamcityapp.tests.data
 
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.tests.api.TEST_STATUS_FAILURE
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsEqual.equalTo
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

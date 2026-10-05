@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.LibraryExtension
+
 plugins { id("teamcityapp.android.library") }
-android { namespace = "teamcityapp.features.drawer.api" }
+extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.drawer.api" }
 dependencies { api(libs.androidx.fragment) }

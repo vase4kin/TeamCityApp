@@ -19,29 +19,24 @@ package com.github.vase4kin.teamcityapp.base.list.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.github.vase4kin.teamcityapp.R;
-
 import java.util.Arrays;
 import java.util.Comparator;
 
-/**
- * Section adapter class from Google IO app
- */
-public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+/** Section adapter class from Google IO app */
+public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter<?>>
+        extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    /**
-     * able to click on a section
-     */
+    /** able to click on a section */
     public interface OnSectionClickListener {
         void onSectionClick(int position);
     }
@@ -54,8 +49,7 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     private T mBaseAdapter;
     private SparseArray<Section> mSections = new SparseArray<>();
 
-    @Nullable
-    private OnSectionClickListener listener;
+    @Nullable private OnSectionClickListener listener;
 
     public void setListener(@Nullable OnSectionClickListener listener) {
         this.listener = listener;
@@ -67,42 +61,46 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
         mBaseAdapter = baseAdapter;
         mContext = context;
 
-        mBaseAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                mValid = mBaseAdapter.getItemCount() > 0;
-                new Handler().post(new Runnable() {
+        mBaseAdapter.registerAdapterDataObserver(
+                new RecyclerView.AdapterDataObserver() {
                     @Override
-                    public void run() {
-                        notifyDataSetChanged();
+                    public void onChanged() {
+                        mValid = mBaseAdapter.getItemCount() > 0;
+                        new Handler(Looper.getMainLooper())
+                                .post(
+                                        new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                notifyDataSetChanged();
+                                            }
+                                        });
+                    }
+
+                    @Override
+                    public void onItemRangeChanged(int positionStart, int itemCount) {
+                        mValid = mBaseAdapter.getItemCount() > 0;
+                        notifyItemRangeChanged(positionStart, itemCount);
+                    }
+
+                    @Override
+                    public void onItemRangeInserted(int positionStart, int itemCount) {
+                        mValid = mBaseAdapter.getItemCount() > 0;
+                        notifyItemRangeInserted(positionStart, itemCount);
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(int positionStart, int itemCount) {
+                        mValid = mBaseAdapter.getItemCount() > 0;
+                        notifyItemRangeRemoved(positionStart, itemCount);
                     }
                 });
-            }
-
-            @Override
-            public void onItemRangeChanged(int positionStart, int itemCount) {
-                mValid = mBaseAdapter.getItemCount() > 0;
-                notifyItemRangeChanged(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeInserted(int positionStart, int itemCount) {
-                mValid = mBaseAdapter.getItemCount() > 0;
-                notifyItemRangeInserted(positionStart, itemCount);
-            }
-
-            @Override
-            public void onItemRangeRemoved(int positionStart, int itemCount) {
-                mValid = mBaseAdapter.getItemCount() > 0;
-                notifyItemRangeRemoved(positionStart, itemCount);
-            }
-        });
     }
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int typeView) {
         if (typeView == SECTION_TYPE) {
-            final View view = LayoutInflater.from(mContext).inflate(mSectionResourceId, parent, false);
+            final View view =
+                    LayoutInflater.from(mContext).inflate(mSectionResourceId, parent, false);
             return new SectionViewHolder(view, mTextResourceId);
         } else {
             return mBaseAdapter.onCreateViewHolder(parent, typeView - 1);
@@ -110,24 +108,38 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     }
 
     @Override
-    @SuppressLint("RecyclerView") // This wrapper translates positions before delegating to the base adapter.
+    @SuppressLint("RecyclerView") // This wrapper translates positions before delegating to the base
+    // adapter.
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder sectionViewHolder, int position) {
         if (isSectionHeaderPosition(position)) {
             ((SectionViewHolder) sectionViewHolder).title.setText(mSections.get(position).title);
-            ((SectionViewHolder) sectionViewHolder).title.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final int adapterPosition = sectionViewHolder.getAdapterPosition();
-                    if (listener != null && adapterPosition != RecyclerView.NO_POSITION) {
-                        listener.onSectionClick(sectionedPositionToPosition(adapterPosition + 1));
-                    }
-                }
-            });
+            ((SectionViewHolder) sectionViewHolder)
+                    .title.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    final int adapterPosition =
+                                            sectionViewHolder.getBindingAdapterPosition();
+                                    if (listener != null
+                                            && adapterPosition != RecyclerView.NO_POSITION) {
+                                        listener.onSectionClick(
+                                                sectionedPositionToPosition(adapterPosition + 1));
+                                    }
+                                }
+                            });
         } else {
-            //noinspection unchecked
-            mBaseAdapter.onBindViewHolder(sectionViewHolder, sectionedPositionToPosition(position));
+            bindBaseViewHolder(
+                    mBaseAdapter, sectionViewHolder, sectionedPositionToPosition(position));
         }
+    }
 
+    // Non-section holders are created by this same adapter in onCreateViewHolder.
+    // The wrapper's public ViewHolder type erases that pairing; keep the cast here.
+    @SuppressWarnings("unchecked")
+    private static void bindBaseViewHolder(
+            RecyclerView.Adapter<?> adapter, RecyclerView.ViewHolder holder, int position) {
+        ((RecyclerView.Adapter<RecyclerView.ViewHolder>) adapter)
+                .onBindViewHolder(holder, position);
     }
 
     @Override
@@ -140,14 +152,16 @@ public class SimpleSectionedRecyclerViewAdapter<T extends RecyclerView.Adapter> 
     public void setSections(Section[] sections) {
         mSections.clear();
 
-        Arrays.sort(sections, new Comparator<Section>() {
-            @Override
-            public int compare(Section o, Section o1) {
-                return (o.firstPosition == o1.firstPosition)
-                        ? 0
-                        : ((o.firstPosition < o1.firstPosition) ? -1 : 1);
-            }
-        });
+        Arrays.sort(
+                sections,
+                new Comparator<Section>() {
+                    @Override
+                    public int compare(Section o, Section o1) {
+                        return (o.firstPosition == o1.firstPosition)
+                                ? 0
+                                : ((o.firstPosition < o1.firstPosition) ? -1 : 1);
+                    }
+                });
 
         int offset = 0; // offset positions for the headers we're adding
         for (Section section : sections) {

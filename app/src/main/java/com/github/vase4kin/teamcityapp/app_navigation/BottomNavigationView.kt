@@ -74,6 +74,7 @@ class BottomNavigationViewImpl(
         fab.setOnClickListener {
             when (val currentItem = navigation.selectedItemId) {
                 R.id.favorites -> listener.onFavoritesFabClicked()
+
                 R.id.build_queue, R.id.running_builds, R.id.agents -> {
                     AppNavigationItem.values().find { it.id == currentItem }?.let {
                         listener.onFilterTabsClicked(it)
@@ -84,7 +85,7 @@ class BottomNavigationViewImpl(
     }
 
     private fun initBottomNavView() {
-        navigation.setOnNavigationItemSelectedListener { item ->
+        navigation.setOnItemSelectedListener { item ->
             AppNavigationItem.values().find { it.id == item.itemId }?.let {
                 selectTabInternal(it, item.isChecked)
             }
@@ -132,6 +133,5 @@ class BottomNavigationViewImpl(
         }
     }
 
-    private fun getAppNavItemByPosition(position: Int): AppNavigationItem? =
-        AppNavigationItem.values().getOrNull(position)
+    private fun getAppNavItemByPosition(position: Int): AppNavigationItem? = AppNavigationItem.values().getOrNull(position)
 }

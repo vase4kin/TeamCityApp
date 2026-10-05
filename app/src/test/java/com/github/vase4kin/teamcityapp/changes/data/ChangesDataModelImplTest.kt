@@ -18,8 +18,8 @@ package com.github.vase4kin.teamcityapp.changes.data
 
 import com.github.vase4kin.teamcityapp.changes.api.ChangeFiles
 import com.github.vase4kin.teamcityapp.changes.api.Changes
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -32,8 +32,10 @@ class ChangesDataModelImplTest {
 
     @Mock
     private lateinit var files: List<String>
+
     @Mock
     private lateinit var changeFiles: ChangeFiles
+
     @Mock
     private lateinit var change: Changes.Change
     private lateinit var dataModel: ChangesDataModel

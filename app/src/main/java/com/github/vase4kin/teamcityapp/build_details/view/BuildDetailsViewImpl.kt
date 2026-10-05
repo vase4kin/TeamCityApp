@@ -55,7 +55,8 @@ class BuildDetailsViewImpl(
     activity: AppCompatActivity,
     valueExtractor: BaseValueExtractor,
     private val propertiesNavigation: PropertiesNavigation
-) : BaseTabsViewModelImpl(view, activity), BuildDetailsView {
+) : BaseTabsViewModelImpl(view, activity),
+    BuildDetailsView {
 
     @BindView(R.id.floating_action_button)
     lateinit var floatingActionButton: FloatingActionButton
@@ -147,7 +148,7 @@ class BuildDetailsViewImpl(
         val offScreenPageLimit = viewPager.adapter?.count ?: 0
         viewPager.offscreenPageLimit = offScreenPageLimit
         overviewTabTitle = activity.getString(R.string.tab_overview)
-        tabLayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        setTabSelectionListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 viewPager.currentItem = tab.position
                 tabTitle = tab.text.toString()
@@ -408,9 +409,7 @@ class BuildDetailsViewImpl(
         @StringRes positiveText: Int
     ): AlertDialog = createConfirmDialog(content, positiveText, withReAddCheckbox = true)
 
-    private fun createProgressDialogWithContent(@StringRes content: Int): AlertDialog {
-        return createProgressDialog(activity, content)
-    }
+    private fun createProgressDialogWithContent(@StringRes content: Int): AlertDialog = createProgressDialog(activity, content)
 
     /**
      * Show snack bar with text message
@@ -426,13 +425,11 @@ class BuildDetailsViewImpl(
      *
      * @param text - Text message resource id
      */
-    private fun createSnackBarWithText(@StringRes text: Int): Snackbar {
-        return Snackbar.make(
-            container,
-            text,
-            Snackbar.LENGTH_LONG
-        )
-    }
+    private fun createSnackBarWithText(@StringRes text: Int): Snackbar = Snackbar.make(
+        container,
+        text,
+        Snackbar.LENGTH_LONG
+    )
 
     /**
      * Set toolbar title

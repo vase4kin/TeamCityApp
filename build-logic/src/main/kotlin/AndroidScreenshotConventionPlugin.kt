@@ -16,7 +16,7 @@
 
 package teamcityapp.buildlogic
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.CommonExtension
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import io.github.takahirom.roborazzi.RoborazziExtension
 import org.gradle.api.Plugin
@@ -29,7 +29,7 @@ import org.gradle.api.tasks.testing.Test
 class AndroidScreenshotConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("io.github.takahirom.roborazzi")
-        extensions.configure(BaseExtension::class.java) {
+        extensions.configure(CommonExtension::class.java) {
             testOptions.unitTests.isIncludeAndroidResources = true
         }
         extensions.configure(RoborazziExtension::class.java) {
@@ -55,7 +55,7 @@ class AndroidScreenshotConventionPlugin : Plugin<Project> {
                 "--add-opens=java.base/java.text=ALL-UNNAMED",
                 "--add-opens=java.base/jdk.internal.access=ALL-UNNAMED",
                 "--add-opens=java.desktop/java.awt.font=ALL-UNNAMED",
-                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+                "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
             )
         }
     }

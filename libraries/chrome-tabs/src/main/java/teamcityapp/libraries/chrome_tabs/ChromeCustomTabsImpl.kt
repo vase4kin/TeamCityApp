@@ -19,6 +19,7 @@ package teamcityapp.libraries.chrome_tabs
 import android.app.Activity
 import android.content.ComponentName
 import android.net.Uri
+import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
@@ -30,8 +31,7 @@ private const val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 /**
  * Impl of [ChromeCustomTabs]
  */
-class ChromeCustomTabsImpl(private val activity: Activity) :
-    ChromeCustomTabs {
+class ChromeCustomTabsImpl(private val activity: Activity) : ChromeCustomTabs {
 
     private var client: CustomTabsClient? = null
     private var customTabsServiceConnection: CustomTabsServiceConnection? = null
@@ -51,7 +51,6 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
                 componentName: ComponentName,
                 customTabsClient: CustomTabsClient
             ) {
-
                 // Pre-warming
                 client = customTabsClient
                 customTabsClient.warmup(0L)
@@ -71,7 +70,11 @@ class ChromeCustomTabsImpl(private val activity: Activity) :
         if (bound) customTabsServiceConnection = connection
 
         customTabsIntent = CustomTabsIntent.Builder(customTabsSession)
-            .setToolbarColor(activity.getThemeColor(R.attr.colorPrimarySurface))
+            .setDefaultColorSchemeParams(
+                CustomTabColorSchemeParams.Builder()
+                    .setToolbarColor(activity.getThemeColor(R.attr.colorPrimarySurface))
+                    .build()
+            )
             .setShowTitle(true)
             .build()
         /*

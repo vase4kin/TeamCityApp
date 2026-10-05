@@ -16,6 +16,8 @@
 
 /* Updated for Compose in 2026. */
 
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
@@ -23,7 +25,7 @@ plugins {
     id("teamcityapp.android.screenshot")
 }
 
-android { namespace = "teamcityapp.features.test_details.impl" }
+extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.test_details.impl" }
 
 dependencies {
     implementation(projects.features.testDetails.api)

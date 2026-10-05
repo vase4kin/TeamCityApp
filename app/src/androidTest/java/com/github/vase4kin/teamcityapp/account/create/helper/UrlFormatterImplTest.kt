@@ -16,9 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.account.create.helper
 
-import org.hamcrest.Matchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
-import org.junit.Assert.assertThat
+import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Test
 

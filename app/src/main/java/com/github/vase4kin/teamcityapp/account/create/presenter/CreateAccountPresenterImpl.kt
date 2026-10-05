@@ -34,7 +34,8 @@ class CreateAccountPresenterImpl @Inject constructor(
     private val dataModel: CreateAccountDataModel,
     private val router: CreateAccountRouter,
     private val tracker: CreateAccountTracker
-) : CreateAccountPresenter, CreateAccountView.ViewListener {
+) : CreateAccountPresenter,
+    CreateAccountView.ViewListener {
 
     /**
      * {@inheritDoc}
@@ -81,15 +82,15 @@ class CreateAccountPresenterImpl @Inject constructor(
         } else {
             dataManager.authUser(
                 object : CustomOnLoadingListener<String> {
-                    override fun onSuccess(url: String) {
+                    override fun onSuccess(data: String) {
                         dataManager.saveNewUserAccount(
-                            url,
+                            data,
                             userName,
                             password,
                             isSslDisabled,
                             object : OnLoadingListener<String> {
-                                override fun onSuccess(serverUrl: String) {
-                                    dataManager.initTeamCityService(serverUrl)
+                                override fun onSuccess(data: String) {
+                                    dataManager.initTeamCityService(data)
                                     tracker.trackUserLoginSuccess(!isSslDisabled)
                                     view.dismissProgressDialog()
                                     view.finish()
@@ -105,13 +106,17 @@ class CreateAccountPresenterImpl @Inject constructor(
                         )
                     }
 
-                    override fun onFail(code: Int, errorMessage: String) {
+                    override fun onFail(statusCode: Int, errorMessage: String) {
                         view.showError(errorMessage)
                         view.dismissProgressDialog()
                         tracker.trackUserLoginFailed(errorMessage)
                     }
                 },
-                url, userName, password, isSslDisabled, false
+                url,
+                userName,
+                password,
+                isSslDisabled,
+                false
             )
         }
     }
@@ -132,9 +137,9 @@ class CreateAccountPresenterImpl @Inject constructor(
         } else {
             dataManager.authGuestUser(
                 object : CustomOnLoadingListener<String> {
-                    override fun onSuccess(url: String) {
-                        dataManager.saveGuestUserAccount(url, isSslDisabled)
-                        dataManager.initTeamCityService(url)
+                    override fun onSuccess(data: String) {
+                        dataManager.saveGuestUserAccount(data, isSslDisabled)
+                        dataManager.initTeamCityService(data)
                         tracker.trackGuestUserLoginSuccess(!isSslDisabled)
                         view.dismissProgressDialog()
                         view.finish()
@@ -147,7 +152,9 @@ class CreateAccountPresenterImpl @Inject constructor(
                         tracker.trackGuestUserLoginFailed(errorMessage)
                     }
                 },
-                url, isSslDisabled, false
+                url,
+                isSslDisabled,
+                false
             )
         }
     }

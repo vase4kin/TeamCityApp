@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("teamcityapp.android.library.java")
 }
 
-android {
+extensions.configure<LibraryExtension> {
     namespace = "teamcityapp.libraries.api"
 
     defaultConfig {

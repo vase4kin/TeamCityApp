@@ -17,13 +17,13 @@
 package com.github.vase4kin.teamcityapp.agents.data
 
 import com.github.vase4kin.teamcityapp.agents.api.Agent
+import java.util.*
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class AgentDataModelImplTest {

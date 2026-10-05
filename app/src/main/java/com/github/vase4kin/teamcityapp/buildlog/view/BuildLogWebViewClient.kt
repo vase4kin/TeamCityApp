@@ -46,7 +46,8 @@ private const val SCRIPT = "$('topWrapper').style.display='none';\n" +
 class BuildLogWebViewClient(
     private val stateHolder: BuildLogStateHolder,
     private val evaluateJs: (script: String) -> Unit
-) : WebViewClient(), LifecycleObserver {
+) : WebViewClient(),
+    LifecycleObserver {
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -59,8 +60,8 @@ class BuildLogWebViewClient(
     /**
      * {@inheritDoc}
      */
-    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-        view.loadUrl(url)
+    override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
+        view.loadUrl(request.url.toString())
         return false
     }
 

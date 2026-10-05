@@ -18,8 +18,8 @@ package com.github.vase4kin.teamcityapp.artifact.extractor
 
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -38,10 +38,13 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
 
     @BindView(R.id.autocomplete_branches)
     lateinit var branchAutocomplete: AutoCompleteTextView
+
     @BindView(R.id.text_no_branches_available)
     lateinit var noBranchesAvailable: TextView
+
     @BindView(R.id.text_no_branches_available_to_filter)
     lateinit var noBranchesAvailableToFilter: TextView
+
     @BindView(R.id.progress_branches_loading)
     lateinit var branchesLoadingProgress: View
     lateinit var unbinder: Unbinder
@@ -144,7 +147,7 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
      * Branches adapter with custom branch filtering
      */
     private class BranchArrayAdapter
-    /**
+    /*
      * Constructor
      *
      * @param context The current context.
@@ -162,6 +165,7 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
          * Branches to show and filter
          */
         private val branches: List<String>
+
         /**
          * Branch filter
          */
@@ -212,7 +216,7 @@ class BranchesComponentViewImpl(private val activity: AppCompatActivity) : Branc
             override fun publishResults(constraint: CharSequence?, results: FilterResults) {
                 if (results.count > 0) {
                     clear()
-                    addAll(results.values as List<String>)
+                    addAll((results.values as List<*>).map { it as String })
                     notifyDataSetChanged()
                 } else {
                     notifyDataSetInvalidated()

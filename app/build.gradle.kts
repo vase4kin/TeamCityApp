@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.ApplicationExtension
 import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import teamcityapp.buildlogic.Config
 import teamcityapp.buildlogic.verifyR8SmokeTestReports
@@ -33,7 +34,7 @@ plugins {
 
 val r8VerificationEnabled = providers.gradleProperty("r8Verification").isPresent
 
-android {
+extensions.configure<ApplicationExtension> {
     namespace = "com.github.vase4kin.teamcityapp"
 
     defaultConfig {
@@ -101,16 +102,12 @@ android {
         }
     }
 
-    variantFilter {
-        if (buildType.name == "release" && flavors.first().name == "mock") {
-            ignore = true
-        }
-    }
-
     packaging {
         jniLibs {
             // Mockito Android needs native libraries extracted in the test APK.
             useLegacyPackaging = true
+            // Preserve Mockito's test-only JVMTI agent rather than attempting to strip it.
+            keepDebugSymbols += "**/libdexmakerjvmtiagent.so"
         }
         resources {
             excludes += listOf(
@@ -130,6 +127,12 @@ android {
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         animationsDisabled = true
+    }
+}
+
+androidComponents {
+    beforeVariants(selector().withBuildType("release").withFlavor("default" to "mock")) {
+        it.enable = false
     }
 }
 
@@ -278,7 +281,8 @@ dependencies {
     implementation(libs.kotlin.stdlib)
 }
 
-// setRoot redirects Android's Java folders; external Kotlin has its own source set.
+// External Kotlin still owns its source sets; the public Android Kotlin directories
+// do not redirect KGP's common androidTest sources in the legacy DSL integration.
 if (r8VerificationEnabled) {
     extensions.configure<org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension> {
         sourceSets.getByName("androidTest").kotlin.setSrcDirs(

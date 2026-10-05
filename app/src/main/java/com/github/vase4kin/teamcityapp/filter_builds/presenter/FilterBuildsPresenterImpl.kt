@@ -34,7 +34,8 @@ class FilterBuildsPresenterImpl @Inject constructor(
     private val branchesInteractor: BranchesInteractor,
     private val branchesComponentView: BranchesComponentView,
     private val tracker: FilterBuildsTracker
-) : FilterBuildsPresenter, FilterBuildsView.ViewListener {
+) : FilterBuildsPresenter,
+    FilterBuildsView.ViewListener {
 
     /**
      * {@inheritDoc}
@@ -92,14 +93,14 @@ class FilterBuildsPresenterImpl @Inject constructor(
         router.closeOnCancel()
     }
 
-    override fun onFilterFabClick(filterType: Int, isPersonal: Boolean, isPinned: Boolean) {
-        val filter = BuildListFilterImpl()
-        filter.setFilter(filterType)
-        filter.setBranch(branchesComponentView.branchName)
-        filter.setPersonal(isPersonal)
-        filter.setPinned(isPinned)
+    override fun onFilterFabClick(filter: Int, isPersonal: Boolean, isPinned: Boolean) {
+        val buildListFilter = BuildListFilterImpl()
+        buildListFilter.setFilter(filter)
+        buildListFilter.setBranch(branchesComponentView.branchName)
+        buildListFilter.setPersonal(isPersonal)
+        buildListFilter.setPinned(isPinned)
         tracker.trackUserFilteredBuilds()
-        router.closeOnSuccess(filter)
+        router.closeOnSuccess(buildListFilter)
     }
 
     /**
