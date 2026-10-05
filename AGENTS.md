@@ -250,12 +250,19 @@ to the requested behavior and the coherent migration slice needed to support it.
   `cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json`
   and `cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json`.
 - Convention-plugin verification: `./gradlew :build-logic:test` (JDK 17).
+- Formatting: run `./gradlew spotlessApply` locally, review the diff, and verify
+  with `./gradlew spotlessCheck`. Local commands cover uncommitted files; use
+  `-PspotlessBase=<branch-or-commit>` to include committed changes. CI supplies each
+  PR's base SHA and checks changed files across every module and `build-logic`.
+  Formatter versions live in the version catalog;
+  shared editor settings live in `.editorconfig`. Generated output is excluded.
+  See [the formatting guide](docs/formatting.md) for local and CI usage.
 - Common tasks: `./gradlew assembleMockDebug`,
   `./gradlew :app:testMockDebugUnitTest`, `./gradlew testMockDebugUnitTest`,
   and `./gradlew lintMockDebug`. CI also runs `testDebugUnitTest` for modules
   without flavors and builds `assembleMockDebugAndroidTest`.
 - Instrumentation tests run in CI through Marathon Cloud. Do not assume that
-  Gradle-managed devices or Spotless are configured here; verify available tasks
+  Gradle-managed devices are configured here; verify available tasks
   before running them. Robolectric/Roborazzi are configured by the opt-in screenshot
   convention described above. Add managed devices or formatting tooling only as
   part of an explicit test/build migration.
