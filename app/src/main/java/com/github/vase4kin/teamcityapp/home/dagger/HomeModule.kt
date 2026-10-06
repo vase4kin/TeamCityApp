@@ -1,6 +1,5 @@
 package com.github.vase4kin.teamcityapp.home.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationInteractor
@@ -31,11 +30,11 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.features.drawer.api.navigation.DrawerNavigation
 import teamcityapp.libraries.cache_manager.CacheManager
-import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
-import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.storage.Storage
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -45,9 +44,7 @@ object HomeModule {
     fun provideOwner(owner: Activity): HomeActivity = owner.requireScreenOwner<HomeActivity>()
 
     @Provides
-    fun providesRootDrawerView(activity: HomeActivity): HomeView {
-        return HomeViewImpl(activity)
-    }
+    fun providesRootDrawerView(activity: HomeActivity): HomeView = HomeViewImpl(activity)
 
     @Provides
     fun providesRootDataManager(
@@ -55,14 +52,10 @@ object HomeModule {
         sharedUserStorage: SharedUserStorage,
         cacheManager: CacheManager,
         eventBus: EventBus
-    ): HomeDataManager {
-        return HomeDataManagerImpl(repository, sharedUserStorage, cacheManager, eventBus)
-    }
+    ): HomeDataManager = HomeDataManagerImpl(repository, sharedUserStorage, cacheManager, eventBus)
 
     @Provides
-    fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker {
-        return HomeTrackerImpl(firebaseAnalytics)
-    }
+    fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker = HomeTrackerImpl(firebaseAnalytics)
 
     @Provides
     fun providesFragmentFactory(): FragmentFactory = FragmentFactoryImpl()
@@ -72,17 +65,13 @@ object HomeModule {
     fun providesAppNavigationInteractor(
         activity: HomeActivity,
         fragmentFactory: FragmentFactory
-    ): AppNavigationInteractor {
-        return AppNavigationInteractorImpl(activity.supportFragmentManager, fragmentFactory)
-    }
+    ): AppNavigationInteractor = AppNavigationInteractorImpl(activity.supportFragmentManager, fragmentFactory)
 
     @Provides
     fun providesBottomNavigationView(
         appNavigationInteractor: AppNavigationInteractor,
         activity: HomeActivity
-    ): BottomNavigationView {
-        return BottomNavigationViewImpl(appNavigationInteractor, activity)
-    }
+    ): BottomNavigationView = BottomNavigationViewImpl(appNavigationInteractor, activity)
 
     @Provides
     @ActivityScoped
@@ -90,25 +79,15 @@ object HomeModule {
 
     @Provides
     @Named("HomeActivity")
-    @ActivityScoped
-    fun provideChromeTabs(activity: HomeActivity): ChromeCustomTabs =
-        ChromeCustomTabsImpl(activity)
-
-    @Provides
-    @Named("HomeActivity")
-    fun providesBuildLogInteractor(activity: HomeActivity, storage: Storage): BuildLogInteractor {
-        return BuildLogInteractorImpl(
-            storage,
-            activity,
-            activity.intent.extras
-        )
-    }
+    fun providesBuildLogInteractor(activity: HomeActivity, storage: Storage): BuildLogInteractor = BuildLogInteractorImpl(
+        storage,
+        activity,
+        activity.intent.extras
+    )
 
     @Provides
     @ActivityScoped
-    fun provideHomeRouter(activity: HomeActivity): HomeRouter {
-        return HomeRouterImpl(activity)
-    }
+    fun provideHomeRouter(activity: HomeActivity, drawerNavigation: DrawerNavigation): HomeRouter = HomeRouterImpl(activity, drawerNavigation)
 
     @Provides
     fun provideHomePresenterImpl(
@@ -119,14 +98,13 @@ object HomeModule {
         onboardingManager: OnboardingManager,
         bottomNavigationView: BottomNavigationView,
         filterProvider: FilterProvider
-    ): HomePresenterImpl =
-        HomePresenterImpl(
-            view,
-            dataManager,
-            tracker,
-            interactor,
-            onboardingManager,
-            bottomNavigationView,
-            filterProvider
-        )
+    ): HomePresenterImpl = HomePresenterImpl(
+        view,
+        dataManager,
+        tracker,
+        interactor,
+        onboardingManager,
+        bottomNavigationView,
+        filterProvider
+    )
 }
