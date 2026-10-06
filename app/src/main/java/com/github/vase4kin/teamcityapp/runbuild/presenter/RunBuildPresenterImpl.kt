@@ -31,9 +31,9 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import teamcityapp.features.properties.repository.models.Properties
 import java.util.ArrayList
 import javax.inject.Inject
+import teamcityapp.features.properties.repository.models.Properties
 
 /**
  * Impl of [RunBuildPresenter]
@@ -45,18 +45,21 @@ class RunBuildPresenterImpl @Inject constructor(
     private val mTracker: RunBuildTracker,
     private val mBranchesComponentView: BranchesComponentView,
     private val mBranchesInteractor: BranchesInteractor
-) : RunBuildPresenter, RunBuildView.ViewListener {
+) : RunBuildPresenter,
+    RunBuildView.ViewListener {
 
     /**
      * Selected agent
      */
     @VisibleForTesting
     var mSelectedAgent: Agent? = null
+
     /**
      * List of available agents
      */
     @VisibleForTesting
     var mAgents: List<Agent> = emptyList()
+
     /**
      * Build custom parameters
      */
@@ -72,14 +75,14 @@ class RunBuildPresenterImpl @Inject constructor(
         mView.initViews(this)
         mBranchesComponentView.initViews()
         mBranchesInteractor.loadBranches(object : OnLoadingListener<List<String>> {
-            override fun onSuccess(branches: List<String>) {
+            override fun onSuccess(data: List<String>) {
                 mBranchesComponentView.hideBranchesLoadingProgress()
-                if (branches.size == 1) {
+                if (data.size == 1) {
                     // set this branch as default and disable the field
-                    mBranchesComponentView.setupAutoCompleteForSingleBranch(branches)
+                    mBranchesComponentView.setupAutoCompleteForSingleBranch(data)
                 } else {
                     // for all other leave the hint as default
-                    mBranchesComponentView.setupAutoComplete(branches)
+                    mBranchesComponentView.setupAutoComplete(data)
                 }
                 mBranchesComponentView.showBranchesAutoComplete()
             }
@@ -92,15 +95,15 @@ class RunBuildPresenterImpl @Inject constructor(
 
         mView.disableAgentSelectionControl()
         mInteractor.loadAgents(object : OnLoadingListener<List<Agent>> {
-            override fun onSuccess(agents: List<Agent>) {
-                if (agents.isEmpty()) {
+            override fun onSuccess(data: List<Agent>) {
+                if (data.isEmpty()) {
                     mAgents = emptyList()
                     mView.hideLoadingAgentsProgress()
                     mView.showNoAgentsAvailable()
                     return
                 }
                 // Setting dialog list
-                Observable.fromIterable(agents)
+                Observable.fromIterable(data)
                     .map { it.name }
                     .toList()
                     .subscribeOn(Schedulers.trampoline())
@@ -108,7 +111,7 @@ class RunBuildPresenterImpl @Inject constructor(
                         onSuccess = { mView.setAgentListDialogWithAgentsList(it) }
                     )
                     .addTo(subscriptions)
-                mAgents = agents
+                mAgents = data
                 mView.hideLoadingAgentsProgress()
                 mView.showSelectedAgentView()
                 mView.enableAgentSelectionControl()

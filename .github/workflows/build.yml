@@ -214,7 +214,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: check-reports
-          path: app/build/reports/lint-report
+          path: app/build/reports/lint-results-mockDebug.*
           if-no-files-found: warn
 
   unit-tests:

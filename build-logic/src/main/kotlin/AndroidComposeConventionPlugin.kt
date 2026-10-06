@@ -16,7 +16,7 @@
 
 package teamcityapp.buildlogic
 
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -24,7 +24,7 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 class AndroidComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
-        extensions.configure(BaseExtension::class.java) {
+        extensions.configure(CommonExtension::class.java) {
             buildFeatures.compose = true
         }
         val libs = extensions.getByType(VersionCatalogsExtension::class.java).named("libs")

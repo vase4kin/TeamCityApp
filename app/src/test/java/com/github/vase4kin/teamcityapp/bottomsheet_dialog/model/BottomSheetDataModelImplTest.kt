@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.bottomsheet_dialog.model
 
 import android.graphics.drawable.Drawable
 import org.hamcrest.CoreMatchers.`is`
-import org.junit.Assert.assertThat
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

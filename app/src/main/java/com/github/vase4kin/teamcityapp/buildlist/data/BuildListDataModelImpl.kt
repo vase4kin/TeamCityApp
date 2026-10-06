@@ -37,55 +37,40 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
     /**
      * {@inheritDoc}
      */
-    override fun getBranchName(position: Int): String {
-        return buildDetailsList[position].branchName ?: ""
-    }
+    override fun getBranchName(position: Int): String = buildDetailsList[position].branchName ?: ""
 
     /**
      * {@inheritDoc}
      */
-    override fun getBuildStatusIcon(position: Int): Int {
-        return buildDetailsList[position].statusIcon
-    }
+    override fun getBuildStatusIcon(position: Int): Int = buildDetailsList[position].statusIcon
 
     /**
      * {@inheritDoc}
      */
-    override fun isRunning(position: Int): Boolean {
-        return AnimationUtils.isAnimationOn && buildDetailsList[position].isRunning
-    }
+    override fun isRunning(position: Int): Boolean = AnimationUtils.isAnimationOn && buildDetailsList[position].isRunning
 
     /**
      * {@inheritDoc}
      */
-    override fun getStatusText(position: Int): String {
-        return buildDetailsList[position].statusText
-    }
+    override fun getStatusText(position: Int): String = buildDetailsList[position].statusText
 
     /**
      * {@inheritDoc}
      */
     override fun getBuildNumber(position: Int): String {
-        val buildNumber = buildDetailsList[position].number
-        return if (buildNumber != null)
-            String.format("#%s", buildNumber)
-        else
-            ""
+        val buildNumber: String? = buildDetailsList[position].number
+        return buildNumber?.let { String.format("#%s", it) } ?: ""
     }
 
     /**
      * {@inheritDoc}
      */
-    override fun getBuild(position: Int): Build {
-        return buildDetailsList[position].toBuild()
-    }
+    override fun getBuild(position: Int): Build = buildDetailsList[position].toBuild()
 
     /**
      * {@inheritDoc}
      */
-    override fun isLoadMore(position: Int): Boolean {
-        return buildDetailsList[position] == LOAD_MORE
-    }
+    override fun isLoadMore(position: Int): Boolean = buildDetailsList[position] == LOAD_MORE
 
     /**
      * {@inheritDoc}
@@ -115,79 +100,57 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
     /**
      * {@inheritDoc}
      */
-    override fun getStartDate(position: Int): String {
-        return buildDetailsList[position].startDateFormattedAsHeader
-    }
+    override fun getStartDate(position: Int): String = buildDetailsList[position].startDateFormattedAsHeader
 
     /**
      * {@inheritDoc}
      */
-    override fun getBuildTypeId(position: Int): String {
-        return buildDetailsList[position].buildTypeId
-    }
+    override fun getBuildTypeId(position: Int): String = buildDetailsList[position].buildTypeId
 
     /**
      * {@inheritDoc}
      */
-    override fun hasBuildTypeInfo(position: Int): Boolean {
-        return buildDetailsList[position].hasBuildTypeInfo()
-    }
+    override fun hasBuildTypeInfo(position: Int): Boolean = buildDetailsList[position].hasBuildTypeInfo()
 
     /**
      * {@inheritDoc}
      */
-    override fun getBuildTypeFullName(position: Int): String {
-        return buildDetailsList[position].buildTypeFullName
-    }
+    override fun getBuildTypeFullName(position: Int): String = buildDetailsList[position].buildTypeFullName
 
     /**
      * {@inheritDoc}
      */
-    override fun getBuildTypeName(position: Int): String {
-        return buildDetailsList[position].buildTypeName ?: ""
-    }
+    override fun getBuildTypeName(position: Int): String = buildDetailsList[position].buildTypeName ?: ""
 
     /**
      * {@inheritDoc}
      */
-    override fun isPersonal(position: Int): Boolean {
-        return buildDetailsList[position].isPersonal
-    }
+    override fun isPersonal(position: Int): Boolean = buildDetailsList[position].isPersonal
 
     /**
      * {@inheritDoc}
      */
-    override fun isPinned(position: Int): Boolean {
-        return buildDetailsList[position].isPinned
-    }
+    override fun isPinned(position: Int): Boolean = buildDetailsList[position].isPinned
 
     /**
      * {@inheritDoc}
      */
-    override fun isQueued(position: Int): Boolean {
-        return buildDetailsList[position].isQueued
-    }
+    override fun isQueued(position: Int): Boolean = buildDetailsList[position].isQueued
 
     /**
      * {@inheritDoc}
      */
-    override fun isSuccess(position: Int): Boolean {
-        return buildDetailsList[position].isSuccess
-    }
+    override fun isSuccess(position: Int): Boolean = buildDetailsList[position].isSuccess
 
     /**
      * {@inheritDoc}
      */
-    override fun isFailed(position: Int): Boolean {
-        return buildDetailsList[position].isFailed
-    }
+    override fun isFailed(position: Int): Boolean = buildDetailsList[position].isFailed
 
     /**
      * {@inheritDoc}
      */
-    override fun iterator(): Iterator<BuildDetails> {
-        return buildDetailsList.iterator()
-    }
+    override fun iterator(): Iterator<BuildDetails> = buildDetailsList.iterator()
 
     companion object {
 
@@ -196,9 +159,7 @@ class BuildListDataModelImpl(private val buildDetailsList: MutableList<BuildDeta
          */
         @VisibleForTesting
         val LOAD_MORE: BuildDetails = BuildDetailsImpl(object : Build() {
-            override fun getId(): String {
-                return UUID.randomUUID().toString()
-            }
+            override fun getId(): String = UUID.randomUUID().toString()
         })
     }
 }

@@ -33,11 +33,13 @@ abstract class BaseTabsViewModelImpl(
 
     @BindView(R.id.viewPager)
     lateinit var viewPager: ViewPager
+
     @BindView(R.id.tabLayout)
     lateinit var tabLayout: TabLayout
 
     private lateinit var unbinder: Unbinder
     private lateinit var adapter: FragmentAdapter
+    private var tabSelectionListener: TabLayout.OnTabSelectedListener? = null
 
     override fun initViews() {
         unbinder = ButterKnife.bind(this, view)
@@ -45,7 +47,7 @@ abstract class BaseTabsViewModelImpl(
         removeAllFragmentsFromFragmentManager()
         adapter = FragmentAdapter(activity.supportFragmentManager, activity)
         addFragments(adapter)
-        tabLayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+        setTabSelectionListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 viewPager.currentItem = tab.position
             }
@@ -75,7 +77,15 @@ abstract class BaseTabsViewModelImpl(
         ft.commitNow()
     }
 
+    protected fun setTabSelectionListener(listener: TabLayout.OnTabSelectedListener) {
+        tabSelectionListener?.let(tabLayout::removeOnTabSelectedListener)
+        tabSelectionListener = listener
+        tabLayout.addOnTabSelectedListener(listener)
+    }
+
     override fun unBindViews() {
+        tabSelectionListener?.let(tabLayout::removeOnTabSelectedListener)
+        tabSelectionListener = null
         unbinder.unbind()
     }
 

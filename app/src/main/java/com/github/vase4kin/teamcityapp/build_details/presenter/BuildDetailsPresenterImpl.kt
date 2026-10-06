@@ -199,7 +199,8 @@ class BuildDetailsPresenterImpl @Inject constructor(
         val branchName = interactor.getBuildDetails().branchName
         view.showRestartingBuildProgressDialog()
         runBuildInteractor.queueBuild(
-            branchName, properties,
+            branchName,
+            properties,
             object : LoadingListenerWithForbiddenSupport<String> {
                 override fun onForbiddenError() {
                     tracker.trackUserGetsForbiddenErrorOnBuildRestart()
@@ -232,11 +233,11 @@ class BuildDetailsPresenterImpl @Inject constructor(
         buildInteractor.loadBuild(
             queuedBuildHref,
             object : OnLoadingListener<Build> {
-                override fun onSuccess(queuedBuild: Build) {
+                override fun onSuccess(data: Build) {
                     tracker.trackUserWantsToSeeQueuedBuildDetails()
                     view.hideBuildLoadingProgress()
                     val buildTypeName = interactor.getBuildTypeName()
-                    router.reopenBuildTabsActivity(queuedBuild, buildTypeName)
+                    router.reopenBuildTabsActivity(data, buildTypeName)
                 }
 
                 override fun onFail(errorMessage: String) {

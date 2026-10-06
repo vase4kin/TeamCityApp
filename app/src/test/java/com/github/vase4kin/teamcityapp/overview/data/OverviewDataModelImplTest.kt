@@ -19,8 +19,9 @@ package com.github.vase4kin.teamcityapp.overview.data
 import android.content.Context
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -29,8 +30,11 @@ import org.mockito.MockitoAnnotations
 
 class OverviewDataModelImplTest {
 
+    private lateinit var mocks: AutoCloseable
+
     @Mock
     private lateinit var element: BuildElement
+
     @Mock
     private lateinit var context: Context
 
@@ -38,9 +42,14 @@ class OverviewDataModelImplTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        mocks = MockitoAnnotations.openMocks(this)
         val elements = listOf(element)
         dataModel = OverviewDataModelImpl(elements, context)
+    }
+
+    @After
+    fun tearDown() {
+        mocks.close()
     }
 
     @Test

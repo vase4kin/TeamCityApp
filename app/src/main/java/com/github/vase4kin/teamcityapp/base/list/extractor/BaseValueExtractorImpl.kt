@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.base.list.extractor
 
 import android.os.Bundle
-
+import androidx.core.os.BundleCompat
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
@@ -47,8 +47,8 @@ open class BaseValueExtractorImpl(protected val bundle: Bundle) : BaseValueExtra
     override val buildDetails: BuildDetails
         get() {
             val build =
-                bundle.getSerializable(BundleExtractorValues.BUILD) ?: return BuildDetails.STUB
-            return BuildDetailsImpl(build as Build)
+                BundleCompat.getSerializable(bundle, BundleExtractorValues.BUILD, Build::class.java) ?: return BuildDetails.STUB
+            return BuildDetailsImpl(build)
         }
 
     /**
@@ -57,8 +57,8 @@ open class BaseValueExtractorImpl(protected val bundle: Bundle) : BaseValueExtra
     override val buildListFilter: BuildListFilter?
         get() {
             val buildListFilter =
-                bundle.getSerializable(BundleExtractorValues.BUILD_LIST_FILTER) ?: return null
-            return buildListFilter as BuildListFilter
+                BundleCompat.getSerializable(bundle, BundleExtractorValues.BUILD_LIST_FILTER, BuildListFilter::class.java) ?: return null
+            return buildListFilter
         }
 
     /**

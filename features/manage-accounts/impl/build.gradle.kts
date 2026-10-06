@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.LibraryExtension
+
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
     id("teamcityapp.android.compose")
     id("teamcityapp.android.screenshot")
 }
-android { namespace = "teamcityapp.features.manage_accounts.impl" }
+extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.manage_accounts.impl" }
 dependencies {
     implementation(projects.features.manageAccounts.api)
     implementation(projects.libraries.theme)

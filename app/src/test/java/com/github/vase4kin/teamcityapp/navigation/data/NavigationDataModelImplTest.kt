@@ -18,15 +18,15 @@ package com.github.vase4kin.teamcityapp.navigation.data
 
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem
 import com.github.vase4kin.teamcityapp.navigation.api.Project
+import java.util.*
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
-import java.util.*
 
 @RunWith(MockitoJUnitRunner::class)
 class NavigationDataModelImplTest {

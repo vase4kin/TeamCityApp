@@ -25,16 +25,16 @@ import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
+import java.util.ArrayList
 import org.greenrobot.eventbus.EventBus
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.verifyNoMoreInteractions
 import org.mockito.junit.MockitoJUnitRunner
-import java.util.ArrayList
 
 @RunWith(MockitoJUnitRunner::class)
 class AgentPresenterImplTest {

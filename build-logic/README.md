@@ -107,6 +107,35 @@ Hilt dependency registration, Data Binding, Java-only modules, and aggregate
 coverage inputs/exclusions/output paths. Focused tests preserve the R8 report
 count guard. CI runs these tests alongside the app and feature unit tests.
 
+## Build warnings
+
+Use `--warning-mode all --console plain` to diagnose Gradle warnings. Add
+`--rerun-tasks` when checking compiler warnings, since cached and up-to-date
+compilation tasks do not emit them. Kotlin also reports diagnostics through
+Gradle's Problems API; inspect `build/reports/problems/problems-report.html`.
+Do not disable warning output to make a build appear clean.
+
+The build scripts and conventions use public Android DSL interfaces while keeping
+`android.newDsl=false` and external Kotlin/kapt for plugin compatibility. App
+instrumentation dependencies retain AGP's default alignment constraints; library
+configurations do not generate cross-variant constraints. Lint uses AGP's default
+report locations, and CI uploads `app/build/reports/lint-results-mockDebug.*`.
+
+Some warnings still require separate migrations:
+
+| Warning | Current dependency or behavior |
+| --- | --- |
+| External Kotlin / legacy variant API | External Kotlin, its R8 verification source-set adapter, kapt, Firebase/OSS licenses and other plugins still rely on legacy integration. Preserve the required opt-outs until that migration is in scope. |
+| Jetifier | Mugen 1.0.3 contains `android/support/` references. Remove or replace this legacy pagination dependency before disabling Jetifier. |
+| Final resource IDs / app compile-time R / resource shrinking | ButterKnife annotations require constant IDs. Remove ButterKnife before adopting non-final IDs and optimized resource shrinking. |
+| Deprecated Fragment and activity transition APIs | Legacy ViewPager screens, fragment menus/permissions, and activity animations need their own migration and integration checks. |
+| Deprecated test rules / Compose rules | ActivityTestRule/IntentsTestRule and Compose v1 rules need lifecycle and scheduler migration, including device tests and reviewed screenshot verification. |
+| Mockito/JVM class sharing and annotation processors | Test instrumentation appends to the JVM bootstrap classpath; generated Hilt processor options may reach processors that do not consume them. Data Binding also prevents incremental annotation processing in modules that still use it. These diagnostics remain visible. |
+
+A stale `ndk.dir` in an ignored `local.properties` can also cause repeated CXX1104
+warnings. Remove that obsolete local override so AGP selects its configured NDK.
+Mockito's test-only JVMTI agent keeps its supplied symbols explicitly.
+
 ## CI execution and caching
 
 CI starts `Build` (mock debug), `Build minified` (production R8 verification),

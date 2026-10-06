@@ -1,9 +1,9 @@
 package teamcityapp.buildlogic
 
 import com.android.build.api.artifact.ScopedArtifact
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.api.variant.ScopedArtifacts
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
@@ -26,8 +26,8 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
             val jacocoVersion = extensions.getByType(VersionCatalogsExtension::class.java)
                 .named("libs").findVersion("jacoco").get().requiredVersion
             pluginManager.withPlugin("com.android.application") {
-                extensions.configure(BaseExtension::class.java) {
-                    jacoco.version = jacocoVersion
+                extensions.configure(ApplicationExtension::class.java) {
+                    testCoverage.jacocoVersion = jacocoVersion
                     buildTypes.getByName("debug").enableAndroidTestCoverage =
                         providers.gradleProperty("instrumentationCoverage").isPresent
                 }
@@ -37,59 +37,69 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                 description = "Generate Jacoco coverage reports"
                 reports {
                     xml.required.set(true)
-                    xml.outputLocation.set(layout.buildDirectory.file(
-                        "coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml"
-                    ))
+                    xml.outputLocation.set(
+                        layout.buildDirectory.file(
+                            "coverage/generateCodeCoverageReport/generateCodeCoverageReport.xml"
+                        )
+                    )
                     html.required.set(true)
                     html.outputLocation.set(rootProject.layout.buildDirectory.dir("coverage-report"))
                 }
                 // CI can restore coverage files without recompiling. When producers are
                 // requested in the same build, read their outputs only after they finish.
                 rootProject.subprojects.forEach { module ->
-                    mustRunAfter(module.tasks.matching {
-                        it is Test || it.name.matches(Regex("(compile(Debug|MockDebug)(JavaWithJavac|Kotlin)|transform(Debug|MockDebug)ClassesWithAsm)"))
-                    })
+                    mustRunAfter(
+                        module.tasks.matching {
+                            it is Test || it.name.matches(Regex("(compile(Debug|MockDebug)(JavaWithJavac|Kotlin)|transform(Debug|MockDebug)ClassesWithAsm)"))
+                        }
+                    )
                 }
                 val filters = listOf(
                     "**/R.class", "**/R\$*.class", "**/BR.class", "**/BR\$*.class",
                     "**/BuildConfig.*", "**/Manifest*.*", "android/**/*.*",
                     "androidx/databinding/**", "**/dagger/**"
                 )
-                sourceDirectories.setFrom(rootProject.subprojects.flatMap { module ->
-                    listOf(module.file("src/main/java"), module.file("src/main/kotlin"))
-                })
+                sourceDirectories.setFrom(
+                    rootProject.subprojects.flatMap { module ->
+                        listOf(module.file("src/main/java"), module.file("src/main/kotlin"))
+                    }
+                )
                 // Hilt/Firebase transform bytecode before unit tests run. Analyse the
                 // same classes so JaCoCo IDs match, falling back for untransformed modules.
-                classDirectories.setFrom(provider {
-                    rootProject.subprojects.flatMap { module ->
-                        listOf("debug", "mockDebug").flatMap { variant ->
-                            val capitalizedVariant = variant.replaceFirstChar { it.uppercase() }
-                            val transformed = module.layout.buildDirectory.dir(
-                                "intermediates/classes/$variant/transform${capitalizedVariant}ClassesWithAsm/dirs"
-                            ).get().asFile
-                            val paths = if (transformed.isDirectory) {
-                                listOf(transformed)
-                            } else {
-                                listOf(
-                                    module.layout.buildDirectory.dir("intermediates/javac/$variant").get().asFile,
-                                    module.layout.buildDirectory.dir("tmp/kotlin-classes/$variant").get().asFile
-                                )
-                            }
-                            paths.map { directory ->
-                                module.fileTree(directory) { exclude(filters) }
+                classDirectories.setFrom(
+                    provider {
+                        rootProject.subprojects.flatMap { module ->
+                            listOf("debug", "mockDebug").flatMap { variant ->
+                                val capitalizedVariant = variant.replaceFirstChar { it.uppercase() }
+                                val transformed = module.layout.buildDirectory.dir(
+                                    "intermediates/classes/$variant/transform${capitalizedVariant}ClassesWithAsm/dirs"
+                                ).get().asFile
+                                val paths = if (transformed.isDirectory) {
+                                    listOf(transformed)
+                                } else {
+                                    listOf(
+                                        module.layout.buildDirectory.dir("intermediates/javac/$variant").get().asFile,
+                                        module.layout.buildDirectory.dir("tmp/kotlin-classes/$variant").get().asFile
+                                    )
+                                }
+                                paths.map { directory ->
+                                    module.fileTree(directory) { exclude(filters) }
+                                }
                             }
                         }
                     }
-                })
-                executionData.setFrom(rootProject.subprojects.map { module ->
-                    module.fileTree(module.layout.buildDirectory) {
-                        include(
-                            "jacoco/*.exec",
-                            "outputs/unit_test_code_coverage/debugUnitTest/*.exec",
-                            "outputs/unit_test_code_coverage/mockDebugUnitTest/*.exec"
-                        )
+                )
+                executionData.setFrom(
+                    rootProject.subprojects.map { module ->
+                        module.fileTree(module.layout.buildDirectory) {
+                            include(
+                                "jacoco/*.exec",
+                                "outputs/unit_test_code_coverage/debugUnitTest/*.exec",
+                                "outputs/unit_test_code_coverage/mockDebugUnitTest/*.exec"
+                            )
+                        }
                     }
-                })
+                )
                 doLast {
                     logger.lifecycle("file://${reports.html.outputLocation.get().asFile}/index.html")
                 }
@@ -119,13 +129,15 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                     include("com/github/vase4kin/teamcityapp/**/*.class", "teamcityapp/**/*.class")
                     exclude("**/R.class", "**/R\$*.class", "**/BR.class", "**/BuildConfig.*", "**/dagger/**")
                 }
-                from(provider {
-                    if (!pluginManager.hasPlugin("com.android.application")) {
-                        coverageReport.get().classDirectories
-                    } else {
-                        emptyList<Any>()
+                from(
+                    provider {
+                        if (!pluginManager.hasPlugin("com.android.application")) {
+                            coverageReport.get().classDirectories
+                        } else {
+                            emptyList<Any>()
+                        }
                     }
-                }) {
+                ) {
                     into("classes")
                     include("**/*.class")
                 }
@@ -141,9 +153,11 @@ class AndroidCoverageConventionPlugin : Plugin<Project> {
                         if (variant.name == "mockDebug") {
                             variant.artifacts.forScope(ScopedArtifacts.Scope.ALL)
                                 .use(instrumentationInputs)
-                                .toGet(ScopedArtifact.CLASSES,
+                                .toGet(
+                                    ScopedArtifact.CLASSES,
                                     InstrumentationCoverageInputs::classJars,
-                                    InstrumentationCoverageInputs::classDirectories)
+                                    InstrumentationCoverageInputs::classDirectories
+                                )
                         }
                     }
             }

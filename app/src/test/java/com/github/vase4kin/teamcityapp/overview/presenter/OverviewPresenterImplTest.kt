@@ -33,10 +33,10 @@ import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 import teamcityapp.libraries.onboarding.OnboardingManager
 
@@ -46,33 +46,43 @@ class OverviewPresenterImplTest {
 
     @Captor
     private lateinit var onPromptShownListenerArgumentCaptor: ArgumentCaptor<OnboardingManager.OnPromptShownListener>
+    private lateinit var mocks: AutoCloseable
+
     @Mock
     private lateinit var menuItem: MenuItem
+
     @Mock
     private lateinit var menu: Menu
+
     @Mock
     private lateinit var menuInflater: MenuInflater
+
     @Mock
     private lateinit var view: OverviewView
+
     @Mock
     private lateinit var interactor: OverViewInteractor
+
     @Mock
     private lateinit var tracker: OverviewTracker
+
     @Mock
     private lateinit var buildDetails: BuildDetails
+
     @Mock
     private lateinit var onboardingManager: OnboardingManager
     private lateinit var presenter: OverviewPresenterImpl
 
     @Before
     fun setUp() {
-        MockitoAnnotations.initMocks(this)
+        mocks = MockitoAnnotations.openMocks(this)
         presenter = OverviewPresenterImpl(view, interactor, tracker, onboardingManager)
         `when`(interactor.buildDetails).thenReturn(buildDetails)
     }
 
     @After
     fun tearDown() {
+        mocks.close()
         verifyNoMoreInteractions(view, interactor, tracker, buildDetails, onboardingManager)
     }
 

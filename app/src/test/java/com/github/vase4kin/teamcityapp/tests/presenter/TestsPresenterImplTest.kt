@@ -29,19 +29,19 @@ import com.github.vase4kin.teamcityapp.utils.any
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
 import com.mugen.MugenCallbacks
+import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.core.Is.`is`
 import org.hamcrest.core.IsEqual.equalTo
-import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 import teamcityapp.features.test_details.repository.models.TestOccurrence
 
@@ -50,28 +50,40 @@ class TestsPresenterImplTest {
 
     @Captor
     private lateinit var onLoadingIntegerListenerArgumentCaptor: ArgumentCaptor<OnLoadingListener<Int>>
+
     @Captor
     private lateinit var onLoadMoreListenerArgumentCaptor: ArgumentCaptor<MugenCallbacks>
+
     @Captor
     private lateinit var onLoadingListenerArgumentCaptor: ArgumentCaptor<OnLoadingListener<List<TestOccurrence>>>
+
     @Mock
     private lateinit var menuItem: MenuItem
+
     @Mock
     private lateinit var menu: Menu
+
     @Mock
     private lateinit var menuInflater: MenuInflater
+
     @Mock
     private lateinit var testOccurrence: TestOccurrence
+
     @Mock
     private lateinit var loadingListener: OnLoadingListener<List<TestOccurrence>>
+
     @Mock
     private lateinit var view: TestsView
+
     @Mock
     private lateinit var dataManager: TestsDataManager
+
     @Mock
     private lateinit var tracker: ViewTracker
+
     @Mock
     private lateinit var valueExtractor: TestsValueExtractor
+
     @Mock
     private lateinit var router: TestsRouter
     private lateinit var presenter: TestsPresenterImpl

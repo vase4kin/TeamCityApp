@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import com.android.build.api.dsl.LibraryExtension
 import teamcityapp.buildlogic.Config
 
 plugins {
@@ -23,7 +24,7 @@ plugins {
     id("teamcityapp.android.screenshot")
 }
 
-android {
+extensions.configure<LibraryExtension> {
     namespace = "teamcityapp.features.about.impl"
 
     buildFeatures {

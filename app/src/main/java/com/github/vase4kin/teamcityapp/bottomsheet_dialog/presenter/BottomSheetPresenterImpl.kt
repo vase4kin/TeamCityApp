@@ -26,7 +26,8 @@ import javax.inject.Inject
 class BottomSheetPresenterImpl @Inject constructor(
     private val view: BottomSheetView,
     private val interactor: BottomSheetInteractor
-) : BottomSheetPresenter, BottomSheetView.OnBottomSheetClickListener {
+) : BottomSheetPresenter,
+    BottomSheetView.OnBottomSheetClickListener {
 
     /**
      * {@inheritDoc}
@@ -56,8 +57,8 @@ class BottomSheetPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onShowBuildsActionClick(branchName: String) {
-        interactor.postNavigateToBuildListEvent(branchName)
+    override fun onShowBuildsActionClick(branch: String) {
+        interactor.postNavigateToBuildListEvent(branch)
         view.close()
     }
 
