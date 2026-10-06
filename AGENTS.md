@@ -15,8 +15,13 @@ to the requested behavior and the coherent migration slice needed to support it.
   presenters and legacy state holders, RxJava 2, Hilt for Android screen injection,
   a separate Dagger account API graph, Retrofit/Gson,
   RxCache, and SharedPreferences. Java and Kotlin coexist.
-- About uses Compose, Material 3, a Hilt ViewModel, and StateFlow. Its suspend
-  repository adapts the existing Rx API and cache. Lifecycle-aware state collection
+- Every module under `features/` uses `api`/`impl`, Compose, Material 3, a Hilt
+  ViewModel, and lifecycle-aware StateFlow collection: About, Properties, Test
+  Details, Change Details, Settings, Manage Accounts, Drawer, and Splash.
+  Kotlin sources and tests use the corresponding `kotlin` roots. Features expose
+  small contracts and immutable public models. App adapters own legacy API,
+  cache, account-storage, and outgoing navigation integration.
+- About's suspend repository adapts the existing Rx API and cache. Lifecycle-aware state collection
   starts loading; losing the last collector cancels pending work immediately,
   while completed content survives configuration changes. About is split into
   `features/about/api` and `features/about/impl`, with Kotlin source roots.
@@ -24,8 +29,17 @@ to the requested behavior and the coherent migration slice needed to support it.
   compatibility; the app repository maps it into About’s plain API model. About UI tests
   run in the app instrumentation suite used by Marathon. The licenses action
   still opens Google's OSS licenses screen.
-- Other screens remain legacy. Room, DataStore, WorkManager, and Navigation 3
-  remain target technologies.
+- Settings uses the shared `libraries/app-theme` DataStore contract, migrating the
+  existing theme preference without changing other preferences. Account storage
+  remains behind suspend app adapters using the existing encrypted store.
+  Properties retains a Fragment entry point, Drawer retains a native bottom-sheet
+  host with Compose content, and Splash retains its installed launcher component
+  through an activity alias. Activities and platform routers remain UI-scoped.
+- Feature implementations own behavioral tests and Roborazzi PNG baselines for
+  every state in both themes, compact/expanded layouts, and enlarged text. Their
+  app-level Compose/Espresso integration tests remain in the Marathon APK.
+- Screens owned by `app/` remain legacy. Room, broader DataStore migration,
+  WorkManager, and Navigation 3 remain target technologies.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
   an included `build-logic` build for conventions and SDK/application settings,
   and JDK 17.
@@ -36,9 +50,9 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 - `app/`: application, TeamCity API and cache integration, shared app flows, and
   features that have not been moved to standalone modules.
-- `features/`: feature modules. About uses `api`/`impl`. Unmigrated features
-  still use `models`/`repository`/`feature` or single-module layouts; migrate the
-  owning feature to `api`/`impl` during substantive refactors.
+- `features/`: feature `api`/`impl` modules. APIs own small contracts and plain
+  public models; implementations own Compose UI, ViewModels, UI-scoped routers,
+  private resources, behavioral tests, and screenshot baselines.
 - `libraries/`: shared API, storage, models, resources, theme, networking helpers,
   security, utilities, and other reusable components.
 - `build-logic/src/main/kotlin/Config.kt`: SDK/JVM settings and application version.
