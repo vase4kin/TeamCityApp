@@ -20,17 +20,17 @@ import android.app.Application
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
-import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.junit.runners.model.Statement
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -65,21 +65,26 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
             }
         }
     }
+
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
         val state = when (stateName) {
             "loading" -> AboutUiState.Loading
+
             "available" -> AboutUiState.Content(
                 ServerDetailsUiState.Available(ServerDetailsUiModel("2026.1", "https://teamcity.example"))
             )
+
             "unavailable" -> AboutUiState.Content(ServerDetailsUiState.Unavailable)
+
             else -> error("Unknown screenshot state: $stateName")
         }
         // Pin the progress indicator's animation frame rather than sampling wall time.
         compose.mainClock.autoAdvance = state != AboutUiState.Loading
+        // Keep release version bumps independent of the visual fixture.
         compose.setContent {
-            TeamCityTheme(darkTheme = variant.dark) { AboutScreen(state, {}, {}, {}) }
+            TeamCityTheme(darkTheme = variant.dark) { AboutScreen(state, {}, {}, {}, appVersion = "1.52.8") }
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
@@ -88,6 +93,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
             compose.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
         } else {
             compose.onNodeWithText(context.getString(R.string.about_app_text_app)).assertIsDisplayed()
+            compose.onNodeWithText("1.52.8").assertIsDisplayed()
             if (stateName == "available") {
                 compose.onNodeWithText("https://teamcity.example").assertIsDisplayed()
             } else {
@@ -122,7 +128,7 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
             listOf("loading", "available", "unavailable").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }

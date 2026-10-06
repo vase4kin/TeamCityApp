@@ -158,7 +158,8 @@ dependencies {
     implementation(projects.features.about.impl)
     implementation(projects.libraries.appRating)
 
-    implementation(projects.features.manageAccounts)
+    implementation(projects.features.manageAccounts.api)
+    implementation(projects.features.manageAccounts.impl)
 
     implementation(projects.features.drawer)
 

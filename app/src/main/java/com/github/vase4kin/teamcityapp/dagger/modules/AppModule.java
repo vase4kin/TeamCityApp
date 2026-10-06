@@ -18,9 +18,7 @@ package com.github.vase4kin.teamcityapp.dagger.modules;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-
 import androidx.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
@@ -32,28 +30,25 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-
-import org.greenrobot.eventbus.EventBus;
-
+import dagger.Lazy;
+import dagger.Module;
+import dagger.Provides;
+import dagger.hilt.InstallIn;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import dagger.hilt.components.SingletonComponent;
+import io.rx_cache2.internal.RxCache;
+import io.victoralbertos.jolyglot.GsonSpeaker;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-
-import dagger.Module;
-import dagger.hilt.InstallIn;
-import dagger.hilt.components.SingletonComponent;
-import dagger.hilt.android.qualifiers.ApplicationContext;
-import dagger.Provides;
-import io.rx_cache2.internal.RxCache;
-import io.victoralbertos.jolyglot.GsonSpeaker;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.greenrobot.eventbus.EventBus;
 import teamcityapp.libraries.cache_manager.CacheManager;
 import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
@@ -63,9 +58,7 @@ import teamcityapp.libraries.security.CryptoManagerImpl;
 import teamcityapp.libraries.storage.Storage;
 import teamcityapp.libraries.storage.models.UserAccount;
 
-/**
- * Todo: Convert to Kotlin
- */
+/** Todo: Convert to Kotlin */
 @Module
 @InstallIn(SingletonComponent.class)
 public class AppModule {
@@ -78,7 +71,6 @@ public class AppModule {
     public static final String CLIENT_BASE_UNSAFE = "base_unsafe";
     public static final String CLIENT_AUTH = "auth";
 
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
@@ -89,7 +81,8 @@ public class AppModule {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected SharedUserStorage provideSharedUserStorage(@ApplicationContext Context context, CryptoManager cryptoManager) {
+    protected SharedUserStorage provideSharedUserStorage(
+            @ApplicationContext Context context, CryptoManager cryptoManager) {
         return SharedUserStorage.init(context, cryptoManager);
     }
 
@@ -102,15 +95,15 @@ public class AppModule {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Named(CLIENT_AUTH)
     @Provides
-    protected OkHttpClient providesAuthHttpClient(SharedUserStorage sharedUserStorage,
-                                                  @Named(CLIENT_BASE) OkHttpClient baseOkHttpClient,
-                                                  @Named(CLIENT_BASE_UNSAFE) OkHttpClient unsafeBaseOkHttpClient) {
+    protected OkHttpClient providesAuthHttpClient(
+            SharedUserStorage sharedUserStorage,
+            @Named(CLIENT_BASE) OkHttpClient baseOkHttpClient,
+            @Named(CLIENT_BASE_UNSAFE) OkHttpClient unsafeBaseOkHttpClient) {
         UserAccount userAccount = sharedUserStorage.getActiveUser();
-        OkHttpClient client = userAccount.isSslDisabled() ? unsafeBaseOkHttpClient : baseOkHttpClient;
+        OkHttpClient client =
+                userAccount.isSslDisabled() ? unsafeBaseOkHttpClient : baseOkHttpClient;
         if (userAccount.isGuestUser()) {
-            return client.newBuilder()
-                    .addInterceptor(new GuestUserAuthInterceptor())
-                    .build();
+            return client.newBuilder().addInterceptor(new GuestUserAuthInterceptor()).build();
         } else {
             return client.newBuilder()
                     .authenticator(new TeamCityAuthenticator(userAccount))
@@ -122,25 +115,27 @@ public class AppModule {
     @Named(CLIENT_BASE_UNSAFE)
     @Singleton
     @Provides
-    protected OkHttpClient providesUnsafeBaseHttpClient(@Named(CLIENT_BASE) OkHttpClient baseOkHttpClient) {
-        final TrustManager[] trustAllCerts = new TrustManager[]{
-                new X509TrustManager() {
-                    @SuppressLint("TrustAllX509TrustManager")
-                    @Override
-                    public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                    }
+    protected OkHttpClient providesUnsafeBaseHttpClient(
+            @Named(CLIENT_BASE) OkHttpClient baseOkHttpClient) {
+        final TrustManager[] trustAllCerts =
+                new TrustManager[] {
+                    new X509TrustManager() {
+                        @SuppressLint("TrustAllX509TrustManager")
+                        @Override
+                        public void checkClientTrusted(
+                                java.security.cert.X509Certificate[] chain, String authType) {}
 
-                    @SuppressLint("TrustAllX509TrustManager")
-                    @Override
-                    public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {
-                    }
+                        @SuppressLint("TrustAllX509TrustManager")
+                        @Override
+                        public void checkServerTrusted(
+                                java.security.cert.X509Certificate[] chain, String authType) {}
 
-                    @Override
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return new java.security.cert.X509Certificate[]{};
+                        @Override
+                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                            return new java.security.cert.X509Certificate[] {};
+                        }
                     }
-                }
-        };
+                };
 
         // Install the all-trusting trust manager
         try {
@@ -148,7 +143,8 @@ public class AppModule {
             sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
             // Create an ssl socket factory with our all-trusting manager
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-            return baseOkHttpClient.newBuilder()
+            return baseOkHttpClient
+                    .newBuilder()
                     .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
                     .hostnameVerifier((hostname, session) -> true)
                     .build();
@@ -162,11 +158,13 @@ public class AppModule {
     @Singleton
     @Provides
     protected OkHttpClient providesBaseHttpClient() {
-        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
-                .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-                .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
-        // TODO: Use DI separated modules for debug and release which will be holding this interceptor
+        OkHttpClient.Builder clientBuilder =
+                new OkHttpClient.Builder()
+                        .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.SECONDS)
+                        .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+                        .writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS);
+        // TODO: Use DI separated modules for debug and release which will be holding this
+        // interceptor
         if (BuildConfig.DEBUG) {
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
@@ -201,8 +199,7 @@ public class AppModule {
     @Singleton
     protected RxCache providesRxCache(@ApplicationContext Context context) {
         File cacheDir = context.getCacheDir();
-        return new RxCache.Builder()
-                .persistence(cacheDir, new GsonSpeaker());
+        return new RxCache.Builder().persistence(cacheDir, new GsonSpeaker());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -223,9 +220,10 @@ public class AppModule {
     @Provides
     protected FirebaseRemoteConfig providesRemoteConfig() {
         FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
-                .build();
+        FirebaseRemoteConfigSettings configSettings =
+                new FirebaseRemoteConfigSettings.Builder()
+                        .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
+                        .build();
         firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
         firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
         return firebaseRemoteConfig;
@@ -239,7 +237,7 @@ public class AppModule {
 
     @Singleton
     @Provides
-    protected CacheManager providesCacheManager(RxCache rxCache) {
-        return new CacheManagerImpl(rxCache);
+    protected CacheManager providesCacheManager(RxCache rxCache, Lazy<CacheProviders> providers) {
+        return new CacheManagerImpl(rxCache, providers);
     }
 }

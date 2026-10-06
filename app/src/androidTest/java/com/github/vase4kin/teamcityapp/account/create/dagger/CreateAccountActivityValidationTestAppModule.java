@@ -15,18 +15,11 @@
  */
 
 package com.github.vase4kin.teamcityapp.account.create.dagger;
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-
 import androidx.annotation.VisibleForTesting;
-
 import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
-import com.github.vase4kin.teamcityapp.TeamCityApplication;
-import com.github.vase4kin.teamcityapp.api.GuestUserAuthInterceptor;
-import com.github.vase4kin.teamcityapp.api.TeamCityAuthenticator;
 import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
@@ -34,28 +27,16 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
-
-import org.greenrobot.eventbus.EventBus;
-
-import java.io.File;
-import java.util.concurrent.TimeUnit;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import dagger.Module;
-import dagger.hilt.InstallIn;
-import dagger.hilt.components.SingletonComponent;
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.Provides;
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.rx_cache2.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
+import java.io.File;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
+import org.greenrobot.eventbus.EventBus;
 import teamcityapp.libraries.cache_manager.CacheManager;
 import teamcityapp.libraries.onboarding.OnboardingManager;
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl;
@@ -63,11 +44,8 @@ import teamcityapp.libraries.remote.RemoteService;
 import teamcityapp.libraries.security.CryptoManager;
 import teamcityapp.libraries.security.CryptoManagerImpl;
 import teamcityapp.libraries.storage.Storage;
-import teamcityapp.libraries.storage.models.UserAccount;
 
-/**
- * Todo: Convert to Kotlin
- */
+/** Todo: Convert to Kotlin */
 @Module
 @dagger.hilt.migration.DisableInstallInCheck
 public class CreateAccountActivityValidationTestAppModule {
@@ -80,7 +58,6 @@ public class CreateAccountActivityValidationTestAppModule {
     public static final String CLIENT_BASE_UNSAFE = "base_unsafe";
     public static final String CLIENT_AUTH = "auth";
 
-
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
@@ -88,19 +65,11 @@ public class CreateAccountActivityValidationTestAppModule {
         return context;
     }
 
-
-
     @Provides
     @Singleton
     protected Storage provideStorage(SharedUserStorage sharedUserStorage) {
         return sharedUserStorage;
     }
-
-
-
-
-
-
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
@@ -128,8 +97,7 @@ public class CreateAccountActivityValidationTestAppModule {
     @Singleton
     protected RxCache providesRxCache(@ApplicationContext Context context) {
         File cacheDir = context.getCacheDir();
-        return new RxCache.Builder()
-                .persistence(cacheDir, new GsonSpeaker());
+        return new RxCache.Builder().persistence(cacheDir, new GsonSpeaker());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -150,9 +118,10 @@ public class CreateAccountActivityValidationTestAppModule {
     @Provides
     protected FirebaseRemoteConfig providesRemoteConfig() {
         FirebaseRemoteConfig firebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
-        FirebaseRemoteConfigSettings configSettings = new FirebaseRemoteConfigSettings.Builder()
-                .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
-                .build();
+        FirebaseRemoteConfigSettings configSettings =
+                new FirebaseRemoteConfigSettings.Builder()
+                        .setMinimumFetchIntervalInSeconds(BuildConfig.DEBUG ? 0 : 43200)
+                        .build();
         firebaseRemoteConfig.setConfigSettingsAsync(configSettings);
         firebaseRemoteConfig.setDefaultsAsync(R.xml.remote_config_defaults);
         return firebaseRemoteConfig;
@@ -166,13 +135,26 @@ public class CreateAccountActivityValidationTestAppModule {
 
     @Singleton
     @Provides
-    protected CacheManager providesCacheManager(RxCache rxCache) {
-        return new CacheManagerImpl(rxCache);
+    protected CacheManager providesCacheManager(
+            RxCache rxCache, dagger.Lazy<CacheProviders> providers) {
+        return new CacheManagerImpl(rxCache, providers);
     }
-    @Provides @Named(CLIENT_BASE)
-    public OkHttpClient base(OkHttpClient client) { return client; }
-    @Provides @Named(CLIENT_BASE_UNSAFE)
-    public OkHttpClient unsafe(OkHttpClient client) { return client; }
-    @Provides @Named(CLIENT_AUTH)
-    public OkHttpClient auth(OkHttpClient client) { return client; }
+
+    @Provides
+    @Named(CLIENT_BASE)
+    public OkHttpClient base(OkHttpClient client) {
+        return client;
+    }
+
+    @Provides
+    @Named(CLIENT_BASE_UNSAFE)
+    public OkHttpClient unsafe(OkHttpClient client) {
+        return client;
+    }
+
+    @Provides
+    @Named(CLIENT_AUTH)
+    public OkHttpClient auth(OkHttpClient client) {
+        return client;
+    }
 }
