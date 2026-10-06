@@ -19,7 +19,7 @@
     <application>
         <activity
             android:name=".TestDetailsActivity"
-            android:theme="@style/TestDetailsTheme" />
+            android:theme="@style/Theme.MyApp" />
     </application>
 
 </manifest>
