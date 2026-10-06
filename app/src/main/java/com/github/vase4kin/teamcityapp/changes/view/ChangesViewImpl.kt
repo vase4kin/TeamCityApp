@@ -19,16 +19,15 @@ package com.github.vase4kin.teamcityapp.changes.view
 import android.app.Activity
 import android.view.View
 import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel
+import com.github.vase4kin.teamcityapp.changes.data.toChangeDetails
 import com.google.android.material.snackbar.Snackbar
 import com.mugen.Mugen
 import com.mugen.MugenCallbacks
-import teamcityapp.features.change.view.ChangeActivity
+import teamcityapp.features.change_details.api.ChangeDetailsNavigation
 
 /**
  * Impl of [ChangesView]
@@ -37,7 +36,8 @@ class ChangesViewImpl(
     view: View,
     activity: Activity,
     @StringRes emptyMessage: Int,
-    adapter: ChangesAdapter
+    adapter: ChangesAdapter,
+    private val changeDetailsNavigation: ChangeDetailsNavigation
 ) : BaseListViewImpl<ChangesDataModel, ChangesAdapter>(view, activity, emptyMessage, adapter),
     ChangesView {
 
@@ -102,21 +102,7 @@ class ChangesViewImpl(
      * {@inheritDoc}
      */
     override fun onClick(change: Changes.Change) {
-        ChangeActivity.start(
-            activity = activity as AppCompatActivity,
-            commitName = change.comment,
-            userName = change.username,
-            date = change.date,
-            changeFileNames = change.files.file.map {
-                Pair<String, String>(
-                    first = it.file,
-                    second = it.changeType
-                )
-            },
-            version = change.version,
-            webUrl = change.webUrl,
-            changeId = change.getId()
-        )
+        changeDetailsNavigation.open(activity, change.toChangeDetails())
     }
 
     /**
@@ -129,7 +115,5 @@ class ChangesViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun recyclerViewId(): Int {
-        return R.id.changes_recycler_view
-    }
+    override fun recyclerViewId(): Int = R.id.changes_recycler_view
 }
