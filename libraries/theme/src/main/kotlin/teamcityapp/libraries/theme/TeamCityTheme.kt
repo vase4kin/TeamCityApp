@@ -18,14 +18,14 @@ package teamcityapp.libraries.theme
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -38,10 +38,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.resources.R as SharedR
 
@@ -72,14 +72,17 @@ fun TeamCityScreen(
     content: @Composable (Modifier) -> Unit
 ) {
     val scrollBehavior = if (scrollToolbarWithContent) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
-    val colors = appBarColors ?: if (LocalDarkTheme.current) TopAppBarDefaults.topAppBarColors()
-    else TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.primary,
-        scrolledContainerColor = MaterialTheme.colorScheme.primary,
-        navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-    )
+    val colors = appBarColors ?: if (LocalDarkTheme.current) {
+        TopAppBarDefaults.topAppBarColors()
+    } else {
+        TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        )
+    }
     val description = stringResource(
         if (navigation == ScreenNavigation.Back) R.string.action_back else R.string.action_close
     )
@@ -101,8 +104,11 @@ fun TeamCityScreen(
                             IconButton(onClick = onClose) {
                                 Icon(
                                     painterResource(
-                                        if (navigation == ScreenNavigation.Back) R.drawable.ic_arrow_back_24dp
-                                        else R.drawable.ic_close_black_24dp
+                                        if (navigation == ScreenNavigation.Back) {
+                                            R.drawable.ic_arrow_back_24dp
+                                        } else {
+                                            R.drawable.ic_close_black_24dp
+                                        }
                                     ),
                                     contentDescription = description
                                 )
@@ -113,8 +119,10 @@ fun TeamCityScreen(
                     scrollBehavior = scrollBehavior
                 )
                 // Match the legacy Activity theme in the system-bar area under edge-to-edge.
-                Box(Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars)
-                    .background(if (LocalDarkTheme.current) colorResource(SharedR.color.black_800) else colors.containerColor))
+                Box(
+                    Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars)
+                        .background(if (LocalDarkTheme.current) colorResource(SharedR.color.black_800) else colors.containerColor)
+                )
             }
         }
     ) { padding -> content(Modifier.fillMaxSize().padding(padding)) }

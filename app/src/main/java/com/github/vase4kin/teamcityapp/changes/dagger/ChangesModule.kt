@@ -1,7 +1,5 @@
 package com.github.vase4kin.teamcityapp.changes.dagger
 
-import teamcityapp.features.change_details.api.ChangeDetailsNavigation
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
@@ -29,6 +27,8 @@ import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.features.change_details.api.ChangeDetailsNavigation
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(FragmentComponent::class)
@@ -38,48 +38,34 @@ object ChangesModule {
     fun provideOwner(owner: Fragment): ChangesFragment = owner.requireScreenOwner<ChangesFragment>()
 
     @Provides
-    fun providesChangesDataManager(repository: Repository, eventBus: EventBus): ChangesDataManager {
-        return ChangesDataManagerImpl(repository, eventBus)
-    }
+    fun providesChangesDataManager(repository: Repository, eventBus: EventBus): ChangesDataManager = ChangesDataManagerImpl(repository, eventBus)
 
     @Provides
     fun providesChangesView(
         fragment: ChangesFragment,
         changesAdapter: ChangesAdapter,
         changeDetailsNavigation: ChangeDetailsNavigation
-    ): ChangesView {
-        return ChangesViewImpl(fragment.requireView(), fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter, changeDetailsNavigation)
-    }
+    ): ChangesView = ChangesViewImpl(fragment.requireView(), fragment.requireActivity(), R.string.empty_list_message_changes, changesAdapter, changeDetailsNavigation)
 
     @Provides
-    fun providesChangesValueExtractor(fragment: ChangesFragment): ChangesValueExtractor {
-        return ChangesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
-    }
+    fun providesChangesValueExtractor(fragment: ChangesFragment): ChangesValueExtractor = ChangesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
 
     @Provides
     @Named("ChangesFragment")
-    fun providesViewTracker(): ViewTracker {
-        return ViewTracker.STUB
-    }
+    fun providesViewTracker(): ViewTracker = ViewTracker.STUB
 
     @Provides
-    fun providesChangesAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ChangesDataModel>>): ChangesAdapter {
-        return ChangesAdapter(viewHolderFactories)
-    }
+    fun providesChangesAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ChangesDataModel>>): ChangesAdapter = ChangesAdapter(viewHolderFactories)
 
     @Provides
     @IntoMap
     @IntKey(BaseListView.TYPE_LOAD_MORE)
-    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<ChangesDataModel> {
-        return LoadMoreViewHolderFactory()
-    }
+    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<ChangesDataModel> = LoadMoreViewHolderFactory()
 
     @Provides
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesChangesViewHolderFactory(): ViewHolderFactory<ChangesDataModel> {
-        return ChangesViewHolderFactory()
-    }
+    fun providesChangesViewHolderFactory(): ViewHolderFactory<ChangesDataModel> = ChangesViewHolderFactory()
 
     @Provides
     fun provideChangesPresenterImpl(

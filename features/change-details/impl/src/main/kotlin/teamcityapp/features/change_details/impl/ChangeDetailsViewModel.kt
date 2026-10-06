@@ -20,25 +20,31 @@ package teamcityapp.features.change_details.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
-import javax.inject.Inject
 
 @HiltViewModel
 class ChangeDetailsViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val tracker: ChangeDetailsTracker,
+    private val tracker: ChangeDetailsTracker
 ) : ViewModel() {
     // The source is a saved navigation snapshot, not a continuously observed repository.
     val state: StateFlow<ChangeDetailsUiState> = MutableStateFlow(readDetails(savedState)).asStateFlow()
 
-    fun onScreenViewed() { tracker.trackView() }
-    fun onMoreDetailsClicked() { tracker.trackMoreDetails() }
-    fun onFileDiffClicked() { tracker.trackFileDiff() }
+    fun onScreenViewed() {
+        tracker.trackView()
+    }
+    fun onMoreDetailsClicked() {
+        tracker.trackMoreDetails()
+    }
+    fun onFileDiffClicked() {
+        tracker.trackFileDiff()
+    }
 }
 
 private fun readDetails(saved: SavedStateHandle): ChangeDetailsUiState {
@@ -47,10 +53,15 @@ private fun readDetails(saved: SavedStateHandle): ChangeDetailsUiState {
     val types = saved.get<ArrayList<String>>(ChangeDetailsArguments.FILE_TYPES) ?: return ChangeDetailsUiState.InvalidInput
     if (names.size != types.size) return ChangeDetailsUiState.InvalidInput
     fun text(key: String) = saved.get<String>(key) ?: ""
-    return ChangeDetailsUiState.Content(ChangeDetails(
-        id = id, comment = text(ChangeDetailsArguments.COMMENT).trim(),
-        userName = text(ChangeDetailsArguments.USER), date = text(ChangeDetailsArguments.DATE),
-        files = names.indices.map { ChangedFile(names[it], types[it]) },
-        revision = text(ChangeDetailsArguments.REVISION), webUrl = text(ChangeDetailsArguments.WEB_URL),
-    ))
+    return ChangeDetailsUiState.Content(
+        ChangeDetails(
+            id = id,
+            comment = text(ChangeDetailsArguments.COMMENT).trim(),
+            userName = text(ChangeDetailsArguments.USER),
+            date = text(ChangeDetailsArguments.DATE),
+            files = names.indices.map { ChangedFile(names[it], types[it]) },
+            revision = text(ChangeDetailsArguments.REVISION),
+            webUrl = text(ChangeDetailsArguments.WEB_URL)
+        )
+    )
 }

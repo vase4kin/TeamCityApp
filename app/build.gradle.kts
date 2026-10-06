@@ -114,8 +114,12 @@ android {
         }
         resources {
             excludes += listOf(
-                "META-INF/*.version", "META-INF/proguard/*", "/*.properties",
-                "fabric/*.properties", "META-INF/*.properties", "META-INF/*.kotlin_module"
+                "META-INF/*.version",
+                "META-INF/proguard/*",
+                "/*.properties",
+                "fabric/*.properties",
+                "META-INF/*.properties",
+                "META-INF/*.kotlin_module"
             )
         }
     }
@@ -288,9 +292,11 @@ tasks.withType<JavaCompile>().configureEach {
     } else if (name.startsWith("hiltJavaCompile")) {
         doFirst {
             // Hilt does not process view bindings; ButterKnife's scanner uses JDK internals.
-            options.annotationProcessorPath = files(options.annotationProcessorPath?.filter {
-                !it.name.contains("butterknife-compiler")
-            })
+            options.annotationProcessorPath = files(
+                options.annotationProcessorPath?.filter {
+                    !it.name.contains("butterknife-compiler")
+                }
+            )
         }
     }
 }
@@ -299,9 +305,11 @@ if (r8VerificationEnabled) {
     // Reject instrumentation startup failures that appear as successful zero-test runs.
     tasks.matching { it.name == "connectedProdR8VerificationAndroidTest" }.configureEach {
         doLast {
-            val reports = fileTree(layout.buildDirectory.dir(
-                "outputs/androidTest-results/connected/r8verification/flavors/prod"
-            )) {
+            val reports = fileTree(
+                layout.buildDirectory.dir(
+                    "outputs/androidTest-results/connected/r8verification/flavors/prod"
+                )
+            ) {
                 include("**/TEST-*.xml")
             }
             verifyR8SmokeTestReports(reports.files)

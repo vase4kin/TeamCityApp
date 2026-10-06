@@ -33,17 +33,31 @@ class ChangeDetailsMapperTest {
         `when`(version).thenReturn("abc123")
         `when`(webUrl).thenReturn("https://teamcity.example/change/123")
     }
+
     @Test fun mapsFormattedDateAndPreservesFieldValuesAndDuplicateFileOrder() {
         val change = change()
         `when`(change.files).thenReturn(ChangeFiles(listOf(ChangeFiles.ChangeFile("same.kt", "added"), ChangeFiles.ChangeFile("same.kt", "removed"))))
-        assertEquals(ChangeDetails("123", " raw comment ", "Developer", "01 Oct 2026",
-            listOf(ChangedFile("same.kt", "added"), ChangedFile("same.kt", "removed")), "abc123", "https://teamcity.example/change/123"), change.toChangeDetails())
+        assertEquals(
+            ChangeDetails(
+                "123",
+                " raw comment ",
+                "Developer",
+                "01 Oct 2026",
+                listOf(ChangedFile("same.kt", "added"), ChangedFile("same.kt", "removed")),
+                "abc123",
+                "https://teamcity.example/change/123"
+            ),
+            change.toChangeDetails()
+        )
     }
+
     @Test fun absentFilesBecomeAnEmptyList() {
         assertTrue(change().toChangeDetails().files.isEmpty())
     }
+
     @Test fun mappingCopiesMutableDtoFileList() {
-        val change = change(); val files = mutableListOf(ChangeFiles.ChangeFile("a.kt", "added"))
+        val change = change()
+        val files = mutableListOf(ChangeFiles.ChangeFile("a.kt", "added"))
         `when`(change.files).thenReturn(ChangeFiles(files))
         val result = change.toChangeDetails()
         files.clear()

@@ -24,8 +24,13 @@ import teamcityapp.features.test_details.impl.TestDetailsViewModel
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class HiltMigrationSmokeTest {
-    @JvmField @Rule(order = 0) val hiltRule = HiltAndroidRule(this)
-    @JvmField @Rule(order = 1) val apiRule = HiltApiTestRule(hiltRule)
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val apiRule = HiltApiTestRule(hiltRule)
 
     private val app: TeamCityApplicationBase
         get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -38,18 +43,23 @@ class HiltMigrationSmokeTest {
 
     @Test
     fun changeDetailsInjectsAndRecreates() {
-        val intent = Intent(app, ChangeDetailsActivity::class.java).putExtras(android.os.Bundle().apply {
-            putString("change:id", "123"); putString("change:comment", "Commit")
-            putString("change:user", "Developer"); putString("change:date", "01 Oct 2026")
-            putStringArrayList("change:file_names", arrayListOf()); putStringArrayList("change:file_types", arrayListOf())
-            putString("change:revision", "abc123"); putString("change:web_url", Mocks.URL)
-        })
+        val intent = Intent(app, ChangeDetailsActivity::class.java).putExtras(
+            android.os.Bundle().apply {
+                putString("change:id", "123")
+                putString("change:comment", "Commit")
+                putString("change:user", "Developer")
+                putString("change:date", "01 Oct 2026")
+                putStringArrayList("change:file_names", arrayListOf())
+                putStringArrayList("change:file_types", arrayListOf())
+                putString("change:revision", "abc123")
+                putString("change:web_url", Mocks.URL)
+            }
+        )
         ActivityScenario.launch<ChangeDetailsActivity>(intent).use {
             assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)
         }
-
     }
 
     @Test

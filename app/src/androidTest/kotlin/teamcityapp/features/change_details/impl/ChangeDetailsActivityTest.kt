@@ -45,9 +45,17 @@ import org.junit.runner.RunWith
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ChangeDetailsActivityTest {
-    @JvmField @Rule(order = 0) val hiltRule = HiltAndroidRule(this)
-    @JvmField @Rule(order = 1) val apiRule = HiltApiTestRule(hiltRule)
-    @JvmField @Rule(order = 2) val compose = createEmptyComposeRule()
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val apiRule = HiltApiTestRule(hiltRule)
+
+    @JvmField
+    @Rule(order = 2)
+    val compose = createEmptyComposeRule()
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val comment = "Preserve the Compose screen appearance"
     private val file = "app/src/main/kotlin/example/Screen + Test.kt"
@@ -57,13 +65,18 @@ class ChangeDetailsActivityTest {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
-    private fun intent(files: Boolean = true) = Intent(app, ChangeDetailsActivity::class.java).putExtras(Bundle().apply {
-        putString("change:id", "123 & 456"); putString("change:comment", "  $comment  ")
-        putString("change:user", "Developer"); putString("change:date", "01 Oct 2026")
-        putStringArrayList("change:file_names", if (files) arrayListOf(file) else arrayListOf())
-        putStringArrayList("change:file_types", if (files) arrayListOf("changed") else arrayListOf())
-        putString("change:revision", "abc123"); putString("change:web_url", webUrl)
-    })
+    private fun intent(files: Boolean = true) = Intent(app, ChangeDetailsActivity::class.java).putExtras(
+        Bundle().apply {
+            putString("change:id", "123 & 456")
+            putString("change:comment", "  $comment  ")
+            putString("change:user", "Developer")
+            putString("change:date", "01 Oct 2026")
+            putStringArrayList("change:file_names", if (files) arrayListOf(file) else arrayListOf())
+            putStringArrayList("change:file_types", if (files) arrayListOf("changed") else arrayListOf())
+            putString("change:revision", "abc123")
+            putString("change:web_url", webUrl)
+        }
+    )
     private fun awaitText(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
@@ -81,12 +94,14 @@ class ChangeDetailsActivityTest {
             awaitText(file)
         }
     }
+
     @Test fun noFilesHidesDiffHint() {
         ActivityScenario.launch<ChangeDetailsActivity>(intent(false)).use {
             awaitText("Changed files (0)")
             compose.onNodeWithText("Click on a file to view a diff").assertDoesNotExist()
         }
     }
+
     @Test fun moreDetailsOpensOriginalBrowserUrl() {
         Intents.init()
         try {
@@ -96,8 +111,11 @@ class ChangeDetailsActivityTest {
                 compose.onNodeWithText("MORE DETAILS").performClick()
                 intended(hasData(webUrl))
             }
-        } finally { Intents.release() }
+        } finally {
+            Intents.release()
+        }
     }
+
     @Test fun fileClickOpensEncodedDiffForActiveServer() {
         Intents.init()
         try {
@@ -109,8 +127,11 @@ class ChangeDetailsActivityTest {
                     .appendQueryParameter("id", "123 & 456").appendQueryParameter("vcsFileName", file).build()
                 intended(hasData(expected))
             }
-        } finally { Intents.release() }
+        } finally {
+            Intents.release()
+        }
     }
+
     @Test fun closeFinishesActivity() {
         ActivityScenario.launch<ChangeDetailsActivity>(intent()).use { scenario ->
             awaitText(comment)
@@ -118,6 +139,7 @@ class ChangeDetailsActivityTest {
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }
+
     @Test fun missingInputClosesActivity() {
         ActivityScenario.launch<ChangeDetailsActivity>(Intent(app, ChangeDetailsActivity::class.java)).use { scenario ->
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }

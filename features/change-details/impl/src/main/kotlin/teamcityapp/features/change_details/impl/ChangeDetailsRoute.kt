@@ -39,8 +39,16 @@ internal fun ChangeDetailsRoute(router: ChangeDetailsRouter, viewModel: ChangeDe
             onPauseOrDispose { }
         }
     }
-    ChangeDetailsScreen(state,
-        onOpenUrl = { url -> viewModel.onMoreDetailsClicked(); router.openUrl(url) },
-        onOpenDiff = { id, fileName -> viewModel.onFileDiffClicked(); router.openDiff(id, fileName) },
-        onClose = router::close)
+    ChangeDetailsScreen(
+        state,
+        onOpenUrl = { url ->
+            viewModel.onMoreDetailsClicked()
+            router.openUrl(url)
+        },
+        onOpenDiff = { id, fileName ->
+            viewModel.onFileDiffClicked()
+            router.openDiff(id, fileName)
+        },
+        onClose = router::close
+    )
 }

@@ -24,6 +24,6 @@ data class ChangeDetails(
     val date: String,
     val files: List<ChangedFile>,
     val revision: String,
-    val webUrl: String,
+    val webUrl: String
 )
 data class ChangedFile(val name: String, val type: String)

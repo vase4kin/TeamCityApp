@@ -22,14 +22,14 @@ import android.os.Parcel
 import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.*
 import org.junit.Test
-import org.mockito.Mockito.mock
-import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
 import org.junit.runner.RunWith
+import org.mockito.Mockito.mock
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import teamcityapp.features.change_details.impl.navigation.ChangeDetailsNavigationImpl
+import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
@@ -47,7 +47,9 @@ class ChangeDetailsNavigationTest {
                 val restored = parcel.readBundle(javaClass.classLoader)!!
                 val arguments = restored.keySet().associateWith { restored.get(it) }
                 assertEquals(ChangeDetailsUiState.Content(fixture), ChangeDetailsViewModel(SavedStateHandle(arguments), mock(ChangeDetailsTracker::class.java)).state.value)
-            } finally { parcel.recycle() }
+            } finally {
+                parcel.recycle()
+            }
             assertEquals(teamcityapp.libraries.utils.R.anim.slide_in_bottom, shadowOf(activity).pendingTransitionEnterAnimationResourceId)
             assertEquals(teamcityapp.libraries.utils.R.anim.hold, shadowOf(activity).pendingTransitionExitAnimationResourceId)
         }

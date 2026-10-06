@@ -39,14 +39,19 @@ class ChangeDetailsRouterTest {
     private val router = ChangeDetailsRouterImpl(activity, tabs, storage)
 
     @Test fun lifecycleOwnsBrowserConnection() {
-        router.start(); router.stop(); router.start(); router.stop()
+        router.start()
+        router.stop()
+        router.start()
+        router.stop()
         verify(tabs, times(2)).initCustomsTabs()
         verify(tabs, times(2)).unbindCustomsTabs()
     }
+
     @Test fun moreDetailsOpensOriginalUrl() {
         router.openUrl(fixture.webUrl)
         verify(tabs).launchUrl(fixture.webUrl)
     }
+
     @Test fun diffUsesCurrentAccountAndEncodesFileNameAndChangeId() {
         val account = mock(UserAccount::class.java)
         `when`(account.teamcityUrl).thenReturn("https://teamcity.example/context")
@@ -58,14 +63,21 @@ class ChangeDetailsRouterTest {
         verify(tabs).launchUrl(expected.toString())
         assertEquals(file, expected.getQueryParameter("vcsFileName"))
     }
+
     @Test fun switchingAccountChangesDiffDestination() {
-        val first = mock(UserAccount::class.java); val next = mock(UserAccount::class.java)
+        val first = mock(UserAccount::class.java)
+        val next = mock(UserAccount::class.java)
         `when`(first.teamcityUrl).thenReturn("https://first.example")
         `when`(next.teamcityUrl).thenReturn("https://next.example")
         `when`(storage.activeUser).thenReturn(first, next)
-        router.openDiff("123", "a.kt"); router.openDiff("123", "a.kt")
+        router.openDiff("123", "a.kt")
+        router.openDiff("123", "a.kt")
         verify(tabs).launchUrl("https://first.example/diffView.html?id=123&vcsFileName=a.kt")
         verify(tabs).launchUrl("https://next.example/diffView.html?id=123&vcsFileName=a.kt")
     }
-    @Test fun closeFinishesActivity() { router.close(); verify(activity).finish() }
+
+    @Test fun closeFinishesActivity() {
+        router.close()
+        verify(activity).finish()
+    }
 }

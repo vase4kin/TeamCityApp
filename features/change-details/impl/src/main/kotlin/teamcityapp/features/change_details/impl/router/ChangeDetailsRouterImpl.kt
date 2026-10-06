@@ -26,7 +26,7 @@ import teamcityapp.libraries.storage.Storage
 class ChangeDetailsRouterImpl(
     private val activity: Activity,
     private val chromeTabs: ChromeCustomTabs,
-    private val storage: Storage,
+    private val storage: Storage
 ) : ChangeDetailsRouter {
     override fun start() = chromeTabs.initCustomsTabs()
     override fun stop() = chromeTabs.unbindCustomsTabs()

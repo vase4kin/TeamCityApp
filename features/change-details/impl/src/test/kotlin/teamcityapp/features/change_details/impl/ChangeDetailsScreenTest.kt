@@ -20,14 +20,14 @@ import android.app.Application
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -44,8 +44,11 @@ import teamcityapp.libraries.theme.TeamCityTheme
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ChangeDetailsScreenTest {
     @get:Rule val compose = createComposeRule()
+
     @Test fun cardAndFilesRenderAndPlatformActionsReceiveExactValues() {
-        var url: String? = null; var diff: Pair<String, String>? = null; var closed = false
+        var url: String? = null
+        var diff: Pair<String, String>? = null
+        var closed = false
         compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(fixture), { url = it }, { id, name -> diff = id to name }, { closed = true }) } }
         compose.onNodeWithText(fixture.comment).assertIsDisplayed()
         compose.onNodeWithText(fixture.revision).assertIsDisplayed()
@@ -58,6 +61,7 @@ class ChangeDetailsScreenTest {
         compose.onNodeWithContentDescription("Close").performClick()
         assertTrue(closed)
     }
+
     @Test fun noFilesHidesDiffHintAndStateChangesRemovePreviousFiles() {
         val state = mutableStateOf<ChangeDetailsUiState>(ChangeDetailsUiState.Content(fixture))
         compose.setContent { TeamCityTheme { ChangeDetailsScreen(state.value, {}, { _, _ -> }, {}) } }
@@ -69,6 +73,7 @@ class ChangeDetailsScreenTest {
         compose.runOnIdle { state.value = ChangeDetailsUiState.InvalidInput }
         compose.onNodeWithTag("change_details:list").assertDoesNotExist()
     }
+
     @Test fun duplicateNamesRetainSeparateActionsAndTypes() {
         val data = fixture.copy(files = listOf(ChangedFile("same.kt", "added"), ChangedFile("same.kt", "removed")))
         val selected = mutableListOf<String>()
@@ -79,6 +84,7 @@ class ChangeDetailsScreenTest {
         compose.onNodeWithText("ADDED").assertIsDisplayed()
         compose.onNodeWithText("REMOVED").assertIsDisplayed()
     }
+
     @Test fun scrollingHidesToolbarAndScrollingBackRestoresIt() {
         val data = fixture.copy(files = (0..60).map { ChangedFile("File $it.kt", "changed") })
         compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(data), {}, { _, _ -> }, {}) } }
@@ -90,6 +96,7 @@ class ChangeDetailsScreenTest {
         compose.waitForIdle()
         compose.onNodeWithText("Change details").assertIsDisplayed()
     }
+
     @Test fun contentUsesProvidedColorsAndTypography() {
         compose.setContent {
             MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
@@ -107,5 +114,4 @@ class ChangeDetailsScreenTest {
         assertEquals(fontSize.sp, results.single().layoutInput.style.fontSize)
         assertEquals(color, results.single().layoutInput.style.color)
     }
-
 }

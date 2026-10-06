@@ -19,7 +19,16 @@ package teamcityapp.features.change_details.impl
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 
-internal val fixture = ChangeDetails("123", "Preserve the Compose screen appearance", "Developer", "01 Oct 2026",
-    listOf(ChangedFile("app/src/main/kotlin/example/Screen.kt", "changed"),
-        ChangedFile("features/example/src/test/kotlin/example/ScreenTest.kt", "added"), ChangedFile("README.md", "removed")),
-    "ef286eeca3ccdfbe8f4883ec0efa487889a616ec", "https://teamcity.example/change/123")
+internal val fixture = ChangeDetails(
+    "123",
+    "Preserve the Compose screen appearance",
+    "Developer",
+    "01 Oct 2026",
+    listOf(
+        ChangedFile("app/src/main/kotlin/example/Screen.kt", "changed"),
+        ChangedFile("features/example/src/test/kotlin/example/ScreenTest.kt", "added"),
+        ChangedFile("README.md", "removed")
+    ),
+    "ef286eeca3ccdfbe8f4883ec0efa487889a616ec",
+    "https://teamcity.example/change/123"
+)

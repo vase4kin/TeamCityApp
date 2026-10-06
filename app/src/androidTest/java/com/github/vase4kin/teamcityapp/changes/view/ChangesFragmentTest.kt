@@ -19,8 +19,8 @@ package com.github.vase4kin.teamcityapp.changes.view
 import android.content.Intent
 import android.os.Bundle
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -40,13 +40,13 @@ import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
-import io.reactivex.Single
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import io.reactivex.Single
 import org.hamcrest.core.AllOf
 import org.junit.Before
 import org.junit.BeforeClass
@@ -83,7 +83,9 @@ class ChangesFragmentTest {
     val activityRule: CustomActivityTestRule<BuildDetailsActivity> =
         CustomActivityTestRule(BuildDetailsActivity::class.java)
 
-    @JvmField @Rule(order = 4) val compose = createEmptyComposeRule()
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -166,11 +168,17 @@ class ChangesFragmentTest {
         // Clicking on change
         onView(withRecyclerView(R.id.changes_recycler_view).atPosition(0)).perform(click())
 
-        listOf("Change details", "Do you believe?", "21312fsd1321", "By john-117 on 30 Jul 16 00:36",
-            "Changed files (1)", "filename!", "EDITED").forEach { text ->
+        listOf(
+            "Change details",
+            "Do you believe?",
+            "21312fsd1321",
+            "By john-117 on 30 Jul 16 00:36",
+            "Changed files (1)",
+            "filename!",
+            "EDITED"
+        ).forEach { text ->
             compose.onNodeWithText(text).assertIsDisplayed()
         }
-
     }
 
     @Test

@@ -22,7 +22,11 @@ import teamcityapp.features.change_details.api.ChangedFile
 
 /** Keep the legacy network DTO and its date formatting behind the feature's plain model. */
 internal fun Changes.Change.toChangeDetails() = ChangeDetails(
-    id = getId().orEmpty(), comment = comment.orEmpty(), userName = username.orEmpty(),
-    date = date.orEmpty(), files = files?.file.orEmpty().map { ChangedFile(it.file.orEmpty(), it.changeType.orEmpty()) },
-    revision = version.orEmpty(), webUrl = webUrl,
+    id = getId().orEmpty(),
+    comment = comment.orEmpty(),
+    userName = username.orEmpty(),
+    date = date.orEmpty(),
+    files = files?.file.orEmpty().map { ChangedFile(it.file.orEmpty(), it.changeType.orEmpty()) },
+    revision = version.orEmpty(),
+    webUrl = webUrl
 )

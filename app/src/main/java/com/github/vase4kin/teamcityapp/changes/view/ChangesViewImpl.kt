@@ -19,16 +19,15 @@ package com.github.vase4kin.teamcityapp.changes.view
 import android.app.Activity
 import android.view.View
 import androidx.annotation.StringRes
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
 import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataModel
+import com.github.vase4kin.teamcityapp.changes.data.toChangeDetails
 import com.google.android.material.snackbar.Snackbar
 import com.mugen.Mugen
 import com.mugen.MugenCallbacks
 import teamcityapp.features.change_details.api.ChangeDetailsNavigation
-import com.github.vase4kin.teamcityapp.changes.data.toChangeDetails
 
 /**
  * Impl of [ChangesView]
@@ -116,7 +115,5 @@ class ChangesViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun recyclerViewId(): Int {
-        return R.id.changes_recycler_view
-    }
+    override fun recyclerViewId(): Int = R.id.changes_recycler_view
 }

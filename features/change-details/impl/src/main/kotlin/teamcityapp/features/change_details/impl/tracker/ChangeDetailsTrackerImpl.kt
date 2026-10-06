@@ -21,9 +21,15 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import javax.inject.Inject
 
 class ChangeDetailsTrackerImpl @Inject constructor(
-    private val analytics: FirebaseAnalytics,
+    private val analytics: FirebaseAnalytics
 ) : ChangeDetailsTracker {
-    override fun trackView() { analytics.logEvent("screen_open_change", null) }
-    override fun trackMoreDetails() { analytics.logEvent("change_click_more_details", null) }
-    override fun trackFileDiff() { analytics.logEvent("change_click_view_file_diff", null) }
+    override fun trackView() {
+        analytics.logEvent("screen_open_change", null)
+    }
+    override fun trackMoreDetails() {
+        analytics.logEvent("change_click_more_details", null)
+    }
+    override fun trackFileDiff() {
+        analytics.logEvent("change_click_view_file_diff", null)
+    }
 }

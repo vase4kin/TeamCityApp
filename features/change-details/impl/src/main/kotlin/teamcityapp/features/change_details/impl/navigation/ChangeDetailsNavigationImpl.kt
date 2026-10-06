@@ -18,11 +18,11 @@ package teamcityapp.features.change_details.impl.navigation
 
 import android.app.Activity
 import android.content.Intent
+import javax.inject.Inject
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangeDetailsNavigation
 import teamcityapp.features.change_details.impl.ChangeDetailsActivity
 import teamcityapp.features.change_details.impl.ChangeDetailsArguments
-import javax.inject.Inject
 
 class ChangeDetailsNavigationImpl @Inject constructor() : ChangeDetailsNavigation {
     override fun open(activity: Activity, details: ChangeDetails) {

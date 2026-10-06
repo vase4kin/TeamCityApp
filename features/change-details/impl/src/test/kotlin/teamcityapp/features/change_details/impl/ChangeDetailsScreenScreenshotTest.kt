@@ -19,20 +19,20 @@ package teamcityapp.features.change_details.impl
 import android.app.Application
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
-import teamcityapp.features.change_details.api.ChangedFile
+import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.junit.runners.model.Statement
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Every Change Details state, in both themes, sizes, and enlarged text. */
@@ -64,16 +64,26 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
             }
         }
     }
+
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
         val state = when (stateName) {
             "content" -> ChangeDetailsUiState.Content(fixture)
+
             "no_files" -> ChangeDetailsUiState.Content(fixture.copy(files = emptyList()))
+
             "blank_fields" -> ChangeDetailsUiState.Content(fixture.copy(comment = "", revision = "", userName = "", date = "", files = listOf(ChangedFile("", ""))))
+
             "invalid_input" -> ChangeDetailsUiState.InvalidInput
-            "long_content" -> ChangeDetailsUiState.Content(fixture.copy(comment = (1..20).joinToString("\n") { "A long multiline commit comment $it" },
-                files = (0..60).map { ChangedFile("features/example/src/main/kotlin/very/long/package/path/ExampleScreen$it.kt", "changed") }))
+
+            "long_content" -> ChangeDetailsUiState.Content(
+                fixture.copy(
+                    comment = (1..20).joinToString("\n") { "A long multiline commit comment $it" },
+                    files = (0..60).map { ChangedFile("features/example/src/main/kotlin/very/long/package/path/ExampleScreen$it.kt", "changed") }
+                )
+            )
+
             else -> error("Unknown screenshot state: $stateName")
         }
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { ChangeDetailsScreen(state, {}, { _, _ -> }, {}) } }
@@ -81,7 +91,9 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
         compose.waitForIdle()
         if (state is ChangeDetailsUiState.Content) {
             compose.onNodeWithTag("change_details:list").assertIsDisplayed()
-        } else compose.onNodeWithTag("change_details:list").assertDoesNotExist()
+        } else {
+            compose.onNodeWithTag("change_details:list").assertDoesNotExist()
+        }
         val name = "change_details_${stateName}_${variant.name}"
         compose.onRoot().captureRoboImage("$name.png")
         if (stateName == "long_content") {
@@ -102,7 +114,7 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
             listOf("content", "no_files", "blank_fields", "invalid_input", "long_content").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }

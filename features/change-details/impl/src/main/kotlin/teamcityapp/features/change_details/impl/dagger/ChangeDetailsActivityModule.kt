@@ -33,6 +33,5 @@ import teamcityapp.libraries.utils.requireScreenOwner
 @InstallIn(ActivityComponent::class)
 object ChangeDetailsActivityModule {
     @Provides @ActivityScoped
-    fun router(activity: Activity, storage: Storage): ChangeDetailsRouter =
-        ChangeDetailsRouterImpl(activity.requireScreenOwner<ChangeDetailsActivity>(), ChromeCustomTabsImpl(activity), storage)
+    fun router(activity: Activity, storage: Storage): ChangeDetailsRouter = ChangeDetailsRouterImpl(activity.requireScreenOwner<ChangeDetailsActivity>(), ChromeCustomTabsImpl(activity), storage)
 }

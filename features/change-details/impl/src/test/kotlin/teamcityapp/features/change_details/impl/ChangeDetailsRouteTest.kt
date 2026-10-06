@@ -28,13 +28,13 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito.*
-import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
 import org.junit.runner.RunWith
+import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.change_details.impl.router.ChangeDetailsRouter
+import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
@@ -47,43 +47,73 @@ class ChangeDetailsRouteTest {
         override val lifecycle = LifecycleRegistry.createUnsafe(this).apply { currentState = Lifecycle.State.RESUMED }
     }
     private class Router : ChangeDetailsRouter {
-        var starts = 0; var stops = 0; var closes = 0
+        var starts = 0
+        var stops = 0
+        var closes = 0
         val urls = mutableListOf<String>()
         val diffs = mutableListOf<Pair<String, String>>()
-        override fun start() { starts++ }
-        override fun stop() { stops++ }
-        override fun close() { closes++ }
-        override fun openUrl(url: String) { urls += url }
-        override fun openDiff(id: String, fileName: String) { diffs += id to fileName }
+        override fun start() {
+            starts++
+        }
+        override fun stop() {
+            stops++
+        }
+        override fun close() {
+            closes++
+        }
+        override fun openUrl(url: String) {
+            urls += url
+        }
+        override fun openDiff(id: String, fileName: String) {
+            diffs += id to fileName
+        }
     }
+
     @Test fun browserConnectionAndScreenEventsFollowVisibleLifecycle() {
-        val owner = Owner(); val router = Router()
+        val owner = Owner()
+        val router = Router()
         val tracker = mock(ChangeDetailsTracker::class.java)
-        val model = ChangeDetailsViewModel(SavedStateHandle(mapOf(ChangeDetailsArguments.ID to "123",
-            ChangeDetailsArguments.FILE_NAMES to arrayListOf<String>(), ChangeDetailsArguments.FILE_TYPES to arrayListOf<String>())), tracker)
+        val model = ChangeDetailsViewModel(
+            SavedStateHandle(
+                mapOf(
+                    ChangeDetailsArguments.ID to "123",
+                    ChangeDetailsArguments.FILE_NAMES to arrayListOf<String>(),
+                    ChangeDetailsArguments.FILE_TYPES to arrayListOf<String>()
+                )
+            ),
+            tracker
+        )
         compose.setContent { CompositionLocalProvider(LocalLifecycleOwner provides owner) { TeamCityTheme { ChangeDetailsRoute(router, model) } } }
         compose.waitForIdle()
-        assertEquals(1, router.starts); verify(tracker).trackView()
+        assertEquals(1, router.starts)
+        verify(tracker).trackView()
         compose.runOnIdle { owner.lifecycle.currentState = Lifecycle.State.CREATED }
         compose.waitForIdle()
         assertEquals(1, router.stops)
         compose.runOnIdle { owner.lifecycle.currentState = Lifecycle.State.RESUMED }
         compose.waitForIdle()
-        assertEquals(2, router.starts); verify(tracker, times(2)).trackView()
+        assertEquals(2, router.starts)
+        verify(tracker, times(2)).trackView()
         compose.runOnIdle { owner.lifecycle.currentState = Lifecycle.State.DESTROYED }
         compose.waitForIdle()
         assertEquals(2, router.stops)
     }
+
     @Test fun browserActionsTrackThroughViewModelAndKeepTheirNavigationArguments() {
         val router = Router()
         val tracker = mock(ChangeDetailsTracker::class.java)
         val fileName = fixture.files.first().name
-        val model = ChangeDetailsViewModel(SavedStateHandle(mapOf(
-            ChangeDetailsArguments.ID to fixture.id,
-            ChangeDetailsArguments.WEB_URL to fixture.webUrl,
-            ChangeDetailsArguments.FILE_NAMES to arrayListOf(fileName),
-            ChangeDetailsArguments.FILE_TYPES to arrayListOf("changed"),
-        )), tracker)
+        val model = ChangeDetailsViewModel(
+            SavedStateHandle(
+                mapOf(
+                    ChangeDetailsArguments.ID to fixture.id,
+                    ChangeDetailsArguments.WEB_URL to fixture.webUrl,
+                    ChangeDetailsArguments.FILE_NAMES to arrayListOf(fileName),
+                    ChangeDetailsArguments.FILE_TYPES to arrayListOf("changed")
+                )
+            ),
+            tracker
+        )
         compose.setContent { TeamCityTheme { ChangeDetailsRoute(router, model) } }
         compose.onNodeWithText("MORE DETAILS").performClick()
         compose.onNodeWithTag("change_details:file:0").performScrollTo().performClick()
@@ -94,11 +124,13 @@ class ChangeDetailsRouteTest {
     }
 
     @Test fun invalidArgumentsCloseWithoutBindingBrowser() {
-        val router = Router(); val tracker = mock(ChangeDetailsTracker::class.java)
+        val router = Router()
+        val tracker = mock(ChangeDetailsTracker::class.java)
         val model = ChangeDetailsViewModel(SavedStateHandle(), tracker)
         compose.setContent { TeamCityTheme { ChangeDetailsRoute(router, model) } }
         compose.waitForIdle()
-        assertEquals(1, router.closes); assertEquals(0, router.starts)
+        assertEquals(1, router.closes)
+        assertEquals(0, router.starts)
         verifyNoInteractions(tracker)
     }
 }

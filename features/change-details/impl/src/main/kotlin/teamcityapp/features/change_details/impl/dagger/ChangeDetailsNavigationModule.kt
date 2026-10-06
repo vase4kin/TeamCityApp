@@ -28,4 +28,3 @@ import teamcityapp.features.change_details.impl.navigation.ChangeDetailsNavigati
 abstract class ChangeDetailsNavigationModule {
     @Binds abstract fun navigation(implementation: ChangeDetailsNavigationImpl): ChangeDetailsNavigation
 }
-

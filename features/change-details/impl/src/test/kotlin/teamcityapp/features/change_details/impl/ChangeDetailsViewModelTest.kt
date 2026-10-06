@@ -20,9 +20,9 @@ import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
-import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
+import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
 
 class ChangeDetailsViewModelTest {
     private val tracker = mock(ChangeDetailsTracker::class.java)
@@ -43,18 +43,22 @@ class ChangeDetailsViewModelTest {
     @Test fun missingArgumentsAreInvalid() {
         assertEquals(ChangeDetailsUiState.InvalidInput, ChangeDetailsViewModel(SavedStateHandle(), tracker).state.value)
     }
+
     @Test fun trimsCommentAndKeepsOtherFieldsAndFileOrder() {
         val original = fixture.copy(comment = "  line one\n  line two  ", revision = " abc ", files = listOf(ChangedFile("a", "changed"), ChangedFile("a", "removed")))
         assertEquals(ChangeDetailsUiState.Content(original.copy(comment = "line one\n  line two")), model(original).state.value)
     }
+
     @Test fun noFilesIsValidContent() {
         val data = fixture.copy(files = emptyList())
         assertEquals(ChangeDetailsUiState.Content(data), model(data).state.value)
     }
+
     @Test fun emptyValuesRemainValidContent() {
         val data = ChangeDetails("", "", "", "", listOf(ChangedFile("", "")), "", "")
         assertEquals(ChangeDetailsUiState.Content(data), model(data).state.value)
     }
+
     @Test fun incompleteFileArgumentsAreRejected() {
         val arguments = arguments(fixture).toMutableMap()
         arguments.remove(ChangeDetailsArguments.FILE_TYPES)
@@ -62,6 +66,7 @@ class ChangeDetailsViewModelTest {
         arguments[ChangeDetailsArguments.FILE_TYPES] = arrayListOf("changed")
         assertEquals(ChangeDetailsUiState.InvalidInput, ChangeDetailsViewModel(SavedStateHandle(arguments), tracker).state.value)
     }
+
     @Test fun snapshotsMutableArgumentLists() {
         val arguments = arguments(fixture)
         val model = ChangeDetailsViewModel(SavedStateHandle(arguments), tracker)
@@ -69,6 +74,7 @@ class ChangeDetailsViewModelTest {
         (arguments[ChangeDetailsArguments.FILE_TYPES] as ArrayList<String>)[0] = "changed later"
         assertEquals(ChangeDetailsUiState.Content(fixture), model.state.value)
     }
+
     @Test fun freshViewModelRestoresSameSavedNavigationData() {
         val first = model(fixture)
         val restored = model(fixture)
@@ -76,9 +82,13 @@ class ChangeDetailsViewModelTest {
     }
     private fun model(data: ChangeDetails) = ChangeDetailsViewModel(SavedStateHandle(arguments(data)), tracker)
     private fun arguments(data: ChangeDetails): Map<String, Any> = mapOf(
-        ChangeDetailsArguments.ID to data.id, ChangeDetailsArguments.COMMENT to data.comment,
-        ChangeDetailsArguments.USER to data.userName, ChangeDetailsArguments.DATE to data.date,
+        ChangeDetailsArguments.ID to data.id,
+        ChangeDetailsArguments.COMMENT to data.comment,
+        ChangeDetailsArguments.USER to data.userName,
+        ChangeDetailsArguments.DATE to data.date,
         ChangeDetailsArguments.FILE_NAMES to ArrayList(data.files.map { it.name }),
         ChangeDetailsArguments.FILE_TYPES to ArrayList(data.files.map { it.type }),
-        ChangeDetailsArguments.REVISION to data.revision, ChangeDetailsArguments.WEB_URL to data.webUrl)
+        ChangeDetailsArguments.REVISION to data.revision,
+        ChangeDetailsArguments.WEB_URL to data.webUrl
+    )
 }
