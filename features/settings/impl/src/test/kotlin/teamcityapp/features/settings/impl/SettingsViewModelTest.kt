@@ -31,29 +31,50 @@ import teamcityapp.libraries.app_theme.*
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class SettingsViewModelTest {
-    private val dispatcher=StandardTestDispatcher()
-    private val store=ViewModelStore()
-    private val options=ThemeOptions.forSdk(35)
-    private class Repo:ThemePreferencesRepository {
-        val choice=MutableStateFlow(ThemeMode.System)
-        var load:Flow<ThemeMode> = choice
-        override val theme get()=load
-        val writes=mutableListOf<ThemeMode>()
-        var save:suspend (ThemeMode)->Unit = { choice.value=it }
-        override suspend fun setTheme(mode:ThemeMode) { writes+=mode;save(mode) }
+    private val dispatcher = StandardTestDispatcher()
+    private val store = ViewModelStore()
+    private val options = ThemeOptions.forSdk(35)
+    private class Repo : ThemePreferencesRepository {
+        val choice = MutableStateFlow(ThemeMode.System)
+        var load: Flow<ThemeMode> = choice
+        override val theme get() = load
+        val writes = mutableListOf<ThemeMode>()
+        var save: suspend (ThemeMode) -> Unit = { choice.value = it }
+        override suspend fun setTheme(mode: ThemeMode) {
+            writes += mode
+            save(mode)
+        }
     }
-    private class Tracker:SettingsTracker {
-        val modes=mutableListOf<ThemeMode>()
+    private class Tracker : SettingsTracker {
+        val modes = mutableListOf<ThemeMode>()
         var views = 0
-        override fun trackView() { views++ }
-        override fun trackLightThemeSet() { modes+=ThemeMode.Light }
-        override fun trackDarkThemeSet() { modes+=ThemeMode.Dark }
-        override fun trackAutoBatteryThemeSet() { modes+=ThemeMode.AutoBattery }
-        override fun trackSystemThemeSet() { modes+=ThemeMode.System }
+        override fun trackView() {
+            views++
+        }
+        override fun trackLightThemeSet() {
+            modes += ThemeMode.Light
+        }
+        override fun trackDarkThemeSet() {
+            modes += ThemeMode.Dark
+        }
+        override fun trackAutoBatteryThemeSet() {
+            modes += ThemeMode.AutoBattery
+        }
+        override fun trackSystemThemeSet() {
+            modes += ThemeMode.System
+        }
     }
-    @Before fun before() { Dispatchers.setMain(dispatcher) }
-    @After fun after() { store.clear();Dispatchers.resetMain() }
-    private fun vm(repo:Repo,tracker:Tracker=Tracker(), options:ThemeOptions=this.options)=SettingsViewModel(repo,options,tracker).also { store.put("settings",it) }
+
+    @Before fun before() {
+        Dispatchers.setMain(dispatcher)
+    }
+
+    @After fun after() {
+        store.clear()
+        Dispatchers.resetMain()
+    }
+    private fun vm(repo: Repo, tracker: Tracker = Tracker(), options: ThemeOptions = this.options) = SettingsViewModel(repo, options, tracker).also { store.put("settings", it) }
+
     @Test fun screenResumeTracksThroughTheViewModelWithoutLoadingPreferences() = runTest(dispatcher) {
         val r = Repo()
         var reads = 0
@@ -70,69 +91,207 @@ class SettingsViewModelTest {
     }
 
     @Test fun loadingIsCollectionDrivenAndTracksExternalPreferenceUpdates() = runTest(dispatcher) {
-        val r=Repo();var subscriptions=0;r.load=r.choice.onStart {subscriptions++};val vm=vm(r)
-        runCurrent();assertEquals(0,subscriptions)
+        val r = Repo()
+        var subscriptions = 0
+        r.load = r.choice.onStart { subscriptions++ }
+        val vm = vm(r)
+        runCurrent()
+        assertEquals(0, subscriptions)
         vm.state.test {
-            assertEquals(SettingsUiState.Loading,awaitItem());assertEquals(SettingsUiState.Content(ThemeMode.System,options.modes),awaitItem())
-            r.choice.value=ThemeMode.Dark;assertEquals(SettingsUiState.Content(ThemeMode.Dark,options.modes),awaitItem())
+            assertEquals(SettingsUiState.Loading, awaitItem())
+            assertEquals(SettingsUiState.Content(ThemeMode.System, options.modes), awaitItem())
+            r.choice.value = ThemeMode.Dark
+            assertEquals(SettingsUiState.Content(ThemeMode.Dark, options.modes), awaitItem())
         }
     }
+
     @Test fun noCollectorsCancelsAndReturnReadsLatestPreference() = runTest(dispatcher) {
-        val r=Repo();var cancelled=false;r.load=r.choice.onCompletion {cancelled=true};val vm=vm(r)
-        vm.state.test {awaitItem();awaitItem()};runCurrent();assertTrue(cancelled)
-        r.choice.value=ThemeMode.Light
-        vm.state.test {assertEquals(ThemeMode.System,(awaitItem() as SettingsUiState.Content).selected);assertEquals(ThemeMode.Light,(awaitItem() as SettingsUiState.Content).selected)}
+        val r = Repo()
+        var cancelled = false
+        r.load = r.choice.onCompletion { cancelled = true }
+        val vm = vm(r)
+        vm.state.test {
+            awaitItem()
+            awaitItem()
+        }
+        runCurrent()
+        assertTrue(cancelled)
+        r.choice.value = ThemeMode.Light
+        vm.state.test {
+            assertEquals(ThemeMode.System, (awaitItem() as SettingsUiState.Content).selected)
+            assertEquals(ThemeMode.Light, (awaitItem() as SettingsUiState.Content).selected)
+        }
     }
+
     @Test fun pendingReadCancellationDoesNotBecomeAnError() = runTest(dispatcher) {
-        val r=Repo();var cancelled=false;r.load=flow {try {awaitCancellation()} finally {cancelled=true}};val vm=vm(r)
-        vm.state.test {assertEquals(SettingsUiState.Loading,awaitItem());runCurrent()};runCurrent()
-        assertTrue(cancelled);assertEquals(SettingsUiState.Loading,vm.state.value)
+        val r = Repo()
+        var cancelled = false
+        r.load = flow {
+            try {
+                awaitCancellation()
+            } finally {
+                cancelled = true
+            }
+        }
+        val vm = vm(r)
+        vm.state.test {
+            assertEquals(SettingsUiState.Loading, awaitItem())
+            runCurrent()
+        }
+        runCurrent()
+        assertTrue(cancelled)
+        assertEquals(SettingsUiState.Loading, vm.state.value)
     }
+
     @Test fun readFailureCanBeRetried() = runTest(dispatcher) {
-        val r=Repo();r.load=flow {throw IOException()};val vm=vm(r)
-        vm.state.test {awaitItem();assertEquals(SettingsUiState.Error,awaitItem());r.load=r.choice;vm.retry();assertEquals(SettingsUiState.Loading,awaitItem());assertTrue(awaitItem() is SettingsUiState.Content)}
+        val r = Repo()
+        r.load = flow { throw IOException() }
+        val vm = vm(r)
+        vm.state.test {
+            awaitItem()
+            assertEquals(SettingsUiState.Error, awaitItem())
+            r.load = r.choice
+            vm.retry()
+            assertEquals(SettingsUiState.Loading, awaitItem())
+            assertTrue(awaitItem() is SettingsUiState.Content)
+        }
     }
+
     @Test fun selectionSavesAndTracksOnlySuccessfulChoice() = runTest(dispatcher) {
-        val r=Repo();val t=Tracker();val vm=vm(r,t)
-        vm.state.test {awaitItem();awaitItem();vm.select(ThemeMode.Dark);runCurrent();cancelAndIgnoreRemainingEvents()}
-        assertEquals(listOf(ThemeMode.Dark),r.writes);assertEquals(listOf(ThemeMode.Dark),t.modes);assertEquals(ThemeMode.Dark,(vm.state.value as SettingsUiState.Content).selected)
+        val r = Repo()
+        val t = Tracker()
+        val vm = vm(r, t)
+        vm.state.test {
+            awaitItem()
+            awaitItem()
+            vm.select(ThemeMode.Dark)
+            runCurrent()
+            cancelAndIgnoreRemainingEvents()
+        }
+        assertEquals(listOf(ThemeMode.Dark), r.writes)
+        assertEquals(listOf(ThemeMode.Dark), t.modes)
+        assertEquals(ThemeMode.Dark, (vm.state.value as SettingsUiState.Content).selected)
     }
+
     @Test fun sameOrUnavailableChoiceAndLoadingEventsDoNotWrite() = runTest(dispatcher) {
-        val r=Repo();val vm=vm(r);vm.select(ThemeMode.Dark);vm.retrySave();runCurrent();assertTrue(r.writes.isEmpty())
-        vm.state.test {awaitItem();awaitItem();vm.select(ThemeMode.System);vm.select(ThemeMode.AutoBattery);vm.retry();runCurrent();expectNoEvents()}
+        val r = Repo()
+        val vm = vm(r)
+        vm.select(ThemeMode.Dark)
+        vm.retrySave()
+        runCurrent()
+        assertTrue(r.writes.isEmpty())
+        vm.state.test {
+            awaitItem()
+            awaitItem()
+            vm.select(ThemeMode.System)
+            vm.select(ThemeMode.AutoBattery)
+            vm.retry()
+            runCurrent()
+            expectNoEvents()
+        }
         assertTrue(r.writes.isEmpty())
     }
+
     @Test fun failedSaveKeepsCurrentChoiceAndRetrySavesIntendedChoice() = runTest(dispatcher) {
-        val r=Repo();r.save={throw IOException()};val t=Tracker();val vm=vm(r,t)
+        val r = Repo()
+        r.save = { throw IOException() }
+        val t = Tracker()
+        val vm = vm(r, t)
         vm.state.test {
-            awaitItem();awaitItem();vm.select(ThemeMode.Dark);runCurrent();cancelAndIgnoreRemainingEvents()
+            awaitItem()
+            awaitItem()
+            vm.select(ThemeMode.Dark)
+            runCurrent()
+            cancelAndIgnoreRemainingEvents()
         }
-        assertEquals(SettingsUiState.Content(ThemeMode.System,options.modes,saveFailed=true),vm.state.value);assertTrue(t.modes.isEmpty())
-        vm.state.test {awaitItem();r.save={r.choice.value=it};vm.retrySave();runCurrent();cancelAndIgnoreRemainingEvents()}
-        assertEquals(listOf(ThemeMode.Dark,ThemeMode.Dark),r.writes);assertEquals(listOf(ThemeMode.Dark),t.modes)
-    }
-    @Test fun savingRejectsDuplicateAndConcurrentSelections() = runTest(dispatcher) {
-        val r=Repo();val pending=CompletableDeferred<Unit>();r.save={pending.await();r.choice.value=it};val vm=vm(r)
-        vm.state.test {awaitItem();awaitItem();vm.select(ThemeMode.Dark);vm.select(ThemeMode.Light);runCurrent();assertEquals(1,r.writes.size);pending.complete(Unit);runCurrent();cancelAndIgnoreRemainingEvents()}
-        assertEquals(listOf(ThemeMode.Dark),r.writes)
-    }
-    @Test fun clearingViewModelCancelsPendingSaveWithoutTrackingIt() = runTest(dispatcher) {
-        val r=Repo();var cancelled=false;r.save={try {awaitCancellation()}finally{cancelled=true}};val t=Tracker();val vm=vm(r,t)
-        vm.state.test {awaitItem();awaitItem();vm.select(ThemeMode.Dark);runCurrent();store.clear();runCurrent();cancelAndIgnoreRemainingEvents()}
-        assertTrue(cancelled);assertTrue(t.modes.isEmpty())
-    }
-    @Test fun olderAndroidOptionsArePreservedAndBatterySelectionIsTracked() = runTest(dispatcher) {
-        val r=Repo();val t=Tracker();val old=ThemeOptions.forSdk(28);val vm=vm(r,t,old)
-        vm.state.test {awaitItem();assertEquals(old.modes,(awaitItem() as SettingsUiState.Content).options);vm.select(ThemeMode.AutoBattery);runCurrent();cancelAndIgnoreRemainingEvents()}
-        assertEquals(listOf(ThemeMode.AutoBattery),t.modes)
-    }
-    @Test fun configurationChangeRetainsContentWhileTheNewCollectionWaits() = runTest(dispatcher) {
-        val r=Repo();val vm=vm(r)
-        vm.state.test {awaitItem();awaitItem()};runCurrent()
-        r.load=flow {awaitCancellation()}
+        assertEquals(SettingsUiState.Content(ThemeMode.System, options.modes, saveFailed = true), vm.state.value)
+        assertTrue(t.modes.isEmpty())
         vm.state.test {
-            assertEquals(SettingsUiState.Content(ThemeMode.System,options.modes),awaitItem())
-            runCurrent();expectNoEvents()
+            awaitItem()
+            r.save = { r.choice.value = it }
+            vm.retrySave()
+            runCurrent()
+            cancelAndIgnoreRemainingEvents()
+        }
+        assertEquals(listOf(ThemeMode.Dark, ThemeMode.Dark), r.writes)
+        assertEquals(listOf(ThemeMode.Dark), t.modes)
+    }
+
+    @Test fun savingRejectsDuplicateAndConcurrentSelections() = runTest(dispatcher) {
+        val r = Repo()
+        val pending = CompletableDeferred<Unit>()
+        r.save = {
+            pending.await()
+            r.choice.value = it
+        }
+        val vm = vm(r)
+        vm.state.test {
+            awaitItem()
+            awaitItem()
+            vm.select(ThemeMode.Dark)
+            vm.select(ThemeMode.Light)
+            runCurrent()
+            assertEquals(1, r.writes.size)
+            pending.complete(Unit)
+            runCurrent()
+            cancelAndIgnoreRemainingEvents()
+        }
+        assertEquals(listOf(ThemeMode.Dark), r.writes)
+    }
+
+    @Test fun clearingViewModelCancelsPendingSaveWithoutTrackingIt() = runTest(dispatcher) {
+        val r = Repo()
+        var cancelled = false
+        r.save = {
+            try {
+                awaitCancellation()
+            } finally {
+                cancelled = true
+            }
+        }
+        val t = Tracker()
+        val vm = vm(r, t)
+        vm.state.test {
+            awaitItem()
+            awaitItem()
+            vm.select(ThemeMode.Dark)
+            runCurrent()
+            store.clear()
+            runCurrent()
+            cancelAndIgnoreRemainingEvents()
+        }
+        assertTrue(cancelled)
+        assertTrue(t.modes.isEmpty())
+    }
+
+    @Test fun olderAndroidOptionsArePreservedAndBatterySelectionIsTracked() = runTest(dispatcher) {
+        val r = Repo()
+        val t = Tracker()
+        val old = ThemeOptions.forSdk(28)
+        val vm = vm(r, t, old)
+        vm.state.test {
+            awaitItem()
+            assertEquals(old.modes, (awaitItem() as SettingsUiState.Content).options)
+            vm.select(ThemeMode.AutoBattery)
+            runCurrent()
+            cancelAndIgnoreRemainingEvents()
+        }
+        assertEquals(listOf(ThemeMode.AutoBattery), t.modes)
+    }
+
+    @Test fun configurationChangeRetainsContentWhileTheNewCollectionWaits() = runTest(dispatcher) {
+        val r = Repo()
+        val vm = vm(r)
+        vm.state.test {
+            awaitItem()
+            awaitItem()
+        }
+        runCurrent()
+        r.load = flow { awaitCancellation() }
+        vm.state.test {
+            assertEquals(SettingsUiState.Content(ThemeMode.System, options.modes), awaitItem())
+            runCurrent()
+            expectNoEvents()
         }
     }
 }

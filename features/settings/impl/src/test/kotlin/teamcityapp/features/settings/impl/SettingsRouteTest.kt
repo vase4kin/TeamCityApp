@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -35,13 +36,12 @@ import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
-import teamcityapp.libraries.theme.TeamCityTheme
-import kotlinx.coroutines.flow.MutableStateFlow
+import teamcityapp.features.settings.impl.router.SettingsRouter
+import teamcityapp.features.settings.impl.tracker.SettingsTracker
 import teamcityapp.libraries.app_theme.ThemeMode
 import teamcityapp.libraries.app_theme.ThemeOptions
 import teamcityapp.libraries.app_theme.ThemePreferencesRepository
-import teamcityapp.features.settings.impl.router.SettingsRouter
-import teamcityapp.features.settings.impl.tracker.SettingsTracker
+import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -53,12 +53,17 @@ class SettingsRouteTest {
     private class Owner : LifecycleOwner {
         override val lifecycle = LifecycleRegistry.createUnsafe(this).apply { currentState = Lifecycle.State.RESUMED }
     }
-    @After fun after() { compose.runOnIdle { store.clear() } }
+
+    @After fun after() {
+        compose.runOnIdle { store.clear() }
+    }
     private fun model(tracker: SettingsTracker) = SettingsViewModel(
         object : ThemePreferencesRepository {
             override val theme = MutableStateFlow(ThemeMode.System)
             override suspend fun setTheme(mode: ThemeMode) = error("Unexpected theme change")
-        }, ThemeOptions.forSdk(35), tracker,
+        },
+        ThemeOptions.forSdk(35),
+        tracker
     ).also { store.put("settings", it) }
     private fun router(onClose: () -> Unit) = object : SettingsRouter {
         override fun close() = onClose()

@@ -25,15 +25,15 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.OkHttpClient
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
+import teamcityapp.libraries.coroutines.IoDispatcher
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.remote.RemoteService
 import teamcityapp.libraries.storage.Storage
-import javax.inject.Named
-import kotlinx.coroutines.CoroutineDispatcher
-import teamcityapp.libraries.coroutines.IoDispatcher
 
 @EntryPoint
 @InstallIn(SingletonComponent::class)

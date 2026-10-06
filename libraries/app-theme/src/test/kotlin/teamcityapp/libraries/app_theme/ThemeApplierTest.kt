@@ -31,13 +31,17 @@ class ThemeApplierTest {
         val original = AppCompatDelegate.getDefaultNightMode()
         try {
             val applier = ThemePreferencesModule.applier()
-            mapOf(ThemeMode.Light to AppCompatDelegate.MODE_NIGHT_NO,
+            mapOf(
+                ThemeMode.Light to AppCompatDelegate.MODE_NIGHT_NO,
                 ThemeMode.Dark to AppCompatDelegate.MODE_NIGHT_YES,
                 ThemeMode.AutoBattery to AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY,
-                ThemeMode.System to AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM).forEach { (choice, expected) ->
+                ThemeMode.System to AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            ).forEach { (choice, expected) ->
                 applier.apply(choice)
                 assertEquals(expected, AppCompatDelegate.getDefaultNightMode())
             }
-        } finally { AppCompatDelegate.setDefaultNightMode(original) }
+        } finally {
+            AppCompatDelegate.setDefaultNightMode(original)
+        }
     }
 }

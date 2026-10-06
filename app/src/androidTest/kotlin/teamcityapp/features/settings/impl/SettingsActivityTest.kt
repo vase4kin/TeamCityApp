@@ -43,22 +43,35 @@ import teamcityapp.libraries.app_theme.ThemeMode
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class SettingsActivityTest {
-    @JvmField @Rule(order = 0) val hilt = HiltAndroidRule(this)
-    @JvmField @Rule(order = 1) val api = HiltApiTestRule(hilt)
-    @JvmField @Rule(order = 2) val compose = createEmptyComposeRule()
+    @JvmField
+    @Rule(order = 0)
+    val hilt = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val api = HiltApiTestRule(hilt)
+
+    @JvmField
+    @Rule(order = 2)
+    val compose = createEmptyComposeRule()
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val repo get() = app.appInjector.themePreferences()
+
     @Before fun before() {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL, false)
         runBlocking { repo.setTheme(ThemeMode.Light) }
     }
-    @After fun after() { runBlocking { repo.setTheme(ThemeMode.System) } }
-    private fun launch() = ActivityScenario.launch<SettingsActivity>(Intent(app,SettingsActivity::class.java))
+
+    @After fun after() {
+        runBlocking { repo.setTheme(ThemeMode.System) }
+    }
+    private fun launch() = ActivityScenario.launch<SettingsActivity>(Intent(app, SettingsActivity::class.java))
     private fun awaitSummary(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
     }
+
     @Test fun selectingThemePersistsAppliesAndSurvivesRecreation() {
         launch().use { scenario ->
             awaitSummary("Light theme")
@@ -66,40 +79,53 @@ class SettingsActivityTest {
             compose.onNodeWithText("Dark theme").performClick()
             awaitSummary("Dark theme")
             compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES }
-            scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES,it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
-            assertEquals(ThemeMode.Dark,runBlocking { repo.theme.first() })
-            scenario.recreate();awaitSummary("Dark theme")
-            scenario.moveToState(Lifecycle.State.CREATED);scenario.moveToState(Lifecycle.State.RESUMED);awaitSummary("Dark theme")
+            scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
+            assertEquals(ThemeMode.Dark, runBlocking { repo.theme.first() })
+            scenario.recreate()
+            awaitSummary("Dark theme")
+            scenario.moveToState(Lifecycle.State.CREATED)
+            scenario.moveToState(Lifecycle.State.RESUMED)
+            awaitSummary("Dark theme")
         }
     }
+
     @Test fun openDialogSurvivesConfigurationChange() {
         launch().use { scenario ->
-            awaitSummary("Light theme");compose.onNodeWithTag("settings:theme").performClick()
-            compose.onNodeWithTag("settings:dialog").assertIsDisplayed();scenario.recreate()
+            awaitSummary("Light theme")
+            compose.onNodeWithTag("settings:theme").performClick()
+            compose.onNodeWithTag("settings:dialog").assertIsDisplayed()
+            scenario.recreate()
             compose.waitUntil(5_000) { compose.onAllNodesWithTag("settings:dialog").fetchSemanticsNodes().isNotEmpty() }
-            compose.onNodeWithText("Dark theme").performClick();awaitSummary("Dark theme")
+            compose.onNodeWithText("Dark theme").performClick()
+            awaitSummary("Dark theme")
         }
     }
+
     @Test fun cancelKeepsSavedThemeAndBackClosesActivity() {
         launch().use { scenario ->
-            awaitSummary("Light theme");compose.onNodeWithTag("settings:theme").performClick()
-            compose.onNodeWithText("CANCEL").performClick();compose.onNodeWithTag("settings:dialog").assertDoesNotExist()
-            assertEquals(ThemeMode.Light,runBlocking { repo.theme.first() })
-            compose.onNodeWithContentDescription("Back").performClick();compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
+            awaitSummary("Light theme")
+            compose.onNodeWithTag("settings:theme").performClick()
+            compose.onNodeWithText("CANCEL").performClick()
+            compose.onNodeWithTag("settings:dialog").assertDoesNotExist()
+            assertEquals(ThemeMode.Light, runBlocking { repo.theme.first() })
+            compose.onNodeWithContentDescription("Back").performClick()
+            compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }
+
     @Test fun savedThemeIsAppliedToOtherComposeActivitiesBeforeOpeningSettings() {
         runBlocking { repo.setTheme(ThemeMode.Dark) }
         compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES }
-        ActivityScenario.launch<AboutActivity>(Intent(app,AboutActivity::class.java)).use { scenario ->
-            scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES,it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
+        ActivityScenario.launch<AboutActivity>(Intent(app, AboutActivity::class.java)).use { scenario ->
+            scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
             scenario.recreate()
-            scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES,it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
+            scenario.onActivity { assertEquals(Configuration.UI_MODE_NIGHT_YES, it.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) }
         }
     }
+
     @Test fun savedThemeIsReadOnANewActivityLaunch() {
-        launch().use {awaitSummary("Light theme")}
+        launch().use { awaitSummary("Light theme") }
         runBlocking { repo.setTheme(ThemeMode.Dark) }
-        launch().use {awaitSummary("Dark theme")}
+        launch().use { awaitSummary("Dark theme") }
     }
 }

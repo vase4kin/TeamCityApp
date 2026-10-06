@@ -21,28 +21,39 @@ import androidx.datastore.preferences.SharedPreferencesMigration
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import teamcityapp.libraries.coroutines.IoDispatcher
-import javax.inject.Inject
-import javax.inject.Singleton
 
 /** Owns the single DataStore and its IO work for an application component's lifetime. */
 @Singleton
 class ThemePreferencesStore @Inject constructor(
-    @ApplicationContext context: Context, options: ThemeOptions, @IoDispatcher dispatcher: CoroutineDispatcher,
+    @ApplicationContext context: Context,
+    options: ThemeOptions,
+    @IoDispatcher dispatcher: CoroutineDispatcher
 ) {
     private val job = SupervisorJob()
     val repository: ThemePreferencesRepository = DataStoreThemePreferencesRepository(
         PreferenceDataStoreFactory.create(
-            migrations = listOf(SharedPreferencesMigration(context, "${context.packageName}_preferences",
-                keysToMigrate = setOf(DataStoreThemePreferencesRepository.LEGACY_KEY))),
+            migrations = listOf(
+                SharedPreferencesMigration(
+                    context,
+                    "${context.packageName}_preferences",
+                    keysToMigrate = setOf(DataStoreThemePreferencesRepository.LEGACY_KEY)
+                )
+            ),
             scope = CoroutineScope(job + dispatcher),
-            produceFile = { context.preferencesDataStoreFile("app_theme") },
-        ), options.default,
+            produceFile = { context.preferencesDataStoreFile("app_theme") }
+        ),
+        options.default
     )
+
     /** Allows isolated application components to finish all file work before releasing the store. */
-    suspend fun close() { job.cancelAndJoin() }
+    suspend fun close() {
+        job.cancelAndJoin()
+    }
 }

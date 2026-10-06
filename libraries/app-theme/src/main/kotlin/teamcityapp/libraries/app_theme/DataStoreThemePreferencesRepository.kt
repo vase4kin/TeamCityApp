@@ -24,10 +24,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 internal class DataStoreThemePreferencesRepository(
-    private val store: DataStore<Preferences>, private val default: ThemeMode,
+    private val store: DataStore<Preferences>,
+    private val default: ThemeMode
 ) : ThemePreferencesRepository {
     override val theme = store.data.map { ThemeMode.fromStoredValue(it[THEME]) ?: default }.distinctUntilChanged()
-    override suspend fun setTheme(mode: ThemeMode) { store.edit { it[THEME] = mode.storedValue } }
+    override suspend fun setTheme(mode: ThemeMode) {
+        store.edit { it[THEME] = mode.storedValue }
+    }
     companion object {
         const val LEGACY_KEY = "preference_key_theme"
         val THEME = stringPreferencesKey(LEGACY_KEY)

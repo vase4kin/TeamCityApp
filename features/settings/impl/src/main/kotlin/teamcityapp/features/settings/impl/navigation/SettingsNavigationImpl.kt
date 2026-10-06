@@ -23,5 +23,7 @@ import teamcityapp.features.settings.api.navigation.SettingsNavigation
 import teamcityapp.features.settings.impl.SettingsActivity
 
 internal class SettingsNavigationImpl @Inject constructor() : SettingsNavigation {
-    override fun open(activity: Activity) { activity.startActivity(Intent(activity, SettingsActivity::class.java)) }
+    override fun open(activity: Activity) {
+        activity.startActivity(Intent(activity, SettingsActivity::class.java))
+    }
 }

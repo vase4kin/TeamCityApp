@@ -21,16 +21,24 @@ import org.junit.Test
 
 class ThemeModeTest {
     @Test fun olderAndroidKeepsLightAndDarkChoices() {
-        for(sdk in 24..27) assertEquals(ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark), ThemeMode.Light), ThemeOptions.forSdk(sdk))
+        for (sdk in 24..27) assertEquals(ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark), ThemeMode.Light), ThemeOptions.forSdk(sdk))
     }
+
     @Test fun androidPieKeepsAutoBatteryDefault() {
         assertEquals(ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.AutoBattery), ThemeMode.AutoBattery), ThemeOptions.forSdk(28))
     }
+
     @Test fun modernAndroidKeepsFollowSystemDefault() {
-        for(sdk in listOf(29,35,37)) assertEquals(ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.System), ThemeMode.System), ThemeOptions.forSdk(sdk))
+        for (sdk in listOf(29, 35, 37)) assertEquals(ThemeOptions(listOf(ThemeMode.Light, ThemeMode.Dark, ThemeMode.System), ThemeMode.System), ThemeOptions.forSdk(sdk))
     }
+
     @Test fun everyExistingSerializedValueStillResolves() {
-        listOf("Light", "Dark", "Auto-battery", "System").zip(ThemeMode.entries).forEach { (value,mode) -> assertEquals(mode, ThemeMode.fromStoredValue(value)); assertEquals(value,mode.storedValue) }
-        assertNull(ThemeMode.fromStoredValue("unknown")); assertNull(ThemeMode.fromStoredValue(null)); assertNull(ThemeMode.fromStoredValue(""))
+        listOf("Light", "Dark", "Auto-battery", "System").zip(ThemeMode.entries).forEach { (value, mode) ->
+            assertEquals(mode, ThemeMode.fromStoredValue(value))
+            assertEquals(value, mode.storedValue)
+        }
+        assertNull(ThemeMode.fromStoredValue("unknown"))
+        assertNull(ThemeMode.fromStoredValue(null))
+        assertNull(ThemeMode.fromStoredValue(""))
     }
 }

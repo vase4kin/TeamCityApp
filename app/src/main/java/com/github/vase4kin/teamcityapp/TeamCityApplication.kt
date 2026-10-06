@@ -21,5 +21,8 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class TeamCityApplication : TeamCityApplicationBase() {
     @javax.inject.Inject lateinit var themeController: teamcityapp.libraries.app_theme.AppThemeController
-    override fun onCreate() { super.onCreate(); themeController.start() }
+    override fun onCreate() {
+        super.onCreate()
+        themeController.start()
+    }
 }

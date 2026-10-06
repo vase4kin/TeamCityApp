@@ -27,11 +27,14 @@ import teamcityapp.features.settings.impl.navigation.SettingsNavigationImpl
 import teamcityapp.features.settings.impl.router.SettingsRouter
 import teamcityapp.features.settings.impl.router.SettingsRouterImpl
 
-@Module @InstallIn(SingletonComponent::class)
+@Module
+@InstallIn(SingletonComponent::class)
 object SettingsModule {
     @Provides fun navigation(): SettingsNavigation = SettingsNavigationImpl()
 }
-@Module @InstallIn(ActivityComponent::class)
+
+@Module
+@InstallIn(ActivityComponent::class)
 object SettingsActivityModule {
     @Provides fun router(activity: Activity): SettingsRouter = SettingsRouterImpl(activity)
 }

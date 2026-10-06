@@ -18,8 +18,14 @@ package teamcityapp.libraries.app_theme
 
 /** Values deliberately retain the strings used by the existing theme preference. */
 enum class ThemeMode(val storedValue: String) {
-    Light("Light"), Dark("Dark"), AutoBattery("Auto-battery"), System("System");
-    companion object { fun fromStoredValue(value: String?): ThemeMode? = entries.firstOrNull { it.storedValue == value } }
+    Light("Light"),
+    Dark("Dark"),
+    AutoBattery("Auto-battery"),
+    System("System");
+
+    companion object {
+        fun fromStoredValue(value: String?): ThemeMode? = entries.firstOrNull { it.storedValue == value }
+    }
 }
 
 data class ThemeOptions(val modes: List<ThemeMode>, val default: ThemeMode) {

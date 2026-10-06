@@ -29,14 +29,16 @@ import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import teamcityapp.libraries.coroutines.MainDispatcher
 
-fun interface ThemeApplier { fun apply(mode: ThemeMode) }
+fun interface ThemeApplier {
+    fun apply(mode: ThemeMode)
+}
 
 /** One application-owned subscription applies persisted choices to every legacy and Compose screen. */
 @Singleton
 class AppThemeController @Inject constructor(
     private val repository: ThemePreferencesRepository,
     private val applier: ThemeApplier,
-    @MainDispatcher dispatcher: CoroutineDispatcher,
+    @MainDispatcher dispatcher: CoroutineDispatcher
 ) {
     private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private var observation: Job? = null
@@ -44,10 +46,19 @@ class AppThemeController @Inject constructor(
         if (observation?.isActive == true) return
         observation = scope.launch {
             repository.theme.retryWhen { error, _ ->
-                if (error is IOException) { delay(1_000); true } else false
+                if (error is IOException) {
+                    delay(1_000)
+                    true
+                } else {
+                    false
+                }
             }.distinctUntilChanged().collect(applier::apply)
         }
     }
+
     /** Releases the application observer when an isolated application/test lifecycle ends. */
-    fun stop() { observation?.cancel(); observation = null }
+    fun stop() {
+        observation?.cancel()
+        observation = null
+    }
 }

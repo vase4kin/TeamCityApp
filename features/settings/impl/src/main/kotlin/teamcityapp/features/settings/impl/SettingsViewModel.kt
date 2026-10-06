@@ -35,7 +35,7 @@ import teamcityapp.libraries.app_theme.ThemePreferencesRepository
 class SettingsViewModel @Inject constructor(
     private val repository: ThemePreferencesRepository,
     private val options: ThemeOptions,
-    private val tracker: SettingsTracker,
+    private val tracker: SettingsTracker
 ) : ViewModel() {
     private data class Save(val saving: Boolean = false, val failed: Boolean = false)
     private val save = MutableStateFlow(Save())
@@ -57,15 +57,19 @@ class SettingsViewModel @Inject constructor(
     }.combine(save) { content, operation ->
         if (content is SettingsUiState.Content) {
             content.copy(saving = operation.saving, saveFailed = operation.failed)
-        } else content
+        } else {
+            content
+        }
     }.stateIn(
         viewModelScope,
         // Stop observing immediately in the background; reread persisted changes on return.
         SharingStarted.WhileSubscribed(stopTimeoutMillis = 0),
-        SettingsUiState.Loading,
+        SettingsUiState.Loading
     )
 
-    fun onScreenViewed() { tracker.trackView() }
+    fun onScreenViewed() {
+        tracker.trackView()
+    }
 
     fun retry() {
         if (state.value == SettingsUiState.Error) reload.value++

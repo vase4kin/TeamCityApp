@@ -18,4 +18,6 @@ package teamcityapp.features.settings.api.navigation
 
 import android.app.Activity
 
-interface SettingsNavigation { fun open(activity: Activity) }
+interface SettingsNavigation {
+    fun open(activity: Activity)
+}

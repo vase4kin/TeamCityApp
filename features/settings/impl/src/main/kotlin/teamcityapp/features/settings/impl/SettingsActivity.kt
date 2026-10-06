@@ -21,9 +21,9 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 import teamcityapp.features.settings.impl.router.SettingsRouter
 import teamcityapp.libraries.theme.TeamCityTheme
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {

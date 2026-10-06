@@ -18,9 +18,9 @@ package teamcityapp.features.settings.impl
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -29,8 +29,19 @@ import teamcityapp.features.settings.impl.router.SettingsRouter
 @Composable
 fun SettingsRoute(router: SettingsRouter, viewModel: SettingsViewModel = hiltViewModel()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    LifecycleResumeEffect(viewModel) { viewModel.onScreenViewed(); onPauseOrDispose {} }
+    LifecycleResumeEffect(viewModel) {
+        viewModel.onScreenViewed()
+        onPauseOrDispose {}
+    }
     var dialogOpen by rememberSaveable { mutableStateOf(false) }
-    SettingsScreen(state, viewModel::select, viewModel::retry, viewModel::retrySave, router::close, dialogOpen,
-        onOpenDialog = { dialogOpen = true }, onDismissDialog = { dialogOpen = false })
+    SettingsScreen(
+        state,
+        viewModel::select,
+        viewModel::retry,
+        viewModel::retrySave,
+        router::close,
+        dialogOpen,
+        onOpenDialog = { dialogOpen = true },
+        onDismissDialog = { dialogOpen = false }
+    )
 }

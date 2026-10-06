@@ -44,59 +44,87 @@ class ThemePreferencesRepositoryTest {
     private suspend fun TestScope.withStore(migrate: Boolean = false, block: suspend (DataStoreThemePreferencesRepository) -> Unit) {
         val file = File.createTempFile("theme-test", ".preferences_pb").also { it.delete() }
         val scope = CoroutineScope(SupervisorJob() + StandardTestDispatcher(testScheduler))
-        val store = PreferenceDataStoreFactory.create(scope = scope,
-            migrations = if(migrate) listOf(SharedPreferencesMigration(context, "migration-test", keysToMigrate = setOf(DataStoreThemePreferencesRepository.LEGACY_KEY))) else emptyList(),
-            produceFile = { file })
-        try { block(DataStoreThemePreferencesRepository(store, ThemeMode.System)) }
-        finally { scope.cancel(); runCurrent(); file.delete() }
+        val store = PreferenceDataStoreFactory.create(
+            scope = scope,
+            migrations = if (migrate) listOf(SharedPreferencesMigration(context, "migration-test", keysToMigrate = setOf(DataStoreThemePreferencesRepository.LEGACY_KEY))) else emptyList(),
+            produceFile = { file }
+        )
+        try {
+            block(DataStoreThemePreferencesRepository(store, ThemeMode.System))
+        } finally {
+            scope.cancel()
+            runCurrent()
+            file.delete()
+        }
     }
+
     @Test fun noSavedChoiceUsesSdkDefault() = runTest {
         withStore { assertEquals(ThemeMode.System, it.theme.first()) }
     }
+
     @Test fun writesAllModesAndReadsThemBack() = runTest {
-        withStore { repo -> ThemeMode.entries.forEach { mode -> repo.setTheme(mode); assertEquals(mode,repo.theme.first()) } }
+        withStore { repo ->
+            ThemeMode.entries.forEach { mode ->
+                repo.setTheme(mode)
+                assertEquals(mode, repo.theme.first())
+            }
+        }
     }
+
     @Test fun migrationPreservesEveryLegacyValueAndOtherPreferences() = runTest {
         ThemeMode.entries.forEach { mode ->
             val prefs = context.getSharedPreferences("migration-test", Context.MODE_PRIVATE)
             assertTrue(prefs.edit().clear().putString(DataStoreThemePreferencesRepository.LEGACY_KEY, mode.storedValue).putString("other", "preserved").commit())
             withStore(migrate = true) { repo ->
-                assertEquals(mode,repo.theme.first())
+                assertEquals(mode, repo.theme.first())
                 assertFalse(prefs.contains(DataStoreThemePreferencesRepository.LEGACY_KEY))
-                assertEquals("preserved",prefs.getString("other",null))
+                assertEquals("preserved", prefs.getString("other", null))
             }
         }
     }
+
     @Test fun unknownLegacyValueFallsBackWithoutDeletingOtherPreferences() = runTest {
         val prefs = context.getSharedPreferences("migration-test", Context.MODE_PRIVATE)
-        prefs.edit().clear().putString(DataStoreThemePreferencesRepository.LEGACY_KEY, "old-unknown").putInt("count",7).commit()
-        withStore(migrate = true) { assertEquals(ThemeMode.System,it.theme.first()) }
-        assertEquals(7,prefs.getInt("count",0))
+        prefs.edit().clear().putString(DataStoreThemePreferencesRepository.LEGACY_KEY, "old-unknown").putInt("count", 7).commit()
+        withStore(migrate = true) { assertEquals(ThemeMode.System, it.theme.first()) }
+        assertEquals(7, prefs.getInt("count", 0))
     }
+
     @Test fun themeSurvivesStoreAndProcessRecreation() = runTest {
-        val file=File.createTempFile("recreated-theme", ".preferences_pb").also { it.delete() }
+        val file = File.createTempFile("recreated-theme", ".preferences_pb").also { it.delete() }
         try {
-            for(mode in listOf(ThemeMode.Dark, ThemeMode.Light)) {
-                val scope=CoroutineScope(SupervisorJob()+StandardTestDispatcher(testScheduler))
-                val store=PreferenceDataStoreFactory.create(scope=scope,produceFile={file})
-                val repo=DataStoreThemePreferencesRepository(store,ThemeMode.System)
-                if(mode==ThemeMode.Dark) repo.setTheme(mode) else assertEquals(ThemeMode.Dark,repo.theme.first())
-                scope.cancel();runCurrent()
+            for (mode in listOf(ThemeMode.Dark, ThemeMode.Light)) {
+                val scope = CoroutineScope(SupervisorJob() + StandardTestDispatcher(testScheduler))
+                val store = PreferenceDataStoreFactory.create(scope = scope, produceFile = { file })
+                val repo = DataStoreThemePreferencesRepository(store, ThemeMode.System)
+                if (mode == ThemeMode.Dark) repo.setTheme(mode) else assertEquals(ThemeMode.Dark, repo.theme.first())
+                scope.cancel()
+                runCurrent()
             }
-        } finally { file.delete() }
+        } finally {
+            file.delete()
+        }
     }
+
     @Test fun existingDataStoreChoiceWinsOverLegacyPreference() = runTest {
-        val file=File.createTempFile("existing-theme", ".preferences_pb").also { it.delete() }
-        val oldScope=CoroutineScope(SupervisorJob()+StandardTestDispatcher(testScheduler))
-        val old=PreferenceDataStoreFactory.create(scope=oldScope,produceFile={file})
-        old.edit { it[DataStoreThemePreferencesRepository.THEME]="Dark" }; oldScope.cancel();runCurrent()
-        context.getSharedPreferences("migration-test",Context.MODE_PRIVATE).edit().clear().putString(DataStoreThemePreferencesRepository.LEGACY_KEY,"Light").commit()
-        val scope=CoroutineScope(SupervisorJob()+StandardTestDispatcher(testScheduler))
+        val file = File.createTempFile("existing-theme", ".preferences_pb").also { it.delete() }
+        val oldScope = CoroutineScope(SupervisorJob() + StandardTestDispatcher(testScheduler))
+        val old = PreferenceDataStoreFactory.create(scope = oldScope, produceFile = { file })
+        old.edit { it[DataStoreThemePreferencesRepository.THEME] = "Dark" }
+        oldScope.cancel()
+        runCurrent()
+        context.getSharedPreferences("migration-test", Context.MODE_PRIVATE).edit().clear().putString(DataStoreThemePreferencesRepository.LEGACY_KEY, "Light").commit()
+        val scope = CoroutineScope(SupervisorJob() + StandardTestDispatcher(testScheduler))
         try {
-            val migrated=PreferenceDataStoreFactory.create(scope=scope,produceFile={file},migrations=listOf(SharedPreferencesMigration(context,"migration-test",keysToMigrate=setOf(DataStoreThemePreferencesRepository.LEGACY_KEY))))
-            assertEquals(ThemeMode.Dark,DataStoreThemePreferencesRepository(migrated,ThemeMode.System).theme.first())
-        } finally { scope.cancel();runCurrent();file.delete() }
+            val migrated = PreferenceDataStoreFactory.create(scope = scope, produceFile = { file }, migrations = listOf(SharedPreferencesMigration(context, "migration-test", keysToMigrate = setOf(DataStoreThemePreferencesRepository.LEGACY_KEY))))
+            assertEquals(ThemeMode.Dark, DataStoreThemePreferencesRepository(migrated, ThemeMode.System).theme.first())
+        } finally {
+            scope.cancel()
+            runCurrent()
+            file.delete()
+        }
     }
+
     @Test fun corruptStoreIsReportedWithoutSilentlyResettingTheSavedFile() = runTest {
         val file = File.createTempFile("corrupt-theme", ".preferences_pb")
         val bytes = byteArrayOf(-1, -1, -1)
@@ -107,6 +135,10 @@ class ThemePreferencesRepositoryTest {
             val repo = DataStoreThemePreferencesRepository(store, ThemeMode.System)
             assertTrue(runCatching { repo.theme.first() }.exceptionOrNull() is androidx.datastore.core.CorruptionException)
             assertArrayEquals(bytes, file.readBytes())
-        } finally { scope.cancel(); runCurrent(); file.delete() }
+        } finally {
+            scope.cancel()
+            runCurrent()
+            file.delete()
+        }
     }
 }

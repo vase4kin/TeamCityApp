@@ -19,21 +19,21 @@ package teamcityapp.features.settings.impl
 import android.app.Application
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
-import teamcityapp.libraries.app_theme.ThemeMode
-import teamcityapp.libraries.app_theme.ThemeOptions
+import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.junit.runners.model.Statement
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.libraries.app_theme.ThemeMode
+import teamcityapp.libraries.app_theme.ThemeOptions
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Every Settings state, in both themes, sizes, and enlarged text. */
@@ -65,21 +65,22 @@ class SettingsScreenScreenshotTest(private val stateName: String, private val va
             }
         }
     }
+
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
-        val options = when(stateName) {
+        val options = when (stateName) {
             "auto_battery", "dialog_battery" -> ThemeOptions.forSdk(28)
             "dialog_legacy" -> ThemeOptions.forSdk(24)
             else -> ThemeOptions.forSdk(35)
         }
-        val selected = when(stateName) {
+        val selected = when (stateName) {
             "light", "dialog_light", "dialog_legacy" -> ThemeMode.Light
             "dark", "dialog_dark" -> ThemeMode.Dark
             "auto_battery", "dialog_battery", "unavailable" -> ThemeMode.AutoBattery
             else -> ThemeMode.System
         }
-        val state = when(stateName) {
+        val state = when (stateName) {
             "loading" -> SettingsUiState.Loading
             "error" -> SettingsUiState.Error
             else -> SettingsUiState.Content(selected, options.modes, saving = stateName == "saving", saveFailed = stateName == "save_error")
@@ -88,8 +89,11 @@ class SettingsScreenScreenshotTest(private val stateName: String, private val va
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val name = "settings_${stateName}_${variant.name}"
-        if(stateName.startsWith("dialog")) compose.onNodeWithTag("settings:dialog").captureRoboImage("$name.png")
-        else compose.onRoot().captureRoboImage("$name.png")
+        if (stateName.startsWith("dialog")) {
+            compose.onNodeWithTag("settings:dialog").captureRoboImage("$name.png")
+        } else {
+            compose.onRoot().captureRoboImage("$name.png")
+        }
     }
 
     companion object {
@@ -100,7 +104,7 @@ class SettingsScreenScreenshotTest(private val stateName: String, private val va
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
             listOf("loading", "error", "light", "dark", "system", "auto_battery", "unavailable", "saving", "save_error", "dialog_light", "dialog_dark", "dialog_system", "dialog_battery", "dialog_legacy").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }

@@ -26,13 +26,17 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object ThemePreferencesModule {
     @Provides fun options(): ThemeOptions = ThemeOptions.forSdk(Build.VERSION.SDK_INT)
+
     @Provides fun repository(store: ThemePreferencesStore): ThemePreferencesRepository = store.repository
+
     @Provides fun applier(): ThemeApplier = ThemeApplier { mode ->
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(when(mode) {
-            ThemeMode.Light -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-            ThemeMode.Dark -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
-            ThemeMode.AutoBattery -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
-            ThemeMode.System -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
-        })
+        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
+            when (mode) {
+                ThemeMode.Light -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+                ThemeMode.Dark -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+                ThemeMode.AutoBattery -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_AUTO_BATTERY
+                ThemeMode.System -> androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+            }
+        )
     }
 }

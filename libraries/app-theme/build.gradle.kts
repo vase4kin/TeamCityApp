@@ -18,7 +18,10 @@ plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.hilt")
 }
-android { namespace = "teamcityapp.libraries.app_theme"; testOptions.unitTests.isIncludeAndroidResources = true }
+android {
+    namespace = "teamcityapp.libraries.app_theme"
+    testOptions.unitTests.isIncludeAndroidResources = true
+}
 dependencies {
     api(projects.libraries.coroutines)
     implementation(libs.androidx.appcompat)
