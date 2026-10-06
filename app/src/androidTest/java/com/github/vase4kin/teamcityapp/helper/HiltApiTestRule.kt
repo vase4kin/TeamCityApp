@@ -18,6 +18,7 @@ class HiltApiTestRule(
     override fun before() {
         hilt.inject()
         val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.themeController().start()
         app.setApiGraphFactoryForTesting { baseUrl ->
             DaggerRestApiComponent.builder()
                 .appComponent(app.appInjector)
@@ -26,5 +27,10 @@ class HiltApiTestRule(
                 })
                 .build()
         }
+    }
+    override fun after() {
+        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.themeController().stop()
+        kotlinx.coroutines.runBlocking { app.appInjector.themePreferencesStore().close() }
     }
 }

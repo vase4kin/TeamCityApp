@@ -36,13 +36,13 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.core.AllOf.allOf
@@ -55,7 +55,7 @@ import org.junit.runner.RunWith
 import org.mockito.Spy
 import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.manage_accounts.view.ManageAccountsActivity
-import teamcityapp.features.settings.view.SettingsActivity
+import teamcityapp.features.settings.impl.SettingsActivity
 
 /**
  * Tests for Drawer

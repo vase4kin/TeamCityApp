@@ -17,7 +17,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.change_details.impl.ChangeDetailsActivity
-import teamcityapp.features.settings.view.SettingsActivity
+import teamcityapp.features.settings.impl.SettingsActivity
 import teamcityapp.features.test_details.impl.TestDetailsActivity
 import teamcityapp.features.test_details.impl.TestDetailsViewModel
 
@@ -85,7 +85,7 @@ class HiltMigrationSmokeTest {
     @Test
     fun settingsInjectsAndRecreates() {
         ActivityScenario.launch<SettingsActivity>(Intent(app, SettingsActivity::class.java)).use {
-            it.onActivity { activity -> assertEquals(1, activity.supportFragmentManager.fragments.size) }
+            assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)
         }

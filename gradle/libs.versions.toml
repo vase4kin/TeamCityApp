@@ -1,5 +1,6 @@
 # Dependency and plugin versions. Keep runtime versions unchanged during catalog migrations.
 [versions]
+datastore = "1.2.1"
 jacoco = "0.8.14"
 androidx-lifecycle = "2.11.0"
 androidx-test = "1.7.0"
@@ -29,6 +30,7 @@ roborazzi = "1.76.0"
 robolectric = "4.17"
 
 [libraries]
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 roborazzi-gradlePlugin = { module = "io.github.takahirom.roborazzi:roborazzi-gradle-plugin", version.ref = "roborazzi" }
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
@@ -68,7 +70,6 @@ androidx-recyclerView = { module = "androidx.recyclerview:recyclerview", version
 androidx-annotationn = { module = "androidx.annotation:annotation", version = "1.11.0" }
 androidx-browser = { module = "androidx.browser:browser", version = "1.10.0" }
 androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version = "2.2.2" }
-androidx-preference = { module = "androidx.preference:preference", version = "1.2.1" }
 androidx-lifecycle-lifeCycle = { module = "androidx.lifecycle:lifecycle-runtime", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-lifeCycleCompiler = { module = "androidx.lifecycle:lifecycle-compiler", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-lifeCycleLiveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }

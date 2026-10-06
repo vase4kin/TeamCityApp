@@ -24,7 +24,6 @@ import com.github.vase4kin.teamcityapp.dagger.components.DaggerRestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.components.RestApiComponent
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
 import dagger.hilt.EntryPoints
-import teamcityapp.libraries.utils.applyThemeFromSettings
 
 open class TeamCityApplicationBase : Application() {
 
@@ -42,11 +41,6 @@ open class TeamCityApplicationBase : Application() {
 
     val restApiInjector: RestApiComponent
         get() = apiSession.requireGraph()
-
-    override fun onCreate() {
-        super.onCreate()
-        applyThemeFromSettings()
-    }
 
     fun buildRestApiInjectorWithBaseUrl(baseUrl: String) {
         apiSession.rebuild(baseUrl)
