@@ -263,6 +263,9 @@ dependencies {
             exclude(group = "com.google.protobuf", module = "protobuf-lite")
         }
         androidTestImplementation(libs.androidx.test.espresso.web)
+        // Espresso's runtime-only accessibility dependency upgrades Hamcrest to 2.2.
+        // Use its shim on both classpaths so Kotlin cannot call removed 1.3 overloads.
+        androidTestImplementation(libs.hamcrestLibrary)
         // Mockito
         androidTestImplementation(libs.mockito.mockitoAndroid)
         androidTestImplementation(libs.mockito.mockitoKotlin)
