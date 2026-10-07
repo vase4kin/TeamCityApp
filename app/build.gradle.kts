@@ -181,6 +181,9 @@ dependencies {
     implementation(projects.features.bottomSheet.api)
     implementation(projects.features.bottomSheet.impl)
 
+    implementation(projects.features.filterBottomSheet.api)
+    implementation(projects.features.filterBottomSheet.impl)
+
     implementation(projects.features.buildLog.api)
     implementation(projects.features.buildLog.impl)
 

@@ -28,10 +28,10 @@ import androidx.core.view.ViewCompat
 import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.view.FilterBottomSheetDialogFragment
 import com.google.android.material.elevation.ElevationOverlayProvider
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import teamcityapp.features.filter_bottom_sheet.api.FilterBottomSheetNavigation
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.utils.getThemeColor
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
@@ -42,7 +42,7 @@ private const val TIME_PROMPT_DELAY = 500
 /**
  * impl of [HomeView]
  */
-class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
+class HomeViewImpl(private val activity: AppCompatActivity, private val featureNavigation: FilterBottomSheetNavigation) : HomeView {
 
     private lateinit var parentView: View
     private lateinit var fab: FloatingActionButton
@@ -92,7 +92,7 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
      * {@inheritDoc}
      */
     override fun showFilterBottomSheet(filter: Filter) {
-        FilterBottomSheetDialogFragment.createBottomSheetDialog(filter.code)
+        featureNavigation.createBottomSheetDialog(filter.code)
             .show(activity.supportFragmentManager, TAG_BOTTOM_SHEET)
     }
 
