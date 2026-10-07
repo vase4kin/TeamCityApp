@@ -22,6 +22,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
@@ -29,6 +30,7 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.junit.Assert.*
 import org.junit.Rule
@@ -50,6 +52,19 @@ class ManageAccountsScreenTest {
     private val ssl = ManagedAccount(ManagedAccountId("https://server", "Bob"), true, true)
     private val state = ManageAccountsUiState(AccountListUiState.Content(listOf(normal, ssl)))
 
+    @Test fun accountRowSpansTheListAndBothEdgesAreClickable() {
+        val removed = mutableListOf<ManagedAccountId>()
+        compose.setContent { TeamCityTheme { ManageAccountsScreen(state, { removed += it }, {}, {}, {}) } }
+        val listBounds = compose.onNodeWithTag("accounts:list").fetchSemanticsNode().boundsInRoot
+        val row = compose.onNodeWithTag(accountTag(normal.id))
+        val rowBounds = row.fetchSemanticsNode().boundsInRoot
+        assertEquals(listBounds.left, rowBounds.left, 0f)
+        assertEquals(listBounds.right, rowBounds.right, 0f)
+        row.performTouchInput { click(Offset(1f, center.y)) }
+        row.performTouchInput { click(Offset(width - 1f, center.y)) }
+        assertEquals(listOf(normal.id, normal.id), removed)
+    }
+
     @Test fun rowsWithSameServerUseFullIdentityAndWarningHasASeparateAction() {
         val removed = mutableListOf<ManagedAccountId>()
         var warnings = 0
@@ -67,7 +82,7 @@ class ManageAccountsScreenTest {
         var closed = 0
         compose.setContent { TeamCityTheme { ManageAccountsScreen(ManageAccountsUiState(AccountListUiState.Empty), {}, {}, { added++ }, { closed++ }) } }
         compose.onNodeWithTag("accounts:empty").assertExists()
-        compose.onNodeWithContentDescription("Add account").performClick()
+        compose.onNodeWithContentDescription("Add account").assertHeightIsEqualTo(56.dp).performClick()
         compose.onNodeWithContentDescription("Back").performClick()
         assertEquals(1, added)
         assertEquals(1, closed)

@@ -37,25 +37,27 @@ import teamcityapp.libraries.theme.*
 fun FilterBuildsScreen(state: FilterBuildsUiState, onChange: (BuildFilter) -> Unit, onApply: () -> Unit, onClose: () -> Unit, onChooseFilter: () -> Unit, dialog: Boolean = false, onDismissDialog: () -> Unit = {}) {
     val filter = state.filter
     val labels = stringArrayResource(R.array.build_filters)
-    TeamCityScreen(stringResource(R.string.title_filter_builds), onClose, appBarHeight = 56.dp, scrollToolbarWithContent = true, containerColor = MaterialTheme.colorScheme.surface) { modifier ->
+    TeamCityScreen(stringResource(R.string.title_filter_builds), onClose, appBarHeight = 56.dp, scrollToolbarWithContent = true) { modifier ->
         Box(modifier) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("filter-builds:scroll")) {
-                BranchField(state.branches, state.branchesFailed, filter.branch, { onChange(filter.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(if (state.branchesFailed) R.string.text_no_branches_available else R.string.text_no_branches_available_to_filter), stringResource(R.string.hint_default_filter_branch), filter = true)
-                HorizontalDivider()
-                Column(Modifier.fillMaxWidth().clickable(onClick = onChooseFilter).padding(horizontal = 16.dp, vertical = 12.dp).testTag("filter-builds:chooser")) {
-                    Text(stringResource(R.string.text_filters), style = MaterialTheme.typography.bodyLarge)
-                    Text(if (filter.status == BuildStatusFilter.None) stringResource(R.string.text_filters_none) else labels[filter.status.ordinal], style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                HorizontalDivider()
-                TeamCitySwitch(stringResource(R.string.text_switcher_for_personal), filter.personal, { onChange(filter.copy(personal = it)) }, Modifier.padding(horizontal = 16.dp, vertical = 12.dp).testTag("filter-builds:personal"))
-                HorizontalDivider()
-                if (filter.status != BuildStatusFilter.Queued) {
-                    TeamCitySwitch(stringResource(R.string.text_switcher_for_pinned), filter.pinned, { onChange(filter.copy(pinned = it)) }, Modifier.padding(horizontal = 16.dp, vertical = 12.dp).testTag("filter-builds:pinned"))
+                Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+                    BranchField(state.branches, state.branchesFailed, filter.branch, { onChange(filter.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(if (state.branchesFailed) R.string.text_no_branches_available else R.string.text_no_branches_available_to_filter), stringResource(R.string.hint_default_filter_branch), filter = true)
                     HorizontalDivider()
+                    Column(Modifier.fillMaxWidth().clickable(onClick = onChooseFilter).padding(horizontal = 16.dp, vertical = 12.dp).testTag("filter-builds:chooser")) {
+                        Text(stringResource(R.string.text_filters), style = MaterialTheme.typography.bodyLarge)
+                        Text(if (filter.status == BuildStatusFilter.None) stringResource(R.string.text_filters_none) else labels[filter.status.ordinal], style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    HorizontalDivider()
+                    TeamCitySwitch(stringResource(R.string.text_switcher_for_personal), filter.personal, { onChange(filter.copy(personal = it)) }, Modifier.testTag("filter-builds:personal"), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp))
+                    HorizontalDivider()
+                    if (filter.status != BuildStatusFilter.Queued) {
+                        TeamCitySwitch(stringResource(R.string.text_switcher_for_pinned), filter.pinned, { onChange(filter.copy(pinned = it)) }, Modifier.testTag("filter-builds:pinned"), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp))
+                        HorizontalDivider()
+                    }
                 }
-                Spacer(Modifier.fillMaxWidth().height(96.dp).background(MaterialTheme.colorScheme.background))
+                Spacer(Modifier.height(96.dp))
             }
-            ExtendedFloatingActionButton(onApply, Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp).testTag("filter-builds:apply"), shape = RoundedCornerShape(28.dp), containerColor = MaterialTheme.colorScheme.secondary, contentColor = MaterialTheme.colorScheme.onSecondary) {
+            TeamCityExtendedFloatingActionButton(onApply, Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp).testTag("filter-builds:apply")) {
                 Icon(painterResource(R.drawable.ic_done_24px), null)
                 Spacer(Modifier.width(12.dp))
                 Text(stringResource(R.string.text_apply_filters_button).uppercase())

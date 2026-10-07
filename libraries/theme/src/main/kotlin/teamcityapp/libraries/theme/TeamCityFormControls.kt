@@ -30,13 +30,13 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-/** Compact switch geometry matches the existing platform switches. */
+/** Compact switch geometry matches the existing platform switches. [contentPadding] is inside the full-row tap and ripple area. */
 @Composable
-fun TeamCitySwitch(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+fun TeamCitySwitch(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true, contentPadding: PaddingValues = PaddingValues(0.dp)) {
     val colors = MaterialTheme.colorScheme
     val thumb = if (checked) colors.secondary else colors.surface
     val track = if (checked) colors.secondary.copy(alpha = .5f) else colors.onSurface.copy(alpha = .3f)
-    Row(modifier.fillMaxWidth().heightIn(min = 48.dp).toggleable(checked, enabled = enabled, role = Role.Switch, onValueChange = onCheckedChange), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier.fillMaxWidth().toggleable(checked, enabled = enabled, role = Role.Switch, onValueChange = onCheckedChange).padding(contentPadding).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(label, modifier = Modifier.weight(1f).padding(end = 8.dp), style = MaterialTheme.typography.bodyLarge, color = colors.onSurface.copy(alpha = if (enabled) 1f else .38f))
         Canvas(Modifier.size(40.dp, 32.dp)) {
             drawRoundRect(track, topLeft = Offset(3.dp.toPx(), 9.dp.toPx()), size = Size(34.dp.toPx(), 14.dp.toPx()), cornerRadius = CornerRadius(7.dp.toPx()))
