@@ -5,6 +5,7 @@ jacoco = "0.8.14"
 androidx-lifecycle = "2.11.0"
 androidx-test = "1.7.0"
 espresso = "3.7.0"
+hamcrest = "2.2"
 mockito = "5.24.0"
 okhttp = "5.4.0"
 retrofit = "3.0.0"
@@ -62,6 +63,7 @@ mugen = { module = "com.vinaysshenoy:mugen", version = "1.0.3" }
 fragNav = { module = "com.github.ncapdevi:fragnav", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
+hamcrestLibrary = { module = "org.hamcrest:hamcrest-library", version.ref = "hamcrest" }
 androidx-fragment = { module = "androidx.fragment:fragment", version = "1.5.4" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version = "1.8.0" }
 androidx-cardView = { module = "androidx.cardview:cardview", version = "1.0.0" }
