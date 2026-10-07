@@ -46,10 +46,7 @@
             android:name=".navigation.view.NavigationActivity"
             android:label="@string/title_activity_navigation"
             android:theme="@style/Theme.MyApp" />
-        <activity
-            android:name=".account.create.view.CreateAccountActivity"
-            android:label="@string/title_activity_create_account"
-            android:theme="@style/Theme.MyApp" />
+
         <activity
             android:name=".runbuild.view.RunBuildActivity"
             android:label="@string/title_run_build"

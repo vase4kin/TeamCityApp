@@ -32,7 +32,6 @@
     <string name="title_activity_build_list">Builds</string>
     <string name="title_activity_build">Build</string>
     <string name="title_activity_navigation">Project/BuildType</string>
-    <string name="title_activity_create_account">Create account</string>
 
     <!--Build tabs-->
     <string name="tab_overview">Overview</string>
@@ -44,17 +43,9 @@
     <string name="tab_snapshot_dependencies">Snapshot dependencies</string>
 
     <!--progress creating new account dialog-->
-    <string name="progress_dialog_title">Checking</string>
     <string name="progress_dialog_content">Please wait…</string>
 
     <!--create new account dialog-->
-    <string name="add_new_account_dialog_title">Add user account</string>
-    <string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
-    <string name="add_new_account_dialog_create_account_button_text">Add</string>
-
-    <string name="discard_dialog_content">Discard user account?</string>
-    <string name="discard_dialog_positive_button_text">Discard</string>
-    <string name="discard_dialog_negative_button_text">Cancel</string>
 
     <!--Download artifact dialog -->
     <string name="download_artifact_dialog_title">Downloading artifact file..</string>
@@ -119,15 +110,9 @@
     <string name="build_element_copy_text">Text copied!</string>
 
     <!--Create account values-->
-    <string name="server_field_hint">TeamCity server url</string>
-    <string name="server_cannot_be_empty">Server url cannot be empty</string>
     <string name="server_no_such_server">No TeamCity server associated with hostname</string>
     <string name="server_correct_url">Please provide correct server url</string>
-    <string name="server_check_url">Please check server url</string>
-    <string name="server_password_cannot_be_empty">Password cannot be empty</string>
-    <string name="server_user_name_cannot_be_empty">Username cannot be empty</string>
     <string name="server_not_secure_http">Using http is insecure and it\'s recommend to use https instead. Use your favorite search engine to get more information about this topic.</string>
-    <string name="error_save_account">Could not save user. Please try again</string>
 
     <!--Tests-->
     <string name="text_passed">Passed (%d)</string>
@@ -144,13 +129,7 @@
     <string name="text_browse_build_log_button">Open in the web browser</string>
 
     <!--Login activity-->
-    <string name="text_teamcity_url">https://</string>
-    <string name="text_guest_user_switch">Login as guest user</string>
-    <string name="text_disable_ssl_switch">Ignore SSL issues</string>
     <string name="text_try_it_out_button">Try it out</string>
-    <string name="hint_user_name">Username</string>
-    <string name="hint_password">Password</string>
-    <string name="warning_ssl_dialog_negative">Cancel</string>
 
     <!--Run build activity-->
     <string name="title_run_build">Run build</string>

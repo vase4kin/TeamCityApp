@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 Andrey Tolpeev
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+<string name="progress_dialog_title">Checking</string>
+<string name="progress_dialog_content">Please wait…</string>
+<string name="add_new_account_dialog_title">Add user account</string>
+<string name="add_new_account_dialog_account_exist_error_message">Account with such teamcity url already exist!</string>
+<string name="add_new_account_dialog_create_account_button_text">Add</string>
+<string name="discard_dialog_content">Discard user account?</string>
+<string name="discard_dialog_positive_button_text">Discard</string>
+<string name="discard_dialog_negative_button_text">Cancel</string>
+    <string name="title_activity_create_account">Create account</string>
+</resources>

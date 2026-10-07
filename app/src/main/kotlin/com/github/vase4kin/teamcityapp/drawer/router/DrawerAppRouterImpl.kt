@@ -17,10 +17,10 @@
 package com.github.vase4kin.teamcityapp.drawer.router
 
 import android.app.Activity
-import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutNavigation
+import teamcityapp.features.create_account.api.navigation.CreateAccountNavigation
 import teamcityapp.features.drawer.api.router.DrawerAppRouter
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsNavigation
 import teamcityapp.features.settings.api.navigation.SettingsNavigation
@@ -28,7 +28,8 @@ import teamcityapp.features.settings.api.navigation.SettingsNavigation
 class DrawerAppRouterImpl @Inject constructor(
     private val aboutNavigation: AboutNavigation,
     private val settingsNavigation: SettingsNavigation,
-    private val manageAccountsNavigation: ManageAccountsNavigation
+    private val manageAccountsNavigation: ManageAccountsNavigation,
+    private val createAccountNavigation: CreateAccountNavigation
 ) : DrawerAppRouter {
 
     override fun openAbout(activity: Activity) {
@@ -36,7 +37,7 @@ class DrawerAppRouterImpl @Inject constructor(
     }
 
     override fun openAddAccount(activity: Activity) {
-        CreateAccountActivity.start(
+        createAccountNavigation.open(
             activity
         )
     }
