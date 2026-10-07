@@ -39,10 +39,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import teamcityapp.libraries.resources.R as SharedR
 
 private val LocalDarkTheme = staticCompositionLocalOf { false }
@@ -50,10 +52,28 @@ private val LocalDarkTheme = staticCompositionLocalOf { false }
 enum class ScreenNavigation { Back, Close }
 
 @Composable
-fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) DarkColorScheme else LightColorScheme
+fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), legacyColors: Boolean = false, content: @Composable () -> Unit) {
+    val baseColors = if (darkTheme) DarkColorScheme else LightColorScheme
+    val colors = if (legacyColors) {
+        baseColors.copy(
+            surface = Color(if (darkTheme) 0xFF121212 else 0xFFFFFFFF),
+            background = Color(if (darkTheme) 0xFF000000 else 0xFFF5F5F5),
+            onSurface = Color(if (darkTheme) 0xFFFFFFFF else 0xFF000000),
+            onBackground = Color(if (darkTheme) 0xFFFFFFFF else 0xFF000000),
+            onSurfaceVariant = Color(if (darkTheme) 0xFFB3B3B3 else 0xFF616161),
+            outline = (if (darkTheme) Color.White else Color.Black).copy(alpha = .38f),
+            outlineVariant = (if (darkTheme) Color.White else Color.Black).copy(alpha = .12f),
+            surfaceContainer = Color(if (darkTheme) 0xFF121212 else 0xFFFFFFFF),
+            surfaceContainerHigh = Color(if (darkTheme) 0xFF121212 else 0xFFFFFFFF),
+            secondary = Color(if (darkTheme) 0xFF80DEEA else 0xFF03DAC6),
+            onSecondary = if (darkTheme) Color.Black else Color.White,
+            error = Color(if (darkTheme) 0xFFCF6679 else 0xFFB00020)
+        )
+    } else {
+        baseColors
+    }
     CompositionLocalProvider(LocalDarkTheme provides darkTheme) {
-        MaterialTheme(colorScheme = colors, typography = TeamCityTypography, content = content)
+        MaterialTheme(colorScheme = colors, typography = if (legacyColors) TeamCityTypography.copy(headlineSmall = TeamCityTypography.headlineSmall.copy(fontSize = 20.sp, lineHeight = 28.sp, fontWeight = FontWeight.Medium)) else TeamCityTypography, content = content)
     }
 }
 
@@ -69,6 +89,7 @@ fun TeamCityScreen(
     titleStartPadding: Dp = 0.dp,
     appBarColors: TopAppBarColors? = null,
     containerColor: Color = MaterialTheme.colorScheme.background,
+    actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {},
     content: @Composable (Modifier) -> Unit
 ) {
     val scrollBehavior = if (scrollToolbarWithContent) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
@@ -115,6 +136,7 @@ fun TeamCityScreen(
                             }
                         }
                     },
+                    actions = actions,
                     colors = colors,
                     scrollBehavior = scrollBehavior
                 )

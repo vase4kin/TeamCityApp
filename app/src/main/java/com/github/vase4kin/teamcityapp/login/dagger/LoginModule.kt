@@ -4,7 +4,7 @@ import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
+import teamcityapp.libraries.remote.url.UrlFormatter
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl

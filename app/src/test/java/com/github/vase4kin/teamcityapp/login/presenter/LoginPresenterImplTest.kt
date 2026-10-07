@@ -18,7 +18,7 @@ package com.github.vase4kin.teamcityapp.login.presenter
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView

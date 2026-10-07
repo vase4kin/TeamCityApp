@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.account.create.presenter
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView

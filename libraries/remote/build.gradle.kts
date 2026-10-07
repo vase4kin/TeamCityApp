@@ -18,6 +18,7 @@ import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     id("teamcityapp.android.library")
+    id("teamcityapp.android.hilt")
 }
 
 extensions.configure<LibraryExtension> {
@@ -25,5 +26,11 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
+    kapt(libs.dagger.compiler)
+    testImplementation(libs.junit)
+    testImplementation(libs.hamcrestJunit)
+    testImplementation(libs.robolectric)
     implementation(libs.kotlin.stdlib)
 }
+
+tasks.withType<Test>().configureEach { systemProperty("robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2") }

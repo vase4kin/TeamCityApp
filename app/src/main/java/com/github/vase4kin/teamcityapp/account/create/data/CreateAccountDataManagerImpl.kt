@@ -15,13 +15,14 @@
  */
 
 package com.github.vase4kin.teamcityapp.account.create.data
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
+import teamcityapp.libraries.remote.url.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.AUTHORIZATION
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.crashlytics.FirebaseCrashlytics

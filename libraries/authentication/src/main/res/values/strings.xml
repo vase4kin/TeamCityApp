@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 Andrey Tolpeev
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+<string name="server_field_hint">TeamCity server url</string>
+<string name="server_cannot_be_empty">Server url cannot be empty</string>
+<string name="server_no_such_server">No TeamCity server associated with hostname</string>
+<string name="server_correct_url">Please provide correct server url</string>
+<string name="server_check_url">Please check server url</string>
+<string name="server_password_cannot_be_empty">Password cannot be empty</string>
+<string name="server_user_name_cannot_be_empty">Username cannot be empty</string>
+<string name="server_not_secure_http">Using http is insecure and it\'s recommend to use https instead. Use your favorite search engine to get more information about this topic.</string>
+<string name="error_save_account">Could not save user. Please try again</string>
+<string name="text_teamcity_url">https://</string>
+<string name="text_guest_user_switch">Login as guest user</string>
+<string name="text_disable_ssl_switch">Ignore SSL issues</string>
+<string name="hint_user_name">Username</string>
+<string name="hint_password">Password</string>
+<string name="warning_ssl_dialog_negative">Cancel</string>
+<string name="warning_ssl_dialog_title">Warning</string>
+<string name="warning_ssl_dialog_content">Ignoring SSL certificate validity is incredibly dangerous and opens up the app for all kinds of security problems. Specifically, making the app vulnerable to <a href="https://en.wikipedia.org/wiki/Man-in-the-middle_attack">man-in-the-middle attacks</a>. Use it on your own risk!</string>
+<string name="dialog_ok_title">OK</string>
+</resources>

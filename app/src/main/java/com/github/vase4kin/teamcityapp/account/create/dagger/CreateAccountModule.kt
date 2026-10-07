@@ -6,7 +6,7 @@ import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataMana
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModelImpl
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
+import teamcityapp.libraries.remote.url.UrlFormatter
 import com.github.vase4kin.teamcityapp.account.create.presenter.CreateAccountPresenterImpl
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouterImpl

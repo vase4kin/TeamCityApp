@@ -16,23 +16,23 @@
 
 package com.github.vase4kin.teamcityapp.dagger.modules
 
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.RepositoryImpl
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.scopes.UserScope
-import dagger.hilt.migration.DisableInstallInCheck
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.migration.DisableInstallInCheck
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Named
-import kotlinx.coroutines.CoroutineDispatcher
 import teamcityapp.libraries.coroutines.IoDispatcher
+import teamcityapp.libraries.remote.url.UrlFormatter
 
 @DisableInstallInCheck
 @Module
@@ -40,15 +40,13 @@ class RestApiModule(private val baseUrl: String) {
 
     @Provides
     @UserScope
-    internal fun provideTeamCityService(@Named(CLIENT_AUTH) okHttpClient: OkHttpClient): TeamCityService {
-        return Retrofit.Builder()
-            .baseUrl(baseUrl)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(okHttpClient)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-            .create(TeamCityService::class.java)
-    }
+    internal fun provideTeamCityService(@Named(CLIENT_AUTH) okHttpClient: OkHttpClient): TeamCityService = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .client(okHttpClient)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .build()
+        .create(TeamCityService::class.java)
 
     @Provides
     @UserScope
@@ -57,7 +55,5 @@ class RestApiModule(private val baseUrl: String) {
         cacheProviders: CacheProviders,
         urlFormatter: UrlFormatter,
         @IoDispatcher ioDispatcher: CoroutineDispatcher
-    ): Repository {
-        return RepositoryImpl(teamCityService, cacheProviders, urlFormatter, ioDispatcher)
-    }
+    ): Repository = RepositoryImpl(teamCityService, cacheProviders, urlFormatter, ioDispatcher)
 }

@@ -16,30 +16,30 @@
 
 package com.github.vase4kin.teamcityapp.api
 
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
-import teamcityapp.features.test_details.repository.models.TestOccurrence
-import io.rx_cache2.DynamicKey
-import org.mockito.kotlin.any
-import org.mockito.kotlin.eq
-import org.mockito.kotlin.argumentCaptor
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
+import io.rx_cache2.DynamicKey
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
 import org.junit.Assert.*
-import org.mockito.Mockito.`when`
-import org.mockito.Mockito.verify
-import teamcityapp.features.about.api.AboutServerInfo
-import teamcityapp.features.about.repository.models.ServerInfo
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import teamcityapp.features.about.api.AboutServerInfo
+import teamcityapp.features.about.repository.models.ServerInfo
+import teamcityapp.features.test_details.repository.models.TestOccurrence
+import teamcityapp.libraries.remote.url.UrlFormatter
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(MockitoJUnitRunner::class)
@@ -47,8 +47,10 @@ class RepositoryImplTest {
 
     @Mock
     private lateinit var teamCityService: TeamCityService
+
     @Mock
     private lateinit var cacheProviders: CacheProviders
+
     @Mock
     private lateinit var urlFormatter: UrlFormatter
     private lateinit var repository: RepositoryImpl
@@ -86,7 +88,10 @@ class RepositoryImplTest {
         val cachedRequest = SingleSubject.create<ServerInfo>()
         `when`(teamCityService.serverInfo()).thenReturn(upstream)
         `when`(cacheProviders.serverInfo(upstream)).thenReturn(cachedRequest)
-        val job = launch { repository.serverInfo(); fail("Canceled request must not return content") }
+        val job = launch {
+            repository.serverInfo()
+            fail("Canceled request must not return content")
+        }
         runCurrent()
         assertTrue(cachedRequest.hasObservers())
         job.cancel()
@@ -111,7 +116,10 @@ class RepositoryImplTest {
 
     @Test fun serverInfoStartsOnInjectedDispatcher() = runTest {
         val queuedRepository = RepositoryImpl(
-            teamCityService, cacheProviders, urlFormatter, StandardTestDispatcher(testScheduler)
+            teamCityService,
+            cacheProviders,
+            urlFormatter,
+            StandardTestDispatcher(testScheduler)
         )
         val info = ServerInfo("2026.1", "https://teamcity.example")
         val upstream = Single.just(info)
@@ -144,7 +152,10 @@ class RepositoryImplTest {
         `when`(urlFormatter.formatBasicUrl("/test")).thenReturn("/guestAuth/test")
         `when`(teamCityService.testOccurrence("/guestAuth/test")).thenReturn(upstream)
         `when`(cacheProviders.testOccurrence(eq(upstream), any<DynamicKey>())).thenReturn(pending)
-        val job = launch { repository.testDetails("/test"); fail("Canceled request must not return") }
+        val job = launch {
+            repository.testDetails("/test")
+            fail("Canceled request must not return")
+        }
         runCurrent()
         assertTrue(pending.hasObservers())
         job.cancel()
@@ -161,9 +172,14 @@ class RepositoryImplTest {
         `when`(cacheProviders.testOccurrence(eq(upstream), any<DynamicKey>()))
             .thenReturn(Single.just(TestOccurrence()), Single.error(IllegalStateException("offline")))
         assertEquals("", repository.testDetails("/test"))
-        try { repository.testDetails("/test"); fail("Expected error") }
-        catch (error: IllegalStateException) { assertEquals("offline", error.message) }
+        try {
+            repository.testDetails("/test")
+            fail("Expected error")
+        } catch (error: IllegalStateException) {
+            assertEquals("offline", error.message)
+        }
     }
+
     @Test fun testDetailsStartsOnInjectedDispatcher() = runTest {
         val queuedRepository = RepositoryImpl(teamCityService, cacheProviders, urlFormatter, StandardTestDispatcher(testScheduler))
         val upstream = Single.just(TestOccurrence("details"))
