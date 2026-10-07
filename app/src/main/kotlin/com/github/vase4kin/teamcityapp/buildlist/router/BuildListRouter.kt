@@ -17,7 +17,7 @@
 package com.github.vase4kin.teamcityapp.buildlist.router
 
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
+import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
 
 /**
  * Build list router
@@ -33,14 +33,14 @@ interface BuildListRouter {
     fun openBuildPage(build: Build, buildTypeName: String?)
 
     /**
-     * Open run build page [com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity]
+     * Open run build page [teamcityapp.features.run_build.api.navigation.RunBuildNavigation]
      *
      * @param buildTypeId - Build type id
      */
     fun openRunBuildPage(buildTypeId: String)
 
     /**
-     * Open filter builds page [FilterBuildsActivity]
+     * Open filter builds page [FilterBuildsNavigation]
      *
      * @param buildTypeId - Build type id
      */

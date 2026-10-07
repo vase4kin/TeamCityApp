@@ -38,8 +38,8 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
@@ -47,12 +47,9 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchHomeToolb
 import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
-import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.whenever
-import io.reactivex.Single
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import io.reactivex.Single
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
@@ -63,6 +60,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
+import teamcityapp.features.filter_builds.api.BuildStatusFilter
 
 @Ignore("https://github.com/vase4kin/TeamCityApp/issues/362")
 @HiltAndroidTest
@@ -129,7 +129,7 @@ class RunningBuildsFragmentTest {
     fun testUserCanSeeSuccessFullyLoadedRunningBuilds() {
         // Favorites two builds
         val locator = BuildListFilterImpl().apply {
-            setFilter(FilterBuildsView.FILTER_RUNNING)
+            setFilter(BuildStatusFilter.Running.ordinal)
         }.toLocator()
         val buildTypeId1 = "id1"
         val buildTypeId2 = "id2"

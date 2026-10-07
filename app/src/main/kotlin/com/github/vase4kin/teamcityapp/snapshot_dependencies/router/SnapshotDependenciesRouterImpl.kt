@@ -24,8 +24,8 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouterImpl
 /**
  * Router for snapshot dependencies build list
  */
-class SnapshotDependenciesRouterImpl(activity: Activity, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation) :
-    BuildListRouterImpl(activity, runBuild),
+class SnapshotDependenciesRouterImpl(activity: Activity, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation, filterBuilds: teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation) :
+    BuildListRouterImpl(activity, runBuild, filterBuilds),
     SnapshotDependenciesRouter {
 
     /**

@@ -16,14 +16,14 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.filter
 
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
+import teamcityapp.features.filter_builds.api.BuildStatusFilter
 
 /**
  * Impl of [BuildListFilter]
  */
 class BuildListFilterImpl : BuildListFilter {
 
-    private var filterType: Int = FilterBuildsView.FILTER_NONE
+    private var filterType: Int = BuildStatusFilter.None.ordinal
     private var branch: String? = null
     private var isPersonal = false
     private var isPinned = false
@@ -62,14 +62,14 @@ class BuildListFilterImpl : BuildListFilter {
     override fun toLocator(): String {
         val locatorBuilder = StringBuilder()
         when (filterType) {
-            FilterBuildsView.FILTER_SUCCESS -> locatorBuilder.append("status:SUCCESS")
-            FilterBuildsView.FILTER_FAILED -> locatorBuilder.append("status:FAILURE")
-            FilterBuildsView.FILTER_ERROR -> locatorBuilder.append("status:ERROR")
-            FilterBuildsView.FILTER_CANCELLED -> locatorBuilder.append("canceled:true")
-            FilterBuildsView.FILTER_FAILED_TO_START -> locatorBuilder.append("failedToStart:true")
-            FilterBuildsView.FILTER_RUNNING -> locatorBuilder.append("running:true")
-            FilterBuildsView.FILTER_QUEUED -> locatorBuilder.append("state:queued")
-            FilterBuildsView.FILTER_NONE -> locatorBuilder.append("state:any,canceled:any,failedToStart:any")
+            BuildStatusFilter.Success.ordinal -> locatorBuilder.append("status:SUCCESS")
+            BuildStatusFilter.Failed.ordinal -> locatorBuilder.append("status:FAILURE")
+            BuildStatusFilter.Error.ordinal -> locatorBuilder.append("status:ERROR")
+            BuildStatusFilter.Cancelled.ordinal -> locatorBuilder.append("canceled:true")
+            BuildStatusFilter.FailedToStart.ordinal -> locatorBuilder.append("failedToStart:true")
+            BuildStatusFilter.Running.ordinal -> locatorBuilder.append("running:true")
+            BuildStatusFilter.Queued.ordinal -> locatorBuilder.append("state:queued")
+            BuildStatusFilter.None.ordinal -> locatorBuilder.append("state:any,canceled:any,failedToStart:any")
             else -> locatorBuilder.append("state:any,canceled:any,failedToStart:any")
         }
         locatorBuilder.append(",")
@@ -86,16 +86,16 @@ class BuildListFilterImpl : BuildListFilter {
         locatorBuilder.append("pinned:")
         // Queued builds can be shown if only pinned:any, because queued builds can't be pinned
         // ONLY DO SO FOR QUEUED BUILDS FILTER (For now it's expected behavior)
-        if (filterType == FilterBuildsView.FILTER_QUEUED) {
+        if (filterType == BuildStatusFilter.Queued.ordinal) {
             locatorBuilder.append("any")
         } else {
             locatorBuilder.append(isPinned)
         }
         // Remove count for queued and running build cause they don't have next href
-        if (filterType == FilterBuildsView.FILTER_RUNNING) {
+        if (filterType == BuildStatusFilter.Running.ordinal) {
             return locatorBuilder.toString()
         }
-        if (filterType == FilterBuildsView.FILTER_QUEUED) {
+        if (filterType == BuildStatusFilter.Queued.ordinal) {
             return locatorBuilder.toString()
         }
         locatorBuilder.append(",")

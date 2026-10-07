@@ -84,7 +84,7 @@ object BuildQueueFragmentModule {
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesBuildListRouter(fragment: BuildQueueFragment, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation): BuildListRouter = BuildListRouterImpl(fragment.requireActivity(), runBuild)
+    fun providesBuildListRouter(fragment: BuildQueueFragment, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation, filterBuilds: teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation): BuildListRouter = BuildListRouterImpl(fragment.requireActivity(), runBuild, filterBuilds)
 
     @Provides
     @Named("BuildQueueFragment")

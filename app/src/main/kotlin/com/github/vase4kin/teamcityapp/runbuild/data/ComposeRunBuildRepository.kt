@@ -24,11 +24,14 @@ import javax.inject.Provider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.rx2.await
 import retrofit2.HttpException
+import teamcityapp.features.filter_builds.api.FilterBuildsRepository
 import teamcityapp.features.properties.repository.models.Properties
 import teamcityapp.features.run_build.api.*
 
 /** Resolve the account repository per operation. Await also cancels the legacy Rx subscription. */
-class ComposeRunBuildRepository @Inject constructor(private val repositories: Provider<Repository>) : RunBuildRepository {
+class ComposeRunBuildRepository @Inject constructor(private val repositories: Provider<Repository>) :
+    RunBuildRepository,
+    FilterBuildsRepository {
     override suspend fun branches(buildTypeId: String): List<String> = repositories.get().listBranches(buildTypeId).await().branches.map { it.name }
     override suspend fun agents(buildTypeId: String): List<BuildAgent> {
         val repository = repositories.get()
