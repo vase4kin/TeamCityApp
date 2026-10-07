@@ -34,7 +34,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity
 import com.github.vase4kin.teamcityapp.splash.dagger.SplashRepositoryModule
 import dagger.hilt.android.testing.*
 import java.util.concurrent.atomic.AtomicInteger
@@ -44,6 +43,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import teamcityapp.features.login.impl.LoginActivity
 import teamcityapp.features.splash.api.*
 
 @HiltAndroidTest

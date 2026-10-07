@@ -19,16 +19,16 @@ package com.github.vase4kin.teamcityapp.splash.router
 
 import android.app.Activity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity
 import javax.inject.Inject
+import teamcityapp.features.login.api.navigation.LoginNavigation
 import teamcityapp.features.splash.api.SplashDestination
 import teamcityapp.features.splash.api.router.SplashAppRouter
 
-class SplashAppRouterImpl @Inject constructor() : SplashAppRouter {
+class SplashAppRouterImpl @Inject constructor(private val loginNavigation: LoginNavigation) : SplashAppRouter {
     override fun open(activity: Activity, destination: SplashDestination) {
         when (destination) {
             SplashDestination.Home -> HomeActivity.start(activity)
-            SplashDestination.Login -> LoginActivity.start(activity)
+            SplashDestination.Login -> loginNavigation.open(activity)
         }
     }
 }

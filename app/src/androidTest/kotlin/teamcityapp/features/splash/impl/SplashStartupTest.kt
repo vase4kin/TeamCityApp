@@ -18,12 +18,11 @@ package teamcityapp.features.splash.impl
 
 import android.content.ComponentName
 import android.content.Intent
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -64,7 +63,7 @@ class SplashStartupTest {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         instrumentation.runOnMainSync {
             val monitor = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-            androidx.test.runner.lifecycle.Stage.values().flatMap { monitor.getActivitiesInStage(it) }.distinct().filter { it is com.github.vase4kin.teamcityapp.home.view.HomeActivity || it is com.github.vase4kin.teamcityapp.login.view.LoginActivity }.forEach { it.finish() }
+            androidx.test.runner.lifecycle.Stage.values().flatMap { monitor.getActivitiesInStage(it) }.distinct().filter { it is com.github.vase4kin.teamcityapp.home.view.HomeActivity || it is teamcityapp.features.login.impl.LoginActivity }.forEach { it.finish() }
         }
         instrumentation.waitForIdleSync()
     }
@@ -73,7 +72,7 @@ class SplashStartupTest {
     @Test fun emptyStoreOpensTheExistingLoginScreen() {
         launch().use { scenario ->
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
-            onView(withText(R.string.text_app_description)).check(matches(isDisplayed()))
+            compose.onNodeWithText(app.getString(teamcityapp.features.login.impl.R.string.text_app_description)).assertIsDisplayed()
         }
     }
 

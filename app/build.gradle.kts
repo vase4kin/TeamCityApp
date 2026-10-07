@@ -180,6 +180,8 @@ dependencies {
     implementation(projects.features.properties.impl)
 
     implementation(projects.libraries.authentication)
+    implementation(projects.features.login.api)
+    implementation(projects.features.login.impl)
 
     // Android support libraries
     implementation(libs.androidx.appcompat)
