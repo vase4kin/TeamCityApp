@@ -62,7 +62,7 @@ object SnapshotDependenciesModule {
     fun provideOwner(owner: Fragment): SnapshotDependenciesFragment = owner.requireScreenOwner<SnapshotDependenciesFragment>()
 
     @Provides
-    fun providesBuildListRouter(fragment: SnapshotDependenciesFragment): SnapshotDependenciesRouter = SnapshotDependenciesRouterImpl(fragment.requireActivity())
+    fun providesBuildListRouter(fragment: SnapshotDependenciesFragment, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation): SnapshotDependenciesRouter = SnapshotDependenciesRouterImpl(fragment.requireActivity(), runBuild)
 
     @Provides
     fun providesBuildListValueExtractor(fragment: SnapshotDependenciesFragment): SnapshotDependenciesValueExtractor = SnapshotDependenciesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)

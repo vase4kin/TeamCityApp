@@ -47,10 +47,7 @@
             android:label="@string/title_activity_navigation"
             android:theme="@style/Theme.MyApp" />
 
-        <activity
-            android:name=".runbuild.view.RunBuildActivity"
-            android:label="@string/title_run_build"
-            android:theme="@style/Theme.MyApp" />
+
         <activity
             android:name=".filter_builds.view.FilterBuildsActivity"
             android:label="@string/title_filter_builds"

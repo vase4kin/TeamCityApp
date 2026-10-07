@@ -84,7 +84,7 @@ object RunningBuildsFragmentModule {
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesBuildListRouter(fragment: RunningBuildsFragment): BuildListRouter = BuildListRouterImpl(fragment.requireActivity())
+    fun providesBuildListRouter(fragment: RunningBuildsFragment, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation): BuildListRouter = BuildListRouterImpl(fragment.requireActivity(), runBuild)
 
     @Provides
     @Named("RunningBuildsFragment")
