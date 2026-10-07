@@ -93,9 +93,6 @@
 
     <!--Artifact-->
     <!--bottom sheet menu-->
-    <string name="artifact_download">Download</string>
-    <string name="artifact_open">Open</string>
-    <string name="artifact_open_in_browser">Open in browser</string>
     <!--permissions dialog-->
     <string name="permissions_dialog_title">Permissions warning</string>
     <string name="permissions_dialog_content">In order to download artifact the app requires to have WRITE_EXTERNAL_STORAGE permissions granted.</string>
@@ -103,10 +100,6 @@
     <string name="permissions_dialog_text_no_permissions">The download artifacts functionality is disabled. Please enable required permissions.</string>
 
     <!--Build element-->
-    <string name="build_element_copy">Copy</string>
-    <string name="build_element_show_all_builds_built_branch">Show builds built on this branch</string>
-    <string name="build_element_open_build_type">Open configuration</string>
-    <string name="build_element_open_project">Open project</string>
     <string name="build_element_copy_text">Text copied!</string>
 
     <!--Create account values-->

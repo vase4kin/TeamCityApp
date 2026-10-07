@@ -66,8 +66,9 @@ object OverviewModule {
     @Provides
     fun providesBaseListView(
         adapter: OverviewAdapter,
-        fragment: OverviewFragment
-    ): OverviewView = OverviewViewImpl(fragment.requireView(), fragment.requireActivity().requireScreenOwner<AppCompatActivity>(), adapter)
+        fragment: OverviewFragment,
+        featureNavigation: teamcityapp.features.bottom_sheet.api.BottomSheetNavigation
+    ): OverviewView = OverviewViewImpl(fragment.requireView(), fragment.requireActivity().requireScreenOwner<AppCompatActivity>(), adapter, featureNavigation)
 
     @Provides
     fun providesOverviewAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<OverviewDataModel>>): OverviewAdapter = OverviewAdapter(viewHolderFactories)

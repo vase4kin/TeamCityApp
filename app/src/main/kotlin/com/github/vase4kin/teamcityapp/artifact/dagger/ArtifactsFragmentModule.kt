@@ -76,12 +76,14 @@ object ArtifactsFragmentModule {
     @Named("ArtifactListFragment")
     fun providesArtifactView(
         fragment: ArtifactListFragment,
-        @Named("ArtifactListFragment") adapter: ArtifactAdapter
+        @Named("ArtifactListFragment") adapter: ArtifactAdapter,
+        featureNavigation: teamcityapp.features.bottom_sheet.api.BottomSheetNavigation
     ): ArtifactView = ArtifactViewImpl(
         fragment.requireView(),
         fragment.requireActivity(),
         R.string.empty_list_message_artifacts,
-        adapter
+        adapter,
+        featureNavigation
     )
 
     @Provides

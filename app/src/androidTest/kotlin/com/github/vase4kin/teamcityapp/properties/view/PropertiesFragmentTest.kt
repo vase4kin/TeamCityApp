@@ -40,11 +40,11 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import io.reactivex.Single
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import io.reactivex.Single
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -65,6 +65,16 @@ private const val TIMEOUT = 5000
 @RunWith(AndroidJUnit4::class)
 class PropertiesFragmentTest {
 
+    private fun clickSheetAction(label: String) {
+        compose.waitUntil(5_000) {
+            compose.onAllNodesWithText(label).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        compose.onNodeWithText(label).performClick()
+        compose.waitUntil(5_000) {
+            compose.onAllNodesWithTag("sheet:content").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
+        }
+    }
+
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -82,7 +92,9 @@ class PropertiesFragmentTest {
     val activityRule: CustomActivityTestRule<BuildDetailsActivity> =
         CustomActivityTestRule(BuildDetailsActivity::class.java)
 
-    @JvmField @Rule(order = 4) val compose = createEmptyComposeRule()
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -229,26 +241,8 @@ class PropertiesFragmentTest {
         // Click on parameter
         compose.onNodeWithTag("properties:row:0").performClick()
 
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String {
-                return "The parameters menu is not opened"
-            }
-
-            override fun checkCondition(): Boolean {
-                var isParameterClicked = false
-                try {
-                    onView(withText(R.string.build_element_copy)).check(matches(isDisplayed()))
-                    isParameterClicked = true
-                } catch (ignored: Exception) {
-                    compose.onNodeWithTag("properties:row:0").performClick()
-                }
-
-                return isParameterClicked
-            }
-        })
-
         // Clicking on copy
-        onView(withText(R.string.build_element_copy)).perform(click())
+        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.build_element_copy))
 
         // Checking toast message
         onView(withText(R.string.build_element_copy_text))

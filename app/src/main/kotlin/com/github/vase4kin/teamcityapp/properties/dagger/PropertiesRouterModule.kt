@@ -31,5 +31,5 @@ import teamcityapp.libraries.utils.requireScreenOwner
 object PropertiesRouterModule {
 
     @Provides
-    fun provideRouter(fragment: Fragment): PropertiesRouter = PropertiesRouterImpl(fragment.requireScreenOwner<PropertiesFragment>())
+    fun provideRouter(fragment: Fragment, featureNavigation: teamcityapp.features.bottom_sheet.api.BottomSheetNavigation): PropertiesRouter = PropertiesRouterImpl(fragment.requireScreenOwner<PropertiesFragment>(), featureNavigation)
 }

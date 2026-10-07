@@ -27,10 +27,10 @@ import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListViewImpl
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.utils.createProgressDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import teamcityapp.features.bottom_sheet.api.BottomSheetNavigation
+import teamcityapp.features.bottom_sheet.api.SheetMenuType
 
 private const val TAG_BOTTOM_SHEET = "Tag bottom sheet"
 
@@ -41,7 +41,8 @@ class ArtifactViewImpl(
     view: View,
     activity: Activity,
     @StringRes emptyMessage: Int,
-    adapter: ArtifactAdapter
+    adapter: ArtifactAdapter,
+    private val featureNavigation: BottomSheetNavigation
 ) : BaseListViewImpl<ArtifactDataModel, ArtifactAdapter>(view, activity, emptyMessage, adapter),
     ArtifactView {
 
@@ -96,10 +97,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showFullBottomSheet(artifactFile: File) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             artifactFile.name,
             arrayOf(artifactFile.content.href, artifactFile.children!!.href),
-            MenuItemsFactory.TYPE_ARTIFACT_FULL
+            SheetMenuType.ArtifactFull
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
@@ -111,10 +112,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showFolderBottomSheet(artifactFile: File) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             artifactFile.name,
             artifactFile.children!!.href,
-            MenuItemsFactory.TYPE_ARTIFACT_FOLDER
+            SheetMenuType.ArtifactFolder
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
@@ -126,10 +127,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showBrowserBottomSheet(artifactFile: File) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             artifactFile.name,
             arrayOf(artifactFile.content.href, artifactFile.href),
-            MenuItemsFactory.TYPE_ARTIFACT_BROWSER
+            SheetMenuType.ArtifactBrowser
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
@@ -141,10 +142,10 @@ class ArtifactViewImpl(
      * {@inheritDoc}
      */
     override fun showDefaultBottomSheet(artifactFile: File) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             artifactFile.name,
             artifactFile.content.href,
-            MenuItemsFactory.TYPE_ARTIFACT_DEFAULT
+            SheetMenuType.ArtifactDefault
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
