@@ -29,10 +29,9 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl
 import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
-import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 import teamcityapp.libraries.utils.initToolbar
 
 /**
@@ -65,9 +64,9 @@ class BuildListActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         // Move that logic to presenter
         if (resultCode != Activity.RESULT_OK) return
-        if (requestCode == RunBuildActivity.REQUEST_CODE) {
+        if (requestCode == RunBuildNavigation.REQUEST_CODE) {
             presenter.onRunBuildActivityResult(
-                data?.getStringExtra(RunBuildRouter.EXTRA_HREF) ?: ""
+                data?.getStringExtra(RunBuildNavigation.EXTRA_HREF) ?: ""
             )
         } else if (requestCode == FilterBuildsActivity.REQUEST_CODE) {
             presenter.onFilterBuildsActivityResult(data!!.getSerializableExtra(FilterBuildsRouter.EXTRA_FILTER) as BuildListFilter)

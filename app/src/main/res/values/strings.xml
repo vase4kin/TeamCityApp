@@ -138,30 +138,11 @@
     <string name="text_no_branches_available_to_filter">No branches available to filter</string>
     <string name="text_loading_branches">Loading branches</string>
     <string name="hint_default_build_branch">Default branch</string>
-    <string name="error_base_error">We encountered problem running build</string>
-    <string name="error_forbidden_error">You don\'t have permissions to run a build</string>
-    <string name="text_queueing_build">Running build..</string>
     <string name="text_restarting_build">Restarting build..</string>
     <string name="text_opening_build">Opening build..</string>
     <string name="text_build_is_run">Build is added to build queue</string>
     <string name="error_opening_build">We encountered problem opening build</string>
     <string name="text_show_build">Show</string>
-    <string name="text_switcher_run_as_personal">Personal</string>
-    <string name="text_switcher_run_as_queue_at_the_top">Queue to the top</string>
-    <string name="text_switcher_run_as_clean_all_files">Clean all files before the build</string>
-    <string name="text_agents">Agent</string>
-    <string name="hint_default_filter_agent">The fastest idle agent</string>
-    <string name="text_no_agents_available">No agents available</string>
-    <string name="text_loading_agents">Loading agents</string>
-    <string name="title_agent_chooser_dialog">Choose agent</string>
-    <string name="text_parameters">Parameters</string>
-    <string name="text_add_parameter">Add</string>
-    <string name="text_clear_parameters">Clear all</string>
-    <string name="text_add_parameter_button">@string/text_add_parameter</string>
-    <string name="title_add_parameter">New parameter</string>
-    <string name="text_error_parameter_name">Name cannot be empty</string>
-    <string name="hint_parameter_name">Name</string>
-    <string name="hint_parameter_value">Value</string>
 
     <!--Build details activity-->
     <string name="text_stopping_build">Stopping build..</string>

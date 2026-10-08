@@ -54,8 +54,6 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTi
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.overview.view.eq
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
-import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -70,6 +68,8 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
+import teamcityapp.features.run_build.impl.RunBuildActivity
 
 /**
  * Tests for [BuildListActivity]
@@ -241,7 +241,7 @@ class BuildListActivityTest {
 
         // Preparing stubbing intent
         val resultData = Intent()
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href")
+        resultData.putExtra(RunBuildNavigation.EXTRA_HREF, "href")
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
 
         activityRule.launchActivity(null)
@@ -269,7 +269,7 @@ class BuildListActivityTest {
 
         // Preparing stubbing intent
         val resultData = Intent()
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href")
+        resultData.putExtra(RunBuildNavigation.EXTRA_HREF, "href")
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
 
         activityRule.launchActivity(null)
@@ -305,7 +305,7 @@ class BuildListActivityTest {
 
         // Preparing stubbing intent
         val resultData = Intent()
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href")
+        resultData.putExtra(RunBuildNavigation.EXTRA_HREF, "href")
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
 
         activityRule.launchActivity(null)
@@ -348,7 +348,7 @@ class BuildListActivityTest {
 
         // Preparing stubbing intent
         val resultData = Intent()
-        resultData.putExtra(RunBuildRouter.EXTRA_HREF, "href")
+        resultData.putExtra(RunBuildNavigation.EXTRA_HREF, "href")
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
 
         activityRule.launchActivity(null)

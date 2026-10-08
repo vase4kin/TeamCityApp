@@ -22,12 +22,12 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
+import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 
 /**
  * impl of [BuildListRouter]
  */
-open class BuildListRouterImpl(protected val activity: Activity) : BuildListRouter {
+open class BuildListRouterImpl(protected val activity: Activity, private val runBuild: RunBuildNavigation) : BuildListRouter {
 
     /**
      * {@inheritDoc}
@@ -40,7 +40,7 @@ open class BuildListRouterImpl(protected val activity: Activity) : BuildListRout
      * {@inheritDoc}
      */
     override fun openRunBuildPage(buildTypeId: String) {
-        RunBuildActivity.startForResult(activity, buildTypeId)
+        runBuild.openForResult(activity, buildTypeId)
     }
 
     /**

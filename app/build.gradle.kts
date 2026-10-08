@@ -179,6 +179,9 @@ dependencies {
     implementation(projects.features.properties.api)
     implementation(projects.features.properties.impl)
 
+    implementation(projects.features.runBuild.api)
+    implementation(projects.features.runBuild.impl)
+
     implementation(projects.libraries.authentication)
     implementation(projects.features.login.api)
     implementation(projects.features.login.impl)
