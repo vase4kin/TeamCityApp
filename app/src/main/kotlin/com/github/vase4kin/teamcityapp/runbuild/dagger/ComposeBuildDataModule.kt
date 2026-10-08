@@ -21,10 +21,15 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import teamcityapp.features.filter_builds.api.*
 import teamcityapp.features.run_build.api.*
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ComposeBuildDataModule {
     @Provides fun runBuild(repository: ComposeRunBuildRepository): RunBuildRepository = repository
+
+    @Provides fun filterResultAdapter(impl: com.github.vase4kin.teamcityapp.filter_builds.data.AppFilterBuildsResultAdapter): FilterBuildsResultAdapter = impl
+
+    @Provides fun filterBuilds(repository: ComposeRunBuildRepository): FilterBuildsRepository = repository
 }

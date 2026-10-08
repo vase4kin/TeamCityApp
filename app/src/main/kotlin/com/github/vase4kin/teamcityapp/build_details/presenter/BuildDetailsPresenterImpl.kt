@@ -28,10 +28,10 @@ import com.github.vase4kin.teamcityapp.build_details.view.OnBuildDetailsViewList
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
 import javax.inject.Inject
+import teamcityapp.features.filter_builds.api.BuildStatusFilter
 
 /**
  * Impl of [BuildDetailsPresenter]
@@ -256,7 +256,7 @@ class BuildDetailsPresenterImpl @Inject constructor(
         val name = interactor.getBuildTypeName()
         val id = interactor.getBuildDetails().buildTypeId
         val filter = BuildListFilterImpl()
-        filter.setFilter(FilterBuildsView.FILTER_NONE)
+        filter.setFilter(BuildStatusFilter.None.ordinal)
         filter.setBranch(branchName)
         router.startBuildListActivity(name, id, filter)
     }

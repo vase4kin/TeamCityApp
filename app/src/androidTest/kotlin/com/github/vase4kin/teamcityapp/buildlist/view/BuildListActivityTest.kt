@@ -42,9 +42,6 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
-import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
@@ -68,6 +65,9 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.filter_builds.api.BuildStatusFilter
+import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
+import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
 import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 import teamcityapp.features.run_build.impl.RunBuildActivity
 
@@ -420,11 +420,11 @@ class BuildListActivityTest {
         // Preparing stubbing intent
         val resultData = Intent()
         val filter = BuildListFilterImpl()
-        filter.setFilter(FilterBuildsView.FILTER_CANCELLED)
+        filter.setFilter(BuildStatusFilter.Cancelled.ordinal)
         filter.setBranch("branch")
         filter.setPersonal(true)
         filter.setPinned(true)
-        resultData.putExtra(FilterBuildsRouter.EXTRA_FILTER, filter)
+        resultData.putExtra(FilterBuildsNavigation.EXTRA_FILTER, filter)
         val result = Instrumentation.ActivityResult(Activity.RESULT_OK, resultData)
 
         activityRule.launchActivity(null)

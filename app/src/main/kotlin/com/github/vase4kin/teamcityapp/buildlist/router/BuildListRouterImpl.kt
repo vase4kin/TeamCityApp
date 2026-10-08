@@ -20,14 +20,14 @@ import android.app.Activity
 import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
 import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 
 /**
  * impl of [BuildListRouter]
  */
-open class BuildListRouterImpl(protected val activity: Activity, private val runBuild: RunBuildNavigation) : BuildListRouter {
+open class BuildListRouterImpl(protected val activity: Activity, private val runBuild: RunBuildNavigation, private val filterBuilds: FilterBuildsNavigation) : BuildListRouter {
 
     /**
      * {@inheritDoc}
@@ -47,7 +47,7 @@ open class BuildListRouterImpl(protected val activity: Activity, private val run
      * {@inheritDoc}
      */
     override fun openFilterBuildsPage(buildTypeId: String) {
-        FilterBuildsActivity.startForResult(activity, buildTypeId)
+        filterBuilds.openForResult(activity, buildTypeId)
     }
 
     /**

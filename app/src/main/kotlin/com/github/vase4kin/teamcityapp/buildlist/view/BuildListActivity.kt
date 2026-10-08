@@ -27,10 +27,9 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl
-import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
-import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
 import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 import teamcityapp.libraries.utils.initToolbar
 
@@ -68,8 +67,8 @@ class BuildListActivity : AppCompatActivity() {
             presenter.onRunBuildActivityResult(
                 data?.getStringExtra(RunBuildNavigation.EXTRA_HREF) ?: ""
             )
-        } else if (requestCode == FilterBuildsActivity.REQUEST_CODE) {
-            presenter.onFilterBuildsActivityResult(data!!.getSerializableExtra(FilterBuildsRouter.EXTRA_FILTER) as BuildListFilter)
+        } else if (requestCode == FilterBuildsNavigation.REQUEST_CODE) {
+            presenter.onFilterBuildsActivityResult(data!!.getSerializableExtra(FilterBuildsNavigation.EXTRA_FILTER) as BuildListFilter)
         }
     }
 

@@ -77,7 +77,7 @@ object BuildListModule {
 
     @Provides
     @Named("BuildListActivity")
-    fun providesBuildListRouter(activity: BuildListActivity, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation): BuildListRouter = BuildListRouterImpl(activity, runBuild)
+    fun providesBuildListRouter(activity: BuildListActivity, runBuild: teamcityapp.features.run_build.api.navigation.RunBuildNavigation, filterBuilds: teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation): BuildListRouter = BuildListRouterImpl(activity, runBuild, filterBuilds)
 
     @Provides
     @Named("BuildListActivity")

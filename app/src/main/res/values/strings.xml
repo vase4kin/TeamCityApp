@@ -133,11 +133,6 @@
 
     <!--Run build activity-->
     <string name="title_run_build">Run build</string>
-    <string name="text_build_branch">Build branch</string>
-    <string name="text_no_branches_available">No branches available</string>
-    <string name="text_no_branches_available_to_filter">No branches available to filter</string>
-    <string name="text_loading_branches">Loading branches</string>
-    <string name="hint_default_build_branch">Default branch</string>
     <string name="text_restarting_build">Restarting build..</string>
     <string name="text_opening_build">Opening build..</string>
     <string name="text_build_is_run">Build is added to build queue</string>
@@ -186,13 +181,7 @@
 
     <!--Filter builds activity-->
     <string name="title_filter_builds">Filter builds</string>
-    <string name="title_filter_chooser_dialog">Choose filter</string>
-    <string name="text_switcher_for_pinned">Pinned</string>
-    <string name="text_switcher_for_personal">Personal</string>
     <string name="text_filters">Filter</string>
-    <string name="text_filters_none">None</string>
-    <string name="hint_default_filter_branch">Any</string>
-    <string name="text_apply_filters_button">Apply filters</string>
 
     <!--Onboarding-->
     <string name="title_onboarding_navigation_drawer">Explore navigation drawer</string>
