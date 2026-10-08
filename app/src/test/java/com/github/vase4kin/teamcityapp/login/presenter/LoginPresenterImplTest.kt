@@ -18,13 +18,12 @@ package com.github.vase4kin.teamcityapp.login.presenter
 
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
-import org.mockito.kotlin.whenever
 import org.junit.After
 import org.junit.Before
 import org.junit.Ignore
@@ -33,12 +32,13 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.doNothing
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.whenever
 import teamcityapp.libraries.remote.RemoteService
 
 @RunWith(MockitoJUnitRunner::class)

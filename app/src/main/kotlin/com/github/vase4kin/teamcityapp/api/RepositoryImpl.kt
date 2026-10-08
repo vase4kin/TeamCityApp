@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.api
 
-import com.github.vase4kin.teamcityapp.account.create.helper.UrlFormatter
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.artifact.api.Files
@@ -33,13 +32,14 @@ import io.rx_cache2.DynamicKey
 import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
-import okhttp3.ResponseBody
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
+import okhttp3.ResponseBody
 import teamcityapp.features.about.api.AboutServerInfo
-import teamcityapp.libraries.coroutines.IoDispatcher
 import teamcityapp.features.test_details.repository.models.TestOccurrence
+import teamcityapp.libraries.coroutines.IoDispatcher
+import teamcityapp.libraries.remote.url.UrlFormatter
 
 /**
  * Impl of [Repository]
@@ -76,35 +76,29 @@ class RepositoryImpl(
     /**
      * {@inheritDoc}
      */
-    override fun listBuildTypes(id: String, update: Boolean): Single<NavigationNode> {
-        return cacheProviders.listBuildTypes(
-            teamCityService.listBuildTypes(id),
-            DynamicKey(id),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun listBuildTypes(id: String, update: Boolean): Single<NavigationNode> = cacheProviders.listBuildTypes(
+        teamCityService.listBuildTypes(id),
+        DynamicKey(id),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun buildType(id: String, update: Boolean): Single<BuildType> {
-        return cacheProviders.buildType(
-            teamCityService.buildType(id),
-            DynamicKey(id),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun buildType(id: String, update: Boolean): Single<BuildType> = cacheProviders.buildType(
+        teamCityService.buildType(id),
+        DynamicKey(id),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun build(url: String, update: Boolean): Single<Build> {
-        return cacheProviders.build(
-            teamCityService.build(urlFormatter.formatBasicUrl(url)),
-            DynamicKey(url),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun build(url: String, update: Boolean): Single<Build> = cacheProviders.build(
+        teamCityService.build(urlFormatter.formatBasicUrl(url)),
+        DynamicKey(url),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
@@ -124,24 +118,20 @@ class RepositoryImpl(
     /**
      * {@inheritDoc}
      */
-    override fun listRunningBuilds(locator: String, fields: String?, update: Boolean): Single<Builds> {
-        return cacheProviders.listRunningBuilds(
-            teamCityService.listRunningBuilds(locator, fields),
-            DynamicKey(locator + fields),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun listRunningBuilds(locator: String, fields: String?, update: Boolean): Single<Builds> = cacheProviders.listRunningBuilds(
+        teamCityService.listRunningBuilds(locator, fields),
+        DynamicKey(locator + fields),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds> {
-        return cacheProviders.listQueuedBuilds(
-            teamCityService.listQueueBuilds(locator, fields),
-            DynamicKey(locator + fields),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds> = cacheProviders.listQueuedBuilds(
+        teamCityService.listQueueBuilds(locator, fields),
+        DynamicKey(locator + fields),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
@@ -158,87 +148,67 @@ class RepositoryImpl(
     /**
      * {@inheritDoc}
      */
-    override fun listMoreBuilds(url: String): Single<Builds> {
-        return teamCityService.listMoreBuilds(urlFormatter.formatBasicUrl(url))
-    }
+    override fun listMoreBuilds(url: String): Single<Builds> = teamCityService.listMoreBuilds(urlFormatter.formatBasicUrl(url))
 
     /**
      * {@inheritDoc}
      */
-    override fun listArtifacts(url: String, locator: String, update: Boolean): Single<Files> {
-        return cacheProviders.listArtifacts(
-            teamCityService.listArtifacts(urlFormatter.formatBasicUrl(url), locator),
-            DynamicKey(url),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun listArtifacts(url: String, locator: String, update: Boolean): Single<Files> = cacheProviders.listArtifacts(
+        teamCityService.listArtifacts(urlFormatter.formatBasicUrl(url), locator),
+        DynamicKey(url),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun downloadFile(url: String): Single<ResponseBody> {
-        return teamCityService.downloadFile(urlFormatter.formatBasicUrl(url))
-    }
+    override fun downloadFile(url: String): Single<ResponseBody> = teamCityService.downloadFile(urlFormatter.formatBasicUrl(url))
 
     /**
      * {@inheritDoc}
      */
-    override fun listTestOccurrences(url: String, update: Boolean): Single<TestOccurrences> {
-        return cacheProviders.listTestOccurrences(
-            teamCityService.listTestOccurrences(urlFormatter.formatBasicUrl(url)),
-            DynamicKey(url),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun listTestOccurrences(url: String, update: Boolean): Single<TestOccurrences> = cacheProviders.listTestOccurrences(
+        teamCityService.listTestOccurrences(urlFormatter.formatBasicUrl(url)),
+        DynamicKey(url),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun testOccurrence(url: String): Single<TestOccurrence> {
-        return cacheProviders.testOccurrence(
-            teamCityService.testOccurrence(urlFormatter.formatBasicUrl(url)),
-            DynamicKey(url)
-        )
-    }
+    override fun testOccurrence(url: String): Single<TestOccurrence> = cacheProviders.testOccurrence(
+        teamCityService.testOccurrence(urlFormatter.formatBasicUrl(url)),
+        DynamicKey(url)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun listChanges(url: String, update: Boolean): Single<Changes> {
-        return cacheProviders.listChanges(
-            teamCityService.listChanges(urlFormatter.formatBasicUrl(url)),
-            DynamicKey(url),
-            EvictDynamicKey(update)
-        )
-    }
+    override fun listChanges(url: String, update: Boolean): Single<Changes> = cacheProviders.listChanges(
+        teamCityService.listChanges(urlFormatter.formatBasicUrl(url)),
+        DynamicKey(url),
+        EvictDynamicKey(update)
+    )
 
     /**
      * {@inheritDoc}
      */
-    override fun change(url: String): Single<Changes.Change> {
-        return cacheProviders.change(teamCityService.change(urlFormatter.formatBasicUrl(url)), DynamicKey(url))
-    }
+    override fun change(url: String): Single<Changes.Change> = cacheProviders.change(teamCityService.change(urlFormatter.formatBasicUrl(url)), DynamicKey(url))
 
     /**
      * {@inheritDoc}
      */
-    override fun listBranches(buildTypeId: String): Single<Branches> {
-        return cacheProviders.listBranches(teamCityService.listBranches(buildTypeId), DynamicKey(buildTypeId))
-    }
+    override fun listBranches(buildTypeId: String): Single<Branches> = cacheProviders.listBranches(teamCityService.listBranches(buildTypeId), DynamicKey(buildTypeId))
 
     /**
      * {@inheritDoc}
      */
-    override fun queueBuild(build: Build): Single<Build> {
-        return teamCityService.queueBuild(build)
-    }
+    override fun queueBuild(build: Build): Single<Build> = teamCityService.queueBuild(build)
 
     /**
      * {@inheritDoc}
      */
-    override fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build> {
-        return teamCityService.cancelBuild(urlFormatter.formatBasicUrl(url), buildCancelRequest)
-    }
+    override fun cancelBuild(url: String, buildCancelRequest: BuildCancelRequest): Single<Build> = teamCityService.cancelBuild(urlFormatter.formatBasicUrl(url), buildCancelRequest)
 
     /**
      * {@inheritDoc}

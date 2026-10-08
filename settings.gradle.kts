@@ -66,3 +66,5 @@ include(":features:change-details:api")
 include(":features:change-details:impl")
 include(":features:properties:api")
 include(":features:properties:impl")
+
+include(":libraries:authentication")

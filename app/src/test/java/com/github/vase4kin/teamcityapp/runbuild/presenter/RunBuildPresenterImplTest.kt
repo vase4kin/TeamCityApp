@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.presenter
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
@@ -27,9 +27,10 @@ import com.github.vase4kin.teamcityapp.runbuild.view.BranchesComponentView
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildView
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
+import java.util.ArrayList
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.`is`
 import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.`is`
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -37,13 +38,12 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
 import teamcityapp.features.properties.repository.models.Properties
-import java.util.ArrayList
 
 /**
  * Tests for [RunBuildPresenterImpl]
@@ -53,22 +53,31 @@ class RunBuildPresenterImplTest {
 
     @Captor
     private lateinit var propertiesArgumentCaptor: ArgumentCaptor<Properties>
+
     @Captor
     private lateinit var queueLoadingListenerCaptor: ArgumentCaptor<LoadingListenerWithForbiddenSupport<String>>
+
     @Captor
     private lateinit var branchLoadingListenerCaptor: ArgumentCaptor<OnLoadingListener<List<String>>>
+
     @Captor
     private lateinit var agentsLoadingListenerCaptor: ArgumentCaptor<OnLoadingListener<List<Agent>>>
+
     @Mock
     private lateinit var view: RunBuildView
+
     @Mock
     private lateinit var interactor: RunBuildInteractor
+
     @Mock
     private lateinit var router: RunBuildRouter
+
     @Mock
     private lateinit var tracker: RunBuildTracker
+
     @Mock
     private lateinit var branchesComponentView: BranchesComponentView
+
     @Mock
     private lateinit var branchesInteractor: BranchesInteractor
     private val agent = Agent("agentName")

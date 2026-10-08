@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.runningbuilds.data
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManagerImpl
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
@@ -32,7 +32,8 @@ import io.reactivex.Observable
 class RunningBuildsDataManagerImpl(
     repository: Repository,
     private val storage: SharedUserStorage
-) : BuildListDataManagerImpl(repository, storage), RunningBuildsDataManager {
+) : BuildListDataManagerImpl(repository, storage),
+    RunningBuildsDataManager {
 
     /**
      * Filter to show only running builds

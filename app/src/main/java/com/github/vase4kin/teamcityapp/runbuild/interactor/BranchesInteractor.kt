@@ -16,7 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.interactor
 
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 
 /**
  * Interactor to handle fetching branches

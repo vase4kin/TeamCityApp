@@ -127,6 +127,7 @@ extensions.configure<ApplicationExtension> {
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
         animationsDisabled = true
+        unitTests.isIncludeAndroidResources = true
     }
 }
 
@@ -178,6 +179,8 @@ dependencies {
     implementation(projects.features.properties.api)
     implementation(projects.features.properties.impl)
 
+    implementation(projects.libraries.authentication)
+
     // Android support libraries
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.cardView)
@@ -216,6 +219,7 @@ dependencies {
     kapt(libs.dagger.compiler)
 
     // Rx
+    implementation(libs.androidx.activity.compose)
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.rx2)
     implementation(libs.rxjava.rxJava)
@@ -233,6 +237,7 @@ dependencies {
     // Bottom nav libries
     implementation(libs.fragNav)
     // Unit tests
+    testImplementation(libs.robolectric)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.mockito.mockitoCore)

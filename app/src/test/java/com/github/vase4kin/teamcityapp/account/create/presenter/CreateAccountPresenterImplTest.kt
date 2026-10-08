@@ -19,10 +19,10 @@ package com.github.vase4kin.teamcityapp.account.create.presenter
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataModel
 import com.github.vase4kin.teamcityapp.account.create.data.CustomOnLoadingListener
-import com.github.vase4kin.teamcityapp.account.create.data.OnLoadingListener
 import com.github.vase4kin.teamcityapp.account.create.router.CreateAccountRouter
 import com.github.vase4kin.teamcityapp.account.create.tracker.CreateAccountTracker
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountView
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.utils.capture
 import com.github.vase4kin.teamcityapp.utils.eq
 import org.junit.After
@@ -32,10 +32,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Captor
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoMoreInteractions
+import org.mockito.Mockito.`when`
 
 @RunWith(org.mockito.junit.MockitoJUnitRunner.Silent::class)
 class CreateAccountPresenterImplTest {
