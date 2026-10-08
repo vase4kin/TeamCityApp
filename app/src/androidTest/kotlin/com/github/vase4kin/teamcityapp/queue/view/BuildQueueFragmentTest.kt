@@ -1,0 +1,357 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.queue.view
+
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
+import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.buildlist.api.Builds
+import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.any
+import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import io.reactivex.Single
+import org.hamcrest.core.AllOf.allOf
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Ignore
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.Mockito.`when`
+import org.mockito.Spy
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.whenever
+
+@Ignore("https://github.com/vase4kin/TeamCityApp/issues/362")
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class BuildQueueFragmentTest {
+
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
+
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @Rule(order = 3)
+    @JvmField
+    val activityRule = CustomActivityTestRule(HomeActivity::class.java)
+
+    @Spy
+    private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+
+    private val storage: SharedUserStorage
+        get() {
+            val app =
+                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+            return app.appInjector.sharedUserStorage()
+        }
+
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun disableOnboarding() {
+            TestUtils.disableOnboarding()
+        }
+    }
+
+    @Before
+    fun setUp() {
+        val storage = storage
+        storage.clearAll()
+        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+    }
+
+    @Test
+    fun testUserCanSeeUseFiltersToLoadBuilds() {
+        // Favorites
+        val buildTypeId1 = "id1"
+        val buildTypeId2 = "id2"
+        storage.addBuildTypeToFavorites(buildTypeId1)
+        storage.addBuildTypeToFavorites(buildTypeId2)
+        val buildsByBuildTypeId1 = listOf<Build>(Mocks.queuedBuild1())
+        val buildsByBuildTypeId2 = listOf<Build>(Mocks.queuedBuild3())
+        `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId1), null))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+        `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId1), "count"))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId1.size, buildsByBuildTypeId1)))
+        `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId2), null))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+        `when`(teamCityService.listQueueBuilds(buildTypeIdLocator(buildTypeId2), "count"))
+            .thenReturn(Single.just(Builds(buildsByBuildTypeId2.size, buildsByBuildTypeId2)))
+
+        // ALL
+        val builds = listOf<Build>(Mocks.queuedBuild1(), Mocks.queuedBuild2(), Mocks.queuedBuild3())
+        `when`(teamCityService.listQueueBuilds(null, null))
+            .thenReturn(Single.just(Builds(builds.size, builds)))
+        `when`(teamCityService.listQueueBuilds(null, "count"))
+            .thenReturn(Single.just(Builds(builds.size, builds)))
+
+        activityRule.launchActivity(null)
+
+        // Click on build queue tab
+        clickOnBuildQueueTab()
+
+        // Check badge
+        checkBuildQueueTabBadgeCount("2")
+
+        // List has item with header
+        onView(withId(R.id.build_queue_recycler_view)).check(hasItemsCount(4))
+        // Checking header 1
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                0,
+                R.id.section_text
+            )
+        )
+            .check(matches(withText("project name - build type name")))
+        // Checking adapter item 1
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                1,
+                R.id.buildStatus
+            )
+        )
+            .check(matches(withText("Queued build")))
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                1,
+                R.id.branchName
+            )
+        )
+            .check(matches(withText("refs/heads/master")))
+        // Checking header 2
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                2,
+                R.id.section_text
+            )
+        )
+            .check(matches(withText("Project name one two - Another configuration")))
+        // Checking adapter item 3
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                3,
+                R.id.buildStatus
+            )
+        )
+            .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                3,
+                R.id.branchName
+            )
+        )
+            .check(matches(withText("refs/heads/dev0feature")))
+
+        // filter builds to show all
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.filter_bottom_sheet.impl.R.string.text_show_queued)).performClick()
+
+        // check snack bar text
+        onView(withText(R.string.text_filters_applied)).check(matches(isDisplayed()))
+
+        // Check badge
+        checkBuildQueueTabBadgeCount("3")
+
+        // Check all builds
+
+        // List has item with header
+        onView(withId(R.id.build_queue_recycler_view)).check(hasItemsCount(5))
+        // Checking header 1
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                0,
+                R.id.section_text
+            )
+        )
+            .check(matches(withText("project name - build type name")))
+        // Checking adapter item 1
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                1,
+                R.id.buildStatus
+            )
+        )
+            .check(matches(withText("Queued build")))
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                1,
+                R.id.branchName
+            )
+        )
+            .check(matches(withText("refs/heads/master")))
+        // Checking adapter item 2
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                2,
+                R.id.buildStatus
+            )
+        )
+            .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                2,
+                R.id.branchName
+            )
+        )
+            .check(matches(withText("refs/heads/dev")))
+        // Checking header 2
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                3,
+                R.id.section_text
+            )
+        )
+            .check(matches(withText("Project name one two - Another configuration")))
+        // Checking adapter item 3
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                4,
+                R.id.buildStatus
+            )
+        )
+            .check(matches(withText("This build will not start because there are no compatible agents which can run it")))
+        onView(
+            withRecyclerView(R.id.build_queue_recycler_view).atPositionOnView(
+                4,
+                R.id.branchName
+            )
+        )
+            .check(matches(withText("refs/heads/dev0feature")))
+    }
+
+    @Test
+    fun testUserCanSeeUpdatedToolbar() {
+        activityRule.launchActivity(null)
+
+        // Click on build queue tab
+        clickOnBuildQueueTab()
+
+        TestUtils.matchHomeToolbarTitle(
+            R.id.home_build_queue_toolbar_title,
+            R.string.build_queue_drawer_item
+        )
+    }
+
+    @Test
+    fun testUserCanSeeFailureMessageForFavoritesQueueBuilds() {
+        // Prepare data
+        doReturn(Single.error<Builds>(RuntimeException("smth bad happend!")))
+            .whenever(teamCityService).listQueueBuilds(any(), any())
+
+        storage.addBuildTypeToFavorites("id1")
+
+        activityRule.launchActivity(null)
+
+        // Click on build queue tab
+        clickOnBuildQueueTab()
+
+        checkBuildQueueTabBadgeCount("0")
+
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
+
+        // filter builds to show all
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.filter_bottom_sheet.impl.R.string.text_show_queued)).performClick()
+
+        checkBuildQueueTabBadgeCount("0")
+
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testUserCanSeeFailureMessageForAllQueueBuilds() {
+        // Prepare data
+        doReturn(Single.error<Builds>(RuntimeException("smth bad happend!")))
+            .whenever(teamCityService).listQueueBuilds(any(), any())
+        storage.addBuildTypeToFavorites("id1")
+
+        activityRule.launchActivity(null)
+
+        // Click on build queue tab
+        clickOnBuildQueueTab()
+
+        checkBuildQueueTabBadgeCount("0")
+
+        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testUserCanSeeEmptyDataMessageIfBuildQueueIsEmpty() {
+        doReturn(Single.just<Builds>(Builds(0, emptyList())))
+            .whenever(teamCityService).listQueueBuilds(any(), any())
+
+        activityRule.launchActivity(null)
+
+        // Click on build queue tab
+        clickOnBuildQueueTab()
+
+        checkBuildQueueTabBadgeCount("0")
+        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_favorite_build_queue)))
+
+        // filter builds to show all
+        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.filter_bottom_sheet.impl.R.string.text_show_queued)).performClick()
+
+        checkBuildQueueTabBadgeCount("0")
+        onView(withId(R.id.queued_empty_title_view)).check(matches(isDisplayed()))
+            .check(matches(withText(R.string.empty_list_message_build_queue)))
+    }
+
+    private fun clickOnBuildQueueTab() {
+        onView(withId(R.id.build_queue))
+            .perform(click())
+    }
+
+    private fun checkBuildQueueTabBadgeCount(count: String) {
+        // FIXME
+    }
+
+    private fun buildTypeIdLocator(buildTypeId: String): String = "buildType:$buildTypeId"
+}
