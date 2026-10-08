@@ -182,6 +182,8 @@ dependencies {
     implementation(projects.libraries.authentication)
     implementation(projects.features.login.api)
     implementation(projects.features.login.impl)
+    implementation(projects.features.createAccount.api)
+    implementation(projects.features.createAccount.impl)
 
     // Android support libraries
     implementation(libs.androidx.appcompat)

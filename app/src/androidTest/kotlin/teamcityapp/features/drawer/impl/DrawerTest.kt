@@ -34,7 +34,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
@@ -50,6 +49,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.about.impl.AboutActivity
+import teamcityapp.features.create_account.impl.CreateAccountActivity
 import teamcityapp.features.drawer.impl.navigation.DrawerNavigationImpl
 import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
 import teamcityapp.features.settings.impl.SettingsActivity
