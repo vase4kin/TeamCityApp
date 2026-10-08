@@ -102,14 +102,6 @@
         </item>
     </style>
 
-    <style name="LoginActivityTheme" parent="Theme.MyApp">
-        <item name="android:statusBarColor">?attr/colorSurface</item>
-        <item name="android:navigationBarColor">?attr/colorSurface</item>
-        <item name="android:navigationBarDividerColor" tools:ignore="NewApi">
-            @android:color/transparent
-        </item>
-    </style>
-
     <style name="HomeTheme" parent="Theme.MyApp">
         <item name="android:navigationBarColor">?attr/colorPrimarySurface</item>
         <item name="android:navigationBarDividerColor" tools:ignore="NewApi">

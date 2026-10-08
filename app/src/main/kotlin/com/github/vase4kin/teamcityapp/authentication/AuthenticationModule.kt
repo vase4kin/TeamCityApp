@@ -20,10 +20,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import teamcityapp.features.login.api.*
 import teamcityapp.libraries.authentication.AuthenticationRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AuthenticationModule {
     @Provides fun authentication(repository: AppAuthenticationRepository): AuthenticationRepository = repository
+
+    @Provides fun login(repository: AppLoginRepository): LoginRepository = repository
 }

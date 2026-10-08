@@ -20,11 +20,11 @@ package com.github.vase4kin.teamcityapp.manage_accounts.router
 import android.app.Activity
 import com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.login.view.LoginActivity
 import javax.inject.Inject
+import teamcityapp.features.login.api.navigation.LoginNavigation
 import teamcityapp.features.manage_accounts.api.router.ManageAccountsAppRouter
 
-class ManageAccountsRouterImpl @Inject constructor() : ManageAccountsAppRouter {
+class ManageAccountsRouterImpl @Inject constructor(private val loginNavigation: LoginNavigation) : ManageAccountsAppRouter {
     override fun openHome(activity: Activity) {
         HomeActivity.startWhenSwitchingAccountsFromDrawer(activity)
     }
@@ -32,6 +32,6 @@ class ManageAccountsRouterImpl @Inject constructor() : ManageAccountsAppRouter {
         CreateAccountActivity.start(activity)
     }
     override fun openLogin(activity: Activity) {
-        LoginActivity.startWithClearStack(activity)
+        loginNavigation.openWithClearStack(activity)
     }
 }

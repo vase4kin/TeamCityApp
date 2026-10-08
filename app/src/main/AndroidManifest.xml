@@ -28,11 +28,7 @@
         android:theme="@style/Theme.MyApp"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity
-            android:name=".login.view.LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/LoginActivityTheme"
-            tools:ignore="LockedOrientationActivity" />
+
         <activity
             android:name=".home.view.HomeActivity"
             android:label="@string/app_name"
