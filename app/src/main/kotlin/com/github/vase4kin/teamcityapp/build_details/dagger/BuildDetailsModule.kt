@@ -59,12 +59,14 @@ object BuildDetailsModule {
     fun providesBuildTabsView(
         activity: BuildDetailsActivity,
         @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
-        propertiesNavigation: PropertiesNavigation
+        propertiesNavigation: PropertiesNavigation,
+        featureNavigation: teamcityapp.features.build_log.api.BuildLogNavigation
     ): BuildDetailsView = BuildDetailsViewImpl(
         activity.findViewById<View>(android.R.id.content),
         activity,
         valueExtractor,
-        propertiesNavigation
+        propertiesNavigation,
+        featureNavigation
     )
 
     @Provides

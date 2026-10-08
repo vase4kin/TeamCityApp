@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl
 import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.Companion.TIMEOUT_TEXT_COPIED_SNACKBAR
-import com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragment
 import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
@@ -42,6 +41,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import teamcityapp.features.build_log.api.BuildLogNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
 import teamcityapp.features.properties.api.Property
 
@@ -54,7 +54,8 @@ class BuildDetailsViewImpl(
     view: View,
     activity: AppCompatActivity,
     valueExtractor: BaseValueExtractor,
-    private val propertiesNavigation: PropertiesNavigation
+    private val propertiesNavigation: PropertiesNavigation,
+    private val featureNavigation: BuildLogNavigation
 ) : BaseTabsViewModelImpl(view, activity),
     BuildDetailsView {
 
@@ -112,7 +113,7 @@ class BuildDetailsViewImpl(
         if (!buildDetails.isQueued) {
             fragmentAdapter.add(
                 R.string.tab_build_log,
-                BuildLogFragment.newInstance(buildDetails.id)
+                featureNavigation.create(buildDetails.id)
             )
         }
         fragmentAdapter.add(
