@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.overview.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -45,6 +44,7 @@ import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.onboarding.OnboardingManager
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(FragmentComponent::class)
@@ -58,45 +58,33 @@ object OverviewModule {
         repository: Repository,
         eventBus: EventBus,
         valueExtractor: OverviewValueExtractor
-    ): OverViewInteractor {
-        return OverviewInteractorImpl(repository, eventBus, valueExtractor)
-    }
+    ): OverViewInteractor = OverviewInteractorImpl(repository, eventBus, valueExtractor)
 
     @Provides
-    fun providesBaseValueExtractor(fragment: OverviewFragment): OverviewValueExtractor {
-        return OverviewValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
-    }
+    fun providesBaseValueExtractor(fragment: OverviewFragment): OverviewValueExtractor = OverviewValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
 
     @Provides
     fun providesBaseListView(
         adapter: OverviewAdapter,
         fragment: OverviewFragment
-    ): OverviewView {
-        return OverviewViewImpl(fragment.requireView(), fragment.requireActivity().requireScreenOwner<AppCompatActivity>(), adapter)
-    }
+    ): OverviewView = OverviewViewImpl(fragment.requireView(), fragment.requireActivity().requireScreenOwner<AppCompatActivity>(), adapter)
 
     @Provides
-    fun providesOverviewAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<OverviewDataModel>>): OverviewAdapter {
-        return OverviewAdapter(viewHolderFactories)
-    }
+    fun providesOverviewAdapter(viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<OverviewDataModel>>): OverviewAdapter = OverviewAdapter(viewHolderFactories)
 
     @Provides
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesOverviewViewHolderFactory(): ViewHolderFactory<OverviewDataModel> {
-        return OverviewViewHolderFactory()
-    }
+    fun providesOverviewViewHolderFactory(): ViewHolderFactory<OverviewDataModel> = OverviewViewHolderFactory()
 
     @Provides
-    fun providesFirebaseViewTracker(firebaseAnalytics: FirebaseAnalytics): OverviewTracker {
-        return FirebaseOverviewTrackerImpl(firebaseAnalytics)
-    }
+    fun providesFirebaseViewTracker(firebaseAnalytics: FirebaseAnalytics): OverviewTracker = FirebaseOverviewTrackerImpl(firebaseAnalytics)
+
     @Provides
     fun presenter(
         view: OverviewView,
         interactor: OverViewInteractor,
         tracker: OverviewTracker,
         onboardingManager: OnboardingManager
-    ): OverviewPresenterImpl =
-        OverviewPresenterImpl(view, interactor, tracker, onboardingManager)
+    ): OverviewPresenterImpl = OverviewPresenterImpl(view, interactor, tracker, onboardingManager)
 }

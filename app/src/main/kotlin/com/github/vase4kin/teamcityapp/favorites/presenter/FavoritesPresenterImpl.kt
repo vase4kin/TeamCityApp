@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.favorites.presenter
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.favorites.interactor.FavoritesInteractor
 import com.github.vase4kin.teamcityapp.favorites.tracker.FavoritesTracker
 import com.github.vase4kin.teamcityapp.favorites.view.FavoritesView
@@ -64,9 +64,7 @@ class FavoritesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun createModel(data: List<NavigationItem>): NavigationDataModel {
-        return NavigationDataModelImpl(data.toMutableList())
-    }
+    override fun createModel(data: List<NavigationItem>): NavigationDataModel = NavigationDataModelImpl(data.toMutableList())
 
     /**
      * {@inheritDoc}

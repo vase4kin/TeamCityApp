@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.dagger.components
 
-import teamcityapp.libraries.remote.url.UrlFormatterModule
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.dagger.modules.RestApiModule
@@ -28,13 +27,14 @@ import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.remote.RemoteService
+import teamcityapp.libraries.remote.url.UrlFormatterModule
 
 @UserScope
 @Component(
     dependencies = [AppComponent::class],
     modules = [
         RestApiModule::class,
-        UrlFormatterModule::class,
+        UrlFormatterModule::class
     ]
 )
 interface RestApiComponent {

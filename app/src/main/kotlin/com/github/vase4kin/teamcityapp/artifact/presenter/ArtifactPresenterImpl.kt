@@ -17,7 +17,6 @@
 package com.github.vase4kin.teamcityapp.artifact.presenter
 
 import androidx.annotation.VisibleForTesting
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataManager
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel
@@ -31,6 +30,7 @@ import com.github.vase4kin.teamcityapp.artifact.view.ArtifactView
 import com.github.vase4kin.teamcityapp.artifact.view.OnArtifactPresenterListener
 import com.github.vase4kin.teamcityapp.artifact.view.OnPermissionsDialogListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import javax.inject.Inject
 
@@ -53,15 +53,14 @@ class ArtifactPresenterImpl @Inject constructor(
 
     @VisibleForTesting
     var fileName: String? = null
+
     @VisibleForTesting
     var fileHref: String? = null
 
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: List<File>): ArtifactDataModel {
-        return ArtifactDataModelImpl(data)
-    }
+    public override fun createModel(data: List<File>): ArtifactDataModel = ArtifactDataModelImpl(data)
 
     /**
      * {@inheritDoc}
@@ -126,9 +125,7 @@ class ArtifactPresenterImpl @Inject constructor(
      * @param url - Artifact url
      * @return Boolean
      */
-    private fun isBrowserUrl(url: String): Boolean {
-        return url.contains(".html") || url.contains(".htm")
-    }
+    private fun isBrowserUrl(url: String): Boolean = url.contains(".html") || url.contains(".htm")
 
     /**
      * {@inheritDoc}

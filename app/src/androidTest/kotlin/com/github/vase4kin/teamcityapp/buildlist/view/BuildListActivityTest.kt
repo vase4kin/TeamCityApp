@@ -46,6 +46,7 @@ import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsView
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
@@ -55,10 +56,9 @@ import com.github.vase4kin.teamcityapp.overview.view.eq
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import io.reactivex.Single
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import io.reactivex.Single
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
@@ -67,8 +67,8 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.`when`
 import org.mockito.Spy
 
 /**

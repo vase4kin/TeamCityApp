@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.os.Bundle
 import android.os.Environment
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +50,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(FragmentComponent::class)
@@ -77,56 +77,42 @@ object ArtifactsFragmentModule {
     fun providesArtifactView(
         fragment: ArtifactListFragment,
         @Named("ArtifactListFragment") adapter: ArtifactAdapter
-    ): ArtifactView {
-        return ArtifactViewImpl(
-            fragment.requireView(),
-            fragment.requireActivity(),
-            R.string.empty_list_message_artifacts,
-            adapter
-        )
-    }
+    ): ArtifactView = ArtifactViewImpl(
+        fragment.requireView(),
+        fragment.requireActivity(),
+        R.string.empty_list_message_artifacts,
+        adapter
+    )
 
     @Provides
     @Named("ArtifactListFragment")
-    fun providesArtifactRouter(fragment: ArtifactListFragment, sharedUserStorage: SharedUserStorage): ArtifactRouter {
-        return ArtifactRouterImpl(
-            sharedUserStorage,
-            fragment.requireActivity().requireScreenOwner<AppCompatActivity>(),
-            ChromeCustomTabsImpl(fragment.requireActivity())
-        )
-    }
+    fun providesArtifactRouter(fragment: ArtifactListFragment, sharedUserStorage: SharedUserStorage): ArtifactRouter = ArtifactRouterImpl(
+        sharedUserStorage,
+        fragment.requireActivity().requireScreenOwner<AppCompatActivity>(),
+        ChromeCustomTabsImpl(fragment.requireActivity())
+    )
 
     @Provides
     @Named("ArtifactListFragment")
-    fun providesArtifactValueExtractor(fragment: ArtifactListFragment): ArtifactValueExtractor {
-        return ArtifactValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
-    }
+    fun providesArtifactValueExtractor(fragment: ArtifactListFragment): ArtifactValueExtractor = ArtifactValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
 
     @Provides
     @Named("ArtifactListFragment")
-    fun providesViewTracker(): ViewTracker {
-        return ViewTracker.STUB
-    }
+    fun providesViewTracker(): ViewTracker = ViewTracker.STUB
 
     @Provides
     @Named("ArtifactListFragment")
-    fun providesPermissionManager(fragment: ArtifactListFragment): PermissionManager {
-        return PermissionManagerImpl(fragment.requireActivity().requireScreenOwner<AppCompatActivity>())
-    }
+    fun providesPermissionManager(fragment: ArtifactListFragment): PermissionManager = PermissionManagerImpl(fragment.requireActivity().requireScreenOwner<AppCompatActivity>())
 
     @Provides
     @Named("ArtifactListFragment")
-    fun providesArtifactAdapter(@Named("ArtifactListFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ArtifactDataModel>>): ArtifactAdapter {
-        return ArtifactAdapter(viewHolderFactories)
-    }
+    fun providesArtifactAdapter(@Named("ArtifactListFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ArtifactDataModel>>): ArtifactAdapter = ArtifactAdapter(viewHolderFactories)
 
     @Provides
     @Named("ArtifactListFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesArtifactViewHolderFactory(): ViewHolderFactory<ArtifactDataModel> {
-        return ArtifactViewHolderFactory()
-    }
+    fun providesArtifactViewHolderFactory(): ViewHolderFactory<ArtifactDataModel> = ArtifactViewHolderFactory()
 
     @Provides
     @Named("ArtifactListFragment")
@@ -137,13 +123,12 @@ object ArtifactsFragmentModule {
         @Named("ArtifactListFragment") valueExtractor: ArtifactValueExtractor,
         @Named("ArtifactListFragment") router: ArtifactRouter,
         @Named("ArtifactListFragment") permissionManager: PermissionManager
-    ): ArtifactPresenterImpl =
-        ArtifactPresenterImpl(
-            view,
-            dataManager,
-            tracker,
-            valueExtractor,
-            router,
-            permissionManager
-        )
+    ): ArtifactPresenterImpl = ArtifactPresenterImpl(
+        view,
+        dataManager,
+        tracker,
+        valueExtractor,
+        router,
+        permissionManager
+    )
 }

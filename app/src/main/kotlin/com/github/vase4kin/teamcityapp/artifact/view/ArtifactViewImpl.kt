@@ -22,7 +22,6 @@ import android.view.View
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.data.ArtifactDataModel
@@ -113,7 +112,9 @@ class ArtifactViewImpl(
      */
     override fun showFolderBottomSheet(artifactFile: File) {
         val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
-            artifactFile.name, artifactFile.children!!.href, MenuItemsFactory.TYPE_ARTIFACT_FOLDER
+            artifactFile.name,
+            artifactFile.children!!.href,
+            MenuItemsFactory.TYPE_ARTIFACT_FOLDER
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
@@ -141,7 +142,9 @@ class ArtifactViewImpl(
      */
     override fun showDefaultBottomSheet(artifactFile: File) {
         val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
-            artifactFile.name, artifactFile.content.href, MenuItemsFactory.TYPE_ARTIFACT_DEFAULT
+            artifactFile.name,
+            artifactFile.content.href,
+            MenuItemsFactory.TYPE_ARTIFACT_DEFAULT
         )
         bottomSheetDialogFragment.show(
             (activity as AppCompatActivity).supportFragmentManager,
@@ -152,9 +155,7 @@ class ArtifactViewImpl(
     /**
      * {@inheritDoc}
      */
-    override fun recyclerViewId(): Int {
-        return R.id.artifact_recycler_view
-    }
+    override fun recyclerViewId(): Int = R.id.artifact_recycler_view
 
     /**
      * {@inheritDoc}

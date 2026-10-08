@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.runningbuilds.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -56,6 +55,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.onboarding.OnboardingManager
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(FragmentComponent::class)
@@ -66,9 +66,7 @@ object RunningBuildsFragmentModule {
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesRunningBuildsDataManager(repository: Repository, storage: SharedUserStorage): RunningBuildsDataManager {
-        return RunningBuildsDataManagerImpl(repository, storage)
-    }
+    fun providesRunningBuildsDataManager(repository: Repository, storage: SharedUserStorage): RunningBuildsDataManager = RunningBuildsDataManagerImpl(repository, storage)
 
     @Provides
     @Named("RunningBuildsFragment")
@@ -76,40 +74,30 @@ object RunningBuildsFragmentModule {
         fragment: RunningBuildsFragment,
         @Named("RunningBuildsFragment") adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>,
         filterProvider: FilterProvider
-    ): RunningBuildListView {
-        return RunningBuildsListViewImpl(
-            fragment.requireView(),
-            fragment.requireActivity(),
-            R.string.empty_list_message_running_builds,
-            adapter,
-            filterProvider
-        )
-    }
+    ): RunningBuildListView = RunningBuildsListViewImpl(
+        fragment.requireView(),
+        fragment.requireActivity(),
+        R.string.empty_list_message_running_builds,
+        adapter,
+        filterProvider
+    )
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesBuildListRouter(fragment: RunningBuildsFragment): BuildListRouter {
-        return BuildListRouterImpl(fragment.requireActivity())
-    }
+    fun providesBuildListRouter(fragment: RunningBuildsFragment): BuildListRouter = BuildListRouterImpl(fragment.requireActivity())
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesBuildListValueExtractor(): BaseValueExtractor {
-        return BaseValueExtractorImpl(Bundle.EMPTY)
-    }
+    fun providesBuildListValueExtractor(): BaseValueExtractor = BaseValueExtractorImpl(Bundle.EMPTY)
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
-        return BuildInteractorImpl(teamCityService)
-    }
+    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor = BuildInteractorImpl(teamCityService)
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): BuildListTracker {
-        return object : FirebaseBuildListTrackerImpl(firebaseAnalytics, "") {
-            override fun trackView() {}
-        }
+    fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): BuildListTracker = object : FirebaseBuildListTrackerImpl(firebaseAnalytics, "") {
+        override fun trackView() {}
     }
 
     @Provides
@@ -117,31 +105,23 @@ object RunningBuildsFragmentModule {
     fun providesSimpleSectionedRecyclerViewAdapter(
         fragment: RunningBuildsFragment,
         @Named("RunningBuildsFragment") adapter: BuildListAdapter
-    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
-        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
-    }
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> = SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
 
     @Provides
     @Named("RunningBuildsFragment")
-    fun providesBuildListAdapter(@Named("RunningBuildsFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter {
-        return BuildListAdapter(viewHolderFactories)
-    }
+    fun providesBuildListAdapter(@Named("RunningBuildsFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter = BuildListAdapter(viewHolderFactories)
 
     @Provides
     @Named("RunningBuildsFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_LOAD_MORE)
-    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
-        return LoadMoreViewHolderFactory()
-    }
+    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> = LoadMoreViewHolderFactory()
 
     @Provides
     @Named("RunningBuildsFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
-        return BuildsViewHolderFactory()
-    }
+    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> = BuildsViewHolderFactory()
 
     @Provides
     fun provideRunningBuildsListPresenterImpl(
@@ -154,16 +134,15 @@ object RunningBuildsFragmentModule {
         onboardingManager: OnboardingManager,
         filterProvider: FilterProvider,
         eventBus: EventBus
-    ): RunningBuildsListPresenterImpl =
-        RunningBuildsListPresenterImpl(
-            view,
-            dataManager,
-            tracker,
-            router,
-            valueExtractor,
-            buildInteractor,
-            onboardingManager,
-            filterProvider,
-            eventBus
-        )
+    ): RunningBuildsListPresenterImpl = RunningBuildsListPresenterImpl(
+        view,
+        dataManager,
+        tracker,
+        router,
+        valueExtractor,
+        buildInteractor,
+        onboardingManager,
+        filterProvider,
+        eventBus
+    )
 }

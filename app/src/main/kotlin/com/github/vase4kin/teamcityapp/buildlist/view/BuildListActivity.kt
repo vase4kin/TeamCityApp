@@ -21,6 +21,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager
@@ -30,10 +31,9 @@ import com.github.vase4kin.teamcityapp.filter_builds.router.FilterBuildsRouter
 import com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity
 import com.github.vase4kin.teamcityapp.runbuild.router.RunBuildRouter
 import com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity
-import androidx.appcompat.app.AppCompatActivity
-import teamcityapp.libraries.utils.initToolbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import teamcityapp.libraries.utils.initToolbar
 
 /**
  * Activity to manage build list
@@ -79,9 +79,7 @@ class BuildListActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return presenter.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = presenter.onOptionsItemSelected(item)
 
     override fun finish() {
         super.finish()

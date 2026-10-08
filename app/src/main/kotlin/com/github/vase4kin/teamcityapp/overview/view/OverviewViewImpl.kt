@@ -45,11 +45,11 @@ import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl
 import com.google.android.material.elevation.ElevationOverlayProvider
 import io.supercharge.shimmerlayout.ShimmerLayout
+import java.util.ArrayList
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.utils.getThemeColor
 import tr.xip.errorview.ErrorView
 import uk.co.samuelwall.materialtaptargetprompt.MaterialTapTargetPrompt
-import java.util.ArrayList
 
 private const val TIMEOUT_PROMPT = 500
 private const val TAG_BOTTOM_SHEET = "BottomSheet Dialog"
@@ -65,10 +65,13 @@ class OverviewViewImpl(
 
     @BindView(R.id.swiperefresh)
     lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
     @BindView(R.id.my_recycler_view)
     lateinit var recyclerView: RecyclerView
+
     @BindView(R.id.error_view)
     lateinit var errorView: ErrorView
+
     @BindView(R.id.skeleton_view)
     lateinit var skeletonView: ViewGroup
 
@@ -341,18 +344,22 @@ class OverviewViewImpl(
                 listener?.onCancelBuildContextMenuClick()
                 return true
             }
+
             R.id.share_build -> {
                 listener?.onShareButtonClick()
                 return true
             }
+
             R.id.restart_build -> {
                 listener?.onRestartBuildButtonClick()
                 return true
             }
+
             R.id.open_in_a_browser -> {
                 listener?.onOpenBrowser()
                 return true
             }
+
             else -> return false
         }
     }
@@ -465,7 +472,8 @@ class OverviewViewImpl(
         val elevation =
             activity.resources.getDimension(R.dimen.dp_4)
         return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
-            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
+            activity.getThemeColor(R.attr.colorPrimarySurface),
+            elevation
         )
     }
 }

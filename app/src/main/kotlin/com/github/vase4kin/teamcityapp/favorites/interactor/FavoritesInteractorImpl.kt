@@ -16,10 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.favorites.interactor
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.interfaces.Collectible
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -34,7 +34,8 @@ private val EMPTY_BUILDTYPE = BuildType()
 class FavoritesInteractorImpl(
     private val repository: Repository,
     private val storage: SharedUserStorage
-) : BaseListRxDataManagerImpl<FavoritesInteractorImpl.NavigationItemsList, NavigationItem>(), FavoritesInteractor {
+) : BaseListRxDataManagerImpl<FavoritesInteractorImpl.NavigationItemsList, NavigationItem>(),
+    FavoritesInteractor {
 
     /**
      * {@inheritDoc}
@@ -58,8 +59,6 @@ class FavoritesInteractorImpl(
 
     class NavigationItemsList(private val items: List<NavigationItem>) : Collectible<NavigationItem> {
 
-        override fun getObjects(): List<NavigationItem> {
-            return items
-        }
+        override fun getObjects(): List<NavigationItem> = items
     }
 }

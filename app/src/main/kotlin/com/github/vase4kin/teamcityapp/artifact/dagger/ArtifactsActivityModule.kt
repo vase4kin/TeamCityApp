@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.artifact.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import android.os.Bundle
 import android.os.Environment
@@ -50,6 +49,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -75,56 +75,42 @@ object ArtifactsActivityModule {
     fun providesArtifactView(
         activity: ArtifactListActivity,
         @Named("ArtifactListActivity") adapter: ArtifactAdapter
-    ): ArtifactView {
-        return ArtifactViewImpl(
-            activity.findViewById(android.R.id.content),
-            activity,
-            R.string.empty_list_message_artifacts,
-            adapter
-        )
-    }
+    ): ArtifactView = ArtifactViewImpl(
+        activity.findViewById(android.R.id.content),
+        activity,
+        R.string.empty_list_message_artifacts,
+        adapter
+    )
 
     @Provides
     @Named("ArtifactListActivity")
-    fun providesArtifactRouter(activity: ArtifactListActivity, sharedUserStorage: SharedUserStorage): ArtifactRouter {
-        return ArtifactRouterImpl(
-            sharedUserStorage,
-            activity,
-            ChromeCustomTabsImpl(activity)
-        )
-    }
+    fun providesArtifactRouter(activity: ArtifactListActivity, sharedUserStorage: SharedUserStorage): ArtifactRouter = ArtifactRouterImpl(
+        sharedUserStorage,
+        activity,
+        ChromeCustomTabsImpl(activity)
+    )
 
     @Provides
     @Named("ArtifactListActivity")
-    fun providesArtifactValueExtractor(activity: ArtifactListActivity): ArtifactValueExtractor {
-        return ArtifactValueExtractorImpl(activity.intent.extras ?: Bundle.EMPTY)
-    }
+    fun providesArtifactValueExtractor(activity: ArtifactListActivity): ArtifactValueExtractor = ArtifactValueExtractorImpl(activity.intent.extras ?: Bundle.EMPTY)
 
     @Provides
     @Named("ArtifactListActivity")
-    fun providesViewTracker(): ViewTracker {
-        return ViewTracker.STUB
-    }
+    fun providesViewTracker(): ViewTracker = ViewTracker.STUB
 
     @Provides
     @Named("ArtifactListActivity")
-    fun providesPermissionManager(activity: ArtifactListActivity): PermissionManager {
-        return PermissionManagerImpl(activity)
-    }
+    fun providesPermissionManager(activity: ArtifactListActivity): PermissionManager = PermissionManagerImpl(activity)
 
     @Provides
     @Named("ArtifactListActivity")
-    fun providesArtifactAdapter(@Named("ArtifactListActivity") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ArtifactDataModel>>): ArtifactAdapter {
-        return ArtifactAdapter(viewHolderFactories)
-    }
+    fun providesArtifactAdapter(@Named("ArtifactListActivity") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<ArtifactDataModel>>): ArtifactAdapter = ArtifactAdapter(viewHolderFactories)
 
     @Provides
     @Named("ArtifactListActivity")
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesArtifactViewHolderFactory(): ViewHolderFactory<ArtifactDataModel> {
-        return ArtifactViewHolderFactory()
-    }
+    fun providesArtifactViewHolderFactory(): ViewHolderFactory<ArtifactDataModel> = ArtifactViewHolderFactory()
 
     @Provides
     @Named("ArtifactListActivity")
@@ -135,13 +121,12 @@ object ArtifactsActivityModule {
         @Named("ArtifactListActivity") valueExtractor: ArtifactValueExtractor,
         @Named("ArtifactListActivity") router: ArtifactRouter,
         @Named("ArtifactListActivity") permissionManager: PermissionManager
-    ): ArtifactPresenterImpl =
-        ArtifactPresenterImpl(
-            view,
-            dataManager,
-            tracker,
-            valueExtractor,
-            router,
-            permissionManager
-        )
+    ): ArtifactPresenterImpl = ArtifactPresenterImpl(
+        view,
+        dataManager,
+        tracker,
+        valueExtractor,
+        router,
+        permissionManager
+    )
 }

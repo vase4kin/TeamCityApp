@@ -18,9 +18,9 @@ package com.github.vase4kin.teamcityapp.navigation.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationItem
 import com.github.vase4kin.teamcityapp.navigation.api.NavigationNode
 import teamcityapp.libraries.remote.RemoteService
@@ -32,7 +32,8 @@ class NavigationDataManagerImpl(
     private val mRepository: Repository,
     context: Context,
     private val remoteService: RemoteService
-) : BaseListRxDataManagerImpl<NavigationNode, NavigationItem>(), NavigationDataManager {
+) : BaseListRxDataManagerImpl<NavigationNode, NavigationItem>(),
+    NavigationDataManager {
 
     private val sharedPreferences: SharedPreferences
 
@@ -53,9 +54,7 @@ class NavigationDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun showRateTheApp(): Boolean {
-        return !isRated && remoteService.isNotChurn()
-    }
+    override fun showRateTheApp(): Boolean = !isRated && remoteService.isNotChurn()
 
     /**
      * {@inheritDoc}

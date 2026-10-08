@@ -15,25 +15,24 @@
  */
 
 package com.github.vase4kin.teamcityapp.account.create.data
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
-
 import android.content.Context
 import android.net.Uri
 import android.os.Handler
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import teamcityapp.libraries.remote.url.UrlFormatter
 import com.github.vase4kin.teamcityapp.api.AUTHORIZATION
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import java.io.IOException
+import java.net.UnknownHostException
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
-import java.io.IOException
-import java.net.UnknownHostException
+import teamcityapp.libraries.remote.url.UrlFormatter
 
 private const val AUTH_URL = "httpAuth/app/rest/server"
 private const val AUTH_GUEST_URL = "guestAuth/app/rest/server"
@@ -112,9 +111,7 @@ class CreateAccountDataManagerImpl(
     /**
      * @return [OkHttpClient] depending on ssl enabled state
      */
-    private fun getClient(isSslEnabled: Boolean): OkHttpClient {
-        return if (isSslEnabled) unsafeBaseOkHttpClient else baseOkHttpClient
-    }
+    private fun getClient(isSslEnabled: Boolean): OkHttpClient = if (isSslEnabled) unsafeBaseOkHttpClient else baseOkHttpClient
 
     /**
      * Handle auth request
@@ -131,7 +128,6 @@ class CreateAccountDataManagerImpl(
         listener: CustomOnLoadingListener<String>,
         checkSecureConnection: Boolean
     ) {
-
         val serverAuthUri = Uri.parse(serverUrl).buildUpon()
             .appendEncodedPath(authUrl).build()
 
@@ -146,7 +142,6 @@ class CreateAccountDataManagerImpl(
         val handler = Handler(context.mainLooper)
 
         try {
-
             val request = Request.Builder()
                 .url(serverAuthUri.toString())
                 .build()

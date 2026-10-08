@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.snapshot_dependencies.presenter
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataModel
@@ -64,9 +64,7 @@ class SnapshotDependenciesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun createModel(data: List<BuildDetails>): BuildListDataModel {
-        return BuildListDataModelImpl(data.toMutableList())
-    }
+    override fun createModel(data: List<BuildDetails>): BuildListDataModel = BuildListDataModelImpl(data.toMutableList())
 
     /**
      * {@inheritDoc}
@@ -125,11 +123,7 @@ class SnapshotDependenciesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    override fun isLoading(): Boolean {
-        return false
-    }
+    override fun isLoading(): Boolean = false
 
-    override fun hasLoadedAllItems(): Boolean {
-        return false
-    }
+    override fun hasLoadedAllItems(): Boolean = false
 }

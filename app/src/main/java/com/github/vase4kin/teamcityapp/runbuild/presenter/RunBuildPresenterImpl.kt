@@ -17,8 +17,8 @@
 package com.github.vase4kin.teamcityapp.runbuild.presenter
 
 import androidx.annotation.VisibleForTesting
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.runbuild.interactor.BranchesInteractor
 import com.github.vase4kin.teamcityapp.runbuild.interactor.LoadingListenerWithForbiddenSupport
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor

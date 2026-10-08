@@ -17,8 +17,8 @@
 package com.github.vase4kin.teamcityapp.changes.presenter
 
 import androidx.annotation.VisibleForTesting
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.changes.data.ChangesDataManager
@@ -71,13 +71,9 @@ class ChangesPresenterImpl @Inject constructor(
                 })
             }
 
-            override fun isLoading(): Boolean {
-                return isLoadMoreLoading
-            }
+            override fun isLoading(): Boolean = isLoadMoreLoading
 
-            override fun hasLoadedAllItems(): Boolean {
-                return !dataManager.canLoadMore()
-            }
+            override fun hasLoadedAllItems(): Boolean = !dataManager.canLoadMore()
         })
         view.replaceSkeletonViewContent()
     }
@@ -95,9 +91,7 @@ class ChangesPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: List<Changes.Change>): ChangesDataModel {
-        return ChangesDataModelImpl(data.toMutableList())
-    }
+    public override fun createModel(data: List<Changes.Change>): ChangesDataModel = ChangesDataModelImpl(data.toMutableList())
 
     /**
      * {@inheritDoc}

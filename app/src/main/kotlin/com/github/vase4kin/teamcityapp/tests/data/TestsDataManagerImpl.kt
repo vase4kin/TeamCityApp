@@ -16,9 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.tests.data
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
@@ -36,7 +36,8 @@ import teamcityapp.features.test_details.repository.models.TestOccurrence
 class TestsDataManagerImpl(
     private val repository: Repository,
     private val eventBus: EventBus
-) : BaseListRxDataManagerImpl<TestOccurrences, TestOccurrence>(), TestsDataManager {
+) : BaseListRxDataManagerImpl<TestOccurrences, TestOccurrence>(),
+    TestsDataManager {
 
     private var mLoadMoreUrl: String? = null
     private var mLoadingListener: OnLoadingListener<List<TestOccurrence>>? = null
@@ -136,9 +137,7 @@ class TestsDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun canLoadMore(): Boolean {
-        return mLoadMoreUrl != null
-    }
+    override fun canLoadMore(): Boolean = mLoadMoreUrl != null
 
     /**
      * {@inheritDoc}

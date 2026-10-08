@@ -16,9 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.changes.data
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenter
 import com.github.vase4kin.teamcityapp.changes.api.Changes
@@ -35,7 +35,8 @@ import org.greenrobot.eventbus.EventBus
 class ChangesDataManagerImpl(
     private val repository: Repository,
     private val eventBus: EventBus
-) : BaseListRxDataManagerImpl<Changes, Changes.Change>(), ChangesDataManager {
+) : BaseListRxDataManagerImpl<Changes, Changes.Change>(),
+    ChangesDataManager {
 
     private var loadMoreUrl: String? = null
 
@@ -104,9 +105,7 @@ class ChangesDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun canLoadMore(): Boolean {
-        return loadMoreUrl != null
-    }
+    override fun canLoadMore(): Boolean = loadMoreUrl != null
 
     /**
      * {@inheritDoc}

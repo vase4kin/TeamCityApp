@@ -255,7 +255,8 @@ class HomeViewImpl(private val activity: AppCompatActivity) : HomeView {
         val elevation =
             activity.resources.getDimension(R.dimen.dp_4)
         return ElevationOverlayProvider(activity).compositeOverlayIfNeeded(
-            activity.getThemeColor(R.attr.colorPrimarySurface), elevation
+            activity.getThemeColor(R.attr.colorPrimarySurface),
+            elevation
         )
     }
 }

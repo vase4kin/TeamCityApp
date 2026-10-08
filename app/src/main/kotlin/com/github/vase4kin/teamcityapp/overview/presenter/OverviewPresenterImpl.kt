@@ -24,8 +24,8 @@ import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.data.OverViewInteractor
 import com.github.vase4kin.teamcityapp.overview.tracker.OverviewTracker
 import com.github.vase4kin.teamcityapp.overview.view.OverviewView
-import teamcityapp.libraries.onboarding.OnboardingManager
 import javax.inject.Inject
+import teamcityapp.libraries.onboarding.OnboardingManager
 
 /**
  * Impl of [OverviewPresenter]
@@ -126,9 +126,7 @@ class OverviewPresenterImpl @Inject internal constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return view.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = view.onOptionsItemSelected(item)
 
     /**
      * {@inheritDoc}
@@ -291,10 +289,12 @@ class OverviewPresenterImpl @Inject internal constructor(
                 val startTime = buildDetails.startDate
                 view.addTimeCard(startTime)
             }
+
             buildDetails.isQueued -> {
                 val queuedTime = buildDetails.queuedDate
                 view.addQueuedTimeCard(queuedTime)
             }
+
             else -> {
                 val finishTime = buildDetails.finishTime
                 view.addTimeCard(finishTime)
@@ -323,30 +323,35 @@ class OverviewPresenterImpl @Inject internal constructor(
                     view.addTriggeredByCard(vcsName)
                 }
             }
+
             buildDetails.isTriggeredByUnknown -> {
                 val unknownConfigurationInfo = buildDetails.triggeredDetails
                 if (unknownConfigurationInfo != null) {
                     view.addTriggeredByCard(unknownConfigurationInfo)
                 }
             }
+
             buildDetails.isTriggeredByUser -> {
                 val triggeredUserNameInfo = buildDetails.userNameOfUserWhoTriggeredBuild
                 if (triggeredUserNameInfo != null) {
                     view.addTriggeredByCard(triggeredUserNameInfo)
                 }
             }
+
             buildDetails.isRestarted -> {
                 val restartedUserInfo = buildDetails.userNameOfUserWhoTriggeredBuild
                 if (restartedUserInfo != null) {
                     view.addRestartedByCard(restartedUserInfo)
                 }
             }
+
             buildDetails.isTriggeredByBuildType -> {
                 val buildTypeName = buildDetails.nameOfTriggeredBuildType
                 if (buildTypeName != null) {
                     view.addTriggeredByCard(buildTypeName)
                 }
             }
+
             else -> view.addTriggeredByUnknownTriggerTypeCard()
         }
 

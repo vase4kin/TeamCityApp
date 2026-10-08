@@ -224,7 +224,7 @@ class ChangedSelectionTest(unittest.TestCase):
                 self.assertEqual(result["fallback_paths"], [])
 
     def test_changed_test_file_selects_every_active_method_in_that_class(self):
-        path = "app/src/androidTest/java/com/github/vase4kin/teamcityapp/buildlist/view/BuildListActivityTest.kt"
+        path = "app/src/androidTest/kotlin/com/github/vase4kin/teamcityapp/buildlist/view/BuildListActivityTest.kt"
         self.assertEqual(set(self.select(path)["tests"]), self.smoke | self.index[path])
 
     def test_new_methods_enter_changed_selection_without_catalog_updates(self):

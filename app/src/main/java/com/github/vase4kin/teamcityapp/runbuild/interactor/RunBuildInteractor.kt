@@ -16,14 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.interactor
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import teamcityapp.features.properties.repository.models.Properties
 
 /**
  * Forbidden code error
  */
 const val CODE_FORBIDDEN = 403
+
 /**
  * Extra bundle key
  */

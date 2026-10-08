@@ -23,8 +23,8 @@ import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.login.router.LoginRouter
 import com.github.vase4kin.teamcityapp.login.tracker.LoginTracker
 import com.github.vase4kin.teamcityapp.login.view.LoginView
-import teamcityapp.libraries.remote.RemoteService
 import javax.inject.Inject
+import teamcityapp.libraries.remote.RemoteService
 
 private const val UNAUTHORIZED_STATUS_CODE = 401
 
@@ -37,7 +37,8 @@ class LoginPresenterImpl @Inject constructor(
     private val router: LoginRouter,
     private val tracker: LoginTracker,
     private val remoteService: RemoteService
-) : LoginPresenter, LoginView.ViewListener {
+) : LoginPresenter,
+    LoginView.ViewListener {
 
     private var loginInfo: LoginInfo? = null
 
@@ -220,7 +221,11 @@ class LoginPresenterImpl @Inject constructor(
                     }
                 }
             },
-            serverUrl, userName, password, isSslDisabled, checkSecureConnection
+            serverUrl,
+            userName,
+            password,
+            isSslDisabled,
+            checkSecureConnection
         )
     }
 
@@ -248,7 +253,9 @@ class LoginPresenterImpl @Inject constructor(
                             view.showUnauthorizedInfoDialog()
                             clearLoginInfo()
                         }
+
                         CreateAccountDataManager.ERROR_CODE_HTTP_NOT_SECURE -> view.showNotSecureConnectionDialog(true)
+
                         else -> {
                             view.showError(errorMessage)
                             clearLoginInfo()
@@ -256,7 +263,9 @@ class LoginPresenterImpl @Inject constructor(
                     }
                 }
             },
-            serverUrl, isSslDisabled, checkSecureConnection
+            serverUrl,
+            isSslDisabled,
+            checkSecureConnection
         )
     }
 

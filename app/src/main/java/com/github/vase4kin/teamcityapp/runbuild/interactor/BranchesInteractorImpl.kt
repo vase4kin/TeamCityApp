@@ -16,8 +16,8 @@
 
 package com.github.vase4kin.teamcityapp.runbuild.interactor
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

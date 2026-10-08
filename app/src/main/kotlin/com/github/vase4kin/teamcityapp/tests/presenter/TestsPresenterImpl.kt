@@ -20,8 +20,8 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.VisibleForTesting
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataManager
 import com.github.vase4kin.teamcityapp.tests.data.TestsDataModel
@@ -31,8 +31,8 @@ import com.github.vase4kin.teamcityapp.tests.router.TestsRouter
 import com.github.vase4kin.teamcityapp.tests.view.OnTestsPresenterListener
 import com.github.vase4kin.teamcityapp.tests.view.TestsView
 import com.mugen.MugenCallbacks
-import teamcityapp.features.test_details.repository.models.TestOccurrence
 import javax.inject.Inject
+import teamcityapp.features.test_details.repository.models.TestOccurrence
 
 /**
  * Impl of [TestsPresenter]
@@ -68,9 +68,7 @@ class TestsPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: List<TestOccurrence>): TestsDataModel {
-        return TestsDataModelImpl(data.toMutableList())
-    }
+    public override fun createModel(data: List<TestOccurrence>): TestsDataModel = TestsDataModelImpl(data.toMutableList())
 
     /**
      * {@inheritDoc}
@@ -97,13 +95,9 @@ class TestsPresenterImpl @Inject constructor(
                 })
             }
 
-            override fun isLoading(): Boolean {
-                return isLoadMoreLoading
-            }
+            override fun isLoading(): Boolean = isLoadMoreLoading
 
-            override fun hasLoadedAllItems(): Boolean {
-                return !dataManager.canLoadMore()
-            }
+            override fun hasLoadedAllItems(): Boolean = !dataManager.canLoadMore()
         })
         view.replaceSkeletonViewContent()
     }

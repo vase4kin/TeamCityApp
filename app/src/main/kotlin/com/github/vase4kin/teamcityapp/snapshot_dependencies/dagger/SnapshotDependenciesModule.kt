@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.snapshot_dependencies.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.github.vase4kin.teamcityapp.R
@@ -53,6 +52,7 @@ import dagger.hilt.android.components.FragmentComponent
 import dagger.multibindings.IntKey
 import dagger.multibindings.IntoMap
 import javax.inject.Named
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(FragmentComponent::class)
@@ -62,33 +62,23 @@ object SnapshotDependenciesModule {
     fun provideOwner(owner: Fragment): SnapshotDependenciesFragment = owner.requireScreenOwner<SnapshotDependenciesFragment>()
 
     @Provides
-    fun providesBuildListRouter(fragment: SnapshotDependenciesFragment): SnapshotDependenciesRouter {
-        return SnapshotDependenciesRouterImpl(fragment.requireActivity())
-    }
+    fun providesBuildListRouter(fragment: SnapshotDependenciesFragment): SnapshotDependenciesRouter = SnapshotDependenciesRouterImpl(fragment.requireActivity())
 
     @Provides
-    fun providesBuildListValueExtractor(fragment: SnapshotDependenciesFragment): SnapshotDependenciesValueExtractor {
-        return SnapshotDependenciesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
-    }
+    fun providesBuildListValueExtractor(fragment: SnapshotDependenciesFragment): SnapshotDependenciesValueExtractor = SnapshotDependenciesValueExtractorImpl(fragment.arguments ?: Bundle.EMPTY)
 
     @Provides
     @Named("SnapshotDependenciesFragment")
-    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
-        return BuildInteractorImpl(teamCityService)
-    }
+    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor = BuildInteractorImpl(teamCityService)
 
     @Provides
-    fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): SnapshotDependenciesTracker {
-        return SnapshotDependenciesTrackerImpl(firebaseAnalytics)
-    }
+    fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): SnapshotDependenciesTracker = SnapshotDependenciesTrackerImpl(firebaseAnalytics)
 
     @Provides
     fun providesBuildListDataManager(
         repository: Repository,
         storage: SharedUserStorage
-    ): SnapshotDependenciesInteractor {
-        return SnapshotDependenciesInteractorImpl(repository, storage)
-    }
+    ): SnapshotDependenciesInteractor = SnapshotDependenciesInteractorImpl(repository, storage)
 
     @Provides
     @Named("SnapshotDependenciesFragment")
@@ -104,9 +94,7 @@ object SnapshotDependenciesModule {
             adapter,
             FilterProvider()
         ) {
-            override fun recyclerViewId(): Int {
-                return R.id.snapshot_recycler_view
-            }
+            override fun recyclerViewId(): Int = R.id.snapshot_recycler_view
         }
     }
 
@@ -115,31 +103,23 @@ object SnapshotDependenciesModule {
     fun providesSimpleSectionedRecyclerViewAdapter(
         fragment: SnapshotDependenciesFragment,
         @Named("SnapshotDependenciesFragment") adapter: BuildListAdapter
-    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
-        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
-    }
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> = SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
 
     @Provides
     @Named("SnapshotDependenciesFragment")
-    fun providesBuildListAdapter(@Named("SnapshotDependenciesFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter {
-        return BuildListAdapter(viewHolderFactories)
-    }
+    fun providesBuildListAdapter(@Named("SnapshotDependenciesFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter = BuildListAdapter(viewHolderFactories)
 
     @Provides
     @Named("SnapshotDependenciesFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_LOAD_MORE)
-    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
-        return LoadMoreViewHolderFactory()
-    }
+    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> = LoadMoreViewHolderFactory()
 
     @Provides
     @Named("SnapshotDependenciesFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
-        return BuildsViewHolderFactory()
-    }
+    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> = BuildsViewHolderFactory()
 
     @Provides
     fun provideSnapshotDependenciesPresenterImpl(
@@ -148,12 +128,11 @@ object SnapshotDependenciesModule {
         tracker: SnapshotDependenciesTracker,
         valueExtractor: SnapshotDependenciesValueExtractor,
         router: SnapshotDependenciesRouter
-    ): SnapshotDependenciesPresenterImpl =
-        SnapshotDependenciesPresenterImpl(
-            view,
-            dataManager,
-            tracker,
-            valueExtractor,
-            router
-        )
+    ): SnapshotDependenciesPresenterImpl = SnapshotDependenciesPresenterImpl(
+        view,
+        dataManager,
+        tracker,
+        valueExtractor,
+        router
+    )
 }

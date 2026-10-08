@@ -1,10 +1,8 @@
 package com.github.vase4kin.teamcityapp.login.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManager
 import com.github.vase4kin.teamcityapp.account.create.data.CreateAccountDataManagerImpl
-import teamcityapp.libraries.remote.url.UrlFormatter
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.login.presenter.LoginPresenterImpl
@@ -24,6 +22,8 @@ import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Named
 import okhttp3.OkHttpClient
 import teamcityapp.libraries.remote.RemoteService
+import teamcityapp.libraries.remote.url.UrlFormatter
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -33,9 +33,7 @@ object LoginModule {
     fun provideOwner(owner: Activity): LoginActivity = owner.requireScreenOwner<LoginActivity>()
 
     @Provides
-    fun providesLoginView(activity: LoginActivity): LoginView {
-        return LoginViewImpl(activity)
-    }
+    fun providesLoginView(activity: LoginActivity): LoginView = LoginViewImpl(activity)
 
     @Provides
     @Named("LoginActivity")
@@ -45,21 +43,19 @@ object LoginModule {
         @Named(CLIENT_BASE_UNSAFE) unsafeBaseOkHttpClient: OkHttpClient,
         sharedUserStorage: SharedUserStorage,
         urlFormatter: UrlFormatter
-    ): CreateAccountDataManager {
-        return CreateAccountDataManagerImpl(
-            activity, baseOkHttpClient, unsafeBaseOkHttpClient, sharedUserStorage, urlFormatter
-        )
-    }
+    ): CreateAccountDataManager = CreateAccountDataManagerImpl(
+        activity,
+        baseOkHttpClient,
+        unsafeBaseOkHttpClient,
+        sharedUserStorage,
+        urlFormatter
+    )
 
     @Provides
-    fun providesLoginRouter(activity: LoginActivity): LoginRouter {
-        return LoginRouterImpl(activity)
-    }
+    fun providesLoginRouter(activity: LoginActivity): LoginRouter = LoginRouterImpl(activity)
 
     @Provides
-    fun providesFirebaseLoginTracker(firebaseAnalytics: FirebaseAnalytics): LoginTracker {
-        return LoginTrackerImpl(firebaseAnalytics)
-    }
+    fun providesFirebaseLoginTracker(firebaseAnalytics: FirebaseAnalytics): LoginTracker = LoginTrackerImpl(firebaseAnalytics)
 
     @Provides
     fun provideLoginPresenterImpl(

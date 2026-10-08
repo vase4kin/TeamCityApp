@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.queue.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
 import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -56,6 +55,7 @@ import dagger.multibindings.IntoMap
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.libraries.onboarding.OnboardingManager
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(FragmentComponent::class)
@@ -66,9 +66,7 @@ object BuildQueueFragmentModule {
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesRunningBuildsDataManager(repository: Repository, storage: SharedUserStorage): RunningBuildsDataManager {
-        return BuildQueueDataManagerImpl(repository, storage)
-    }
+    fun providesRunningBuildsDataManager(repository: Repository, storage: SharedUserStorage): RunningBuildsDataManager = BuildQueueDataManagerImpl(repository, storage)
 
     @Provides
     @Named("BuildQueueFragment")
@@ -76,40 +74,30 @@ object BuildQueueFragmentModule {
         fragment: BuildQueueFragment,
         @Named("BuildQueueFragment") adapter: SimpleSectionedRecyclerViewAdapter<BuildListAdapter>,
         filterProvider: FilterProvider
-    ): RunningBuildListView {
-        return BuildQueueViewImpl(
-            fragment.requireView(),
-            fragment.requireActivity(),
-            R.string.empty_list_message_build_queue,
-            adapter,
-            filterProvider
-        )
-    }
+    ): RunningBuildListView = BuildQueueViewImpl(
+        fragment.requireView(),
+        fragment.requireActivity(),
+        R.string.empty_list_message_build_queue,
+        adapter,
+        filterProvider
+    )
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesBuildListRouter(fragment: BuildQueueFragment): BuildListRouter {
-        return BuildListRouterImpl(fragment.requireActivity())
-    }
+    fun providesBuildListRouter(fragment: BuildQueueFragment): BuildListRouter = BuildListRouterImpl(fragment.requireActivity())
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesBuildListValueExtractor(): BaseValueExtractor {
-        return BaseValueExtractorImpl(Bundle.EMPTY)
-    }
+    fun providesBuildListValueExtractor(): BaseValueExtractor = BaseValueExtractorImpl(Bundle.EMPTY)
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
-        return BuildInteractorImpl(teamCityService)
-    }
+    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor = BuildInteractorImpl(teamCityService)
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): BuildListTracker {
-        return object : FirebaseBuildListTrackerImpl(firebaseAnalytics, "") {
-            override fun trackView() {}
-        }
+    fun providesFirebaseBuildListTracker(firebaseAnalytics: FirebaseAnalytics): BuildListTracker = object : FirebaseBuildListTrackerImpl(firebaseAnalytics, "") {
+        override fun trackView() {}
     }
 
     @Provides
@@ -117,31 +105,23 @@ object BuildQueueFragmentModule {
     fun providesSimpleSectionedRecyclerViewAdapter(
         fragment: BuildQueueFragment,
         @Named("BuildQueueFragment") adapter: BuildListAdapter
-    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> {
-        return SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
-    }
+    ): SimpleSectionedRecyclerViewAdapter<BuildListAdapter> = SimpleSectionedRecyclerViewAdapter(fragment.requireContext(), adapter)
 
     @Provides
     @Named("BuildQueueFragment")
-    fun providesBuildListAdapter(@Named("BuildQueueFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter {
-        return BuildListAdapter(viewHolderFactories)
-    }
+    fun providesBuildListAdapter(@Named("BuildQueueFragment") viewHolderFactories: Map<Int, @JvmSuppressWildcards ViewHolderFactory<BuildListDataModel>>): BuildListAdapter = BuildListAdapter(viewHolderFactories)
 
     @Provides
     @Named("BuildQueueFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_LOAD_MORE)
-    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
-        return LoadMoreViewHolderFactory()
-    }
+    fun providesLoadMoreViewHolderFactory(): ViewHolderFactory<BuildListDataModel> = LoadMoreViewHolderFactory()
 
     @Provides
     @Named("BuildQueueFragment")
     @IntoMap
     @IntKey(BaseListView.TYPE_DEFAULT)
-    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> {
-        return BuildsViewHolderFactory()
-    }
+    fun providesBuildViewHolderFactory(): ViewHolderFactory<BuildListDataModel> = BuildsViewHolderFactory()
 
     @Provides
     fun provideQueueBuildsListPresenterImpl(
@@ -154,16 +134,15 @@ object BuildQueueFragmentModule {
         onboardingManager: OnboardingManager,
         filterProvider: FilterProvider,
         eventBus: EventBus
-    ): QueueBuildsListPresenterImpl =
-        QueueBuildsListPresenterImpl(
-            view,
-            dataManager,
-            tracker,
-            router,
-            valueExtractor,
-            buildInteractor,
-            onboardingManager,
-            filterProvider,
-            eventBus
-        )
+    ): QueueBuildsListPresenterImpl = QueueBuildsListPresenterImpl(
+        view,
+        dataManager,
+        tracker,
+        router,
+        valueExtractor,
+        buildInteractor,
+        onboardingManager,
+        filterProvider,
+        eventBus
+    )
 }

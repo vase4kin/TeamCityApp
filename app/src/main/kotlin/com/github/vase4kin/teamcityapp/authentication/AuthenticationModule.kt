@@ -26,5 +26,4 @@ import teamcityapp.libraries.authentication.AuthenticationRepository
 @InstallIn(SingletonComponent::class)
 object AuthenticationModule {
     @Provides fun authentication(repository: AppAuthenticationRepository): AuthenticationRepository = repository
-
 }

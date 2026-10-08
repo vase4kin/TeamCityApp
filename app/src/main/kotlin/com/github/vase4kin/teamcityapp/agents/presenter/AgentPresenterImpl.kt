@@ -16,7 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.agents.presenter
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.agents.api.Agent
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModel
 import com.github.vase4kin.teamcityapp.agents.data.AgentDataModelImpl
@@ -24,13 +23,14 @@ import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManager
 import com.github.vase4kin.teamcityapp.agents.extractor.AgentsValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
 import com.github.vase4kin.teamcityapp.base.list.view.BaseListView
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.tracker.ViewTracker
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import javax.inject.Inject
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
-import javax.inject.Inject
 
 /**
  * Handles logic of [com.github.vase4kin.teamcityapp.agents.view.AgentListFragment]
@@ -71,9 +71,7 @@ class AgentPresenterImpl @Inject constructor(
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: List<Agent>): AgentDataModel {
-        return AgentDataModelImpl(data)
-    }
+    public override fun createModel(data: List<Agent>): AgentDataModel = AgentDataModelImpl(data)
 
     /**
      * {@inheritDoc}
@@ -109,6 +107,5 @@ class AgentPresenterImpl @Inject constructor(
      */
     @Suppress("unused")
     @Subscribe
-    fun onEvent(@Suppress("UNUSED_PARAMETER") event: HomeDataManager.AgentsFilterChangedEvent) =
-        loadData()
+    fun onEvent(@Suppress("UNUSED_PARAMETER") event: HomeDataManager.AgentsFilterChangedEvent) = loadData()
 }

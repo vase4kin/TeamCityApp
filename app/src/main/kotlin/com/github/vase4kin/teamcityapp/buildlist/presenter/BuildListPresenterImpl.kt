@@ -20,9 +20,9 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.annotation.VisibleForTesting
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.list.presenter.BaseListPresenterImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildListDataManager
@@ -34,8 +34,8 @@ import com.github.vase4kin.teamcityapp.buildlist.router.BuildListRouter
 import com.github.vase4kin.teamcityapp.buildlist.tracker.BuildListTracker
 import com.github.vase4kin.teamcityapp.buildlist.view.BuildListView
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
-import teamcityapp.libraries.onboarding.OnboardingManager
 import javax.inject.Inject
+import teamcityapp.libraries.onboarding.OnboardingManager
 
 open class BuildListPresenterImpl<V : BuildListView, DM : BuildListDataManager> @Inject
 constructor(
@@ -57,6 +57,7 @@ constructor(
 
     @VisibleForTesting
     internal var isLoadMoreLoading = false
+
     /**
      * Saved local queued build href
      */
@@ -239,23 +240,17 @@ constructor(
     /**
      * {@inheritDoc}
      */
-    override fun isLoading(): Boolean {
-        return isLoadMoreLoading
-    }
+    override fun isLoading(): Boolean = isLoadMoreLoading
 
     /**
      * {@inheritDoc}
      */
-    override fun hasLoadedAllItems(): Boolean {
-        return !dataManager.canLoadMore()
-    }
+    override fun hasLoadedAllItems(): Boolean = !dataManager.canLoadMore()
 
     /**
      * {@inheritDoc}
      */
-    public override fun createModel(data: List<BuildDetails>): BuildListDataModel {
-        return BuildListDataModelImpl(data.toMutableList())
-    }
+    public override fun createModel(data: List<BuildDetails>): BuildListDataModel = BuildListDataModelImpl(data.toMutableList())
 
     /**
      * {@inheritDoc}
@@ -324,9 +319,7 @@ constructor(
     /**
      * {@inheritDoc}
      */
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return view.onOptionsItemSelected(item)
-    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = view.onOptionsItemSelected(item)
 
     /**
      * {@inheritDoc}

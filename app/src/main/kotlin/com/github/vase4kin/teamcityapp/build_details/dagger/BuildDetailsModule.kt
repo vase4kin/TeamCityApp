@@ -16,8 +16,6 @@
 
 package com.github.vase4kin.teamcityapp.build_details.dagger
 
-import teamcityapp.libraries.utils.requireScreenOwner
-import teamcityapp.features.properties.api.PropertiesNavigation
 import android.app.Activity
 import android.view.View
 import com.github.vase4kin.teamcityapp.api.Repository
@@ -46,7 +44,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.features.properties.api.PropertiesNavigation
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
+import teamcityapp.libraries.utils.requireScreenOwner
 
 @Module
 @InstallIn(ActivityComponent::class)
@@ -60,20 +60,16 @@ object BuildDetailsModule {
         activity: BuildDetailsActivity,
         @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
         propertiesNavigation: PropertiesNavigation
-    ): BuildDetailsView {
-        return BuildDetailsViewImpl(
-            activity.findViewById<View>(android.R.id.content),
-            activity,
-            valueExtractor,
-            propertiesNavigation
-        )
-    }
+    ): BuildDetailsView = BuildDetailsViewImpl(
+        activity.findViewById<View>(android.R.id.content),
+        activity,
+        valueExtractor,
+        propertiesNavigation
+    )
 
     @Provides
     @Named("BuildDetailsActivity")
-    fun providesBuildTabsValueExtractor(activity: BuildDetailsActivity): BaseValueExtractor {
-        return BaseValueExtractorImpl(activity.intent.extras!!)
-    }
+    fun providesBuildTabsValueExtractor(activity: BuildDetailsActivity): BaseValueExtractor = BaseValueExtractorImpl(activity.intent.extras!!)
 
     @Provides
     fun providesBaseTabsDataManager(
@@ -81,37 +77,27 @@ object BuildDetailsModule {
         @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
         sharedUserStorage: SharedUserStorage,
         repository: Repository
-    ): BuildDetailsInteractor {
-        return BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
-    }
+    ): BuildDetailsInteractor = BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
 
     @Provides
-    fun providesBuildTabsRouter(activity: BuildDetailsActivity): BuildDetailsRouter {
-        return BuildDetailsRouterImpl(
-            activity,
-            ChromeCustomTabsImpl(activity)
-        )
-    }
+    fun providesBuildTabsRouter(activity: BuildDetailsActivity): BuildDetailsRouter = BuildDetailsRouterImpl(
+        activity,
+        ChromeCustomTabsImpl(activity)
+    )
 
     @Provides
     @Named("BuildDetailsActivity")
     fun providesRunBuildInteractor(
         repository: Repository,
         @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor
-    ): RunBuildInteractor {
-        return RunBuildInteractorImpl(repository, valueExtractor.buildDetails.buildTypeId)
-    }
+    ): RunBuildInteractor = RunBuildInteractorImpl(repository, valueExtractor.buildDetails.buildTypeId)
 
     @Provides
     @Named("BuildDetailsActivity")
-    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor {
-        return BuildInteractorImpl(teamCityService)
-    }
+    fun providesBuildInteractor(teamCityService: TeamCityService): BuildInteractor = BuildInteractorImpl(teamCityService)
 
     @Provides
-    fun providesFirebaseViewTracker(firebaseAnalytics: FirebaseAnalytics): BuildDetailsTracker {
-        return FirebaseBuildDetailsTrackerImpl(firebaseAnalytics)
-    }
+    fun providesFirebaseViewTracker(firebaseAnalytics: FirebaseAnalytics): BuildDetailsTracker = FirebaseBuildDetailsTrackerImpl(firebaseAnalytics)
 
     @Provides
     fun provideBuildDetailsPresenterImpl(
@@ -121,13 +107,12 @@ object BuildDetailsModule {
         router: BuildDetailsRouter,
         @Named("BuildDetailsActivity") runBuildInteractor: RunBuildInteractor,
         @Named("BuildDetailsActivity") buildInteractor: BuildInteractor
-    ): BuildDetailsPresenterImpl =
-        BuildDetailsPresenterImpl(
-            view,
-            tracker,
-            dataManager,
-            router,
-            runBuildInteractor,
-            buildInteractor
-        )
+    ): BuildDetailsPresenterImpl = BuildDetailsPresenterImpl(
+        view,
+        tracker,
+        dataManager,
+        router,
+        runBuildInteractor,
+        buildInteractor
+    )
 }

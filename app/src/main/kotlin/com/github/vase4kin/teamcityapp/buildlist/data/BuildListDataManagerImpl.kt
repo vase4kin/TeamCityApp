@@ -16,9 +16,9 @@
 
 package com.github.vase4kin.teamcityapp.buildlist.data
 
-import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
+import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
@@ -38,7 +38,8 @@ import io.reactivex.schedulers.Schedulers
 open class BuildListDataManagerImpl(
     protected val repository: Repository,
     private val sharedUserStorage: SharedUserStorage
-) : BaseListRxDataManagerImpl<Builds, Build>(), BuildListDataManager {
+) : BaseListRxDataManagerImpl<Builds, Build>(),
+    BuildListDataManager {
 
     /**
      * Load more url
@@ -71,9 +72,7 @@ open class BuildListDataManagerImpl(
     /**
      * {@inheritDoc}
      */
-    override fun canLoadMore(): Boolean {
-        return loadMoreUrl != null
-    }
+    override fun canLoadMore(): Boolean = loadMoreUrl != null
 
     /**
      * {@inheritDoc}
@@ -147,42 +146,40 @@ open class BuildListDataManagerImpl(
         loadBuildDetailsList(buildDetailsList, loadingListener)
     }
 
-    protected fun getBuildDetailsObservable(call: Single<Builds>): Observable<BuildDetails> {
-        return call
-            // converting all received builds to observables
-            .flatMapObservable { builds ->
-                if (builds.count == 0) {
-                    Observable.fromIterable(emptyList<Build>())
-                } else {
-                    loadMoreUrl = builds.nextHref
-                    Observable.fromIterable(builds.objects)
-                }
+    protected fun getBuildDetailsObservable(call: Single<Builds>): Observable<BuildDetails> = call
+        // converting all received builds to observables
+        .flatMapObservable { builds ->
+            if (builds.count == 0) {
+                Observable.fromIterable(emptyList<Build>())
+            } else {
+                loadMoreUrl = builds.nextHref
+                Observable.fromIterable(builds.objects)
             }
-            // returning new updated build observables for each stored build already
-            .flatMapSingle { serverBuild ->
-                // Make sure cache is updated
-                val serverBuildDetails = BuildDetailsImpl(serverBuild)
-                // If server build's running update cache immediately
-                if (serverBuildDetails.isRunning) {
-                    repository.build(serverBuild.href, true)
-                } else {
-                    // Call cache
-                    repository.build(serverBuild.href, false)
-                        .flatMap { cachedBuild ->
-                            val cacheBuildDetails = BuildDetailsImpl(cachedBuild)
-                            // Compare if server side and cache are updated
-                            // If cache's not updated -> update it
-                            repository.build(
-                                cachedBuild.href,
-                                // Don't update cache if server and cache builds are finished
-                                serverBuildDetails.isFinished != cacheBuildDetails.isFinished
-                            )
-                        }
-                }
+        }
+        // returning new updated build observables for each stored build already
+        .flatMapSingle { serverBuild ->
+            // Make sure cache is updated
+            val serverBuildDetails = BuildDetailsImpl(serverBuild)
+            // If server build's running update cache immediately
+            if (serverBuildDetails.isRunning) {
+                repository.build(serverBuild.href, true)
+            } else {
+                // Call cache
+                repository.build(serverBuild.href, false)
+                    .flatMap { cachedBuild ->
+                        val cacheBuildDetails = BuildDetailsImpl(cachedBuild)
+                        // Compare if server side and cache are updated
+                        // If cache's not updated -> update it
+                        repository.build(
+                            cachedBuild.href,
+                            // Don't update cache if server and cache builds are finished
+                            serverBuildDetails.isFinished != cacheBuildDetails.isFinished
+                        )
+                    }
             }
-            .map { BuildDetailsImpl(it) }
-            .cast(BuildDetails::class.java)
-    }
+        }
+        .map { BuildDetailsImpl(it) }
+        .cast(BuildDetails::class.java)
 
     /**
      * Load build count
