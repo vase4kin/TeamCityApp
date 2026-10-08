@@ -17,10 +17,14 @@ to the requested behavior and the coherent migration slice needed to support it.
   RxCache, and SharedPreferences. Java and Kotlin coexist.
 - Every module under `features/` uses `api`/`impl`, Compose, Material 3, a Hilt
   ViewModel, and lifecycle-aware StateFlow collection: About, Properties, Test
-  Details, Change Details, Settings, Manage Accounts, Drawer, and Splash.
+  Details, Change Details, Settings, Manage Accounts, Drawer, Splash, Login,
+  Create Account, Run Build, Build Log, Filter Builds, Action Bottom Sheet, and
+  Quick Filter Bottom Sheet.
   Kotlin sources and tests use the corresponding `kotlin` roots. Features expose
-  small contracts and immutable public models. App adapters own legacy API,
-  cache, account-storage, and outgoing navigation integration.
+  small contracts and immutable public models. Feature implementations own their
+  activity/fragment hosts, UI-scoped routers, trackers, and feature DI. Incoming
+  navigation uses feature APIs; app adapters own legacy API, cache, account-storage,
+  and outgoing navigation to destinations still owned by the app.
 - About's suspend repository adapts the existing Rx API and cache. Lifecycle-aware state collection
   starts loading; losing the last collector cancels pending work immediately,
   while completed content survives configuration changes. About is split into
@@ -38,6 +42,32 @@ to the requested behavior and the coherent migration slice needed to support it.
 - Feature implementations own behavioral tests and Roborazzi PNG baselines for
   every state in both themes, compact/expanded layouts, and enlarged text. Their
   app-level Compose/Espresso integration tests remain in the Marathon APK.
+- Login and Create Account share stateless account controls and authentication
+  analytics in `libraries/authentication`; each feature owns its screen tracker.
+  Server URL formatting belongs to `libraries/remote`, with bindings for Hilt and
+  the existing account API graph. Legacy loading callbacks remain in app base loading.
+  Login and Create Account retain their installed component names through aliases.
+  Their app adapter preserves challenge-based Basic auth, explicit HTTP/SSL consent,
+  encrypted account persistence, duplicate detection, and API-session initialization.
+  Pending submissions survive configuration changes without duplicate requests;
+  passwords stay in memory and are cleared after successful persistence.
+- Run Build and Filter Builds own their activity hosts, routers, trackers, and
+  incoming navigation/result contracts. Activity aliases preserve old component names.
+  Filter Builds uses an app adapter to serialize its immutable selection into the
+  existing legacy result payload; request codes and extra keys remain unchanged.
+  The app repository maps immutable request models to the existing TeamCity wire DTOs
+  and cancels Rx subscriptions when coroutine loading is cancelled. Both bottom sheets
+  own their native fragment hosts and UI-scoped routers. The action sheet owns
+  clipboard access and dispatches artifact/navigation events through an app adapter.
+  Quick Filter owns analytics; its app repository preserves retained legacy filter
+  state and events. Callers create these fragments through injected feature APIs.
+- Build Log uses Compose state with a view-scoped WebView through `AndroidView`.
+  Detaching its fragment disposes the WebView and pending page callbacks; reattaching
+  creates a fresh view. The feature owns its host and Custom Tabs router; the app
+  supplies variant-specific page timeouts through the feature configuration API.
+  The existing consent preference remains behind the app adapter
+  because Home also resets it synchronously on account changes. That shared storage
+  boundary must migrate together when Home is modernized.
 - Screens owned by `app/` remain legacy. Room, broader DataStore migration,
   WorkManager, and Navigation 3 remain target technologies.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
