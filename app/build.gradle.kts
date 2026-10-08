@@ -178,6 +178,8 @@ dependencies {
 
     implementation(projects.features.properties.api)
     implementation(projects.features.properties.impl)
+    implementation(projects.features.bottomSheet.api)
+    implementation(projects.features.bottomSheet.impl)
 
     implementation(projects.features.buildLog.api)
     implementation(projects.features.buildLog.impl)

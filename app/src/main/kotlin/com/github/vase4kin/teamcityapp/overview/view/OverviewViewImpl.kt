@@ -39,13 +39,13 @@ import butterknife.BindView
 import butterknife.ButterKnife
 import butterknife.Unbinder
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.menu_items.MenuItemsFactory
-import com.github.vase4kin.teamcityapp.bottomsheet_dialog.view.BottomSheetDialogFragment
 import com.github.vase4kin.teamcityapp.navigation.api.BuildElement
 import com.github.vase4kin.teamcityapp.overview.data.OverviewDataModelImpl
 import com.google.android.material.elevation.ElevationOverlayProvider
 import io.supercharge.shimmerlayout.ShimmerLayout
 import java.util.ArrayList
+import teamcityapp.features.bottom_sheet.api.BottomSheetNavigation
+import teamcityapp.features.bottom_sheet.api.SheetMenuType
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.utils.getThemeColor
 import tr.xip.errorview.ErrorView
@@ -60,7 +60,8 @@ private const val TAG_BOTTOM_SHEET = "BottomSheet Dialog"
 class OverviewViewImpl(
     private val view: View,
     private val activity: AppCompatActivity,
-    private val adapter: OverviewAdapter
+    private val adapter: OverviewAdapter,
+    private val featureNavigation: BottomSheetNavigation
 ) : OverviewView {
 
     @BindView(R.id.swiperefresh)
@@ -368,10 +369,10 @@ class OverviewViewImpl(
      * {@inheritDoc}
      */
     override fun showDefaultCardBottomSheetDialog(header: String, description: String) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             header,
             description,
-            MenuItemsFactory.TYPE_DEFAULT
+            SheetMenuType.Default
         )
         bottomSheetDialogFragment.show(activity.supportFragmentManager, TAG_BOTTOM_SHEET)
     }
@@ -380,10 +381,10 @@ class OverviewViewImpl(
      * {@inheritDoc}
      */
     override fun showBranchCardBottomSheetDialog(description: String) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             activity.getString(R.string.build_branch_section_text),
             description,
-            MenuItemsFactory.TYPE_BRANCH
+            SheetMenuType.Branch
         )
         bottomSheetDialogFragment.show(activity.supportFragmentManager, TAG_BOTTOM_SHEET)
     }
@@ -392,10 +393,10 @@ class OverviewViewImpl(
      * {@inheritDoc}
      */
     override fun showBuildTypeCardBottomSheetDialog(description: String) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             activity.getString(R.string.build_type_by_section_text),
             description,
-            MenuItemsFactory.TYPE_BUILD_TYPE
+            SheetMenuType.BuildType
         )
         bottomSheetDialogFragment.show(activity.supportFragmentManager, TAG_BOTTOM_SHEET)
     }
@@ -404,10 +405,10 @@ class OverviewViewImpl(
      * {@inheritDoc}
      */
     override fun showProjectCardBottomSheetDialog(description: String) {
-        val bottomSheetDialogFragment = BottomSheetDialogFragment.createBottomSheetDialog(
+        val bottomSheetDialogFragment = featureNavigation.createBottomSheetDialog(
             activity.getString(R.string.build_project_by_section_text),
             description,
-            MenuItemsFactory.TYPE_PROJECT
+            SheetMenuType.Project
         )
         bottomSheetDialogFragment.show(activity.supportFragmentManager, TAG_BOTTOM_SHEET)
     }

@@ -74,12 +74,14 @@ object ArtifactsActivityModule {
     @Named("ArtifactListActivity")
     fun providesArtifactView(
         activity: ArtifactListActivity,
-        @Named("ArtifactListActivity") adapter: ArtifactAdapter
+        @Named("ArtifactListActivity") adapter: ArtifactAdapter,
+        featureNavigation: teamcityapp.features.bottom_sheet.api.BottomSheetNavigation
     ): ArtifactView = ArtifactViewImpl(
         activity.findViewById(android.R.id.content),
         activity,
         R.string.empty_list_message_artifacts,
-        adapter
+        adapter,
+        featureNavigation
     )
 
     @Provides

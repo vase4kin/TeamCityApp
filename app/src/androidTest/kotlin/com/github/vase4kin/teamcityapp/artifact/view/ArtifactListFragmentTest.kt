@@ -1,0 +1,687 @@
+/*
+ * Copyright 2020 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.github.vase4kin.teamcityapp.artifact.view
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.longClick
+import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.intent.Intents.intended
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasType
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withParent
+import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.SdkSuppress
+import androidx.test.platform.app.InstrumentationRegistry
+import com.azimolabs.conditionwatcher.ConditionWatcher
+import com.azimolabs.conditionwatcher.Instruction
+import com.github.vase4kin.teamcityapp.R
+import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.artifact.api.File
+import com.github.vase4kin.teamcityapp.artifact.api.Files
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
+import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
+import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import io.reactivex.Single
+import java.util.ArrayList
+import okhttp3.ResponseBody.Companion.toResponseBody
+import org.hamcrest.core.AllOf.allOf
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Ignore
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.Mockito.`when`
+import org.mockito.Spy
+
+private const val BUILD_TYPE_NAME = "name"
+private const val TIMEOUT = 5000
+
+/**
+ * Tests for [ArtifactListFragment]
+ */
+@HiltAndroidTest
+@RunWith(AndroidJUnit4::class)
+class ArtifactListFragmentTest {
+
+    private fun openArtifacts() {
+        // Keep the off-screen Compose page's clock still while Espresso injects the tab tap.
+        compose.mainClock.autoAdvance = false
+        try {
+            onView(withText("Artifacts"))
+                .perform(scrollTo())
+                .check(matches(isDisplayed()))
+                .perform(click())
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
+        compose.waitForIdle()
+    }
+
+    private fun clickSheetAction(label: String) {
+        compose.waitUntil(5_000) {
+            compose.onAllNodesWithText(label).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+        }
+        compose.onNodeWithText(label).performClick()
+        compose.waitUntil(5_000) {
+            compose.onAllNodesWithTag("sheet:content").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
+        }
+    }
+
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
+
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule().strictness(org.mockito.quality.Strictness.LENIENT)
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
+    val activityRule: CustomIntentsTestRule<BuildDetailsActivity> =
+        CustomIntentsTestRule(BuildDetailsActivity::class.java)
+
+    @Spy
+    private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+
+    @Spy
+    private val build: Build = Mocks.successBuild()
+
+    companion object {
+        @JvmStatic
+        @BeforeClass
+        fun disableOnboarding() {
+            TestUtils.disableOnboarding()
+        }
+    }
+
+    @Before
+    fun setUp() {
+        val app =
+            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().clearAll()
+        app.appInjector.sharedUserStorage()
+            .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        ConditionWatcher.setTimeoutLimit(TIMEOUT)
+    }
+
+    @Test
+    fun testUserCanSeeArtifacts() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Checking artifacts
+        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(3))
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                0,
+                R.id.title
+            )
+        ).check(matches(withText("res")))
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                1,
+                R.id.title
+            )
+        ).check(matches(withText("AndroidManifest.xml")))
+        val sizeText = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
+            "7.77 kB"
+        } else {
+            "7.59 KB"
+        }
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                1,
+                R.id.subTitle
+            )
+        ).check(matches(withText(sizeText)))
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                2,
+                R.id.title
+            )
+        ).check(matches(withText("index.html")))
+        val sizeText2 = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
+            "698 kB"
+        } else {
+            "681 KB"
+        }
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                2,
+                R.id.subTitle
+            )
+        ).check(matches(withText(sizeText2)))
+    }
+
+    @Test
+    fun testUserCanSeeArtifactsEmptyMessageIfArtifactsAreEmpty() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        `when`(
+            teamCityService.listArtifacts(
+                anyString(),
+                anyString()
+            )
+        ).thenReturn(Single.just(Files(emptyList())))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Checking message
+        onView(withText(R.string.empty_list_message_artifacts)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun testUserCanSeeArtifactsErrorMessageIfSmthBadHappens() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(
+            Single.error(
+                RuntimeException("Fake error happened!")
+            )
+        )
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Checking error
+        onView(
+            allOf(
+                withText(R.string.error_view_error_text),
+                withParent(isDisplayed())
+            )
+        ).check(
+            matches(isDisplayed())
+        )
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testUserCanOpenArtifactWithChildren() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        val folderOne = File(
+            "res",
+            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
+            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
+        )
+        val folderTwo = File(
+            "res_level_deeper1",
+            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
+            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
+        )
+        val folderThree = File(
+            "res_level_deeper2",
+            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
+            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
+        )
+        val deeperArtifacts = ArrayList<File>()
+        deeperArtifacts.add(folderTwo)
+        deeperArtifacts.add(folderThree)
+        `when`(teamCityService.listArtifacts(anyString(), anyString()))
+            .thenReturn(Single.just(Files(listOf(folderOne))))
+            .thenReturn(Single.just(Files(deeperArtifacts)))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Checking first level artifacts
+        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "Can't find artifact with name res"
+
+            override fun checkCondition(): Boolean = try {
+                onView(
+                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                        0,
+                        R.id.title
+                    )
+                )
+                    .check(matches(withText("res")))
+                true
+            } catch (ignored: AssertionError) {
+                false
+            }
+        })
+
+        // Clicking first level artifacts
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "Can't click on artifact at position 0"
+
+            override fun checkCondition(): Boolean = try {
+                onView(
+                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                        0,
+                        R.id.title
+                    )
+                )
+                    .perform(click())
+                true
+            } catch (ignored: AssertionError) {
+                false
+            }
+        })
+
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "The artifact page is not loaded"
+
+            override fun checkCondition(): Boolean {
+                var isResFolderClicked = false
+                try {
+                    onView(withText("res_level_deeper1")).check(matches(isDisplayed()))
+                    isResFolderClicked = true
+                } catch (ignored: AssertionError) {
+                    onView(withRecyclerView(R.id.artifact_recycler_view).atPosition(0))
+                        .perform(click())
+                }
+
+                return isResFolderClicked
+            }
+        })
+
+        // In case of the same recycler view ids
+        onView(withText("res_level_deeper1")).check(matches(isDisplayed()))
+        onView(withText("res_level_deeper2")).check(matches(isDisplayed()))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testUserCanOpenArtifactWithChildrenByLongTap() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        val folderOne = File(
+            "res",
+            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
+            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
+        )
+        val folderTwo = File(
+            "res_level_deeper1",
+            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
+            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
+        )
+        val folderThree = File(
+            "res_level_deeper2",
+            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
+            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
+        )
+        val deeperArtifacts = ArrayList<File>()
+        deeperArtifacts.add(folderTwo)
+        deeperArtifacts.add(folderThree)
+        `when`(teamCityService.listArtifacts(anyString(), anyString()))
+            .thenReturn(Single.just(Files(listOf(folderOne))))
+            .thenReturn(Single.just(Files(deeperArtifacts)))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Checking first level artifacts
+        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "Can't find artifact with name res"
+
+            override fun checkCondition(): Boolean = try {
+                onView(
+                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                        0,
+                        R.id.title
+                    )
+                )
+                    .check(matches(withText("res")))
+                true
+            } catch (ignored: AssertionError) {
+                false
+            }
+        })
+
+        // Long click on first level artifacts
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "Can't do long click on artifact at 0 position"
+
+            override fun checkCondition(): Boolean = try {
+                onView(
+                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
+                        0,
+                        R.id.title
+                    )
+                )
+                    .perform(longClick())
+                true
+            } catch (ignored: AssertionError) {
+                false
+            }
+        })
+
+        // Click on open option
+        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_open))
+
+        // In case of the same recycler view ids
+        onView(withText("res_level_deeper1")).check(matches(isDisplayed()))
+        onView(withText("res_level_deeper2")).check(matches(isDisplayed()))
+    }
+
+    @Ignore
+    @Test
+    fun testUserCanDownloadArtifact() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(
+            Single.just(
+                "text".toResponseBody()
+            )
+        )
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Clicking on artifact to download
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view)
+                .atPositionOnView(1, R.id.title)
+        )
+            .check(matches(withText("AndroidManifest.xml")))
+            .perform(click())
+
+        // Click on download option
+        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_download))
+
+        // Check filter builds activity is opened
+        intended(
+            allOf(
+                hasAction(Intent.ACTION_VIEW),
+                hasType("*/*")
+            )
+        )
+    }
+
+    @Ignore("Test opens chrome and gets stuck")
+    @Test
+    fun testUserCanOpenHtmlFileInBrowser() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Clicking on artifact
+        onView(
+            withRecyclerView(R.id.artifact_recycler_view)
+                .atPositionOnView(2, R.id.title)
+        )
+            .check(matches(withText("index.html")))
+            .perform(click())
+
+        // Click on download option
+        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_open_in_browser))
+
+        // Check filter builds activity is opened
+        intended(
+            allOf(
+                hasData(Uri.parse("https://teamcity.server.com/repository/download/Checkstyle_IdeaInspectionsPullRequest/null:id/TCity.apk!/index.html?guest=1")),
+                hasAction(Intent.ACTION_VIEW)
+            )
+        )
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testUserSeeSnackBarWithErrorMessageIfArtifactWasNotDownloaded() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.error(RuntimeException("ERROR!")))
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Checking artifact title and clicking on it
+        val artifactName = "AndroidManifest.xml"
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "Can't click on artifact with name $artifactName"
+
+            override fun checkCondition(): Boolean = try {
+                onView(
+                    withRecyclerView(R.id.artifact_recycler_view)
+                        .atPositionOnView(1, R.id.title)
+                )
+                    .check(matches(withText(artifactName)))
+                    .perform(click())
+                true
+            } catch (ignored: AssertionError) {
+                false
+            }
+        })
+
+        // Click on download option
+        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_download))
+
+        // Checking error snack bar message
+        onView(withText(R.string.download_artifact_retry_snack_bar_text))
+            .check(matches(isDisplayed()))
+    }
+
+    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.O)
+    @Ignore("The app no longer requests install unknown apps permission")
+    @Test
+    fun testUserBeingAskedToGrantAllowInstallPackagesPermissions() {
+        // Prepare mocks
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
+        val files = ArrayList<File>()
+        files.add(
+            File(
+                "my-fancy-app.apk",
+                697840,
+                File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/my-fancy-app.apk"),
+                "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/my-fancy-app.apk"
+            )
+        )
+        val filesMock = Files(files)
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(
+            Single.just(
+                filesMock
+            )
+        )
+
+        // Prepare intent
+        // <! ---------------------------------------------------------------------- !>
+        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
+        // <! ---------------------------------------------------------------------- !>
+        val intent = Intent()
+        val b = Bundle()
+        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
+        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
+        intent.putExtras(b)
+
+        // Start activity
+        activityRule.launchActivity(intent)
+
+        // Checking artifact tab title
+        openArtifacts()
+
+        // Clicking on apk to download
+        val artifactName = "my-fancy-app.apk"
+        ConditionWatcher.waitForCondition(object : Instruction() {
+            override fun getDescription(): String = "Can't click on artifact with name $artifactName"
+
+            override fun checkCondition(): Boolean = try {
+                onView(
+                    withRecyclerView(R.id.artifact_recycler_view)
+                        .atPositionOnView(0, R.id.title)
+                )
+                    .check(matches(withText(artifactName)))
+                    .perform(click())
+                true
+            } catch (ignored: AssertionError) {
+                false
+            }
+        })
+
+        // Click on download option
+        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_download))
+
+        // Check dialog text
+        onView(withText(R.string.permissions_install_packages_dialog_content)).check(
+            matches(
+                isDisplayed()
+            )
+        )
+
+        /*// Confirm dialog
+        onView(withText(R.string.dialog_ok_title)).perform(click());
+
+        // Check filter builds activity is opened
+        intended(allOf(
+                hasAction(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES),
+                hasData("package:com.github.vase4kin.teamcityapp.mock.debug")));*/
+    }
+}
