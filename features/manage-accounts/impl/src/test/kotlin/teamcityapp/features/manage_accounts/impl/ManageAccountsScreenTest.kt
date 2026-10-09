@@ -24,12 +24,17 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.junit.Assert.*
@@ -52,28 +57,14 @@ class ManageAccountsScreenTest {
     private val ssl = ManagedAccount(ManagedAccountId("https://server", "Bob"), true, true)
     private val state = ManageAccountsUiState(AccountListUiState.Content(listOf(normal, ssl)))
 
-    @Test fun accountRowSpansTheListAndBothEdgesAreClickable() {
-        val removed = mutableListOf<ManagedAccountId>()
-        compose.setContent { TeamCityTheme { ManageAccountsScreen(state, { removed += it }, {}, {}, {}) } }
-        val listBounds = compose.onNodeWithTag("accounts:list").fetchSemanticsNode().boundsInRoot
-        val row = compose.onNodeWithTag(accountTag(normal.id))
-        val rowBounds = row.fetchSemanticsNode().boundsInRoot
-        assertEquals(listBounds.left, rowBounds.left, 0f)
-        assertEquals(listBounds.right, rowBounds.right, 0f)
-        row.performTouchInput { click(Offset(1f, center.y)) }
-        row.performTouchInput { click(Offset(width - 1f, center.y)) }
-        assertEquals(listOf(normal.id, normal.id), removed)
-    }
-
-    @Test fun rowsWithSameServerUseFullIdentityAndWarningHasASeparateAction() {
+    @Test fun accountIdentityIsNonDestructiveAndRemoveIsExplicit() {
         val removed = mutableListOf<ManagedAccountId>()
         var warnings = 0
         compose.setContent { TeamCityTheme { ManageAccountsScreen(state, { removed += it }, { warnings++ }, {}, {}) } }
-        compose.onNodeWithTag(accountTag(normal.id)).performClick()
-        compose.onNodeWithText("Bob", useUnmergedTree = true).performClick()
-        compose.onAllNodesWithText("https://server", useUnmergedTree = true)[1].performClick()
-        compose.onNodeWithText("Ignore SSL certificate validity is enabled for this account", useUnmergedTree = true).performClick()
-        assertEquals(listOf(normal.id, ssl.id, ssl.id), removed)
+        compose.onNodeWithTag(accountTag(normal.id)).assertHasNoClickAction()
+        compose.onNodeWithTag("${accountTag(normal.id)}:remove").performClick()
+        compose.onNodeWithTag("${accountTag(ssl.id)}:ssl").assertHeightIsAtLeast(48.dp).performClick()
+        assertEquals(listOf(normal.id), removed)
         assertEquals(1, warnings)
     }
 
@@ -82,7 +73,7 @@ class ManageAccountsScreenTest {
         var closed = 0
         compose.setContent { TeamCityTheme { ManageAccountsScreen(ManageAccountsUiState(AccountListUiState.Empty), {}, {}, { added++ }, { closed++ }) } }
         compose.onNodeWithTag("accounts:empty").assertExists()
-        compose.onNodeWithContentDescription("Add account").assertHeightIsEqualTo(56.dp).performClick()
+        compose.onNodeWithTag("accounts:add").assertHeightIsEqualTo(56.dp).performClick()
         compose.onNodeWithContentDescription("Back").performClick()
         assertEquals(1, added)
         assertEquals(1, closed)
@@ -92,7 +83,10 @@ class ManageAccountsScreenTest {
         var events = 0
         compose.setContent { TeamCityTheme { ManageAccountsScreen(state.copy(removal = AccountRemovalUiState.Removing(normal.id)), { events++ }, { events++ }, { events++ }, {}) } }
         compose.onNodeWithTag("accounts:removing").assertExists()
-        compose.onNodeWithTag(accountTag(normal.id)).assertIsNotEnabled()
+        listOf(normal, ssl).forEach { account ->
+            compose.onNodeWithTag("${accountTag(account.id)}:remove").assertIsNotEnabled().performClick()
+        }
+        compose.onNodeWithTag("${accountTag(ssl.id)}:ssl").assertIsNotEnabled().performClick()
         compose.onNodeWithTag("accounts:add").performClick()
         assertEquals(0, events)
     }
@@ -113,10 +107,10 @@ class ManageAccountsScreenTest {
         var cancelled = 0
         val removed = mutableListOf<ManagedAccountId>()
         compose.setContent { TeamCityTheme { ManageAccountsScreen(state, {}, {}, {}, {}, dialog = ManageAccountsDialog.ConfirmRemoval(ssl.id), onDismissDialog = { cancelled++ }, onConfirmRemoval = { removed += it }) } }
-        compose.onNodeWithText("NOPE").performClick()
+        compose.onNodeWithText("Cancel").performClick()
         assertTrue(removed.isEmpty())
         assertEquals(1, cancelled)
-        compose.onNodeWithText("SURE").performClick()
+        compose.onNodeWithText("Remove").performClick()
         assertEquals(listOf(ssl.id), removed)
     }
 
@@ -136,16 +130,16 @@ class ManageAccountsScreenTest {
             var dialog by rememberSaveable(stateSaver = accountDialogSaver) { mutableStateOf<ManageAccountsDialog>(ManageAccountsDialog.None) }
             TeamCityTheme { ManageAccountsScreen(state, { dialog = ManageAccountsDialog.ConfirmRemoval(it) }, {}, {}, {}, dialog = dialog, onConfirmRemoval = { removed += it }) }
         }
-        compose.onNodeWithText("Bob", useUnmergedTree = true).performClick()
+        compose.onNodeWithTag("${accountTag(ssl.id)}:remove").performClick()
         restoration.emulateSavedInstanceStateRestore()
         compose.onNodeWithTag("accounts:dialog").assertIsDisplayed()
-        compose.onNodeWithText("SURE").performClick()
+        compose.onNodeWithText("Remove").performClick()
         assertEquals(listOf(ssl.id), removed)
     }
 
     @Test fun accountUsesProvidedColorsAndTypography() {
         compose.setContent {
-            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
+            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(titleMedium = TextStyle(fontSize = 22.sp), bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
                 ManageAccountsScreen(state, {}, {}, {}, {})
             }
         }
@@ -155,11 +149,92 @@ class ManageAccountsScreenTest {
 
     @Test fun warningDialogUsesProvidedTypography() {
         compose.setContent {
-            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
+            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(titleMedium = TextStyle(fontSize = 22.sp), bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
                 ManageAccountsScreen(state, {}, {}, {}, {}, dialog = ManageAccountsDialog.SslWarning)
             }
         }
         assertThemeText("Warning", 28, Color.Red)
+    }
+
+    @Test fun removalErrorReservesSpaceForLastAccountActionsAtDoubleText() {
+        var warnings = 0
+        var removed: ManagedAccountId? = null
+        compose.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(360.dp, 600.dp))) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    TeamCityTheme { ManageAccountsScreen(state.copy(removal = AccountRemovalUiState.Error(normal.id)), { removed = it }, { warnings++ }, {}, {}) }
+                }
+            }
+        }
+        val feedback = compose.onNodeWithTag("accounts:remove_error")
+        fun assertAboveFeedback(tag: String) {
+            val action = compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed()
+            assertTrue(action.fetchSemanticsNode().boundsInRoot.bottom <= feedback.fetchSemanticsNode().boundsInRoot.top)
+            action.performClick()
+        }
+        assertAboveFeedback("${accountTag(ssl.id)}:ssl")
+        assertEquals(1, warnings)
+        assertAboveFeedback("${accountTag(ssl.id)}:remove")
+        assertEquals(ssl.id, removed)
+        compose.onNodeWithText("Retry").assertIsDisplayed()
+        compose.onNodeWithTag("accounts:add").assertIsDisplayed()
+    }
+
+    @Test fun cornerRemoveHasContextualLabelAndOneCallbackPerTargetEdge() {
+        val removed = mutableListOf<ManagedAccountId>()
+        compose.setContent { TeamCityTheme { ManageAccountsScreen(state, { removed += it }, {}, {}, {}) } }
+        listOf(normal, ssl).forEach { account ->
+            compose.onNodeWithTag(accountTag(account.id)).assertHasNoClickAction().performTouchInput { click(center) }
+            val remove = compose.onNodeWithTag("${accountTag(account.id)}:remove")
+            remove.assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
+                .assertContentDescriptionEquals("Remove ${account.id.userName} account at ${account.id.serverUrl}")
+                .assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Button))
+            remove.performTouchInput { click(Offset(1f, height / 2f)) }
+            remove.performTouchInput { click(Offset(width - 1f, height / 2f)) }
+        }
+        assertEquals(listOf(normal.id, normal.id, ssl.id, ssl.id), removed)
+    }
+
+    @Test fun currentCapsuleIsPassiveAndRemoveTooltipDescribesItsExactAccount() {
+        val removed = mutableListOf<ManagedAccountId>()
+        compose.setContent { TeamCityTheme { ManageAccountsScreen(state, { removed += it }, {}, {}, {}) } }
+        compose.onNode(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Current account")).assertHasNoClickAction()
+        compose.onNodeWithTag("${accountTag(ssl.id)}:current", useUnmergedTree = true).assertHasNoClickAction()
+            .assert(SemanticsMatcher("Passive decorative capsule") { !it.config.contains(SemanticsProperties.Text) && !it.config.contains(SemanticsProperties.Role) })
+        compose.onNodeWithText("Active account").assertDoesNotExist()
+        compose.onNodeWithTag("${accountTag(normal.id)}:remove").performTouchInput { longClick() }
+        compose.onNodeWithText("Remove account").assertIsDisplayed()
+        assertTrue(removed.isEmpty())
+    }
+
+    @Test fun longNamedIdentityKeepsRemoveAndFullWidthUrlReadableAtDoubleTextAndRtl() {
+        val long = ManagedAccount(ManagedAccountId("https://a-very-long-teamcity-server.example/projects/production", "alexander.morgan.platform"), true, false)
+        var removals = 0
+        compose.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(360.dp, 800.dp))) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                        TeamCityTheme { ManageAccountsScreen(ManageAccountsUiState(AccountListUiState.Content(listOf(long))), { removals++ }, {}, {}, {}) }
+                    }
+                }
+            }
+        }
+        compose.onNodeWithTag(accountTag(long.id)).assertHasNoClickAction()
+        val icon = compose.onNodeWithTag("${accountTag(long.id)}:remove").assertIsDisplayed().assertWidthIsAtLeast(48.dp).assertHeightIsAtLeast(48.dp)
+        val name = compose.onNodeWithText(long.id.userName, useUnmergedTree = true)
+        val url = compose.onNodeWithTag("${accountTag(long.id)}:url", useUnmergedTree = true)
+        val nameBounds = name.fetchSemanticsNode().boundsInRoot
+        val urlBounds = url.fetchSemanticsNode().boundsInRoot
+        assertTrue(urlBounds.width > nameBounds.width)
+        assertTrue(icon.fetchSemanticsNode().boundsInRoot.right <= nameBounds.left)
+        listOf(name, url).forEach { node ->
+            val results = mutableListOf<TextLayoutResult>()
+            node.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+            assertFalse(results.single().hasVisualOverflow)
+        }
+        compose.onNodeWithTag("${accountTag(long.id)}:current", useUnmergedTree = true).assertIsDisplayed().assertHasNoClickAction()
+        icon.performClick()
+        assertEquals(1, removals)
     }
 
     private fun assertThemeText(text: String, fontSize: Int, color: Color) {

@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.libraries.chromeTabs)
     implementation(projects.libraries.utils)
 
+    implementation(libs.compose.material3.windowSizeClass)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
     implementation(libs.google.openSourceLicensesLibrary)

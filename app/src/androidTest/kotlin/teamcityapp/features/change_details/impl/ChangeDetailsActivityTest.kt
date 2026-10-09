@@ -108,7 +108,7 @@ class ChangeDetailsActivityTest {
             intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
             ActivityScenario.launch<ChangeDetailsActivity>(intent()).use {
                 awaitText(comment)
-                compose.onNodeWithText("MORE DETAILS").performClick()
+                compose.onNodeWithText("More details").performClick()
                 intended(hasData(webUrl))
             }
         } finally {

@@ -26,6 +26,8 @@ extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.prope
 dependencies {
     implementation(projects.features.properties.api)
     implementation(projects.libraries.theme)
+    implementation(projects.libraries.clipboard)
+    implementation(projects.libraries.utils)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)

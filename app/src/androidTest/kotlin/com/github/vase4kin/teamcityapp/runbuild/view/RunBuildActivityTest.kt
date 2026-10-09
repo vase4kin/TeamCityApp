@@ -206,7 +206,7 @@ class RunBuildActivityTest {
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check no agents
-        compose.onNodeWithText(context.getString(teamcityapp.features.run_build.impl.R.string.text_no_agents_available)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(teamcityapp.features.run_build.impl.R.string.agents_unavailable)).assertIsDisplayed()
     }
 
     @Test
@@ -217,7 +217,8 @@ class RunBuildActivityTest {
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check clean all files is checked by default
-        compose.onNodeWithTag("run-build:clean").assertIsOn()
+        compose.onNodeWithTag("run-build:options").performClick()
+        compose.onNodeWithTag("run-build:clean").performScrollTo().assertIsOn()
     }
 
     @Test
@@ -228,11 +229,12 @@ class RunBuildActivityTest {
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check personal
-        compose.onNodeWithTag("run-build:personal").performClick()
+        compose.onNodeWithTag("run-build:options").performClick()
+        compose.onNodeWithTag("run-build:personal").performScrollTo().performClick()
         // Check queue to the top
-        compose.onNodeWithTag("run-build:top").performClick()
+        compose.onNodeWithTag("run-build:top").performScrollTo().performClick()
         // Check clean all files
-        compose.onNodeWithTag("run-build:clean").performClick()
+        compose.onNodeWithTag("run-build:clean").performScrollTo().performClick()
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking triggered build
@@ -256,9 +258,10 @@ class RunBuildActivityTest {
         // Starting the activity
         activityRule.launchActivity(intent)
         // Scroll to
+        compose.onNodeWithTag("run-build:options").performClick()
         compose.onNodeWithTag("run-build:add").performScrollTo()
         // Add new param
-        compose.onNodeWithTag("run-build:add").performClick()
+        compose.onNodeWithTag("run-build:add").performScrollTo().performClick()
         // Fill params
         compose.onNodeWithTag("parameter:name").performTextInput(PARAMETER_NAME)
         compose.onNodeWithTag("parameter:value").performTextInput(PARAMETER_VALUE)
@@ -291,9 +294,10 @@ class RunBuildActivityTest {
         // Starting the activity
         activityRule.launchActivity(intent)
         // Scroll to
+        compose.onNodeWithTag("run-build:options").performClick()
         compose.onNodeWithTag("run-build:add").performScrollTo()
         // Add new param
-        compose.onNodeWithTag("run-build:add").performClick()
+        compose.onNodeWithTag("run-build:add").performScrollTo().performClick()
         // Fill params
         compose.onNodeWithTag("parameter:name").performTextInput(PARAMETER_NAME)
         compose.onNodeWithTag("parameter:value").performTextInput(PARAMETER_VALUE)
@@ -305,7 +309,7 @@ class RunBuildActivityTest {
         compose.onNodeWithText(PARAMETER_NAME).assert(hasText(PARAMETER_NAME))
         compose.onNodeWithText(PARAMETER_VALUE).assert(hasText(PARAMETER_VALUE))
         // Clear all params
-        compose.onNodeWithTag("run-build:clear").performClick()
+        compose.onNodeWithTag("run-build:clear").performScrollTo().performClick()
         // Starting the build
         compose.onNodeWithTag("run-build:submit").performClick()
         // Checking triggered build
@@ -325,9 +329,10 @@ class RunBuildActivityTest {
         // Starting the activity
         activityRule.launchActivity(intent)
         // Scroll to
+        compose.onNodeWithTag("run-build:options").performClick()
         compose.onNodeWithTag("run-build:add").performScrollTo()
         // Add new param
-        compose.onNodeWithTag("run-build:add").performClick()
+        compose.onNodeWithTag("run-build:add").performScrollTo().performClick()
         // Fill params
         compose.onNodeWithTag("parameter:name").performTextInput("")
         compose.onNodeWithTag("parameter:value").performTextInput(PARAMETER_VALUE)

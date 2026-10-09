@@ -19,6 +19,7 @@ import com.android.build.api.dsl.LibraryExtension
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.compose")
+    id("teamcityapp.android.screenshot")
     id("teamcityapp.android.hilt")
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.authentication" }

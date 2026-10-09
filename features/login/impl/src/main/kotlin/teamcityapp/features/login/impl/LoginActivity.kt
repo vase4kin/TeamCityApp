@@ -18,11 +18,13 @@ package teamcityapp.features.login.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.login.impl.LoginRoute
 import teamcityapp.features.login.impl.router.LoginRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
@@ -30,6 +32,12 @@ class LoginActivity : AppCompatActivity() {
     @Inject lateinit var router: LoginRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme(legacyColors = true) { LoginRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                LoginRoute(router)
+            }
+        }
     }
 }

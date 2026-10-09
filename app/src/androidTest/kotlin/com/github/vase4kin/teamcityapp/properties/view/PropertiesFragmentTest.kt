@@ -16,8 +16,12 @@
 
 package com.github.vase4kin.teamcityapp.properties.view
 
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.os.Build as AndroidBuild
 import android.os.Bundle
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
@@ -45,6 +49,7 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Rule
@@ -64,16 +69,6 @@ private const val TIMEOUT = 5000
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class PropertiesFragmentTest {
-
-    private fun clickSheetAction(label: String) {
-        compose.waitUntil(5_000) {
-            compose.onAllNodesWithText(label).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
-        }
-        compose.onNodeWithText(label).performClick()
-        compose.waitUntil(5_000) {
-            compose.onAllNodesWithTag("sheet:content").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
-        }
-    }
 
     @JvmField
     @Rule(order = 0)
@@ -238,14 +233,18 @@ class PropertiesFragmentTest {
             .check(matches(isDisplayed()))
             .perform(click())
 
-        // Click on parameter
-        compose.onNodeWithTag("properties:row:0").performClick()
+        // Value selection remains independent from the full-width copy action.
+        compose.onNodeWithText("24", useUnmergedTree = true).performTouchInput { longClick() }
+        compose.onNodeWithTag("sheet:content").assertDoesNotExist()
+        compose.onNodeWithTag("properties:row:0").performTouchInput { click(Offset(width - 2f, centerY)) }
 
-        // Clicking on copy
-        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.build_element_copy))
-
-        // Checking toast message
-        onView(withText(R.string.build_element_copy_text))
-            .check(matches(isDisplayed()))
+        compose.onNodeWithTag("sheet:content").assertDoesNotExist()
+        val clipboard = activityRule.activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        assertEquals("24", clipboard.primaryClip!!.getItemAt(0).text.toString())
+        if (AndroidBuild.VERSION.SDK_INT >= 33) {
+            compose.onNodeWithText(activityRule.activity.getString(teamcityapp.features.properties.impl.R.string.property_value_copied)).assertDoesNotExist()
+        } else {
+            compose.onNodeWithText(activityRule.activity.getString(teamcityapp.features.properties.impl.R.string.property_value_copied)).assertIsDisplayed()
+        }
     }
 }

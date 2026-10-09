@@ -96,7 +96,7 @@ class DrawerTest {
         launch().use {
             open()
             row(first).assertHasNoClickAction()
-            compose.onNodeWithContentDescription("Active account").assertIsDisplayed()
+            compose.onNode(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.StateDescription, "Current account")).assertIsDisplayed()
             assertEquals(first, storage.activeUser.teamcityUrl)
         }
     }
@@ -130,7 +130,7 @@ class DrawerTest {
             Intents.init()
             try {
                 Intents.intending(hasComponent(destination.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-                compose.onNodeWithTag("drawer:$tag").performClick()
+                compose.onNodeWithTag("drawer:$tag").performScrollTo().performClick()
                 Intents.intended(hasComponent(destination.name))
             } finally {
                 Intents.release()
@@ -152,7 +152,7 @@ class DrawerTest {
             Intents.init()
             try {
                 Intents.intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-                compose.onNodeWithTag("drawer:privacy").performClick()
+                compose.onNodeWithTag("drawer:privacy").performScrollTo().performClick()
                 Intents.intended(hasData(app.getString(R.string.about_app_url_privacy)))
             } finally {
                 Intents.release()
@@ -166,7 +166,7 @@ class DrawerTest {
             Intents.init()
             try {
                 Intents.intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-                compose.onNodeWithTag("drawer:rate").performClick()
+                compose.onNodeWithTag("drawer:rate").performScrollTo().performClick()
                 assertTrue(Intents.getIntents().any { it.action == Intent.ACTION_VIEW && it.dataString?.contains("id=com.github.vase4kin.teamcityapp") == true })
             } finally {
                 Intents.release()
@@ -181,7 +181,7 @@ class DrawerTest {
             awaitRows()
             row(first).assertHasNoClickAction()
             compose.onNodeWithTag("drawer:settings").assertIsDisplayed()
-            compose.onNodeWithTag("drawer:privacy").assertIsDisplayed()
+            compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()
         }
     }
 
@@ -192,7 +192,7 @@ class DrawerTest {
             compose.waitUntil(5_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
             open()
             row(first).assertIsDisplayed()
-            compose.onNodeWithTag("drawer:privacy").assertIsDisplayed()
+            compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()
         }
     }
 
@@ -219,7 +219,7 @@ class DrawerTest {
                 expanded
             }
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
-            compose.onNodeWithTag("drawer:privacy").assertIsDisplayed()
+            compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("drawer:rate").assertIsDisplayed()
             fragment(scenario) { assertTrue((it.dialog as BottomSheetDialog).behavior.isDraggable) }
         }
@@ -238,7 +238,7 @@ class DrawerTest {
                 expanded
             }
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
-            compose.onNodeWithTag("drawer:privacy").assertIsDisplayed()
+            compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()
         }
     }
 }

@@ -41,18 +41,19 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.theme.TeamCitySwitch
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Shared account fields; each screen owns state, validation, dialogs and submission. */
 @Composable
-fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, duplicateMessage: String = "") {
+fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, duplicateMessage: String = "", horizontalPadding: Dp = 0.dp) {
     var urlText by remember { mutableStateOf(TextFieldValue(state.serverUrl, TextRange(state.serverUrl.length))) }
     val focus = LocalFocusManager.current
     val submit = {
         focus.clearFocus()
-        onSubmit()
+        if (!state.busy) onSubmit()
     }
     val error = when (val value = state.error) {
         AuthenticationError.EmptyUrl -> stringResource(R.string.server_cannot_be_empty)
@@ -63,28 +64,57 @@ fun AuthenticationForm(state: AuthenticationFormState, onChange: (Authentication
         is AuthenticationError.Server -> value.message
         null -> null
     }
-    Column(modifier) {
+    val urlError = state.error == AuthenticationError.EmptyUrl
+    val userError = state.error == AuthenticationError.EmptyUserName
+    val passwordError = state.error == AuthenticationError.EmptyPassword
+    val globalError = error != null && !urlError && !userError && !passwordError
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        if (globalError) {
+            Surface(modifier = Modifier.padding(horizontal = horizontalPadding), color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.medium) {
+                Text(error.orEmpty(), Modifier.fillMaxWidth().padding(16.dp).testTag("auth:error"), color = MaterialTheme.colorScheme.onErrorContainer, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
         // Preserve the account fields' existing opt-out from platform autofill.
         OutlinedTextField(
             value = urlText.copy(text = state.serverUrl), onValueChange = {
                 urlText = it
                 onChange(state.copy(serverUrl = it.text))
             },
-            modifier = Modifier.fillMaxWidth().semantics { contentDataType = ContentDataType.None }.testTag("auth:url"), label = { Text(stringResource(R.string.server_field_hint)) },
-            singleLine = true, enabled = !state.busy, shape = RoundedCornerShape(4.dp), isError = error != null,
-            supportingText = error?.let { { Text(it, Modifier.testTag("auth:error")) } },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).semantics { contentDataType = ContentDataType.None }.testTag("auth:url"), label = { Text(stringResource(R.string.server_field_hint)) },
+            singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = urlError,
+            supportingText = if (urlError) {
+                { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
+            } else {
+                null
+            },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = if (state.guest) ImeAction.Done else ImeAction.Next),
             keyboardActions = KeyboardActions(onDone = { submit() })
         )
         TeamCitySwitch(stringResource(R.string.text_guest_user_switch), state.guest, {
             focus.clearFocus()
             onChange(state.copy(guest = it))
-        }, Modifier.padding(top = if (spaced) 16.dp else 8.dp).testTag("auth:guest"), !state.busy)
+        }, Modifier.testTag("auth:guest"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) 16.dp else 8.dp))
         if (!state.guest) {
-            OutlinedTextField(state.userName, { onChange(state.copy(userName = it)) }, Modifier.fillMaxWidth().padding(top = if (spaced) 16.dp else 0.dp).semantics { contentDataType = ContentDataType.None }.testTag("auth:username"), label = { Text(stringResource(R.string.hint_user_name)) }, singleLine = true, enabled = !state.busy, shape = RoundedCornerShape(4.dp), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next))
-            OutlinedTextField(state.password, { onChange(state.copy(password = it)) }, Modifier.fillMaxWidth().padding(top = if (spaced) 16.dp else 0.dp).semantics { contentDataType = ContentDataType.None }.testTag("auth:password"), label = { Text(stringResource(R.string.hint_password)) }, singleLine = true, enabled = !state.busy, shape = RoundedCornerShape(4.dp), visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() }))
+            OutlinedTextField(
+                state.userName, { onChange(state.copy(userName = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) 16.dp else 0.dp).semantics { contentDataType = ContentDataType.None }.testTag("auth:username"), label = { Text(stringResource(R.string.hint_user_name)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = userError,
+                supportingText = if (userError) {
+                    { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
+                } else {
+                    null
+                },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+            )
+            OutlinedTextField(
+                state.password, { onChange(state.copy(password = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) 16.dp else 0.dp).semantics { contentDataType = ContentDataType.None }.testTag("auth:password"), label = { Text(stringResource(R.string.hint_password)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = passwordError,
+                supportingText = if (passwordError) {
+                    { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
+                } else {
+                    null
+                },
+                visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() })
+            )
         }
-        TeamCitySwitch(stringResource(R.string.text_disable_ssl_switch), state.sslDisabled, onSslChange, Modifier.padding(top = if (spaced) 16.dp else 8.dp).testTag("auth:ssl"), !state.busy)
+        TeamCitySwitch(stringResource(R.string.text_disable_ssl_switch), state.sslDisabled, onSslChange, Modifier.testTag("auth:ssl"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) 16.dp else 8.dp))
     }
 }
 
@@ -93,11 +123,11 @@ fun AuthenticationWarning(http: Boolean = false, onAccept: () -> Unit, onDecline
     AlertDialog(
         onDismissRequest = {},
         modifier = Modifier.testTag("auth:warning"),
-        shape = RoundedCornerShape(4.dp),
+        shape = MaterialTheme.shapes.large,
         title = { Text(stringResource(R.string.warning_ssl_dialog_title)) },
         text = { if (http) Text(stringResource(R.string.server_not_secure_http)) else Text(sslWarningText()) },
-        confirmButton = { TextButton(onClick = onAccept) { Text(stringResource(R.string.dialog_ok_title).uppercase()) } },
-        dismissButton = { TextButton(onClick = onDecline) { Text(stringResource(R.string.warning_ssl_dialog_negative).uppercase()) } }
+        confirmButton = { TextButton(onClick = onAccept) { Text(stringResource(R.string.dialog_ok_title)) } },
+        dismissButton = { TextButton(onClick = onDecline) { Text(stringResource(R.string.warning_ssl_dialog_negative)) } }
     )
 }
 
@@ -106,7 +136,7 @@ fun AuthenticationProgress(message: String, title: String? = null) {
     AlertDialog(
         onDismissRequest = {},
         modifier = Modifier.testTag("auth:progress"),
-        shape = RoundedCornerShape(4.dp),
+        shape = MaterialTheme.shapes.large,
         title = title?.let { { Text(it) } },
         text = {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {

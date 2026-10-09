@@ -30,6 +30,7 @@ dependencies {
     implementation(projects.features.bottomSheet.api)
 
     implementation(projects.libraries.theme)
+    implementation(projects.libraries.clipboard)
     implementation(projects.libraries.resources)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

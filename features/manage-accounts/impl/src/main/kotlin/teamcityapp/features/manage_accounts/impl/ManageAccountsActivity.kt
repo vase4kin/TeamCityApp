@@ -19,10 +19,12 @@ package teamcityapp.features.manage_accounts.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.manage_accounts.impl.router.ManageAccountsRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
@@ -30,6 +32,12 @@ class ManageAccountsActivity : AppCompatActivity() {
     @Inject lateinit var router: ManageAccountsRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme { ManageAccountsRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                ManageAccountsRoute(router)
+            }
+        }
     }
 }

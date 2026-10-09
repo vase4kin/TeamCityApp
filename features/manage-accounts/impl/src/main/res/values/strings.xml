@@ -17,8 +17,8 @@
 
 <resources>
     <!--Dialog remove active account-->
-    <string name="dialog_remove_active_account_positive_button_text">Sure</string>
-    <string name="dialog_remove_active_account_positive_negative_text">Nope</string>
+    <string name="dialog_remove_active_account_positive_button_text">Remove</string>
+    <string name="dialog_remove_active_account_positive_negative_text">Cancel</string>
     <string name="dialog_remove_active_account_positive_content_text">Are you sure to delete active user account?</string>
     <string name="dialog_remove_not_active_account_positive_content_text">Are you sure to delete a user account?</string>
     <!--Managing account values-->
@@ -29,4 +29,9 @@
     <string name="accounts_remove_error">Unable to finish removing the account. Please try again.</string>
     <string name="accounts_retry">Retry</string>
     <string name="accounts_add">Add account</string>
+<string name="accounts_empty">No accounts yet. Add an account to connect to your TeamCity server.</string>
+<string name="accounts_current">Current account</string>
+<string name="accounts_current_short">Current</string>
+<string name="accounts_remove_description">Remove %1$s account at %2$s</string>
+<string name="accounts_remove">Remove account</string>
 </resources>

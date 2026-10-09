@@ -33,7 +33,7 @@ class BuildLogFragment : Fragment() {
     @Inject lateinit var configuration: teamcityapp.features.build_log.api.BuildLogConfiguration
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent { TeamCityTheme(legacyColors = true) { BuildLogRoute(router, configuration.pageLoadingTimeoutMillis) } }
+        setContent { TeamCityTheme { BuildLogRoute(router, configuration.pageLoadingTimeoutMillis) } }
     }
     companion object {
         fun newInstance(buildId: String): BuildLogFragment {

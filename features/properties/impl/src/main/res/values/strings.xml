@@ -17,4 +17,10 @@
 <resources>
     <string name="text_property_value_empty">Empty</string>
     <string name="empty_list_message_parameters">No user defined parameters</string>
+    <string name="copy_property">Copy value for %1$s</string>
+    <string name="show_full_property_value">Show full value</string>
+    <string name="hide_full_property_value">Hide full value</string>
+    <string name="show_full_property_value_description">Show full value for %1$s</string>
+    <string name="hide_full_property_value_description">Hide full value for %1$s</string>
+    <string name="property_value_copied">Value copied</string>
 </resources>

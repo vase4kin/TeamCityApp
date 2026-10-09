@@ -24,4 +24,8 @@ Copyright 2026 Andrey Tolpeev
 <string name="text_show_running">Show all running builds</string>
 <string name="text_show_connected">Show connected agents</string>
 <string name="text_show_disconnected">Show disconnected agents</string>
+<string name="selected_all">All builds</string>
+<string name="selected_favorites">Favorite builds</string>
+<string name="selected_connected">Connected agents</string>
+<string name="selected_disconnected">Disconnected agents</string>
 </resources>

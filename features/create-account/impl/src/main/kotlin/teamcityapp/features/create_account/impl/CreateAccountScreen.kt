@@ -34,22 +34,26 @@ enum class CreateAccountDialog { None, Ssl, Discard }
 
 @Composable
 fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFormState) -> Unit, onSubmit: () -> Unit, onSslChange: (Boolean) -> Unit, onClose: () -> Unit, dialog: CreateAccountDialog = CreateAccountDialog.None, onConfirm: () -> Unit = {}, onDecline: () -> Unit = {}) {
-    TeamCityScreen(stringResource(R.string.add_new_account_dialog_title), onClose, appBarHeight = 56.dp, actions = {
-        IconButton(onSubmit, enabled = !state.form.busy, modifier = Modifier.testTag("create-account:submit")) {
-            Icon(androidx.compose.ui.res.painterResource(R.drawable.ic_done_24px), stringResource(R.string.add_new_account_dialog_create_account_button_text))
+    val scrollState = rememberScrollState()
+    TeamCityScreen(stringResource(R.string.add_new_account_dialog_title), onClose, bottomBar = {
+        TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("create-account:bottom-action")) {
+            Button(onSubmit, Modifier.fillMaxWidth().padding(16.dp).heightIn(min = 56.dp).testTag("create-account:submit"), enabled = !state.form.busy) {
+                Text(stringResource(R.string.add_new_account_dialog_create_account_button_text))
+            }
         }
     }) { modifier ->
-        Column(modifier.imePadding().verticalScroll(rememberScrollState()).testTag("create-account:scroll")) {
-            Surface(Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface) {
-                AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(16.dp), spaced = true, duplicateMessage = stringResource(R.string.add_new_account_dialog_account_exist_error_message))
+        Column(modifier) {
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("create-account:scroll").padding(16.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+                Card(Modifier.widthIn(max = 560.dp).fillMaxWidth().testTag("create-account:form"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(vertical = 24.dp), duplicateMessage = stringResource(R.string.add_new_account_dialog_account_exist_error_message), horizontalPadding = 24.dp)
+                }
             }
-            HorizontalDivider()
         }
     }
     when {
         state.form.busy -> AuthenticationProgress(stringResource(R.string.progress_dialog_content), stringResource(R.string.progress_dialog_title))
         dialog == CreateAccountDialog.Ssl -> AuthenticationWarning(onAccept = onConfirm, onDecline = onDecline)
-        dialog == CreateAccountDialog.Discard -> AlertDialog(onDismissRequest = onDecline, modifier = Modifier.testTag("create-account:discard"), shape = RoundedCornerShape(4.dp), text = { Text(stringResource(R.string.discard_dialog_content)) }, confirmButton = { TextButton(onConfirm) { Text(stringResource(R.string.discard_dialog_positive_button_text).uppercase()) } }, dismissButton = { TextButton(onDecline) { Text(stringResource(R.string.discard_dialog_negative_button_text).uppercase()) } })
+        dialog == CreateAccountDialog.Discard -> AlertDialog(onDismissRequest = onDecline, modifier = Modifier.testTag("create-account:discard"), shape = MaterialTheme.shapes.large, text = { Text(stringResource(R.string.discard_dialog_content)) }, confirmButton = { TextButton(onConfirm) { Text(stringResource(R.string.discard_dialog_positive_button_text)) } }, dismissButton = { TextButton(onDecline) { Text(stringResource(R.string.discard_dialog_negative_button_text)) } })
     }
 }
 

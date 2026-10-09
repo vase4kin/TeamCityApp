@@ -22,11 +22,11 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.test.*
-import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -54,7 +54,7 @@ class TestDetailsScreenTest {
         var retried = 0
         var closed = 0
         compose.setContent { TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Error, { retried++ }, { closed++ }) } }
-        compose.onNodeWithText("TRY AGAIN").performClick()
+        compose.onNodeWithText("Try again").performClick()
         compose.onNodeWithContentDescription("Close").performClick()
         assertEquals(1, retried)
         assertEquals(1, closed)
@@ -63,18 +63,19 @@ class TestDetailsScreenTest {
     @Test fun stateChangeRemovesStaleContentAndRetry() {
         val state = androidx.compose.runtime.mutableStateOf<TestDetailsUiState>(TestDetailsUiState.Error)
         compose.setContent { TeamCityTheme { TestDetailsScreen(state.value, {}, {}) } }
-        compose.onNodeWithText("TRY AGAIN").assertIsDisplayed()
+        compose.onNodeWithText("Try again").assertIsDisplayed()
         compose.runOnIdle { state.value = TestDetailsUiState.Empty }
         compose.onNodeWithText("No test details").assertIsDisplayed()
-        compose.onNodeWithText("TRY AGAIN").assertDoesNotExist()
+        compose.onNodeWithText("Try again").assertDoesNotExist()
     }
+
     @Test fun contentUsesProvidedColorsAndTypography() {
         compose.setContent {
             MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
                 TestDetailsScreen(TestDetailsUiState.Content("Theme-aware output"), {}, {})
             }
         }
-        assertThemeText("Theme-aware output", 22, Color.Red)
+        assertThemeText("Theme-aware output", 18, Color.Red)
     }
 
     @Test fun errorUsesProvidedColorsAndTypography() {
@@ -95,5 +96,4 @@ class TestDetailsScreenTest {
         assertEquals(fontSize.sp, results.single().layoutInput.style.fontSize)
         assertEquals(color, results.single().layoutInput.style.color)
     }
-
 }

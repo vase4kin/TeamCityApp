@@ -21,6 +21,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -84,10 +85,16 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
             else -> CreateAccountDialog.None
         }
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark, legacyColors = true) { CreateAccountScreen(CreateAccountUiState(form), {}, {}, {}, {}, dialog) } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { CreateAccountScreen(CreateAccountUiState(form), {}, {}, {}, {}, dialog) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "scrolled") compose.onNodeWithTag("auth:ssl").performScrollTo()
+        if (stateName == "scrolled") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("create-account:scroll").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) { it(0f, 10_000f) }
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+        }
         compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
         val tag = when (stateName) {
             "loading" -> "auth:progress"
@@ -95,8 +102,7 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
             "discard" -> "create-account:discard"
             else -> null
         }
-        val node = if (tag == null) compose.onRoot() else compose.onNodeWithTag(tag)
-        node.captureRoboImage("create_account_${stateName}_${variant.name}.png")
+        if (tag == null) compose.onRoot().captureRoboImage("create_account_${stateName}_${variant.name}.png") else captureScreenRoboImage("create_account_${stateName}_${variant.name}.png")
     }
 
     companion object {
@@ -107,11 +113,12 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("double_font_$theme", 360, 800, dark, 2f)
             )
             listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "server_error", "duplicate", "save_error", "loading", "ssl_dialog", "discard", "scrolled").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
-            }
+            } + listOf("user", "scrolled").map { state -> arrayOf<Any>(state, Variant("landscape_$theme", 720, 360, dark, 1f)) }
         }
     }
 }

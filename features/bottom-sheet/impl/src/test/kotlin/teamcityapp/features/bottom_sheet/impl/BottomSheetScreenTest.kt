@@ -44,4 +44,21 @@ class BottomSheetScreenTest {
         items.forEach { compose.onNodeWithTag("sheet:${it.action}").performClick() }
         assertEquals(items, selected)
     }
+
+    @Test fun actionPaddingIsInsideFullWidthHitArea() {
+        val items = sheetItems(SheetMenuType.BuildType, listOf("configuration"))
+        val selected = mutableListOf<SheetItem>()
+        compose.setContent { TeamCityTheme { BottomSheetScreen(BottomSheetUiState("Configuration", items), { selected += it }) } }
+        val content = compose.onNodeWithTag("sheet:content").fetchSemanticsNode().boundsInRoot
+        items.forEach { item ->
+            val row = compose.onNodeWithTag("sheet:${item.action}")
+            row.assert(androidx.compose.ui.test.SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Button))
+            val bounds = row.fetchSemanticsNode().boundsInRoot
+            assertEquals(content.left, bounds.left)
+            assertEquals(content.right, bounds.right)
+            row.performTouchInput { click(androidx.compose.ui.geometry.Offset(1f, height / 2f)) }
+            row.performTouchInput { click(androidx.compose.ui.geometry.Offset(width - 1f, height / 2f)) }
+        }
+        assertEquals(items.flatMap { listOf(it, it) }, selected)
+    }
 }

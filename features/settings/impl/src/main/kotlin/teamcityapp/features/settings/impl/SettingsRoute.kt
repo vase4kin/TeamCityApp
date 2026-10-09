@@ -33,15 +33,5 @@ fun SettingsRoute(router: SettingsRouter, viewModel: SettingsViewModel = hiltVie
         viewModel.onScreenViewed()
         onPauseOrDispose {}
     }
-    var dialogOpen by rememberSaveable { mutableStateOf(false) }
-    SettingsScreen(
-        state,
-        viewModel::select,
-        viewModel::retry,
-        viewModel::retrySave,
-        router::close,
-        dialogOpen,
-        onOpenDialog = { dialogOpen = true },
-        onDismissDialog = { dialogOpen = false }
-    )
+    SettingsScreen(state, viewModel::select, viewModel::retry, viewModel::retrySave, router::close)
 }

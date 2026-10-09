@@ -28,6 +28,10 @@
     <string name="drawer_switching">Switching account</string>
     <string name="drawer_retry">Try again</string>
     <string name="drawer_dismiss">Dismiss</string>
-    <string name="drawer_active_account">Active account</string>
+    <string name="drawer_current_account">Current account</string>
+    <string name="drawer_current_short">Current</string>
+    <string name="drawer_manage">Manage</string>
     <string name="drawer_ssl_disabled">SSL verification disabled</string>
+<string name="drawer_accounts_title">Your accounts</string>
+<string name="drawer_empty_accounts">Add an account to connect to TeamCity</string>
 </resources>

@@ -26,6 +26,7 @@ import teamcityapp.features.bottom_sheet.impl.BottomSheetDialogFragment
 import teamcityapp.features.bottom_sheet.impl.navigation.BottomSheetNavigationImpl
 import teamcityapp.features.bottom_sheet.impl.router.BottomSheetRouter
 import teamcityapp.features.bottom_sheet.impl.router.BottomSheetRouterImpl
+import teamcityapp.libraries.clipboard.ClipboardWriter
 import teamcityapp.libraries.utils.requireScreenOwner
 @Module
 @InstallIn(SingletonComponent::class)
@@ -36,5 +37,5 @@ object BottomSheetNavigationModule {
 @Module
 @InstallIn(FragmentComponent::class)
 object BottomSheetRouterModule {
-    @Provides fun router(owner: Fragment, actions: BottomSheetAppActions): BottomSheetRouter = BottomSheetRouterImpl(owner.requireScreenOwner<BottomSheetDialogFragment>(), actions)
+    @Provides fun router(owner: Fragment, actions: BottomSheetAppActions, clipboard: ClipboardWriter): BottomSheetRouter = BottomSheetRouterImpl(owner.requireScreenOwner<BottomSheetDialogFragment>(), actions, clipboard)
 }

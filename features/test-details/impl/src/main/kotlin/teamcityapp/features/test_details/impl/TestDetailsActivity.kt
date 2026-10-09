@@ -20,11 +20,13 @@ package teamcityapp.features.test_details.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
-import teamcityapp.features.test_details.impl.router.TestDetailsRouter
-import teamcityapp.libraries.theme.TeamCityTheme
 import javax.inject.Inject
+import teamcityapp.features.test_details.impl.router.TestDetailsRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
+import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
 class TestDetailsActivity : AppCompatActivity() {
@@ -32,7 +34,13 @@ class TestDetailsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme { TestDetailsRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                TestDetailsRoute(router)
+            }
+        }
     }
 
     override fun finish() {

@@ -230,11 +230,8 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:pinned").assertIsDisplayed()
         compose.onNodeWithTag("filter-builds:personal").assertIsDisplayed()
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by queued
-        compose.onNodeWithText("Queued").performClick()
+        compose.onNodeWithTag("filter-builds:status:Queued").performScrollTo().performClick()
 
         // Check switchers
         compose.onNodeWithTag("filter-builds:pinned").assertDoesNotExist()
@@ -252,11 +249,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Success").performClick()
+        compose.onNodeWithTag("filter-builds:status:Success").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
@@ -278,11 +272,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Failed").performClick()
+        compose.onNodeWithTag("filter-builds:status:Failed").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
@@ -304,11 +295,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Failed due server error").performClick()
+        compose.onNodeWithTag("filter-builds:status:Error").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
@@ -330,11 +318,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Cancelled").performClick()
+        compose.onNodeWithTag("filter-builds:status:Cancelled").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
@@ -356,11 +341,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Failed to start").performClick()
+        compose.onNodeWithTag("filter-builds:status:FailedToStart").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
@@ -382,11 +364,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Running").performClick()
+        compose.onNodeWithTag("filter-builds:status:Running").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
@@ -408,11 +387,8 @@ class FilterBuildsActivityTest {
         // Pressing filter builds toolbar item
         onView(withId(R.id.filter_builds)).perform(click())
 
-        // Click on filter chooser
-        compose.onNodeWithTag("filter-builds:chooser").performClick()
-
         // Filter by success
-        compose.onNodeWithText("Queued").performClick()
+        compose.onNodeWithTag("filter-builds:status:Queued").performScrollTo().performClick()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()

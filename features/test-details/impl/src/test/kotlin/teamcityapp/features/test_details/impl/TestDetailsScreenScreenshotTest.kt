@@ -20,16 +20,16 @@ import android.app.Application
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
-import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
+import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.junit.runners.model.Statement
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
@@ -64,6 +64,7 @@ class TestDetailsScreenScreenshotTest(private val stateName: String, private val
             }
         }
     }
+
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
@@ -83,7 +84,7 @@ class TestDetailsScreenScreenshotTest(private val stateName: String, private val
         when (state) {
             TestDetailsUiState.Loading -> compose.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
             TestDetailsUiState.Empty -> compose.onNodeWithText("No test details").assertIsDisplayed()
-            TestDetailsUiState.Error -> compose.onNodeWithText("TRY AGAIN").assertIsDisplayed()
+            TestDetailsUiState.Error -> compose.onNodeWithText("Try again").assertIsDisplayed()
             is TestDetailsUiState.Content -> compose.onNodeWithTag("test_details:text").assertIsDisplayed()
             TestDetailsUiState.InvalidInput -> compose.onNodeWithTag("test_details:text").assertDoesNotExist()
         }
@@ -104,7 +105,7 @@ class TestDetailsScreenScreenshotTest(private val stateName: String, private val
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
             listOf("loading", "empty", "error", "invalid_input", "content", "long_content").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }

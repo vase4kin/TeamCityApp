@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TeamCitySheetHeader(title: String) {
-    Box(Modifier.fillMaxWidth().padding(top = 8.dp), contentAlignment = Alignment.Center) { Box(Modifier.size(32.dp, 4.dp).background(MaterialTheme.colorScheme.onSurface.copy(alpha = .3f), RoundedCornerShape(2.dp))) }
-    Box(Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = 16.dp), contentAlignment = Alignment.CenterStart) { Text(title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    Box(Modifier.fillMaxWidth().padding(top = 12.dp), contentAlignment = Alignment.Center) { Box(Modifier.size(40.dp, 4.dp).background(MaterialTheme.colorScheme.onSurface.copy(alpha = .3f), RoundedCornerShape(2.dp))) }
+    Box(Modifier.fillMaxWidth().heightIn(min = 76.dp).padding(horizontal = 24.dp, vertical = 16.dp), contentAlignment = Alignment.CenterStart) { Text(title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface) }
 }
 
 @Preview @Composable

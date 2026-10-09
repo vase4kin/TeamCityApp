@@ -21,4 +21,5 @@
     <string name="theme_save_error">Unable to save theme. Please try again.</string>
     <string name="retry_theme">Retry</string><string name="cancel_theme">Cancel</string>
     <string name="theme_unavailable">Not set</string>
+<string name="current_theme">Current theme: %1$s</string>
 </resources>

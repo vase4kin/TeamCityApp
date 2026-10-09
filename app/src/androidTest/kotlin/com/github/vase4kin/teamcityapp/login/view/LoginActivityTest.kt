@@ -574,7 +574,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:demo").performScrollTo()
             .assertIsDisplayed()
             .performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.warning_ssl_dialog_negative).uppercase()).performClick()
+        compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.warning_ssl_dialog_negative)).performClick()
         assertNoUnverifiedIntents()
     }
 
@@ -604,7 +604,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:demo").performScrollTo()
             .assertIsDisplayed().performClick()
 
-        compose.onNodeWithText(context.getString(R.string.text_try_it_out_button).uppercase()).performClick()
+        compose.onNodeWithText(context.getString(teamcityapp.features.login.impl.R.string.dialog_try_it_out_title)).performClick()
 
         compose.waitForIdle()
         intended(

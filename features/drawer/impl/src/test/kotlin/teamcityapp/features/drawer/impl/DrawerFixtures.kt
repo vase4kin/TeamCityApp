@@ -21,6 +21,8 @@ internal val inactive = DrawerAccount(DrawerAccountId("https://teamcity.example/
 internal fun drawerFixture(name: String): DrawerUiState {
     val accounts = when (name) {
         "one" -> listOf(active)
+        "named" -> listOf(active.copy(id = active.id.copy(userName = "alex.morgan")))
+        "named_long" -> listOf(active.copy(id = active.id.copy(userName = "alexander.morgan.platform")))
         "long", "scrolled" -> (1..20).map { DrawerAccount(DrawerAccountId("https://a-very-long-teamcity-server.example/projects/production/$it", "Developer with a very long full name $it"), it == 1, it % 2 == 0) }
         "no_active" -> listOf(active.copy(isActive = false), inactive)
         else -> listOf(inactive, active)

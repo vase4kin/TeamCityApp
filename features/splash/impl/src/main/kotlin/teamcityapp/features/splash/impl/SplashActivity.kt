@@ -20,11 +20,13 @@ package teamcityapp.features.splash.impl
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.splash.impl.router.SplashRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 // Preserve the installed launcher and recover account-store errors before choosing Home/Login.
@@ -34,8 +36,14 @@ class SplashActivity : AppCompatActivity() {
     @Inject lateinit var router: SplashRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         // The legacy window drawable is centered in the full window, including system bars.
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        setContent { TeamCityTheme { SplashRoute(router) } }
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                SplashRoute(router)
+            }
+        }
     }
 }

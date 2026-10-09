@@ -82,3 +82,5 @@ include(":features:filter-bottom-sheet:api")
 include(":features:filter-bottom-sheet:impl")
 include(":features:bottom-sheet:api")
 include(":features:bottom-sheet:impl")
+
+include(":libraries:clipboard")

@@ -21,6 +21,7 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -86,7 +87,7 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
         }
         val state = LoginUiState(form, demo = if (stateName in listOf("demo", "demo_dialog", "scrolled")) DemoServer(true, "https://teamcity.jetbrains.com") else null, demoLoading = stateName == "demo_loading", httpConfirmation = stateName == "http", guestUnauthorized = stateName == "unauthorized")
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark, legacyColors = true) { LoginScreen(state, {}, {}, {}, {}, dialog) } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { LoginScreen(state, {}, {}, {}, {}, dialog) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (stateName == "scrolled") {
@@ -104,8 +105,7 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             "demo_dialog" -> "login:demo-dialog"
             else -> null
         }
-        val node = if (tag == null) compose.onRoot() else compose.onNodeWithTag(tag)
-        node.captureRoboImage("login_${stateName}_${variant.name}.png")
+        if (tag == null) compose.onRoot().captureRoboImage("login_${stateName}_${variant.name}.png") else captureScreenRoboImage("login_${stateName}_${variant.name}.png")
     }
 
     companion object {
@@ -116,7 +116,8 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("double_font_$theme", 360, 800, dark, 2f)
             )
             listOf("user", "guest", "filled", "empty_url", "empty_user", "empty_password", "save_error", "server_error", "demo_loading", "demo", "loading", "http", "unauthorized", "ssl_dialog", "demo_dialog", "scrolled").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }

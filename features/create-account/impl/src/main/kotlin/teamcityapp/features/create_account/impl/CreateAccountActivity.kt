@@ -18,11 +18,13 @@ package teamcityapp.features.create_account.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.create_account.impl.CreateAccountRoute
 import teamcityapp.features.create_account.impl.router.CreateAccountRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
@@ -30,6 +32,12 @@ class CreateAccountActivity : AppCompatActivity() {
     @Inject lateinit var router: CreateAccountRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme(legacyColors = true) { CreateAccountRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                CreateAccountRoute(router)
+            }
+        }
     }
 }

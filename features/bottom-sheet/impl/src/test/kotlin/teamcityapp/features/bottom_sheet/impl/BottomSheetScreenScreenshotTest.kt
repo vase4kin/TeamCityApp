@@ -19,6 +19,7 @@ package teamcityapp.features.bottom_sheet.impl
 import android.app.Application
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -69,11 +70,12 @@ class BottomSheetScreenScreenshotTest(private val stateName: String, private val
     @Test fun rendersState() {
         val state = BottomSheetUiState("TeamCity item", if (stateName == "empty") emptyList() else sheetItems(SheetMenuType.valueOf(stateName), listOf("main", "https://teamcity.example/artifacts/report.html")))
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark, legacyColors = true) { BottomSheetScreen(state, {}) } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { BottomSheetScreen(state, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val tag = "sheet:content"
         val node = if (tag == null) compose.onRoot() else compose.onNodeWithTag(tag)
+        node.assertWidthIsEqualTo(minOf(variant.width, 640).dp)
         node.captureRoboImage("bottom_sheet_${stateName}_${variant.name}.png")
     }
 
@@ -85,7 +87,8 @@ class BottomSheetScreenScreenshotTest(private val stateName: String, private val
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("double_font_$theme", 360, 800, dark, 2f)
             )
             listOf("Default", "Branch", "ArtifactDefault", "ArtifactBrowser", "ArtifactFolder", "ArtifactFull", "BuildType", "Project", "empty").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }

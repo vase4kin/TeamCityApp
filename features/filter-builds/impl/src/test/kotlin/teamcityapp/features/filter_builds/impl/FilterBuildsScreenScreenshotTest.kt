@@ -89,13 +89,18 @@ class FilterBuildsScreenScreenshotTest(private val stateName: String, private va
             )
         )
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark, legacyColors = true) { FilterBuildsScreen(state, {}, {}, {}, {}, dialog = stateName == "dialog") } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { FilterBuildsScreen(state, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
-        if (stateName == "scrolled") compose.onNodeWithTag("filter-builds:pinned").performScrollTo()
+        if (stateName == "scrolled") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("filter-builds:scroll").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) { it(0f, 10_000f) }
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+        }
         compose.onNodeWithContentDescription(RuntimeEnvironment.getApplication().getString(teamcityapp.libraries.theme.R.string.action_close)).assertIsDisplayed()
-        val tag = if (stateName == "dialog") "filter-builds:dialog" else null
-        val node = if (tag == null) compose.onRoot() else compose.onNodeWithTag(tag)
+        val node = compose.onRoot()
         node.captureRoboImage("filter_builds_${stateName}_${variant.name}.png")
     }
 
@@ -107,11 +112,12 @@ class FilterBuildsScreenScreenshotTest(private val stateName: String, private va
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("loading", "empty", "single_branch", "branches_error", "content", "queued", "dialog", "scrolled").flatMap { state ->
+            listOf("loading", "empty", "single_branch", "branches_error", "content", "queued", "scrolled").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
-            }
+            } + listOf("content", "scrolled").map { state -> arrayOf<Any>(state, Variant("landscape_$theme", 720, 360, dark, 1f)) }
         }
     }
 }

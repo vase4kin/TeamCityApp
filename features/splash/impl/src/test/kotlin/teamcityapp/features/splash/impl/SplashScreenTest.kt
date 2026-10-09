@@ -52,7 +52,9 @@ class SplashScreenTest {
         val root = compose.onNodeWithTag("splash:screen").fetchSemanticsNode().boundsInRoot
         val logo = compose.onNodeWithTag("splash:logo").fetchSemanticsNode().boundsInRoot
         assertEquals(root.center.x, logo.center.x, 0.1f)
-        assertEquals(root.center.y, logo.center.y, 0.1f)
+        val group = compose.onNodeWithTag("splash:loading").fetchSemanticsNode().boundsInRoot
+        assertEquals(root.center.y, group.center.y, 0.1f)
+        compose.onNode(hasProgressBarRangeInfo(androidx.compose.ui.semantics.ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
         compose.onNodeWithText("Try again").assertDoesNotExist()
     }
 
@@ -79,7 +81,7 @@ class SplashScreenTest {
     @Test fun errorUsesProvidedSurfaceAndTypography() {
         compose.setContent {
             MaterialTheme(
-                colorScheme = lightColorScheme(surface = Color.Green, onSurface = Color.Red),
+                colorScheme = lightColorScheme(primaryContainer = Color.Green, onSurface = Color.Red),
                 typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))
             ) {
                 SplashScreen(SplashUiState.Error)

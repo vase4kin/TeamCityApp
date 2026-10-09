@@ -47,4 +47,25 @@ class FilterBottomSheetScreenTest {
         compose.onNodeWithTag("quick-filter:apply").assertIsEnabled().performClick()
         assertEquals(1, applied)
     }
+
+    @Test fun currentModeIsSelectedAndOnlyAlternativeChangesTheFilter() {
+        var applied = 0
+        compose.setContent { TeamCityTheme { FilterBottomSheetScreen(FilterBottomSheetUiState(filter = QuickFilter.AgentsDisconnected)) { applied++ } } }
+        compose.onNodeWithTag("quick-filter:selected").assertIsSelected().assertHasNoClickAction()
+        compose.onNodeWithTag("quick-filter:apply").assertIsNotSelected().performClick()
+        assertEquals(1, applied)
+    }
+
+    @Test fun alternativeModeHasFullWidthEdgeHitTargets() {
+        var applied = 0
+        compose.setContent { TeamCityTheme { FilterBottomSheetScreen(FilterBottomSheetUiState()) { applied++ } } }
+        val content = compose.onNodeWithTag("quick-filter:content").fetchSemanticsNode().boundsInRoot
+        val row = compose.onNodeWithTag("quick-filter:apply")
+        val bounds = row.fetchSemanticsNode().boundsInRoot
+        assertEquals(content.left, bounds.left)
+        assertEquals(content.right, bounds.right)
+        row.performTouchInput { click(androidx.compose.ui.geometry.Offset(1f, height / 2f)) }
+        row.performTouchInput { click(androidx.compose.ui.geometry.Offset(width - 1f, height / 2f)) }
+        assertEquals(2, applied)
+    }
 }

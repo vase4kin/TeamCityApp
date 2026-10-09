@@ -70,14 +70,14 @@ class SettingsScreenScreenshotTest(private val stateName: String, private val va
 
     @Test fun rendersState() {
         val options = when (stateName) {
-            "auto_battery", "dialog_battery" -> ThemeOptions.forSdk(28)
-            "dialog_legacy" -> ThemeOptions.forSdk(24)
+            "auto_battery" -> ThemeOptions.forSdk(28)
+            "legacy" -> ThemeOptions.forSdk(24)
             else -> ThemeOptions.forSdk(35)
         }
         val selected = when (stateName) {
-            "light", "dialog_light", "dialog_legacy" -> ThemeMode.Light
-            "dark", "dialog_dark" -> ThemeMode.Dark
-            "auto_battery", "dialog_battery", "unavailable" -> ThemeMode.AutoBattery
+            "light", "legacy" -> ThemeMode.Light
+            "dark" -> ThemeMode.Dark
+            "auto_battery", "unavailable" -> ThemeMode.AutoBattery
             else -> ThemeMode.System
         }
         val state = when (stateName) {
@@ -85,15 +85,12 @@ class SettingsScreenScreenshotTest(private val stateName: String, private val va
             "error" -> SettingsUiState.Error
             else -> SettingsUiState.Content(selected, options.modes, saving = stateName == "saving", saveFailed = stateName == "save_error")
         }
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { SettingsScreen(state, {}, {}, {}, {}, dialogOpen = stateName.startsWith("dialog")) } }
+        compose.mainClock.autoAdvance = !(stateName in listOf("loading", "saving"))
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { SettingsScreen(state, {}, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val name = "settings_${stateName}_${variant.name}"
-        if (stateName.startsWith("dialog")) {
-            compose.onNodeWithTag("settings:dialog").captureRoboImage("$name.png")
-        } else {
-            compose.onRoot().captureRoboImage("$name.png")
-        }
+        compose.onRoot().captureRoboImage("$name.png")
     }
 
     companion object {
@@ -104,9 +101,10 @@ class SettingsScreenScreenshotTest(private val stateName: String, private val va
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("loading", "error", "light", "dark", "system", "auto_battery", "unavailable", "saving", "save_error", "dialog_light", "dialog_dark", "dialog_system", "dialog_battery", "dialog_legacy").flatMap { state ->
+            listOf("loading", "error", "light", "dark", "system", "auto_battery", "unavailable", "saving", "save_error", "legacy").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }
