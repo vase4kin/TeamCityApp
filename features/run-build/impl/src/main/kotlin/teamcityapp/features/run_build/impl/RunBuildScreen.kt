@@ -41,47 +41,49 @@ data class ParameterDialogState(val name: String = "", val value: String = "", v
 @Composable
 fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQueue: () -> Unit, onClose: () -> Unit, onSelectAgent: () -> Unit, onAddParameter: () -> Unit, onClearParameters: () -> Unit, agentDialog: Boolean = false, parameterDialog: ParameterDialogState? = null, onDismissDialog: () -> Unit = {}, onAgentSelected: (BuildAgent) -> Unit = {}, onParameterChange: (ParameterDialogState) -> Unit = {}, onConfirmParameter: () -> Unit = {}) {
     val request = state.request
-    TeamCityScreen(stringResource(R.string.title_run_build), onClose, appBarHeight = 56.dp, scrollToolbarWithContent = true, containerColor = MaterialTheme.colorScheme.surface) { modifier ->
+    TeamCityScreen(stringResource(R.string.title_run_build), onClose, appBarHeight = 56.dp, scrollToolbarWithContent = true) { modifier ->
         Box(modifier) {
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).testTag("run-build:scroll")) {
-                BranchField(state.branches, state.branchesFailed, request.branch, { onChange(request.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(R.string.text_no_branches_available), stringResource(R.string.hint_default_build_branch), enabled = !state.queuing)
-                HorizontalDivider()
-                Column(Modifier.fillMaxWidth().clickable(enabled = !state.queuing && !state.agents.isNullOrEmpty(), onClick = onSelectAgent).padding(horizontal = 16.dp, vertical = 12.dp).testTag("run-build:agent")) {
-                    Text(stringResource(R.string.text_agents), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyLarge)
-                    if (state.agents == null) {
-                        Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(stringResource(R.string.text_loading_agents), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            CircularProgressIndicator(Modifier.padding(start = 16.dp).size(20.dp), strokeWidth = 2.dp)
-                        }
-                    } else {
-                        Text(if (state.agents.isEmpty()) stringResource(R.string.text_no_agents_available) else request.agent?.name ?: stringResource(R.string.hint_default_filter_agent), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                }
-                HorizontalDivider()
-                TeamCitySwitch(stringResource(R.string.text_switcher_run_as_personal), request.personal, { onChange(request.copy(personal = it)) }, Modifier.padding(horizontal = 16.dp, vertical = 12.dp).testTag("run-build:personal"), !state.queuing)
-                HorizontalDivider()
-                TeamCitySwitch(stringResource(R.string.text_switcher_run_as_queue_at_the_top), request.queueAtTop, { onChange(request.copy(queueAtTop = it)) }, Modifier.padding(horizontal = 16.dp, vertical = 12.dp).testTag("run-build:top"), !state.queuing)
-                HorizontalDivider()
-                TeamCitySwitch(stringResource(R.string.text_switcher_run_as_clean_all_files), request.cleanSources, { onChange(request.copy(cleanSources = it)) }, Modifier.padding(horizontal = 16.dp, vertical = 12.dp).testTag("run-build:clean"), !state.queuing)
-                HorizontalDivider()
-                Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                    Text(stringResource(R.string.text_parameters), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyLarge)
-                    if (request.parameters.isEmpty()) Text(stringResource(R.string.text_filters_none), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    request.parameters.forEach { parameter ->
-                        Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
-                            Text(parameter.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                            Text(parameter.value, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+                    BranchField(state.branches, state.branchesFailed, request.branch, { onChange(request.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(R.string.text_no_branches_available), stringResource(R.string.hint_default_build_branch), enabled = !state.queuing)
+                    HorizontalDivider()
+                    Column(Modifier.fillMaxWidth().clickable(enabled = !state.queuing && !state.agents.isNullOrEmpty(), onClick = onSelectAgent).padding(horizontal = 16.dp, vertical = 12.dp).testTag("run-build:agent")) {
+                        Text(stringResource(R.string.text_agents), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyLarge)
+                        if (state.agents == null) {
+                            Row(Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(R.string.text_loading_agents), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                CircularProgressIndicator(Modifier.padding(start = 16.dp).size(20.dp), strokeWidth = 2.dp)
+                            }
+                        } else {
+                            Text(if (state.agents.isEmpty()) stringResource(R.string.text_no_agents_available) else request.agent?.name ?: stringResource(R.string.hint_default_filter_agent), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
-                    FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                        Button(onAddParameter, enabled = !state.queuing, shape = RoundedCornerShape(4.dp), modifier = Modifier.testTag("run-build:add")) { Text(stringResource(R.string.text_add_parameter).uppercase()) }
-                        OutlinedButton(onClearParameters, enabled = !state.queuing && request.parameters.isNotEmpty(), shape = RoundedCornerShape(4.dp), modifier = Modifier.testTag("run-build:clear")) { Text(stringResource(R.string.text_clear_parameters).uppercase()) }
+                    HorizontalDivider()
+                    TeamCitySwitch(stringResource(R.string.text_switcher_run_as_personal), request.personal, { onChange(request.copy(personal = it)) }, Modifier.testTag("run-build:personal"), !state.queuing, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp))
+                    HorizontalDivider()
+                    TeamCitySwitch(stringResource(R.string.text_switcher_run_as_queue_at_the_top), request.queueAtTop, { onChange(request.copy(queueAtTop = it)) }, Modifier.testTag("run-build:top"), !state.queuing, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp))
+                    HorizontalDivider()
+                    TeamCitySwitch(stringResource(R.string.text_switcher_run_as_clean_all_files), request.cleanSources, { onChange(request.copy(cleanSources = it)) }, Modifier.testTag("run-build:clean"), !state.queuing, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp))
+                    HorizontalDivider()
+                    Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+                        Text(stringResource(R.string.text_parameters), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyLarge)
+                        if (request.parameters.isEmpty()) Text(stringResource(R.string.text_filters_none), Modifier.padding(top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        request.parameters.forEach { parameter ->
+                            Row(Modifier.fillMaxWidth().padding(top = 4.dp)) {
+                                Text(parameter.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                                Text(parameter.value, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
+                        FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                            Button(onAddParameter, enabled = !state.queuing, shape = RoundedCornerShape(4.dp), modifier = Modifier.testTag("run-build:add")) { Text(stringResource(R.string.text_add_parameter).uppercase()) }
+                            OutlinedButton(onClearParameters, enabled = !state.queuing && request.parameters.isNotEmpty(), shape = RoundedCornerShape(4.dp), modifier = Modifier.testTag("run-build:clear")) { Text(stringResource(R.string.text_clear_parameters).uppercase()) }
+                        }
                     }
+                    HorizontalDivider()
                 }
-                HorizontalDivider()
-                Spacer(Modifier.fillMaxWidth().height(96.dp).background(MaterialTheme.colorScheme.background))
+                Spacer(Modifier.height(96.dp))
             }
-            ExtendedFloatingActionButton(onQueue, Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp).testTag("run-build:submit"), shape = RoundedCornerShape(28.dp), containerColor = MaterialTheme.colorScheme.secondary, contentColor = MaterialTheme.colorScheme.onSecondary) {
+            TeamCityExtendedFloatingActionButton(onQueue, Modifier.align(Alignment.BottomCenter).padding(bottom = 40.dp).testTag("run-build:submit")) {
                 Icon(painterResource(R.drawable.ic_directions_run_white_24px), null)
                 Spacer(Modifier.width(12.dp))
                 Text(stringResource(R.string.title_run_build).uppercase())

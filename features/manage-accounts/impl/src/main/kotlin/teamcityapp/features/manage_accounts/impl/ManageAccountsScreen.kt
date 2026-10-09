@@ -87,7 +87,7 @@ fun ManageAccountsScreen(
 
                 is AccountListUiState.Content -> LazyColumn(
                     Modifier.fillMaxSize().testTag("accounts:list"),
-                    contentPadding = PaddingValues(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, bottom = 112.dp)
+                    contentPadding = PaddingValues(bottom = 112.dp)
                 ) {
                     items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->
                         AccountRow(account, state.canInteract, { onRemove(account.id) }, onSslWarning)
@@ -108,7 +108,7 @@ fun ManageAccountsScreen(
                     }
                 }
             }
-            FloatingActionButton(
+            TeamCityFloatingActionButton(
                 onClick = { if (state.canInteract) onCreateAccount() },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }
             ) { Icon(painterResource(ThemeR.drawable.ic_add_black_24dp), stringResource(R.string.accounts_add), Modifier.size(TeamCityDimensions.iconSize)) }
@@ -129,7 +129,7 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
         Column {
             Row(
                 Modifier.fillMaxWidth().testTag(accountTag(account.id)).clickable(enabled = enabled, role = Role.Button, onClick = onRemove)
-                    .padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.contentPadding),
+                    .padding(horizontal = TeamCityDimensions.contentPadding * 2, vertical = TeamCityDimensions.contentPadding),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -163,7 +163,7 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
                     }
                 }
             }
-            HorizontalDivider()
+            HorizontalDivider(Modifier.padding(horizontal = TeamCityDimensions.contentPadding))
         }
     }
 }
