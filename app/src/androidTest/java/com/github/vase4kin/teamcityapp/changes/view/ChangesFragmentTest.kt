@@ -175,7 +175,7 @@ class ChangesFragmentTest {
             "By john-117 on 30 Jul 16 00:36",
             "Changed files (1)",
             "filename!",
-            "EDITED"
+            "Edited"
         ).forEach { text ->
             compose.onNodeWithText(text).assertIsDisplayed()
         }

@@ -16,7 +16,6 @@
 
 package teamcityapp.features.about
 
-import teamcityapp.features.about.impl.AboutActivity
 import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
@@ -37,6 +36,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.hamcrest.Matchers.allOf
 import org.junit.Assert.*
 import org.junit.Before
@@ -45,18 +46,29 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.about.impl.AboutActivity
 import teamcityapp.features.about.repository.models.ServerInfo
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class AboutActivityTest {
-    @JvmField @Rule(order = 0) val hiltRule = HiltAndroidRule(this)
-    @JvmField @Rule(order = 1) val mockitoRule = org.mockito.junit.MockitoJUnit.rule()
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule()
         .strictness(org.mockito.quality.Strictness.LENIENT)
-    @JvmField @Rule(order = 2) val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
-    @JvmField @Rule(order = 3) val compose = createEmptyComposeRule()
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
+
+    @JvmField
+    @Rule(order = 3)
+    val compose = createEmptyComposeRule()
+
     @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val info = ServerInfo("xxx117", "https://www.server.xxx177.com")
@@ -96,7 +108,8 @@ class AboutActivityTest {
         `when`(teamCityService.serverInfo()).thenReturn(Single.error(IllegalStateException("offline")))
         launch().use {
             awaitText(app.getString(R.string.about_app_text_app))
-            compose.onNodeWithText(app.getString(R.string.about_app_text_server_info)).assertDoesNotExist()
+            compose.onNodeWithText(app.getString(R.string.about_app_text_server_info)).assertIsDisplayed()
+            compose.onNodeWithTag("about:server-unavailable").assertIsDisplayed()
             scrollTo(app.getString(R.string.about_app_email))
             scrollTo(app.getString(R.string.about_app_text_privacy))
         }
@@ -105,8 +118,7 @@ class AboutActivityTest {
     @Test fun stoppingCancelsAndReturningLoadsFreshContent() {
         val request = SingleSubject.create<ServerInfo>()
         val subscribed = CountDownLatch(1)
-        `when`(teamCityService.serverInfo()).thenReturn(
-            request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
+        `when`(teamCityService.serverInfo()).thenReturn(request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
         launch().use { scenario ->
             assertTrue(subscribed.await(5, TimeUnit.SECONDS))
             scenario.moveToState(Lifecycle.State.CREATED)
@@ -121,8 +133,7 @@ class AboutActivityTest {
     @Test fun recreatingWhileLoadingCancelsAndRestartsRequest() {
         val request = SingleSubject.create<ServerInfo>()
         val subscribed = CountDownLatch(1)
-        `when`(teamCityService.serverInfo()).thenReturn(
-            request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
+        `when`(teamCityService.serverInfo()).thenReturn(request.doOnSubscribe { subscribed.countDown() }, Single.just(info))
         launch().use { scenario ->
             assertTrue(subscribed.await(5, TimeUnit.SECONDS))
             scenario.recreate()
@@ -149,7 +160,8 @@ class AboutActivityTest {
                     R.string.about_app_text_found_issue to R.string.about_app_url_found_issue,
                     R.string.about_app_text_source_code to R.string.about_app_url_source_code,
                     R.string.about_app_text_web to R.string.about_app_url_web,
-                    R.string.about_app_text_privacy to R.string.about_app_url_privacy)
+                    R.string.about_app_text_privacy to R.string.about_app_url_privacy
+                )
                 links.forEach { (label, url) ->
                     scrollTo(app.getString(label))
                     compose.onNodeWithText(app.getString(label)).performClick()
@@ -157,13 +169,25 @@ class AboutActivityTest {
                 }
                 scrollTo(app.getString(R.string.about_app_text_email))
                 compose.onNodeWithText(app.getString(R.string.about_app_text_email)).performClick()
-                Intents.intended(allOf(hasAction(Intent.ACTION_CHOOSER), hasExtra(Intent.EXTRA_INTENT,
-                    allOf(hasAction(Intent.ACTION_SENDTO), hasData("mailto:${app.getString(R.string.about_app_email)}"),
-                        hasExtra(Intent.EXTRA_SUBJECT, app.getString(R.string.about_app_email_title))))))
+                Intents.intended(
+                    allOf(
+                        hasAction(Intent.ACTION_CHOOSER),
+                        hasExtra(
+                            Intent.EXTRA_INTENT,
+                            allOf(
+                                hasAction(Intent.ACTION_SENDTO),
+                                hasData("mailto:${app.getString(R.string.about_app_email)}"),
+                                hasExtra(Intent.EXTRA_SUBJECT, app.getString(R.string.about_app_email_title))
+                            )
+                        )
+                    )
+                )
                 scrollTo(app.getString(R.string.about_app_text_libraries))
                 compose.onNodeWithText(app.getString(R.string.about_app_text_libraries)).performClick()
                 Intents.intended(hasComponent(OssLicensesMenuActivity::class.java.name))
-            } finally { Intents.release() }
+            } finally {
+                Intents.release()
+            }
         }
     }
 

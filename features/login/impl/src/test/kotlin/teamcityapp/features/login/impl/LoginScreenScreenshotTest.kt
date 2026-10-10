@@ -19,7 +19,9 @@ package teamcityapp.features.login.impl
 import android.app.Application
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.dropbox.differ.SimpleImageComparator
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
+import com.github.takahirom.roborazzi.RoborazziOptions
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
@@ -105,7 +107,25 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
             "demo_dialog" -> "login:demo-dialog"
             else -> null
         }
-        if (tag == null) compose.onRoot().captureRoboImage("login_${stateName}_${variant.name}.png") else captureScreenRoboImage("login_${stateName}_${variant.name}.png")
+        val path = "login_${stateName}_${variant.name}.png"
+        when {
+            tag == null -> compose.onRoot().captureRoboImage(path)
+
+            stateName == "loading" -> {
+                // Native dialog edge blending varies by up to two RGB levels across hosts.
+                // Keep zero changed pixels; allow only this small color-rounding difference.
+                captureScreenRoboImage(
+                    path,
+                    roborazziOptions = RoborazziOptions(
+                        compareOptions = RoborazziOptions.CompareOptions(
+                            imageComparator = SimpleImageComparator(maxDistance = 0.01f)
+                        )
+                    )
+                )
+            }
+
+            else -> captureScreenRoboImage(path)
+        }
     }
 
     companion object {

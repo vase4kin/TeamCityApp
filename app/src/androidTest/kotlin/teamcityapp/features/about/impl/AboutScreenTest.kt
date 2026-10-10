@@ -43,7 +43,7 @@ class AboutScreenTest {
         height: Int = 700
     ) {
         compose.setContent {
-            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(width.dp, height.dp))) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.WindowSize(DpSize(width.dp, height.dp))) {
                 TeamCityTheme { AboutScreen(state, {}, onAction, onClose) }
             }
         }
