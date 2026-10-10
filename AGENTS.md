@@ -19,7 +19,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   ViewModel, and lifecycle-aware StateFlow collection: About, Properties, Test
   Details, Change Details, Settings, Manage Accounts, Drawer, Splash, Login,
   Create Account, Run Build, Build Log, Filter Builds, Action Bottom Sheet, and
-  Quick Filter Bottom Sheet, Agents, Changes, and Test Occurrences.
+  Quick Filter Bottom Sheet, Agents, Changes, Test Occurrences, Navigation,
+  Favorites, Build History, Running Builds, Build Queue, Snapshot Dependencies,
+  Build Overview, and Artifacts.
   Kotlin sources and tests use the corresponding `kotlin` roots. Features expose
   small contracts and immutable public models. Feature implementations own their
   activity/fragment hosts, UI-scoped routers, trackers, and feature DI. Incoming
@@ -81,9 +83,20 @@ to the requested behavior and the coherent migration slice needed to support it.
   project/configuration models in `libraries/build-configurations`. Navigation owns
   its recursive Activity alias and rating UI; Favorites retains explicit partial/all-failed
   states without removing saved IDs. Home account reloads replace their owners, cancelling
-  old requests even when users share a server URL. Their integration tests include two
-  active favorite-action gates awaiting the legacy Build History migration.
-  See `docs/compose-list-migration.md` for the remaining consumers and migration order.
+  old requests even when users share a server URL. Build History owns favorite actions
+  through the same active-account storage adapter.
+  Build History, Running Builds, Build Queue, and Snapshot Dependencies share complete
+  immutable launch snapshots in `libraries/builds` and Compose rows in `libraries/build-ui`.
+  History uses Paging; Home lists have explicit visibility and account/query gates.
+  Overview and Artifacts own their Compose Fragment hosts, with an Activity alias for
+  artifact folders. Downloads retain their ViewModel state and close blocked network
+  reads on cancellation without overwriting completed files. The native Build Details
+  shell shares activity-scoped arguments: incoming payloads construct tabs, loaded
+  snapshots drive current actions, restored tabs retain their ViewModels, and a new
+  Intent replaces the old owners. Home badge counts remain behind a narrow callback
+  adapter until its native shell is migrated. The old `base/list` foundation, sectioned
+  RecyclerView adapters, Mugen, and shimmer list layouts have been removed.
+  See `docs/compose-list-migration.md` for the inventory, architecture, and verification.
 - Screens owned by `app/` remain legacy. Room, broader DataStore migration,
   WorkManager, and Navigation 3 remain target technologies.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
