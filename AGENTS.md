@@ -19,7 +19,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   ViewModel, and lifecycle-aware StateFlow collection: About, Properties, Test
   Details, Change Details, Settings, Manage Accounts, Drawer, Splash, Login,
   Create Account, Run Build, Build Log, Filter Builds, Action Bottom Sheet, and
-  Quick Filter Bottom Sheet.
+  Quick Filter Bottom Sheet, Agents, and Changes.
   Kotlin sources and tests use the corresponding `kotlin` roots. Features expose
   small contracts and immutable public models. Feature implementations own their
   activity/fragment hosts, UI-scoped routers, trackers, and feature DI. Incoming
@@ -68,6 +68,14 @@ to the requested behavior and the coherent migration slice needed to support it.
   The existing consent preference remains behind the app adapter
   because Home also resets it synchronously on account changes. That shared storage
   boundary must migrate together when Home is modernized.
+- Agents and Changes retain Fragment entry points and share the stateless
+  `libraries/list-ui` loading, empty, error, refresh, and append components.
+  Agents uses `libraries/list-state` for finite query-driven loading and explicit
+  Home visibility, cancelling unfinished work while hidden and retaining completed
+  content through configuration changes. Changes uses Paging with opaque TeamCity
+  continuation URLs, ViewModel-scoped page retention, and independently retryable
+  tab counts. App adapters preserve legacy RxCache DTO names and request policies.
+  See `docs/compose-list-migration.md` for the remaining consumers and migration order.
 - Screens owned by `app/` remain legacy. Room, broader DataStore migration,
   WorkManager, and Navigation 3 remain target technologies.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
