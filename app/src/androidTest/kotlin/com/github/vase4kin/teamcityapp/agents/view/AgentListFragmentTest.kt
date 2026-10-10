@@ -16,16 +16,11 @@
 
 package com.github.vase4kin.teamcityapp.agents.view
 
-import android.content.Context
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -36,35 +31,25 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
-import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchHomeToolbarTitle
 import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
-import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 import org.hamcrest.core.AllOf.allOf
-import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Ignore
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.agents.impl.R as AgentsR
+import teamcityapp.features.filter_bottom_sheet.impl.R as FilterR
 
-@Ignore("https://github.com/vase4kin/TeamCityApp/issues/362")
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class AgentListFragmentTest {
-
-    @JvmField
-    @Rule(order = 4)
-    val compose = createEmptyComposeRule()
-
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -77,199 +62,117 @@ class AgentListFragmentTest {
     @Rule(order = 2)
     val apiRule = HiltApiTestRule(hiltRule) { teamCityService }
 
-    @Rule(order = 3)
     @JvmField
-    var activityRule = CustomActivityTestRule(HomeActivity::class.java)
+    @Rule(order = 3)
+    val activityRule = CustomActivityTestRule(HomeActivity::class.java)
 
-    @Spy
-    private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
 
-    private val storage: SharedUserStorage
-        get() {
-            val app =
-                InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
-            return app.appInjector.sharedUserStorage()
-        }
-
-    private val context: Context
-        get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
+    @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
     companion object {
-        @JvmStatic
-        @BeforeClass
-        fun disableOnboarding() {
-            TestUtils.disableOnboarding()
+        @JvmStatic @BeforeClass
+        fun disableOnboarding() = TestUtils.disableOnboarding()
+    }
+
+    @Before fun setUp() {
+        val app = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.appInjector.sharedUserStorage().apply {
+            clearAll()
+            saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         }
     }
 
-    @Before
-    fun setUp() {
-        val storage = storage
-        storage.clearAll()
-        storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+    @Test fun filtersReplaceConnectedRowsWithDisconnectedRows() {
+        openAgents()
+        assertTextVisible("agent 1")
+        compose.onNodeWithText("agent 2").assertIsDisplayed()
+        compose.onNodeWithText("agent 3").assertIsDisplayed()
+        showDisconnected()
+        assertTextVisible("Mac mini 3434")
+        compose.onNodeWithText("agent 1").assertDoesNotExist()
+        compose.onNodeWithText("agent 2").assertDoesNotExist()
+        compose.onNodeWithText("agent 3").assertDoesNotExist()
     }
 
-    @Test
-    fun testUserCanSeeUseFiltersToLoadBuilds() {
+    @Test fun showsTheAgentsToolbarAndOpensTheDrawer() {
+        openAgents()
+        assertTextVisible(text(AgentsR.string.agents_title))
+        compose.onNodeWithContentDescription(text(AgentsR.string.agents_open_drawer)).performClick()
+        compose.onNodeWithTag("drawer:list").assertExists()
+    }
+
+    @Test fun failureCanBeRetriedWithoutRecreatingTheFragment() {
+        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.error(RuntimeException("offline")))
+        openAgents()
+        assertTextVisible(text(R.string.error_view_error_text))
+        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Recovered")))))
+        compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
+        assertTextVisible("Recovered")
+    }
+
+    @Test fun emptyMessageFollowsTheSelectedFilter() {
+        `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Agents(0, emptyList())))
+        openAgents()
+        assertTextVisible(text(AgentsR.string.agents_empty_connected))
+        showDisconnected()
+        assertTextVisible(text(AgentsR.string.agents_empty_disconnected))
+        compose.onNodeWithText(text(AgentsR.string.agents_empty_connected)).assertDoesNotExist()
+    }
+
+    @Test fun returningToTheAgentsTabReloadsItsCompletedList() {
+        val calls = AtomicInteger()
+        `when`(teamCityService.listAgents(false, null, null)).thenAnswer {
+            calls.incrementAndGet()
+            Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Visible agent"))))
+        }
+        openAgents()
+        assertTextVisible("Visible agent")
+        Assert.assertEquals(1, calls.get())
+        selectTab(R.id.favorites)
+        selectTab(R.id.agents)
+        compose.waitUntil(10_000) { calls.get() >= 2 }
+        Assert.assertEquals(2, calls.get())
+        assertTextVisible("Visible agent")
+    }
+
+    @Test fun switchingTabsCancelsAPendingAgentsRequest() {
+        val disposed = AtomicBoolean()
+        val subscribed = AtomicBoolean()
+        `when`(teamCityService.listAgents(false, null, null)).thenReturn(
+            Single.never<Agents>().doOnSubscribe { subscribed.set(true) }.doOnDispose { disposed.set(true) }
+        )
+        openAgents()
+        compose.waitUntil(10_000) { subscribed.get() }
+        selectTab(R.id.favorites)
+        compose.waitUntil(10_000) { disposed.get() }
+        `when`(teamCityService.listAgents(false, null, null)).thenReturn(
+            Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Returned agent"))))
+        )
+        selectTab(R.id.agents)
+        assertTextVisible("Returned agent")
+    }
+
+    private fun openAgents() {
         activityRule.launchActivity(null)
+        selectTab(R.id.agents)
+    }
 
-        // Click on agents tab
-        clickOnAgentsTab()
+    private fun selectTab(id: Int) {
+        onView(allOf(withId(id), isDescendantOfA(withId(R.id.navigation)), isDisplayed())).perform(click())
+    }
 
-        // Check badge
-        checkAgentsTabBadgeCount("3")
-
-        // checking connected
-        onView(allOf(withId(R.id.agents_recycler_view), isDisplayed()))
-            .check(hasItemsCount(3))
-        onView(
-            allOf(
-                withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
-                    0,
-                    R.id.title
-                ),
-                isDisplayed()
-            )
-        )
-            .check(matches(withText("agent 1")))
-        onView(
-            withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
-                1,
-                R.id.title
-            )
-        )
-            .check(matches(withText("agent 2")))
-        onView(
-            withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
-                2,
-                R.id.title
-            )
-        )
-            .check(matches(withText("agent 3")))
-
-        // filter agents to show disconnected
+    private fun showDisconnected() {
         onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
-        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.filter_bottom_sheet.impl.R.string.text_show_disconnected)).performClick()
-
-        // check snack bar text
-        onView(withText(R.string.text_agents_filters_applied)).check(matches(isDisplayed()))
-
-        // Check badge
-        checkAgentsTabBadgeCount("1")
-
-        // checking disconnected
-        onView(allOf(withId(R.id.agents_recycler_view), isDisplayed()))
-            .check(hasItemsCount(1))
-        onView(
-            withRecyclerView(R.id.agents_recycler_view).atPositionOnView(
-                0,
-                R.id.title
-            )
-        )
-            .check(matches(withText("Mac mini 3434")))
+        compose.onNodeWithText(text(FilterR.string.text_show_disconnected)).performClick()
     }
 
-    @Test
-    fun testUserCanSeeUpdatedToolbar() {
-        activityRule.launchActivity(null)
-
-        // Click on build queue tab
-        clickOnAgentsTab()
-
-        // Check toolbar
-        matchHomeToolbarTitle(R.id.home_agents_toolbar_title, R.string.drawer_item_agents)
+    private fun assertTextVisible(value: String) {
+        compose.waitUntil(10_000) { compose.onAllNodesWithText(value).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText(value).assertIsDisplayed()
     }
 
-    @Test
-    fun testUserCanSeeFailureMessageForConnectedAgents() {
-        // Prepare data
-        `when`(
-            teamCityService.listAgents(
-                any(),
-                any(),
-                any()
-            )
-        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
-
-        activityRule.launchActivity(null)
-
-        // Click on agents tab
-        clickOnAgentsTab()
-
-        checkAgentsTabBadgeCount("0")
-
-        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
-
-        // filter builds to show all
-        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
-        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.filter_bottom_sheet.impl.R.string.text_show_disconnected)).performClick()
-
-        checkAgentsTabBadgeCount("0")
-
-        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun testUserCanSeeFailureMessageForDisconnectedAgents() {
-        // Prepare data
-        `when`(
-            teamCityService.listAgents(
-                any(),
-                any(),
-                any()
-            )
-        ).thenReturn(Single.error(RuntimeException("smth bad happend!")))
-
-        activityRule.launchActivity(null)
-
-        // Click on agents tab
-        clickOnAgentsTab()
-
-        checkAgentsTabBadgeCount("0")
-
-        onView(withText(R.string.error_view_error_text)).check(matches(isDisplayed()))
-    }
-
-    @Test
-    fun testUserCanSeeEmptyDataMessageIfBuildQueueIsEmpty() {
-        `when`(
-            teamCityService.listAgents(
-                any(),
-                any(),
-                any()
-            )
-        ).thenReturn(Single.just(Agents(0, emptyList())))
-
-        activityRule.launchActivity(null)
-
-        // Click on agents tab
-        clickOnAgentsTab()
-
-        checkAgentsTabBadgeCount("0")
-        onView(withId(R.id.agents_empty_title_view)).check(matches(isDisplayed()))
-            .check(matches(withText(R.string.empty_list_message_agents)))
-
-        // filter builds to show all
-        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
-        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.filter_bottom_sheet.impl.R.string.text_show_disconnected)).performClick()
-
-        checkAgentsTabBadgeCount("0")
-        onView(withId(R.id.agents_empty_title_view)).check(matches(isDisplayed()))
-            .check(matches(withText(R.string.empty_list_message_agents_disconnected)))
-    }
-
-    private fun clickOnAgentsTab() {
-        onView(
-            allOf(
-                withId(R.id.agents),
-                isDescendantOfA(withId(R.id.navigation)),
-                isDisplayed()
-            )
-        )
-            .perform(click())
-    }
-
-    private fun checkAgentsTabBadgeCount(count: String) {
-        // FIXME
-    }
+    private fun text(id: Int) = InstrumentationRegistry.getInstrumentation().targetContext.getString(id)
 }

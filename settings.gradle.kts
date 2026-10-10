@@ -84,3 +84,7 @@ include(":features:bottom-sheet:api")
 include(":features:bottom-sheet:impl")
 
 include(":libraries:clipboard")
+include(":libraries:list-state")
+include(":libraries:list-ui")
+include(":features:agents:api")
+include(":features:agents:impl")

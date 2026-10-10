@@ -22,7 +22,6 @@
     <item type="id" name="artifact_fragment_list" />
     <item type="id" name="artifact_recycler_view" />
     <item type="id" name="account_recycler_view" />
-    <item type="id" name="agents_recycler_view" />
     <item type="id" name="build_recycler_view" />
     <item type="id" name="changes_recycler_view" />
     <item type="id" name="navigation_recycler_view" />
@@ -36,6 +35,5 @@
     <item type="id" name="favorites_empty_title_view" />
     <item type="id" name="running_empty_title_view" />
     <item type="id" name="queued_empty_title_view" />
-    <item type="id" name="agents_empty_title_view" />
     <item type="id" name="toolbar" />
 </resources>

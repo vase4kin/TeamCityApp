@@ -41,7 +41,7 @@ class HomeDataManagerImpl(
     private val runningBuildsDataManager =
         RunningBuildsDataManagerImpl(repository, sharedUserStorage)
     private val queuedBuildsDataManager = BuildQueueDataManagerImpl(repository, sharedUserStorage)
-    private val agentsDataManager = AgentsDataManagerImpl(repository, eventBus)
+    private val agentsDataManager = AgentsDataManagerImpl(repository)
 
     private var listener: HomeDataManager.Listener? = null
 
