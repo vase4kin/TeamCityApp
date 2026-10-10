@@ -21,6 +21,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,8 +38,10 @@ import androidx.compose.ui.unit.dp
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityMonospace
 import teamcityapp.libraries.theme.TeamCityScreen
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.teamCityStatusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,7 +59,8 @@ fun ChangeDetailsScreen(
         if (state is ChangeDetailsUiState.Content) {
             val details = state.details
             LazyColumn(
-                modifier.testTag("change_details:list")
+                modifier.widthIn(max = 720.dp).testTag("change_details:list"),
+                contentPadding = PaddingValues(8.dp)
             ) {
                 item("details") {
                     ChangeCard(details, { onOpenUrl(details.webUrl) }, Modifier.padding(TeamCityDimensions.smallSpacing))
@@ -73,18 +77,18 @@ fun ChangeDetailsScreen(
 
 @Composable
 private fun ChangeCard(details: ChangeDetails, onOpenUrl: () -> Unit, modifier: Modifier = Modifier) {
-    Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.surface, shape = MaterialTheme.shapes.small, shadowElevation = 1.dp) {
-        Column(Modifier.padding(start = TeamCityDimensions.smallSpacing, end = TeamCityDimensions.smallSpacing, top = TeamCityDimensions.smallSpacing)) {
-            DetailField(stringResource(R.string.text_comment), details.comment, MaterialTheme.typography.bodyLarge)
+    Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
+        Column(Modifier.padding(24.dp)) {
+            DetailField(stringResource(R.string.text_comment), details.comment, MaterialTheme.typography.headlineSmall)
             HorizontalDivider(Modifier.padding(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.outlineVariant)
-            DetailField(stringResource(R.string.text_revision), details.revision, MaterialTheme.typography.bodyMedium)
+            SelectionContainer { DetailField(stringResource(R.string.text_revision), details.revision, TeamCityMonospace) }
             HorizontalDivider(Modifier.padding(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.outlineVariant)
             DetailField(stringResource(R.string.text_user), stringResource(R.string.text_description, details.userName, details.date), MaterialTheme.typography.bodyMedium)
             Spacer(Modifier.height(TeamCityDimensions.smallSpacing))
             OutlinedButton(onClick = onOpenUrl) {
                 Icon(painterResource(R.drawable.ic_web_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
                 Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
-                Text(stringResource(R.string.text_button_open_in_browser).uppercase(LocalLocale.current.platformLocale))
+                Text(stringResource(R.string.text_button_open_in_browser))
             }
         }
     }
@@ -92,9 +96,11 @@ private fun ChangeCard(details: ChangeDetails, onOpenUrl: () -> Unit, modifier: 
 
 @Composable
 private fun DetailField(label: String, value: String, style: TextStyle) {
-    Text(label.uppercase(LocalLocale.current.platformLocale), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelSmall)
-    Spacer(Modifier.height(TeamCityDimensions.extraSmallSpacing))
-    Text(value, Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface, style = style)
+    Column {
+        Text(label, color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.labelSmall)
+        Spacer(Modifier.height(TeamCityDimensions.extraSmallSpacing))
+        Text(value, Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface, style = style)
+    }
 }
 
 @Composable
@@ -111,20 +117,26 @@ private fun ChangedFilesHeader(count: Int, modifier: Modifier = Modifier) {
 
 @Composable
 private fun ChangedFileRow(file: ChangedFile, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val statuses = teamCityStatusColors()
+    val status = when (file.type.lowercase(java.util.Locale.ROOT)) {
+        "added" -> statuses.success
+        "removed", "deleted" -> teamcityapp.libraries.theme.TeamCityStatusColor(MaterialTheme.colorScheme.errorContainer, MaterialTheme.colorScheme.onErrorContainer)
+        else -> statuses.info
+    }
     Row(
         modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onClick)
+            .heightIn(min = 56.dp).clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = TeamCityDimensions.contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp) {
+        Surface(shape = MaterialTheme.shapes.small, color = status.container) {
             Text(
-                file.type.uppercase(LocalLocale.current.platformLocale),
+                file.type,
                 Modifier
                     .padding(TeamCityDimensions.extraSmallSpacing)
                     .widthIn(min = TeamCityDimensions.minimumTouchTarget),
-                color = MaterialTheme.colorScheme.onSurface,
+                color = status.onContainer,
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Clip,

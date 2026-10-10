@@ -19,10 +19,12 @@ package teamcityapp.features.settings.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.settings.impl.router.SettingsRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
@@ -30,6 +32,12 @@ class SettingsActivity : AppCompatActivity() {
     @Inject lateinit var router: SettingsRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme { SettingsRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                SettingsRoute(router)
+            }
+        }
     }
 }

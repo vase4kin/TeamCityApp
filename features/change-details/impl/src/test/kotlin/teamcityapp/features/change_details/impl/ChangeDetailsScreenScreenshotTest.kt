@@ -97,7 +97,7 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
         val name = "change_details_${stateName}_${variant.name}"
         compose.onRoot().captureRoboImage("$name.png")
         if (stateName == "long_content") {
-            compose.onNodeWithText("MORE DETAILS").performScrollTo().assertIsDisplayed()
+            compose.onNodeWithText("More details").performScrollTo().assertIsDisplayed()
             compose.waitForIdle()
             compose.onRoot().captureRoboImage("${name}_action.png")
             compose.onNodeWithTag("change_details:list").performScrollToIndex((state as ChangeDetailsUiState.Content).details.files.size + 1)

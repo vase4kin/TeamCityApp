@@ -18,12 +18,14 @@ package teamcityapp.features.run_build.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.run_build.impl.RunBuildRoute
 import teamcityapp.features.run_build.impl.router.RunBuildRouter
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
@@ -31,7 +33,13 @@ class RunBuildActivity : AppCompatActivity() {
     @Inject lateinit var router: RunBuildRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme(legacyColors = true) { RunBuildRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                RunBuildRoute(router)
+            }
+        }
     }
     override fun finish() {
         super.finish()

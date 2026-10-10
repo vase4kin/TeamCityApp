@@ -34,7 +34,7 @@ import teamcityapp.libraries.theme.TeamCityTheme
 
 @Composable
 fun SplashScreen(state: SplashUiState, modifier: Modifier = Modifier, onRetry: () -> Unit = {}) {
-    Surface(modifier.fillMaxSize().testTag("splash:screen"), color = MaterialTheme.colorScheme.surface, contentColor = MaterialTheme.colorScheme.onSurface) {
+    Surface(modifier.fillMaxSize().testTag("splash:screen"), color = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onSurface) {
         Box(contentAlignment = Alignment.Center) {
             if (state == SplashUiState.Error) {
                 Column(
@@ -55,7 +55,15 @@ fun SplashScreen(state: SplashUiState, modifier: Modifier = Modifier, onRetry: (
                             else -> "splash:navigated"
                         }
                     )
-                ) { SplashLogo() }
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        SplashLogo()
+                        if (state == SplashUiState.Loading) {
+                            Spacer(Modifier.height(32.dp))
+                            CircularProgressIndicator(Modifier.size(32.dp))
+                        }
+                    }
+                }
             }
         }
     }

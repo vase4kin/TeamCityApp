@@ -19,6 +19,7 @@ package teamcityapp.features.manage_accounts.impl
 import android.app.Activity
 import android.app.Instrumentation.ActivityResult
 import android.content.Intent
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.lifecycle.Lifecycle
@@ -35,6 +36,8 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -42,6 +45,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.create_account.impl.CreateAccountActivity
 import teamcityapp.features.login.impl.LoginActivity
+import teamcityapp.libraries.app_theme.ThemeMode
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -69,12 +73,125 @@ class ManageAccountsActivityTest {
         storage.saveGuestUserAccountAndSetItAsActive(second, true)
     }
     private fun launch() = ActivityScenario.launch<ManageAccountsActivity>(Intent(app, ManageAccountsActivity::class.java))
-    private fun row(url: String) = compose.onNodeWithTag("accounts:row:$url:Guest user")
+    private fun row(url: String) = compose.onNodeWithTag("accounts:row:$url:Guest user:remove")
     private fun awaitRows() {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(second).fetchSemanticsNodes().isNotEmpty() }
     }
     private fun awaitDialog() {
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("accounts:dialog").fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    @Test fun cornerIconNativeLight() = verifyNativeCorner(false)
+
+    @Test fun cornerIconNativeDark() = verifyNativeCorner(true)
+
+    private fun verifyNativeCorner(dark: Boolean) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val originalTheme = runBlocking { app.appInjector.themePreferences().theme.first() }
+        val originalNight = AppCompatDelegate.getDefaultNightMode()
+        try {
+            runBlocking { app.appInjector.themePreferences().setTheme(if (dark) ThemeMode.Dark else ThemeMode.Light) }
+            instrumentation.runOnMainSync { AppCompatDelegate.setDefaultNightMode(if (dark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO) }
+            listOf(false, true).forEach { multiple ->
+                storage.clearAll()
+                val name = if (multiple) "alexander.morgan.platform" else "Guest user"
+                if (multiple) {
+                    storage.saveUserAccountAndSetItAsActive(
+                        first,
+                        name,
+                        "test-password",
+                        false,
+                        object : com.github.vase4kin.teamcityapp.storage.SharedUserStorage.OnStorageListener {
+                            override fun onSuccess() = Unit
+                            override fun onFail() = throw AssertionError("Named account fixture could not be saved")
+                        }
+                    )
+                    storage.saveGuestUserAccountAndSetItAsActive(second, true)
+                } else {
+                    storage.saveGuestUserAccountAndSetItAsActive(first, false)
+                }
+                val prefix = "manage_${if (multiple) "multiple" else "single"}_${if (dark) "dark" else "light"}"
+                launch().use { scenario ->
+                    compose.waitUntil(5_000) { compose.onAllNodesWithText(first).fetchSemanticsNodes().isNotEmpty() }
+                    compose.mainClock.advanceTimeBy(500)
+                    compose.waitForIdle()
+                    android.os.SystemClock.sleep(300)
+                    val target = compose.onNodeWithTag("accounts:row:$first:$name:remove")
+                    target.assertWidthIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget)
+                        .assertHeightIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget)
+                        .assertContentDescriptionEquals("Remove $name account at $first")
+                    compose.onNodeWithText(name, useUnmergedTree = true).performTouchInput { click(center) }
+                    compose.onNodeWithText(first, useUnmergedTree = true).performTouchInput { click(center) }
+                    compose.onNodeWithTag("accounts:dialog").assertDoesNotExist()
+                    assertEquals(if (multiple) 2 else 1, storage.userAccounts.size)
+                    val before = captureNative("${prefix}_idle")
+                    val bounds = target.fetchSemanticsNode().boundsInWindow
+                    val delta = IntArray(2)
+                    scenario.onActivity {
+                        val screen = IntArray(2)
+                        val window = IntArray(2)
+                        it.window.decorView.getLocationOnScreen(screen)
+                        it.window.decorView.getLocationInWindow(window)
+                        delta[0] = screen[0] - window[0]
+                        delta[1] = screen[1] - window[1]
+                    }
+                    target.performTouchInput { down(center) }
+                    try {
+                        compose.mainClock.advanceTimeBy(200)
+                        compose.waitForIdle()
+                        android.os.SystemClock.sleep(100)
+                        val held = captureNative("${prefix}_pressed")
+                        val y = bounds.center.y.toInt() + delta[1]
+                        listOf(bounds.left.toInt() + 4, bounds.right.toInt() - 5).forEach { x ->
+                            assertNotEquals("Icon feedback must fill its bounded target", before.getPixel(x + delta[0], y), held.getPixel(x + delta[0], y))
+                        }
+                    } finally {
+                        target.performTouchInput { cancel() }
+                    }
+                    compose.mainClock.advanceTimeBy(500)
+                    compose.waitForIdle()
+                    target.performClick()
+                    awaitDialog()
+                    captureNative("${prefix}_confirmation")
+                    compose.onNodeWithText("Cancel").performClick()
+                    compose.onNodeWithTag("accounts:dialog").assertDoesNotExist()
+                    assertEquals(if (multiple) 2 else 1, storage.userAccounts.size)
+                    captureNative("${prefix}_cancelled")
+                    if (multiple) {
+                        target.performClick()
+                        awaitDialog()
+                        compose.onNodeWithText("Remove").performClick()
+                        compose.waitUntil(5_000) { storage.userAccounts.size == 1 && compose.onAllNodesWithText(first).fetchSemanticsNodes().isEmpty() }
+                        assertEquals(second, storage.activeUser.teamcityUrl)
+                        captureNative("${prefix}_confirmed")
+                    }
+                }
+            }
+        } finally {
+            runBlocking { app.appInjector.themePreferences().setTheme(originalTheme) }
+            instrumentation.runOnMainSync { AppCompatDelegate.setDefaultNightMode(originalNight) }
+        }
+    }
+
+    private fun captureNative(name: String): android.graphics.Bitmap {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        if (!name.endsWith("_pressed")) {
+            compose.mainClock.advanceTimeBy(300)
+            compose.waitForIdle()
+            android.os.SystemClock.sleep(200)
+        }
+        instrumentation.waitForIdleSync()
+        val bitmap = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+        if (android.os.Build.VERSION.SDK_INT >= 29 && InstrumentationRegistry.getArguments().getString("persistManageAccountEvidence") == "true") {
+            val values = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "$name.png")
+                put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/TeamCityAccountTests")
+            }
+            val uri = requireNotNull(app.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values))
+            requireNotNull(app.contentResolver.openOutputStream(uri)).use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+        }
+        return bitmap
     }
 
     @Test fun contentSurvivesRecreationAndReadsNewAccountsAfterResume() {
@@ -97,7 +214,7 @@ class ManageAccountsActivityTest {
             compose.onNodeWithText(warning, useUnmergedTree = true).performClick()
             awaitDialog()
             compose.onNodeWithText("Warning").assertIsDisplayed()
-            compose.onNodeWithText("SURE").assertDoesNotExist()
+            compose.onNodeWithText("Remove").assertDoesNotExist()
             compose.onNodeWithText("OK").performClick()
             compose.onNodeWithTag("accounts:dialog").assertDoesNotExist()
             assertEquals(2, storage.userAccounts.size)
@@ -109,7 +226,7 @@ class ManageAccountsActivityTest {
             awaitRows()
             row(first).performClick()
             awaitDialog()
-            compose.onNodeWithText("NOPE").performClick()
+            compose.onNodeWithText("Cancel").performClick()
             assertEquals(2, storage.userAccounts.size)
             compose.onNodeWithContentDescription("Back").performClick()
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
@@ -121,7 +238,7 @@ class ManageAccountsActivityTest {
             awaitRows()
             row(first).performClick()
             awaitDialog()
-            compose.onNodeWithText("SURE").performClick()
+            compose.onNodeWithText("Remove").performClick()
             compose.waitUntil(5_000) { compose.onAllNodesWithText(first).fetchSemanticsNodes().isEmpty() }
             row(second).assertIsDisplayed()
             assertEquals(second, storage.activeUser.teamcityUrl)
@@ -136,9 +253,9 @@ class ManageAccountsActivityTest {
             intending(hasComponent(HomeActivity::class.java.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
             launch().use {
                 awaitRows()
-                compose.onNodeWithText(second, useUnmergedTree = true).performClick()
+                row(second).performClick()
                 awaitDialog()
-                compose.onNodeWithText("SURE").performClick()
+                compose.onNodeWithText("Remove").performClick()
                 compose.waitUntil(5_000) { Intents.getIntents().any { it.component?.className == HomeActivity::class.java.name } }
                 intended(hasComponent(HomeActivity::class.java.name))
                 assertEquals(first, storage.activeUser.teamcityUrl)
@@ -159,7 +276,7 @@ class ManageAccountsActivityTest {
                 compose.waitUntil(5_000) { compose.onAllNodesWithText(first).fetchSemanticsNodes().isNotEmpty() }
                 row(first).performClick()
                 awaitDialog()
-                compose.onNodeWithText("SURE").performClick()
+                compose.onNodeWithText("Remove").performClick()
                 compose.waitUntil(10_000) { storage.userAccounts.isEmpty() }
                 compose.waitUntil(10_000) {
                     val failure = compose.onAllNodesWithTag("accounts:remove_error").fetchSemanticsNodes().isNotEmpty()
@@ -180,7 +297,7 @@ class ManageAccountsActivityTest {
             intending(hasComponent(CreateAccountActivity::class.java.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
             launch().use {
                 awaitRows()
-                compose.onNodeWithContentDescription("Add account").performClick()
+                compose.onNodeWithTag("accounts:add").performClick()
                 intended(hasComponent(CreateAccountActivity::class.java.name))
             }
         } finally {
@@ -195,7 +312,7 @@ class ManageAccountsActivityTest {
             awaitDialog()
             scenario.recreate()
             awaitDialog()
-            compose.onNodeWithText("SURE").performClick()
+            compose.onNodeWithText("Remove").performClick()
             compose.waitUntil(5_000) { compose.onAllNodesWithText(first).fetchSemanticsNodes().isEmpty() }
             assertEquals(second, storage.activeUser.teamcityUrl)
         }
@@ -205,7 +322,7 @@ class ManageAccountsActivityTest {
         storage.clearAll()
         launch().use {
             compose.waitUntil(5_000) { compose.onAllNodesWithTag("accounts:empty").fetchSemanticsNodes().isNotEmpty() }
-            compose.onNodeWithContentDescription("Add account").assertIsDisplayed()
+            compose.onNodeWithTag("accounts:add").assertIsDisplayed()
             compose.onNodeWithText("Guest user").assertDoesNotExist()
         }
     }

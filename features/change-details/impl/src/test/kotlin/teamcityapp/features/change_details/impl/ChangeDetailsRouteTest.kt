@@ -115,7 +115,7 @@ class ChangeDetailsRouteTest {
             tracker
         )
         compose.setContent { TeamCityTheme { ChangeDetailsRoute(router, model) } }
-        compose.onNodeWithText("MORE DETAILS").performClick()
+        compose.onNodeWithText("More details").performClick()
         compose.onNodeWithTag("change_details:file:0").performScrollTo().performClick()
         assertEquals(listOf(fixture.webUrl), router.urls)
         assertEquals(listOf(fixture.id to fileName), router.diffs)

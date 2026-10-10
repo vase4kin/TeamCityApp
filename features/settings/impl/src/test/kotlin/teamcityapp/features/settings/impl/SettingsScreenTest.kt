@@ -44,43 +44,20 @@ class SettingsScreenTest {
     @get:Rule val compose = createComposeRule()
     private val content = SettingsUiState.Content(ThemeMode.System, ThemeOptions.forSdk(35).modes)
 
-    @Test fun themeRowOpensDialogAndBackClosesScreen() {
-        var opened = false
+    @Test fun visibleThemeChoiceSelectsImmediatelyAndBackClosesScreen() {
+        val selected = mutableListOf<ThemeMode>()
         var closed = false
-        compose.setContent { TeamCityTheme { SettingsScreen(content, {}, {}, {}, { closed = true }, onOpenDialog = { opened = true }) } }
-        compose.onNodeWithText("General").assertIsDisplayed()
-        compose.onNodeWithText("Follow system").assertIsDisplayed()
-        compose.onNodeWithTag("settings:theme").performClick()
-        assertTrue(opened)
+        compose.setContent { TeamCityTheme { SettingsScreen(content, { selected += it }, {}, {}, { closed = true }) } }
+        compose.onNodeWithTag("settings:option:System").assertIsSelected()
+        compose.onNodeWithTag("settings:option:Dark").performScrollTo().performClick()
+        assertEquals(listOf(ThemeMode.Dark), selected)
         compose.onNodeWithContentDescription("Back").performClick()
         assertTrue(closed)
     }
 
-    @Test fun dialogSelectsImmediatelyAndDismisses() {
-        val selected = mutableListOf<ThemeMode>()
-        var dismissals = 0
-        compose.setContent { TeamCityTheme { SettingsScreen(content, { selected += it }, {}, {}, {}, dialogOpen = true, onDismissDialog = { dismissals++ }) } }
-        compose.onNode(isDialog()).assertExists()
-        compose.onNode(hasText("Follow system") and isSelected()).assertExists()
-        compose.onNodeWithText("Dark theme").performClick()
-        assertEquals(listOf(ThemeMode.Dark), selected)
-        assertEquals(1, dismissals)
-    }
-
-    @Test fun cancellingDialogDoesNotChangePreference() {
-        val selected = mutableListOf<ThemeMode>()
-        var dismissed = false
-        compose.setContent { TeamCityTheme { SettingsScreen(content, { selected += it }, {}, {}, {}, dialogOpen = true, onDismissDialog = { dismissed = true }) } }
-        compose.onNodeWithText("CANCEL").performClick()
-        assertTrue(dismissed)
-        assertTrue(selected.isEmpty())
-    }
-
-    @Test fun savingPreventsAnotherDialogAndShowsProgress() {
-        var opened = false
-        compose.setContent { TeamCityTheme { SettingsScreen(content.copy(saving = true), {}, {}, {}, {}, onOpenDialog = { opened = true }) } }
-        compose.onNodeWithTag("settings:theme").assertIsNotEnabled().performClick()
-        assertFalse(opened)
+    @Test fun savingDisablesEveryChoiceAndShowsProgress() {
+        compose.setContent { TeamCityTheme { SettingsScreen(content.copy(saving = true), { fail("No selection while saving") }, {}, {}, {}) } }
+        content.options.forEach { compose.onNodeWithTag("settings:option:$it").assertIsNotEnabled().performClick() }
         compose.onNodeWithTag("settings:saving").assertIsDisplayed()
     }
 
@@ -95,7 +72,7 @@ class SettingsScreenTest {
     @Test fun saveFailureKeepsCurrentSummaryAndOffersRetry() {
         var retries = 0
         compose.setContent { TeamCityTheme { SettingsScreen(content.copy(saveFailed = true), {}, {}, { retries++ }, {}) } }
-        compose.onNodeWithText("Follow system").assertIsDisplayed()
+        compose.onNodeWithTag("settings:current").assertTextEquals("Current theme: Follow system")
         compose.onNodeWithText("Retry").performClick()
         assertEquals(1, retries)
     }
@@ -105,38 +82,11 @@ class SettingsScreenTest {
         compose.onNodeWithText("Not set").assertIsDisplayed()
     }
 
-    @Test fun olderAndroidShowsOnlySupportedDialogChoices() {
-        compose.setContent { TeamCityTheme { SettingsScreen(content.copy(selected = ThemeMode.Light, options = ThemeOptions.forSdk(24).modes), {}, {}, {}, {}, dialogOpen = true) } }
-        compose.onNode(hasText("Light theme") and isSelected()).assertExists()
-        compose.onNodeWithText("Dark theme").assertExists()
-        compose.onNodeWithText("Auto battery").assertDoesNotExist()
-        compose.onAllNodesWithText("Follow system").assertCountEquals(0)
-    }
-
-    @Test fun preferenceUsesProvidedColorsAndTypography() {
-        compose.setContent {
-            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
-                SettingsScreen(content, {}, {}, {}, {})
-            }
-        }
-        assertThemeText("Theme", 22, Color.Red)
-        assertThemeText("Follow system", 18, Color.Blue)
-    }
-
-    @Test fun themeDialogUsesProvidedTypography() {
-        compose.setContent {
-            MaterialTheme(colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue), typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))) {
-                SettingsScreen(content, {}, {}, {}, {}, dialogOpen = true)
-            }
-        }
-        assertThemeText("Dark theme", 22, Color.Red)
-    }
-
-    private fun assertThemeText(text: String, fontSize: Int, color: Color) {
-        val results = mutableListOf<TextLayoutResult>()
-        compose.onAllNodesWithText(text, useUnmergedTree = true)[0]
-            .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
-        assertEquals(fontSize.sp, results.single().layoutInput.style.fontSize)
-        assertEquals(color, results.single().layoutInput.style.color)
+    @Test fun olderAndroidShowsOnlySupportedChoices() {
+        val options = ThemeOptions.forSdk(24).modes
+        compose.setContent { TeamCityTheme { SettingsScreen(content.copy(selected = ThemeMode.Light, options = options), {}, {}, {}, {}) } }
+        options.forEach { compose.onNodeWithTag("settings:option:$it").assertExists() }
+        compose.onNodeWithTag("settings:option:Light").assertIsSelected()
+        compose.onNodeWithTag("settings:option:System").assertDoesNotExist()
     }
 }

@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.impl.navigation.BottomSheetNavigationImpl
 import teamcityapp.features.bottom_sheet.impl.router.BottomSheetRouterImpl
+import teamcityapp.libraries.clipboard.AndroidClipboardWriter
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class BottomSheetOwnershipTest {
@@ -47,7 +48,7 @@ class BottomSheetOwnershipTest {
             val actions = mock(BottomSheetAppActions::class.java)
             `when`(fragment.requireContext()).thenReturn(RuntimeEnvironment.getApplication())
             val item = SheetItem(action, "https://server/path/file.txt")
-            BottomSheetRouterImpl(fragment, actions).perform(item)
+            BottomSheetRouterImpl(fragment, actions, AndroidClipboardWriter(RuntimeEnvironment.getApplication())).perform(item)
             val order = inOrder(actions, fragment)
             order.verify(actions).dispatch(item)
             order.verify(fragment).dismiss()
@@ -63,7 +64,7 @@ class BottomSheetOwnershipTest {
         val actions = mock(BottomSheetAppActions::class.java)
         val item = SheetItem(SheetAction.Branch, "release")
         doThrow(IllegalStateException("destination unavailable")).`when`(actions).dispatch(item)
-        assertThrows(IllegalStateException::class.java) { BottomSheetRouterImpl(fragment, actions).perform(item) }
+        assertThrows(IllegalStateException::class.java) { BottomSheetRouterImpl(fragment, actions, AndroidClipboardWriter(RuntimeEnvironment.getApplication())).perform(item) }
         verify(fragment, never()).dismiss()
     }
 }

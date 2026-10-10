@@ -86,7 +86,7 @@ class BuildLogScreenScreenshotTest(private val stateName: String, private val va
             )
         }
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark, legacyColors = true) { androidx.compose.material3.Surface { BuildLogScreen(state, {}, {}, {}, webContent = { _, modifier -> androidx.compose.material3.Text("Build started\nCheckout sources\nCompilation successful\nBuild finished", modifier.padding(16.dp)) }) } } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { androidx.compose.material3.Surface { BuildLogScreen(state, {}, {}, {}, webContent = { _, modifier -> androidx.compose.material3.Text("Build started\nCheckout sources\nCompilation successful\nBuild finished", modifier.padding(16.dp)) }) } } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         val tag: String? = null

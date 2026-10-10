@@ -17,8 +17,11 @@
 package teamcityapp.features.drawer.impl
 
 import android.app.Application
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.LayoutDirection
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -41,7 +44,7 @@ import teamcityapp.libraries.theme.TeamCityTheme
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class DrawerScreenScreenshotTest(private val stateName: String, private val variant: Variant) {
-    data class Variant(val name: String, val width: Int, val height: Int, val dark: Boolean, val fontScale: Float) {
+    data class Variant(val name: String, val width: Int, val height: Int, val dark: Boolean, val fontScale: Float, val rtl: Boolean = false) {
         override fun toString() = name
     }
 
@@ -68,7 +71,7 @@ class DrawerScreenScreenshotTest(private val stateName: String, private val vari
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { DrawerScreen(drawerFixture(stateName), {}, {}, {}, {}, {}, {}, {}) } }
+        compose.setContent { CompositionLocalProvider(LocalLayoutDirection provides if (variant.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) { TeamCityTheme(darkTheme = variant.dark) { DrawerScreen(drawerFixture(stateName), {}, {}, {}, {}, {}, {}, {}) } } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (stateName == "scrolled") {
@@ -89,9 +92,14 @@ class DrawerScreenScreenshotTest(private val stateName: String, private val vari
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "empty", "error", "one", "mixed", "no_active", "long", "scrolled", "switching", "switch_error", "missing").flatMap { state ->
-                variants.map { arrayOf<Any>(state, it) }
+            val existing = listOf("loading", "empty", "error", "one", "mixed", "no_active", "long", "scrolled", "switching", "switch_error", "missing").flatMap { state ->
+                (variants + (if (state == "one") listOf(Variant("rtl_phone_$theme", 360, 800, dark, 1f, rtl = true)) else emptyList()) + if (state in listOf("one", "long", "scrolled")) listOf(Variant("double_font_$theme", 360, 800, dark, 2f)) else emptyList()).map { arrayOf<Any>(state, it) }
             }
+            existing + listOf(
+                arrayOf<Any>("named", Variant("phone_$theme", 360, 800, dark, 1f)),
+                arrayOf<Any>("named_long", Variant("double_font_$theme", 360, 800, dark, 2f)),
+                arrayOf<Any>("named_long", Variant("rtl_large_font_$theme", 360, 800, dark, 1.5f, rtl = true))
+            )
         }
     }
 }

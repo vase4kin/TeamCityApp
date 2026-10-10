@@ -46,7 +46,7 @@ fun BuildLogScreen(state: BuildLogUiState, onRetry: () -> Unit, onAuthenticate: 
 
                 state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize().padding(16.dp), onAuthenticate)
 
-                state.session.needsAuthentication -> LogMessage(R.drawable.ic_accessible_black_24px, R.string.text_login_again, R.string.text_button_login, onAuthenticate, "build-log:authenticate", !state.acknowledging)
+                state.session.needsAuthentication -> LogMessage(R.drawable.ic_lock_24dp, R.string.text_login_again, R.string.text_button_login, onAuthenticate, "build-log:authenticate", !state.acknowledging)
 
                 else -> {
                     webContent(state, Modifier.fillMaxSize().alpha(if (state.page == BuildLogPage.Content) 1f else 0f))
@@ -61,10 +61,12 @@ fun BuildLogScreen(state: BuildLogUiState, onRetry: () -> Unit, onAuthenticate: 
 @Composable
 private fun LogMessage(icon: Int, message: Int, action: Int, onClick: () -> Unit, tag: String, enabled: Boolean = true) {
     Box(Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-        Column(Modifier.verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(painterResource(icon), null, Modifier.size(96.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(stringResource(message), Modifier.padding(top = if (tag == "build-log:browser") 32.dp else 16.dp, bottom = 16.dp), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = if (tag == "build-log:browser") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-            Button(onClick, enabled = enabled, shape = RoundedCornerShape(4.dp), modifier = Modifier.testTag(tag)) { Text(stringResource(action).uppercase()) }
+        Card(Modifier.widthIn(max = 560.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(painterResource(icon), null, Modifier.size(64.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(message), Modifier.padding(top = if (tag == "build-log:browser") 32.dp else 16.dp, bottom = 16.dp), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = if (tag == "build-log:browser") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+                Button(onClick, enabled = enabled, shape = MaterialTheme.shapes.large, modifier = Modifier.heightIn(min = 56.dp).testTag(tag)) { Text(stringResource(action)) }
+            }
         }
     }
 }

@@ -20,16 +20,20 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.LoadingContent
@@ -40,6 +44,7 @@ import teamcityapp.libraries.theme.TeamCityTheme
 
 enum class AboutAction { Rate, Issue, Source, Libraries, Website, Email, Privacy }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun AboutScreen(
     state: AboutUiState,
@@ -48,31 +53,41 @@ fun AboutScreen(
     onClose: () -> Unit,
     appVersion: String = BuildConfig.VERSION
 ) {
-    TeamCityScreen(stringResource(SharedR.string.drawer_item_about), onClose, ScreenNavigation.Back) { modifier ->
+    val configuration = LocalConfiguration.current
+    val window = WindowSizeClass.calculateFromSize(DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp))
+    TeamCityScreen(stringResource(SharedR.string.drawer_item_about), onClose, ScreenNavigation.Back, contentMaxWidth = 840.dp) { modifier ->
         when (state) {
             AboutUiState.Loading -> LoadingContent(modifier)
 
             is AboutUiState.Content -> Box(modifier, contentAlignment = Alignment.TopCenter) {
                 LazyVerticalGrid(
-                    columns = GridCells.Adaptive(360.dp),
+                    columns = GridCells.Fixed(if (window.widthSizeClass == WindowWidthSizeClass.Expanded) 2 else 1),
                     modifier = Modifier.widthIn(max = 840.dp).fillMaxWidth().fillMaxHeight(),
                     contentPadding = PaddingValues(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    (state.serverDetails as? ServerDetailsUiState.Available)?.info?.let { info ->
-                        item {
-                            AboutSection(stringResource(R.string.about_app_text_server_info)) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
+                            Column(Modifier.padding(24.dp)) {
+                                Text(stringResource(R.string.about_app_name), style = MaterialTheme.typography.headlineLarge)
+                                Text(appVersion, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleMedium)
+                            }
+                        }
+                    }
+                    item {
+                        AboutSection(stringResource(R.string.about_app_text_server_info)) {
+                            val info = (state.serverDetails as? ServerDetailsUiState.Available)?.info
+                            if (info != null) {
                                 AboutRow(stringResource(R.string.about_version), ThemeR.drawable.ic_info_outline_black_24dp, info.version)
-                                AboutRow(stringResource(R.string.about_app_text_server_url), R.drawable.ic_web_black_24dp, info.webUrl) {
-                                    onOpenUrl(info.webUrl)
-                                }
+                                AboutRow(stringResource(R.string.about_app_text_server_url), R.drawable.ic_web_black_24dp, info.webUrl) { onOpenUrl(info.webUrl) }
+                            } else {
+                                Text(stringResource(R.string.server_unavailable), Modifier.padding(16.dp).testTag("about:server-unavailable"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
                     item {
                         AboutSection(stringResource(R.string.about_app_text_app)) {
-                            AboutRow(stringResource(R.string.about_version), ThemeR.drawable.ic_info_outline_black_24dp, appVersion)
                             AboutRow(stringResource(R.string.about_app_text_rate_app), R.drawable.ic_star_border_black_24dp) {
                                 onAction(AboutAction.Rate)
                             }
@@ -119,7 +134,7 @@ fun AboutScreen(
 @Composable
 private fun AboutSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(Modifier.fillMaxWidth().testTag("about:section"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-        Text(title, Modifier.padding(16.dp), style = MaterialTheme.typography.titleMedium)
+        Text(title, Modifier.padding(20.dp), style = MaterialTheme.typography.titleLarge)
         content()
     }
 }

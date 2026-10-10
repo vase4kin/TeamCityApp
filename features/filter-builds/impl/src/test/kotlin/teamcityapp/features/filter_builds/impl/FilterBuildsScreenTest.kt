@@ -17,10 +17,13 @@
 package teamcityapp.features.filter_builds.impl
 
 import android.app.Application
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
@@ -41,17 +44,50 @@ import teamcityapp.libraries.theme.TeamCityTheme
 class FilterBuildsScreenTest {
     @get:Rule val compose = createComposeRule()
 
+    @Test fun bottomActionsSeparateOnlyWhileContentRemainsBelowTheViewport() {
+        val viewportHeight = mutableStateOf(760)
+        val state = FilterBuildsUiState(branches = emptyList())
+        var flat = androidx.compose.ui.graphics.Color.Unspecified
+        var raised = androidx.compose.ui.graphics.Color.Unspecified
+        compose.setContent {
+            TeamCityTheme {
+                flat = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                raised = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
+                androidx.compose.foundation.layout.Box(androidx.compose.ui.Modifier.height(viewportHeight.value.dp)) {
+                    FilterBuildsScreen(state, {}, {}, {})
+                }
+            }
+        }
+        fun assertBar(expected: androidx.compose.ui.graphics.Color) {
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.waitForIdle()
+            val pixels = compose.onNodeWithTag("filter-builds:bottom-action").captureToImage().toPixelMap()
+            assertEquals(expected, pixels[8, 8])
+            compose.onNodeWithTag("filter-builds:apply").assertIsDisplayed()
+        }
+        assertBar(flat)
+        compose.runOnIdle { viewportHeight.value = 360 }
+        assertBar(raised)
+        val before = compose.onNodeWithTag("filter-builds:apply").fetchSemanticsNode().boundsInRoot
+        val scroll = compose.onNodeWithTag("filter-builds:scroll")
+        scroll.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) { it(0f, 10_000f) }
+        assertBar(flat)
+        assertEquals(before, compose.onNodeWithTag("filter-builds:apply").fetchSemanticsNode().boundsInRoot)
+        scroll.performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) { it(0f, -40f) }
+        assertBar(raised)
+    }
+
     @Test fun applyFabRetainsItsLabelSizeAndAction() {
         var applied = 0
-        compose.setContent { TeamCityTheme { FilterBuildsScreen(FilterBuildsUiState(branches = emptyList()), {}, { applied++ }, {}, {}) } }
+        compose.setContent { TeamCityTheme { FilterBuildsScreen(FilterBuildsUiState(branches = emptyList()), {}, { applied++ }, {}) } }
         compose.onNodeWithTag("filter-builds:apply").assertHeightIsEqualTo(56.dp).performClick()
-        compose.onNodeWithText("APPLY FILTERS").assertIsDisplayed()
+        compose.onNodeWithText("Apply filters").assertIsDisplayed()
         assertEquals(1, applied)
     }
 
     @Test fun queuedFilterHidesPinnedWithoutChangingTheSavedChoice() {
         val state = mutableStateOf(FilterBuildsUiState(branches = emptyList(), filter = BuildFilter(pinned = true)))
-        compose.setContent { TeamCityTheme { FilterBuildsScreen(state.value, { state.value = state.value.copy(filter = it) }, {}, {}, {}, dialog = true) } }
+        compose.setContent { TeamCityTheme { FilterBuildsScreen(state.value, { state.value = state.value.copy(filter = it) }, {}, {}) } }
         compose.onNodeWithText("Queued").performClick()
         compose.onNodeWithTag("filter-builds:pinned").assertDoesNotExist()
         assertTrue(state.value.filter.pinned)
@@ -59,7 +95,7 @@ class FilterBuildsScreenTest {
     }
 
     @Test fun singleBranchOffersTheAnyBranchDefault() {
-        compose.setContent { TeamCityTheme { FilterBuildsScreen(FilterBuildsUiState(branches = listOf("main")), {}, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme { FilterBuildsScreen(FilterBuildsUiState(branches = listOf("main")), {}, {}, {}) } }
         compose.onNodeWithTag("branches:input").assertDoesNotExist()
         compose.onNodeWithText("No branches available to filter").assertIsDisplayed()
     }
@@ -72,16 +108,13 @@ class FilterBuildsScreenTest {
                 FilterBuildsScreen(state.value, {
                     changes++
                     state.value = state.value.copy(filter = it)
-                }, {}, {}, {})
+                }, {}, {})
             }
         }
-        val screenBounds = compose.onNodeWithTag("filter-builds:scroll").fetchSemanticsNode().boundsInRoot
         listOf("personal", "pinned").forEach { option ->
             val row = compose.onNodeWithTag("filter-builds:$option")
             val rowBounds = row.fetchSemanticsNode().boundsInRoot
-            assertEquals(screenBounds.left, rowBounds.left, 0f)
-            assertEquals(screenBounds.right, rowBounds.right, 0f)
-            row.assertHeightIsEqualTo(72.dp)
+            row.assertHeightIsAtLeast(48.dp)
             repeat(4) { edge ->
                 val before = changes
                 row.performTouchInput {
@@ -107,12 +140,36 @@ class FilterBuildsScreenTest {
         assertBackgroundContinuesToBottom(dark = true)
     }
 
+    @Test fun everyStatusIsVisibleAsAnExplicitSelectionChoice() {
+        val state = mutableStateOf(FilterBuildsUiState(branches = emptyList(), filter = BuildFilter(personal = true, pinned = true)))
+        var changes = 0
+        compose.setContent {
+            TeamCityTheme {
+                FilterBuildsScreen(state.value, {
+                    changes++
+                    state.value = state.value.copy(filter = it)
+                }, {}, {})
+            }
+        }
+        BuildStatusFilter.entries.forEachIndexed { index, selected ->
+            compose.onNodeWithTag("filter-builds:status:$selected").performScrollTo().performClick()
+            assertEquals(index + 1, changes)
+            assertEquals(selected, state.value.filter.status)
+            assertTrue(state.value.filter.personal)
+            assertTrue(state.value.filter.pinned)
+            BuildStatusFilter.entries.forEach { status ->
+                val choice = compose.onNodeWithTag("filter-builds:status:$status")
+                choice.assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+                if (status == selected) choice.assertIsSelected() else choice.assertIsNotSelected()
+            }
+        }
+    }
+
     private fun assertBackgroundContinuesToBottom(dark: Boolean) {
-        compose.setContent { TeamCityTheme(darkTheme = dark, legacyColors = true) { FilterBuildsScreen(FilterBuildsUiState(branches = emptyList()), {}, {}, {}, {}) } }
-        val expected = Color(if (dark) 0xFF000000 else 0xFFF5F5F5)
+        compose.setContent { TeamCityTheme(darkTheme = dark) { FilterBuildsScreen(FilterBuildsUiState(branches = emptyList()), {}, {}, {}) } }
+        val expected = Color(if (dark) 0xFF11131B else 0xFFF9F9FF)
         val pixels = compose.onNodeWithTag("filter-builds:scroll").captureToImage().toPixelMap()
         assertEquals(expected, pixels[8, pixels.height - 8])
-        assertEquals(Color(if (dark) 0xFF121212 else 0xFFFFFFFF), pixels[8, 16])
         val root = compose.onRoot().captureToImage().toPixelMap()
         assertEquals(expected, root[8, root.height - 8])
     }

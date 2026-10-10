@@ -25,13 +25,27 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.bottom_sheet.impl.BottomSheetRoute
 import teamcityapp.features.bottom_sheet.impl.router.BottomSheetRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 @AndroidEntryPoint
 class BottomSheetDialogFragment : MaterialBottomSheetDialogFragment() {
+    override fun getTheme() = teamcityapp.libraries.theme.R.style.ThemeOverlay_TeamCity_ComposeBottomSheetDialog
+
     @Inject lateinit var router: BottomSheetRouter
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent { TeamCityTheme(legacyColors = true) { BottomSheetRoute(router) } }
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(dialog?.window)
+                BottomSheetRoute(router)
+            }
+        }
+    }
+    override fun onStart() {
+        super.onStart()
+        (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior?.maxWidth =
+            (teamcityapp.libraries.theme.TeamCityDimensions.paneMaxWidth.value * resources.displayMetrics.density).toInt()
+        dialog?.window?.let { teamcityapp.libraries.theme.applyTeamCityWindowStyle(it, resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK == android.content.res.Configuration.UI_MODE_NIGHT_YES) }
     }
     companion object {
 

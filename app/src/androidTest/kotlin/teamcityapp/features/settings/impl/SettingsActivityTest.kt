@@ -75,7 +75,6 @@ class SettingsActivityTest {
     @Test fun selectingThemePersistsAppliesAndSurvivesRecreation() {
         launch().use { scenario ->
             awaitSummary("Light theme")
-            compose.onNodeWithTag("settings:theme").performClick()
             compose.onNodeWithText("Dark theme").performClick()
             awaitSummary("Dark theme")
             compose.waitUntil(5_000) { AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES }
@@ -89,24 +88,21 @@ class SettingsActivityTest {
         }
     }
 
-    @Test fun openDialogSurvivesConfigurationChange() {
+    @Test fun selectedChoiceSurvivesConfigurationChange() {
         launch().use { scenario ->
             awaitSummary("Light theme")
-            compose.onNodeWithTag("settings:theme").performClick()
-            compose.onNodeWithTag("settings:dialog").assertIsDisplayed()
+            compose.onNodeWithTag("settings:option:Light").assertIsSelected()
             scenario.recreate()
-            compose.waitUntil(5_000) { compose.onAllNodesWithTag("settings:dialog").fetchSemanticsNodes().isNotEmpty() }
+            awaitSummary("Light theme")
+            compose.onNodeWithTag("settings:option:Light").assertIsSelected()
             compose.onNodeWithText("Dark theme").performClick()
             awaitSummary("Dark theme")
         }
     }
 
-    @Test fun cancelKeepsSavedThemeAndBackClosesActivity() {
+    @Test fun backWithoutSelectingKeepsSavedThemeAndClosesActivity() {
         launch().use { scenario ->
             awaitSummary("Light theme")
-            compose.onNodeWithTag("settings:theme").performClick()
-            compose.onNodeWithText("CANCEL").performClick()
-            compose.onNodeWithTag("settings:dialog").assertDoesNotExist()
             assertEquals(ThemeMode.Light, runBlocking { repo.theme.first() })
             compose.onNodeWithContentDescription("Back").performClick()
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }

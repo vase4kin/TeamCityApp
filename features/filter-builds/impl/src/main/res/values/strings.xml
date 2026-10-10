@@ -24,16 +24,17 @@ Copyright 2026 Andrey Tolpeev
 <string name="text_switcher_for_pinned">Pinned</string>
 <string name="text_switcher_for_personal">Personal</string>
 <string name="text_filters">Filter</string>
-<string name="text_filters_none">None</string>
+<string name="text_filters_none">All builds</string>
 <string name="hint_default_filter_branch">Any</string>
 <string name="text_apply_filters_button">Apply filters</string>
 <string-array name="build_filters">
         <item>Success</item>
         <item>Failed</item>
-        <item>Failed due server error</item>
+        <item>Server error</item>
         <item>Cancelled</item>
         <item>Failed to start</item>
         <item>Running</item>
         <item>Queued</item>
     </string-array>
+<string name="branches_unavailable">Unable to load branches. The branch filter is unchanged.</string>
 </resources>

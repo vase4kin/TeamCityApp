@@ -35,4 +35,6 @@
     <string name="about_app_email">contact@teamcity.app</string>
     <string name="about_app_email_title">Questions about TeamCityApp</string>
     <string name="about_version">Version</string>
+<string name="server_unavailable">Server information is unavailable</string>
+    <string name="about_app_name">TeamCityApp</string>
 </resources>

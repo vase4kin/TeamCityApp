@@ -32,6 +32,8 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -40,17 +42,27 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.test_details.repository.models.TestOccurrence
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class TestDetailsActivityTest {
-    @JvmField @Rule(order = 0) val hiltRule = HiltAndroidRule(this)
-    @JvmField @Rule(order = 1) val mockitoRule = org.mockito.junit.MockitoJUnit.rule()
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val mockitoRule = org.mockito.junit.MockitoJUnit.rule()
         .strictness(org.mockito.quality.Strictness.LENIENT)
-    @JvmField @Rule(order = 2) val apiRule = HiltApiTestRule(hiltRule) { service }
-    @JvmField @Rule(order = 3) val compose = createEmptyComposeRule()
+
+    @JvmField
+    @Rule(order = 2)
+    val apiRule = HiltApiTestRule(hiltRule) { service }
+
+    @JvmField
+    @Rule(order = 3)
+    val compose = createEmptyComposeRule()
+
     @Spy private val service: TeamCityService = FakeTeamCityServiceImpl()
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val text = "Test details <tag> & literal text"
@@ -60,8 +72,7 @@ class TestDetailsActivityTest {
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
 
-    private fun launch(url: String = "/test") = ActivityScenario.launch<TestDetailsActivity>(
-        Intent(app, TestDetailsActivity::class.java).putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
+    private fun launch(url: String = "/test") = ActivityScenario.launch<TestDetailsActivity>(Intent(app, TestDetailsActivity::class.java).putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
     private fun awaitText(text: String) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(text).assertIsDisplayed()
@@ -87,9 +98,9 @@ class TestDetailsActivityTest {
         `when`(service.testOccurrence(anyString())).thenReturn(Single.error(IllegalStateException("offline")), Single.just(TestOccurrence(text)))
         launch().use {
             awaitText("There's an error loading the page")
-            compose.onNodeWithText("TRY AGAIN").performClick()
+            compose.onNodeWithText("Try again").performClick()
             awaitText(text)
-            compose.onNodeWithText("TRY AGAIN").assertDoesNotExist()
+            compose.onNodeWithText("Try again").assertDoesNotExist()
             verify(service, times(2)).testOccurrence(anyString())
         }
     }

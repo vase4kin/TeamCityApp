@@ -43,19 +43,19 @@ class AboutScreenTest {
         height: Int = 700
     ) {
         compose.setContent {
-            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(width.dp, height.dp))) {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.WindowSize(DpSize(width.dp, height.dp))) {
                 TeamCityTheme { AboutScreen(state, {}, onAction, onClose) }
             }
         }
     }
 
-    @Test fun compactWindowStacksSectionsAndHidesUnavailableServer() {
+    @Test fun compactWindowStacksSectionsAndShowsUnavailableServer() {
         content(360)
         val cards = compose.onAllNodesWithTag("about:section").fetchSemanticsNodes()
         assertTrue(cards.size >= 2)
         assertEquals(cards[0].boundsInRoot.left, cards[1].boundsInRoot.left, 1f)
         assertTrue(cards[1].boundsInRoot.top > cards[0].boundsInRoot.bottom)
-        compose.onNodeWithText(text(R.string.about_app_text_server_info)).assertDoesNotExist()
+        compose.onNodeWithTag("about:server-unavailable").assertIsDisplayed()
     }
 
     @Test fun wideWindowUsesCenteredColumns() {
@@ -69,7 +69,7 @@ class AboutScreenTest {
     @Test fun ratingEventIsDelegatedToCaller() {
         val actions = mutableListOf<AboutAction>()
         content(360, onAction = actions::add)
-        compose.onNodeWithText(text(R.string.about_app_text_rate_app)).performClick()
+        compose.onNodeWithText(text(R.string.about_app_text_rate_app)).performScrollTo().performClick()
         assertEquals(listOf(AboutAction.Rate), actions)
     }
 

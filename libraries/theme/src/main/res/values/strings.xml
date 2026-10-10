@@ -18,4 +18,5 @@
     <string name="action_close">Close</string>
     <string name="action_back">Back</string>
     <string name="app_name">Theme</string>
+<string name="action_retry">Try again</string>
 </resources>

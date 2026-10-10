@@ -31,7 +31,6 @@ fun FilterBuildsRoute(router: FilterBuildsRouter, viewModel: FilterBuildsViewMod
         onPauseOrDispose {}
     }
 
-    var dialog by rememberSaveable { mutableStateOf(false) }
     BackHandler { router.close() }
-    FilterBuildsScreen(state, viewModel::update, { router.apply(viewModel.apply()) }, router::close, { dialog = true }, dialog, { dialog = false })
+    FilterBuildsScreen(state, viewModel::update, { router.apply(viewModel.apply()) }, router::close)
 }

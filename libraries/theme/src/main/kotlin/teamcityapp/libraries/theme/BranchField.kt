@@ -48,27 +48,25 @@ fun BranchField(branches: List<String>?, failed: Boolean, value: String, onChang
             failed || branches.isEmpty() || (filter && branches.size <= 1) -> Text(empty, Modifier.padding(start = 4.dp, top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             else -> Box {
-                val interaction = remember { MutableInteractionSource() }
-                val focused by interaction.collectIsFocusedAsState()
                 val focus = LocalFocusManager.current
                 val active = enabled && branches.size > 1
-                BasicTextField(
-                    value, {
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = {
                         onChange(it)
                         expanded = it.length >= 2
-                    }, Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("branches:input"), enabled = active, singleLine = true, textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (active) 1f else .38f)), interactionSource = interaction, keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
+                    },
+                    modifier = Modifier.fillMaxWidth().testTag("branches:input"),
+                    enabled = active,
+                    singleLine = true,
+                    placeholder = { Text(hint) },
+                    shape = MaterialTheme.shapes.medium,
+                    keyboardOptions = KeyboardOptions(autoCorrectEnabled = false, imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(onDone = {
                         focus.clearFocus()
                         expanded = false
-                    }),
-                    decorationBox = { field ->
-                        Box(Modifier.fillMaxWidth().padding(horizontal = 4.dp, vertical = 8.dp), contentAlignment = Alignment.CenterStart) {
-                            if (value.isEmpty()) Text(hint, style = MaterialTheme.typography.bodyLarge.copy(fontSize = 18.sp), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            field()
-                        }
-                    }
+                    })
                 )
-                Box(Modifier.fillMaxWidth().align(Alignment.BottomStart).height(if (focused) 2.dp else 1.dp).background(if (focused) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = .38f)))
                 DropdownMenu(expanded && enabled, { expanded = false }) {
                     branches.filter { it.contains(value, ignoreCase = true) }.forEach { branch ->
                         DropdownMenuItem(text = { Text(branch) }, onClick = {

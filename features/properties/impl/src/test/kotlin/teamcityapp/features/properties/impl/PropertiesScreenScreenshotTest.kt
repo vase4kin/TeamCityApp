@@ -17,23 +17,23 @@
 package teamcityapp.features.properties.impl
 
 import android.app.Application
-import teamcityapp.features.properties.api.Property
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import com.github.takahirom.roborazzi.captureScreenRoboImage
-import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.junit.rules.TestRule
 import org.junit.runner.RunWith
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.junit.runners.model.Statement
 import org.robolectric.ParameterizedRobolectricTestRunner
+import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.properties.api.Property
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Deterministic goldens for every parameter-list state and supported layout. */
@@ -65,16 +65,33 @@ class PropertiesScreenScreenshotTest(private val stateName: String, private val 
             }
         }
     }
+
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
         val state = when (stateName) {
             "empty" -> PropertiesUiState.Empty
+
             "content" -> PropertiesUiState.Content(listOf(Property("sdk", "24"), Property("userName", "Murdock")))
+
             "empty_value" -> PropertiesUiState.Content(listOf(Property("env.CI", "")))
-            "long_content" -> PropertiesUiState.Content((0..30).map {
-                Property("env.very.long.parameter.name.$it.with.more.text", "A long parameter value that wraps to a second line and is truncated when it exceeds the available row width")
-            })
+
+            "long_value", "expanded_value" -> PropertiesUiState.Content(
+                listOf(
+                    Property("build.number", "#1842"),
+                    Property("teamcity.build.branch", "feature/simpler-properties"),
+                    Property("env.JAVA_HOME", "/opt/java/openjdk-17"),
+                    Property("env.GRADLE_OPTS", "-Xmx4g -XX:+UseParallelGC -Dfile.encoding=UTF-8\n-Dorg.gradle.daemon=false -Dorg.gradle.parallel=true\n-Dorg.gradle.caching=true -Dorg.gradle.workers.max=4"),
+                    Property("env.HTTP_PROXY", "")
+                )
+            )
+
+            "long_content" -> PropertiesUiState.Content(
+                (0..30).map {
+                    Property("env.very.long.parameter.name.$it.with.more.text", "A long parameter value that wraps to a second line and is truncated when it exceeds the available row width")
+                }
+            )
+
             else -> error("Unknown screenshot state: $stateName")
         }
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { PropertiesScreen(state, {}) } }
@@ -86,10 +103,14 @@ class PropertiesScreenScreenshotTest(private val stateName: String, private val 
         } else {
             compose.onNodeWithTag("properties:list").assertIsDisplayed()
         }
+        if (stateName == "expanded_value") {
+            compose.onNodeWithTag("properties:expand:3").performScrollTo().performClick()
+            compose.waitForIdle()
+        }
         val name = "properties_${stateName}_${variant.name}"
         compose.onRoot().captureRoboImage("$name.png")
         if (stateName == "long_content") {
-            compose.onNodeWithTag("properties:list").performScrollToIndex(30)
+            compose.onNodeWithTag("properties:list").performScrollToNode(hasTestTag("properties:row:30"))
             compose.onNodeWithTag("properties:row:30").assertIsDisplayed()
             compose.onRoot().captureRoboImage("${name}_bottom.png")
         }
@@ -103,9 +124,9 @@ class PropertiesScreenScreenshotTest(private val stateName: String, private val 
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("empty", "content", "empty_value", "long_content").flatMap { state ->
+            listOf("empty", "content", "empty_value", "long_content", "long_value", "expanded_value").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

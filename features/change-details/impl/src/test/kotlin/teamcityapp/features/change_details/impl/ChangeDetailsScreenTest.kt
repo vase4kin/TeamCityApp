@@ -54,7 +54,7 @@ class ChangeDetailsScreenTest {
         compose.onNodeWithText(fixture.revision).assertIsDisplayed()
         compose.onNodeWithText("By Developer on 01 Oct 2026").assertIsDisplayed()
         compose.onNodeWithText("Changed files (3)").assertIsDisplayed()
-        compose.onNodeWithText("MORE DETAILS").performClick()
+        compose.onNodeWithText("More details").performClick()
         assertEquals(fixture.webUrl, url)
         compose.onNodeWithTag("change_details:file:1").performClick()
         assertEquals(fixture.id to fixture.files[1].name, diff)
@@ -81,8 +81,8 @@ class ChangeDetailsScreenTest {
         compose.onNodeWithTag("change_details:file:0").performClick()
         compose.onNodeWithTag("change_details:file:1").performClick()
         assertEquals(listOf("same.kt", "same.kt"), selected)
-        compose.onNodeWithText("ADDED").assertIsDisplayed()
-        compose.onNodeWithText("REMOVED").assertIsDisplayed()
+        compose.onNodeWithText("added").assertIsDisplayed()
+        compose.onNodeWithText("removed").assertIsDisplayed()
     }
 
     @Test fun scrollingHidesToolbarAndScrollingBackRestoresIt() {
@@ -103,7 +103,7 @@ class ChangeDetailsScreenTest {
                 ChangeDetailsScreen(ChangeDetailsUiState.Content(fixture), {}, { _, _ -> }, {})
             }
         }
-        assertThemeText(fixture.comment, 22, Color.Red)
+        assertThemeText(fixture.comment, 28, Color.Red)
         assertThemeText(fixture.revision, 18, Color.Red)
     }
 

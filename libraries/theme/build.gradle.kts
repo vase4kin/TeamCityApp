@@ -23,10 +23,16 @@ plugins {
 
 extensions.configure<LibraryExtension> {
     namespace = "teamcityapp.libraries.theme"
+    testOptions.unitTests.isIncludeAndroidResources = true
 }
 
 dependencies {
+    testImplementation(libs.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.compose.ui.testJunit4)
+    debugImplementation(libs.compose.ui.testManifest)
     implementation(projects.libraries.resources)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.google.material)
     implementation(libs.errorView)
 }

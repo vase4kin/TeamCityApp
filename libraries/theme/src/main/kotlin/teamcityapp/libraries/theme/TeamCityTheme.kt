@@ -16,64 +16,47 @@
 
 package teamcityapp.libraries.theme
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import teamcityapp.libraries.resources.R as SharedR
 
-private val LocalDarkTheme = staticCompositionLocalOf { false }
+internal val LocalDarkTheme = staticCompositionLocalOf { false }
 
 enum class ScreenNavigation { Back, Close }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), legacyColors: Boolean = false, content: @Composable () -> Unit) {
-    val baseColors = if (darkTheme) DarkColorScheme else LightColorScheme
-    val colors = if (legacyColors) {
-        baseColors.copy(
-            surface = Color(if (darkTheme) 0xFF121212 else 0xFFFFFFFF),
-            background = Color(if (darkTheme) 0xFF000000 else 0xFFF5F5F5),
-            onSurface = Color(if (darkTheme) 0xFFFFFFFF else 0xFF000000),
-            onBackground = Color(if (darkTheme) 0xFFFFFFFF else 0xFF000000),
-            onSurfaceVariant = Color(if (darkTheme) 0xFFB3B3B3 else 0xFF616161),
-            outline = (if (darkTheme) Color.White else Color.Black).copy(alpha = .38f),
-            outlineVariant = (if (darkTheme) Color.White else Color.Black).copy(alpha = .12f),
-            surfaceContainer = Color(if (darkTheme) 0xFF121212 else 0xFFFFFFFF),
-            surfaceContainerHigh = Color(if (darkTheme) 0xFF121212 else 0xFFFFFFFF),
-            secondary = Color(if (darkTheme) 0xFF80DEEA else 0xFF03DAC6),
-            onSecondary = if (darkTheme) Color.Black else Color.White,
-            error = Color(if (darkTheme) 0xFFCF6679 else 0xFFB00020)
-        )
-    } else {
-        baseColors
-    }
+fun TeamCityTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     CompositionLocalProvider(LocalDarkTheme provides darkTheme) {
-        MaterialTheme(colorScheme = colors, typography = if (legacyColors) TeamCityTypography.copy(headlineSmall = TeamCityTypography.headlineSmall.copy(fontSize = 20.sp, lineHeight = 28.sp, fontWeight = FontWeight.Medium)) else TeamCityTypography, content = content)
+        MaterialExpressiveTheme(
+            colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
+            typography = TeamCityTypography,
+            shapes = TeamCityShapes,
+            motionScheme = MotionScheme.expressive(),
+            content = content
+        )
     }
 }
 
@@ -89,31 +72,30 @@ fun TeamCityScreen(
     titleStartPadding: Dp = 0.dp,
     appBarColors: TopAppBarColors? = null,
     containerColor: Color = MaterialTheme.colorScheme.background,
+    contentMaxWidth: Dp = TeamCityDimensions.screenContentMaxWidth,
     actions: @Composable androidx.compose.foundation.layout.RowScope.() -> Unit = {},
+    bottomBar: (@Composable () -> Unit)? = null,
     content: @Composable (Modifier) -> Unit
 ) {
     val scrollBehavior = if (scrollToolbarWithContent) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
-    val colors = appBarColors ?: if (LocalDarkTheme.current) {
-        TopAppBarDefaults.topAppBarColors()
-    } else {
-        TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-            titleContentColor = MaterialTheme.colorScheme.onPrimary,
-            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-        )
-    }
+    val colors = appBarColors ?: TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.surface,
+        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+        navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+        titleContentColor = MaterialTheme.colorScheme.onSurface,
+        actionIconContentColor = MaterialTheme.colorScheme.onSurface
+    )
     val description = stringResource(
         if (navigation == ScreenNavigation.Back) R.string.action_back else R.string.action_close
     )
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).then(if (bottomBar != null) Modifier.imePadding() else Modifier),
         containerColor = containerColor,
+        bottomBar = { bottomBar?.invoke() },
         topBar = {
             Box {
                 TopAppBar(
-                    modifier = if (LocalDarkTheme.current) Modifier else Modifier.shadow(4.dp, clip = false),
+                    modifier = Modifier,
                     title = { Text(title, modifier = Modifier.padding(start = titleStartPadding), style = titleStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     expandedHeight = appBarHeight,
                     navigationIcon = {
@@ -140,27 +122,32 @@ fun TeamCityScreen(
                     colors = colors,
                     scrollBehavior = scrollBehavior
                 )
-                // Match the legacy Activity theme in the system-bar area under edge-to-edge.
-                Box(
-                    Modifier.fillMaxWidth().windowInsetsTopHeight(WindowInsets.statusBars)
-                        .background(if (LocalDarkTheme.current) colorResource(SharedR.color.black_800) else colors.containerColor)
-                )
             }
         }
-    ) { padding -> content(Modifier.fillMaxSize().padding(padding)) }
+    ) { padding ->
+        Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding), contentAlignment = Alignment.TopCenter) {
+            content(Modifier.widthIn(max = contentMaxWidth).fillMaxWidth().fillMaxHeight())
+        }
+    }
 }
 
 @Composable
 fun LoadingContent(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.primary) {
-    Box(modifier, contentAlignment = Alignment.Center) { CircularProgressIndicator(color = color) }
+    Box(modifier, contentAlignment = Alignment.Center) {
+        Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
+            CircularProgressIndicator(Modifier.padding(24.dp), color = color)
+        }
+    }
 }
 
 @Composable
 fun MessageContent(message: String, modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null) {
     Box(modifier.padding(24.dp), contentAlignment = Alignment.Center) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(message, style = MaterialTheme.typography.bodyLarge)
-            action?.invoke()
+        Card(Modifier.widthIn(max = 480.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+            Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(message, style = MaterialTheme.typography.titleMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                action?.invoke()
+            }
         }
     }
 }

@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.theme.*
 
 @Composable
@@ -38,23 +39,29 @@ fun TestDetailsScreen(state: TestDetailsUiState, onRetry: () -> Unit, onClose: (
     TeamCityScreen(title = stringResource(R.string.test_details_title), onClose = onClose) { modifier ->
         when (state) {
             TestDetailsUiState.Loading -> LoadingContent(modifier)
+
             TestDetailsUiState.Empty -> Box(modifier, contentAlignment = Alignment.Center) {
                 Text(
                     text = stringResource(R.string.text_empty_test_details),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
+
             TestDetailsUiState.Error -> ErrorContent(modifier, onRetry)
+
             TestDetailsUiState.InvalidInput -> Unit
-            is TestDetailsUiState.Content -> SelectionContainer(modifier) {
-                Text(
-                    text = remember(state.details) { formatTestDetails(state.details) },
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.fillMaxSize().testTag("test_details:text")
-                        .verticalScroll(rememberScrollState()).padding(TeamCityDimensions.contentPadding),
-                )
+
+            is TestDetailsUiState.Content -> androidx.compose.material3.Surface(modifier.padding(16.dp), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
+                SelectionContainer(Modifier.fillMaxSize()) {
+                    Text(
+                        text = remember(state.details) { formatTestDetails(state.details) },
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = TeamCityMonospace,
+                        modifier = Modifier.fillMaxSize().testTag("test_details:text")
+                            .verticalScroll(rememberScrollState()).padding(TeamCityDimensions.contentPadding)
+                    )
+                }
             }
         }
     }
@@ -68,8 +75,12 @@ private fun DetailsPreview() {
 
 @Preview
 @Composable
-private fun EmptyPreview() { TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Empty, {}, {}) } }
+private fun EmptyPreview() {
+    TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Empty, {}, {}) }
+}
 
 @Preview
 @Composable
-private fun ErrorPreview() { TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Error, {}, {}) } }
+private fun ErrorPreview() {
+    TeamCityTheme { TestDetailsScreen(TestDetailsUiState.Error, {}, {}) }
+}

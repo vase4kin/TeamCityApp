@@ -68,6 +68,7 @@ class SplashScreenScreenshotTest(private val stateName: String, private val vari
     @get:Rule val rules: RuleChain = RuleChain.outerRule(device).around(compose)
 
     @Test fun rendersState() {
+        compose.mainClock.autoAdvance = stateName != "loading"
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { SplashScreen(splashFixture(stateName)) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()

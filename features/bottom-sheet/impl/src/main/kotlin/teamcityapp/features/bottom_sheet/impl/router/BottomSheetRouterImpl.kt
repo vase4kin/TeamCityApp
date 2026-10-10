@@ -15,16 +15,13 @@
  */
 
 package teamcityapp.features.bottom_sheet.impl.router
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.features.bottom_sheet.impl.BottomSheetDialogFragment
-class BottomSheetRouterImpl(private val fragment: BottomSheetDialogFragment, private val actions: BottomSheetAppActions) : BottomSheetRouter {
+import teamcityapp.libraries.clipboard.ClipboardWriter
+class BottomSheetRouterImpl(private val fragment: BottomSheetDialogFragment, private val actions: BottomSheetAppActions, private val clipboard: ClipboardWriter) : BottomSheetRouter {
     override fun perform(item: SheetItem) {
         if (item.action == SheetAction.Copy) {
-            val clipboard = fragment.requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            clipboard.setPrimaryClip(ClipData.newPlainText("", item.description))
+            clipboard.copy("", item.description)
         }
         actions.dispatch(item)
         fragment.dismiss()

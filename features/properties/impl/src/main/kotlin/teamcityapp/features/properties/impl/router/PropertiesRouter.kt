@@ -17,5 +17,6 @@
 package teamcityapp.features.properties.impl.router
 
 interface PropertiesRouter {
-    fun showCopyValueBottomSheet(title: String, value: String)
+    /** Copies the original value and returns whether this UI should confirm it. */
+    fun copyValue(name: String, value: String): Boolean
 }

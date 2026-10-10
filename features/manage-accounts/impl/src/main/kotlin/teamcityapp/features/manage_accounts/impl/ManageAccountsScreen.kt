@@ -18,32 +18,27 @@ package teamcityapp.features.manage_accounts.impl
 
 import android.text.Spanned
 import android.text.style.URLSpan
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.platform.LocalResources
-import androidx.compose.ui.platform.LocalViewConfiguration
-import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import teamcityapp.features.manage_accounts.api.ManagedAccount
 import teamcityapp.features.manage_accounts.api.ManagedAccountId
@@ -74,44 +69,53 @@ fun ManageAccountsScreen(
         scrollToolbarWithContent = true
     ) { modifier ->
         Box(modifier) {
-            when (val accounts = state.accounts) {
-                AccountListUiState.Loading -> LoadingContent(Modifier.fillMaxSize().testTag("accounts:loading"))
+            val removalFailed = state.removal is AccountRemovalUiState.Error
+            Column(Modifier.fillMaxSize().padding(bottom = if (removalFailed) 112.dp else 0.dp)) {
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    when (val accounts = state.accounts) {
+                        AccountListUiState.Loading -> LoadingContent(Modifier.fillMaxSize().testTag("accounts:loading"))
 
-                AccountListUiState.Empty -> Box(Modifier.fillMaxSize().testTag("accounts:empty"))
+                        AccountListUiState.Empty -> MessageContent(stringResource(R.string.accounts_empty), Modifier.fillMaxSize().testTag("accounts:empty"))
 
-                AccountListUiState.Error -> CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-                    MessageContent(stringResource(R.string.accounts_load_error), Modifier.fillMaxSize()) {
-                        TextButton(onClick = onRetry) { Text(stringResource(R.string.accounts_retry)) }
+                        AccountListUiState.Error -> CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                            MessageContent(stringResource(R.string.accounts_load_error), Modifier.fillMaxSize()) {
+                                TextButton(onClick = onRetry) { Text(stringResource(R.string.accounts_retry)) }
+                            }
+                        }
+
+                        is AccountListUiState.Content -> LazyColumn(
+                            Modifier.fillMaxSize().testTag("accounts:list"),
+                            contentPadding = PaddingValues(bottom = if (removalFailed) 0.dp else 112.dp)
+                        ) {
+                            items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->
+                                AccountRow(account, state.canInteract, { onRemove(account.id) }, onSslWarning)
+                            }
+                        }
                     }
                 }
-
-                is AccountListUiState.Content -> LazyColumn(
-                    Modifier.fillMaxSize().testTag("accounts:list"),
-                    contentPadding = PaddingValues(bottom = 112.dp)
-                ) {
-                    items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->
-                        AccountRow(account, state.canInteract, { onRemove(account.id) }, onSslWarning)
+                if (removalFailed) {
+                    Surface(
+                        Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("accounts:remove_error"),
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = MaterialTheme.shapes.small,
+                        shadowElevation = 2.dp
+                    ) {
+                        Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                            Text(stringResource(R.string.accounts_remove_error), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+                            TextButton(onClick = onRetryRemoval) { Text(stringResource(R.string.accounts_retry)) }
+                        }
                     }
                 }
             }
             if (state.removal is AccountRemovalUiState.Removing) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("accounts:removing"))
-            if (state.removal is AccountRemovalUiState.Error) {
-                Surface(
-                    Modifier.align(Alignment.BottomCenter).fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, bottom = 112.dp).testTag("accounts:remove_error"),
-                    color = MaterialTheme.colorScheme.surface,
-                    shape = MaterialTheme.shapes.small,
-                    shadowElevation = 2.dp
-                ) {
-                    Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-                        Text(stringResource(R.string.accounts_remove_error), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-                        TextButton(onClick = onRetryRemoval) { Text(stringResource(R.string.accounts_retry)) }
-                    }
-                }
-            }
-            TeamCityFloatingActionButton(
+            TeamCityExtendedFloatingActionButton(
                 onClick = { if (state.canInteract) onCreateAccount() },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }
-            ) { Icon(painterResource(ThemeR.drawable.ic_add_black_24dp), stringResource(R.string.accounts_add), Modifier.size(TeamCityDimensions.iconSize)) }
+            ) {
+                Icon(painterResource(ThemeR.drawable.ic_add_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
+                Spacer(Modifier.width(12.dp))
+                Text(stringResource(R.string.accounts_add))
+            }
         }
     }
     if (state.canInteract) {
@@ -123,47 +127,77 @@ fun ManageAccountsScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -> Unit, onSslWarning: () -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.surface) {
-        Column {
-            Row(
-                Modifier.fillMaxWidth().testTag(accountTag(account.id)).clickable(enabled = enabled, role = Role.Button, onClick = onRemove)
-                    .padding(horizontal = TeamCityDimensions.contentPadding * 2, vertical = TeamCityDimensions.contentPadding),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painterResource(if (account.isSslDisabled) R.drawable.ic_account_alert else R.drawable.ic_account),
-                    null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(TeamCityDimensions.iconSize)
-                )
-                Column(Modifier.weight(1f).padding(start = TeamCityDimensions.contentPadding)) {
-                    Text(account.id.userName, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    Text(account.id.serverUrl, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    if (account.isSslDisabled) {
-                        val configuration = LocalViewConfiguration.current
-                        // Match the legacy warning's bounds. Expanding its touch target would
-                        // intercept taps on the server label immediately above it.
-                        val warningConfiguration = remember(configuration) {
-                            object : ViewConfiguration by configuration {
-                                override val minimumTouchTargetSize = DpSize.Zero
-                            }
+    val colors = MaterialTheme.colorScheme
+    val content = if (account.isActive) colors.onPrimaryContainer else colors.onSurface
+    val current = stringResource(R.string.accounts_current)
+    val removeDescription = stringResource(R.string.accounts_remove_description, account.id.userName, account.id.serverUrl)
+    Card(
+        Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag(accountTag(account.id)),
+        colors = CardDefaults.cardColors(containerColor = if (account.isActive) colors.primaryContainer else colors.surfaceContainerHigh, contentColor = content),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Column(Modifier.padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+                Row(
+                    Modifier.weight(1f).semantics(mergeDescendants = true) { if (account.isActive) stateDescription = current }.testTag("${accountTag(account.id)}:identity"),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                ) {
+                    Surface(Modifier.size(TeamCityDimensions.minimumTouchTarget), color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.medium) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(painterResource(R.drawable.ic_account), null, Modifier.size(TeamCityDimensions.iconSize), tint = colors.primary)
                         }
-                        CompositionLocalProvider(LocalViewConfiguration provides warningConfiguration) {
-                            Text(
-                                stringResource(R.string.text_account_un_secure_ssl_),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(top = TeamCityDimensions.extraSmallSpacing).clickable(enabled = enabled, role = Role.Button, onClick = onSslWarning)
-                            )
+                    }
+                    FlowRow(
+                        Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing),
+                        verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)
+                    ) {
+                        Text(account.id.userName, style = MaterialTheme.typography.titleMedium, color = content)
+                        if (account.isActive) {
+                            Surface(
+                                Modifier.testTag("${accountTag(account.id)}:current").clearAndSetSemantics {},
+                                color = colors.primary.copy(alpha = 0.16f),
+                                shape = RoundedCornerShape(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                            ) {
+                                Row(
+                                    Modifier.padding(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.extraSmallSpacing),
+                                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.contentPadding), tint = content)
+                                    Text(stringResource(R.string.accounts_current_short), style = MaterialTheme.typography.labelMedium, color = content)
+                                }
+                            }
                         }
                     }
                 }
+                TooltipBox(
+                    positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+                    tooltip = { PlainTooltip { Text(stringResource(R.string.accounts_remove)) } },
+                    state = rememberTooltipState(),
+                    enableUserInput = enabled
+                ) {
+                    FilledTonalIconButton(
+                        onClick = onRemove,
+                        enabled = enabled,
+                        modifier = Modifier.size(TeamCityDimensions.minimumTouchTarget).testTag("${accountTag(account.id)}:remove"),
+                        shape = MaterialTheme.shapes.medium,
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(containerColor = colors.errorContainer.copy(alpha = 0.35f), contentColor = colors.error)
+                    ) {
+                        Icon(painterResource(R.drawable.ic_delete), removeDescription, Modifier.size(TeamCityDimensions.iconSize))
+                    }
+                }
             }
-            HorizontalDivider(Modifier.padding(horizontal = TeamCityDimensions.contentPadding))
+            Text(account.id.serverUrl, Modifier.fillMaxWidth().testTag("${accountTag(account.id)}:url"), style = MaterialTheme.typography.bodyMedium, color = if (account.isActive) content else colors.onSurfaceVariant)
+            if (account.isSslDisabled) {
+                TextButton(onSslWarning, enabled = enabled, modifier = Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.minimumTouchTarget).testTag("${accountTag(account.id)}:ssl"), colors = ButtonDefaults.textButtonColors(contentColor = teamCityStatusColors().warning.onContainer, containerColor = teamCityStatusColors().warning.container)) {
+                    Text(stringResource(R.string.text_account_un_secure_ssl_), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         }
     }
 }
@@ -187,7 +221,6 @@ private fun warningText() = run {
 
 @Composable
 private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: () -> Unit) {
-    val locale = LocalLocale.current.platformLocale
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.testTag("accounts:dialog"),
@@ -208,7 +241,7 @@ private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: (
         dismissButton = if (!warning) {
             {
                 TextButton(onClick = onDismiss) {
-                    Text(stringResource(R.string.dialog_remove_active_account_positive_negative_text).uppercase(locale))
+                    Text(stringResource(R.string.dialog_remove_active_account_positive_negative_text))
                 }
             }
         } else {
@@ -216,7 +249,7 @@ private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: (
         },
         confirmButton = {
             TextButton(onClick = if (warning) onDismiss else onConfirm) {
-                Text(stringResource(if (warning) android.R.string.ok else R.string.dialog_remove_active_account_positive_button_text).uppercase(locale))
+                Text(stringResource(if (warning) android.R.string.ok else R.string.dialog_remove_active_account_positive_button_text))
             }
         }
     )

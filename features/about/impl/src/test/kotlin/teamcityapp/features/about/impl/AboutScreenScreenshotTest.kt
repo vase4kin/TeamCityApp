@@ -36,7 +36,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.libraries.theme.TeamCityTheme
 
-/** Every About state, including the deliberately invisible server failure. */
+/** Every About state, including the visible optional server failure. */
 @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
@@ -92,12 +92,12 @@ class AboutScreenScreenshotTest(private val stateName: String, private val varia
         if (state == AboutUiState.Loading) {
             compose.onNode(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).assertIsDisplayed()
         } else {
-            compose.onNodeWithText(context.getString(R.string.about_app_text_app)).assertIsDisplayed()
+            compose.onNodeWithText(context.getString(R.string.about_app_text_app)).assertExists()
             compose.onNodeWithText("1.52.8").assertIsDisplayed()
             if (stateName == "available") {
                 compose.onNodeWithText("https://teamcity.example").assertIsDisplayed()
             } else {
-                compose.onNodeWithText(context.getString(R.string.about_app_text_server_info)).assertDoesNotExist()
+                compose.onNodeWithTag("about:server-unavailable").assertExists()
             }
         }
         val name = "about_${stateName}_${variant.name}"

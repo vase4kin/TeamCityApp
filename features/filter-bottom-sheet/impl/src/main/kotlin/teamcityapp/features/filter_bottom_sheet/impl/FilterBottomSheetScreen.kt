@@ -18,12 +18,17 @@ package teamcityapp.features.filter_bottom_sheet.impl
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
@@ -44,14 +49,28 @@ fun FilterBottomSheetScreen(state: FilterBottomSheetUiState, onApply: () -> Unit
         QuickFilter.AgentsConnected -> R.string.text_show_disconnected
         QuickFilter.AgentsDisconnected -> R.string.text_show_connected
     }
-    Surface(color = MaterialTheme.colorScheme.surface) {
-        Column(Modifier.fillMaxWidth().testTag("quick-filter:content")) {
-            TeamCitySheetHeader(stringResource(title))
-            Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(enabled = !state.applying, onClick = onApply).padding(horizontal = 16.dp).testTag("quick-filter:apply"), verticalAlignment = Alignment.CenterVertically) {
-                if (state.applying) CircularProgressIndicator(Modifier.size(24.dp)) else Icon(painterResource(R.drawable.ic_done_24px), null, Modifier.size(24.dp))
-                Text(stringResource(description), Modifier.padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
+    val selected = when (filter) {
+        QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.string.selected_all
+        QuickFilter.RunningFavorites, QuickFilter.QueuedFavorites -> R.string.selected_favorites
+        QuickFilter.AgentsConnected -> R.string.selected_connected
+        QuickFilter.AgentsDisconnected -> R.string.selected_disconnected
+    }
+    Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)) {
+            Column(Modifier.fillMaxWidth().navigationBarsPadding().selectableGroup().testTag("quick-filter:content")) {
+                TeamCitySheetHeader(stringResource(title))
+                Surface(Modifier.fillMaxWidth().padding(horizontal = 16.dp), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.primaryContainer) {
+                    Row(Modifier.padding(16.dp).testTag("quick-filter:selected").semantics { this.selected = true }, verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(selected = true, onClick = null)
+                        Text(stringResource(selected), Modifier.padding(start = 12.dp), style = MaterialTheme.typography.titleMedium)
+                    }
+                }
+                Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).selectable(selected = false, enabled = !state.applying, role = Role.RadioButton, onClick = onApply).padding(start = 32.dp, end = 32.dp).testTag("quick-filter:apply"), verticalAlignment = Alignment.CenterVertically) {
+                    if (state.applying) CircularProgressIndicator(Modifier.size(24.dp)) else RadioButton(selected = false, onClick = null)
+                    Text(stringResource(description), Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
+                }
+                if (state.failed) Text(stringResource(teamcityapp.libraries.resources.R.string.error_view_error_text), Modifier.padding(16.dp), color = MaterialTheme.colorScheme.error)
             }
-            if (state.failed) Text(stringResource(teamcityapp.libraries.resources.R.string.error_view_error_text), Modifier.padding(16.dp), color = MaterialTheme.colorScheme.error)
         }
     }
 }

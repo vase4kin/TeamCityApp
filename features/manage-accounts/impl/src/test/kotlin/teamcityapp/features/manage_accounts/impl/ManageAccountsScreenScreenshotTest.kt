@@ -17,10 +17,14 @@
 package teamcityapp.features.manage_accounts.impl
 
 import android.app.Application
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.LayoutDirection
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import com.github.takahirom.roborazzi.captureScreenRoboImage
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -41,7 +45,7 @@ import teamcityapp.libraries.theme.TeamCityTheme
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ManageAccountsScreenScreenshotTest(private val stateName: String, private val variant: Variant) {
-    data class Variant(val name: String, val width: Int, val height: Int, val dark: Boolean, val fontScale: Float) {
+    data class Variant(val name: String, val width: Int, val height: Int, val dark: Boolean, val fontScale: Float, val rtl: Boolean = false) {
         override fun toString() = name
     }
 
@@ -72,6 +76,8 @@ class ManageAccountsScreenScreenshotTest(private val stateName: String, private 
         val secondary = ManagedAccount(ManagedAccountId("https://teamcity.example/secondary", "Guest user"), true, true)
         val accounts = when (stateName) {
             "normal" -> listOf(primary)
+            "named" -> listOf(primary.copy(id = primary.id.copy(userName = "alex.morgan"), isActive = true))
+            "named_long" -> listOf(primary.copy(id = primary.id.copy(userName = "alexander.morgan.platform"), isActive = true))
             "long", "scrolled" -> (1..16).map { ManagedAccount(ManagedAccountId("https://a-very-long-teamcity-server.example/projects/production/$it", "Developer with a very long full name $it"), it == 1, it % 2 == 0) }
             else -> listOf(primary, secondary)
         }
@@ -91,7 +97,8 @@ class ManageAccountsScreenScreenshotTest(private val stateName: String, private 
             "remove_dialog" -> ManageAccountsDialog.ConfirmRemoval(primary.id)
             else -> ManageAccountsDialog.None
         }
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { ManageAccountsScreen(ManageAccountsUiState(list, removal), {}, {}, {}, {}, dialog = dialog) } }
+        compose.mainClock.autoAdvance = !(stateName in listOf("loading", "removing"))
+        compose.setContent { CompositionLocalProvider(LocalLayoutDirection provides if (variant.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) { TeamCityTheme(darkTheme = variant.dark) { ManageAccountsScreen(ManageAccountsUiState(list, removal), {}, {}, {}, {}, dialog = dialog) } } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (stateName == "scrolled") {
@@ -101,9 +108,15 @@ class ManageAccountsScreenScreenshotTest(private val stateName: String, private 
         }
         val name = "accounts_${stateName}_${variant.name}"
         if (dialog != ManageAccountsDialog.None) {
-            compose.onNodeWithTag("accounts:dialog").captureRoboImage("$name.png")
+            captureScreenRoboImage("$name.png")
         } else {
             compose.onRoot().captureRoboImage("$name.png")
+            if (stateName == "remove_error") {
+                compose.onNodeWithTag("${accountTag(secondary.id)}:ssl").performScrollTo().assertIsDisplayed()
+                compose.mainClock.advanceTimeBy(500)
+                compose.waitForIdle()
+                compose.onRoot().captureRoboImage("${name}_bottom.png")
+            }
         }
     }
 
@@ -115,11 +128,17 @@ class ManageAccountsScreenScreenshotTest(private val stateName: String, private 
             val variants = listOf(
                 Variant("phone_$theme", 360, 800, dark, 1f),
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
-                Variant("large_font_$theme", 360, 800, dark, 1.5f)
+                Variant("large_font_$theme", 360, 800, dark, 1.5f),
+                Variant("double_font_$theme", 360, 800, dark, 2f)
             )
-            listOf("loading", "empty", "error", "normal", "mixed", "long", "scrolled", "removing", "remove_error", "cleanup_error", "ssl_dialog", "remove_dialog").flatMap { state ->
+            val existing = listOf("loading", "empty", "error", "normal", "mixed", "long", "scrolled", "removing", "remove_error", "cleanup_error", "ssl_dialog", "remove_dialog").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
+            existing + listOf(
+                arrayOf<Any>("named", Variant("phone_$theme", 360, 800, dark, 1f)),
+                arrayOf<Any>("named_long", Variant("double_font_$theme", 360, 800, dark, 2f)),
+                arrayOf<Any>("named_long", Variant("rtl_large_font_$theme", 360, 800, dark, 1.5f, rtl = true))
+            )
         }
     }
 }

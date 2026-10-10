@@ -23,6 +23,7 @@ firebase-perf-plugin = "2.0.2"
 crashlytics-plugin = "3.0.6"
 oss-licenses-plugin = "0.10.9"
 compose-bom = "2026.09.00"
+compose-material3 = "1.5.0-beta01"
 androidx-activity = "1.12.3"
 coroutines = "1.10.2"
 turbine = "1.2.0"
@@ -36,7 +37,8 @@ roborazzi-gradlePlugin = { module = "io.github.takahirom.roborazzi:roborazzi-gra
 roborazzi-core = { module = "io.github.takahirom.roborazzi:roborazzi", version.ref = "roborazzi" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "compose-bom" }
-compose-material3 = { module = "androidx.compose.material3:material3" }
+compose-material3-windowSizeClass = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "compose-material3" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-testManifest = { module = "androidx.compose.ui:ui-test-manifest" }

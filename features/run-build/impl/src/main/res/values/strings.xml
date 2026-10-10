@@ -22,9 +22,9 @@ Copyright 2026 Andrey Tolpeev
 <string name="text_no_branches_available_to_filter">No branches available to filter</string>
 <string name="text_loading_branches">Loading branches</string>
 <string name="hint_default_build_branch">Default branch</string>
-<string name="error_base_error">We encountered problem running build</string>
-<string name="error_forbidden_error">You don\'t have permissions to run a build</string>
-<string name="text_queueing_build">Running build..</string>
+<string name="error_base_error">Unable to run the build. Please try again.</string>
+<string name="error_forbidden_error">You don\'t have permission to run this build.</string>
+<string name="text_queueing_build">Queuing build…</string>
 <string name="text_switcher_run_as_personal">Personal</string>
 <string name="text_switcher_run_as_queue_at_the_top">Queue to the top</string>
 <string name="text_switcher_run_as_clean_all_files">Clean all files before the build</string>
@@ -43,4 +43,16 @@ Copyright 2026 Andrey Tolpeev
 <string name="hint_parameter_value">Value</string>
 <string name="text_filters_none">None</string>
 <string name="hint_default_filter_branch">Any</string>
+<string name="quick_setup">Quick setup</string>
+<string name="run_options">Run options</string>
+<string name="edit_options">Edit</string>
+<string name="hide_options">Hide</string>
+<string name="run_options_summary">Personal: %1$s • Priority: %2$s • Clean sources: %3$s</string>
+<string name="parameter_count">Custom parameters: %1$d</string>
+<string name="option_on">On</string>
+<string name="option_off">Off</string>
+<string name="priority_top">Top</string>
+<string name="priority_normal">Normal</string>
+<string name="branches_unavailable">Unable to load branches. The default branch will be used.</string>
+<string name="agents_unavailable">Unable to load agents. TeamCity will choose an agent.</string>
 </resources>

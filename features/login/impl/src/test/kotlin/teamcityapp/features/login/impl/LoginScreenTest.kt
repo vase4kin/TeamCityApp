@@ -22,6 +22,7 @@ import androidx.compose.ui.autofill.ContentDataType
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -38,6 +39,26 @@ import teamcityapp.libraries.theme.TeamCityTheme
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class LoginScreenTest {
     @get:Rule val compose = createComposeRule()
+
+    @Config(qualifiers = "en-rUS-w1000dp-h1000dp-notnight-mdpi")
+    @Test
+    fun tabletSwitchRowsStayWithin560dpFormPane() {
+        compose.setContent { TeamCityTheme { LoginScreen(LoginUiState(), {}, {}, {}, {}) } }
+        compose.onNodeWithTag("login:form").assertWidthIsEqualTo(560.dp)
+        listOf("auth:guest", "auth:ssl").forEach { compose.onNodeWithTag(it).assertWidthIsEqualTo(560.dp) }
+    }
+
+    @Test fun switchRowsSpanTheBoundedFormPane() {
+        compose.setContent { TeamCityTheme { LoginScreen(LoginUiState(), { }, { }, { }, { }) } }
+        val pane = compose.onNodeWithTag("login:form").fetchSemanticsNode().boundsInRoot
+        listOf("auth:guest", "auth:ssl").forEach { tag ->
+            val row = compose.onNodeWithTag(tag)
+            row.assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Switch))
+            val bounds = row.fetchSemanticsNode().boundsInRoot
+            assertEquals(pane.left, bounds.left)
+            assertEquals(pane.right, bounds.right)
+        }
+    }
 
     @Test fun guestModeHidesCredentialsAndPreservesThemWhenSwitchingBack() {
         val state = mutableStateOf(LoginUiState(AuthenticationFormState(userName = "Alice", password = "secret"), demoLoading = false))
@@ -64,5 +85,27 @@ class LoginScreenTest {
         compose.onNodeWithText("OK").performClick()
         assertEquals(1, http)
         assertEquals(0, ssl)
+    }
+
+    @Test fun usernameValidationBelongsToUsernameField() {
+        compose.setContent { TeamCityTheme { LoginScreen(LoginUiState(form = AuthenticationFormState(error = AuthenticationError.EmptyUserName), demoLoading = false), {}, {}, {}, {}) } }
+        compose.onNodeWithTag("auth:username").assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Error))
+        compose.onNodeWithTag("auth:url").assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.Error))
+        compose.onNodeWithTag("auth:password").assert(SemanticsMatcher.keyNotDefined(SemanticsProperties.Error))
+        compose.onNodeWithTag("auth:error", useUnmergedTree = true).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun shortWindowWithDoubleTextKeepsSubmitReachableAndImeSubmitsOnce() {
+        var submits = 0
+        compose.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(androidx.compose.ui.unit.DpSize(360.dp, 400.dp))) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    TeamCityTheme { LoginScreen(LoginUiState(demoLoading = false), {}, { submits++ }, {}, {}) }
+                }
+            }
+        }
+        compose.onNodeWithTag("auth:password").performScrollTo().performImeAction()
+        assertEquals(1, submits)
+        compose.onNodeWithTag("login:submit").performScrollTo().assertIsDisplayed()
     }
 }

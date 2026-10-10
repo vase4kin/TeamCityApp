@@ -16,7 +16,25 @@
 
 package teamcityapp.libraries.theme
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 
-// Keep the Material 3 type scale in one place for all Compose screens and components.
-internal val TeamCityTypography = Typography()
+private val DefaultTypography = Typography()
+
+internal val TeamCityTypography = Typography(
+    displaySmall = DefaultTypography.displaySmall.copy(fontWeight = FontWeight.Bold),
+    headlineLarge = DefaultTypography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+    headlineMedium = DefaultTypography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+    headlineSmall = DefaultTypography.headlineSmall.copy(fontWeight = FontWeight.SemiBold),
+    titleLarge = DefaultTypography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
+    titleMedium = DefaultTypography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+    labelLarge = DefaultTypography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
+)
+
+/** Technical values retain spacing and are selectable at their owning screen. */
+val TeamCityMonospace: TextStyle
+    @Composable get() = MaterialTheme.typography.bodyMedium.copy(fontFamily = FontFamily.Monospace)

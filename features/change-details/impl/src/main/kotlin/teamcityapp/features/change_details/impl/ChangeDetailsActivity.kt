@@ -19,10 +19,12 @@ package teamcityapp.features.change_details.impl
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import teamcityapp.features.change_details.impl.router.ChangeDetailsRouter
+import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @AndroidEntryPoint
@@ -30,7 +32,13 @@ class ChangeDetailsActivity : AppCompatActivity() {
     @Inject lateinit var router: ChangeDetailsRouter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { TeamCityTheme { ChangeDetailsRoute(router) } }
+        enableEdgeToEdge()
+        setContent {
+            TeamCityTheme {
+                TeamCitySystemBars(window)
+                ChangeDetailsRoute(router)
+            }
+        }
     }
     override fun finish() {
         super.finish()
