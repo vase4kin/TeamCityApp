@@ -66,6 +66,16 @@ ViewModel
 
 Feature `api` modules expose navigation and repository contracts and immutable models. `impl` modules own hosts, ViewModels, screen resources, UI-scoped routers, trackers, behavioral tests, and screenshot baselines. Other features depend on APIs. Keep Activities, Fragments, callbacks, adapters, and platform launches out of retained ViewModels.
 
+## Expressive presentation and shared errors
+
+All migrated lists use grouped Material 3 surfaces through `TeamCityListRow`. The owning feature supplies `ListRowPosition` from adjacent rows in the same logical section; paged features inspect neighbors with `peek` so grouping does not trigger extra requests. Outer corners are larger than inner corners, and interactive rows animate their corners when pressed. Passive agent and test rows retain their non-interactive semantics. Artifact long presses retain their existing actions.
+
+Shared leading surfaces, section headings, and loading placeholders use the same geometry. Build rows expose a readable status label alongside their status icon, with wrapping titles, details, and branches. History uses a wrapping screen title and a labeled Run build action. Its list viewport reserves the action's measured height so a scrolled append retry cannot sit beneath the floating button.
+
+`libraries/theme` owns both error presentations. `ErrorContent` supplies the full-screen icon, headline, message, and primary recovery action. `ErrorNotice` supplies a compact notice beside retained content for refresh, append, optional-section, save, and download failures. Notices stack their actions in narrow layouts or with enlarged text. Bounded feedback areas scroll and preserve space for the main content; full-screen errors also scroll when the window is too short.
+
+The same error components are used by Settings, Manage Accounts, Splash, Build Log, Drawer, About, authentication forms, Run Build, and Quick Filter. Feature-specific explanations and recovery callbacks remain with their owners: an authentication failure offers Sign in, and download/count failures retry their own operation. Favorites presents one all-failed explanation rather than duplicating a generic failure. Field validation remains attached to its field, and consent/permission dialogs retain their existing purpose.
+
 ## Lifecycle and failure policy
 
 Home hides and shows fragments without pausing them. Its list routes therefore need explicit visibility gates alongside lifecycle collection. Hidden finite lists should cancel unfinished requests. Navigation retains completed content; Agents and Favorites reload with normal cache policy after a genuine return. Configuration recreation retains completed content without duplicating requests.
@@ -114,6 +124,10 @@ All consumers in the inventory use their Compose replacements, existing entry po
 
 Final verification covers 1,514 shared-library and feature tests, 371 app unit tests, 1,232 visually reviewed PNG baselines, and 196 unique passing emulator integration cases. The comprehensive 196-case emulator run was followed by a passing 61-case targeted rerun after correcting test fixtures and synchronization; every case has a passing result. The native pager test helper pumps pending offscreen Compose layout while retaining actual TabLayout taps, and filter tests drive Compose frames before checking returned requests. Four Home regression cases verify incoming tab selection, restored-tab precedence, and invalid tab indices. Both mock debug APKs build; production debug Kotlin/Hilt compilation, lint for both flavors, and repository formatting pass. Lint retains existing warnings and reports no errors.
 
-The final implementation checkpoint is `818cd42`. All checkpoints remain local on `codex/compose-lists`; nothing has been pushed. Native Home and Build Details hosts, Rx APIs/cache DTOs, and account storage remain explicit compatibility boundaries for later migrations.
+The initial migration implementation checkpoint is `818cd42`. All checkpoints remain local on `codex/compose-lists`; nothing has been pushed. Native Home and Build Details hosts, Rx APIs/cache DTOs, and account storage remain explicit compatibility boundaries for later migrations.
+
+The expressive presentation follow-up passes 3,288 local test cases, including 371 app tests and verification of the refreshed screenshot baselines, plus 35 unique emulator integration cases. Added behavior coverage checks default and custom error actions, disabled retries, passive notices, long build labels, retained-content recovery, and short windows with enlarged text. History append retry and account-load retry stay above their measured floating action lanes. Screenshot review covers both themes, compact/expanded layouts, enlarged text, and scrolled recovery actions, including authentication failures. Drawer integration uses the accessible Compose navigation button rather than the superseded native toolbar selector.
+
+Verification commands use JDK 17: `./gradlew testDebugUnitTest :app:testMockDebugUnitTest`, `./gradlew lintDebug :app:lintMockDebug :app:lintProdDebug --max-workers=1`, and `./gradlew :app:assembleMockDebug :app:assembleMockDebugAndroidTest :app:compileProdDebugKotlin`. Formatting passes with `spotlessApply` and `spotlessCheck`. Lint reports existing warnings and no errors. Production lint passed when retried with one worker after an internal Kotlin analyzer crash.
 
 Compose list and paging behavior follow the official [Compose lists guidance](https://developer.android.com/develop/ui/compose/lists) and [Paging overview](https://developer.android.com/topic/libraries/architecture/paging/v3-overview). Feature ownership follows the repository's `AGENTS.md` contract.
