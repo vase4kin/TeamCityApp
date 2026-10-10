@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import teamcityapp.features.running_builds.api.RunningBuildsFilter
 import teamcityapp.libraries.build_ui.TeamCityBuildConfigurationHeader
 import teamcityapp.libraries.build_ui.TeamCityBuildRow
@@ -36,6 +37,7 @@ import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.TeamCityListContainer
 import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.listRowPosition
 import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.TeamCityDimensions
 
@@ -61,13 +63,21 @@ internal fun RunningBuildsScreen(
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("running_builds:list")) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("running_builds:list"), contentPadding = PaddingValues(bottom = 16.dp)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         if (index == 0 || buildConfigurationTitle(rows[index - 1]) != buildConfigurationTitle(build)) {
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("running_builds:configuration:$index"))
                         }
-                        TeamCityBuildRow(build, { onBuild(build) }, Modifier.testTag("running_builds:build:${build.id}"))
+                        TeamCityBuildRow(
+                            build,
+                            { onBuild(build) },
+                            Modifier.testTag("running_builds:build:${build.id}"),
+                            position = listRowPosition(
+                                hasPrevious = index > 0 && buildConfigurationTitle(rows[index - 1]) == buildConfigurationTitle(build),
+                                hasNext = index + 1 < rows.size && buildConfigurationTitle(rows[index + 1]) == buildConfigurationTitle(build)
+                            )
+                        )
                     }
                 }
             }

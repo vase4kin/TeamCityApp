@@ -17,10 +17,9 @@
 
 package teamcityapp.features.build_overview.impl
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,8 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.list_state.ListUiState
-import teamcityapp.libraries.list_ui.TeamCityListContainer
-import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -41,28 +39,39 @@ fun BuildOverviewScreen(state: BuildOverviewUiState, onRefresh: () -> Unit, onRe
     TeamCityListContainer(state.list, onRefresh, onRetry, modifier = modifier.fillMaxSize().testTag("overview:screen"), empty = { TeamCityListEmpty(stringResource(R.string.overview_empty)) }) {
         val rows = (state.list as? ListUiState.Content<OverviewRow>)?.items.orEmpty()
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list")) {
-                items(rows, key = { it.field }, contentType = { it.icon }) { row -> OverviewRowContent(row, { onRowClick(row) }) }
+            LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                itemsIndexed(rows, key = { _, row -> row.field }, contentType = { _, row -> row.icon }) { index, row ->
+                    OverviewRowContent(row, { onRowClick(row) }, listRowPosition(index, rows.size))
+                }
             }
         }
     }
 }
 
 @Composable
-internal fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit) {
-    Column(Modifier.fillMaxWidth().testTag("overview:row:${row.field}").clickable(onClick = onClick)) {
-        Row(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
-            if (row.icon == OverviewIcon.Running) {
-                CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = 2.dp)
-            } else {
-                Icon(painterResource(row.icon.drawable()), null, Modifier.size(TeamCityDimensions.iconSize))
-            }
-            Column(Modifier.weight(1f).padding(start = TeamCityDimensions.contentPadding)) {
-                Text(stringResource(row.field.label()), style = MaterialTheme.typography.bodyLarge)
-                Text(row.value.resolve(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+internal fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single) {
+    val isError = row.icon == OverviewIcon.Failure || row.icon == OverviewIcon.Error
+    TeamCityListRow(
+        onClick = onClick,
+        modifier = Modifier.testTag("overview:row:${row.field}"),
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon(
+                containerColor = if (isError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
+                contentColor = if (isError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                if (row.icon == OverviewIcon.Running) {
+                    CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = 2.dp)
+                } else {
+                    Icon(painterResource(row.icon.drawable()), null, Modifier.size(TeamCityDimensions.iconSize))
+                }
             }
         }
-        HorizontalDivider(Modifier.padding(start = 56.dp))
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(stringResource(row.field.label()), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(row.value.resolve(), style = MaterialTheme.typography.titleMedium)
+        }
     }
 }
 private fun OverviewIcon.drawable(): Int = when (this) {

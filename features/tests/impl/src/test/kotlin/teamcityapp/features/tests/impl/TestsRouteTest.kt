@@ -97,7 +97,7 @@ class TestsRouteTest {
         }
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Couldn’t refresh. Try again.").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("There are no failed tests").assertIsDisplayed()
-        compose.onNodeWithText("Oops").assertDoesNotExist()
+        compose.onNodeWithText("Couldn’t load content").assertDoesNotExist()
         assertEquals(listOf(false, true), repository.requests.map { it.force })
     }
 

@@ -101,6 +101,7 @@ class ArtifactsScreenScreenshotTest(private val stateName: String, private val v
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { ArtifactsScreen(state, true, platform, {}, {}, {}, {}, {}, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName == "download_failed") compose.onNodeWithText("Retry download").assertIsDisplayed()
         if (stateName == "downloading" || platform != null) {
             captureScreenRoboImage("artifacts_${stateName}_${variant.name}.png")
         } else {

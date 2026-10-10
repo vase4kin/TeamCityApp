@@ -112,7 +112,7 @@ class NavigationActivityTest {
     @Test fun initialErrorRetainsProjectTitleAndCanBeRetried() {
         `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.error(RuntimeException("offline")))
         launch().use {
-            assertTextVisible(text(R.string.error_view_error_text))
+            assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
             compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
             `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(Mocks.navigationNode()))
             compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()

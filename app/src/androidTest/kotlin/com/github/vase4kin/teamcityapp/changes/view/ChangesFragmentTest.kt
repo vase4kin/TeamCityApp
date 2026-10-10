@@ -97,7 +97,7 @@ class ChangesFragmentTest {
     @Test fun failedChangesCanBeRetriedWithinTheBuildTab() {
         `when`(teamCityService.listChanges(anyString())).thenReturn(Single.error(RuntimeException("offline")))
         openChanges("Changes (0)")
-        assertTextVisible(text(R.string.error_view_error_text))
+        assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         val fake = FakeTeamCityServiceImpl()
         `when`(teamCityService.listChanges(anyString())).thenAnswer { fake.listChanges(it.getArgument(0)) }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()

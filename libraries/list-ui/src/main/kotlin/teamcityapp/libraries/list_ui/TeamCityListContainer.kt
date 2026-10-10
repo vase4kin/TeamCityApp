@@ -25,13 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.ErrorContent
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /**
@@ -47,42 +45,46 @@ fun TeamCityListContainer(
     modifier: Modifier = Modifier,
     loading: @Composable () -> Unit = { TeamCityListLoading() },
     empty: @Composable () -> Unit,
+    refreshFailureMessage: String? = null,
     content: @Composable () -> Unit
 ) {
     Surface(modifier) {
-        when (state) {
-            ListUiState.Loading -> loading()
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            val failureMaxHeight = (maxHeight / 3).coerceAtLeast(48.dp)
+            when (state) {
+                ListUiState.Loading -> loading()
 
-            ListUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry)
+                ListUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry)
 
-            is ListUiState.Empty, is ListUiState.Content -> {
-                val refreshing = when (state) {
-                    is ListUiState.Empty -> state.isRefreshing
-                    is ListUiState.Content -> state.isRefreshing
-                }
-                val refreshFailed = when (state) {
-                    is ListUiState.Empty -> state.refreshFailed
-                    is ListUiState.Content -> state.refreshFailed
-                }
-                Column(Modifier.fillMaxSize()) {
-                    if (refreshFailed) {
-                        RefreshFailure(onRetry, enabled = !refreshing)
+                is ListUiState.Empty, is ListUiState.Content -> {
+                    val refreshing = when (state) {
+                        is ListUiState.Empty -> state.isRefreshing
+                        is ListUiState.Content -> state.isRefreshing
                     }
-                    PullToRefreshBox(
-                        isRefreshing = refreshing,
-                        onRefresh = onRefresh,
-                        modifier = Modifier.weight(1f).fillMaxWidth()
-                    ) {
-                        if (state is ListUiState.Empty) {
-                            // A scrollable empty surface lets the same pull gesture reload an empty list.
-                            BoxWithConstraints(Modifier.fillMaxSize()) {
-                                Box(
-                                    Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).heightIn(min = maxHeight),
-                                    contentAlignment = Alignment.Center
-                                ) { empty() }
+                    val refreshFailed = when (state) {
+                        is ListUiState.Empty -> state.refreshFailed
+                        is ListUiState.Content -> state.refreshFailed
+                    }
+                    Column(Modifier.fillMaxSize()) {
+                        if (refreshFailed) {
+                            RefreshFailure(onRetry, enabled = !refreshing, message = refreshFailureMessage, maxHeight = failureMaxHeight)
+                        }
+                        PullToRefreshBox(
+                            isRefreshing = refreshing,
+                            onRefresh = onRefresh,
+                            modifier = Modifier.weight(1f).fillMaxWidth()
+                        ) {
+                            if (state is ListUiState.Empty) {
+                                // A scrollable empty surface lets the same pull gesture reload an empty list.
+                                BoxWithConstraints(Modifier.fillMaxSize()) {
+                                    Box(
+                                        Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).heightIn(min = maxHeight),
+                                        contentAlignment = Alignment.Center
+                                    ) { empty() }
+                                }
+                            } else {
+                                content()
                             }
-                        } else {
-                            content()
                         }
                     }
                 }
@@ -92,17 +94,14 @@ fun TeamCityListContainer(
 }
 
 @Composable
-private fun RefreshFailure(onRetry: () -> Unit, enabled: Boolean) {
-    Surface(color = MaterialTheme.colorScheme.errorContainer) {
-        Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Text(
-                stringResource(R.string.list_refresh_failed),
-                Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                style = MaterialTheme.typography.bodyMedium
-            )
-            TextButton(onClick = onRetry, enabled = enabled) { Text(stringResource(R.string.list_action_retry)) }
-        }
-    }
+private fun RefreshFailure(onRetry: () -> Unit, enabled: Boolean, message: String?, maxHeight: androidx.compose.ui.unit.Dp) {
+    ErrorNotice(
+        message = message ?: stringResource(R.string.list_refresh_failed),
+        onRetry = onRetry,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).heightIn(max = maxHeight),
+        actionLabel = stringResource(R.string.list_action_retry),
+        enabled = enabled
+    )
 }
 
 @Preview

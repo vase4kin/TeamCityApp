@@ -113,6 +113,7 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName == "count_unavailable") compose.onNodeWithText("Retry count").assertIsDisplayed()
         compose.onRoot().captureRoboImage("tests_${stateName}_${variant.name}.png")
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true
@@ -120,6 +121,14 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
             compose.mainClock.autoAdvance = false
             compose.mainClock.advanceTimeBy(100)
             compose.onNodeWithTag("tests:test:30").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("tests_${stateName}_${variant.name}_bottom.png")
+        }
+        if (append == TestsAppendState.Error && variant.fontScale > 1f) {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("tests:list").performScrollToNode(hasText("Retry"))
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(100)
+            compose.onNodeWithText("Retry").assertIsDisplayed()
             compose.onRoot().captureRoboImage("tests_${stateName}_${variant.name}_bottom.png")
         }
     }

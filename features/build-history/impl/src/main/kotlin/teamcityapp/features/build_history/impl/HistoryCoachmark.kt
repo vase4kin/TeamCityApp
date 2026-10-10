@@ -40,6 +40,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
+import teamcityapp.libraries.theme.ErrorNotice
 
 /** Bounds come from this screen's actual controls, including edge-to-edge insets and resizing. */
 @Composable
@@ -88,7 +89,7 @@ internal fun HistoryCoachmark(state: OnboardingState.Available, anchor: Rect, on
                 Column(Modifier.verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(title, style = MaterialTheme.typography.headlineSmall)
                     Text(description, style = MaterialTheme.typography.bodyLarge)
-                    if (state.saveFailed) Text(stringResource(R.string.history_prompt_save_failed), color = MaterialTheme.colorScheme.error)
+                    if (state.saveFailed) ErrorNotice(stringResource(R.string.history_prompt_save_failed), modifier = Modifier.fillMaxWidth())
                     Button(onClick = onDismiss, enabled = !state.saving, modifier = Modifier.align(Alignment.End).testTag("history:prompt-dismiss")) {
                         if (state.saving) {
                             CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)

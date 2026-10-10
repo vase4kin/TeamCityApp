@@ -17,9 +17,12 @@
 package teamcityapp.libraries.build_ui
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.text.TextLayoutResult
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -62,6 +65,52 @@ class BuildUiTest {
     @Test fun runningIndicatorHasStatusDescription() {
         compose.setContent { TeamCityTheme { TeamCityBuildRow(build.copy(state = "running"), {}) } }
         compose.onNodeWithContentDescription("Running").assertExists()
+    }
+
+    @Test fun statusIsVisibleTextEvenWhenServerDetailIsMissingOrUsesDifferentWording() {
+        val current = mutableStateOf(build.copy(statusText = null))
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(current.value, {}) } }
+        val cases = listOf(
+            build.copy(statusText = null) to "Success",
+            build.copy(status = "FAILURE", statusText = "2 tests failed") to "Failed",
+            build.copy(status = "ERROR", statusText = null) to "Error",
+            build.copy(status = "UNKNOWN", statusText = null) to "Unknown",
+            build.copy(state = "running", statusText = null) to "Running",
+            build.copy(state = "queued", waitReason = "Waiting for an agent") to "Queued"
+        )
+        cases.forEach { (snapshot, label) ->
+            compose.runOnIdle { current.value = snapshot }
+            compose.onNodeWithText(label, useUnmergedTree = true).assertIsDisplayed()
+        }
+    }
+
+    @Test fun matchingServerStatusDoesNotRepeatTheVisibleLabel() {
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(build, {}) } }
+        compose.onAllNodesWithText("Success", useUnmergedTree = true).assertCountEquals(1)
+    }
+
+    @Test fun longBuildDetailsWrapWithoutClippingAndKeepFlagsAndRowAction() {
+        val snapshot = build.copy(
+            number = "123456789012345678901234567890",
+            statusText = "Building the production mobile application with every deployment environment",
+            branchName = "feature/preserve-the-complete-build-launch-payload-and-configuration-navigation",
+            personal = true,
+            pinned = true
+        )
+        var opened = false
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(snapshot, { opened = true }, androidx.compose.ui.Modifier.testTag("row")) } }
+        compose.onNodeWithText("#${snapshot.number}", useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithText(snapshot.statusText!!, useUnmergedTree = true).assertIsDisplayed()
+        compose.onNodeWithText(snapshot.branchName!!, useUnmergedTree = true).assertIsDisplayed()
+        listOf("#${snapshot.number}", snapshot.statusText, snapshot.branchName).forEach { text ->
+            val layouts = mutableListOf<TextLayoutResult>()
+            compose.onNodeWithText(text!!, useUnmergedTree = true).performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
+            assertFalse("Long build text must wrap instead of clipping: $text", layouts.single().hasVisualOverflow)
+        }
+        compose.onNodeWithContentDescription("Personal build").assertIsDisplayed()
+        compose.onNodeWithContentDescription("Pinned build").assertIsDisplayed()
+        compose.onNodeWithTag("row").performClick()
+        assertTrue(opened)
     }
 
     @Test fun absentAndPartialConfigurationsUseTopLevelId() {

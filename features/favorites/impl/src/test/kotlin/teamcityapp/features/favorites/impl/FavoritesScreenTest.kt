@@ -73,9 +73,27 @@ class FavoritesScreenTest {
     }
 
     @Test fun allFailedShowsSavedFavoritesMessageInsteadOfEmpty() {
-        compose.setContent { TeamCityTheme { FavoritesScreen(FavoritesUiState(ListUiState.Error, FavoritesFailure.AllFailed), {}, {}, {}, {}, {}) } }
+        var retries = 0
+        compose.setContent { TeamCityTheme { FavoritesScreen(FavoritesUiState(ListUiState.Error, FavoritesFailure.AllFailed), {}, { retries++ }, {}, {}, {}) } }
         compose.onNodeWithText("Couldn't load favorites. Your saved favorites are kept.").assertIsDisplayed()
         compose.onNodeWithText("No favorite configurations added").assertDoesNotExist()
+        compose.onAllNodesWithText("Try again").assertCountEquals(1)
+        compose.onNodeWithText("Try again").performClick()
+        assertEquals(1, retries)
+    }
+
+    @Test fun failedRefreshShowsOneContextualNoticeAndRetainsNavigableRows() {
+        var retries = 0
+        var opened: BuildConfigurationSummary? = null
+        val state = FavoritesUiState(ListUiState.Content(rows, refreshFailed = true), FavoritesFailure.AllFailed)
+        compose.setContent { TeamCityTheme { FavoritesScreen(state, {}, { retries++ }, {}, {}, { opened = it }) } }
+        compose.onAllNodesWithText("Couldn't load favorites. Your saved favorites are kept.").assertCountEquals(1)
+        compose.onNodeWithText("Couldn’t refresh. Try again.").assertDoesNotExist()
+        compose.onAllNodesWithText("Retry").assertCountEquals(1)
+        compose.onNodeWithText("Retry").performClick()
+        compose.onNodeWithTag("favorites:configuration:1").performClick()
+        assertEquals(1, retries)
+        assertEquals(rows.first(), opened)
     }
 
     @Test fun drawerActionHasAccessibleLabel() {

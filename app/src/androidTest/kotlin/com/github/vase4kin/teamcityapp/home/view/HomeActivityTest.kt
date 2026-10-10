@@ -152,7 +152,7 @@ class HomeActivityTest {
     @Test fun initialErrorCanBeRetried() {
         `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.error(RuntimeException("offline")))
         activityRule.launchActivity(null)
-        assertTextVisible(text(R.string.error_view_error_text))
+        assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         `when`(teamCityService.listBuildTypes(anyString())).thenReturn(Single.just(Mocks.navigationNode()))
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         awaitRow("project:id")

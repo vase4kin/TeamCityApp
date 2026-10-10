@@ -17,9 +17,17 @@
 package teamcityapp.features.build_history.impl
 
 import android.app.Application
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -96,7 +104,7 @@ class BuildHistoryScreenTest {
             historyBuild("44").copy(startDate = "20261009T102030Z")
         )
         compose.setContent { TeamCityTheme { HistoryTestScreen(rows = rows) } }
-        compose.onNodeWithText("Queued").assertIsDisplayed().assertHasNoClickAction()
+        compose.onNodeWithTag("history:section:queued").assertIsDisplayed().assertHasNoClickAction()
         compose.onAllNodesWithText("10 October").assertCountEquals(1)
         compose.onNodeWithTag("history:list").performScrollToNode(hasTestTag("history:build:44"))
         compose.onNodeWithText("09 October").assertIsDisplayed().assertHasNoClickAction()
@@ -109,6 +117,8 @@ class BuildHistoryScreenTest {
         var favorites = 0
         compose.setContent { TeamCityTheme { HistoryTestScreen(onBack = { backs++ }, onRun = { runs++ }, onFilter = { filters++ }, onFavorite = { favorites++ }) } }
         compose.onNodeWithTag("history:back").performClick()
+        compose.onNodeWithText("Run build").assertIsDisplayed()
+        compose.onNodeWithText("Build Android and check all supported configurations").assertIsDisplayed()
         compose.onNodeWithTag("history:run").performClick()
         compose.onNodeWithTag("history:filter").performClick()
         compose.onNodeWithTag("history:favorite").performClick()
@@ -139,12 +149,60 @@ class BuildHistoryScreenTest {
         compose.onNodeWithTag("history:favorite").assertIsNotEnabled()
     }
 
+    @Test fun optionalFailuresKeepTheMainSurfaceAndBothRecoveryActionsAvailableOnShortLargeTextScreens() {
+        var favoriteRetries = 0
+        var onboardingRetries = 0
+        val state = androidx.compose.runtime.mutableStateOf<ListUiState<BuildLaunchData>>(ListUiState.Content(listOf(historyBuild())))
+        compose.setContent {
+            TeamCityTheme {
+                CompositionLocalProvider(LocalDensity provides Density(LocalDensity.current.density, 1.5f)) {
+                    Box(Modifier.width(320.dp).height(400.dp)) {
+                        HistoryTestScreen(
+                            state = state.value,
+                            controls = BuildHistoryControls(FavoriteState.Unavailable, OnboardingState.Unavailable),
+                            onFavoriteRetry = { favoriteRetries++ },
+                            onPromptRetry = { onboardingRetries++ }
+                        )
+                    }
+                }
+            }
+        }
+        val bodyHeight = compose.onNodeWithTag("history:body").fetchSemanticsNode().boundsInRoot.height
+        val mainHeight = compose.onNodeWithTag("history:main-content").fetchSemanticsNode().boundsInRoot.height
+        assertTrue("Optional notices must preserve at least half the body for the list", mainHeight >= bodyHeight / 2)
+        compose.onAllNodesWithText("Retry")[0].performScrollTo().performClick()
+        compose.onAllNodesWithText("Retry")[1].performScrollTo().performClick()
+        assertEquals(1, favoriteRetries)
+        assertEquals(1, onboardingRetries)
+        compose.runOnIdle { state.value = ListUiState.Error }
+        val errorHeight = compose.onNodeWithTag("history:main-content").fetchSemanticsNode().boundsInRoot.height
+        assertTrue("Optional notices must preserve the initial-error recovery surface", errorHeight >= bodyHeight / 2)
+        compose.onNodeWithText("Try again").assertHasClickAction()
+    }
+
     @Test fun appendRetryKeepsBuildRowsVisible() {
         var retries = 0
         compose.setContent { TeamCityTheme { HistoryTestScreen(append = HistoryAppendState.Error, onAppendRetry = { retries++ }) } }
         compose.onNodeWithTag("history:build:42").assertIsDisplayed()
         compose.onNodeWithText("Retry").performClick()
         assertEquals(1, retries)
+    }
+
+    @Test fun scrolledAppendRetryStaysOutsideTheFloatingRunActionHitTarget() {
+        var retries = 0
+        var runs = 0
+        val rows = (0..9).map { historyBuild(it.toString()) }
+        compose.setContent {
+            TeamCityTheme { HistoryTestScreen(rows = rows, append = HistoryAppendState.Error, onAppendRetry = { retries++ }, onRun = { runs++ }) }
+        }
+        compose.onNodeWithTag("history:list").performScrollToNode(hasText("Retry"))
+        val retry = compose.onNodeWithText("Retry")
+        val retryBounds = retry.fetchSemanticsNode().boundsInRoot
+        val runBounds = compose.onNodeWithTag("history:run").fetchSemanticsNode().boundsInRoot
+        assertTrue("The footer Retry hit target must stay above the Run build action", retryBounds.bottom <= runBounds.top)
+        retry.performClick()
+        assertEquals(1, retries)
+        assertEquals(0, runs)
     }
 
     @Test fun contextualTipsNameActualRunFilterAndFavoriteTargetsAndDismissInOrder() {

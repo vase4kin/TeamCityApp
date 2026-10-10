@@ -107,7 +107,7 @@ class AgentListFragmentTest {
     @Test fun failureCanBeRetriedWithoutRecreatingTheFragment() {
         `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.error(RuntimeException("offline")))
         openAgents()
-        assertTextVisible(text(R.string.error_view_error_text))
+        assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         `when`(teamCityService.listAgents(any(), any(), any())).thenReturn(Single.just(Agents(1, listOf(com.github.vase4kin.teamcityapp.agents.api.Agent("Recovered")))))
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
         assertTextVisible("Recovered")

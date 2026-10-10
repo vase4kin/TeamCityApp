@@ -65,8 +65,8 @@ class AgentsScreenTest {
                 AgentsScreen(AgentsUiState(list = ListUiState.Content(listOf(Agent("1", "Same name"), Agent("2", "Same name")))), { refreshes++ }, {}, {})
             }
         }
-        compose.onNodeWithTag("agents:row:1").assertIsDisplayed()
-        compose.onNodeWithTag("agents:row:2").assertIsDisplayed()
+        compose.onNodeWithTag("agents:row:1").assertIsDisplayed().assertHasNoClickAction()
+        compose.onNodeWithTag("agents:row:2").assertIsDisplayed().assertHasNoClickAction()
         compose.onNodeWithTag("agents:list").performTouchInput { swipeDown() }
         compose.waitForIdle()
         assertEquals(1, refreshes)

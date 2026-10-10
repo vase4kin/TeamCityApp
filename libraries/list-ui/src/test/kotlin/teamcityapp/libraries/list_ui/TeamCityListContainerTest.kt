@@ -20,11 +20,14 @@ import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertEquals
 import org.junit.Rule
@@ -63,6 +66,30 @@ class TeamCityListContainerTest {
         compose.runOnIdle { state.value = ListUiState.Content(listOf("0", "1"), isRefreshing = true, refreshFailed = true) }
         compose.onNodeWithText("Retry").assertIsNotEnabled()
         compose.onNodeWithText("Agent 0").assertIsDisplayed()
+    }
+
+    @Test fun refreshRecoveryPreservesListSpaceInShortWindowWithLargeText() {
+        var retries = 0
+        compose.setContent {
+            TeamCityTheme {
+                CompositionLocalProvider(LocalDensity provides Density(1f, 2f)) {
+                    TeamCityListContainer(
+                        ListUiState.Content(listOf("agent"), refreshFailed = true),
+                        {},
+                        { retries++ },
+                        Modifier.width(320.dp).height(280.dp),
+                        empty = {},
+                        refreshFailureMessage = "Couldn’t refresh the TeamCity agents. Previously loaded data is still available."
+                    ) {
+                        LazyColumn(Modifier.fillMaxSize().testTag("retained-list")) { item { Text("Agent") } }
+                    }
+                }
+            }
+        }
+        compose.onNodeWithTag("retained-list").assertHeightIsAtLeast(170.dp)
+        compose.onNodeWithText("Agent").assertIsDisplayed()
+        compose.onNodeWithText("Retry").performScrollTo().assertIsDisplayed().performClick()
+        assertEquals(1, retries)
     }
 
     @Test fun emptyListSupportsPullToRefresh() = pullToRefresh(ListUiState.Empty())

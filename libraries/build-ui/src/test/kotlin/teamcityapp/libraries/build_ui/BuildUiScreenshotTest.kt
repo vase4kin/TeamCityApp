@@ -41,6 +41,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.list_ui.ListRowPosition
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
@@ -92,7 +93,13 @@ class BuildUiScreenshotTest(private val stateName: String, private val variant: 
                 Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background), contentAlignment = Alignment.TopCenter) {
                     LazyColumn(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
                         item { TeamCityBuildConfigurationHeader(row, { _, _ -> }) }
-                        item { TeamCityBuildRow(row, {}, Modifier.testTag("row")) }
+                        if (stateName == "grouped") {
+                            item { TeamCityBuildRow(row, {}, position = ListRowPosition.First) }
+                            item { TeamCityBuildRow(row.copy(id = "2", number = "43", state = "running", statusText = "Building and running tests"), {}, position = ListRowPosition.Middle) }
+                            item { TeamCityBuildRow(row.copy(id = "3", number = "44", status = "FAILURE", statusText = "Tests failed"), {}, position = ListRowPosition.Last) }
+                        } else {
+                            item { TeamCityBuildRow(row, {}, Modifier.testTag("row")) }
+                        }
                     }
                 }
             }
@@ -112,7 +119,7 @@ class BuildUiScreenshotTest(private val stateName: String, private val variant: 
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("success", "failure", "error", "unknown", "running", "queued", "queued_fallback", "flags", "partial_configuration", "long_labels").flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            listOf("success", "failure", "error", "unknown", "running", "queued", "queued_fallback", "flags", "partial_configuration", "long_labels", "grouped").flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

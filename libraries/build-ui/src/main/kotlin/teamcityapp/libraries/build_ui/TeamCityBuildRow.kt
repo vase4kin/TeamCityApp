@@ -17,26 +17,31 @@
 
 package teamcityapp.libraries.build_ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.builds.BuildLaunchData
+import teamcityapp.libraries.list_ui.ListRowPosition
+import teamcityapp.libraries.list_ui.TeamCityListLeadingIcon
+import teamcityapp.libraries.list_ui.TeamCityListRow
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.teamCityStatusColors
 
 @Composable
-fun TeamCityBuildRow(build: BuildLaunchData, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun TeamCityBuildRow(
+    build: BuildLaunchData,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    position: ListRowPosition = ListRowPosition.Single
+) {
     val label = stringResource(
         when {
             build.isRunning -> R.string.build_running
@@ -56,35 +61,48 @@ fun TeamCityBuildRow(build: BuildLaunchData, onClick: () -> Unit, modifier: Modi
     }
     val statusColors = teamCityStatusColors()
     val statusText = if (build.isQueued) build.waitReason ?: stringResource(R.string.build_queued_fallback) else build.statusText.orEmpty()
-    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-        Column(modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onClick)) {
-            Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+    val containerColor = when {
+        build.isRunning -> statusColors.info.container
+        build.isQueued -> statusColors.warning.container
+        build.isFailed || build.status == "ERROR" -> MaterialTheme.colorScheme.errorContainer
+        build.isSuccess -> statusColors.success.container
+        else -> MaterialTheme.colorScheme.surfaceContainerHighest
+    }
+    val contentColor = when {
+        build.isRunning -> statusColors.info.onContainer
+        build.isQueued -> statusColors.warning.onContainer
+        build.isFailed || build.status == "ERROR" -> MaterialTheme.colorScheme.onErrorContainer
+        build.isSuccess -> statusColors.success.onContainer
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    TeamCityListRow(
+        onClick = onClick,
+        modifier = modifier,
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon(containerColor = containerColor, contentColor = contentColor) {
                 if (build.isRunning) {
-                    CircularProgressIndicator(Modifier.size(24.dp).semantics { contentDescription = label }, strokeWidth = 2.dp)
+                    CircularProgressIndicator(Modifier.size(24.dp).semantics { contentDescription = label }, color = contentColor, strokeWidth = 2.dp)
                 } else {
-                    Icon(
-                        painterResource(icon),
-                        label,
-                        Modifier.size(24.dp),
-                        tint = when {
-                            build.isFailed -> MaterialTheme.colorScheme.error
-                            build.isSuccess -> statusColors.success.onContainer
-                            else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        }
-                    )
-                }
-                Column(Modifier.weight(1f).padding(start = 16.dp)) {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                        val number = build.number ?: stringResource(R.string.build_no_number)
-                        Text(stringResource(R.string.build_number, number), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-                        if (build.personal) Icon(painterResource(R.drawable.ic_person_black_24dp), stringResource(R.string.build_personal), Modifier.padding(start = 8.dp).size(16.dp))
-                        if (build.pinned) Icon(painterResource(R.drawable.ic_pin), stringResource(R.string.build_pinned), Modifier.padding(start = 8.dp).size(16.dp))
-                    }
-                    Text(statusText, style = MaterialTheme.typography.bodyLarge)
-                    build.branchName?.takeIf { it.isNotEmpty() }?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    Icon(painterResource(icon), null, Modifier.size(24.dp))
                 }
             }
-            HorizontalDivider(Modifier.padding(start = 56.dp))
+        }
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                val number = build.number ?: stringResource(R.string.build_no_number)
+                Text(stringResource(R.string.build_number, number), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                if (build.personal) Icon(painterResource(R.drawable.ic_person_black_24dp), stringResource(R.string.build_personal), Modifier.padding(start = 8.dp).size(18.dp))
+                if (build.pinned) Icon(painterResource(R.drawable.ic_pin), stringResource(R.string.build_pinned), Modifier.padding(start = 8.dp).size(18.dp))
+            }
+            Text(label, style = MaterialTheme.typography.labelMedium, color = contentColor)
+            if (statusText.isNotBlank() && statusText != label) {
+                Text(statusText, style = MaterialTheme.typography.bodyMedium)
+            }
+            build.branchName?.takeIf { it.isNotEmpty() }?.let {
+                Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
         }
     }
 }

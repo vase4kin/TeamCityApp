@@ -24,6 +24,6 @@ plugins {
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.build_ui" }
 dependencies {
     api(projects.libraries.builds)
-    implementation(projects.libraries.listUi)
+    api(projects.libraries.listUi)
     implementation(projects.libraries.theme)
 }

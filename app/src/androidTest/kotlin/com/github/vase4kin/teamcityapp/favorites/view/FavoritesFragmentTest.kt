@@ -194,7 +194,7 @@ class FavoritesFragmentTest {
         `when`(teamCityService.buildType(anyString())).thenReturn(Single.error(RuntimeException("offline")))
         openFavorites()
         assertTextVisible(text(FavoritesR.string.favorites_all_failed))
-        assertTextVisible(text(R.string.error_view_error_text))
+        assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_title))
         compose.onNodeWithText(text(FavoritesR.string.favorites_empty)).assertDoesNotExist()
         Assert.assertEquals(listOf("good", "missing"), storage.favoriteBuildTypeIds)
         `when`(teamCityService.buildType("good")).thenReturn(Single.just(build("good", "Recovered first")))

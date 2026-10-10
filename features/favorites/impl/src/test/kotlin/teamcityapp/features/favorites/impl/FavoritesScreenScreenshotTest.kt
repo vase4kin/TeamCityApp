@@ -90,6 +90,7 @@ class FavoritesScreenScreenshotTest(private val stateName: String, private val v
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { FavoritesScreen(state, {}, {}, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName == "partial" || stateName == "partial_refreshing") compose.onNodeWithText("Retry").assertIsDisplayed()
         compose.onRoot().captureRoboImage("favorites_${stateName}_${variant.name}.png")
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true

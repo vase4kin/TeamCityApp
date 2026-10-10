@@ -33,6 +33,8 @@ import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
 internal enum class ChangesAppendState { Idle, Loading, Error }
@@ -56,12 +58,7 @@ internal fun ChangesScreen(
     Surface(modifier.fillMaxSize()) {
         Column {
             if (countState == ChangesCountState.Unavailable) {
-                Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
-                    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                        Text(stringResource(R.string.changes_count_unavailable), style = MaterialTheme.typography.bodyMedium)
-                        TextButton(onClick = onCountRetry) { Text(stringResource(R.string.changes_retry_count)) }
-                    }
-                }
+                ErrorNotice(stringResource(R.string.changes_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.changes_retry_count))
             }
             TeamCityListContainer(
                 state,
@@ -70,15 +67,17 @@ internal fun ChangesScreen(
                 Modifier.weight(1f).fillMaxWidth(),
                 empty = { TeamCityListEmpty(stringResource(R.string.changes_empty)) }
             ) {
-                LazyColumn(Modifier.fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
-                    items(itemCount, key = itemKey, contentType = { "change" }) { index ->
-                        val change = itemAt(index)
-                        if (change == null) TeamCityListLoadingRow() else ChangeRow(change, { onChange(change) })
-                    }
-                    when (appendState) {
-                        ChangesAppendState.Loading -> item(key = "changes:append-loading") { TeamCityListAppendLoading() }
-                        ChangesAppendState.Error -> item(key = "changes:append-error") { TeamCityListAppendRetry(onAppendRetry) }
-                        ChangesAppendState.Idle -> Unit
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                        items(itemCount, key = itemKey, contentType = { "change" }) { index ->
+                            val change = itemAt(index)
+                            if (change == null) TeamCityListLoadingRow(position = listRowPosition(index, itemCount)) else ChangeRow(change, { onChange(change) }, listRowPosition(index, itemCount))
+                        }
+                        when (appendState) {
+                            ChangesAppendState.Loading -> item(key = "changes:append-loading") { TeamCityListAppendLoading() }
+                            ChangesAppendState.Error -> item(key = "changes:append-error") { TeamCityListAppendRetry(onAppendRetry) }
+                            ChangesAppendState.Idle -> Unit
+                        }
                     }
                 }
             }
@@ -87,25 +86,24 @@ internal fun ChangesScreen(
 }
 
 @Composable
-private fun ChangeRow(change: ChangeDetails, onClick: () -> Unit) {
-    ListItem(
+private fun ChangeRow(change: ChangeDetails, onClick: () -> Unit, position: ListRowPosition) {
+    TeamCityListRow(
         onClick = onClick,
         modifier = Modifier.testTag("changes:change:${change.id}"),
+        position = position,
         leadingContent = {
-            Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.secondaryContainer) {
-                Box(Modifier.size(48.dp), contentAlignment = Alignment.Center) {
-                    Text(if (change.files.size > 9) stringResource(R.string.changes_many_files) else change.files.size.toString(), style = MaterialTheme.typography.titleMedium)
-                }
-            }
-        },
-        supportingContent = {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(R.string.changes_author_date, change.userName, change.date))
-                Text(change.revision, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(pluralStringResource(R.plurals.changes_files, change.files.size, change.files.size), color = MaterialTheme.colorScheme.onSurfaceVariant)
+            TeamCityListLeadingIcon(containerColor = MaterialTheme.colorScheme.secondaryContainer, contentColor = MaterialTheme.colorScheme.onSecondaryContainer) {
+                Text(if (change.files.size > 9) stringResource(R.string.changes_many_files) else change.files.size.toString(), style = MaterialTheme.typography.titleMedium)
             }
         }
-    ) { Text(change.comment.trim(), maxLines = 3, overflow = TextOverflow.Ellipsis) }
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(change.comment.trim(), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.changes_author_date, change.userName, change.date), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(change.revision, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(pluralStringResource(R.plurals.changes_files, change.files.size, change.files.size), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
 }
 
 @Preview

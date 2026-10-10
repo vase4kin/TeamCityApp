@@ -19,7 +19,6 @@ package teamcityapp.libraries.list_ui
 import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
@@ -87,7 +86,12 @@ class TeamCityListScreenshotTest(private val stateName: String, private val vari
                     LazyColumn(Modifier.fillMaxSize()) {
                         item { TeamCityListSectionHeader("Connected agents", onClick = {}) }
                         items(2) { index ->
-                            ListItem(supportingContent = { Text("Ready to run builds") }) { Text(if (index == 0) "Linux agent" else "Windows agent") }
+                            TeamCityListRow(position = listRowPosition(index, 2)) {
+                                Column {
+                                    Text(if (index == 0) "Linux agent" else "Windows agent")
+                                    Text("Ready to run builds")
+                                }
+                            }
                         }
                         if (stateName == "append_loading") item { TeamCityListAppendLoading() }
                         if (stateName == "append_failed") item { TeamCityListAppendRetry({}) }

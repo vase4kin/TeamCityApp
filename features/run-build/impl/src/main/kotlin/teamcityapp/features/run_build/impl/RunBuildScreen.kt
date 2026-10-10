@@ -31,9 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -63,9 +60,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
     }) { modifier ->
         Column(modifier) {
             if (state.queueError != null) {
-                Surface(color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.large) {
-                    Text(stringResource(if (state.queueError == QueueBuildResult.Forbidden) R.string.error_forbidden_error else R.string.error_base_error), Modifier.fillMaxWidth().padding(16.dp).testTag("run-build:error").semantics { liveRegion = LiveRegionMode.Polite }, color = MaterialTheme.colorScheme.onErrorContainer)
-                }
+                ErrorNotice(stringResource(if (state.queueError == QueueBuildResult.Forbidden) R.string.error_forbidden_error else R.string.error_base_error), modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("run-build:error"))
             }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("run-build:scroll").padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(stringResource(R.string.quick_setup), style = MaterialTheme.typography.headlineMedium)
@@ -79,17 +74,19 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                                 CircularProgressIndicator(Modifier.padding(start = 16.dp).size(20.dp), strokeWidth = 2.dp)
                             }
                         } else {
-                            Text(
-                                if (state.agentsFailed) {
-                                    stringResource(R.string.agents_unavailable)
-                                } else if (state.agents.isEmpty()) {
-                                    stringResource(R.string.text_no_agents_available)
-                                } else {
-                                    request.agent?.name ?: stringResource(R.string.hint_default_filter_agent)
-                                },
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                            if (state.agentsFailed) {
+                                ErrorNotice(stringResource(R.string.agents_unavailable), modifier = Modifier.padding(top = 8.dp))
+                            } else {
+                                Text(
+                                    if (state.agents.isEmpty()) {
+                                        stringResource(R.string.text_no_agents_available)
+                                    } else {
+                                        request.agent?.name ?: stringResource(R.string.hint_default_filter_agent)
+                                    },
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                         }
                     }
                 }

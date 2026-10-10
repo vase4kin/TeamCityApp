@@ -17,7 +17,6 @@
 
 package teamcityapp.features.favorites.impl
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -28,15 +27,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.liveRegion
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
-import teamcityapp.libraries.list_ui.TeamCityListContainer
-import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.ErrorContent
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -65,40 +63,37 @@ fun FavoritesScreen(
         }
     ) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
-            if (state.failure == FavoritesFailure.AllFailed) {
-                Text(
-                    stringResource(R.string.favorites_all_failed),
-                    Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).semantics { liveRegion = LiveRegionMode.Polite },
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            TeamCityListContainer(
-                state.list,
-                onRefresh,
-                onRetry,
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                empty = { TeamCityListEmpty(stringResource(R.string.favorites_empty)) }
-            ) {
-                val rows = (state.list as? ListUiState.Content<BuildConfigurationSummary>)?.items ?: return@TeamCityListContainer
-                // Group by identity even when separate projects share a display name.
-                val groups = rows.groupBy { it.project.id }
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("favorites:list")) {
-                        if (state.failure is FavoritesFailure.Partial) {
-                            item(key = "partial", contentType = "partial") {
-                                FavoritesPartialFailure(state.failure.unavailableIds.size, onRetry, enabled = !state.list.isRefreshing())
+            if (state.list == ListUiState.Error && state.failure == FavoritesFailure.AllFailed) {
+                ErrorContent(Modifier.weight(1f).fillMaxWidth(), onRetry, message = stringResource(R.string.favorites_all_failed))
+            } else {
+                TeamCityListContainer(
+                    state.list,
+                    onRefresh,
+                    onRetry,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    empty = { TeamCityListEmpty(stringResource(R.string.favorites_empty)) },
+                    refreshFailureMessage = if (state.failure == FavoritesFailure.AllFailed) stringResource(R.string.favorites_all_failed) else null
+                ) {
+                    val rows = (state.list as? ListUiState.Content<BuildConfigurationSummary>)?.items ?: return@TeamCityListContainer
+                    // Group by identity even when separate projects share a display name.
+                    val groups = rows.groupBy { it.project.id }
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                        LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("favorites:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                            if (state.failure is FavoritesFailure.Partial) {
+                                item(key = "partial", contentType = "partial") {
+                                    FavoritesPartialFailure(state.failure.unavailableIds.size, onRetry, enabled = !state.list.isRefreshing())
+                                }
                             }
-                        }
-                        groups.forEach { (id, configurations) ->
-                            val project = configurations.first().project
-                            item(key = "project:$id", contentType = "project") { FavoritesProjectHeader(project, { onProjectClick(project) }) }
-                            val occurrences = mutableMapOf<String, Int>()
-                            configurations.forEach { configuration ->
-                                val occurrence = occurrences.getOrDefault(configuration.id, 0)
-                                occurrences[configuration.id] = occurrence + 1
-                                item(key = "configuration:$id:${configuration.id}:$occurrence", contentType = "configuration") {
-                                    FavoriteConfigurationRow(configuration, { onConfigurationClick(configuration) })
+                            groups.forEach { (id, configurations) ->
+                                val project = configurations.first().project
+                                item(key = "project:$id", contentType = "project") { FavoritesProjectHeader(project, { onProjectClick(project) }) }
+                                val occurrences = mutableMapOf<String, Int>()
+                                configurations.forEachIndexed { index, configuration ->
+                                    val occurrence = occurrences.getOrDefault(configuration.id, 0)
+                                    occurrences[configuration.id] = occurrence + 1
+                                    item(key = "configuration:$id:${configuration.id}:$occurrence", contentType = "configuration") {
+                                        FavoriteConfigurationRow(configuration, { onConfigurationClick(configuration) }, listRowPosition(index, configurations.size))
+                                    }
                                 }
                             }
                         }
@@ -117,37 +112,31 @@ private fun ListUiState<*>.isRefreshing(): Boolean = when (this) {
 
 @Composable
 internal fun FavoritesProjectHeader(project: ProjectReference, onClick: () -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
-        Text(
-            project.name,
-            Modifier.fillMaxWidth().testTag("favorites:project:${project.id}").clickable(onClick = onClick).padding(TeamCityDimensions.contentPadding),
-            style = MaterialTheme.typography.titleSmall
-        )
-    }
+    TeamCityListSectionHeader(project.name, Modifier.testTag("favorites:project:${project.id}"), onClick)
 }
 
 @Composable
-internal fun FavoriteConfigurationRow(configuration: BuildConfigurationSummary, onClick: () -> Unit) {
-    Column(Modifier.fillMaxWidth().testTag("favorites:configuration:${configuration.id}").clickable(onClick = onClick)) {
-        Row(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(R.drawable.ic_crop_din_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
-            Column(Modifier.weight(1f).padding(start = TeamCityDimensions.contentPadding)) {
-                Text(configuration.name, style = MaterialTheme.typography.bodyLarge)
-                configuration.description?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+internal fun FavoriteConfigurationRow(configuration: BuildConfigurationSummary, onClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single) {
+    TeamCityListRow(
+        onClick = onClick,
+        modifier = Modifier.testTag("favorites:configuration:${configuration.id}"),
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon {
+                Icon(painterResource(R.drawable.ic_crop_din_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
             }
         }
-        HorizontalDivider()
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(configuration.name, style = MaterialTheme.typography.titleMedium)
+            configuration.description?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
     }
 }
 
 @Composable
 private fun FavoritesPartialFailure(count: Int, onRetry: () -> Unit, enabled: Boolean) {
-    Surface(color = MaterialTheme.colorScheme.errorContainer, modifier = Modifier.testTag("favorites:partial")) {
-        Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding)) {
-            Text(pluralStringResource(R.plurals.favorites_partial_failed, count, count), Modifier.semantics { liveRegion = LiveRegionMode.Polite }, style = MaterialTheme.typography.bodyMedium)
-            TextButton(onRetry, enabled = enabled) { Text(stringResource(R.string.favorites_retry)) }
-        }
-    }
+    ErrorNotice(pluralStringResource(R.plurals.favorites_partial_failed, count, count), onRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("favorites:partial"), actionLabel = stringResource(R.string.favorites_retry), enabled = enabled)
 }
 
 @Preview

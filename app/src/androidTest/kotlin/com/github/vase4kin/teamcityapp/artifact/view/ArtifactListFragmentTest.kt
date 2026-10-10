@@ -145,7 +145,7 @@ class ArtifactListFragmentTest {
     @Test fun initialFailureCanRetry() {
         `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.error(RuntimeException("offline")))
         start()
-        awaitText(text(R.string.error_view_error_text))
+        awaitText(text(teamcityapp.libraries.theme.R.string.error_load_message))
         `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
         val retry = compose.onAllNodesWithText(text(teamcityapp.libraries.theme.R.string.action_retry))
         val visibleRetry = retry.fetchSemanticsNodes().indices.single { index -> runCatching { retry[index].assertIsDisplayed() }.isSuccess }

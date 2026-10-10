@@ -18,8 +18,6 @@
 package teamcityapp.features.artifacts.impl
 
 import android.text.format.Formatter
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -35,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.features.artifacts.api.Artifact
 import teamcityapp.libraries.list_state.ListUiState
-import teamcityapp.libraries.list_ui.TeamCityListContainer
-import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -66,12 +64,7 @@ fun ArtifactsScreen(
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
             if (state.download is ArtifactDownloadState.Failed) {
-                Surface(color = MaterialTheme.colorScheme.errorContainer) {
-                    Row(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.artifacts_download_failed), Modifier.weight(1f))
-                        TextButton(onRetryDownload) { Text(stringResource(R.string.artifacts_retry_download)) }
-                    }
-                }
+                ErrorNotice(stringResource(R.string.artifacts_download_failed), onRetryDownload, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.artifacts_retry_download))
             }
             TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.weight(1f), empty = { TeamCityListEmpty(stringResource(R.string.artifacts_empty)) }) {
                 val rows = (state.list as? ListUiState.Content<Artifact>)?.items.orEmpty()
@@ -82,9 +75,9 @@ fun ArtifactsScreen(
                     "${file.href}:$occurrence"
                 }
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list")) {
-                        itemsIndexed(rows, key = { index, _ -> keys[index] }) { _, file ->
-                            ArtifactRow(file, { onArtifactClick(file) }, { onArtifactLongClick(file) })
+                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                        itemsIndexed(rows, key = { index, _ -> keys[index] }) { index, file ->
+                            ArtifactRow(file, { onArtifactClick(file) }, { onArtifactLongClick(file) }, listRowPosition(index, rows.size))
                         }
                     }
                 }
@@ -124,19 +117,24 @@ fun ArtifactsScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-internal fun ArtifactRow(file: Artifact, onClick: () -> Unit, onLongClick: () -> Unit) {
+internal fun ArtifactRow(file: Artifact, onClick: () -> Unit, onLongClick: () -> Unit, position: ListRowPosition = ListRowPosition.Single) {
     val context = LocalContext.current
-    Column(Modifier.fillMaxWidth().testTag("artifacts:row:${file.href}").combinedClickable(onClick = onClick, onLongClick = onLongClick)) {
-        Row(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(if (file.childrenHref != null) R.drawable.ic_artifacts_folder else R.drawable.ic_artifacts_file), null, Modifier.size(TeamCityDimensions.iconSize))
-            Column(Modifier.weight(1f).padding(start = TeamCityDimensions.contentPadding)) {
-                Text(file.name, style = MaterialTheme.typography.bodyLarge)
-                if (file.size != 0L) Text(Formatter.formatFileSize(context, file.size), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    TeamCityListRow(
+        onClick = onClick,
+        onLongClick = onLongClick,
+        modifier = Modifier.testTag("artifacts:row:${file.href}"),
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon {
+                Icon(painterResource(if (file.childrenHref != null) R.drawable.ic_artifacts_folder else R.drawable.ic_artifacts_file), null, Modifier.size(TeamCityDimensions.iconSize))
             }
         }
-        HorizontalDivider(Modifier.padding(start = 56.dp))
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(file.name, style = MaterialTheme.typography.titleMedium)
+            if (file.size != 0L) Text(Formatter.formatFileSize(context, file.size), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 

@@ -171,7 +171,7 @@ class SnapshotDependenciesFragmentTest {
     @Test fun initialFailureCanRetryTheDependencyQuery() {
         `when`(teamCityService.listBuilds(anyString())).thenReturn(Single.error(RuntimeException("snapshot offline")))
         start()
-        compose.waitUntil(10_000) { snapshotText(text(R.string.error_view_error_text)).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(10_000) { snapshotText(text(teamcityapp.libraries.theme.R.string.error_load_message)).fetchSemanticsNodes().isNotEmpty() }
         dependencies()
         snapshotText(text(teamcityapp.libraries.theme.R.string.action_retry)).onFirst().performClick()
         awaitTag("snapshot:build:dependency-1")
@@ -181,7 +181,7 @@ class SnapshotDependenciesFragmentTest {
         dependencies()
         `when`(teamCityService.build(running.href)).thenReturn(Single.error(RuntimeException("detail offline")))
         start()
-        compose.waitUntil(10_000) { snapshotText(text(R.string.error_view_error_text)).fetchSemanticsNodes().isNotEmpty() }
+        compose.waitUntil(10_000) { snapshotText(text(teamcityapp.libraries.theme.R.string.error_load_message)).fetchSemanticsNodes().isNotEmpty() }
         `when`(teamCityService.build(running.href)).thenReturn(Single.just(BuildComposeFixtures.legacy(running)))
         snapshotText(text(teamcityapp.libraries.theme.R.string.action_retry)).onFirst().performClick()
         awaitTag("snapshot:build:dependency-2")
@@ -218,7 +218,7 @@ class SnapshotDependenciesFragmentTest {
         dependencies()
         tab(text(R.string.tab_snapshot_dependencies))
         awaitTag("snapshot:build:dependency-1")
-        snapshotText(text(R.string.error_view_error_text)).assertCountEquals(0)
+        snapshotText(text(teamcityapp.libraries.theme.R.string.error_load_message)).assertCountEquals(0)
     }
     private val queued = BuildComposeFixtures.loaded.copy(id = "dependency-1", href = "/buildQueue/dependency-1", state = "queued", waitReason = "Waiting for dependency agent")
     private val running = BuildComposeFixtures.loaded.copy(id = "dependency-2", href = "/builds/dependency-2", statusText = "Running dependency tests")

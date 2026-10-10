@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.build_ui.TeamCityBuildConfigurationHeader
 import teamcityapp.libraries.build_ui.TeamCityBuildRow
 import teamcityapp.libraries.build_ui.buildConfigurationTitle
@@ -34,6 +35,7 @@ import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.TeamCityListContainer
 import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.listRowPosition
 import teamcityapp.libraries.theme.TeamCityDimensions
 
 @Composable
@@ -55,14 +57,22 @@ internal fun SnapshotDependenciesScreen(
             val rows = (state as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list")) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list"), contentPadding = PaddingValues(bottom = 16.dp)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         val title = buildConfigurationTitle(build)
                         if (index == 0 || buildConfigurationTitle(rows[index - 1]) != title) {
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("snapshot:configuration:$index"))
                         }
-                        TeamCityBuildRow(build, { onBuild(build) }, Modifier.testTag("snapshot:build:${build.id}"))
+                        TeamCityBuildRow(
+                            build,
+                            { onBuild(build) },
+                            Modifier.testTag("snapshot:build:${build.id}"),
+                            position = listRowPosition(
+                                hasPrevious = index > 0 && buildConfigurationTitle(rows[index - 1]) == buildConfigurationTitle(build),
+                                hasNext = index + 1 < rows.size && buildConfigurationTitle(rows[index + 1]) == buildConfigurationTitle(build)
+                            )
+                        )
                     }
                 }
             }

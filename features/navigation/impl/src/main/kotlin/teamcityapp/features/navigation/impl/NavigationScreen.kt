@@ -17,7 +17,6 @@
 
 package teamcityapp.features.navigation.impl
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -34,8 +33,8 @@ import teamcityapp.features.navigation.api.NavigationEntry
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
-import teamcityapp.libraries.list_ui.TeamCityListContainer
-import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -86,9 +85,12 @@ fun NavigationScreen(
                 "$identity:$occurrence"
             }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("navigation:list")) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("navigation:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
                     itemsIndexed(entries, key = { index, _ -> keys[index] }, contentType = { _, entry -> entry::class }) { index, entry ->
-                        NavigationEntryRow(entry, { onEntryClick(entry) })
+                        val hasRating = state.rating is RatingPromptState.Available || state.rating == RatingPromptState.Unavailable
+                        val hasPrevious = index > 0 && entries[index - 1]::class == entry::class && !(index == 1 && hasRating)
+                        val hasNext = index + 1 < entries.size && entries[index + 1]::class == entry::class && !(index == 0 && hasRating)
+                        NavigationEntryRow(entry, { onEntryClick(entry) }, position = listRowPosition(hasPrevious, hasNext))
                         if (index == 0 && state.rating is RatingPromptState.Available) {
                             RatingPromptCard(state.rating, onRateCancel, onRateNow)
                         } else if (index == 0 && state.rating == RatingPromptState.Unavailable) {
@@ -107,7 +109,7 @@ private fun NavigationEntry.identity(): String = when (this) {
 }
 
 @Composable
-internal fun NavigationEntryRow(entry: NavigationEntry, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun NavigationEntryRow(entry: NavigationEntry, onClick: () -> Unit, modifier: Modifier = Modifier, position: ListRowPosition = ListRowPosition.Single) {
     val name: String
     val description: String?
     val icon: Int
@@ -124,15 +126,20 @@ internal fun NavigationEntryRow(entry: NavigationEntry, onClick: () -> Unit, mod
             icon = R.drawable.ic_crop_din_black_24dp
         }
     }
-    Column(modifier.fillMaxWidth().testTag("navigation:row:${entry.identity()}").clickable(onClick = onClick)) {
-        Row(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(icon), null, Modifier.size(TeamCityDimensions.iconSize))
-            Column(Modifier.weight(1f).padding(start = TeamCityDimensions.contentPadding)) {
-                Text(name, style = MaterialTheme.typography.bodyLarge)
-                if (description != null) Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    TeamCityListRow(
+        onClick = onClick,
+        modifier = modifier.testTag("navigation:row:${entry.identity()}"),
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon {
+                Icon(painterResource(icon), null, Modifier.size(TeamCityDimensions.iconSize))
             }
         }
-        HorizontalDivider(Modifier.padding(start = 56.dp))
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(name, style = MaterialTheme.typography.titleMedium)
+            if (description != null) Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 
@@ -142,7 +149,7 @@ internal fun RatingPromptCard(state: RatingPromptState.Available, onCancel: () -
         Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
             Text(stringResource(R.string.navigation_rate_title), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.navigation_rate_description), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)
-            if (state.saveFailed) Text(stringResource(R.string.navigation_rate_save_failed), Modifier.padding(top = 8.dp), color = MaterialTheme.colorScheme.error)
+            if (state.saveFailed) ErrorNotice(stringResource(R.string.navigation_rate_save_failed), modifier = Modifier.padding(top = 8.dp))
             Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onCancel, enabled = !state.isSaving, modifier = Modifier.testTag("navigation:rate-cancel")) { Text(stringResource(R.string.navigation_rate_cancel)) }
                 TextButton(onRateNow, enabled = !state.isSaving, modifier = Modifier.testTag("navigation:rate-now")) { Text(stringResource(R.string.navigation_rate_now)) }
@@ -154,12 +161,7 @@ internal fun RatingPromptCard(state: RatingPromptState.Available, onCancel: () -
 
 @Composable
 private fun RatingUnavailable(onRetry: () -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.errorContainer, modifier = Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("navigation:rating-unavailable")) {
-        Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-            Text(stringResource(R.string.navigation_rate_unavailable), style = MaterialTheme.typography.bodyMedium)
-            TextButton(onRetry) { Text(stringResource(R.string.navigation_rate_retry)) }
-        }
-    }
+    ErrorNotice(stringResource(R.string.navigation_rate_unavailable), onRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("navigation:rating-unavailable"), actionLabel = stringResource(R.string.navigation_rate_retry))
 }
 
 @Preview

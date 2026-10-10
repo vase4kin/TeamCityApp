@@ -166,7 +166,7 @@ class TestOccurrencesFragmentTest {
     @Test fun initialListFailureCanBeRetriedWithinTheTestsTab() {
         `when`(teamCityService.listTestOccurrences(FAILED_URL)).thenReturn(Single.error(RuntimeException("offline")))
         openTests()
-        assertTextVisible(text(R.string.error_view_error_text))
+        assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         val fake = FakeTeamCityServiceImpl()
         `when`(teamCityService.listTestOccurrences(FAILED_URL)).thenAnswer { fake.listTestOccurrences(FAILED_URL) }
         compose.onNodeWithText(text(teamcityapp.libraries.theme.R.string.action_retry)).performClick()

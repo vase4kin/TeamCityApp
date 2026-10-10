@@ -19,7 +19,7 @@ package teamcityapp.features.agents.impl
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,8 +32,7 @@ import androidx.compose.ui.unit.dp
 import teamcityapp.features.agents.api.Agent
 import teamcityapp.features.agents.api.AgentsFilter
 import teamcityapp.libraries.list_state.ListUiState
-import teamcityapp.libraries.list_ui.TeamCityListContainer
-import teamcityapp.libraries.list_ui.TeamCityListEmpty
+import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
@@ -75,9 +74,9 @@ fun AgentsScreen(
         ) {
             val content = state.list as? ListUiState.Content<Agent> ?: return@TeamCityListContainer
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("agents:list")) {
-                    items(content.items, key = { it.id }, contentType = { "agent" }) { agent ->
-                        AgentRow(agent)
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("agents:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                    itemsIndexed(content.items, key = { _, agent -> agent.id }, contentType = { _, _ -> "agent" }) { index, agent ->
+                        AgentRow(agent, position = listRowPosition(index, content.items.size))
                     }
                 }
             }
@@ -86,13 +85,17 @@ fun AgentsScreen(
 }
 
 @Composable
-internal fun AgentRow(agent: Agent, modifier: Modifier = Modifier) {
-    Column(modifier.fillMaxWidth().testTag("agents:row:${agent.id}")) {
-        Row(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(SharedR.drawable.ic_directions_railway_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
-            Text(agent.name, Modifier.padding(start = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge)
+internal fun AgentRow(agent: Agent, modifier: Modifier = Modifier, position: ListRowPosition = ListRowPosition.Single) {
+    TeamCityListRow(
+        modifier = modifier.testTag("agents:row:${agent.id}"),
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon {
+                Icon(painterResource(SharedR.drawable.ic_directions_railway_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
+            }
         }
-        HorizontalDivider(Modifier.padding(start = 56.dp))
+    ) {
+        Text(agent.name, Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
     }
 }
 

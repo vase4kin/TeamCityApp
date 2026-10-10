@@ -19,6 +19,7 @@ import com.android.build.api.dsl.LibraryExtension
 plugins {
     id("teamcityapp.android.library")
     id("teamcityapp.android.compose")
+    id("teamcityapp.android.screenshot")
 }
 
 extensions.configure<LibraryExtension> {
@@ -34,5 +35,4 @@ dependencies {
     implementation(projects.libraries.resources)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.google.material)
-    implementation(libs.errorView)
 }

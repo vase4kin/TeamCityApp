@@ -18,7 +18,6 @@
 
 package teamcityapp.features.tests.impl
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -28,12 +27,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.features.tests.api.*
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -76,12 +75,7 @@ internal fun TestsScreen(
                 }
             }
             if (countState == TestsCountState.Unavailable) {
-                Surface(color = MaterialTheme.colorScheme.surfaceContainer) {
-                    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
-                        Text(stringResource(R.string.tests_count_unavailable), style = MaterialTheme.typography.bodyMedium)
-                        TextButton(onClick = onCountRetry) { Text(stringResource(R.string.tests_retry_count)) }
-                    }
-                }
+                ErrorNotice(stringResource(R.string.tests_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.tests_retry_count))
             }
             TeamCityListContainer(
                 state,
@@ -105,7 +99,9 @@ internal fun TestsScreen(
                                 if (index == 0 || itemPeek(index - 1)?.status?.let(::sectionFilter) != sectionFilter(test.status)) {
                                     TeamCityListSectionHeader(sectionTitle(test.status, counts))
                                 }
-                                TestRow(test, { onFailedTest(test.href) })
+                                val previousInSection = index > 0 && itemPeek(index - 1)?.status?.let(::sectionFilter) == sectionFilter(test.status)
+                                val nextInSection = index + 1 < itemCount && itemPeek(index + 1)?.status?.let(::sectionFilter) == sectionFilter(test.status)
+                                TestRow(test, { onFailedTest(test.href) }, position = listRowPosition(previousInSection, nextInSection))
                             }
                         }
                         when (appendState) {
@@ -146,7 +142,7 @@ private fun sectionTitle(status: TestStatus, counts: TestsCounts): String = when
 }
 
 @Composable
-internal fun TestRow(test: TestOccurrence, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun TestRow(test: TestOccurrence, onClick: () -> Unit, modifier: Modifier = Modifier, position: ListRowPosition = ListRowPosition.Single) {
     val statusLabel = stringResource(
         when (test.status) {
             TestStatus.Failed -> R.string.tests_filter_failed
@@ -161,13 +157,24 @@ internal fun TestRow(test: TestOccurrence, onClick: () -> Unit, modifier: Modifi
         TestStatus.Ignored -> R.drawable.ic_help_black_24dp
         TestStatus.Error -> R.drawable.ic_report_problem_black_24dp
     }
-    val interaction = if (test.status == TestStatus.Failed) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier
-    Column(modifier.fillMaxWidth().then(interaction).testTag("tests:test:${test.id}")) {
-        Row(Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(painterResource(icon), statusLabel, Modifier.size(24.dp), tint = if (test.status == TestStatus.Failed || test.status == TestStatus.Error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(test.name, Modifier.padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
+    val isError = test.status == TestStatus.Failed || test.status == TestStatus.Error
+    TeamCityListRow(
+        onClick = if (test.status == TestStatus.Failed) onClick else null,
+        modifier = modifier.testTag("tests:test:${test.id}"),
+        position = position,
+        leadingContent = {
+            TeamCityListLeadingIcon(
+                containerColor = if (isError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
+                contentColor = if (isError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(painterResource(icon), null, Modifier.size(24.dp))
+            }
         }
-        HorizontalDivider(Modifier.padding(start = 56.dp))
+    ) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(test.name, style = MaterialTheme.typography.titleMedium)
+            Text(statusLabel, style = MaterialTheme.typography.labelMedium, color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 

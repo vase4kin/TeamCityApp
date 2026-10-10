@@ -160,8 +160,8 @@ class OverviewFragmentTest {
     @Test fun initialErrorRetriesIntoCurrentContent() {
         `when`(teamCityService.build(anyString())).thenReturn(Single.error(RuntimeException("offline")))
         activityRule.launchActivity(BuildComposeFixtures.intent())
-        compose.waitUntil(10_000) { overviewText(text(R.string.error_view_error_text)).fetchSemanticsNodes().isNotEmpty() }
-        overviewText(text(R.string.error_view_error_text)).onFirst().assertIsDisplayed()
+        compose.waitUntil(10_000) { overviewText(text(teamcityapp.libraries.theme.R.string.error_load_message)).fetchSemanticsNodes().isNotEmpty() }
+        overviewText(text(teamcityapp.libraries.theme.R.string.error_load_message)).onFirst().assertIsDisplayed()
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
         overviewText(text(teamcityapp.libraries.theme.R.string.action_retry)).onFirst().performClick()
         row("Result", "Current build succeeded")
@@ -365,7 +365,7 @@ class OverviewFragmentTest {
             `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
             row("Result", "Current build succeeded")
-            overviewText(text(R.string.error_view_error_text)).assertCountEquals(0)
+            overviewText(text(teamcityapp.libraries.theme.R.string.error_load_message)).assertCountEquals(0)
         }
     }
 

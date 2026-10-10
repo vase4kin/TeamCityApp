@@ -222,7 +222,7 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("A")
         whenever(teamCityService.listRunningBuilds(favoriteLocator("A"), null)).thenReturn(Single.error(RuntimeException("offline")))
         openTab()
-        assertTextVisible(text(R.string.error_view_error_text))
+        assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         assertBadgeCount(0)
         val recovered = build("1", "A", "Alpha", "Project A", "Recovered")
         stubFavorite("A", listOf(recovered))

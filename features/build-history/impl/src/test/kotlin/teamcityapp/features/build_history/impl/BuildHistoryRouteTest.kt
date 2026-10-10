@@ -99,7 +99,7 @@ class BuildHistoryRouteTest {
         }
         compose.waitUntil(5_000) { compose.onAllNodesWithText("Couldn’t refresh. Try again.").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("No builds").assertIsDisplayed()
-        compose.onNodeWithText("Oops").assertDoesNotExist()
+        compose.onNodeWithText("Couldn’t load content").assertDoesNotExist()
     }
 
     @Test fun queuedResultKeepsShowActionDuringRefreshAndLaunchesFullBuild() {

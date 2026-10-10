@@ -126,6 +126,15 @@ class LoginScreenScreenshotTest(private val stateName: String, private val varia
 
             else -> captureScreenRoboImage(path)
         }
+        if (stateName in listOf("save_error", "server_error", "duplicate") && (variant.fontScale > 1f || variant.width >= 600)) {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("login:submit").performScrollTo().assertIsDisplayed()
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("login:submit").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("login_${stateName}_${variant.name}_bottom.png")
+        }
     }
 
     companion object {
