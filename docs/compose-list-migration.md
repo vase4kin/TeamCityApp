@@ -18,7 +18,7 @@ limitations under the License.
 
 The legacy list foundation serves ten list destinations, plus part of Build Overview and Build Details argument handling. Replace its presenter/view inheritance with shared stateless Compose components and reusable loading behavior. Each feature should own its ViewModel, models, repository contract, rows, and actions. This preserves common behavior without making every screen implement irrelevant callbacks.
 
-The inventory below describes the legacy implementation before migration. Agents and Changes have verified Compose replacements, proving finite loading and server paging against the shared foundation. Tests and Navigation have unregistered feature drafts awaiting integration and verification; their legacy screens remain active.
+The inventory below describes the legacy implementation before migration. Agents, Changes, and Test Occurrences have verified Compose replacements, proving finite loading and server paging against the shared foundation. Navigation, Favorites, and the build list family have feature drafts awaiting integration and verification; their legacy screens remain active.
 
 ## Foundation and consumers
 
@@ -102,7 +102,9 @@ For each feature, verify repository mapping/cache policy, query replacement, can
 
 The Agents pilot has 17 loader tests, 64 shared UI tests, 76 feature tests, six app unit tests, and six passing emulator integration tests. Its 126 PNG baselines were visually reviewed. App and instrumentation APKs build, and app/feature/shared UI lint passes. The local checkpoint is `de390ac` on `codex/compose-lists`.
 
-The Changes pilot has 28 behavioral tests and 66 screenshot cases, with 78 visually reviewed PNG baselines including scrolled enlarged-text content. Its seven app adapter tests and three existing mapper tests pass. All four emulator integration tests pass, covering row navigation, initial retry, empty content, and optional count retry. App and instrumentation APKs build; app/Changes lint and repository formatting checks pass. The local checkpoint is `a4f0be2` on the same branch. Neither checkpoint has been pushed.
+The Changes pilot has 28 behavioral tests and 66 screenshot cases, with 78 visually reviewed PNG baselines including scrolled enlarged-text content. Its seven app adapter tests and three existing mapper tests pass. All four emulator integration tests pass, covering row navigation, initial retry, empty content, and optional count retry. App and instrumentation APKs build; app/Changes lint and repository formatting checks pass. The local checkpoint is `a4f0be2` on the same branch. These checkpoints remain local.
+
+The Test Occurrences slice has 153 feature tests, seven app adapter tests, and 126 visually reviewed PNG baselines. All ten emulator integration cases pass, including filter-specific empty messages, count retry without page reload, and selected-filter/page retention through Activity recreation. Four Changes integration cases also pass after fixing Build Details to reconnect restored tab fragments instead of discarding their ViewModels. Opening a different build still creates fresh tabs. App and instrumentation APKs build; app/feature lint and formatting pass. The local checkpoint is `af3818c`; no checkpoint has been pushed.
 
 Migration is complete when all consumers in the inventory use their Compose replacements, existing entry points and cache/account behavior still work, and no production references remain to `base/list`, sectioned RecyclerView adapters, or Mugen. Remove each dependency only after checking whether another untouched screen still uses it.
 
