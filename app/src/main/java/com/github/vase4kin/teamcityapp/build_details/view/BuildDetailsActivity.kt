@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +21,15 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenterImpl
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import androidx.appcompat.app.AppCompatActivity
-import teamcityapp.libraries.utils.initToolbar
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Provider
 import javax.inject.Inject
+import javax.inject.Provider
+import teamcityapp.libraries.utils.initToolbar
 
 /**
  * Activity to manage build details info
@@ -84,6 +85,10 @@ class BuildDetailsActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         val resumePresenter = presenterResumed
         disposePresenter()
+        // A new build needs fresh tab arguments; recreation keeps the restored tabs instead.
+        supportFragmentManager.beginTransaction().apply {
+            supportFragmentManager.fragments.forEach { remove(it) }
+        }.commitNow()
         setIntent(intent)
         presenter = presenterProvider.get()
         presenter.onViewsCreated()

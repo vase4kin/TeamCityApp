@@ -1,0 +1,30 @@
+<!--
+  ~ Copyright 2026 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="tests_filter_failed">Failed</string>
+    <string name="tests_filter_passed">Passed</string>
+    <string name="tests_filter_ignored">Ignored</string>
+    <string name="tests_section_failed">Failed (%d)</string>
+    <string name="tests_section_passed">Passed (%d)</string>
+    <string name="tests_section_ignored">Ignored (%d)</string>
+    <string name="tests_status_error">Error</string>
+    <string name="tests_empty_failed">There are no failed tests</string>
+    <string name="tests_empty_passed">There are no passed tests</string>
+    <string name="tests_empty_ignored">There are no ignored tests</string>
+    <string name="tests_count_unavailable">The total test count couldn’t be loaded.</string>
+    <string name="tests_retry_count">Retry count</string>
+</resources>

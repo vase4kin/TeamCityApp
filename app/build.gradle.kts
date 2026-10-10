@@ -182,6 +182,8 @@ dependencies {
     implementation(projects.features.agents.impl)
     implementation(projects.features.changes.api)
     implementation(projects.features.changes.impl)
+    implementation(projects.features.tests.api)
+    implementation(projects.features.tests.impl)
     implementation(projects.features.bottomSheet.api)
     implementation(projects.features.bottomSheet.impl)
 

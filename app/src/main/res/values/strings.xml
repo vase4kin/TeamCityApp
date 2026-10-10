@@ -67,7 +67,6 @@
     <string name="empty_list_message_favorite_build_queue">Favorite builds queue is empty</string>
     <string name="empty_list_message_projects_or_build_types">No projects or build configurations</string>
     <string name="empty_list_message_favorites">No favorite configurations added</string>
-    <string name="empty_passed_tests">There are no failed tests</string>
 
     <!--Build elements-->
     <string name="unknown_trigger_type_text">Unknown trigger type!</string>
@@ -105,9 +104,6 @@
     <string name="server_not_secure_http">Using http is insecure and it\'s recommend to use https instead. Use your favorite search engine to get more information about this topic.</string>
 
     <!--Tests-->
-    <string name="text_passed">Passed (%d)</string>
-    <string name="text_failed">Failed (%d)</string>
-    <string name="text_ignored">Ignored (%d)</string>
 
     <!--Testing-->
     <string name="navigate_up">Navigate up</string>

@@ -46,6 +46,7 @@ import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.features.changes.api.ChangesNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
+import teamcityapp.features.tests.api.TestsNavigation
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.utils.requireScreenOwner
 
@@ -62,14 +63,16 @@ object BuildDetailsModule {
         @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
         propertiesNavigation: PropertiesNavigation,
         featureNavigation: teamcityapp.features.build_log.api.BuildLogNavigation,
-        changesNavigation: ChangesNavigation
+        changesNavigation: ChangesNavigation,
+        testsNavigation: TestsNavigation
     ): BuildDetailsView = BuildDetailsViewImpl(
         activity.findViewById<View>(android.R.id.content),
         activity,
         valueExtractor,
         propertiesNavigation,
         featureNavigation,
-        changesNavigation
+        changesNavigation,
+        testsNavigation
     )
 
     @Provides

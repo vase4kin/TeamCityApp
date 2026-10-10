@@ -34,7 +34,6 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeou
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
-import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
 import com.github.vase4kin.teamcityapp.utils.createProgressDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -44,6 +43,7 @@ import teamcityapp.features.build_log.api.BuildLogNavigation
 import teamcityapp.features.changes.api.ChangesNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
 import teamcityapp.features.properties.api.Property
+import teamcityapp.features.tests.api.TestsNavigation
 
 private const val TAB_TITLE = "tabTitle"
 
@@ -56,7 +56,8 @@ class BuildDetailsViewImpl(
     valueExtractor: BaseValueExtractor,
     private val propertiesNavigation: PropertiesNavigation,
     private val featureNavigation: BuildLogNavigation,
-    private val changesNavigation: ChangesNavigation
+    private val changesNavigation: ChangesNavigation,
+    private val testsNavigation: TestsNavigation
 ) : BaseTabsViewModelImpl(view, activity),
     BuildDetailsView {
 
@@ -103,7 +104,7 @@ class BuildDetailsViewImpl(
         if (testsHref != null) {
             fragmentAdapter.add(
                 R.string.tab_tests,
-                TestOccurrencesFragment.newInstance(
+                testsNavigation.createFragment(
                     testsHref,
                     buildDetails.passedTestCount,
                     buildDetails.failedTestCount,
@@ -137,6 +138,9 @@ class BuildDetailsViewImpl(
             )
         }
     }
+
+    // FragmentPagerAdapter reconnects restored tabs, retaining their ViewModels and pages.
+    override val retainRestoredFragments: Boolean = true
 
     /**
      * {@inheritDoc}
