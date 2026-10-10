@@ -42,11 +42,6 @@
             android:label="@string/title_activity_build"
             android:theme="@style/Theme.MyApp" />
         <activity
-            android:name=".navigation.view.NavigationActivity"
-            android:label="@string/title_activity_navigation"
-            android:theme="@style/Theme.MyApp" />
-
-        <activity
             android:name=".artifact.view.ArtifactListActivity"
             android:label="@string/tab_artifacts"
             android:theme="@style/Theme.MyApp" />

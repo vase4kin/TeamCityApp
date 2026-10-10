@@ -31,7 +31,6 @@
     <!--Activity titles-->
     <string name="title_activity_build_list">Builds</string>
     <string name="title_activity_build">Build</string>
-    <string name="title_activity_navigation">Project/BuildType</string>
 
     <!--Build tabs-->
     <string name="tab_overview">Overview</string>
@@ -189,10 +188,6 @@
     <string name="text_info_add_action">Add projects</string>
 
     <!--Rate-->
-    <string name="rate_title">Rate TeamCityApp</string>
-    <string name="rate_description">Like the app? Give us a review, we\'ll appreciate it.</string>
-    <string name="rate_cancel">Cancel</string>
-    <string name="rate_now">Rate</string>
 
     <!--Filter bottom sheet-->
 

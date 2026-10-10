@@ -184,6 +184,11 @@ dependencies {
     implementation(projects.features.changes.impl)
     implementation(projects.features.tests.api)
     implementation(projects.features.tests.impl)
+    implementation(projects.libraries.buildConfigurations)
+    implementation(projects.features.navigation.api)
+    implementation(projects.features.navigation.impl)
+    implementation(projects.features.favorites.api)
+    implementation(projects.features.favorites.impl)
     implementation(projects.features.bottomSheet.api)
     implementation(projects.features.bottomSheet.impl)
 

@@ -63,7 +63,6 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarSubTitle
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
-import com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -80,6 +79,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
+import teamcityapp.features.navigation.api.NavigationNavigation
 
 /**
  * Tests for [OverviewFragment]
@@ -833,7 +833,7 @@ class OverviewFragmentTest {
 
         intended(
             allOf(
-                hasComponent(NavigationActivity::class.java.name),
+                hasComponent(NavigationNavigation.LEGACY_ACTIVITY),
                 hasExtras(
                     allOf(
                         hasEntry(equalTo(BundleExtractorValues.ID), equalTo("projectId")),

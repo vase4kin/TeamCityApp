@@ -45,6 +45,7 @@ import dagger.hilt.android.components.ActivityComponent
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.features.changes.api.ChangesNavigation
+import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
 import teamcityapp.features.tests.api.TestsNavigation
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
@@ -88,9 +89,10 @@ object BuildDetailsModule {
     ): BuildDetailsInteractor = BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
 
     @Provides
-    fun providesBuildTabsRouter(activity: BuildDetailsActivity): BuildDetailsRouter = BuildDetailsRouterImpl(
+    fun providesBuildTabsRouter(activity: BuildDetailsActivity, navigation: NavigationNavigation): BuildDetailsRouter = BuildDetailsRouterImpl(
         activity,
-        ChromeCustomTabsImpl(activity)
+        ChromeCustomTabsImpl(activity),
+        navigation
     )
 
     @Provides

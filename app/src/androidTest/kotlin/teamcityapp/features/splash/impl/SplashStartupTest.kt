@@ -25,11 +25,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
-import com.github.vase4kin.teamcityapp.helper.TestUtils
 import dagger.hilt.android.testing.*
 import org.junit.After
 import org.junit.Before
@@ -80,7 +78,7 @@ class SplashStartupTest {
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         launch().use { scenario ->
             compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
-            TestUtils.matchHomeToolbarTitle(R.id.home_projects_toolbar_title, R.string.projects_drawer_item)
+            compose.onNodeWithText(app.getString(teamcityapp.features.navigation.impl.R.string.navigation_projects_title)).assertIsDisplayed()
         }
     }
 }
