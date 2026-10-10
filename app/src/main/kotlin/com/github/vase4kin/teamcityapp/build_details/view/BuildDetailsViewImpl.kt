@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl
 import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.Companion.TIMEOUT_TEXT_COPIED_SNACKBAR
-import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
 import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
@@ -42,6 +41,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import teamcityapp.features.build_log.api.BuildLogNavigation
+import teamcityapp.features.changes.api.ChangesNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
 import teamcityapp.features.properties.api.Property
 
@@ -55,7 +55,8 @@ class BuildDetailsViewImpl(
     activity: AppCompatActivity,
     valueExtractor: BaseValueExtractor,
     private val propertiesNavigation: PropertiesNavigation,
-    private val featureNavigation: BuildLogNavigation
+    private val featureNavigation: BuildLogNavigation,
+    private val changesNavigation: ChangesNavigation
 ) : BaseTabsViewModelImpl(view, activity),
     BuildDetailsView {
 
@@ -95,7 +96,7 @@ class BuildDetailsViewImpl(
         if (changesHref != null) {
             fragmentAdapter.add(
                 R.string.tab_changes,
-                ChangesFragment.newInstance(changesHref)
+                changesNavigation.createFragment(changesHref)
             )
         }
         val testsHref = buildDetails.testsHref
