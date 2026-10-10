@@ -77,6 +77,12 @@ to the requested behavior and the coherent migration slice needed to support it.
   tab counts. Tests retains its selected status filter across recreation. Build Details
   reconnects restored tab fragments and clears them only when opening a different build.
   App adapters preserve legacy RxCache DTO names and request policies.
+  Navigation and Favorites also use the shared finite list foundation and immutable
+  project/configuration models in `libraries/build-configurations`. Navigation owns
+  its recursive Activity alias and rating UI; Favorites retains explicit partial/all-failed
+  states without removing saved IDs. Home account reloads replace their owners, cancelling
+  old requests even when users share a server URL. Their integration tests include two
+  active favorite-action gates awaiting the legacy Build History migration.
   See `docs/compose-list-migration.md` for the remaining consumers and migration order.
 - Screens owned by `app/` remain legacy. Room, broader DataStore migration,
   WorkManager, and Navigation 3 remain target technologies.

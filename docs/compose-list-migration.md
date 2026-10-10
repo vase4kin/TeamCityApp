@@ -18,7 +18,7 @@ limitations under the License.
 
 The legacy list foundation serves ten list destinations, plus part of Build Overview and Build Details argument handling. Replace its presenter/view inheritance with shared stateless Compose components and reusable loading behavior. Each feature should own its ViewModel, models, repository contract, rows, and actions. This preserves common behavior without making every screen implement irrelevant callbacks.
 
-The inventory below describes the legacy implementation before migration. Agents, Changes, and Test Occurrences have verified Compose replacements, proving finite loading and server paging against the shared foundation. Navigation, Favorites, and the build list family have feature drafts awaiting integration and verification; their legacy screens remain active.
+The inventory below describes the legacy implementation before migration. Agents, Changes, Test Occurrences, Navigation, and Favorites now use Compose replacements, proving finite loading and server paging against the shared foundation. The build list family has feature drafts awaiting integration and verification; its legacy screens remain active.
 
 ## Foundation and consumers
 
@@ -106,6 +106,8 @@ The Changes pilot has 28 behavioral tests and 66 screenshot cases, with 78 visua
 
 The Test Occurrences slice has 153 feature tests, seven app adapter tests, and 126 visually reviewed PNG baselines. All ten emulator integration cases pass, including filter-specific empty messages, count retry without page reload, and selected-filter/page retention through Activity recreation. Four Changes integration cases also pass after fixing Build Details to reconnect restored tab fragments instead of discarding their ViewModels. Opening a different build still creates fresh tabs. App and instrumentation APKs build; app/feature lint and formatting pass. The local checkpoint is `af3818c`; no checkpoint has been pushed.
 
-Migration is complete when all consumers in the inventory use their Compose replacements, existing entry points and cache/account behavior still work, and no production references remain to `base/list`, sectioned RecyclerView adapters, or Mugen. Remove each dependency only after checking whether another untouched screen still uses it.
+Navigation and Favorites share immutable project/configuration models in `libraries/build-configurations`. Their 210 feature tests, 18 app adapter tests, and 162 visually reviewed PNG baselines pass, along with app/feature lint, formatting, and both APK builds. Across the emulator runs, 32 integration cases pass, covering the installed Navigation alias, recursion, drawer actions, rating persistence, partial/all-failed favorites, configuration retention, same-server account switching, and Splash startup. Two newly activated Favorites cases still fail when invoking the legacy Build History favorite action: the action does not change saved membership. Keep these cases as gates for the Build History migration rather than suppressing them. The local checkpoint is `a8ca0ce`.
+
+Migration is complete when all consumers in the inventory use their Compose replacements, existing entry points and cache/account behavior still work, all integration gates pass, and no production references remain to `base/list`, sectioned RecyclerView adapters, or Mugen. Remove each dependency only after checking whether another untouched screen still uses it.
 
 Compose list and paging behavior follow the official [Compose lists guidance](https://developer.android.com/develop/ui/compose/lists) and [Paging overview](https://developer.android.com/topic/libraries/architecture/paging/v3-overview). Feature ownership follows the repository's `AGENTS.md` contract.
