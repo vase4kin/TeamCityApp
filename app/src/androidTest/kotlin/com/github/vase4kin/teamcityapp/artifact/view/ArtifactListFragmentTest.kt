@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +17,25 @@
 
 package com.github.vase4kin.teamcityapp.artifact.view
 
+import android.app.Activity
+import android.app.Instrumentation.ActivityResult
+import android.content.ComponentName
 import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
+import android.text.format.Formatter
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
+import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasType
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withParent
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.*
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.filters.SdkSuppress
 import androidx.test.platform.app.InstrumentationRegistry
-import com.azimolabs.conditionwatcher.ConditionWatcher
-import com.azimolabs.conditionwatcher.Instruction
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
@@ -49,65 +46,35 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
-import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
+import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
+import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
-import com.github.vase4kin.teamcityapp.helper.RecyclerViewMatcher.Companion.withRecyclerView
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.hasItemsCount
+import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
+import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
-import java.util.ArrayList
+import io.reactivex.subjects.SingleSubject
+import java.util.concurrent.atomic.AtomicInteger
+import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.hamcrest.core.AllOf.allOf
+import org.junit.Assert.*
 import org.junit.Before
-import org.junit.BeforeClass
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.Mockito.`when`
+import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.artifacts.api.ArtifactsNavigation
+import teamcityapp.features.artifacts.impl.R as ArtifactsR
+import teamcityapp.features.bottom_sheet.impl.R as SheetR
 
-private const val BUILD_TYPE_NAME = "name"
-private const val TIMEOUT = 5000
-
-/**
- * Tests for [ArtifactListFragment]
- */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ArtifactListFragmentTest {
-
-    private fun openArtifacts() {
-        // Keep the off-screen Compose page's clock still while Espresso injects the tab tap.
-        compose.mainClock.autoAdvance = false
-        try {
-            onView(withText("Artifacts"))
-                .perform(scrollTo())
-                .check(matches(isDisplayed()))
-                .perform(click())
-        } finally {
-            compose.mainClock.autoAdvance = true
-        }
-        compose.waitForIdle()
-    }
-
-    private fun clickSheetAction(label: String) {
-        compose.waitUntil(5_000) {
-            compose.onAllNodesWithText(label).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
-        }
-        compose.onNodeWithText(label).performClick()
-        compose.waitUntil(5_000) {
-            compose.onAllNodesWithTag("sheet:content").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
-        }
-    }
-
-    @JvmField
-    @Rule(order = 4)
-    val compose = createEmptyComposeRule()
-
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -122,566 +89,257 @@ class ArtifactListFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomIntentsTestRule<BuildDetailsActivity> =
-        CustomIntentsTestRule(BuildDetailsActivity::class.java)
+    val activityRule = CustomActivityTestRule(BuildDetailsActivity::class.java)
 
-    @Spy
-    private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+    @JvmField
+    @Rule(order = 4)
+    val compose = createEmptyComposeRule()
 
-    @Spy
-    private val build: Build = Mocks.successBuild()
+    @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
+    private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
 
-    companion object {
-        @JvmStatic
-        @BeforeClass
-        fun disableOnboarding() {
-            TestUtils.disableOnboarding()
-        }
-    }
-
-    @Before
-    fun setUp() {
-        val app =
-            InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+    @Before fun setUp() {
+        androidx.test.espresso.intent.Intents.init()
+        TestUtils.disableOnboarding()
+        val app = context.applicationContext as TeamCityApplicationBase
+        app.appInjector.cacheManager().evictAllCache()
         app.appInjector.sharedUserStorage().clearAll()
-        app.appInjector.sharedUserStorage()
-            .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        ConditionWatcher.setTimeoutLimit(TIMEOUT)
+        app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
-
-    @Test
-    fun testUserCanSeeArtifacts() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Checking artifacts
-        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(3))
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                0,
-                R.id.title
-            )
-        ).check(matches(withText("res")))
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                1,
-                R.id.title
-            )
-        ).check(matches(withText("AndroidManifest.xml")))
-        val sizeText = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
-            "7.77 kB"
-        } else {
-            "7.59 KB"
+    private fun text(id: Int) = context.getString(id)
+    private fun awaitText(value: String) {
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithText(value).fetchSemanticsNodes(atLeastOneRootRequired = false).indices.any { index ->
+                runCatching { compose.onAllNodesWithText(value)[index].assertIsDisplayed() }.isSuccess
+            }
         }
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                1,
-                R.id.subTitle
-            )
-        ).check(matches(withText(sizeText)))
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                2,
-                R.id.title
-            )
-        ).check(matches(withText("index.html")))
-        val sizeText2 = if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.N) {
-            "698 kB"
-        } else {
-            "681 KB"
+    }
+    private fun awaitTag(value: String) {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+    }
+    private fun tab(title: String) = compose.tapNativePagerTab(title)
+    private fun sheet(label: String) {
+        awaitText(label)
+        compose.onNodeWithText(label).performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("sheet:content").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
+    }
+
+    @org.junit.After fun releaseIntents() {
+        androidx.test.espresso.intent.Intents.release()
+    }
+
+    @Test fun filenamesAndPlatformFormattedSizesAreVisible() {
+        openArtifacts(Mocks.artifacts())
+        awaitText("res")
+        awaitText("AndroidManifest.xml")
+        awaitText(Formatter.formatFileSize(context, 7768L))
+        awaitText("index.html")
+        awaitText(Formatter.formatFileSize(context, 697840L))
+    }
+
+    @Test fun emptyArtifactsHasExplicitEmptyState() {
+        openArtifacts(Files(emptyList()))
+        awaitText(text(ArtifactsR.string.artifacts_empty))
+    }
+
+    @Test fun initialFailureCanRetry() {
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.error(RuntimeException("offline")))
+        start()
+        awaitText(text(R.string.error_view_error_text))
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
+        val retry = compose.onAllNodesWithText(text(teamcityapp.libraries.theme.R.string.action_retry))
+        val visibleRetry = retry.fetchSemanticsNodes().indices.single { index -> runCatching { retry[index].assertIsDisplayed() }.isSuccess }
+        retry[visibleRetry].performClick()
+        awaitText("AndroidManifest.xml")
+    }
+
+    @Test fun folderClickOpensInstalledAliasWithFullBuildAndExactChildrenUrl() {
+        folders()
+        clickFile("/metadata/res")
+        intended(allOf(hasComponent(ArtifactsNavigation.LEGACY_ACTIVITY), hasExtra(ArtifactsNavigation.URL, "/children/res"), hasExtra(ArtifactsNavigation.NAME, "res"), BuildComposeFixtures.fullPayload(ArtifactsNavigation.BUILD, BuildComposeFixtures.finished)))
+        awaitText("Nested file.txt")
+    }
+
+    @Test fun folderLongClickOpenActionUsesSameNavigationPayload() {
+        folders()
+        compose.onNodeWithTag("artifacts:row:/metadata/res").performTouchInput { longClick() }
+        sheet(text(SheetR.string.artifact_open))
+        intended(allOf(hasComponent(ArtifactsNavigation.LEGACY_ACTIVITY), hasExtra(ArtifactsNavigation.URL, "/children/res"), BuildComposeFixtures.fullPayload(ArtifactsNavigation.BUILD, BuildComposeFixtures.finished)))
+        awaitText("Nested file.txt")
+    }
+
+    @Test fun archiveOffersDownloadAndOpenWithOpaqueArchiveChildren() {
+        val archive = Gson().fromJson("""{"name":"bundle.zip","href":"/metadata/bundle.zip","size":2048,"content":{"href":"/content/bundle.zip"},"children":{"href":"/children/bundle.zip!"}}""", File::class.java)
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Files(listOf(archive))))
+        `when`(teamCityService.listArtifacts("/children/bundle.zip!", "browseArchives:true")).thenReturn(Single.just(Files(listOf(file("Inner file.txt", "/metadata/inner")))))
+        start()
+        clickFile("/metadata/bundle.zip")
+        awaitText(text(SheetR.string.artifact_download))
+        sheet(text(SheetR.string.artifact_open))
+        intended(allOf(hasComponent(ArtifactsNavigation.LEGACY_ACTIVITY), hasExtra(ArtifactsNavigation.URL, "/children/bundle.zip!"), BuildComposeFixtures.fullPayload(ArtifactsNavigation.BUILD, BuildComposeFixtures.finished)))
+        awaitText("Inner file.txt")
+    }
+
+    @Test fun downloadedFileOpensWithProviderUriAndGrants() {
+        intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just("downloaded bytes".toResponseBody()))
+        openArtifacts(Files(listOf(file("teamcity.unknown", "/metadata/download"))))
+        download("/metadata/download")
+        compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasType("*/*")))
+        val opened = androidx.test.espresso.intent.Intents.getIntents().last { it.action == Intent.ACTION_VIEW }
+        assertEquals("content", opened.data!!.scheme)
+        assertEquals(context.packageName + ".provider", opened.data!!.authority)
+        assertTrue(opened.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION != 0)
+        assertTrue(opened.flags and Intent.FLAG_GRANT_WRITE_URI_PERMISSION != 0)
+        val saved = java.io.File(context.getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS) ?: context.filesDir, "teamcity.unknown")
+        assertEquals("downloaded bytes", saved.readText())
+        saved.delete()
+    }
+
+    @Test fun htmlBrowserUsesFullBuildIdConfigurationAndMetadataPath() {
+        intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
+        val html = file("index.html", "/guestAuth/app/rest/builds/id:42/artifacts/metadata/archive.zip!/index.html")
+        openArtifacts(Files(listOf(html)))
+        clickFile(html.href)
+        sheet(text(SheetR.string.artifact_open_in_browser))
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(Mocks.URL + "/repository/download/current-config/42:id/archive.zip!/index.html?guest=1")))
+    }
+
+    @Test fun downloadFailureNotifiesBuildDetailsAndFeatureRetryCanSucceed() {
+        intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.error(RuntimeException("download offline")))
+        openArtifacts(Files(listOf(file("retry.unknown", "/metadata/retry"))))
+        download("/metadata/retry")
+        awaitText(text(ArtifactsR.string.artifacts_download_failed))
+        onView(withText(R.string.download_artifact_retry_snack_bar_text)).check(matches(isDisplayed()))
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just("retried".toResponseBody()))
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_retry_download)).performClick()
+        compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
+    }
+
+    @Test fun cancelDownloadDisposesTheNetworkRequestWithoutFailureNotification() {
+        val pending = SingleSubject.create<ResponseBody>()
+        val canceled = AtomicInteger()
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending.doOnDispose { canceled.incrementAndGet() })
+        openArtifacts(Files(listOf(file("cancel.unknown", "/metadata/cancel"))))
+        download("/metadata/cancel")
+        awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+        compose.waitUntil(10_000) { pending.hasObservers() }
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
+        compose.waitUntil(10_000) { canceled.get() == 1 }
+        assertFalse(pending.hasObservers())
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_downloading_title)).assertDoesNotExist()
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
+        onView(withText(R.string.download_artifact_retry_snack_bar_text)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
+    }
+
+    @Test fun restoredArtifactsRetainsPagesAndPendingDownloadWithoutDuplicateWork() {
+        val pending = SingleSubject.create<ResponseBody>()
+        val lists = AtomicInteger()
+        val downloads = AtomicInteger()
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenAnswer {
+            lists.incrementAndGet()
+            Single.just(Files(listOf(file("restore.unknown", "/metadata/restore"))))
         }
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                2,
-                R.id.subTitle
-            )
-        ).check(matches(withText(sizeText2)))
+        `when`(teamCityService.downloadFile(anyString())).thenAnswer {
+            downloads.incrementAndGet()
+            pending
+        }
+        ActivityScenario.launch<BuildDetailsActivity>(BuildComposeFixtures.intent(BuildComposeFixtures.finished)).use { scenario ->
+            awaitTag("overview:list")
+            tab("Artifacts")
+            download("/metadata/restore")
+            awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+            val completedLists = lists.get()
+            scenario.recreate()
+            awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+            assertEquals(completedLists, lists.get())
+            assertEquals(1, downloads.get())
+            assertTrue(pending.hasObservers())
+            compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
+            compose.waitUntil(10_000) { !pending.hasObservers() }
+            awaitText("restore.unknown")
+            // After closing the download dialog, query the native host's restored toolbar.
+            TestUtils.matchToolbarTitle("#latest-number")
+            TestUtils.matchToolbarSubTitle("Current configuration")
+        }
     }
 
-    @Test
-    fun testUserCanSeeArtifactsEmptyMessageIfArtifactsAreEmpty() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        `when`(
-            teamCityService.listArtifacts(
-                anyString(),
-                anyString()
-            )
-        ).thenReturn(Single.just(Files(emptyList())))
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Checking message
-        onView(withText(R.string.empty_list_message_artifacts)).check(matches(isDisplayed()))
+    @Test fun apkDownloadUsesAppPrivateStorageWithoutRequestingInstallPermission() {
+        val pending = SingleSubject.create<ResponseBody>()
+        `when`(teamCityService.downloadFile(anyString())).thenReturn(pending)
+        openArtifacts(Files(listOf(file("app.apk", "/metadata/app.apk"))))
+        download("/metadata/app.apk")
+        awaitText(text(ArtifactsR.string.artifacts_downloading_title))
+        compose.waitUntil(10_000) { pending.hasObservers() }
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_permission_denied)).assertDoesNotExist()
+        assertFalse(androidx.test.espresso.intent.Intents.getIntents().any { it.action == android.provider.Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES })
+        compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
+        compose.waitUntil(10_000) { !pending.hasObservers() }
     }
 
-    @Test
-    fun testUserCanSeeArtifactsErrorMessageIfSmthBadHappens() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(
-            Single.error(
-                RuntimeException("Fake error happened!")
-            )
-        )
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Checking error
-        onView(
-            allOf(
-                withText(R.string.error_view_error_text),
-                withParent(isDisplayed())
-            )
-        ).check(
-            matches(isDisplayed())
-        )
+    @Test fun hiddenBuildDetailsArtifactsCannotConsumeFolderActivityDownloadEvents() {
+        intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
+        val downloads = AtomicInteger()
+        `when`(teamCityService.downloadFile(anyString())).thenAnswer {
+            downloads.incrementAndGet()
+            Single.just("one owner".toResponseBody())
+        }
+        folders()
+        clickFile("/metadata/res")
+        awaitText("Nested file.txt")
+        download("/metadata/nested")
+        compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
+        assertEquals(1, downloads.get())
+        assertEquals(1, androidx.test.espresso.intent.Intents.getIntents().count { it.action == Intent.ACTION_VIEW })
     }
 
-    @Test
-    @Throws(Exception::class)
-    fun testUserCanOpenArtifactWithChildren() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val folderOne = File(
-            "res",
-            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
-            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
-        )
-        val folderTwo = File(
-            "res_level_deeper1",
-            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
-            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
-        )
-        val folderThree = File(
-            "res_level_deeper2",
-            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
-            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
-        )
-        val deeperArtifacts = ArrayList<File>()
-        deeperArtifacts.add(folderTwo)
-        deeperArtifacts.add(folderThree)
-        `when`(teamCityService.listArtifacts(anyString(), anyString()))
-            .thenReturn(Single.just(Files(listOf(folderOne))))
-            .thenReturn(Single.just(Files(deeperArtifacts)))
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Checking first level artifacts
-        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "Can't find artifact with name res"
-
-            override fun checkCondition(): Boolean = try {
-                onView(
-                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                        0,
-                        R.id.title
-                    )
-                )
-                    .check(matches(withText("res")))
-                true
-            } catch (ignored: AssertionError) {
-                false
-            }
-        })
-
-        // Clicking first level artifacts
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "Can't click on artifact at position 0"
-
-            override fun checkCondition(): Boolean = try {
-                onView(
-                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                        0,
-                        R.id.title
-                    )
-                )
-                    .perform(click())
-                true
-            } catch (ignored: AssertionError) {
-                false
-            }
-        })
-
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "The artifact page is not loaded"
-
-            override fun checkCondition(): Boolean {
-                var isResFolderClicked = false
-                try {
-                    onView(withText("res_level_deeper1")).check(matches(isDisplayed()))
-                    isResFolderClicked = true
-                } catch (ignored: AssertionError) {
-                    onView(withRecyclerView(R.id.artifact_recycler_view).atPosition(0))
-                        .perform(click())
-                }
-
-                return isResFolderClicked
-            }
-        })
-
-        // In case of the same recycler view ids
-        onView(withText("res_level_deeper1")).check(matches(isDisplayed()))
-        onView(withText("res_level_deeper2")).check(matches(isDisplayed()))
+    @Test fun installedArtifactActivityAcceptsLegacyExtrasAndRestoresItsFolder() {
+        val lists = AtomicInteger()
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenAnswer {
+            lists.incrementAndGet()
+            Single.just(Files(listOf(file("Alias file.txt", "/metadata/alias"))))
+        }
+        val alias = Intent().setComponent(ComponentName(context.packageName, ArtifactsNavigation.LEGACY_ACTIVITY))
+            .putExtra(ArtifactsNavigation.BUILD, BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))
+            .putExtra(ArtifactsNavigation.NAME, "Folder title").putExtra(ArtifactsNavigation.URL, "/children/alias")
+        ActivityScenario.launch<Activity>(alias).use { scenario ->
+            awaitText("Folder title")
+            awaitText("Alias file.txt")
+            val completedLists = lists.get()
+            scenario.recreate()
+            awaitText("Folder title")
+            awaitText("Alias file.txt")
+            assertEquals(completedLists, lists.get())
+        }
+        verify(teamCityService).listArtifacts("/children/alias", "browseArchives:true")
     }
-
-    @Test
-    @Throws(Exception::class)
-    fun testUserCanOpenArtifactWithChildrenByLongTap() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val folderOne = File(
-            "res",
-            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
-            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
-        )
-        val folderTwo = File(
-            "res_level_deeper1",
-            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
-            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
-        )
-        val folderThree = File(
-            "res_level_deeper2",
-            File.Children("/guestAuth/app/rest/builds/id:92912/artifacts/children/TCity.apk!/res"),
-            "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/res"
-        )
-        val deeperArtifacts = ArrayList<File>()
-        deeperArtifacts.add(folderTwo)
-        deeperArtifacts.add(folderThree)
-        `when`(teamCityService.listArtifacts(anyString(), anyString()))
-            .thenReturn(Single.just(Files(listOf(folderOne))))
-            .thenReturn(Single.just(Files(deeperArtifacts)))
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Checking first level artifacts
-        onView(withId(R.id.artifact_recycler_view)).check(hasItemsCount(1))
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "Can't find artifact with name res"
-
-            override fun checkCondition(): Boolean = try {
-                onView(
-                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                        0,
-                        R.id.title
-                    )
-                )
-                    .check(matches(withText("res")))
-                true
-            } catch (ignored: AssertionError) {
-                false
-            }
-        })
-
-        // Long click on first level artifacts
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "Can't do long click on artifact at 0 position"
-
-            override fun checkCondition(): Boolean = try {
-                onView(
-                    withRecyclerView(R.id.artifact_recycler_view).atPositionOnView(
-                        0,
-                        R.id.title
-                    )
-                )
-                    .perform(longClick())
-                true
-            } catch (ignored: AssertionError) {
-                false
-            }
-        })
-
-        // Click on open option
-        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_open))
-
-        // In case of the same recycler view ids
-        onView(withText("res_level_deeper1")).check(matches(isDisplayed()))
-        onView(withText("res_level_deeper2")).check(matches(isDisplayed()))
+    private fun file(name: String, href: String) = File(name, 1024L, File.Content("/content/" + name), href)
+    private fun start() {
+        `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
+        activityRule.launchActivity(BuildComposeFixtures.intent(BuildComposeFixtures.finished))
+        tab("Artifacts")
     }
-
-    @Ignore
-    @Test
-    fun testUserCanDownloadArtifact() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(
-            Single.just(
-                "text".toResponseBody()
-            )
-        )
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Clicking on artifact to download
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(1, R.id.title)
-        )
-            .check(matches(withText("AndroidManifest.xml")))
-            .perform(click())
-
-        // Click on download option
-        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_download))
-
-        // Check filter builds activity is opened
-        intended(
-            allOf(
-                hasAction(Intent.ACTION_VIEW),
-                hasType("*/*")
-            )
-        )
+    private fun openArtifacts(files: Files) {
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(files))
+        start()
     }
-
-    @Ignore("Test opens chrome and gets stuck")
-    @Test
-    fun testUserCanOpenHtmlFileInBrowser() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Clicking on artifact
-        onView(
-            withRecyclerView(R.id.artifact_recycler_view)
-                .atPositionOnView(2, R.id.title)
-        )
-            .check(matches(withText("index.html")))
-            .perform(click())
-
-        // Click on download option
-        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_open_in_browser))
-
-        // Check filter builds activity is opened
-        intended(
-            allOf(
-                hasData(Uri.parse("https://teamcity.server.com/repository/download/Checkstyle_IdeaInspectionsPullRequest/null:id/TCity.apk!/index.html?guest=1")),
-                hasAction(Intent.ACTION_VIEW)
-            )
-        )
+    private fun folders() {
+        val folder = File("res", File.Children("/children/res"), "/metadata/res")
+        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Files(listOf(folder))))
+        `when`(teamCityService.listArtifacts("/children/res", "browseArchives:true")).thenReturn(Single.just(Files(listOf(file("Nested file.txt", "/metadata/nested")))))
+        start()
+        awaitText("res")
     }
-
-    @Test
-    @Throws(Exception::class)
-    fun testUserSeeSnackBarWithErrorMessageIfArtifactWasNotDownloaded() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.error(RuntimeException("ERROR!")))
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Checking artifact title and clicking on it
-        val artifactName = "AndroidManifest.xml"
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "Can't click on artifact with name $artifactName"
-
-            override fun checkCondition(): Boolean = try {
-                onView(
-                    withRecyclerView(R.id.artifact_recycler_view)
-                        .atPositionOnView(1, R.id.title)
-                )
-                    .check(matches(withText(artifactName)))
-                    .perform(click())
-                true
-            } catch (ignored: AssertionError) {
-                false
-            }
-        })
-
-        // Click on download option
-        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_download))
-
-        // Checking error snack bar message
-        onView(withText(R.string.download_artifact_retry_snack_bar_text))
-            .check(matches(isDisplayed()))
+    private fun clickFile(href: String) {
+        awaitTag("artifacts:row:$href")
+        compose.onNodeWithTag("artifacts:row:$href").performClick()
     }
-
-    @SdkSuppress(minSdkVersion = android.os.Build.VERSION_CODES.O)
-    @Ignore("The app no longer requests install unknown apps permission")
-    @Test
-    fun testUserBeingAskedToGrantAllowInstallPackagesPermissions() {
-        // Prepare mocks
-        `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val files = ArrayList<File>()
-        files.add(
-            File(
-                "my-fancy-app.apk",
-                697840,
-                File.Content("/guestAuth/app/rest/builds/id:92912/artifacts/content/TCity.apk!/my-fancy-app.apk"),
-                "/guestAuth/app/rest/builds/id:92912/artifacts/metadata/TCity.apk!/my-fancy-app.apk"
-            )
-        )
-        val filesMock = Files(files)
-        `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(
-            Single.just(
-                filesMock
-            )
-        )
-
-        // Prepare intent
-        // <! ---------------------------------------------------------------------- !>
-        // Passing build object to activity, had to create it for real, Can't pass mock object as serializable in bundle :(
-        // <! ---------------------------------------------------------------------- !>
-        val intent = Intent()
-        val b = Bundle()
-        b.putSerializable(BundleExtractorValues.BUILD, Mocks.successBuild())
-        b.putString(BundleExtractorValues.NAME, BUILD_TYPE_NAME)
-        intent.putExtras(b)
-
-        // Start activity
-        activityRule.launchActivity(intent)
-
-        // Checking artifact tab title
-        openArtifacts()
-
-        // Clicking on apk to download
-        val artifactName = "my-fancy-app.apk"
-        ConditionWatcher.waitForCondition(object : Instruction() {
-            override fun getDescription(): String = "Can't click on artifact with name $artifactName"
-
-            override fun checkCondition(): Boolean = try {
-                onView(
-                    withRecyclerView(R.id.artifact_recycler_view)
-                        .atPositionOnView(0, R.id.title)
-                )
-                    .check(matches(withText(artifactName)))
-                    .perform(click())
-                true
-            } catch (ignored: AssertionError) {
-                false
-            }
-        })
-
-        // Click on download option
-        clickSheetAction(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.bottom_sheet.impl.R.string.artifact_download))
-
-        // Check dialog text
-        onView(withText(R.string.permissions_install_packages_dialog_content)).check(
-            matches(
-                isDisplayed()
-            )
-        )
-
-        /*// Confirm dialog
-        onView(withText(R.string.dialog_ok_title)).perform(click());
-
-        // Check filter builds activity is opened
-        intended(allOf(
-                hasAction(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES),
-                hasData("package:com.github.vase4kin.teamcityapp.mock.debug")));*/
+    private fun download(href: String) {
+        clickFile(href)
+        sheet(text(SheetR.string.artifact_download))
     }
 }

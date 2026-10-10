@@ -34,7 +34,6 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
@@ -53,6 +52,8 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.impl.R as HistoryR
 import teamcityapp.features.favorites.impl.R as FavoritesR
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.impl.R as NavigationR
@@ -126,10 +127,10 @@ class FavoritesFragmentTest {
         awaitProjectRow()
         compose.onNodeWithTag("navigation:row:configuration:build_type_id").performClick()
         awaitBuildList()
-        onView(withId(R.id.add_to_favorites)).perform(click())
+        compose.onNodeWithTag("history:favorite").performClick()
         compose.waitUntil(10_000) { "build_type_id" in storage.favoriteBuildTypeIds }
-        onView(withText(R.string.text_add_to_favorites)).check(matches(isDisplayed()))
-        onView(withText(R.string.text_view_favorites)).perform(click())
+        assertTextVisible(text(HistoryR.string.history_favorite_added))
+        compose.onNodeWithText(text(HistoryR.string.history_view)).performClick()
         awaitConfiguration("build_type_id")
         project("projectId123").assertTextEquals("Secret project")
         configuration("build_type_id").assertTextContains("build type")
@@ -142,9 +143,9 @@ class FavoritesFragmentTest {
         awaitConfiguration("build_type_id")
         configuration("build_type_id").performClick()
         awaitBuildList()
-        onView(withId(R.id.add_to_favorites)).perform(click())
+        compose.onNodeWithTag("history:favorite").performClick()
         compose.waitUntil(10_000) { storage.favoriteBuildTypeIds.isEmpty() }
-        onView(withText(R.string.text_remove_from_favorites)).check(matches(isDisplayed()))
+        assertTextVisible(text(HistoryR.string.history_favorite_removed))
         pressBack()
         assertTextVisible(text(FavoritesR.string.favorites_empty))
         Assert.assertTrue(storage.favoriteBuildTypeIds.isEmpty())
@@ -155,8 +156,8 @@ class FavoritesFragmentTest {
         openFavorites()
         awaitConfiguration("build_type_id")
         configuration("build_type_id").performClick()
-        intended(allOf(hasComponent(BuildListActivity::class.java.name), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
-        TestUtils.matchToolbarTitle("build type")
+        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
+        assertTextVisible("build type")
     }
 
     @Test fun projectHeaderOpensTheInstalledRecursiveNavigationAlias() {
@@ -300,19 +301,11 @@ class FavoritesFragmentTest {
     }
 
     private fun awaitBuildList() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
         compose.waitUntil(10_000) {
-            var ready = false
-            instrumentation.runOnMainSync {
-                val activities = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-                    .getActivitiesInStage(androidx.test.runner.lifecycle.Stage.RESUMED)
-                ready = activities.filterIsInstance<BuildListActivity>().any { activity ->
-                    activity.window.decorView.hasWindowFocus() &&
-                        activity.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.build_recycler_view)?.adapter?.itemCount?.let { it > 0 } == true
-                }
-            }
-            ready
+            compose.onAllNodesWithTag("history:list").fetchSemanticsNodes().isNotEmpty() &&
+                compose.onAllNodesWithTag("history:favorite").fetchSemanticsNodes().singleOrNull()?.config?.contains(androidx.compose.ui.semantics.SemanticsProperties.Disabled) == false
         }
+        compose.onNodeWithTag("history:favorite").assertIsEnabled()
     }
 
     private fun saveUser(name: String) {

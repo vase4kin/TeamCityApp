@@ -19,16 +19,16 @@ package com.github.vase4kin.teamcityapp.navigation.router
 
 import android.app.Activity
 import androidx.fragment.app.FragmentActivity
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import javax.inject.Inject
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.drawer.api.navigation.DrawerNavigation
 import teamcityapp.features.navigation.api.NavigationAppRouter
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 
 /** Stateless app bridge; callers supply the current UI owner. */
-class NavigationAppRouterImpl @Inject constructor(private val drawerNavigation: DrawerNavigation) : NavigationAppRouter {
+class NavigationAppRouterImpl @Inject constructor(private val drawerNavigation: DrawerNavigation, private val historyNavigation: BuildHistoryNavigation) : NavigationAppRouter {
     override fun openBuildConfiguration(activity: Activity, configuration: BuildConfigurationSummary) {
-        BuildListActivity.start(configuration.name, configuration.id, null, activity)
+        historyNavigation.open(activity, configuration.id, configuration.name)
     }
     override fun openDrawer(activity: Activity) {
         drawerNavigation.open((activity as FragmentActivity).supportFragmentManager)

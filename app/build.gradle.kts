@@ -189,6 +189,19 @@ dependencies {
     implementation(projects.features.navigation.impl)
     implementation(projects.features.favorites.api)
     implementation(projects.features.favorites.impl)
+    implementation(projects.libraries.builds)
+    implementation(projects.features.buildHistory.api)
+    implementation(projects.features.buildHistory.impl)
+    implementation(projects.features.runningBuilds.api)
+    implementation(projects.features.runningBuilds.impl)
+    implementation(projects.features.buildQueue.api)
+    implementation(projects.features.buildQueue.impl)
+    implementation(projects.features.snapshotDependencies.api)
+    implementation(projects.features.snapshotDependencies.impl)
+    implementation(projects.features.buildArtifacts.api)
+    implementation(projects.features.buildArtifacts.impl)
+    implementation(projects.features.buildOverview.api)
+    implementation(projects.features.buildOverview.impl)
     implementation(projects.features.bottomSheet.api)
     implementation(projects.features.bottomSheet.impl)
 
@@ -230,8 +243,6 @@ dependencies {
     implementation(libs.retrofit.retrofitRxjavaAdapter)
     // Dialogs
     // Views
-    implementation(libs.errorView)
-    implementation(libs.groupie.groupie)
     // View injection
     implementation(libs.butterknife.butterKnife)
     kapt(libs.butterknife.butterKnifeCompiler)
@@ -239,8 +250,6 @@ dependencies {
     implementation(libs.eventBus)
     // Others
     implementation(libs.jodaTime)
-    implementation(libs.mugen)
-    implementation(libs.shimmerlayout)
     // Onboarding
     implementation(libs.materialTapTargetPrompt)
     // Dagger

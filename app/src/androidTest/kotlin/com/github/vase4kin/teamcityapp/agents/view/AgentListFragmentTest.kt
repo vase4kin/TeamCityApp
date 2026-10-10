@@ -100,7 +100,7 @@ class AgentListFragmentTest {
     @Test fun showsTheAgentsToolbarAndOpensTheDrawer() {
         openAgents()
         assertTextVisible(text(AgentsR.string.agents_title))
-        compose.onNodeWithContentDescription(text(AgentsR.string.agents_open_drawer)).performClick()
+        compose.onNodeWithTag("agents:drawer").performClick()
         compose.onNodeWithTag("drawer:list").assertExists()
     }
 

@@ -31,7 +31,6 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
@@ -49,6 +48,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.impl.R as NavigationR
 
@@ -136,8 +136,9 @@ class HomeActivityTest {
         activityRule.launchActivity(null)
         awaitRow("configuration:build_type_id")
         row("configuration:build_type_id").performClick()
-        intended(allOf(hasComponent(BuildListActivity::class.java.name), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
-        TestUtils.matchToolbarTitle("build type")
+        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test fun rootToolbarOpensTheDrawer() {

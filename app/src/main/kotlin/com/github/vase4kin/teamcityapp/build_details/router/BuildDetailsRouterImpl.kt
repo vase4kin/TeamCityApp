@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
@@ -34,7 +34,8 @@ import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 class BuildDetailsRouterImpl(
     private val activity: Activity,
     private val chromeCustomTabs: ChromeCustomTabs,
-    private val navigation: NavigationNavigation
+    private val navigation: NavigationNavigation,
+    private val historyNavigation: BuildHistoryNavigation
 ) : BuildDetailsRouter {
 
     init {
@@ -63,7 +64,7 @@ class BuildDetailsRouterImpl(
      * {@inheritDoc}
      */
     override fun startBuildListActivity(name: String, id: String, filter: BuildListFilter?) {
-        BuildListActivity.start(name, id, filter, activity)
+        historyNavigation.open(activity, id, name, filter?.toLocator())
     }
 
     /**

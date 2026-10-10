@@ -53,7 +53,7 @@ fun AgentsScreen(
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.agents_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onOpenDrawer) {
+                    IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("agents:drawer")) {
                         Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.agents_open_drawer))
                     }
                 }

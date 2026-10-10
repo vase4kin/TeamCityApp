@@ -18,11 +18,11 @@
 package com.github.vase4kin.teamcityapp.app_navigation
 
 import androidx.fragment.app.Fragment
-import com.github.vase4kin.teamcityapp.queue.view.BuildQueueFragment
-import com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragment
 import teamcityapp.features.agents.api.AgentsNavigation
+import teamcityapp.features.build_queue.api.BuildQueueNavigation
 import teamcityapp.features.favorites.api.FavoritesNavigation
 import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.running_builds.api.RunningBuildsNavigation
 
 interface FragmentFactory {
     fun createFragment(index: Int): Fragment
@@ -32,14 +32,16 @@ interface FragmentFactory {
 class FragmentFactoryImpl(
     private val agentsNavigation: AgentsNavigation,
     private val navigation: NavigationNavigation,
-    private val favoritesNavigation: FavoritesNavigation
+    private val favoritesNavigation: FavoritesNavigation,
+    private val runningNavigation: RunningBuildsNavigation,
+    private val queueNavigation: BuildQueueNavigation
 ) : FragmentFactory {
     override fun createFragment(index: Int): Fragment {
         when (index) {
             AppNavigationItem.PROJECTS.ordinal -> return navigation.createFragment()
             AppNavigationItem.FAVORITES.ordinal -> return favoritesNavigation.createFragment()
-            AppNavigationItem.RUNNING_BUILDS.ordinal -> return RunningBuildsFragment()
-            AppNavigationItem.BUILD_QUEUE.ordinal -> return BuildQueueFragment()
+            AppNavigationItem.RUNNING_BUILDS.ordinal -> return runningNavigation.createFragment()
+            AppNavigationItem.BUILD_QUEUE.ordinal -> return queueNavigation.createFragment()
             AppNavigationItem.AGENTS.ordinal -> return agentsNavigation.createFragment()
         }
         throw IllegalStateException("Wrong index")

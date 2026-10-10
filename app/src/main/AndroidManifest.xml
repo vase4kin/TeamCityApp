@@ -34,16 +34,8 @@
             android:launchMode="singleTop"
             android:theme="@style/HomeTheme" />
         <activity
-            android:name=".buildlist.view.BuildListActivity"
-            android:label="@string/title_activity_build_list"
-            android:theme="@style/Theme.MyApp" />
-        <activity
             android:name=".build_details.view.BuildDetailsActivity"
             android:label="@string/title_activity_build"
-            android:theme="@style/Theme.MyApp" />
-        <activity
-            android:name=".artifact.view.ArtifactListActivity"
-            android:label="@string/tab_artifacts"
             android:theme="@style/Theme.MyApp" />
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"

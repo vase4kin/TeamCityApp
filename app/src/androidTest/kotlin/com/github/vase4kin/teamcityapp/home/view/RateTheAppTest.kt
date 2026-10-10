@@ -33,7 +33,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
@@ -54,6 +53,7 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.impl.R as NavigationR
 import teamcityapp.libraries.remote.RemoteService
@@ -146,8 +146,9 @@ class RateTheAppTest {
         compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
         awaitHandled()
         row("configuration:build_type_id").performClick()
-        intended(hasComponent(BuildListActivity::class.java.name))
-        TestUtils.matchToolbarTitle("build type")
+        intended(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY))
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }
 
     @Test fun emptyProjectDoesNotShowRating() {
