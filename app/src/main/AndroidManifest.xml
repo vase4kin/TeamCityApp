@@ -36,6 +36,8 @@
         <activity-alias android:name="teamcityapp.features.settings.impl.SettingsActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="false"
             android:label="@string/drawer_item_settings" />
+        <activity-alias android:name="teamcityapp.features.splash.impl.SplashActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="teamcityapp.features.splash.view.SplashActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="true">
             <intent-filter>

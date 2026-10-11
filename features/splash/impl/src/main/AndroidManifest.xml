@@ -14,13 +14,4 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <application>
-
-        <activity android:name="teamcityapp.features.splash.impl.SplashActivity"
-            android:exported="false" android:theme="@style/SplashTheme" />
-
-    </application>
-
-</manifest>
+<manifest />

@@ -27,6 +27,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
+import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 @RunWith(RobolectricTestRunner::class)
@@ -39,6 +40,7 @@ class IncomingDestinationResolverTest {
     @Test fun installedFeatureComponentsMapToTheirDestinationKeys() {
         assertEquals(AboutDestination, resolver.destination(intent(IncomingDestinationResolver.ABOUT_COMPONENT)))
         assertEquals(SettingsDestination, resolver.destination(intent(IncomingDestinationResolver.SETTINGS_COMPONENT)))
+        assertEquals(SplashNavigationDestination, resolver.destination(intent(IncomingDestinationResolver.SPLASH_COMPONENT)))
         verifyNoInteractions(registry)
     }
 
@@ -49,7 +51,7 @@ class IncomingDestinationResolverTest {
         verify(registry).decodeDestination("typed-about")
     }
 
-    @Test fun LauncherRootAndUnknownComponentsLeaveStartupSelectionToTheAccountCoordinator() {
+    @Test fun launcherRootAndUnknownComponentsLeaveStartupSelectionToTheAccountCoordinator() {
         assertNull(resolver.destination(Intent()))
         assertNull(resolver.destination(intent(MainActivity::class.java.name)))
         assertNull(resolver.destination(intent("teamcityapp.features.splash.view.SplashActivity")))

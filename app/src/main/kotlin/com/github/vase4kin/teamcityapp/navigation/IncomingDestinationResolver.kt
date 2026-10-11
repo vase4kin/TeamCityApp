@@ -21,6 +21,7 @@ import androidx.navigation3.runtime.NavKey
 import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
+import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 /** The app owns installed component compatibility; feature APIs retain only destination keys. */
@@ -30,10 +31,12 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
         return when (intent.component?.className) {
             ABOUT_COMPONENT -> AboutDestination
             SETTINGS_COMPONENT -> SettingsDestination
+            SPLASH_COMPONENT -> SplashNavigationDestination
             else -> null
         }
     }
     companion object {
+        const val SPLASH_COMPONENT = "teamcityapp.features.splash.impl.SplashActivity"
         const val ABOUT_COMPONENT = "teamcityapp.features.about.impl.AboutActivity"
         const val SETTINGS_COMPONENT = "teamcityapp.features.settings.impl.SettingsActivity"
     }

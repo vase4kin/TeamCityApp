@@ -18,9 +18,8 @@ package teamcityapp.features.splash.impl
 
 import android.content.ComponentName
 import android.content.Intent
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.compose.ui.test.onNodeWithText
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -28,8 +27,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.*
-import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -54,31 +54,33 @@ class SplashStartupTest {
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
 
     @Before fun before() {
+        TestUtils.disableOnboarding()
         app.appInjector.sharedUserStorage().clearAll()
     }
 
-    @After fun closeDestinations() {
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        instrumentation.runOnMainSync {
-            val monitor = androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry.getInstance()
-            androidx.test.runner.lifecycle.Stage.values().flatMap { monitor.getActivitiesInStage(it) }.distinct().filter { it is com.github.vase4kin.teamcityapp.home.view.HomeActivity || it is teamcityapp.features.login.impl.LoginActivity }.forEach { it.finish() }
-        }
-        instrumentation.waitForIdleSync()
-    }
-    private fun launch() = ActivityScenario.launch<SplashActivity>(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setComponent(ComponentName(app.packageName, SplashEntryPoint.LAUNCHER_ACTIVITY)))
+    private fun launch() = ActivityScenario.launch<MainActivity>(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setComponent(ComponentName(app.packageName, SplashEntryPoint.LAUNCHER_ACTIVITY)))
 
     @Test fun emptyStoreOpensTheExistingLoginScreen() {
         launch().use { scenario ->
-            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
-            compose.onNodeWithText(app.getString(teamcityapp.features.login.impl.R.string.text_app_description)).assertIsDisplayed()
+            val description = app.getString(teamcityapp.features.login.impl.R.string.text_app_description)
+            compose.waitUntil(10_000) { compose.onAllNodesWithText(description).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithText(description).assertIsDisplayed()
+            org.junit.Assert.assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            scenario.recreate()
+            compose.onNodeWithText(description).assertIsDisplayed()
         }
     }
 
     @Test fun storedAccountOpensTheExistingProjectsScreen() {
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         launch().use { scenario ->
-            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
-            compose.onNodeWithText(app.getString(teamcityapp.features.navigation.impl.R.string.navigation_projects_title)).assertIsDisplayed()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:row:project:id").fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("navigation:row:project:id").assertIsDisplayed()
+            compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
+            org.junit.Assert.assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            scenario.recreate()
+            compose.onNodeWithTag("navigation:row:project:id").assertIsDisplayed()
+            compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
         }
     }
 }
