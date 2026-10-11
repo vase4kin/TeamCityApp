@@ -30,7 +30,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
-| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: About, Settings, Splash, Test Details, Change Details and Manage Accounts hosts/DI removed; installed aliases verified; nine legacy activities, fragment/sheet hosts and native shells remain |
+| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: eight legacy activity hosts removed; canonical/older installed aliases verified; seven legacy activities, fragment/sheet hosts and native shells remain |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
 ## State and navigation contract
@@ -498,3 +498,22 @@ Verification passed with JDK 17:
 The first instrumentation compile caught duplicate imports in the migrated Hilt smoke test; they were corrected. The first emulator run passed 83/84 cases: the new Create Account Back test omitted its existing discard confirmation because the initial URL contains `https://`. The corrected test verifies that confirmation across recreation and then the retained account list; the complete 84-case rerun passes.
 
 Nine legacy activity hosts remain, along with feature fragment/sheet hosts and native Home/Build Details infrastructure. Login/Create Account host removal and root authentication integration coverage are next, followed by the remaining build/project hosts and all native shell callers. Installed argument/result compatibility, legacy saved-state compatibility, complete process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
+
+
+### Authentication host removal and root lifecycle coverage
+
+Checkpoint `f83c2b381` removes Login/Create Account activity classes, activity-scoped DI/routers, obsolete app outgoing routers and their API contracts, unused AppCompat dependencies, and Login's native theme. Existing Compose routes, Hilt ViewModels, authentication repositories and analytics remain the owners of behavior. Incoming legacy callers use the root destination launcher; Login's clear-task compatibility policy is preserved.
+
+The app manifest owns private root aliases for both the implementation component names and the older Login/Create Account names. The resolver maps all four names to their destination keys. Authentication/validation instrumentation now launches MainActivity through these aliases and verifies the actual Home destination and persisted account properties. Successful authentication replaces its stack; Back exits the root instead of returning to the form. The shared deprecated test rules accept an optional installed component, preserve their normal behavior for remaining legacy callers, and handle nullable default Intents explicitly. Their Kotlin files move to the Kotlin source root with the original license notices preserved.
+
+The existing Login pending-request recreation test runs through Navigation 3. New Create Account integration cases prove that a pending guest request retains its owner and submits only once across root recreation, and that replacing its account stack cancels the network call. A late success after cancellation cannot persist a new account or replace the selected account. Native light/dark authentication switch feedback and bottom-action/keyboard/rotation coverage now use the same root routes.
+
+Verification passed with JDK 17:
+
+- 675 local cases: Login (151), Create Account (122) and app (402), including 236 existing screenshot cases and the new four-name alias dispatch case. Stateless screen baselines are unchanged.
+- All 108 API 37 emulator cases passed: authentication and validation, native switch/bottom-action UI, installed aliases, root/Home/account/Drawer/workflow/Hilt/startup regressions. All 19 Login/Create Account validation cases then passed through the older installed aliases; the authentication and native UI suites already exercise the implementation aliases. Pending requests, cancellation, late responses, HTTP/SSL consent, persistence failure, duplicate validation, demo login, passwords leaving the UI, recreation and Back behavior pass.
+- Mock app/instrumentation APK builds, production Kotlin/Hilt compilation, affected lint and formatting passed. Both feature lint reports contain no issues. The final validation-fixture build and formatting checks passed again before the older-alias emulator run.
+
+The first emulator run exposed a nullable initial Intent in the deprecated custom rules and two stale startup test package names. The rules now provide an explicit default Intent before setting their alias component, and the suite uses the actual startup packages. The corrected complete 108-case run and older-alias checks pass.
+
+Seven legacy activity hosts remain: Navigation, Build History, Run Build, Filter Builds, Artifacts, Home and Build Details. Remove them and their native fragment/sheet callers, migrate the remaining integration fixtures, finish installed argument/result and legacy saved-state compatibility, and run complete process-restoration/all-module/both-flavor verification. The goal remains active; no push or PR was created.
