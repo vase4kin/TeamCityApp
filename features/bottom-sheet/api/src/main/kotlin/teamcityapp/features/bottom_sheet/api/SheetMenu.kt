@@ -16,8 +16,15 @@
 
 package teamcityapp.features.bottom_sheet.api
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class SheetAction { Copy, Branch, ArtifactOpen, ArtifactDownload, ArtifactBrowser, BuildType, Project }
+
+@Serializable
 enum class SheetMenuType { Default, Branch, ArtifactDefault, ArtifactBrowser, ArtifactFolder, ArtifactFull, BuildType, Project }
+
+@Serializable
 data class SheetItem(val action: SheetAction, val description: String) {
     val fileName: String get() = description.trimEnd('/').substringAfterLast('/')
 }

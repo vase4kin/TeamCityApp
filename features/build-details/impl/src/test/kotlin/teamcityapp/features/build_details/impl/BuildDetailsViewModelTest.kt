@@ -200,7 +200,8 @@ class BuildDetailsViewModelTest {
     }
 
     @Test fun forbiddenCancellationDoesNotRefreshAndServerFailureDoes() = runTest(dispatcher) {
-        val model = model()
+        val saved = handle()
+        val model = model(saved)
         cancel = { BuildDetailsMutation.Forbidden }
         model.requestCancellation()
         runCurrent()
@@ -216,6 +217,7 @@ class BuildDetailsViewModelTest {
         assertEquals(R.string.error_base_stop_build_error, model.state.value.notice?.message)
         assertEquals(1L, model.state.value.overviewRefresh)
         assertNull(model.state.value.operation)
+        assertEquals(1L, model(restored(saved), "restored-refresh").state.value.overviewRefresh)
     }
 
     @Test fun restartUsesRefreshedConfigurationAndRestorableQueuedHref() = runTest(dispatcher) {

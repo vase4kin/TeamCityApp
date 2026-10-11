@@ -26,23 +26,37 @@ import javax.inject.Inject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.Json
 import teamcityapp.features.build_overview.api.*
+import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.list_state.*
 
 @HiltViewModel
-class BuildOverviewViewModel @Inject constructor(savedStateHandle: SavedStateHandle, repository: BuildOverviewRepository, codec: BuildLaunchCodec) : ViewModel() {
-    private val incoming = codec.decode(requireNotNull(savedStateHandle.get<Serializable>(BuildOverviewNavigation.BUILD)))
+class BuildOverviewViewModel @Inject constructor(private val savedStateHandle: SavedStateHandle, repository: BuildOverviewRepository, codec: BuildLaunchCodec) : ViewModel() {
+    private val incoming = savedStateHandle.get<String>(JSON_BUILD)?.let { Json.decodeFromString<BuildLaunchData>(it) } ?: codec.decode(requireNotNull(savedStateHandle.get<Serializable>(BuildOverviewNavigation.BUILD)))
+    private var hostRefresh = savedStateHandle.get<Long>(HOST_REFRESH) ?: 0L
     private var loaded = false
     private var currentHref = incoming.href
     private val loader = RefreshableListLoader(flowOf(incoming.href)) { _, force ->
-        val build = repository.build(currentHref, force || (!loaded && incoming.isRunning))
+        val build = repository.build(currentHref, force || (!loaded && (incoming.isRunning || savedStateHandle.get<Boolean>(FORCE_INITIAL) == true)))
         currentCoroutineContext().ensureActive()
         currentHref = build.href
         loaded = true
         listOf(build)
     }
     val state = loader.state.map(::buildOverviewState).stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), BuildOverviewUiState())
+    fun refreshFromHost(version: Long) {
+        if (version <= hostRefresh) return
+        hostRefresh = version
+        savedStateHandle[HOST_REFRESH] = version
+        loader.refresh()
+    }
     fun refresh() = loader.refresh()
     fun retry() = loader.retry()
+    companion object {
+        internal const val FORCE_INITIAL = "overview.force.initial"
+        internal const val JSON_BUILD = "overview.build.json"
+        private const val HOST_REFRESH = "overview.host.refresh"
+    }
 }

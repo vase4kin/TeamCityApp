@@ -16,7 +16,5 @@
 
 package teamcityapp.features.build_overview.impl.tracker
 
-import teamcityapp.features.build_overview.api.BuildOverviewAction
-interface BuildOverviewTracker {
-    fun action(action: BuildOverviewAction, branch: String?)
-}
+import teamcityapp.features.build_overview.api.BuildOverviewAnalytics
+interface BuildOverviewTracker : BuildOverviewAnalytics

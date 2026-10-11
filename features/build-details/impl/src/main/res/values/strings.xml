@@ -55,4 +55,6 @@
     <string name="action_project">Open project</string>
     <string name="action_more">More actions</string>
     <string name="tab_with_count">%1$s (%2$d)</string>
+    <string name="build_element_copy_text">Text copied!</string>
+    <string name="platform_action_failed">Couldn’t open this action.</string>
 </resources>

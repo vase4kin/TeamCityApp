@@ -22,6 +22,7 @@ import java.io.Serializable
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
+import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import teamcityapp.features.build_overview.api.*
@@ -219,6 +220,41 @@ class BuildOverviewViewModelTest {
         runCurrent()
         assertEquals(ListUiState.Loading, vm.state.value.list)
         assertTrue(vm.state.value.actions.isEmpty())
+    }
+
+    @Test fun typedJsonArgumentsDoNotDecodeLegacyPayloadAndHostRefreshIsConsumedOnceAcrossCollectors() = runTest(dispatcher) {
+        val typed = BuildOverviewFixtures.finished.copy(href = "/typed")
+        repository.load = { _, _ -> typed }
+        val saved = SavedStateHandle(mapOf(BuildOverviewViewModel.JSON_BUILD to Json.encodeToString(typed), BuildOverviewNavigation.BUILD to "invalid legacy payload"))
+        val vm = BuildOverviewViewModel(saved, repository, codec).also { store.put("typed", it) }
+        val first = observe(vm)
+        runCurrent()
+        assertEquals(listOf("/typed" to false), repository.calls)
+        vm.refreshFromHost(1)
+        runCurrent()
+        assertEquals(listOf("/typed" to false, "/typed" to true), repository.calls)
+        first.cancel()
+        runCurrent()
+        vm.refreshFromHost(1)
+        observe(vm)
+        runCurrent()
+        assertEquals(2, repository.calls.size)
+        vm.refreshFromHost(2)
+        runCurrent()
+        assertEquals(3, repository.calls.size)
+    }
+
+    @Test fun mutationReplacementForcesFirstOverviewReadEvenWhenItsIncomingSnapshotIsFinished() = runTest(dispatcher) {
+        val typed = BuildOverviewFixtures.finished
+        val vm = BuildOverviewViewModel(SavedStateHandle(mapOf(BuildOverviewViewModel.JSON_BUILD to Json.encodeToString(typed), BuildOverviewViewModel.FORCE_INITIAL to true)), repository, codec).also { store.put("replacement", it) }
+        val first = observe(vm)
+        runCurrent()
+        assertEquals(listOf(typed.href to true), repository.calls)
+        first.cancel()
+        runCurrent()
+        observe(vm)
+        runCurrent()
+        assertEquals(1, repository.calls.size)
     }
     private class FakeRepository : BuildOverviewRepository {
         val calls = mutableListOf<Pair<String, Boolean>>()

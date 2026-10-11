@@ -49,6 +49,7 @@ internal class BuildDetailsViewModel @Inject constructor(
             selected = savedState.get<String>(SELECTED)?.let { name -> incoming.detailsTabs().firstOrNull { it.name == name } } ?: BuildDetailsTab.Overview,
             counts = incoming.detailsTabs().mapNotNull { tab -> savedState.get<Int>("count:${tab.name}")?.let { tab to it } }.toMap(),
             confirmation = savedState.get<String>(CONFIRMATION)?.let { Json.decodeFromString<BuildConfirmation>(it) },
+            overviewRefresh = savedState.get<Long>(OVERVIEW_REFRESH) ?: 0,
             notice = savedState.get<String>(NOTICE)?.let { Json.decodeFromString<BuildDetailsNotice>(it) },
             replacement = savedState.get<String>(REPLACEMENT)?.let { BuildDetailsReplacement(checkNotNull(savedState[REPLACEMENT_ID]), Json.decodeFromString<BuildLaunchData>(it)) }
         )
@@ -161,7 +162,9 @@ internal class BuildDetailsViewModel @Inject constructor(
     }
     private fun cancelFailed(operation: BuildDetailsOperation) {
         tracker.cancelFailed(false)
-        mutableState.value = state.value.copy(overviewRefresh = state.value.overviewRefresh + 1)
+        val version = state.value.overviewRefresh + 1
+        savedState[OVERVIEW_REFRESH] = version
+        mutableState.value = state.value.copy(overviewRefresh = version)
         notice(if (operation == BuildDetailsOperation.Stop) R.string.error_base_stop_build_error else R.string.error_base_remove_build_from_queue_error)
     }
     fun openQueued() {
@@ -211,6 +214,7 @@ internal class BuildDetailsViewModel @Inject constructor(
     companion object {
         internal const val BUILD = "details.incoming"
         internal const val NAME = "details.name"
+        private const val OVERVIEW_REFRESH = "details.overview.refresh"
         private const val CURRENT = "details.current"
         private const val SELECTED = "details.tab"
         private const val CONFIRMATION = "details.confirmation"

@@ -25,8 +25,10 @@ import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.serialization.json.Json
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
+import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.list_state.RefreshableListLoader
 
@@ -37,7 +39,7 @@ class ArtifactsViewModel @Inject constructor(
     codec: BuildLaunchCodec,
     private val tracker: ArtifactsTracker
 ) : ViewModel() {
-    val build = codec.decode(requireNotNull(savedStateHandle.get<Serializable>(ArtifactsNavigation.BUILD)))
+    val build = savedStateHandle.get<String>(JSON_BUILD)?.let { Json.decodeFromString<BuildLaunchData>(it) } ?: codec.decode(requireNotNull(savedStateHandle.get<Serializable>(ArtifactsNavigation.BUILD)))
     private val url = savedStateHandle.get<String>(ArtifactsNavigation.URL).orEmpty()
     private val title = savedStateHandle.get<String>(ArtifactsNavigation.NAME).orEmpty()
     private val loader = RefreshableListLoader(flowOf(url)) { path, force -> repository.entries(path, force) }
@@ -90,5 +92,8 @@ class ArtifactsViewModel @Inject constructor(
         lastClaimedToken = token
         download.value = ArtifactDownloadState.Idle
         return ready.file
+    }
+    companion object {
+        internal const val JSON_BUILD = "artifacts.build.json"
     }
 }

@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
 
-internal enum class BuildDetailsAction { Share, Browser, Cancel, Restart, Configuration, Project }
+internal typealias BuildDetailsAction = BuildDetailsCommand
 internal enum class BuildDetailsOperation(@StringRes val message: Int) {
     Stop(R.string.text_stopping_build),
     Remove(R.string.text_removing_build_from_queue),

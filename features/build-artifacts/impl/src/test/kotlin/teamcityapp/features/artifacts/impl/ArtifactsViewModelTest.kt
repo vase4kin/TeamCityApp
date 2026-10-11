@@ -22,6 +22,7 @@ import java.io.Serializable
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.*
+import kotlinx.serialization.json.Json
 import org.junit.*
 import org.junit.Assert.*
 import teamcityapp.features.artifacts.api.*
@@ -333,5 +334,21 @@ class ArtifactsViewModelTest {
             downloads += file
             return save(file)
         }
+    }
+
+    @Test fun typedJsonBuildKeepsFullSnapshotWithoutDecodingALegacyArgument() = runTest(dispatcher) {
+        val typed = build.copy(properties = BuildProperties(null), snapshotDependencies = BuildCollectionLink(null))
+        val vm = ArtifactsViewModel(
+            SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(typed), ArtifactsNavigation.BUILD to "invalid legacy payload", ArtifactsNavigation.URL to "/typed")),
+            repository,
+            codec,
+            object : ArtifactsTracker {
+                override fun viewShown() {}
+            }
+        ).also { store.put("typed", it) }
+        assertEquals(typed, vm.build)
+        observe(vm)
+        runCurrent()
+        assertEquals(listOf("/typed" to false), repository.calls)
     }
 }

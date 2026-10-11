@@ -23,6 +23,8 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_overview.impl" }
 dependencies {
+    implementation(projects.libraries.navigation)
+    implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildOverview.api)
     implementation(projects.features.bottomSheet.api)
     implementation(projects.libraries.listState)

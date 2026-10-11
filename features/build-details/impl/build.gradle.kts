@@ -24,6 +24,19 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_details.impl" }
 dependencies {
+    implementation(projects.libraries.navigation)
+    implementation(projects.libraries.chromeTabs)
+    implementation(projects.features.buildOverview.api)
+    implementation(projects.features.changes.api)
+    implementation(projects.features.tests.api)
+    implementation(projects.features.buildLog.api)
+    implementation(projects.features.properties.api)
+    implementation(projects.features.buildArtifacts.api)
+    implementation(projects.features.snapshotDependencies.api)
+    implementation(projects.features.buildHistory.api)
+    implementation(projects.features.navigation.api)
+    implementation(projects.features.filterBuilds.api)
+
     implementation(projects.features.buildDetails.api)
     implementation(projects.libraries.theme)
     implementation(libs.androidx.activity.compose)
@@ -34,6 +47,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
+    testImplementation(projects.features.bottomSheet.api)
     testImplementation(libs.coroutines.test)
     kapt(libs.dagger.compiler)
 }

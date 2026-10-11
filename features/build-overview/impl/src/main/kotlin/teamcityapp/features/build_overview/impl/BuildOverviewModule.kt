@@ -23,6 +23,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.FragmentComponent
 import dagger.hilt.components.SingletonComponent
+import teamcityapp.features.build_overview.api.BuildOverviewAnalytics
 import teamcityapp.features.build_overview.api.BuildOverviewNavigation
 import teamcityapp.features.build_overview.impl.tracker.*
 import teamcityapp.libraries.utils.requireScreenOwner
@@ -31,6 +32,8 @@ import teamcityapp.libraries.utils.requireScreenOwner
 @InstallIn(SingletonComponent::class)
 abstract class BuildOverviewModule {
     @Binds abstract fun navigation(impl: BuildOverviewNavigationImpl): BuildOverviewNavigation
+
+    @Binds abstract fun analytics(impl: BuildOverviewTrackerImpl): BuildOverviewAnalytics
 
     @Binds abstract fun tracker(impl: BuildOverviewTrackerImpl): BuildOverviewTracker
 }

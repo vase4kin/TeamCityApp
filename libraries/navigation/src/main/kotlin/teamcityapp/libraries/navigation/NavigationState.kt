@@ -106,8 +106,8 @@ class Navigator(
         return true
     }
 
-    fun <T : NavigationResult> consumeResult(entryId: String, type: KClass<T>): T? {
-        val index = snapshot.results.indexOfFirst { it.entryId == entryId && type.isInstance(it.value) }
+    fun <T : NavigationResult> consumeResult(entryId: String, type: KClass<T>, accepts: (T) -> Boolean = { true }): T? {
+        val index = snapshot.results.indexOfFirst { it.entryId == entryId && type.isInstance(it.value) && accepts(type.java.cast(it.value)) }
         if (index == -1) return null
         val result = type.java.cast(snapshot.results[index].value)
         state.value = snapshot.copy(results = snapshot.results.filterIndexed { i, _ -> i != index })

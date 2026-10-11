@@ -163,4 +163,17 @@ class NavigatorTest {
         assertFalse(nav.popTo("removed", Selected("favorites")))
         assertEquals(original, nav.snapshot)
     }
+
+    @Test fun scopedConsumersLeaveOtherChildResultsInPlaceAndPreserveMatchingOrder() {
+        val nav = navigator()
+        nav.push(Detail("first-sheet"))
+        nav.finish(Selected("first-child"))
+        nav.push(Detail("second-sheet"))
+        nav.finish(Selected("second-child"))
+        assertNull(nav.consumeResult("root", Selected::class) { it.value == "missing-child" })
+        assertEquals(2, nav.snapshot.results.size)
+        assertEquals(Selected("second-child"), nav.consumeResult("root", Selected::class) { it.value == "second-child" })
+        assertEquals(Selected("first-child"), nav.consumeResult("root", Selected::class) { it.value == "first-child" })
+        assertTrue(nav.snapshot.results.isEmpty())
+    }
 }

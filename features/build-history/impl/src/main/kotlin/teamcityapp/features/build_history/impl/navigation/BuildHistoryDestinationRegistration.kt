@@ -27,7 +27,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
-import teamcityapp.features.build_details.api.BuildDetailsNavigation
+import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.*
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.BuildHistoryRoute
@@ -42,7 +42,6 @@ import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 import teamcityapp.libraries.navigation.*
 
 class BuildHistoryDestinationRegistration @Inject constructor(
-    private val builds: BuildDetailsNavigation,
     private val filters: BuildHistoryFilterAdapter,
     private val filterResult: FilterBuildsResultAdapter
 ) : FeatureDestination<BuildHistoryDestination>(BuildHistoryDestination::class, BuildHistoryDestination.serializer()) {
@@ -74,7 +73,9 @@ class BuildHistoryDestinationRegistration @Inject constructor(
                     override fun navigateUp() {
                         if (!navigator.pop()) activity.finish()
                     }
-                    override fun openBuild(build: BuildLaunchData, configurationName: String) = builds.open(activity, build, configurationName)
+                    override fun openBuild(build: BuildLaunchData, configurationName: String) {
+                        navigator.push(BuildDetailsDestination(build, configurationName))
+                    }
                     override fun openRunBuild(configurationId: String) {
                         navigator.push(RunBuildDestination(configurationId, entryId))
                     }

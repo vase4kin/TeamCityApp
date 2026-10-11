@@ -24,7 +24,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
-import teamcityapp.features.build_details.api.BuildDetailsNavigation
+import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.features.running_builds.api.navigation.RunningBuildsDestination
@@ -33,7 +33,7 @@ import teamcityapp.features.running_builds.impl.router.RunningBuildsRouter
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.navigation.*
 
-class RunningBuildsDestinationRegistration @Inject constructor(private val builds: BuildDetailsNavigation) : FeatureDestination<RunningBuildsDestination>(RunningBuildsDestination::class, RunningBuildsDestination.serializer()) {
+class RunningBuildsDestinationRegistration @Inject constructor() : FeatureDestination<RunningBuildsDestination>(RunningBuildsDestination::class, RunningBuildsDestination.serializer()) {
     @Composable override fun Content(destination: RunningBuildsDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
         val router = remember(activity, navigator, entryId) {
@@ -41,7 +41,9 @@ class RunningBuildsDestinationRegistration @Inject constructor(private val build
                 override fun openDrawer() {
                     navigator.push(DrawerDestination)
                 }
-                override fun openBuild(build: BuildLaunchData) = builds.open(activity, build)
+                override fun openBuild(build: BuildLaunchData) {
+                    navigator.push(BuildDetailsDestination(build))
+                }
                 override fun openBuildHistory(configurationId: String, configurationName: String) {
                     navigator.push(BuildHistoryDestination(configurationId, configurationName))
                 }
