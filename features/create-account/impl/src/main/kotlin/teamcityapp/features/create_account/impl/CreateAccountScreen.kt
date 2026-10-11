@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.authentication.*
 import teamcityapp.libraries.theme.*
 
@@ -37,15 +36,15 @@ fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFo
     val scrollState = rememberScrollState()
     TeamCityScreen(stringResource(R.string.add_new_account_dialog_title), onClose, bottomBar = {
         TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("create-account:bottom-action")) {
-            Button(onSubmit, Modifier.fillMaxWidth().padding(16.dp).heightIn(min = 56.dp).testTag("create-account:submit"), enabled = !state.form.busy) {
+            Button(onSubmit, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("create-account:submit"), enabled = !state.form.busy) {
                 Text(stringResource(R.string.add_new_account_dialog_create_account_button_text))
             }
         }
     }) { modifier ->
         Column(modifier) {
-            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("create-account:scroll").padding(16.dp), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
-                Card(Modifier.widthIn(max = 560.dp).fillMaxWidth().testTag("create-account:form"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(vertical = 24.dp), duplicateMessage = stringResource(R.string.add_new_account_dialog_account_exist_error_message), horizontalPadding = 24.dp)
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("create-account:scroll").padding(TeamCityDimensions.contentPadding), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
+                Card(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth).fillMaxWidth().testTag("create-account:form"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(vertical = TeamCityDimensions.sectionSpacing), duplicateMessage = stringResource(R.string.add_new_account_dialog_account_exist_error_message), horizontalPadding = TeamCityDimensions.sectionSpacing)
                 }
             }
         }

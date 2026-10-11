@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.navigation.api.NavigationEntry
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
@@ -85,7 +84,7 @@ fun NavigationScreen(
                 "$identity:$occurrence"
             }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("navigation:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("navigation:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                     itemsIndexed(entries, key = { index, _ -> keys[index] }, contentType = { _, entry -> entry::class }) { index, entry ->
                         val hasRating = state.rating is RatingPromptState.Available || state.rating == RatingPromptState.Unavailable
                         val hasPrevious = index > 0 && entries[index - 1]::class == entry::class && !(index == 1 && hasRating)
@@ -136,7 +135,7 @@ internal fun NavigationEntryRow(entry: NavigationEntry, onClick: () -> Unit, mod
             }
         }
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Text(name, style = MaterialTheme.typography.titleMedium)
             if (description != null) Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
@@ -148,9 +147,9 @@ internal fun RatingPromptCard(state: RatingPromptState.Available, onCancel: () -
     ElevatedCard(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("navigation:rating")) {
         Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
             Text(stringResource(R.string.navigation_rate_title), style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.navigation_rate_description), Modifier.padding(top = 8.dp), style = MaterialTheme.typography.bodyMedium)
-            if (state.saveFailed) ErrorNotice(stringResource(R.string.navigation_rate_save_failed), modifier = Modifier.padding(top = 8.dp))
-            Row(Modifier.fillMaxWidth().padding(top = 8.dp), horizontalArrangement = Arrangement.End) {
+            Text(stringResource(R.string.navigation_rate_description), Modifier.padding(top = TeamCityDimensions.smallSpacing), style = MaterialTheme.typography.bodyMedium)
+            if (state.saveFailed) ErrorNotice(stringResource(R.string.navigation_rate_save_failed), modifier = Modifier.padding(top = TeamCityDimensions.smallSpacing))
+            Row(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.smallSpacing), horizontalArrangement = Arrangement.End) {
                 TextButton(onCancel, enabled = !state.isSaving, modifier = Modifier.testTag("navigation:rate-cancel")) { Text(stringResource(R.string.navigation_rate_cancel)) }
                 TextButton(onRateNow, enabled = !state.isSaving, modifier = Modifier.testTag("navigation:rate-now")) { Text(stringResource(R.string.navigation_rate_now)) }
             }
@@ -161,7 +160,7 @@ internal fun RatingPromptCard(state: RatingPromptState.Available, onCancel: () -
 
 @Composable
 private fun RatingUnavailable(onRetry: () -> Unit) {
-    ErrorNotice(stringResource(R.string.navigation_rate_unavailable), onRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("navigation:rating-unavailable"), actionLabel = stringResource(R.string.navigation_rate_retry))
+    ErrorNotice(stringResource(R.string.navigation_rate_unavailable), onRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("navigation:rating-unavailable"), actionLabel = stringResource(R.string.navigation_rate_retry))
 }
 
 @Preview

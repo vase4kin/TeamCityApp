@@ -38,9 +38,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.TeamCityDimensions
 
 /** Bounds come from this screen's actual controls, including edge-to-edge insets and resizing. */
 @Composable
@@ -66,33 +66,33 @@ internal fun HistoryCoachmark(state: OnboardingState.Available, anchor: Rect, on
             .pointerInput(state.saving) { detectTapGestures { if (!state.saving) onDismiss() } }
     ) {
         Canvas(Modifier.matchParentSize()) {
-            val highlighted = anchor.inflate(8.dp.toPx())
+            val highlighted = anchor.inflate(TeamCityDimensions.smallSpacing.toPx())
             val mask = Path().apply {
                 fillType = PathFillType.EvenOdd
                 addRect(Rect(0f, 0f, size.width, size.height))
-                addRoundRect(RoundRect(highlighted, CornerRadius(16.dp.toPx())))
+                addRoundRect(RoundRect(highlighted, CornerRadius(TeamCityDimensions.coachmarkCornerRadius.toPx())))
             }
             drawPath(mask, Color.Black.copy(alpha = 0.72f))
-            drawRoundRect(Color.White, highlighted.topLeft, highlighted.size, CornerRadius(16.dp.toPx()), style = Stroke(2.dp.toPx()))
+            drawRoundRect(Color.White, highlighted.topLeft, highlighted.size, CornerRadius(TeamCityDimensions.coachmarkCornerRadius.toPx()), style = Stroke(TeamCityDimensions.coachmarkStrokeWidth.toPx()))
         }
-        val inset = 16.dp
+        val inset = TeamCityDimensions.contentPadding
         val targetTop = with(density) { anchor.top.toDp() }
         val targetBottom = with(density) { anchor.bottom.toDp() }
         // Run's explanation sits above the FAB; toolbar explanations start below their target.
-        val topSpace = if (prompt == BuildHistoryPrompt.Run) inset else targetBottom + 16.dp
-        val bottomSpace = if (prompt == BuildHistoryPrompt.Run) maxHeight - targetTop + 16.dp else inset
+        val topSpace = if (prompt == BuildHistoryPrompt.Run) inset else targetBottom + TeamCityDimensions.contentPadding
+        val bottomSpace = if (prompt == BuildHistoryPrompt.Run) maxHeight - targetTop + TeamCityDimensions.contentPadding else inset
         Box(
             Modifier.fillMaxSize().padding(start = inset, end = inset, top = topSpace, bottom = bottomSpace),
             contentAlignment = if (prompt == BuildHistoryPrompt.Run) Alignment.BottomEnd else Alignment.TopEnd
         ) {
-            Card(Modifier.widthIn(max = 480.dp).fillMaxWidth()) {
-                Column(Modifier.verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Card(Modifier.widthIn(max = TeamCityDimensions.messageMaxWidth).fillMaxWidth()) {
+                Column(Modifier.verticalScroll(rememberScrollState()).padding(TeamCityDimensions.largeContentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
                     Text(title, style = MaterialTheme.typography.headlineSmall)
                     Text(description, style = MaterialTheme.typography.bodyLarge)
                     if (state.saveFailed) ErrorNotice(stringResource(R.string.history_prompt_save_failed), modifier = Modifier.fillMaxWidth())
                     Button(onClick = onDismiss, enabled = !state.saving, modifier = Modifier.align(Alignment.End).testTag("history:prompt-dismiss")) {
                         if (state.saving) {
-                            CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                         } else {
                             Text(stringResource(if (state.saveFailed) R.string.history_retry else R.string.history_got_it))
                         }

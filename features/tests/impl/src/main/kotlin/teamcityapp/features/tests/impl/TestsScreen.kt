@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.tests.api.*
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
@@ -61,8 +60,8 @@ internal fun TestsScreen(
         Column {
             if (TestsFilter.entries.any { counts.count(it) > 0 }) {
                 FlowRow(
-                    Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.extraSmallSpacing),
+                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)
                 ) {
                     TestsFilter.entries.filter { it == filter || counts.count(it) > 0 }.forEach { option ->
                         FilterChip(
@@ -75,7 +74,7 @@ internal fun TestsScreen(
                 }
             }
             if (countState == TestsCountState.Unavailable) {
-                ErrorNotice(stringResource(R.string.tests_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.tests_retry_count))
+                ErrorNotice(stringResource(R.string.tests_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.tests_retry_count))
             }
             TeamCityListContainer(
                 state,
@@ -87,7 +86,7 @@ internal fun TestsScreen(
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                     LazyColumn(
                         Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("tests:list"),
-                        contentPadding = PaddingValues(vertical = 8.dp)
+                        contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)
                     ) {
                         items(itemCount, key = { itemPeek(it)?.id ?: "tests:placeholder:$it" }, contentType = { "test" }) { index ->
                             val test = itemAt(index)
@@ -167,11 +166,11 @@ internal fun TestRow(test: TestOccurrence, onClick: () -> Unit, modifier: Modifi
                 containerColor = if (isError) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
                 contentColor = if (isError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
-                Icon(painterResource(icon), null, Modifier.size(24.dp))
+                Icon(painterResource(icon), null, Modifier.size(TeamCityDimensions.iconSize))
             }
         }
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Text(test.name, style = MaterialTheme.typography.titleMedium)
             Text(statusLabel, style = MaterialTheme.typography.labelMedium, color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
         }

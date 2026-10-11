@@ -27,14 +27,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.bottom_sheet.api.*
 import teamcityapp.libraries.theme.*
 
 @Composable
 fun BottomSheetScreen(state: BottomSheetUiState, onAction: (SheetItem) -> Unit) {
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
-        Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)) {
+        Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = TeamCityDimensions.largeCornerRadius, topEnd = TeamCityDimensions.largeCornerRadius)) {
             Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).testTag("sheet:content")) {
                 TeamCitySheetHeader(state.title)
                 state.items.forEach { item ->
@@ -54,12 +53,12 @@ fun BottomSheetScreen(state: BottomSheetUiState, onAction: (SheetItem) -> Unit) 
                         SheetAction.ArtifactBrowser -> R.drawable.ic_open_in_browser_black_24dp
                         else -> R.drawable.ic_open_in_new_black_24dp
                     }
-                    Row(Modifier.fillMaxWidth().heightIn(min = 72.dp).clickable(role = androidx.compose.ui.semantics.Role.Button) { onAction(item) }.padding(horizontal = 32.dp, vertical = 4.dp).testTag("sheet:${item.action}"), verticalAlignment = Alignment.CenterVertically) {
-                        Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.secondaryContainer) { Icon(painterResource(icon), null, Modifier.padding(12.dp).size(24.dp)) }
-                        Text(stringResource(label), Modifier.padding(start = 16.dp), style = MaterialTheme.typography.bodyLarge)
+                    Row(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.listRowMinHeight).clickable(role = androidx.compose.ui.semantics.Role.Button) { onAction(item) }.padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.extraSmallSpacing).testTag("sheet:${item.action}"), verticalAlignment = Alignment.CenterVertically) {
+                        Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.secondaryContainer) { Icon(painterResource(icon), null, Modifier.padding(TeamCityDimensions.mediumSpacing).size(TeamCityDimensions.iconSize)) }
+                        Text(stringResource(label), Modifier.padding(start = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge)
                     }
                 }
-                Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(TeamCityDimensions.smallSpacing))
             }
         }
     }

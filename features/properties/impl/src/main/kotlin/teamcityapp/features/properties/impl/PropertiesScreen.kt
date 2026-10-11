@@ -47,7 +47,6 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.properties.api.Property
 import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.TeamCityDimensions
@@ -78,7 +77,7 @@ fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modif
             }
 
             is PropertiesUiState.Content -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
                     // Duplicate parameter names are valid; preserve their order and identities by index.
                     itemsIndexed(state.properties) { index, property ->
                         PropertyRow(property, { onCopy(property) }, index, state.properties.lastIndex)
@@ -108,11 +107,11 @@ private fun PropertyRow(property: Property, onCopy: () -> Unit, index: Int, last
             Row(
                 Modifier.fillMaxWidth().testTag("properties:row:$index").then(
                     if (empty) Modifier else Modifier.clickable(role = Role.Button, onClickLabel = copyLabel, onClick = onCopy)
-                ).padding(horizontal = 16.dp, vertical = 18.dp),
+                ).padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.propertyRowVerticalPadding),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(14.dp)
+                horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyContentSpacing)
             ) {
-                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
                     Text(property.name, color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.bodyMedium)
                     if (!expanded) {
                         SelectionContainer {
@@ -132,7 +131,7 @@ private fun PropertyRow(property: Property, onCopy: () -> Unit, index: Int, last
                         painter = painterResource(R.drawable.ic_content_copy_black_24dp),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(TeamCityDimensions.compactIconSize)
                     )
                 }
             }
@@ -144,19 +143,19 @@ private fun PropertyRow(property: Property, onCopy: () -> Unit, index: Int, last
                         .semantics {
                             contentDescription = expandDescription
                             stateDescription = expandLabel
-                        }.padding(horizontal = 16.dp, vertical = 12.dp),
+                        }.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.mediumSpacing),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(expandLabel, color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
-                    Icon(painterResource(if (expanded) R.drawable.ic_expand_less_24dp else R.drawable.ic_expand_more_24dp), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                    Icon(painterResource(if (expanded) R.drawable.ic_expand_less_24dp else R.drawable.ic_expand_more_24dp), null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(TeamCityDimensions.compactIconSize))
                 }
             }
             if (expanded) {
                 SelectionContainer {
                     Text(
                         property.value,
-                        Modifier.fillMaxWidth().testTag("properties:full:$index").padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                        Modifier.fillMaxWidth().testTag("properties:full:$index").padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, bottom = TeamCityDimensions.contentPadding),
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.bodyLarge.copy(fontFamily = FontFamily.Monospace)
                     )

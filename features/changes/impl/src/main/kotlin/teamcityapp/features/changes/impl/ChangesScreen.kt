@@ -28,7 +28,6 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.list_state.ListUiState
@@ -58,7 +57,7 @@ internal fun ChangesScreen(
     Surface(modifier.fillMaxSize()) {
         Column {
             if (countState == ChangesCountState.Unavailable) {
-                ErrorNotice(stringResource(R.string.changes_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.changes_retry_count))
+                ErrorNotice(stringResource(R.string.changes_count_unavailable), onCountRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.changes_retry_count))
             }
             TeamCityListContainer(
                 state,
@@ -68,7 +67,7 @@ internal fun ChangesScreen(
                 empty = { TeamCityListEmpty(stringResource(R.string.changes_empty)) }
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                         items(itemCount, key = itemKey, contentType = { "change" }) { index ->
                             val change = itemAt(index)
                             if (change == null) TeamCityListLoadingRow(position = listRowPosition(index, itemCount)) else ChangeRow(change, { onChange(change) }, listRowPosition(index, itemCount))
@@ -97,7 +96,7 @@ private fun ChangeRow(change: ChangeDetails, onClick: () -> Unit, position: List
             }
         }
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Text(change.comment.trim(), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(R.string.changes_author_date, change.userName, change.date), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(change.revision, maxLines = 1, overflow = TextOverflow.Ellipsis, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

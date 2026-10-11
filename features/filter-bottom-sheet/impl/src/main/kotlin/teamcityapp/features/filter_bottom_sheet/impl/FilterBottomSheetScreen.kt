@@ -32,7 +32,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.libraries.theme.*
 
@@ -58,20 +57,20 @@ fun FilterBottomSheetScreen(state: FilterBottomSheetUiState, onApply: () -> Unit
         QuickFilter.AgentsDisconnected -> R.string.selected_disconnected
     }
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
-        Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)) {
+        Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = TeamCityDimensions.largeCornerRadius, topEnd = TeamCityDimensions.largeCornerRadius)) {
             Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).selectableGroup().testTag("quick-filter:content")) {
                 TeamCitySheetHeader(stringResource(title))
-                Surface(Modifier.fillMaxWidth().padding(horizontal = 16.dp), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.primaryContainer) {
-                    Row(Modifier.padding(16.dp).testTag("quick-filter:selected").semantics { this.selected = true }, verticalAlignment = Alignment.CenterVertically) {
+                Surface(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.primaryContainer) {
+                    Row(Modifier.padding(TeamCityDimensions.contentPadding).testTag("quick-filter:selected").semantics { this.selected = true }, verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = true, onClick = null)
-                        Text(stringResource(selected), Modifier.padding(start = 12.dp), style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(selected), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.titleMedium)
                     }
                 }
-                Row(Modifier.fillMaxWidth().heightIn(min = 64.dp).selectable(selected = false, enabled = !state.applying, role = Role.RadioButton, onClick = onApply).padding(start = 32.dp, end = 32.dp).testTag("quick-filter:apply"), verticalAlignment = Alignment.CenterVertically) {
-                    if (state.applying) CircularProgressIndicator(Modifier.size(24.dp)) else RadioButton(selected = false, onClick = null)
-                    Text(stringResource(description), Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
+                Row(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.selectionRowMinHeight).selectable(selected = false, enabled = !state.applying, role = Role.RadioButton, onClick = onApply).padding(start = TeamCityDimensions.extraLargeSpacing, end = TeamCityDimensions.extraLargeSpacing).testTag("quick-filter:apply"), verticalAlignment = Alignment.CenterVertically) {
+                    if (state.applying) CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize)) else RadioButton(selected = false, onClick = null)
+                    Text(stringResource(description), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.bodyLarge)
                 }
-                if (state.failed) ErrorNotice(stringResource(R.string.filter_apply_error), onApply, Modifier.padding(16.dp).testTag("quick-filter:error"), enabled = !state.applying)
+                if (state.failed) ErrorNotice(stringResource(R.string.filter_apply_error), onApply, Modifier.padding(TeamCityDimensions.contentPadding).testTag("quick-filter:error"), enabled = !state.applying)
             }
         }
     }

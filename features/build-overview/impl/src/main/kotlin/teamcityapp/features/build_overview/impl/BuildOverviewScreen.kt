@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.TeamCityDimensions
@@ -39,7 +38,7 @@ fun BuildOverviewScreen(state: BuildOverviewUiState, onRefresh: () -> Unit, onRe
     TeamCityListContainer(state.list, onRefresh, onRetry, modifier = modifier.fillMaxSize().testTag("overview:screen"), empty = { TeamCityListEmpty(stringResource(R.string.overview_empty)) }) {
         val rows = (state.list as? ListUiState.Content<OverviewRow>)?.items.orEmpty()
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+            LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                 itemsIndexed(rows, key = { _, row -> row.field }, contentType = { _, row -> row.icon }) { index, row ->
                     OverviewRowContent(row, { onRowClick(row) }, listRowPosition(index, rows.size))
                 }
@@ -61,14 +60,14 @@ internal fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit, position:
                 contentColor = if (isError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 if (row.icon == OverviewIcon.Running) {
-                    CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = 2.dp)
+                    CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                 } else {
                     Icon(painterResource(row.icon.drawable()), null, Modifier.size(TeamCityDimensions.iconSize))
                 }
             }
         }
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Text(stringResource(row.field.label()), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(row.value.resolve(), style = MaterialTheme.typography.titleMedium)
         }

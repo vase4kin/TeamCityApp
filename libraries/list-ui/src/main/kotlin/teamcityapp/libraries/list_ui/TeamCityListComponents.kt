@@ -41,9 +41,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.MessageContent
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Only adjacent rows in the same logical section share their inside corners. */
@@ -84,15 +84,15 @@ fun TeamCityListRow(
         )
     }
     Surface(
-        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 1.dp).clip(shape).then(interaction),
+        modifier = modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.listRowVerticalSpacing).clip(shape).then(interaction),
         shape = shape,
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         Row(
-            Modifier.fillMaxWidth().heightIn(min = 72.dp).padding(horizontal = 12.dp, vertical = 14.dp),
+            Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.listRowMinHeight).padding(horizontal = TeamCityDimensions.mediumSpacing, vertical = TeamCityDimensions.listRowVerticalPadding),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)
         ) {
             leadingContent?.invoke()
             content()
@@ -113,11 +113,11 @@ private fun listRowShape(position: ListRowPosition, pressed: Boolean): Shape {
 private fun animateListCorner(outer: Boolean, pressed: Boolean): Dp {
     val value by animateDpAsState(
         targetValue = if (pressed) {
-            16.dp
+            TeamCityDimensions.listPressedCornerRadius
         } else if (outer) {
-            24.dp
+            TeamCityDimensions.listOuterCornerRadius
         } else {
-            4.dp
+            TeamCityDimensions.listInnerCornerRadius
         },
         animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
         label = "list corner"
@@ -132,7 +132,7 @@ fun TeamCityListLeadingIcon(
     contentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     content: @Composable () -> Unit
 ) {
-    Surface(modifier = modifier.size(40.dp), shape = RoundedCornerShape(14.dp), color = containerColor, contentColor = contentColor) {
+    Surface(modifier = modifier.size(TeamCityDimensions.listLeadingContainerSize), shape = RoundedCornerShape(TeamCityDimensions.listLeadingCornerRadius), color = containerColor, contentColor = contentColor) {
         Box(contentAlignment = Alignment.Center) { content() }
     }
 }
@@ -148,7 +148,7 @@ fun TeamCityListSectionHeader(title: String, modifier: Modifier = Modifier, onCl
     val interaction = if (onClick == null) Modifier else Modifier.clickable(onClick = onClick)
     Text(
         title,
-        modifier.fillMaxWidth().heightIn(min = 48.dp).then(interaction).semantics { heading() }.padding(horizontal = 20.dp, vertical = 12.dp),
+        modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.minimumTouchTarget).then(interaction).semantics { heading() }.padding(horizontal = TeamCityDimensions.largeContentPadding, vertical = TeamCityDimensions.mediumSpacing),
         style = MaterialTheme.typography.titleSmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
@@ -160,8 +160,8 @@ fun TeamCityListSectionHeader(title: String, modifier: Modifier = Modifier, onCl
 fun TeamCityListLoading(modifier: Modifier = Modifier) {
     val description = stringResource(R.string.list_loading)
     Column(modifier.fillMaxSize().semantics { stateDescription = description }) {
-        Row(Modifier.padding(horizontal = 20.dp, vertical = 16.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            LoadingIndicator(Modifier.size(40.dp))
+        Row(Modifier.padding(horizontal = TeamCityDimensions.largeContentPadding, vertical = TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
+            LoadingIndicator(Modifier.size(TeamCityDimensions.listLeadingContainerSize))
             Text(description, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         }
         repeat(6) { TeamCityListLoadingRow(position = listRowPosition(it, 6)) }
@@ -171,12 +171,12 @@ fun TeamCityListLoading(modifier: Modifier = Modifier) {
 @Composable
 fun TeamCityListLoadingRow(modifier: Modifier = Modifier, position: ListRowPosition = ListRowPosition.Single) {
     TeamCityListRow(modifier = modifier, position = position, leadingContent = {
-        Spacer(Modifier.size(40.dp).clip(RoundedCornerShape(14.dp)).background(MaterialTheme.colorScheme.surfaceContainerHighest))
+        Spacer(Modifier.size(TeamCityDimensions.listLeadingContainerSize).clip(RoundedCornerShape(TeamCityDimensions.listLeadingCornerRadius)).background(MaterialTheme.colorScheme.surfaceContainerHighest))
     }) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Spacer(Modifier.fillMaxWidth(.45f).height(16.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceContainerHighest))
-            Spacer(Modifier.fillMaxWidth(.95f).height(12.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceContainerHighest))
-            Spacer(Modifier.fillMaxWidth(.62f).height(12.dp).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceContainer))
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+            Spacer(Modifier.fillMaxWidth(.45f).height(TeamCityDimensions.skeletonTitleHeight).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceContainerHighest))
+            Spacer(Modifier.fillMaxWidth(.95f).height(TeamCityDimensions.skeletonBodyHeight).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceContainerHighest))
+            Spacer(Modifier.fillMaxWidth(.62f).height(TeamCityDimensions.skeletonBodyHeight).clip(MaterialTheme.shapes.small).background(MaterialTheme.colorScheme.surfaceContainer))
         }
     }
 }
@@ -186,8 +186,8 @@ fun TeamCityListLoadingRow(modifier: Modifier = Modifier, position: ListRowPosit
 @Composable
 fun TeamCityListAppendLoading(modifier: Modifier = Modifier) {
     val description = stringResource(R.string.list_loading_more)
-    Box(modifier.fillMaxWidth().padding(24.dp).semantics { stateDescription = description }, contentAlignment = Alignment.Center) {
-        LoadingIndicator(Modifier.size(40.dp))
+    Box(modifier.fillMaxWidth().padding(TeamCityDimensions.sectionSpacing).semantics { stateDescription = description }, contentAlignment = Alignment.Center) {
+        LoadingIndicator(Modifier.size(TeamCityDimensions.listLeadingContainerSize))
     }
 }
 
@@ -196,7 +196,7 @@ fun TeamCityListAppendRetry(onRetry: () -> Unit, modifier: Modifier = Modifier) 
     ErrorNotice(
         message = stringResource(R.string.list_append_failed),
         onRetry = onRetry,
-        modifier = modifier.fillMaxWidth().padding(16.dp),
+        modifier = modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding),
         actionLabel = stringResource(R.string.list_action_retry)
     )
 }

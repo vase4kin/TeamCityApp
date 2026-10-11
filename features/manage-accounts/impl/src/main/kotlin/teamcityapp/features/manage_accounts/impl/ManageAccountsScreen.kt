@@ -41,7 +41,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.manage_accounts.api.ManagedAccount
 import teamcityapp.features.manage_accounts.api.ManagedAccountId
 import teamcityapp.libraries.resources.R as SharedR
@@ -74,9 +73,9 @@ fun ManageAccountsScreen(
             val removalFailed = state.removal is AccountRemovalUiState.Error
             val reserveActionLane = removalFailed || state.accounts == AccountListUiState.Error
             var addActionHeight by remember { mutableIntStateOf(0) }
-            val addActionSpace = if (addActionHeight == 0) 112.dp else with(LocalDensity.current) { addActionHeight.toDp() }
+            val addActionSpace = if (addActionHeight == 0) TeamCityDimensions.floatingActionLaneHeight else with(LocalDensity.current) { addActionHeight.toDp() }
             val feedbackMaxHeight = maxHeight / 3
-            Column(Modifier.fillMaxSize().padding(bottom = if (reserveActionLane) addActionSpace else 0.dp)) {
+            Column(Modifier.fillMaxSize().padding(bottom = if (reserveActionLane) addActionSpace else TeamCityDimensions.noSpacing)) {
                 Box(Modifier.weight(1f).fillMaxWidth()) {
                     when (val accounts = state.accounts) {
                         AccountListUiState.Loading -> LoadingContent(Modifier.fillMaxSize().testTag("accounts:loading"))
@@ -87,7 +86,7 @@ fun ManageAccountsScreen(
 
                         is AccountListUiState.Content -> LazyColumn(
                             Modifier.fillMaxSize().testTag("accounts:list"),
-                            contentPadding = PaddingValues(bottom = if (removalFailed) 0.dp else addActionSpace)
+                            contentPadding = PaddingValues(bottom = if (removalFailed) TeamCityDimensions.noSpacing else addActionSpace)
                         ) {
                             items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->
                                 AccountRow(account, state.canInteract, { onRemove(account.id) }, onSslWarning)
@@ -109,7 +108,7 @@ fun ManageAccountsScreen(
                 modifier = Modifier.align(Alignment.BottomEnd).onSizeChanged { addActionHeight = it.height }.padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }
             ) {
                 Icon(painterResource(ThemeR.drawable.ic_add_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
                 Text(stringResource(R.string.accounts_add))
             }
         }
@@ -140,7 +139,7 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
                 Row(
                     Modifier.weight(1f).semantics(mergeDescendants = true) { if (account.isActive) stateDescription = current }.testTag("${accountTag(account.id)}:identity"),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)
                 ) {
                     Surface(Modifier.size(TeamCityDimensions.minimumTouchTarget), color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.medium) {
                         Box(contentAlignment = Alignment.Center) {
@@ -157,14 +156,14 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
                             Surface(
                                 Modifier.testTag("${accountTag(account.id)}:current").clearAndSetSemantics {},
                                 color = colors.primary.copy(alpha = 0.16f),
-                                shape = RoundedCornerShape(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                                shape = RoundedCornerShape(TeamCityDimensions.smallCornerRadius)
                             ) {
                                 Row(
                                     Modifier.padding(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.extraSmallSpacing),
                                     horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.contentPadding), tint = content)
+                                    Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.smallIconSize), tint = content)
                                     Text(stringResource(R.string.accounts_current_short), style = MaterialTheme.typography.labelMedium, color = content)
                                 }
                             }

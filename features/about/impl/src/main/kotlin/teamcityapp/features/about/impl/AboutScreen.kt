@@ -40,6 +40,7 @@ import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LoadingContent
 import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.ScreenNavigation
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityScreen
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -56,23 +57,23 @@ fun AboutScreen(
 ) {
     val configuration = LocalConfiguration.current
     val window = WindowSizeClass.calculateFromSize(DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp))
-    TeamCityScreen(stringResource(SharedR.string.drawer_item_about), onClose, ScreenNavigation.Back, contentMaxWidth = 840.dp) { modifier ->
+    TeamCityScreen(stringResource(SharedR.string.drawer_item_about), onClose, ScreenNavigation.Back, contentMaxWidth = TeamCityDimensions.aboutContentMaxWidth) { modifier ->
         when (state) {
             AboutUiState.Loading -> LoadingContent(modifier)
 
             is AboutUiState.Content -> Box(modifier, contentAlignment = Alignment.TopCenter) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(if (window.widthSizeClass == WindowWidthSizeClass.Expanded) 2 else 1),
-                    modifier = Modifier.widthIn(max = 840.dp).fillMaxWidth().fillMaxHeight(),
-                    contentPadding = PaddingValues(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    modifier = Modifier.widthIn(max = TeamCityDimensions.aboutContentMaxWidth).fillMaxWidth().fillMaxHeight(),
+                    contentPadding = PaddingValues(TeamCityDimensions.contentPadding),
+                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding),
+                    verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)
                 ) {
                     item(span = { GridItemSpan(maxLineSpan) }) {
                         Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer)) {
-                            Column(Modifier.padding(24.dp)) {
+                            Column(Modifier.padding(TeamCityDimensions.sectionSpacing)) {
                                 Text(stringResource(R.string.about_app_name), style = MaterialTheme.typography.headlineLarge)
-                                Text(appVersion, Modifier.padding(top = 8.dp), style = MaterialTheme.typography.titleMedium)
+                                Text(appVersion, Modifier.padding(top = TeamCityDimensions.smallSpacing), style = MaterialTheme.typography.titleMedium)
                             }
                         }
                     }
@@ -83,7 +84,7 @@ fun AboutScreen(
                                 AboutRow(stringResource(R.string.about_version), ThemeR.drawable.ic_info_outline_black_24dp, info.version)
                                 AboutRow(stringResource(R.string.about_app_text_server_url), R.drawable.ic_web_black_24dp, info.webUrl) { onOpenUrl(info.webUrl) }
                             } else {
-                                ErrorNotice(stringResource(R.string.server_unavailable), modifier = Modifier.padding(16.dp).testTag("about:server-unavailable"))
+                                ErrorNotice(stringResource(R.string.server_unavailable), modifier = Modifier.padding(TeamCityDimensions.contentPadding).testTag("about:server-unavailable"))
                             }
                         }
                     }
@@ -135,7 +136,7 @@ fun AboutScreen(
 @Composable
 private fun AboutSection(title: String, content: @Composable ColumnScope.() -> Unit) {
     Card(Modifier.fillMaxWidth().testTag("about:section"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-        Text(title, Modifier.padding(20.dp), style = MaterialTheme.typography.titleLarge)
+        Text(title, Modifier.padding(TeamCityDimensions.largeContentPadding), style = MaterialTheme.typography.titleLarge)
         content()
     }
 }

@@ -31,23 +31,22 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 fun BranchField(branches: List<String>?, failed: Boolean, value: String, onChange: (String) -> Unit, title: String, loading: String, empty: String, hint: String, filter: Boolean = false, enabled: Boolean = true) {
     var expanded by remember { mutableStateOf(false) }
-    Column(Modifier.fillMaxWidth().padding(12.dp)) {
-        Text(title, Modifier.padding(start = 4.dp), style = MaterialTheme.typography.bodyLarge)
+    Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.mediumSpacing)) {
+        Text(title, Modifier.padding(start = TeamCityDimensions.extraSmallSpacing), style = MaterialTheme.typography.bodyLarge)
         when {
-            failed -> ErrorNotice(empty, modifier = Modifier.padding(top = 4.dp))
+            failed -> ErrorNotice(empty, modifier = Modifier.padding(top = TeamCityDimensions.extraSmallSpacing))
 
-            branches == null -> Row(Modifier.padding(start = 4.dp, top = 4.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            branches == null -> Row(Modifier.padding(start = TeamCityDimensions.extraSmallSpacing, top = TeamCityDimensions.extraSmallSpacing), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                 Text(loading, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                CircularProgressIndicator(Modifier.padding(start = 16.dp).size(20.dp), strokeWidth = 2.dp)
+                CircularProgressIndicator(Modifier.padding(start = TeamCityDimensions.contentPadding).size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
             }
 
-            branches.isEmpty() || (filter && branches.size <= 1) -> Text(empty, Modifier.padding(start = 4.dp, top = 4.dp), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            branches.isEmpty() || (filter && branches.size <= 1) -> Text(empty, Modifier.padding(start = TeamCityDimensions.extraSmallSpacing, top = TeamCityDimensions.extraSmallSpacing), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
             else -> Box {
                 val focus = LocalFocusManager.current
