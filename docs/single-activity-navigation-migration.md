@@ -25,7 +25,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Phase | Completion evidence | Current state |
 | --- | --- | --- |
 | Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Initial host/API inventory below; outgoing adapter audit remains |
-| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, and per-entry ViewModel tests | Verified with 22 navigation tests, pilot feature tests, production compilation and 17 emulator cases |
+| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 33 navigation tests, pilot feature tests, production compilation and 17 emulator cases |
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Pending |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Pending |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Pending |
@@ -341,3 +341,13 @@ Commands: `./gradlew :libraries:navigation:testDebugUnitTest :features:about:imp
 A regression test first proved that restoring after the active account changed incorrectly retained the previous account's project and pending result. The saved session key and pre-composition validation fixed that case; the complete navigation suite passes. The app's actual account session coordinator remains part of the startup/Home slice.
 
 The next coherent slice connects startup/accounts and the Compose Home shell, so successful startup always targets an implemented Home destination. It must migrate the five Home feature entry points, account/session ownership, badges, filters, drawer and onboarding. Build workflows, Build Details, installed-entry compatibility cleanup and final full-scope verification remain pending. No final completion gate is claimed by this foundation checkpoint.
+
+### Retained children and Compose sheets
+
+Checkpoint `782a08e` adds the hosting needed by Home and Build Details. `RetainedNavigationPane` decorates all child visits but displays only the selected one: hidden children retain ViewModels and saveable state while releasing collectors and view resources. Tab siblings do not consume system Back; removing or resetting their parent clears every child owner. Callers must use stable child IDs scoped to the parent visit.
+
+`DestinationArguments` translates feature-owned typed arguments into defaults for existing `SavedStateHandle` ViewModels without changing their entry store or factory. A fresh-store restoration test verifies that saved user state takes precedence over new defaults. `DestinationPresentation.BottomSheet` registers a Compose modal sheet on the root stack; its underlying screen remains composed at STARTED and returns to RESUMED on dismissal. Sheets cannot be root destinations.
+
+Verification passed with JDK 17: all 33 navigation cases (11 new), 32 About cases, 101 Settings cases and 371 app unit cases; existing pilot golden verification; navigation lint and formatting; mock app/instrumentation APK builds and production compilation. All 17 MainActivity/Drawer emulator cases passed on API 37. Navigation lint retains one existing naming warning in the foundation test helper. The first emulator command used an outdated Drawer test package; the corrected complete suite passed.
+
+Startup/account routing, the actual account session coordinator, five Home registrations and the production Drawer/Quick Filter registrations remain pending. The child and sheet infrastructure is verified independently; it does not establish completion of either shell migration.
