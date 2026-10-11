@@ -28,9 +28,9 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 37 navigation tests, feature tests, production compilation and root-host emulator cases |
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
-| Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed History, Run Build, Filter Builds and detail destinations verified; Build Details tab callers migrate with its shell |
+| Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
-| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | Pending |
+| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: About, Settings and Splash hosts/DI/activity routers removed; installed aliases verified; remaining hosts and native shells pending |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
 ## State and navigation contract
@@ -447,3 +447,35 @@ Verification passed with JDK 17:
 - Mock app/instrumentation APK builds, production debug Kotlin/Hilt compilation, Build Details/Changes/Tests lint and formatting passed. Changes and Tests retain their existing modifier-parameter lint warnings. The final builds, Build Details lint and formatting passed again after cleanup of the obsolete shell count setter.
 
 Installed component dispatch, removal of superseded hosts/navigation/DI/layouts/dependencies, complete process-restoration and root authentication/platform acceptance, and the final all-module/both-flavor verification remain pending. The goal stays active; no push or PR was created.
+
+
+### Installed entry dispatch and removal of About/Settings hosts
+
+Checkpoint `74c8f87` removes the About and Settings activity classes, their obsolete activity DI/close router and unused host dependencies. Their installed component names are private aliases owned by the app manifest and target MainActivity. `IncomingDestinationResolver` maps cold alias launches to typed keys; explicit typed payloads take precedence. Both features continue to reuse their existing route, ViewModel and stateless screen. Their incoming Activity adapters remain only while native app callers still need them. About retains its required AppCompat dependency for the external OSS licenses screen.
+
+The root uses `singleTask` because Android treats alias names as separate component identities under `singleTop`. Incoming requests retain the host's original launch component and save a normalized typed payload. Alias-to-root and root-to-alias requests reuse the same activity and preserve its destination owners, saved stack and Back behavior across recreation.
+
+Verification passed with JDK 17:
+
+- 531 local cases: About (32), Settings (101) and app (398), including three incoming dispatch cases and existing screenshot verification.
+- All 58 API 37 emulator cases: the complete previous navigation/Drawer regression suites, six root cases, seven migrated About cases, five Settings cases and five Hilt smoke cases. About links, email chooser, app rating and external OSS licenses Intent contracts pass from the root. Both directions of alias/typed request reuse preserve the previous About owner without another server request. Cold alias launches, themes, cancellation, recreation and Back pass.
+- Mock app/instrumentation APK builds, production Kotlin/Hilt compilation, affected lint and formatting pass. Settings lint reports no issues; About retains its existing window-size and URI-extension warnings.
+
+The first cleanup compile showed that About still needs AppCompat for the external licenses superclass; that dependency was retained. The first emulator run passed 56/57 cases and exposed duplicate alias-launched roots under `singleTop`. The single-task root and stable incoming component fixed the issue; the complete expanded 58-case suite passed. Remaining hosts, aliases, native shells and full final verification are still pending.
+
+
+### Startup host removal
+
+Checkpoint `e6ede1b` removes the standalone Splash activity, its activity-scoped router/DI, the app's outgoing Splash-to-Home/Login adapter and its obsolete Android API contract. Unused Splash host dependencies are removed. The previously installed private implementation component is an app-owned root alias; the existing exported launcher component remains unchanged and still targets MainActivity. The app resolver maps the private startup component to the registered Splash destination.
+
+Splash integration tests now launch MainActivity and verify destination replacement instead of expecting another activity launch. Empty/account startup replaces Splash with Login/Home, recreation does not repeat the account read, and Back exits the root. Pending reads cancel on stop and restart on resume; background completion waits for resume before account routing; storage errors retain their retry state; both installed components resolve to the root with their required exported/private flags. Real storage-adapter startup tests also retain their selected Projects content and Login screen after recreation.
+
+Verification passed with JDK 17:
+
+- 446 local cases: Splash (48), including existing screenshot verification, and app (398).
+- All ten startup/launcher emulator cases passed on API 37, followed by all 13 Home/root regressions. The earlier 58-case host-removal regression checkpoint remains verified; these additional ten cases bring the distinct migrated acceptance inventory to 68.
+- Mock app/instrumentation APK builds, production Kotlin/Hilt compilation, Splash lint and formatting passed. Splash lint reports no issues.
+
+The first startup emulator run exposed two obsolete test assumptions: paused Android frames need not redraw the ready UI, and Projects text appears in both the toolbar and Home navigation. The tests now observe completed reads and the account coordinator while paused, and use unique content/tab tags. The corrected complete startup and related regression suites pass.
+
+Cleanup remains active. Next remove the remaining authentication/account/detail/build activities and their compatibility DI/routers, migrate their app integration coverage, and replace every legacy fragment/sheet and native Home/Build Details dependency. Complete installed argument/result dispatch and legacy saved-state compatibility during that removal. Full all-module/both-flavor checks and final process-restoration/Marathon acceptance remain required; the goal is not complete. No push or PR was created.
