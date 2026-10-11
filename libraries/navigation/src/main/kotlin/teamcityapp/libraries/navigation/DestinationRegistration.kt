@@ -36,11 +36,13 @@ abstract class FeatureDestination<T : NavKey>(
     final override val keyType: KClass<T>,
     private val serializer: KSerializer<T>
 ) : DestinationRegistration {
+    protected open val presentation: DestinationPresentation = DestinationPresentation.Screen
+
     override fun registerSerializers(builder: SerializersModuleBuilder) {
         builder.polymorphic(NavKey::class) { subclass(keyType, serializer) }
     }
 
-    final override fun entry(visit: NavigationEntry, navigator: Navigator): NavEntry<NavigationEntry> = NavEntry(visit, contentKey = visit.id) {
+    final override fun entry(visit: NavigationEntry, navigator: Navigator): NavEntry<NavigationEntry> = NavEntry(visit, contentKey = visit.id, metadata = presentation.metadata) {
         Content(keyType.java.cast(visit.destination), navigator, visit.id)
     }
 

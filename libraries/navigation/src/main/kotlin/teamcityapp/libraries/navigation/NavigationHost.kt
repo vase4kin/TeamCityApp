@@ -53,6 +53,7 @@ fun NavigationHost(navigator: Navigator, registry: DestinationRegistry, onExit: 
         backStack = navigator.snapshot.entries,
         modifier = modifier,
         onBack = { if (!navigator.pop()) onExit() },
+        sceneStrategies = listOf(BottomSheetSceneStrategy()),
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
