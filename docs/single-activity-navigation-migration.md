@@ -25,10 +25,10 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Phase | Completion evidence | Current state |
 | --- | --- | --- |
 | Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Initial host/API inventory below; outgoing adapter audit remains |
-| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 33 navigation tests, pilot feature tests, production compilation and 17 emulator cases |
-| Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Pending |
-| Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Pending |
-| Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Pending |
+| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 34 navigation tests, pilot feature tests, production compilation and 24 emulator cases |
+| Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
+| Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
+| Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Recursive projects verified; History, build actions and typed feature results pending |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Pending |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | Pending |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
@@ -351,3 +351,27 @@ Checkpoint `782a08e` adds the hosting needed by Home and Build Details. `Retaine
 Verification passed with JDK 17: all 33 navigation cases (11 new), 32 About cases, 101 Settings cases and 371 app unit cases; existing pilot golden verification; navigation lint and formatting; mock app/instrumentation APK builds and production compilation. All 17 MainActivity/Drawer emulator cases passed on API 37. Navigation lint retains one existing naming warning in the foundation test helper. The first emulator command used an outdated Drawer test package; the corrected complete suite passed.
 
 Startup/account routing, the actual account session coordinator, five Home registrations and the production Drawer/Quick Filter registrations remain pending. The child and sheet infrastructure is verified independently; it does not establish completion of either shell migration.
+
+
+### Startup, accounts and Compose Home
+
+Checkpoint `0ef9dfe` saves this implementation on `codex/single-activity-navigation`.
+
+The installed launcher alias now targets MainActivity. Splash, Login, Create Account and Manage Accounts register their existing Compose routes. Successful startup and account operations select a typed Home destination. Authentication, encrypted persistence, duplicate detection and consent behavior remain in the existing feature repositories and app adapters.
+
+An application-scoped account coordinator prepares the API session without retaining an Activity or Navigator. Switching accounts cancels earlier preparation and resets the destination owners using the complete active-account identity, including distinct users on the same server. Preparation errors have a retryable destination; a restored unfinished activation resumes its saved reset policy. Ordinary startup preserves the saved account's Build Log consent. Explicit account activation clears cache, cookies and that shared consent through a dedicated storage contract. Logout clears the API session and replaces the stack with Login.
+
+Home is split into API/implementation modules with a route, stateless screen, Hilt ViewModel and suspend/Flow repository. Its five child visits retain destination state. Phone navigation uses a bottom bar; wider windows use a rail. Badges load independently and retain successful counts when another section fails. Query changes and lost collectors cancel unfinished requests. Filter sheets directly update retained list queries and keep the existing analytics/events; UI feedback remains in the route. Existing onboarding preferences and copy back the Compose prompts.
+
+Drawer and Quick Filter are Compose sheet destinations. Drawer account selection disables dismissal while busy; a focused sheet test verifies the scrim lock and re-enabling. Drawer actions navigate to registered account/About/Settings destinations. A shared list recreation effect preserves the legacy distinction between returning to a tab (cached reload allowed) and configuration recreation (completed content retained without a duplicate reload).
+
+Verification with JDK 17:
+
+- 1,041 passing local cases across navigation (34), shared list UI (65), Home (91), Agents (76), Projects (120), Favorites (92), Running Builds (90), Build Queue (90) and app (383).
+- Home's 91 cases include seven ViewModel cases and 84 visually reviewed Roborazzi baselines: 14 states in light/dark phone, tablet and enlarged-text variants. Existing affected feature goldens also pass.
+- 24 passing API 37 emulator cases: seven startup/Home integration cases, four root navigation cases and 13 existing Drawer cases. They cover the launcher alias, signed-out startup, consent preservation/reset, selected tabs and recreation, recursive project visits, Drawer-to-Settings Back behavior, filter-sheet recreation/application and same-server account replacement.
+- Mock app and instrumentation APK builds, production debug Kotlin/Hilt compilation, affected implementation lint and formatting passed. Lint retains existing warnings for the navigation test helper, the shared list modifier parameter and Login’s legacy portrait-only host; these hosts are removed in cleanup.
+
+The first emulator run exposed a duplicate visible-list reload during recreation; the shared recreation effect fixed it. A separate test lookup needed the toolbar's unmerged semantics. The corrected complete 24-case suite passed. Full process death, the remaining account submission paths in the root host, full app lint/Marathon and all-destination cleanup remain final acceptance work.
+
+History and Build Details still use explicit legacy navigation adapters for this checkpoint. Other compatibility entry points and old hosts remain until their callers migrate. Next: typed History/Run Build/Filter Builds/Test Details/Change Details routes and results, then the Compose Build Details shell, installed-entry dispatch and removal of superseded infrastructure. This checkpoint does not claim the complete single-activity goal.
