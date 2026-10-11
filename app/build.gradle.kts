@@ -141,6 +141,7 @@ dependencies {
     implementation(projects.features.home.api)
     implementation(projects.features.home.impl)
     implementation(projects.features.buildDetails.api)
+    implementation(projects.features.buildDetails.impl)
     implementation(projects.libraries.navigation)
     implementation(fileTree("libs") { include("*.jar") })
 

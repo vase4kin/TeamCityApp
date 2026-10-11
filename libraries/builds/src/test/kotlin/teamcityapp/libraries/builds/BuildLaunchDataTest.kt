@@ -16,6 +16,7 @@
 
 package teamcityapp.libraries.builds
 
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -78,5 +79,22 @@ class BuildLaunchDataTest {
     @Test(expected = IllegalArgumentException::class)
     fun missingDetailUrlCannotBeLaunched() {
         BuildLaunchData("1", " ")
+    }
+
+    @Test fun savedNavigationSnapshotPreservesEveryNestedFieldAndSectionPresence() {
+        val configuration = BuildConfigurationData("configuration", "Config", "project", "Project", "/configuration")
+        val user = BuildUser("alice", "Alice", "user", "/user")
+        val snapshot = BuildLaunchData(
+            "42", "opaque&build:42", "https://server/build/42", "42", "future", "future-status", "status", "branch", "type", configuration,
+            "queued", "started", "finished", "waiting", "estimate", BuildTrigger("user", "date", "details", user, configuration), BuildAgent("agent", "Agent", "/agent"),
+            BuildCancellation("cancelled", user), BuildCollectionLink("/changes", 5, "/changes-next"), BuildCollectionLink("/artifacts", 8, "/artifacts-next"),
+            BuildTests("/tests", 3, 2, 1, 6, "/tests-next"), BuildProperties(listOf(BuildProperty(null, null, true, "property", "/property")), "wrapper", "/properties"),
+            BuildCollectionLink(null, 0), true, true, true, true
+        )
+        assertEquals(snapshot, Json.decodeFromString<BuildLaunchData>(Json.encodeToString(snapshot)))
+        val absent = snapshot.copy(properties = null)
+        val nullList = snapshot.copy(properties = BuildProperties(null))
+        val emptyList = snapshot.copy(properties = BuildProperties(emptyList()))
+        listOf(absent, nullList, emptyList).forEach { assertEquals(it, Json.decodeFromString<BuildLaunchData>(Json.encodeToString(it))) }
     }
 }

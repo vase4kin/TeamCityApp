@@ -16,6 +16,12 @@
 
 import com.android.build.api.dsl.LibraryExtension
 
-plugins { id("teamcityapp.android.library") }
+plugins {
+    id("teamcityapp.android.library")
+    alias(libs.plugins.kotlin.serialization)
+}
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.libraries.builds" }
-dependencies { testImplementation(libs.junit) }
+dependencies {
+    api(libs.kotlinx.serialization.json)
+    testImplementation(libs.junit)
+}
