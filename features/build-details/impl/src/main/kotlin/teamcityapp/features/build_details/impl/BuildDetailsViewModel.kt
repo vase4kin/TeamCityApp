@@ -47,7 +47,6 @@ internal class BuildDetailsViewModel @Inject constructor(
             current = current,
             configurationName = savedState[NAME],
             selected = savedState.get<String>(SELECTED)?.let { name -> incoming.detailsTabs().firstOrNull { it.name == name } } ?: BuildDetailsTab.Overview,
-            counts = incoming.detailsTabs().mapNotNull { tab -> savedState.get<Int>("count:${tab.name}")?.let { tab to it } }.toMap(),
             confirmation = savedState.get<String>(CONFIRMATION)?.let { Json.decodeFromString<BuildConfirmation>(it) },
             overviewRefresh = savedState.get<Long>(OVERVIEW_REFRESH) ?: 0,
             notice = savedState.get<String>(NOTICE)?.let { Json.decodeFromString<BuildDetailsNotice>(it) },
@@ -66,11 +65,6 @@ internal class BuildDetailsViewModel @Inject constructor(
         if (build.id != incoming.id) return
         savedState[CURRENT] = Json.encodeToString(build)
         mutableState.value = state.value.copy(current = build)
-    }
-    fun count(tab: BuildDetailsTab, count: Int) {
-        if (tab !in state.value.tabs || count < 0) return
-        savedState["count:${tab.name}"] = count
-        mutableState.value = state.value.copy(counts = state.value.counts + (tab to count))
     }
     fun requestCancellation() {
         val state = state.value

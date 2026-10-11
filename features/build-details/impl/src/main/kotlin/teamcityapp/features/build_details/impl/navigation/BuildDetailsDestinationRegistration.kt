@@ -75,6 +75,11 @@ class BuildDetailsDestinationRegistration @Inject constructor(
         DestinationArguments(arguments) {
             val model = hiltViewModel<BuildDetailsViewModel>()
             val state by model.state.collectAsStateWithLifecycle()
+            val metadata = hiltViewModel<BuildDetailsMetadataViewModel>()
+            val metadataState by metadata.state.collectAsStateWithLifecycle()
+            val latestMetadata by rememberUpdatedState(metadataState)
+            LaunchedEffect(state.current, metadata) { metadata.loaded(state.current) }
+            val lifecycleState by LocalLifecycleOwner.current.lifecycle.currentStateFlow.collectAsStateWithLifecycle()
             val latest by rememberUpdatedState(state)
             val snackbar = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
@@ -93,7 +98,8 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                     override val refreshVersion get() = latest.overviewRefresh
                     override val current get() = latest.current
                     override fun loaded(build: BuildLaunchData) = model.loaded(build)
-                    override fun count(tab: BuildDetailsTab, count: Int) = model.count(tab, count)
+                    override val countStates get() = latestMetadata.counts
+                    override fun retryCount(tab: BuildDetailsTab) = metadata.retryCount(tab)
                     override fun copied() {
                         scope.launch { snackbar.showSnackbar(copied) }
                     }
@@ -174,15 +180,23 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                 }
             }
             CompositionLocalProvider(LocalBuildDetailsUiHost provides host) {
+                val presentation = state.copy(
+                    counts = metadataState.counts.mapNotNull { (tab, count) -> (count as? BuildDetailsCount.Available)?.let { tab to it.count } }.toMap(),
+                    countFailures = metadataState.counts.filterValues { it == BuildDetailsCount.Unavailable }.keys,
+                    onboardingFailed = metadataState.onboardingFailed,
+                    prompt = metadataState.prompt.takeIf { state.selected == BuildDetailsTab.Overview && lifecycleState == Lifecycle.State.RESUMED && navigator.current.id == entryId }
+                )
                 BuildDetailsScreen(
-                    state,
+                    presentation,
                     calculateWindowSizeClass(activity).widthSizeClass != WindowWidthSizeClass.Compact,
                     onUp = { if (!navigator.pop()) activity.finish() },
                     onSelect = model::select,
                     onAction = { action -> host.dispatch(action, state.current) },
                     onConfirm = model::confirm,
                     onDismissConfirmation = model::dismissConfirmation,
-                    snackbar = snackbar
+                    snackbar = snackbar,
+                    onDismissPrompt = metadata::dismissPrompt,
+                    onRetryMetadata = metadata::retryFailed
                 ) { RetainedNavigationPane(children, "$entryId/${state.selected.name}", navigator, registry.get()) }
             }
         }

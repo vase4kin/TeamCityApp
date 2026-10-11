@@ -46,6 +46,7 @@ internal data class BuildConfirmation(val build: BuildLaunchData, val kind: Conf
         ConfirmationKind.Restart -> R.string.text_restart_button
     }
 }
+internal data class BuildDetailsTabLabel(@StringRes val title: Int, @StringRes val format: Int, val count: Int)
 internal data class BuildDetailsMenuAction(val action: BuildDetailsAction, @StringRes val label: Int)
 
 @Serializable
@@ -63,8 +64,22 @@ internal data class BuildDetailsUiState(
     val preparingConfirmation: Boolean = false,
     val notice: BuildDetailsNotice? = null,
     val replacement: BuildDetailsReplacement? = null,
-    val overviewRefresh: Long = 0
+    val overviewRefresh: Long = 0,
+    val countFailures: Set<BuildDetailsTab> = emptySet(),
+    val prompt: BuildDetailsPromptUi? = null,
+    val onboardingFailed: Boolean = false
 ) {
+    val tabLabels get() = tabs.associateWith { tab ->
+        BuildDetailsTabLabel(
+            tab.label(),
+            when {
+                tab in countFailures -> R.string.tab_with_unavailable_count
+                tab in counts -> R.string.tab_with_count
+                else -> R.string.tab_plain
+            },
+            counts[tab] ?: 0
+        )
+    }
     val title: String get() = current.number?.let { "#$it" } ?: "#${current.id}"
     val subtitle: String get() = current.configuration?.name ?: configurationName.orEmpty()
     val busy: Boolean get() = operation != null || preparingConfirmation

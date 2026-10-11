@@ -65,4 +65,23 @@ class BuildDetailsScreenTest {
         compose.onNodeWithTag("details:confirm").assertDoesNotExist()
         compose.onNodeWithText("Stopping build..").assertExists()
     }
+
+    @Test fun unavailableCountIsExplicitAndMetadataRetryHasOneCallback() {
+        var retries = 0
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, countFailures = setOf(BuildDetailsTab.Changes)), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }, onRetryMetadata = { retries++ }) { Surface {} } } }
+        compose.onNodeWithText("Changes (?)").assertExists()
+        compose.onNodeWithText("Changes (0)").assertDoesNotExist()
+        compose.onNodeWithTag("details:retry-metadata").performClick()
+        assertEquals(1, retries)
+    }
+
+    @Test fun menuTipUsesPreservedCopyAndDismissesThroughTheViewModelCallback() {
+        var dismissals = 0
+        val prompt = BuildDetailsPromptUi(BuildDetailsPrompt.Stop, description = R.string.text_onboarding_stop_build)
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, prompt = prompt), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }, onDismissPrompt = { dismissals++ }) { Surface {} } } }
+        compose.onNodeWithText("Explore menu").assertExists()
+        compose.onNodeWithText("Stop, share or open running builds in a browser").assertExists()
+        compose.onNodeWithTag("details:dismiss-prompt").performClick()
+        assertEquals(1, dismissals)
+    }
 }

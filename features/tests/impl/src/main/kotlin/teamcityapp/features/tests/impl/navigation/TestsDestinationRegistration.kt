@@ -27,7 +27,7 @@ import javax.inject.Inject
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.features.tests.api.navigation.TestsDestination
-import teamcityapp.features.tests.impl.TestsRoute
+import teamcityapp.features.tests.impl.*
 import teamcityapp.features.tests.impl.router.TestsRouter
 import teamcityapp.libraries.navigation.*
 
@@ -48,11 +48,18 @@ class TestsDestinationRegistration @Inject constructor() : FeatureDestination<Te
                     navigator.push(TestDetailsDestination(url))
                 }
                 override fun updateTabCount(count: Int) {
-                    host?.count(BuildDetailsTab.Tests, count)
+                    // The parent metadata owner publishes the shared count state.
                 }
             }
         }
-        DestinationArguments(arguments) { TestsRoute(router) }
+        val count = host?.countStates?.get(BuildDetailsTab.Tests)?.let { count ->
+            when (count) {
+                is BuildDetailsCount.Available -> TestsCountState.Available(count.count)
+                BuildDetailsCount.Loading -> TestsCountState.Loading
+                BuildDetailsCount.Unavailable -> TestsCountState.Unavailable
+            }
+        }
+        DestinationArguments(arguments) { TestsRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsTab.Tests) } }) }
     }
 }
 

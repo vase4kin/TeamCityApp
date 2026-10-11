@@ -28,7 +28,7 @@ import teamcityapp.features.build_details.api.*
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.changes.api.navigation.ChangesDestination
-import teamcityapp.features.changes.impl.ChangesRoute
+import teamcityapp.features.changes.impl.*
 import teamcityapp.features.changes.impl.router.ChangesRouter
 import teamcityapp.libraries.navigation.*
 
@@ -42,11 +42,18 @@ class ChangesDestinationRegistration @Inject constructor() : FeatureDestination<
                     navigator.push(ChangeDetailsDestination(change))
                 }
                 override fun updateTabCount(count: Int) {
-                    host?.count(BuildDetailsTab.Changes, count)
+                    // The parent metadata owner publishes the shared count state.
                 }
             }
         }
-        DestinationArguments(arguments) { ChangesRoute(router) }
+        val count = host?.countStates?.get(BuildDetailsTab.Changes)?.let { count ->
+            when (count) {
+                is BuildDetailsCount.Available -> ChangesCountState.Available(count.count)
+                BuildDetailsCount.Loading -> ChangesCountState.Loading
+                BuildDetailsCount.Unavailable -> ChangesCountState.Unavailable
+            }
+        }
+        DestinationArguments(arguments) { ChangesRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsTab.Changes) } }) }
     }
 }
 

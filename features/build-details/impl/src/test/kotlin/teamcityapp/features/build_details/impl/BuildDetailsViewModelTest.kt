@@ -109,19 +109,16 @@ class BuildDetailsViewModelTest {
         assertEquals(loaded, model.state.value.current)
     }
 
-    @Test fun processRestorationRetainsLoadedActionsSelectionAndCounts() = runTest(dispatcher) {
+    @Test fun processRestorationRetainsLoadedActionsAndSelection() = runTest(dispatcher) {
         val saved = handle()
         model(saved).apply {
             loaded(loaded)
             select(BuildDetailsTab.Changes)
-            count(BuildDetailsTab.Changes, 27)
-            count(BuildDetailsTab.Tests, 9)
         }
         val recreated = model(restored(saved), "restored")
         assertEquals(loaded, recreated.state.value.current)
         assertEquals(incoming.detailsTabs(), recreated.state.value.tabs)
         assertEquals(BuildDetailsTab.Changes, recreated.state.value.selected)
-        assertEquals(mapOf(BuildDetailsTab.Changes to 27, BuildDetailsTab.Tests to 9), recreated.state.value.counts)
     }
 
     @Test fun independentVisitsOfSameBuildKeepSeparateOwners() = runTest(dispatcher) {
@@ -129,17 +126,14 @@ class BuildDetailsViewModelTest {
         val second = model(handle(), "second")
         first.select(BuildDetailsTab.Tests)
         first.loaded(loaded)
-        first.count(BuildDetailsTab.Tests, 100)
         assertEquals(BuildDetailsTab.Overview, second.state.value.selected)
         assertEquals(incoming, second.state.value.current)
         assertTrue(second.state.value.counts.isEmpty())
     }
 
-    @Test fun invalidSelectionOrCountCannotCreateAnAbsentTab() = runTest(dispatcher) {
+    @Test fun invalidSelectionCannotCreateAnAbsentTab() = runTest(dispatcher) {
         val model = model(handle(BuildLaunchData("1", "/b", state = "queued")))
         model.select(BuildDetailsTab.BuildLog)
-        model.count(BuildDetailsTab.Tests, 5)
-        model.count(BuildDetailsTab.Overview, -1)
         assertEquals(listOf(BuildDetailsTab.Overview, BuildDetailsTab.Parameters), model.state.value.tabs)
         assertEquals(BuildDetailsTab.Overview, model.state.value.selected)
         assertTrue(model.state.value.counts.isEmpty())

@@ -16,6 +16,7 @@
 
 package com.github.vase4kin.teamcityapp.navigation
 
+import com.github.vase4kin.teamcityapp.build_details.data.AppBuildDetailsMetadataRepository
 import com.github.vase4kin.teamcityapp.build_details.data.ComposeBuildDetailsRepository
 import com.github.vase4kin.teamcityapp.buildlog.data.AppBuildLogConsentStorage
 import com.github.vase4kin.teamcityapp.home.data.AppHomeRepository
@@ -29,6 +30,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import teamcityapp.features.build_details.api.BuildDetailsMetadataRepository
 import teamcityapp.features.build_details.api.BuildDetailsNavigation
 import teamcityapp.features.build_details.api.BuildDetailsRepository
 import teamcityapp.features.build_log.api.BuildLogConsentStorage
@@ -39,6 +41,8 @@ import teamcityapp.libraries.navigation.AccountFlowNavigation
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class ComposeShellModule {
+    @Binds abstract fun metadata(implementation: AppBuildDetailsMetadataRepository): BuildDetailsMetadataRepository
+
     @Binds abstract fun buildDetails(implementation: ComposeBuildDetailsRepository): BuildDetailsRepository
 
     @Binds abstract fun preparation(implementation: AppAccountSessionPreparation): AccountSessionPreparation

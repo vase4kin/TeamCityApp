@@ -45,6 +45,8 @@ internal fun BuildDetailsScreen(
     onDismissConfirmation: () -> Unit,
     snackbar: SnackbarHostState,
     modifier: Modifier = Modifier,
+    onDismissPrompt: () -> Unit = {},
+    onRetryMetadata: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     var menu by rememberSaveable { mutableStateOf(false) }
@@ -77,13 +79,12 @@ internal fun BuildDetailsScreen(
                 )
                 val tabs: @Composable () -> Unit = {
                     state.tabs.forEach { tab ->
-                        val count = state.counts[tab]
-                        val label = stringResource(tab.label())
+                        val label = state.tabLabels.getValue(tab)
                         Tab(
                             selected = state.selected == tab,
                             onClick = { onSelect(tab) },
                             enabled = !state.busy,
-                            text = { Text(if (count == null) label else stringResource(R.string.tab_with_count, label, count), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                            text = { Text(stringResource(label.format, stringResource(label.title), label.count), maxLines = 1, overflow = TextOverflow.Ellipsis) },
                             modifier = Modifier.testTag("details:tab:${tab.name}")
                         )
                     }
@@ -96,7 +97,22 @@ internal fun BuildDetailsScreen(
             }
         },
         snackbarHost = { SnackbarHost(snackbar) }
-    ) { padding -> Box(Modifier.fillMaxSize().padding(padding)) { content() } }
+    ) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding)) {
+            if (state.countFailures.isNotEmpty() || state.onboardingFailed) {
+                TextButton(onClick = onRetryMetadata, enabled = !state.busy, modifier = Modifier.testTag("details:retry-metadata")) { Text(stringResource(R.string.retry_build_metadata)) }
+            }
+            Box(Modifier.weight(1f)) { content() }
+        }
+    }
+    state.prompt?.takeIf { !state.busy && state.confirmation == null }?.let { prompt ->
+        AlertDialog(
+            onDismissRequest = onDismissPrompt,
+            title = { Text(stringResource(prompt.title)) },
+            text = { Text(stringResource(prompt.description)) },
+            confirmButton = { TextButton(onClick = onDismissPrompt, modifier = Modifier.testTag("details:dismiss-prompt")) { Text(stringResource(R.string.continue_build_tip)) } }
+        )
+    }
     val confirmation = state.confirmation
     if (confirmation != null) {
         // Key checkbox state to the actual confirmed snapshot, including process restoration.

@@ -74,6 +74,24 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         val snapshot = BuildLaunchData("42", "/builds/42", number = "42", state = "finished", webUrl = "https://server/build/42", buildTypeId = "android", configuration = BuildConfigurationData("android", "Build Android application", "project", "Android"), changes = BuildCollectionLink("/changes"), tests = BuildTests("/tests", 100, 20, 3, 123), artifacts = BuildCollectionLink("/artifacts"), snapshotDependencies = BuildCollectionLink(null))
         val counts = mapOf(BuildDetailsTab.Changes to 12, BuildDetailsTab.Tests to 123)
         val state = when {
+            stateName.startsWith("prompt_") -> {
+                val kind = BuildDetailsPrompt.valueOf(stateName.removePrefix("prompt_"))
+                val description = when (kind) {
+                    BuildDetailsPrompt.Stop -> R.string.text_onboarding_stop_build
+                    BuildDetailsPrompt.Remove -> R.string.text_onboarding_remove_build_from_queue
+                    BuildDetailsPrompt.Restart -> R.string.text_onboarding_restart_build
+                }
+                BuildDetailsUiState(snapshot, counts = counts, prompt = BuildDetailsPromptUi(kind, description = description))
+            }
+
+            stateName == "counts_loading" -> BuildDetailsUiState(snapshot)
+
+            stateName == "counts_partial_failed" -> BuildDetailsUiState(snapshot, counts = mapOf(BuildDetailsTab.Changes to 12), countFailures = setOf(BuildDetailsTab.Tests))
+
+            stateName == "counts_all_failed" -> BuildDetailsUiState(snapshot, countFailures = setOf(BuildDetailsTab.Changes, BuildDetailsTab.Tests))
+
+            stateName == "tips_failed" -> BuildDetailsUiState(snapshot, counts = counts, onboardingFailed = true)
+
             stateName.startsWith("tab_") -> BuildDetailsUiState(snapshot, selected = BuildDetailsTab.valueOf(stateName.removePrefix("tab_")), counts = counts)
 
             stateName.startsWith("dialog_") -> {
@@ -112,7 +130,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (BuildDetailsTab.entries.map { "tab_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (BuildDetailsTab.entries.map { "tab_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

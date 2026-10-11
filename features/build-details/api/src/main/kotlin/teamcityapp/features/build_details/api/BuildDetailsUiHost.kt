@@ -25,7 +25,8 @@ interface BuildDetailsUiHost {
     val refreshVersion: Long
     val current: BuildLaunchData
     fun loaded(build: BuildLaunchData)
-    fun count(tab: BuildDetailsTab, count: Int)
+    val countStates: Map<BuildDetailsTab, BuildDetailsCount>
+    fun retryCount(tab: BuildDetailsTab)
     fun dispatch(action: BuildDetailsCommand, build: BuildLaunchData, branch: String? = null)
     fun copied()
 }
