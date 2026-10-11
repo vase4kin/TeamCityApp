@@ -50,11 +50,21 @@ class MainActivity : AppCompatActivity() {
     internal val navigationSnapshot get() = activeNavigator?.snapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        val requestedInitial = incoming.destination(intent)
-        requestedInitial?.let { setIntent(incoming.normalizedIntent(intent, it)) }
+        super.onCreate(RootActivitySavedState.forRoot(savedInstanceState))
         accounts.synchronize()
         val initialSessionKey = accounts.session.value.key
+        val requestedInitial = if (RootActivitySavedState.canRestoreLaunch(savedInstanceState, initialSessionKey)) {
+            incoming.destination(intent)
+        } else {
+            // Reject old arguments before decoding them, including old build snapshots.
+            // Replace them so another recreation cannot replay the rejected alias request.
+            if (RootActivitySavedState.accountChanged(savedInstanceState, initialSessionKey)) {
+                if (initialSessionKey == "signed-out") accounts.login() else accounts.home(resetSession = true)
+            }
+            setIntent(incoming.normalizedIntent(Intent(intent).replaceExtras(Bundle()), accounts.session.value.initial))
+            null
+        }
+        requestedInitial?.let { setIntent(incoming.normalizedIntent(intent, it)) }
         enableEdgeToEdge()
         setContent {
             TeamCityTheme {
@@ -86,6 +96,12 @@ class MainActivity : AppCompatActivity() {
                 NavigationHost(navigator, registry, ::finish)
             }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        // Record the account of the actual saved UI, including a not-yet-applied reset.
+        outState.putString(RootActivitySavedState.ACCOUNT_KEY, navigationSnapshot?.sessionKey ?: accounts.session.value.key)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onNewIntent(intent: Intent) {
