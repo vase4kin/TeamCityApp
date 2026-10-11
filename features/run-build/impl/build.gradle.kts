@@ -25,15 +25,12 @@ plugins {
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.run_build.impl" }
 dependencies {
     implementation(projects.libraries.navigation)
-    implementation(libs.androidx.appcompat)
-    implementation(projects.libraries.utils)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)
     implementation(projects.features.runBuild.api)
     implementation(libs.androidx.activity.compose)
 
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.resources)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)
     implementation(libs.androidx.lifecycle.runtimeCompose)

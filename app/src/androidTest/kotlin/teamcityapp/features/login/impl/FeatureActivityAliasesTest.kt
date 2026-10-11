@@ -35,8 +35,10 @@ class FeatureActivityAliasesTest {
             "com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "com.github.vase4kin.teamcityapp.login.view.LoginActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
-            "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity" to "teamcityapp.features.run_build.impl.RunBuildActivity",
-            "com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity" to "teamcityapp.features.filter_builds.impl.FilterBuildsActivity"
+            "teamcityapp.features.run_build.impl.RunBuildActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "teamcityapp.features.filter_builds.impl.FilterBuildsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity"
         )
         targets.forEach { (legacy, target) ->
             val alias = context.packageManager.getActivityInfo(ComponentName(context, legacy), 0)

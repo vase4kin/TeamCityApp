@@ -43,7 +43,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.run_build.impl.RunBuildActivity
 import teamcityapp.libraries.app_theme.ThemeMode
 
 /** Actual activity/window evidence: local golden rendering does not animate held ripples. */
@@ -106,8 +105,8 @@ class AuthenticationSwitchRippleTest {
     private fun run(dark: Boolean) {
         mode(dark)
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-        val intent = Intent(app, RunBuildActivity::class.java).putExtra(com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID, "href")
-        ActivityScenario.launch<RunBuildActivity>(intent).use { scenario ->
+        val intent = Intent().setClassName(app, IncomingDestinationResolver.RUN_BUILD_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID, "href")
+        ActivityScenario.launch<MainActivity>(intent).use { scenario ->
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("run-build:options").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
             compose.onNodeWithTag("run-build:options").performClick()
             inspect("run", "run-build:options-card", listOf("personal" to false, "top" to false, "clean" to true)) { block -> scenario.onActivity { block(it.window.decorView) } }

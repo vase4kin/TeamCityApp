@@ -39,6 +39,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.any
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
@@ -61,10 +62,9 @@ import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import retrofit2.HttpException
 import retrofit2.Response
-import teamcityapp.features.run_build.impl.RunBuildActivity
 
 /**
- * Tests for [RunBuildActivity]
+ * Tests for the RunBuild root destination
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -88,8 +88,8 @@ class RunBuildActivityMockTest {
 
     @Rule(order = 3)
     @JvmField
-    val activityRule: CustomActivityTestRule<RunBuildActivity> =
-        CustomActivityTestRule(RunBuildActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, "teamcityapp.features.run_build.impl.RunBuildActivity")
 
     @Mock
     lateinit var responseBody: ResponseBody

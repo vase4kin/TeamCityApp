@@ -42,6 +42,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.capture
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -64,13 +65,12 @@ import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.run_build.impl.RunBuildActivity
 
 private const val PARAMETER_NAME = "version"
 private const val PARAMETER_VALUE = "1.3.2"
 
 /**
- * Tests for [RunBuildActivity]
+ * Tests for the RunBuild root destination
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -94,8 +94,8 @@ class RunBuildActivityTest {
 
     @Rule(order = 3)
     @JvmField
-    val activityRule: CustomActivityTestRule<RunBuildActivity> =
-        CustomActivityTestRule(RunBuildActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, "teamcityapp.features.run_build.impl.RunBuildActivity")
 
     @Captor
     lateinit var buildCaptor: ArgumentCaptor<Build>

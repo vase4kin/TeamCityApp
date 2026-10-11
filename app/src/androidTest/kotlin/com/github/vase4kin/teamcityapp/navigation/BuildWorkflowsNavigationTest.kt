@@ -25,6 +25,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
@@ -32,6 +33,7 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import io.reactivex.subjects.SingleSubject
 import javax.inject.Inject
 import org.junit.Assert.*
 import org.junit.Before
@@ -69,6 +71,8 @@ class BuildWorkflowsNavigationTest {
     @Spy private val service: TeamCityService = FakeTeamCityServiceImpl()
 
     @Inject lateinit var launcher: DestinationLauncher
+
+    @Inject lateinit var accounts: AppAccountFlowNavigation
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
 
@@ -136,6 +140,59 @@ class BuildWorkflowsNavigationTest {
             awaitTag("history:list")
             verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
+        }
+    }
+
+    @Test fun pendingRunRetainsItsRequestAcrossRecreationAndDeliversOnlyOneTypedResult() {
+        val pending = SingleSubject.create<Build>()
+        doReturn(pending).`when`(service).queueBuild(org.mockito.kotlin.any())
+        launch().use { scenario ->
+            openHistory()
+            var historyVisit: String? = null
+            scenario.onActivity { historyVisit = it.navigationSnapshot!!.entries.last().id }
+            compose.onNodeWithTag("history:run").performClick()
+            awaitTag("run-build:submit")
+            compose.onNodeWithTag("run-build:submit").performClick()
+            compose.waitUntil(10_000) { pending.hasObservers() }
+            scenario.recreate()
+            awaitTag("run-build:submit")
+            compose.onNodeWithTag("run-build:submit").assertIsNotEnabled()
+            assertTrue(pending.hasObservers())
+            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+            pending.onSuccess(Mocks.queuedBuild1())
+            awaitTag("history:list")
+            compose.waitUntil(10_000) { compose.onAllNodesWithText("Build is added to build queue").fetchSemanticsNodes().isNotEmpty() }
+            scenario.recreate()
+            awaitTag("history:list")
+            scenario.onActivity {
+                assertEquals(historyVisit, it.navigationSnapshot!!.entries.last().id)
+                assertTrue(it.navigationSnapshot!!.results.isEmpty())
+            }
+            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
+        }
+    }
+
+    @Test fun replacingTheAccountStackCancelsAPendingRunAndIgnoresItsLateResult() {
+        val pending = SingleSubject.create<Build>()
+        doReturn(pending).`when`(service).queueBuild(org.mockito.kotlin.any())
+        launch().use { scenario ->
+            openHistory()
+            compose.onNodeWithTag("history:run").performClick()
+            awaitTag("run-build:submit")
+            compose.onNodeWithTag("run-build:submit").performClick()
+            compose.waitUntil(10_000) { pending.hasObservers() }
+            scenario.onActivity { accounts.home(false) }
+            awaitRoot()
+            compose.waitUntil(10_000) { !pending.hasObservers() }
+            pending.onSuccess(Mocks.queuedBuild1())
+            compose.waitForIdle()
+            scenario.onActivity {
+                assertEquals(1, it.navigationSnapshot!!.entries.size)
+                assertTrue(it.navigationSnapshot!!.entries.single().destination is teamcityapp.features.home.api.HomeDestination)
+                assertTrue(it.navigationSnapshot!!.results.isEmpty())
+            }
+            compose.onNodeWithText("Build is added to build queue").assertDoesNotExist()
+            verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
         }
     }
 

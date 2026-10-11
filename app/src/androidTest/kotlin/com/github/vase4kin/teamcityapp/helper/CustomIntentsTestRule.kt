@@ -26,4 +26,10 @@ class CustomIntentsTestRule<T : Activity>(activityClass: Class<T>, private val c
     override fun getActivityIntent(): Intent = (super.getActivityIntent() ?: Intent(Intent.ACTION_MAIN)).apply {
         componentName?.let { setClassName(InstrumentationRegistry.getInstrumentation().targetContext, it) }
     }
+
+    override fun launchActivity(startIntent: Intent?): T = super.launchActivity(
+        startIntent?.let { incoming ->
+            componentName?.let { component -> Intent(incoming).setClassName(InstrumentationRegistry.getInstrumentation().targetContext, component) } ?: incoming
+        }
+    )
 }

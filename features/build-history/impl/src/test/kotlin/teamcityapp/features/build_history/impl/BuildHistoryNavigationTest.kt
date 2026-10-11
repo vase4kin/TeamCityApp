@@ -27,8 +27,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.navigation.BuildHistoryNavigationImpl
-import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
-import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
@@ -51,12 +49,5 @@ class BuildHistoryNavigationTest {
         } finally {
             controller.pause().stop().destroy()
         }
-    }
-
-    @Test fun existingResultContractsRemainUnchanged() {
-        assertEquals(489, RunBuildNavigation.REQUEST_CODE)
-        assertEquals("href", RunBuildNavigation.EXTRA_HREF)
-        assertEquals(12921, FilterBuildsNavigation.REQUEST_CODE)
-        assertEquals("filter", FilterBuildsNavigation.EXTRA_FILTER)
     }
 }

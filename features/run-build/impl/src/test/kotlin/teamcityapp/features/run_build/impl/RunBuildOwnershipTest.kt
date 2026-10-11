@@ -15,60 +15,16 @@
  */
 
 package teamcityapp.features.run_build.impl
-import android.app.Activity
-import android.content.Intent
 import com.google.firebase.analytics.FirebaseAnalytics
-import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.features.run_build.api.*
-import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
-import teamcityapp.features.run_build.impl.navigation.RunBuildNavigationImpl
-import teamcityapp.features.run_build.impl.router.RunBuildRouterImpl
 import teamcityapp.features.run_build.impl.tracker.RunBuildTrackerImpl
-import teamcityapp.libraries.resources.R as SharedR
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class RunBuildOwnershipTest {
-    @Test fun launchPreservesRequestCodeExtraAndTransition() {
-        val owner = spy(Robolectric.buildActivity(Activity::class.java).setup().get())
-        doNothing().`when`(owner).startActivityForResult(any(Intent::class.java), anyInt())
-        RunBuildNavigationImpl().openForResult(owner, "build-type")
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        verify(owner).startActivityForResult(intent.capture(), eq(489))
-        assertEquals(RunBuildActivity::class.java.name, intent.value.component!!.className)
-        assertEquals("build-type", intent.value.getStringExtra("BuildTypeId"))
-        verify(owner).overridePendingTransition(SharedR.anim.slide_in_bottom, SharedR.anim.hold)
-    }
-
-    @Test fun successReturnsCompatiblePayloadBeforeFinishing() {
-        val owner = mock(RunBuildActivity::class.java)
-        val router = RunBuildRouterImpl(owner)
-        router.queued("queued/href")
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        val order = inOrder(owner)
-        order.verify(owner).setResult(eq(Activity.RESULT_OK), intent.capture())
-        assertEquals("queued/href", intent.value.getStringExtra("href"))
-        order.verify(owner).finish()
-        order.verifyNoMoreInteractions()
-    }
-
-    @Test fun cancellationReturnsAnEmptyResult() {
-        val owner = mock(RunBuildActivity::class.java)
-        RunBuildRouterImpl(owner).close()
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        val order = inOrder(owner)
-        order.verify(owner).setResult(eq(Activity.RESULT_CANCELED), intent.capture())
-        assertNull(intent.value.extras)
-        order.verify(owner).finish()
-        order.verifyNoMoreInteractions()
-    }
-
     @Test fun analyticsPreserveLegacyEvents() {
         val analytics = mock(FirebaseAnalytics::class.java)
         val tracker = RunBuildTrackerImpl(analytics)

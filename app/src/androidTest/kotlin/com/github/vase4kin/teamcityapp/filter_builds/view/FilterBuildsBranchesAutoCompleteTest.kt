@@ -38,6 +38,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
@@ -56,12 +57,11 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
 
 private const val TYPE_ID = "TypeId"
 
 /**
- * Tests for [FilterBuildsActivity]
+ * Tests for the FilterBuilds root destination
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -84,8 +84,8 @@ class FilterBuildsBranchesAutoCompleteTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomActivityTestRule<FilterBuildsActivity> =
-        CustomActivityTestRule(FilterBuildsActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, "teamcityapp.features.filter_builds.impl.FilterBuildsActivity")
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()

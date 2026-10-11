@@ -35,10 +35,12 @@ import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
+import teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
+import teamcityapp.features.run_build.api.navigation.RunBuildDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
@@ -157,5 +159,17 @@ class IncomingDestinationResolverTest {
             assertEquals(destination, resolver.destination(normalized))
         }
         verify(codec, times(2)).decode("legacy-build")
+    }
+
+    @Test fun bothFormAliasesPreserveConfigurationIdsAndStandaloneResultOwnership() {
+        listOf(IncomingDestinationResolver.RUN_BUILD_COMPONENT, IncomingDestinationResolver.LEGACY_RUN_BUILD_COMPONENT).forEach { component ->
+            assertEquals(RunBuildDestination("configuration"), resolver.destination(intent(component).putExtra("BuildTypeId", "configuration")))
+            assertEquals(RunBuildDestination(""), resolver.destination(intent(component)))
+        }
+        listOf(IncomingDestinationResolver.FILTER_BUILDS_COMPONENT, IncomingDestinationResolver.LEGACY_FILTER_BUILDS_COMPONENT).forEach { component ->
+            assertEquals(FilterBuildsDestination("configuration"), resolver.destination(intent(component).putExtra("BuildTypeId", "configuration")))
+            assertEquals(FilterBuildsDestination(""), resolver.destination(intent(component)))
+        }
+        verifyNoInteractions(codec, filters, registry)
     }
 }

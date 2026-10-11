@@ -63,10 +63,9 @@ import org.mockito.Mockito.timeout
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
 
 /**
- * Tests for [FilterBuildsActivity]
+ * Tests for typed Filter Builds results delivered to History
  */
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)

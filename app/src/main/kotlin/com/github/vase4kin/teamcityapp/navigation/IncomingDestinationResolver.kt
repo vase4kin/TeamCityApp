@@ -31,10 +31,12 @@ import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
+import teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
+import teamcityapp.features.run_build.api.navigation.RunBuildDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
@@ -46,6 +48,10 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     fun destination(intent: Intent): NavKey? {
         intent.getStringExtra(MainActivity.EXTRA_DESTINATION)?.let { return registry.decodeDestination(it) }
         return when (intent.component?.className) {
+            RUN_BUILD_COMPONENT, LEGACY_RUN_BUILD_COMPONENT -> RunBuildDestination(intent.getStringExtra("BuildTypeId").orEmpty())
+
+            FILTER_BUILDS_COMPONENT, LEGACY_FILTER_BUILDS_COMPONENT -> FilterBuildsDestination(intent.getStringExtra("BuildTypeId").orEmpty())
+
             ABOUT_COMPONENT -> AboutDestination
 
             SETTINGS_COMPONENT -> SettingsDestination
@@ -97,6 +103,11 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     }
 
     companion object {
+        const val RUN_BUILD_COMPONENT = "teamcityapp.features.run_build.impl.RunBuildActivity"
+        const val LEGACY_RUN_BUILD_COMPONENT = "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity"
+        const val FILTER_BUILDS_COMPONENT = "teamcityapp.features.filter_builds.impl.FilterBuildsActivity"
+        const val LEGACY_FILTER_BUILDS_COMPONENT = "com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity"
+
         const val PROJECT_COMPONENT = "teamcityapp.features.navigation.impl.NavigationActivity"
         const val HISTORY_COMPONENT = "teamcityapp.features.build_history.impl.BuildHistoryActivity"
         const val ARTIFACTS_COMPONENT = "teamcityapp.features.artifacts.impl.ArtifactsActivity"

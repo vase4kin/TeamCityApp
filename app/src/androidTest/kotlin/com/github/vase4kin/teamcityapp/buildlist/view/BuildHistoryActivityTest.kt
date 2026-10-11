@@ -57,8 +57,6 @@ import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.BuildHistoryQuery
 import teamcityapp.features.build_history.impl.R as HistoryR
 import teamcityapp.features.filter_builds.api.BuildStatusFilter
-import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
-import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
 import teamcityapp.libraries.navigation.NavigationSnapshot
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl
 
@@ -285,7 +283,6 @@ class BuildHistoryActivityTest {
             awaitRow("after-run")
             awaitText(text(HistoryR.string.history_queued))
             compose.onNodeWithText(text(HistoryR.string.history_show)).assertIsDisplayed()
-            Assert.assertEquals(489, RunBuildNavigation.REQUEST_CODE)
         }
     }
 
@@ -361,7 +358,6 @@ class BuildHistoryActivityTest {
             awaitText(text(HistoryR.string.history_reset))
             compose.onNodeWithText(text(HistoryR.string.history_reset)).performClick()
             compose.waitUntil(10_000) { pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR) == 2 }
-            Assert.assertEquals(12921, FilterBuildsNavigation.REQUEST_CODE)
         }
     }
 
