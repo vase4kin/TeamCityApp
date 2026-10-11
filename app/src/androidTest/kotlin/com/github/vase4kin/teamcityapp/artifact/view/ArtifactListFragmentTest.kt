@@ -50,6 +50,8 @@ import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.destinationIntent
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
 import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -69,8 +71,11 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.artifacts.api.ArtifactsNavigation
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.R as ArtifactsR
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -156,7 +161,7 @@ class ArtifactListFragmentTest {
     @Test fun folderClickOpensInstalledAliasWithFullBuildAndExactChildrenUrl() {
         folders()
         clickFile("/metadata/res")
-        intended(allOf(hasComponent(ArtifactsNavigation.LEGACY_ACTIVITY), hasExtra(ArtifactsNavigation.URL, "/children/res"), hasExtra(ArtifactsNavigation.NAME, "res"), BuildComposeFixtures.fullPayload(ArtifactsNavigation.BUILD, BuildComposeFixtures.finished)))
+        intended(hasDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res")))
         awaitText("Nested file.txt")
     }
 
@@ -164,7 +169,7 @@ class ArtifactListFragmentTest {
         folders()
         compose.onNodeWithTag("artifacts:row:/metadata/res").performTouchInput { longClick() }
         sheet(text(SheetR.string.artifact_open))
-        intended(allOf(hasComponent(ArtifactsNavigation.LEGACY_ACTIVITY), hasExtra(ArtifactsNavigation.URL, "/children/res"), BuildComposeFixtures.fullPayload(ArtifactsNavigation.BUILD, BuildComposeFixtures.finished)))
+        intended(hasDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res")))
         awaitText("Nested file.txt")
     }
 
@@ -176,7 +181,7 @@ class ArtifactListFragmentTest {
         clickFile("/metadata/bundle.zip")
         awaitText(text(SheetR.string.artifact_download))
         sheet(text(SheetR.string.artifact_open))
-        intended(allOf(hasComponent(ArtifactsNavigation.LEGACY_ACTIVITY), hasExtra(ArtifactsNavigation.URL, "/children/bundle.zip!"), BuildComposeFixtures.fullPayload(ArtifactsNavigation.BUILD, BuildComposeFixtures.finished)))
+        intended(hasDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/bundle.zip!", "bundle.zip!")))
         awaitText("Inner file.txt")
     }
 
@@ -303,19 +308,25 @@ class ArtifactListFragmentTest {
             lists.incrementAndGet()
             Single.just(Files(listOf(file("Alias file.txt", "/metadata/alias"))))
         }
-        val alias = Intent().setComponent(ComponentName(context.packageName, ArtifactsNavigation.LEGACY_ACTIVITY))
-            .putExtra(ArtifactsNavigation.BUILD, BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))
-            .putExtra(ArtifactsNavigation.NAME, "Folder title").putExtra(ArtifactsNavigation.URL, "/children/alias")
-        ActivityScenario.launch<Activity>(alias).use { scenario ->
-            awaitText("Folder title")
-            awaitText("Alias file.txt")
-            val completedLists = lists.get()
-            scenario.recreate()
-            awaitText("Folder title")
-            awaitText("Alias file.txt")
-            assertEquals(completedLists, lists.get())
+        listOf(ArtifactsNavigation.LEGACY_ACTIVITY, "teamcityapp.features.artifacts.impl.ArtifactsActivity").forEach { component ->
+            val alias = Intent().setComponent(ComponentName(context.packageName, component))
+                .putExtra(ArtifactsNavigation.BUILD, BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))
+                .putExtra(ArtifactsNavigation.NAME, "Folder title").putExtra(ArtifactsNavigation.URL, "/children/alias")
+            ActivityScenario.launch<com.github.vase4kin.teamcityapp.navigation.MainActivity>(alias).use { scenario ->
+                awaitText("Folder title")
+                awaitText("Alias file.txt")
+                scenario.onActivity {
+                    assertEquals(ArtifactsDestination(BuildComposeFixtures.incoming, "/children/alias", "Folder title"), it.navigationSnapshot!!.entries.single().destination)
+                    org.junit.Assert.assertFalse(it.intent.hasExtra(ArtifactsNavigation.BUILD))
+                }
+                val completedLists = lists.get()
+                scenario.recreate()
+                awaitText("Folder title")
+                awaitText("Alias file.txt")
+                assertEquals(completedLists, lists.get())
+            }
         }
-        verify(teamCityService).listArtifacts("/children/alias", "browseArchives:true")
+        verify(teamCityService, times(2)).listArtifacts("/children/alias", "browseArchives:true")
     }
     private fun file(name: String, href: String) = File(name, 1024L, File.Content("/content/" + name), href)
     private fun start() {

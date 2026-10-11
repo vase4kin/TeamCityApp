@@ -17,15 +17,15 @@
 package teamcityapp.features.navigation.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import javax.inject.Inject
 import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.NavigationFragment
-import teamcityapp.features.navigation.impl.R
 import teamcityapp.libraries.build_configurations.ProjectReference
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-class NavigationNavigationImpl @Inject constructor() : NavigationNavigation {
+class NavigationNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : NavigationNavigation {
     override fun createFragment() = NavigationFragment().apply {
         arguments = Bundle().apply {
             putString(NavigationNavigation.PROJECT_ID, NavigationNavigation.ROOT_PROJECT_ID)
@@ -33,12 +33,6 @@ class NavigationNavigationImpl @Inject constructor() : NavigationNavigation {
         }
     }
     override fun open(activity: Activity, project: ProjectReference) {
-        activity.startActivity(
-            Intent().setClassName(activity, NavigationNavigation.LEGACY_ACTIVITY).apply {
-                putExtra(NavigationNavigation.PROJECT_ID, project.id)
-                putExtra(NavigationNavigation.PROJECT_NAME, project.name)
-            }
-        )
-        activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
+        launcher.open(activity, ProjectDestination(project.id, project.name, false))
     }
 }

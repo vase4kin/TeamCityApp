@@ -22,7 +22,6 @@ import android.content.Intent
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.buildlist.router.AppBuildHistoryRouter
 import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.AppSnapshotDependenciesRouter
 import org.junit.Assert.*
@@ -47,19 +46,6 @@ class BuildListAppRoutersTest {
         properties = BuildProperties(emptyList()),
         snapshotDependencies = BuildCollectionLink("/snapshots", 0)
     )
-
-    @Test fun historyPreservesCompleteBuildAndStandardTaskFlags() {
-        Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            val activity = controller.get()
-            AppBuildHistoryRouter(mapper).openBuild(activity, build, "Configuration")
-            val intent = shadowOf(activity).nextStartedActivity
-            assertEquals(BuildDetailsActivity::class.java.name, intent.component!!.className)
-            assertEquals("Configuration", intent.getStringExtra(BundleExtractorValues.NAME))
-            assertTrue(intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0)
-            assertTrue(intent.flags and Intent.FLAG_ACTIVITY_SINGLE_TOP != 0)
-            assertEquals(build, mapper.toLaunchData(intent.getSerializableExtra(BundleExtractorValues.BUILD, Build::class.java)!!))
-        }
-    }
 
     @Test fun snapshotPreservesCompleteBuildWithinTheCurrentTask() {
         Robolectric.buildActivity(Activity::class.java).setup().use { controller ->

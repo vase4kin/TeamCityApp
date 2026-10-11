@@ -18,22 +18,29 @@ package teamcityapp.features.navigation.impl
 
 import android.app.Activity
 import android.app.Application
+import androidx.navigation3.runtime.NavKey
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.navigation.NavigationNavigationImpl
 import teamcityapp.libraries.build_configurations.ProjectReference
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class NavigationNavigationTest {
-    private val navigation = NavigationNavigationImpl()
+    private val launches = mutableListOf<Triple<Activity, NavKey, Int>>()
+    private val launcher = object : DestinationLauncher {
+        override fun open(activity: Activity, destination: NavKey, flags: Int) {
+            launches += Triple(activity, destination, flags)
+        }
+    }
+    private val navigation = NavigationNavigationImpl(launcher)
 
     @Test fun rootFragmentUsesCompatibleRootArguments() {
         val fragment = navigation.createFragment()
@@ -42,17 +49,12 @@ class NavigationNavigationTest {
         assertEquals("", fragment.requireArguments().getString("name"))
     }
 
-    @Test fun nestedNavigationTargetsInstalledComponentAndPreservesIdAndName() {
+    @Test fun nestedNavigationTargetsTheRootWithCompleteProjectArguments() {
         val controller = Robolectric.buildActivity(Activity::class.java).setup()
         try {
             val activity = controller.get()
             navigation.open(activity, ProjectReference("nested-id", "Nested project"))
-            val intent = shadowOf(activity).nextStartedActivity
-            assertEquals(NavigationNavigation.LEGACY_ACTIVITY, intent.component?.className)
-            assertEquals(activity.packageName, intent.component?.packageName)
-            assertEquals("nested-id", intent.getStringExtra("id"))
-            assertEquals("Nested project", intent.getStringExtra("name"))
-            assertEquals(0, intent.flags)
+            assertEquals(listOf(Triple(activity, ProjectDestination("nested-id", "Nested project", false), 0)), launches)
         } finally {
             controller.pause().stop().destroy()
         }

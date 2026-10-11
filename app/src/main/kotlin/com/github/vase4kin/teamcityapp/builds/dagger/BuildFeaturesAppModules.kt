@@ -22,7 +22,6 @@ import com.github.vase4kin.teamcityapp.artifact.router.AppArtifactsRouterImpl
 import com.github.vase4kin.teamcityapp.buildlist.data.AppBuildHistoryFilterAdapter
 import com.github.vase4kin.teamcityapp.buildlist.data.AppBuildHistoryOnboardingRepository
 import com.github.vase4kin.teamcityapp.buildlist.data.AppBuildHistoryRepository
-import com.github.vase4kin.teamcityapp.buildlist.router.AppBuildHistoryRouter
 import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchCodec
 import com.github.vase4kin.teamcityapp.overview.data.AppBuildOverviewEvents
 import com.github.vase4kin.teamcityapp.overview.data.AppBuildOverviewRepository
@@ -47,7 +46,6 @@ import javax.inject.Singleton
 import teamcityapp.features.artifacts.api.ArtifactsAppRouter
 import teamcityapp.features.artifacts.api.ArtifactsEvents
 import teamcityapp.features.artifacts.api.ArtifactsRepository
-import teamcityapp.features.build_history.api.BuildHistoryAppRouter
 import teamcityapp.features.build_history.api.BuildHistoryFilterAdapter
 import teamcityapp.features.build_history.api.BuildHistoryOnboardingRepository
 import teamcityapp.features.build_history.api.BuildHistoryRepository
@@ -76,9 +74,6 @@ abstract class BuildFeaturesDataModule {
 
     @Binds @Singleton
     abstract fun historyOnboarding(implementation: AppBuildHistoryOnboardingRepository): BuildHistoryOnboardingRepository
-
-    @Binds @Singleton
-    abstract fun historyRouter(implementation: AppBuildHistoryRouter): BuildHistoryAppRouter
 
     @Binds @Singleton
     abstract fun snapshots(implementation: AppSnapshotDependenciesRepository): SnapshotDependenciesRepository

@@ -18,7 +18,6 @@ package teamcityapp.features.build_history.api
 
 import android.app.Activity
 import java.io.Serializable
-import teamcityapp.libraries.builds.BuildLaunchData
 
 interface BuildHistoryNavigation {
     fun open(activity: Activity, configurationId: String, configurationName: String, locator: String? = null)
@@ -34,10 +33,4 @@ interface BuildHistoryNavigation {
 /** The app reads its legacy Serializable BuildListFilter; features retain only its locator. */
 interface BuildHistoryFilterAdapter {
     fun locator(filter: Serializable): String
-}
-
-/** Stateless bridge to legacy BuildDetails and Home; the feature owns its current Activity. */
-interface BuildHistoryAppRouter {
-    fun openBuild(activity: Activity, build: BuildLaunchData, configurationName: String?)
-    fun openFavorites(activity: Activity)
 }

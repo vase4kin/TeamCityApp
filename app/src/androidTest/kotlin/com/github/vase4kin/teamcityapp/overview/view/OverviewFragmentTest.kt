@@ -52,6 +52,8 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarSubTitle
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.destinationIntent
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -70,10 +72,13 @@ import org.mockito.Mockito.*
 import org.mockito.Spy
 import retrofit2.HttpException
 import retrofit2.Response
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_overview.impl.R as OverviewR
 import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.libraries.builds.*
 
 @HiltAndroidTest
@@ -228,7 +233,7 @@ class OverviewFragmentTest {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Branch")
         sheet(text(SheetR.string.build_element_show_all_builds_built_branch))
-        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "current-config")))
+        intended(hasDestination(BuildHistoryDestination("current-config", "Current configuration", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10")))
         verify(teamCityService).listBuilds("current-config", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10")
     }
 
@@ -236,14 +241,14 @@ class OverviewFragmentTest {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Configuration")
         sheet(text(SheetR.string.build_element_open_build_type))
-        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "current-config"), hasExtra(BundleExtractorValues.NAME, "Current configuration")))
+        intended(hasDestination(BuildHistoryDestination("current-config", "Current configuration")))
     }
 
     @Test fun projectNavigationUsesLoadedProjectAndInstalledAlias() {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Project")
         sheet(text(SheetR.string.build_element_open_project))
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "current-project"), hasExtra(BundleExtractorValues.NAME, "Current project")))
+        intended(hasDestination(ProjectDestination("current-project", "Current project", false)))
     }
 
     @Test fun shareUsesTheCurrentWebUrl() {
@@ -410,7 +415,7 @@ class OverviewFragmentTest {
         )
         doReturn(Single.just(BuildComposeFixtures.legacy(queued))).`when`(teamCityService).build(queued.href)
         doReturn(Single.just(BuildComposeFixtures.legacy(nextLoaded))).`when`(teamCityService).build(nextIncoming.href)
-        intending(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY)).respondWith(ActivityResult(Activity.RESULT_CANCELED, null))
+        intending(destinationIntent { it is BuildHistoryDestination }).respondWith(ActivityResult(Activity.RESULT_CANCELED, null))
         val oldRefresh = SingleSubject.create<Build>()
         val oldCancellations = AtomicInteger()
 
@@ -457,11 +462,7 @@ class OverviewFragmentTest {
             clickRow("Configuration")
             sheet(text(SheetR.string.build_element_open_build_type))
             intended(
-                allOf(
-                    hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY),
-                    hasExtra(BundleExtractorValues.ID, "replacement-loaded-config"),
-                    hasExtra(BundleExtractorValues.NAME, "Replacement loaded configuration")
-                )
+                hasDestination(BuildHistoryDestination("replacement-loaded-config", "Replacement loaded configuration"))
             )
         }
     }

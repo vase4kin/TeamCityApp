@@ -41,6 +41,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.gson.Gson
@@ -61,6 +62,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.filter_bottom_sheet.impl.R as QuickR
 import teamcityapp.features.running_builds.impl.R as FeatureR
 import teamcityapp.libraries.list_ui.R as ListR
@@ -95,7 +97,6 @@ class RunningBuildsFragmentTest {
 
     companion object {
         private const val DETAILS_COMPONENT = "com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity"
-        private const val HISTORY_COMPONENT = teamcityapp.features.build_history.api.BuildHistoryNavigation.LEGACY_ACTIVITY
 
         @JvmStatic @BeforeClass
         fun disableOnboarding() = TestUtils.disableOnboarding()
@@ -208,14 +209,11 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("top-level")
         stubFavorite("top-level", listOf(build))
         stubDetails(build)
-        Intents.intending(hasComponent(HISTORY_COMPONENT)).respondWith(android.app.Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+        Intents.intending(hasDestination(BuildHistoryDestination("top-level", "Configuration title"))).respondWith(android.app.Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         openTab()
         awaitRow("1")
         compose.onNodeWithTag("running_builds:configuration:0").performClick()
-        val intent = Intents.getIntents().last { it.component?.className == HISTORY_COMPONENT }
-        Assert.assertEquals("top-level", intent.getStringExtra(BundleExtractorValues.ID))
-        Assert.assertEquals("Configuration title", intent.getStringExtra(BundleExtractorValues.NAME))
-        Assert.assertNull(intent.extras!!.get(BundleExtractorValues.BUILD_LIST_FILTER))
+        Intents.intended(hasDestination(BuildHistoryDestination("top-level", "Configuration title")))
     }
 
     @Test fun initialErrorCanRetryWithoutRemovingFavorites() {

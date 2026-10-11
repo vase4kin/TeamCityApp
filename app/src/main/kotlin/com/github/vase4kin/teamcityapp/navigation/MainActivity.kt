@@ -21,6 +21,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,9 +46,13 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var accounts: AppAccountFlowNavigation
     private val incomingRequest = mutableStateOf<DestinationRequest?>(null)
 
+    private var activeNavigator: teamcityapp.libraries.navigation.Navigator? = null
+    internal val navigationSnapshot get() = activeNavigator?.snapshot
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val requestedInitial = incoming.destination(intent)
+        requestedInitial?.let { setIntent(incoming.normalizedIntent(intent, it)) }
         accounts.synchronize()
         val initialSessionKey = accounts.session.value.key
         enableEdgeToEdge()
@@ -57,6 +62,10 @@ class MainActivity : AppCompatActivity() {
                 val session by accounts.session.collectAsStateWithLifecycle()
                 val initial = if (session.key == initialSessionKey) requestedInitial ?: session.initial else session.initial
                 val navigator = rememberNavigator(initial, registry, session.key)
+                DisposableEffect(navigator) {
+                    activeNavigator = navigator
+                    onDispose { if (activeNavigator === navigator) activeNavigator = null }
+                }
                 val handledRequest = rememberSaveable { mutableStateOf(session.requestId) }
                 LaunchedEffect(session.requestId) {
                     if (session.requestId != null && handledRequest.value != session.requestId) {
@@ -85,9 +94,8 @@ class MainActivity : AppCompatActivity() {
         // Alias names have different Android component identities. Keep this host's launch
         // component stable while saving the normalized request for recreation.
         setIntent(
-            Intent(intent).apply {
+            (destination?.let { incoming.normalizedIntent(intent, it) } ?: Intent(intent)).apply {
                 component = this@MainActivity.intent.component
-                destination?.let { putExtra(EXTRA_DESTINATION, registry.encodeDestination(it)) }
             }
         )
         destination?.let { incomingRequest.value = DestinationRequest(it) }

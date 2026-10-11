@@ -30,6 +30,18 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" />
+        <activity-alias android:name="teamcityapp.features.navigation.impl.NavigationActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.build_history.impl.BuildHistoryActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.artifacts.impl.ArtifactsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.artifact.view.ArtifactListActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="teamcityapp.features.login.impl.LoginActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="com.github.vase4kin.teamcityapp.login.view.LoginActivity"

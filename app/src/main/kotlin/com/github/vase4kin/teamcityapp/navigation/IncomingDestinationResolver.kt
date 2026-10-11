@@ -17,36 +17,76 @@
 package com.github.vase4kin.teamcityapp.navigation
 
 import android.content.Intent
+import androidx.core.content.IntentCompat
 import androidx.navigation3.runtime.NavKey
+import java.io.Serializable
 import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.artifacts.api.ArtifactsNavigation
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
+import teamcityapp.features.build_history.api.BuildHistoryFilterAdapter
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
+import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
+import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 /** The app owns installed component compatibility; feature APIs retain only destination keys. */
-class IncomingDestinationResolver @Inject constructor(private val registry: DestinationRegistry) {
+class IncomingDestinationResolver @Inject constructor(private val registry: DestinationRegistry, private val codec: BuildLaunchCodec, private val historyFilters: BuildHistoryFilterAdapter) {
     fun destination(intent: Intent): NavKey? {
         intent.getStringExtra(MainActivity.EXTRA_DESTINATION)?.let { return registry.decodeDestination(it) }
         return when (intent.component?.className) {
             ABOUT_COMPONENT -> AboutDestination
+
             SETTINGS_COMPONENT -> SettingsDestination
+
             SPLASH_COMPONENT -> SplashNavigationDestination
+
             TEST_DETAILS_COMPONENT -> TestDetailsDestination(intent.getStringExtra("arg_test_url").orEmpty())
+
             CHANGE_DETAILS_COMPONENT -> ChangeDetailsDestination(changeDetails(intent))
+
             MANAGE_ACCOUNTS_COMPONENT -> ManageAccountsDestination
+
             LOGIN_COMPONENT, LEGACY_LOGIN_COMPONENT -> LoginDestination
+
             CREATE_ACCOUNT_COMPONENT, LEGACY_CREATE_ACCOUNT_COMPONENT -> CreateAccountDestination
+
+            PROJECT_COMPONENT, NavigationNavigation.LEGACY_ACTIVITY -> ProjectDestination(intent.getStringExtra(NavigationNavigation.PROJECT_ID) ?: NavigationNavigation.ROOT_PROJECT_ID, intent.getStringExtra(NavigationNavigation.PROJECT_NAME).orEmpty(), false)
+
+            HISTORY_COMPONENT, BuildHistoryNavigation.LEGACY_ACTIVITY -> BuildHistoryDestination(intent.getStringExtra(BuildHistoryNavigation.EXTRA_ID).orEmpty(), intent.getStringExtra(BuildHistoryNavigation.EXTRA_NAME).orEmpty(), historyLocator(intent))
+
+            ARTIFACTS_COMPONENT, ArtifactsNavigation.LEGACY_ACTIVITY -> {
+                val payload = requireNotNull(IntentCompat.getSerializableExtra(intent, ArtifactsNavigation.BUILD, Serializable::class.java))
+                ArtifactsDestination(codec.decode(payload), intent.getStringExtra(ArtifactsNavigation.URL).orEmpty(), intent.getStringExtra(ArtifactsNavigation.NAME).orEmpty())
+            }
+
             else -> null
         }
     }
+    fun normalizedIntent(intent: Intent, destination: NavKey) = Intent(intent).apply {
+        putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(destination))
+        // Only plain destination arguments enter subsequent recreation; legacy DTO names
+        // still belong to their compatibility codec/cache boundary.
+        if (destination is BuildHistoryDestination) removeExtra(BuildHistoryNavigation.EXTRA_LEGACY_FILTER)
+        if (destination is ArtifactsDestination) removeExtra(ArtifactsNavigation.BUILD)
+    }
+
+    private fun historyLocator(intent: Intent): String? {
+        if (intent.hasExtra(BuildHistoryNavigation.EXTRA_LOCATOR)) return intent.getStringExtra(BuildHistoryNavigation.EXTRA_LOCATOR)
+        return IntentCompat.getSerializableExtra(intent, BuildHistoryNavigation.EXTRA_LEGACY_FILTER, Serializable::class.java)?.let(historyFilters::locator)
+    }
+
     private fun changeDetails(intent: Intent): ChangeDetails? {
         val id = intent.getStringExtra("change:id") ?: return null
         val names = intent.getStringArrayListExtra("change:file_names") ?: return null
@@ -57,6 +97,9 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     }
 
     companion object {
+        const val PROJECT_COMPONENT = "teamcityapp.features.navigation.impl.NavigationActivity"
+        const val HISTORY_COMPONENT = "teamcityapp.features.build_history.impl.BuildHistoryActivity"
+        const val ARTIFACTS_COMPONENT = "teamcityapp.features.artifacts.impl.ArtifactsActivity"
         const val LOGIN_COMPONENT = "teamcityapp.features.login.impl.LoginActivity"
         const val LEGACY_LOGIN_COMPONENT = "com.github.vase4kin.teamcityapp.login.view.LoginActivity"
         const val CREATE_ACCOUNT_COMPONENT = "teamcityapp.features.create_account.impl.CreateAccountActivity"

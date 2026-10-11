@@ -39,6 +39,8 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.destinationIntent
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.home.dagger.RateTheAppTestAppModule
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.Module
@@ -53,8 +55,11 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 import teamcityapp.libraries.remote.RemoteService
 
@@ -126,7 +131,7 @@ class RateTheAppTest {
         row("project:id").performClick()
         awaitRows()
         compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_NAME, "Project")))
+        intended(hasDestination(ProjectDestination("id", "Project", false)))
     }
 
     @Test fun ratePersistsChoiceAndLaunchesTheStore() {
@@ -146,7 +151,7 @@ class RateTheAppTest {
         compose.onNodeWithText(text(NavigationR.string.navigation_rate_cancel)).performClick()
         awaitHandled()
         row("configuration:build_type_id").performClick()
-        intended(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY))
+        intended(destinationIntent { it is BuildHistoryDestination })
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }

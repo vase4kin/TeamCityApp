@@ -47,6 +47,8 @@ import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.destinationIntent
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -62,7 +64,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.snapshot_dependencies.impl.R as SnapshotR
 import teamcityapp.libraries.builds.*
 
@@ -165,7 +170,7 @@ class SnapshotDependenciesFragmentTest {
         start()
         awaitTag("snapshot:configuration:0")
         compose.onNodeWithTag("snapshot:configuration:0").performClick()
-        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "current-config"), hasExtra(BundleExtractorValues.NAME, "Current configuration")))
+        intended(hasDestination(BuildHistoryDestination("current-config", "Current configuration")))
     }
 
     @Test fun initialFailureCanRetryTheDependencyQuery() {

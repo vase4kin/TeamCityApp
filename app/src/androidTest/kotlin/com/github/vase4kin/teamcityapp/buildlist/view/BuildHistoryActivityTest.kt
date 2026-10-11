@@ -18,25 +18,16 @@
 package com.github.vase4kin.teamcityapp.buildlist.view
 
 import android.app.Activity
-import android.app.Instrumentation
 import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.core.content.IntentCompat
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.pressBack
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.app_navigation.AppNavigationItem
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
@@ -44,7 +35,9 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
+import com.github.vase4kin.teamcityapp.runbuild.api.Branch
+import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -53,23 +46,20 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
 import java.util.concurrent.atomic.AtomicBoolean
-import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import org.mockito.kotlin.whenever
+import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.BuildHistoryQuery
-import teamcityapp.features.build_history.impl.BuildHistoryActivity
 import teamcityapp.features.build_history.impl.R as HistoryR
 import teamcityapp.features.filter_builds.api.BuildStatusFilter
 import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
-import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
-import teamcityapp.features.run_build.api.BUILD_TYPE_ID
 import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
-import teamcityapp.features.run_build.impl.RunBuildActivity
+import teamcityapp.libraries.navigation.NavigationSnapshot
 import teamcityapp.libraries.onboarding.OnboardingManagerImpl
 
 /** Installed host and app adapters are exercised through the existing account API graph. */
@@ -97,6 +87,9 @@ class BuildHistoryActivityTest {
     private val app get() = context.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
     private val details = mutableMapOf<String, Build>()
+    private var scenario: ActivityScenario<MainActivity>? = null
+    private var runResult = Activity.RESULT_OK
+    private var filterResult = Activity.RESULT_OK
 
     @Before fun setup() {
         TestUtils.disableOnboarding()
@@ -109,12 +102,23 @@ class BuildHistoryActivityTest {
             val href: String = invocation.getArgument(0)
             (details[href] ?: details["/$href"])?.let { Single.just(it) } ?: fallback.build(if (href.startsWith("/")) href else "/$href")
         }.whenever(teamCityService).build(anyString())
-        Intents.init()
+        doReturn(Single.just(Branches(listOf(Branch("main"), Branch("branch/raw"))))).whenever(teamCityService).listBranches(anyString())
     }
 
     @After fun cleanup() {
-        Intents.release()
         TestUtils.disableOnboarding()
+    }
+
+    @Test fun implementationComponentAliasPreservesLegacyFilterThroughRootRecreation() {
+        installPage(listOf(build("1")))
+        val filter = selectedFilter()
+        launch(filter, "teamcityapp.features.build_history.impl.BuildHistoryActivity").use { scenario ->
+            awaitRow("1")
+            scenario.recreate()
+            awaitRow("1")
+            scenario.onActivity { Assert.assertEquals(MainActivity::class.java, it.javaClass) }
+            verify(teamCityService, times(1)).listBuilds("build_type_id", filter.toLocator())
+        }
     }
 
     @Test fun installedAliasAcceptsIdNameAndDefaultAnyLocator() {
@@ -165,7 +169,7 @@ class BuildHistoryActivityTest {
             Assert.assertTrue(queued.top < finished.top)
             compose.onNodeWithTag("history:section:queued").assertHasNoClickAction()
             compose.onNodeWithTag("history:section:22 June").assertHasNoClickAction()
-            Assert.assertTrue(Intents.getIntents().none { it.component?.className == BuildDetailsActivity::class.java.name })
+            Assert.assertTrue(snapshot().entries.none { it.destination is BuildDetailsDestination })
         }
     }
 
@@ -260,25 +264,24 @@ class BuildHistoryActivityTest {
         }
     }
 
-    @Test fun rowForwardsCompleteLegacyBuildToDetails() {
+    @Test fun rowPushesCompleteBuildSnapshotToDetails() {
         val detail = fullBuild("1")
         installPage(listOf(detail))
-        blockBuildDetails()
         launch().use {
             awaitRow("1")
             compose.onNodeWithTag("history:build:1").performClick()
-            assertCompleteBuildIntent("1")
+            assertCompleteBuildDestination("1")
         }
     }
 
-    @Test fun runResultUsesExistingContractAndRefreshesHistoryWithShowAction() {
+    @Test fun typedRunResultRefreshesHistoryWithShowAction() {
         installPage(emptyList())
-        stubRunResult(Activity.RESULT_OK)
+        prepareRun(Activity.RESULT_OK)
         launch().use {
             awaitText(text(HistoryR.string.history_empty))
             installPage(listOf(build("after-run")))
             compose.onNodeWithTag("history:run").performClick()
-            intended(allOf(hasComponent(RunBuildActivity::class.java.name), hasExtra(BUILD_TYPE_ID, "build_type_id")))
+            completeRun()
             awaitRow("after-run")
             awaitText(text(HistoryR.string.history_queued))
             compose.onNodeWithText(text(HistoryR.string.history_show)).assertIsDisplayed()
@@ -288,61 +291,64 @@ class BuildHistoryActivityTest {
 
     @Test fun cancelledRunDoesNotRefreshOrOfferShow() {
         installPage(emptyList())
-        stubRunResult(Activity.RESULT_CANCELED)
+        prepareRun(Activity.RESULT_CANCELED)
         launch().use {
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
+            completeRun()
             compose.waitForIdle()
             compose.onNodeWithText(text(HistoryR.string.history_queued)).assertDoesNotExist()
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
         }
     }
 
-    @Test fun queuedShowWaitsForFullResponseAndLaunchesFullLegacyPayload() {
+    @Test fun queuedShowWaitsForFullResponseAndPushesCompleteTypedSnapshot() {
         installPage(emptyList())
-        stubRunResult(Activity.RESULT_OK)
-        blockBuildDetails()
+        prepareRun(Activity.RESULT_OK)
         val pending = SingleSubject.create<Build>()
         doReturn(pending).whenever(teamCityService).build("/queued/result")
         launch().use {
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
+            completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             compose.waitUntil(10_000) { pending.hasObservers() }
             compose.onNodeWithTag("history:opening-progress").assertIsDisplayed()
             pending.onSuccess(fullBuild("queued"))
-            assertCompleteBuildIntent("queued")
-            verify(teamCityService, times(1)).build("/queued/result")
+            assertCompleteBuildDestination("queued")
+            // History hydration and the newly visible Overview each own one request.
+            verify(teamCityService, times(2)).build("/queued/result")
         }
     }
 
     @Test fun queuedShowFailureRetriesDirectServerRequest() {
         installPage(emptyList())
-        stubRunResult(Activity.RESULT_OK)
-        blockBuildDetails()
+        prepareRun(Activity.RESULT_OK)
         doReturn(Single.error<Build>(IllegalStateException("offline"))).whenever(teamCityService).build("/queued/result")
         launch().use {
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
+            completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             awaitText(text(HistoryR.string.history_open_failed))
             doReturn(Single.just(fullBuild("queued"))).whenever(teamCityService).build("/queued/result")
             compose.onNodeWithText(text(HistoryR.string.history_retry)).performClick()
-            assertCompleteBuildIntent("queued")
-            verify(teamCityService, times(2)).build("/queued/result")
+            assertCompleteBuildDestination("queued")
+            // Failed hydration, explicit retry, and the new Overview load.
+            verify(teamCityService, times(3)).build("/queued/result")
         }
     }
 
     @Test fun selectedFilterSurvivesRefreshRecreationAndReset() {
         installPage(listOf(build("1")))
         val filter = selectedFilter()
-        stubFilterResult(Activity.RESULT_OK, filter)
+        filterResult = Activity.RESULT_OK
         launch().use { scenario ->
             awaitRow("1")
             compose.onNodeWithTag("history:filter").performClick()
-            intended(allOf(hasComponent(FilterBuildsActivity::class.java.name), hasExtra(FilterBuildsNavigation.BUILD_TYPE_ID, "build_type_id")))
+            completeFilter()
             awaitText(text(HistoryR.string.history_filters_applied))
             compose.waitUntil(10_000) { pageCalls(filter.toLocator()) == 1 }
             scenario.recreate()
@@ -351,6 +357,7 @@ class BuildHistoryActivityTest {
             pullRefresh()
             compose.waitUntil(10_000) { pageCalls(filter.toLocator()) == 2 }
             compose.onNodeWithTag("history:filter").performClick()
+            completeFilter()
             awaitText(text(HistoryR.string.history_reset))
             compose.onNodeWithText(text(HistoryR.string.history_reset)).performClick()
             compose.waitUntil(10_000) { pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR) == 2 }
@@ -363,10 +370,11 @@ class BuildHistoryActivityTest {
         val filter = selectedFilter()
         val pending = SingleSubject.create<Builds>()
         doReturn(pending).whenever(teamCityService).listBuilds("build_type_id", filter.toLocator())
-        stubFilterResult(Activity.RESULT_OK, filter)
+        filterResult = Activity.RESULT_OK
         launch().use {
             awaitRow("1")
             compose.onNodeWithTag("history:filter").performClick()
+            completeFilter()
             compose.waitUntil(10_000) { pending.hasObservers() }
             compose.onNodeWithTag("history:build:1").assertDoesNotExist()
             val rows = listOf(build("2"))
@@ -378,10 +386,11 @@ class BuildHistoryActivityTest {
 
     @Test fun cancelledFilterKeepsCurrentRowsAndLocator() {
         installPage(listOf(build("1")))
-        stubFilterResult(Activity.RESULT_CANCELED, selectedFilter())
+        filterResult = Activity.RESULT_CANCELED
         launch().use {
             awaitRow("1")
             compose.onNodeWithTag("history:filter").performClick()
+            completeFilter()
             compose.waitForIdle()
             compose.onNodeWithTag("history:build:1").assertIsDisplayed()
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
@@ -407,19 +416,19 @@ class BuildHistoryActivityTest {
         }
     }
 
-    @Test fun favoriteSnackbarOpensHomeFavoritesAndBackReturnsToRetainedHistory() {
+    @Test fun favoriteSnackbarOpensHomeFavoritesAndReplacesStandaloneHistory() {
         installPage(listOf(build("1")))
-        launch().use {
+        launch().use { scenario ->
             awaitRow("1")
             awaitFavoriteEnabled()
             compose.onNodeWithTag("history:favorite").performClick()
             awaitText(text(HistoryR.string.history_view))
             compose.onNodeWithText(text(HistoryR.string.history_view)).performClick()
-            intended(allOf(hasComponent(HomeActivity::class.java.name), hasExtra(HomeActivity.ARG_TAB, AppNavigationItem.FAVORITES.ordinal)))
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("favorites:configuration:build_type_id").fetchSemanticsNodes().isNotEmpty() }
             Assert.assertEquals(listOf("build_type_id"), storage.favoriteBuildTypeIds)
-            pressBack()
-            awaitRow("1")
+            scenario.onActivity { Assert.assertEquals(1, it.navigationSnapshot!!.entries.size) }
+            androidx.test.espresso.Espresso.pressBackUnconditionally()
+            compose.waitUntil(10_000) { scenario.state == Lifecycle.State.DESTROYED }
             Assert.assertEquals(1, pageCalls(BuildHistoryQuery.DEFAULT_LOCATOR))
         }
     }
@@ -500,37 +509,38 @@ class BuildHistoryActivityTest {
 
     @Test fun pendingQueuedShowSurvivesRecreationWithoutDuplicateRequestOrLaunch() {
         installPage(emptyList())
-        stubRunResult(Activity.RESULT_OK)
-        blockBuildDetails()
+        prepareRun(Activity.RESULT_OK)
         val pending = SingleSubject.create<Build>()
         doReturn(pending).whenever(teamCityService).build("/queued/result")
         launch().use { scenario ->
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
+            completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             compose.waitUntil(10_000) { pending.hasObservers() }
             scenario.recreate()
             compose.onNodeWithTag("history:opening-progress").assertIsDisplayed()
+            verify(teamCityService, times(1)).build("/queued/result")
             pending.onSuccess(fullBuild("queued"))
-            assertCompleteBuildIntent("queued")
+            assertCompleteBuildDestination("queued")
             scenario.recreate()
             compose.waitForIdle()
-            verify(teamCityService, times(1)).build("/queued/result")
-            Assert.assertEquals(1, Intents.getIntents().count { it.component?.className == BuildDetailsActivity::class.java.name })
+            verify(teamCityService, times(2)).build("/queued/result")
+            Assert.assertEquals(1, snapshot().entries.count { it.destination is BuildDetailsDestination })
         }
     }
 
     @Test fun destroyingHistoryCancelsPendingQueuedShowAndIgnoresLateResponse() {
         installPage(emptyList())
-        stubRunResult(Activity.RESULT_OK)
-        blockBuildDetails()
+        prepareRun(Activity.RESULT_OK)
         val pending = SingleSubject.create<Build>()
         doReturn(pending).whenever(teamCityService).build("/queued/result")
         val scenario = launch()
         try {
             awaitText(text(HistoryR.string.history_empty))
             compose.onNodeWithTag("history:run").performClick()
+            completeRun()
             awaitText(text(HistoryR.string.history_show))
             compose.onNodeWithText(text(HistoryR.string.history_show)).performClick()
             compose.waitUntil(10_000) { pending.hasObservers() }
@@ -539,13 +549,13 @@ class BuildHistoryActivityTest {
         }
         compose.waitUntil(10_000) { !pending.hasObservers() }
         pending.onSuccess(fullBuild("late"))
-        Assert.assertTrue(Intents.getIntents().none { it.component?.className == BuildDetailsActivity::class.java.name })
+        Assert.assertEquals(Lifecycle.State.DESTROYED, scenario.state)
     }
 
-    private fun launch(filter: BuildListFilterImpl? = null): ActivityScenario<BuildHistoryActivity> = ActivityScenario.launch(
-        Intent().setClassName(context.packageName, BuildHistoryNavigation.LEGACY_ACTIVITY)
+    private fun launch(filter: BuildListFilterImpl? = null, component: String = BuildHistoryNavigation.LEGACY_ACTIVITY): ActivityScenario<MainActivity> = ActivityScenario.launch<MainActivity>(
+        Intent().setClassName(context.packageName, component)
             .putExtra("id", "build_type_id").putExtra("name", "build type").apply { filter?.let { putExtra("filter", it) } }
-    )
+    ).also { scenario = it }
     private fun installPage(rows: List<Build>, next: String? = null) {
         registerDetails(rows)
         doReturn(Single.just(page(rows, next))).whenever(teamCityService).listBuilds(anyString(), anyString())
@@ -578,25 +588,47 @@ class BuildHistoryActivityTest {
         setPersonal(true)
         setPinned(true)
     }
-    private fun stubRunResult(resultCode: Int) = intending(hasComponent(RunBuildActivity::class.java.name)).respondWith(
-        Instrumentation.ActivityResult(resultCode, Intent().putExtra(RunBuildNavigation.EXTRA_HREF, "/queued/result"))
-    )
-    private fun stubFilterResult(resultCode: Int, filter: BuildListFilterImpl) = intending(hasComponent(FilterBuildsActivity::class.java.name)).respondWith(
-        Instrumentation.ActivityResult(resultCode, Intent().putExtra(FilterBuildsNavigation.EXTRA_FILTER, filter))
-    )
-    private fun blockBuildDetails() = intending(hasComponent(BuildDetailsActivity::class.java.name)).respondWith(Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null))
-    private fun assertCompleteBuildIntent(id: String) {
-        compose.waitUntil(10_000) { Intents.getIntents().any { it.component?.className == BuildDetailsActivity::class.java.name } }
-        val intent = Intents.getIntents().last { it.component?.className == BuildDetailsActivity::class.java.name }
-        val payload = IntentCompat.getSerializableExtra(intent, BundleExtractorValues.BUILD, Build::class.java)!!
+    private fun prepareRun(resultCode: Int) {
+        runResult = resultCode
+        doReturn(Single.just(fullBuild("queued"))).whenever(teamCityService).queueBuild(org.mockito.kotlin.any<Build>())
+    }
+    private fun completeRun() {
+        compose.waitUntil(10_000) { compose.onAllNodes(hasTestTag("run-build:submit") and isEnabled()).fetchSemanticsNodes().isNotEmpty() }
+        if (runResult == Activity.RESULT_OK) compose.onNodeWithTag("run-build:submit").performClick() else pressBack()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("run-build:submit").fetchSemanticsNodes().isEmpty() }
+    }
+    private fun completeFilter() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("filter-builds:chooser").fetchSemanticsNodes().isNotEmpty() }
+        if (filterResult == Activity.RESULT_CANCELED) {
+            pressBack()
+        } else {
+            compose.onNodeWithTag("filter-builds:status:Cancelled").performClick()
+            compose.onNodeWithTag("branches:input").performScrollTo().performTextClearance()
+            compose.onNodeWithTag("branches:input").performTextInput("branch/raw")
+            compose.onNodeWithTag("filter-builds:personal").performScrollTo().performClick()
+            compose.onNodeWithTag("filter-builds:pinned").performScrollTo().performClick()
+            compose.onNodeWithTag("filter-builds:apply").performClick()
+        }
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("filter-builds:chooser").fetchSemanticsNodes().isEmpty() }
+    }
+    private fun snapshot(): NavigationSnapshot {
+        var result: NavigationSnapshot? = null
+        scenario!!.onActivity { result = it.navigationSnapshot }
+        return requireNotNull(result)
+    }
+    private fun assertCompleteBuildDestination(id: String) {
+        compose.waitUntil(10_000) { snapshot().entries.last().destination is BuildDetailsDestination }
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:list").fetchSemanticsNodes().isNotEmpty() }
+        val destination = snapshot().entries.last().destination as BuildDetailsDestination
+        val payload = destination.build
         Assert.assertEquals(id, payload.id)
         Assert.assertEquals("098", payload.number)
         Assert.assertEquals("raw/branch", payload.branchName)
-        Assert.assertEquals("Android", payload.buildType?.id)
-        Assert.assertEquals(2, payload.testOccurrences?.failed)
-        Assert.assertEquals("/snapshots", payload.snapshotBuilds?.href)
-        Assert.assertEquals("env", payload.properties?.properties?.single()?.name)
-        Assert.assertEquals("build type", intent.getStringExtra(BundleExtractorValues.NAME))
+        Assert.assertEquals("Android", payload.configuration?.id)
+        Assert.assertEquals(2, payload.tests?.failed)
+        Assert.assertEquals("/snapshots", payload.snapshotDependencies?.href)
+        Assert.assertEquals("env", payload.properties?.items?.single()?.name)
+        Assert.assertEquals("build type", destination.configurationName)
     }
     private fun awaitFavoriteEnabled() = compose.waitUntil(10_000) {
         compose.onAllNodes(hasTestTag("history:favorite") and isEnabled()).fetchSemanticsNodes().isNotEmpty()

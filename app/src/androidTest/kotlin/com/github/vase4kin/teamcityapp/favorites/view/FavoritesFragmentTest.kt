@@ -39,6 +39,8 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.destinationIntent
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -52,10 +54,13 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
+import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.R as HistoryR
 import teamcityapp.features.favorites.impl.R as FavoritesR
 import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 
 @HiltAndroidTest
@@ -156,7 +161,7 @@ class FavoritesFragmentTest {
         openFavorites()
         awaitConfiguration("build_type_id")
         configuration("build_type_id").performClick()
-        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
+        intended(hasDestination(BuildHistoryDestination("build_type_id", "build type")))
         assertTextVisible("build type")
     }
 
@@ -165,7 +170,7 @@ class FavoritesFragmentTest {
         openFavorites()
         awaitConfiguration("build_type_id")
         project("projectId123").performClick()
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_ID, "projectId123"), hasExtra(NavigationNavigation.PROJECT_NAME, "Secret project")))
+        intended(hasDestination(ProjectDestination("projectId123", "Secret project", false)))
         assertTextVisible("Secret project")
     }
 

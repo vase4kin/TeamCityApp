@@ -30,6 +30,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -39,7 +40,6 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.navigation.api.NavigationNavigation
-import teamcityapp.features.navigation.impl.NavigationActivity
 import teamcityapp.features.navigation.impl.R as NavigationR
 
 @HiltAndroidTest
@@ -76,6 +76,16 @@ class NavigationActivityTest {
             saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         }
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
+    }
+
+    @Test fun implementationComponentAliasAlsoRetainsProjectArgumentsAcrossRecreation() {
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(context.packageName, "teamcityapp.features.navigation.impl.NavigationActivity").putExtra("id", "selected-project").putExtra("name", "Selected project")).use { scenario ->
+            awaitRows()
+            scenario.recreate()
+            awaitRows()
+            scenario.onActivity { Assert.assertEquals(MainActivity::class.java, it.javaClass) }
+            verify(teamCityService, times(1)).listBuildTypes("selected-project")
+        }
     }
 
     @Test fun legacyActivityAliasAcceptsTheExistingProjectArguments() {
@@ -136,7 +146,7 @@ class NavigationActivityTest {
         }
     }
 
-    private fun launch(): ActivityScenario<NavigationActivity> = ActivityScenario.launch(
+    private fun launch(): ActivityScenario<MainActivity> = ActivityScenario.launch(
         Intent().setClassName(context.packageName, NavigationNavigation.LEGACY_ACTIVITY)
             .putExtra(NavigationNavigation.PROJECT_ID, "selected-project")
             .putExtra(NavigationNavigation.PROJECT_NAME, "Selected project")

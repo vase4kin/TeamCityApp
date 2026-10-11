@@ -36,6 +36,8 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -44,12 +46,15 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
+import org.junit.Assert.assertEquals
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 
 @HiltAndroidTest
@@ -122,13 +127,13 @@ class HomeActivityTest {
         assertTextVisible("New project")
         row("project:child").assertTextContains("Contains a lot of projects")
         row("configuration:child-build").assertTextContains("Build and run tests")
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_ID, "id"), hasExtra(NavigationNavigation.PROJECT_NAME, "Project")))
+        intended(hasDestination(ProjectDestination("id", "Project", false)))
         verify(teamCityService).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
         verify(teamCityService).listBuildTypes("id")
         row("project:child").performClick()
         assertTextVisible("New project")
         assertTextVisible("Description")
-        intended(allOf(hasComponent(NavigationNavigation.LEGACY_ACTIVITY), hasExtra(NavigationNavigation.PROJECT_ID, "child"), hasExtra(NavigationNavigation.PROJECT_NAME, "New project")))
+        assertEquals(ProjectDestination("child", "New project", false), currentRootSnapshot().entries.last().destination)
         verify(teamCityService).listBuildTypes("child")
     }
 
@@ -136,7 +141,7 @@ class HomeActivityTest {
         activityRule.launchActivity(null)
         awaitRow("configuration:build_type_id")
         row("configuration:build_type_id").performClick()
-        intended(allOf(hasComponent(BuildHistoryNavigation.LEGACY_ACTIVITY), hasExtra(BundleExtractorValues.ID, "build_type_id"), hasExtra(BundleExtractorValues.NAME, "build type")))
+        intended(hasDestination(BuildHistoryDestination("build_type_id", "build type")))
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }
