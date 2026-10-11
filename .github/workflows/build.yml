@@ -34,6 +34,10 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' && (github.event.action != 'edited' || github.event.changes.title != null) }}
 
+env:
+  # Compose lint across the feature modules exceeds the local 2 GiB heap.
+  GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4g
+
 jobs:
   test-policy:
     name: Test policy
@@ -93,16 +97,16 @@ jobs:
 
       - name: Build mock application
         if: needs.test-policy.outputs.run_ui_tests != 'true'
-        run: ./gradlew :app:assembleMockDebug --stacktrace
+        run: ./gradlew :app:assembleMockDebug --max-workers=2 --stacktrace
 
       - name: Build mock application and instrumentation APK without coverage
         if: needs.test-policy.outputs.run_ui_tests == 'true' && needs.test-policy.outputs.collect_coverage != 'true'
-        run: ./gradlew :app:assembleMockDebug :app:assembleMockDebugAndroidTest --stacktrace
+        run: ./gradlew :app:assembleMockDebug :app:assembleMockDebugAndroidTest --max-workers=2 --stacktrace
 
       - name: Build mock application and instrumentation APK with coverage
         if: needs.test-policy.outputs.run_ui_tests == 'true' && needs.test-policy.outputs.collect_coverage == 'true'
         run: |
-          ./gradlew -PinstrumentationCoverage :app:assembleMockDebug :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs --stacktrace
+          ./gradlew -PinstrumentationCoverage :app:assembleMockDebug :app:assembleMockDebugAndroidTest :app:prepareInstrumentationCoverageInputs --max-workers=2 --stacktrace
 
       - name: Upload mock test APKs
         if: needs.test-policy.outputs.run_ui_tests == 'true'
@@ -148,11 +152,11 @@ jobs:
 
       - name: Build minified application
         if: needs.test-policy.outputs.suite != 'full'
-        run: ./gradlew -Pr8Verification :app:assembleProdR8Verification --stacktrace
+        run: ./gradlew -Pr8Verification :app:assembleProdR8Verification --max-workers=1 --stacktrace
 
       - name: Build minified application and R8 smoke-test APK
         if: needs.test-policy.outputs.suite == 'full'
-        run: ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest --stacktrace
+        run: ./gradlew -Pr8Verification :app:assembleProdR8Verification :app:assembleProdR8VerificationAndroidTest --max-workers=1 --stacktrace
 
       - name: Upload R8 diagnostics
         if: always()
@@ -207,7 +211,7 @@ jobs:
         run: ./gradlew spotlessCheck "-PspotlessBase=$SPOTLESS_BASE" --stacktrace
 
       - name: Run checks
-        run: ./gradlew lintMockDebug --stacktrace
+        run: ./gradlew lintMockDebug --max-workers=1 --stacktrace
 
       - name: Upload check reports
         if: always()
@@ -251,7 +255,7 @@ jobs:
       - name: Run unit tests and generate coverage
         run: |
           python3 -m unittest discover -s scripts/tests
-          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest verifyRoborazziDebug :app:generateCodeCoverageReport --stacktrace
+          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest verifyRoborazziDebug :app:generateCodeCoverageReport --max-workers=2 --stacktrace
 
       - name: Upload unit-test results
         if: always()
