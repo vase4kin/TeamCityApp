@@ -35,17 +35,19 @@ import teamcityapp.libraries.navigation.rememberNavigator
 import teamcityapp.libraries.theme.TeamCitySystemBars
 import teamcityapp.libraries.theme.TeamCityTheme
 
-/** Single Compose host. Startup and remaining destinations are migrated into this host in subsequent slices. */
+/** Application-owned Compose host and dispatcher for installed entry points. */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject lateinit var registry: DestinationRegistry
+
+    @Inject lateinit var incoming: IncomingDestinationResolver
 
     @Inject lateinit var accounts: AppAccountFlowNavigation
     private val incomingRequest = mutableStateOf<DestinationRequest?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val requestedInitial = intent.getStringExtra(EXTRA_DESTINATION)?.let(registry::decodeDestination)
+        val requestedInitial = incoming.destination(intent)
         accounts.synchronize()
         val initialSessionKey = accounts.session.value.key
         enableEdgeToEdge()
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 val request = incomingRequest.value
                 LaunchedEffect(request) {
-                    request?.let { navigator.push(registry.decodeDestination(it.payload)) }
+                    request?.let { navigator.push(it.destination) }
                     incomingRequest.value = null
                 }
                 NavigationHost(navigator, registry, ::finish)
@@ -79,11 +81,19 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        setIntent(intent)
-        intent.getStringExtra(EXTRA_DESTINATION)?.let { incomingRequest.value = DestinationRequest(it) }
+        val destination = incoming.destination(intent)
+        // Alias names have different Android component identities. Keep this host's launch
+        // component stable while saving the normalized request for recreation.
+        setIntent(
+            Intent(intent).apply {
+                component = this@MainActivity.intent.component
+                destination?.let { putExtra(EXTRA_DESTINATION, registry.encodeDestination(it)) }
+            }
+        )
+        destination?.let { incomingRequest.value = DestinationRequest(it) }
     }
 
-    private class DestinationRequest(val payload: String)
+    private class DestinationRequest(val destination: androidx.navigation3.runtime.NavKey)
     companion object {
         const val EXTRA_DESTINATION = "navigation.destination"
     }

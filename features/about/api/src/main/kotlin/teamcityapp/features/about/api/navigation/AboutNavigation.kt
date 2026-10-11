@@ -18,7 +18,7 @@ package teamcityapp.features.about.api.navigation
 
 import android.app.Activity
 
-/** Compatibility entry point while About is hosted in its own activity. */
+/** Compatibility entry point for app callers that have not adopted destination keys. */
 interface AboutNavigation {
     fun open(activity: Activity)
 }

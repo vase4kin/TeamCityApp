@@ -129,6 +129,36 @@ class MainActivityNavigationTest {
         }
     }
 
+    @Test fun installedAliasNewIntentUsesTheExistingHostAndSavedStack() {
+        launchAbout().use { scenario ->
+            await(info.version)
+            scenario.onActivity { activity ->
+                activity.startActivity(Intent().setClassName(activity, IncomingDestinationResolver.SETTINGS_COMPONENT).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            }
+            await("Light theme")
+            assertEquals(Lifecycle.State.RESUMED, scenario.state)
+            scenario.onActivity {
+                assertEquals(MainActivity::class.java.name, it.intent.component?.className)
+                assertEquals(SettingsDestination, registry.decodeDestination(checkNotNull(it.intent.getStringExtra(MainActivity.EXTRA_DESTINATION))))
+                assertTrue(it.supportFragmentManager.fragments.isEmpty())
+            }
+            scenario.recreate()
+            await("Light theme")
+            compose.onNodeWithContentDescription("Back").performClick()
+            await(info.version)
+            verify(service, times(1)).serverInfo()
+        }
+    }
+
+    @Test fun installedAboutAndSettingsAliasesArePrivateAndTargetTheRootActivity() {
+        listOf(IncomingDestinationResolver.ABOUT_COMPONENT, IncomingDestinationResolver.SETTINGS_COMPONENT).forEach { name ->
+            val component = android.content.ComponentName(app.packageName, name)
+            val activity = app.packageManager.getActivityInfo(component, 0)
+            assertEquals(MainActivity::class.java.name, activity.targetActivity)
+            assertFalse(activity.exported)
+        }
+    }
+
     @Test fun toolbarBackAtRootClosesTheHost() {
         launchAbout().use { scenario ->
             await(info.version)

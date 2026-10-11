@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright 2020 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -28,7 +29,13 @@
         android:theme="@style/Theme.MyApp"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTop" />
+        <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" />
+        <activity-alias android:name="teamcityapp.features.about.impl.AboutActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false"
+            android:label="@string/drawer_item_about" />
+        <activity-alias android:name="teamcityapp.features.settings.impl.SettingsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false"
+            android:label="@string/drawer_item_settings" />
         <activity-alias android:name="teamcityapp.features.splash.view.SplashActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="true">
             <intent-filter>

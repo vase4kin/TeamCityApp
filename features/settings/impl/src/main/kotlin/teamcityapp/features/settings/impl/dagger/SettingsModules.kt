@@ -16,26 +16,16 @@
 
 package teamcityapp.features.settings.impl.dagger
 
-import android.app.Activity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
 import teamcityapp.features.settings.api.navigation.SettingsNavigation
 import teamcityapp.features.settings.impl.navigation.SettingsNavigationImpl
-import teamcityapp.features.settings.impl.router.SettingsRouter
-import teamcityapp.features.settings.impl.router.SettingsRouterImpl
 import teamcityapp.libraries.navigation.DestinationLauncher
 
 @Module
 @InstallIn(SingletonComponent::class)
 object SettingsModule {
     @Provides fun navigation(launcher: DestinationLauncher): SettingsNavigation = SettingsNavigationImpl(launcher)
-}
-
-@Module
-@InstallIn(ActivityComponent::class)
-object SettingsActivityModule {
-    @Provides fun router(activity: Activity): SettingsRouter = SettingsRouterImpl(activity)
 }
