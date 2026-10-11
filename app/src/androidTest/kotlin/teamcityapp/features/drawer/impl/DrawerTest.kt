@@ -36,7 +36,7 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -50,7 +50,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
-import teamcityapp.features.drawer.impl.navigation.DrawerNavigationImpl
+import teamcityapp.features.drawer.api.navigation.DrawerDestination
+import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
@@ -83,7 +84,7 @@ class DrawerTest {
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(first, false)
     }
-    private fun launch() = ActivityScenario.launch<HomeActivity>(Intent(app, HomeActivity::class.java))
+    private fun launch() = ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java).setClassName(app, IncomingDestinationResolver.HOME_COMPONENT))
     private fun open() {
         val description = app.getString(teamcityapp.features.navigation.impl.R.string.navigation_open_drawer)
         compose.waitUntil(5_000) { runCatching { compose.onNodeWithContentDescription(description).assertIsDisplayed() }.isSuccess }
@@ -92,9 +93,6 @@ class DrawerTest {
     }
     private fun awaitRows(url: String = first) {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(url, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
-    }
-    private fun fragment(scenario: ActivityScenario<HomeActivity>, action: (DrawerBottomSheetDialogFragment) -> Unit) {
-        scenario.onActivity { action(it.supportFragmentManager.findFragmentByTag(DrawerNavigationImpl.TAG) as DrawerBottomSheetDialogFragment) }
     }
 
     @Test fun activeAccountIsVisibleAndCannotBeSelected() {
@@ -112,37 +110,29 @@ class DrawerTest {
             open()
             row(second).assertHasNoClickAction()
             row(first).assertIsDisplayed()
-            Intents.init()
-            try {
-                Intents.intending(hasComponent(HomeActivity::class.java.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-                row(first).performClick()
-                compose.waitUntil(5_000) { Intents.getIntents().any { it.component?.className == HomeActivity::class.java.name } }
-                Intents.intended(hasComponent(HomeActivity::class.java.name))
-                assertEquals(first, storage.activeUser.teamcityUrl)
-                assertTrue(Intents.getIntents().single { it.component?.className == HomeActivity::class.java.name }.getBooleanExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false))
-                compose.waitUntil(5_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
-                scenario.moveToState(Lifecycle.State.CREATED)
-                scenario.moveToState(Lifecycle.State.RESUMED)
-                assertEquals(1, Intents.getIntents().count { it.component?.className == HomeActivity::class.java.name })
-            } finally {
-                Intents.release()
+            var previous: String? = null
+            scenario.onActivity { previous = it.navigationSnapshot!!.entries.first().id }
+            row(first).performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isEmpty() }
+            compose.onNodeWithTag("home:tab:Projects").assertIsDisplayed()
+            assertEquals(first, storage.activeUser.teamcityUrl)
+            scenario.onActivity {
+                assertEquals(HomeDestination(), it.navigationSnapshot!!.entries.single().destination)
+                assertNotEquals(previous, it.navigationSnapshot!!.entries.single().id)
+                assertTrue(it.supportFragmentManager.fragments.isEmpty())
             }
         }
     }
     private fun navigation(tag: String, destination: Class<*>, key: NavKey? = null) {
-        launch().use {
+        launch().use { scenario ->
             open()
-            Intents.init()
-            try {
-                Intents.intending(hasComponent(destination.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-                compose.onNodeWithTag("drawer:$tag").performScrollTo().performClick()
-                Intents.intended(hasComponent(destination.name))
-                if (key != null) {
-                    val request = Intents.getIntents().single { it.component?.className == destination.name }
-                    assertEquals(key, destinationRegistry.decodeDestination(checkNotNull(request.getStringExtra(MainActivity.EXTRA_DESTINATION))))
-                }
-            } finally {
-                Intents.release()
+            compose.onNodeWithTag("drawer:$tag").performScrollTo().performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isEmpty() }
+            scenario.onActivity {
+                assertEquals(key, it.navigationSnapshot!!.entries.last().destination)
+                assertEquals(HomeDestination(), it.navigationSnapshot!!.entries.first().destination)
+                assertEquals(2, it.navigationSnapshot!!.entries.size)
+                assertTrue(it.supportFragmentManager.fragments.isEmpty())
             }
         }
     }
@@ -217,34 +207,27 @@ class DrawerTest {
         }
     }
 
-    @Test fun expandedSheetScrollsManyAccountsToFooterAndSupportsNativeDrag() {
+    @Test fun sheetScrollsManyAccountsToFooterAndSupportsDrag() {
         (1..20).forEach { storage.saveGuestUserAccountAndSetItAsActive("https://teamcity.example/server-$it", it % 2 == 0) }
         launch().use { scenario ->
             open()
-            fragment(scenario) { (it.dialog as BottomSheetDialog).behavior.state = BottomSheetBehavior.STATE_EXPANDED }
-            compose.waitUntil(5_000) {
-                var expanded = false
-                fragment(scenario) { expanded = (it.dialog as BottomSheetDialog).behavior.state == BottomSheetBehavior.STATE_EXPANDED }
-                expanded
-            }
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
             compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("drawer:rate").assertIsDisplayed()
-            fragment(scenario) { assertTrue((it.dialog as BottomSheetDialog).behavior.isDraggable) }
+            compose.onNodeWithTag("navigation:sheet").performTouchInput {
+                swipe(Offset(width / 2f, 5f), Offset(width / 2f, height.toFloat()), durationMillis = 300)
+            }
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isEmpty() }
+            scenario.onActivity { assertEquals(1, it.navigationSnapshot!!.entries.size) }
         }
     }
 
-    @Test fun swipingContentExpandsTheNativeSheet() {
+    @Test fun swipingContentKeepsFooterActionsReachable() {
         (1..20).forEach { storage.saveGuestUserAccountAndSetItAsActive("https://teamcity.example/server-$it", false) }
         launch().use { scenario ->
             open()
             compose.onNodeWithTag("drawer:list").performTouchInput {
                 swipe(start = Offset(center.x, height * 0.4f), end = Offset(center.x, 20f), durationMillis = 500)
-            }
-            compose.waitUntil(5_000) {
-                var expanded = false
-                fragment(scenario) { expanded = (it.dialog as BottomSheetDialog).behavior.state == BottomSheetBehavior.STATE_EXPANDED }
-                expanded
             }
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
             compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()

@@ -17,18 +17,14 @@
 package com.github.vase4kin.teamcityapp.favorites.dagger
 
 import com.github.vase4kin.teamcityapp.favorites.data.AppFavoritesRepository
-import com.github.vase4kin.teamcityapp.favorites.router.FavoritesAppRouterImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.favorites.api.FavoritesAppRouter
 import teamcityapp.features.favorites.api.FavoritesRepository
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class FavoritesAppModule {
     @Binds abstract fun repository(implementation: AppFavoritesRepository): FavoritesRepository
-
-    @Binds abstract fun router(implementation: FavoritesAppRouterImpl): FavoritesAppRouter
 }

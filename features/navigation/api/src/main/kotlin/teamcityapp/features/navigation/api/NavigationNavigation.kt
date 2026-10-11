@@ -17,11 +17,9 @@
 package teamcityapp.features.navigation.api
 
 import android.app.Activity
-import androidx.fragment.app.Fragment
 import teamcityapp.libraries.build_configurations.ProjectReference
 
 interface NavigationNavigation {
-    fun createFragment(): Fragment
     fun open(activity: Activity, project: ProjectReference)
 
     companion object {

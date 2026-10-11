@@ -16,7 +16,6 @@
 
 package teamcityapp.features.filter_bottom_sheet.impl
 import android.os.Bundle
-import androidx.fragment.app.FragmentFactory
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.junit.Assert.*
 import org.junit.Test
@@ -26,29 +25,10 @@ import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
-import teamcityapp.features.filter_bottom_sheet.impl.navigation.FilterBottomSheetNavigationImpl
-import teamcityapp.features.filter_bottom_sheet.impl.router.FilterBottomSheetRouterImpl
 import teamcityapp.features.filter_bottom_sheet.impl.tracker.QuickFilterTrackerImpl
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class FilterBottomSheetOwnershipTest {
-    @Test fun navigationRetainsEveryFilterCodeOnRestoration() {
-        QuickFilter.entries.forEach { filter ->
-            val original = FilterBottomSheetNavigationImpl().createBottomSheetDialog(filter.ordinal)
-            val restored = FragmentFactory().instantiate(original.javaClass.classLoader!!, original.javaClass.name)
-            restored.arguments = original.arguments
-            assertTrue(restored is FilterBottomSheetDialogFragment)
-            assertEquals(filter.ordinal, restored.requireArguments().getInt("arg_code"))
-        }
-    }
-
-    @Test fun routerDismissesTheOwningSheet() {
-        val fragment = mock(FilterBottomSheetDialogFragment::class.java)
-        FilterBottomSheetRouterImpl(fragment).close()
-        verify(fragment).dismiss()
-        verifyNoMoreInteractions(fragment)
-    }
-
     @Test fun analyticsPreserveAllLegacyFilterNamesAndEvents() {
         val analytics = mock(FirebaseAnalytics::class.java)
         val tracker = QuickFilterTrackerImpl(analytics)

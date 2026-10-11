@@ -20,7 +20,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.rememberDecoratedNavEntries
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -44,22 +46,25 @@ fun RetainedNavigationPane(
 ) {
     require(children.map { it.id }.distinct().size == children.size) { "Child entry IDs must be unique" }
     require(children.any { it.id == selectedEntryId }) { "The selected child must exist" }
-    val entries = rememberDecoratedNavEntries(
-        backStack = children,
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = { registry.entry(it, navigator) }
-    )
-    // Decorate all children, but pass only the active child to NavDisplay. This keeps hidden
-    // stores alive and prevents a sibling tab from becoming a system Back destination.
-    NavDisplay(
-        entries = listOf(entries.first { it.contentKey == selectedEntryId }),
-        modifier = modifier,
-        transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-        popTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-        predictivePopTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
-        onBack = {}
-    )
+    val entryOwner = LocalNavigationEntryLifecycleOwner.current ?: LocalLifecycleOwner.current
+    CompositionLocalProvider(LocalLifecycleOwner provides entryOwner) {
+        val entries = rememberDecoratedNavEntries(
+            backStack = children,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = { registry.entry(it, navigator) }
+        )
+        // Decorate all children, but pass only the active child to NavDisplay. This keeps hidden
+        // stores alive and prevents a sibling tab from becoming a system Back destination.
+        NavDisplay(
+            entries = listOf(entries.first { it.contentKey == selectedEntryId }),
+            modifier = modifier,
+            transitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+            popTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+            predictivePopTransitionSpec = { EnterTransition.None togetherWith ExitTransition.None },
+            onBack = {}
+        )
+    }
 }

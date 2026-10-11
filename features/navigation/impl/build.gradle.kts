@@ -32,8 +32,6 @@ dependencies {
     implementation(projects.libraries.listUi)
     implementation(projects.libraries.appRating)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.fragment)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

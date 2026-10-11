@@ -15,10 +15,12 @@
  */
 
 package teamcityapp.features.login.impl
+
 import android.content.ComponentName
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +29,7 @@ class FeatureActivityAliasesTest {
     @Test fun legacyComponentsResolveToTheirCurrentOwningActivity() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val targets = mapOf(
+            "com.github.vase4kin.teamcityapp.home.view.HomeActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "teamcityapp.features.navigation.impl.NavigationActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "teamcityapp.features.build_history.impl.BuildHistoryActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",

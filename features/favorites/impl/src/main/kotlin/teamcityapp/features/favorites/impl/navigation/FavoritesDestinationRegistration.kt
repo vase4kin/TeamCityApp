@@ -26,7 +26,6 @@ import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
-import teamcityapp.features.favorites.api.FavoritesAppRouter
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
 import teamcityapp.features.favorites.impl.FavoritesRoute
 import teamcityapp.features.favorites.impl.router.FavoritesRouter

@@ -55,17 +55,20 @@ class AppAccountFlowNavigation @Inject constructor(
         root.value = RootAccountSession(key, destination, UUID.randomUUID().toString())
     }
     override fun home(resetSession: Boolean) {
+        activate(HomeDestination(), resetSession)
+    }
+    override fun activate(destination: NavKey, resetSession: Boolean) {
         pending?.cancel()
         val key = preparation.currentKey()
-        request(key, AccountActivationDestination(resetSession = resetSession))
+        request(key, AccountActivationDestination(resetSession = resetSession, destination = destination))
         pending = scope.launch {
             try {
                 preparation.prepare(key, resetSession)
                 if (preparation.currentKey() != key) throw CancellationException("Account changed during activation")
-                request(key, HomeDestination())
+                request(key, destination)
             } catch (error: Exception) {
                 if (error is CancellationException) throw error
-                request(key, AccountActivationDestination(failed = true, resetSession = resetSession))
+                request(key, AccountActivationDestination(failed = true, resetSession = resetSession, destination = destination))
             }
         }
     }

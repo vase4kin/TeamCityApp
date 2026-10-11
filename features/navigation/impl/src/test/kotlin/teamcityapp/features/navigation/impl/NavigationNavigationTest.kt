@@ -42,13 +42,6 @@ class NavigationNavigationTest {
     }
     private val navigation = NavigationNavigationImpl(launcher)
 
-    @Test fun rootFragmentUsesCompatibleRootArguments() {
-        val fragment = navigation.createFragment()
-        assertTrue(fragment is NavigationFragment)
-        assertEquals("_Root", fragment.requireArguments().getString("id"))
-        assertEquals("", fragment.requireArguments().getString("name"))
-    }
-
     @Test fun nestedNavigationTargetsTheRootWithCompleteProjectArguments() {
         val controller = Robolectric.buildActivity(Activity::class.java).setup()
         try {

@@ -278,7 +278,6 @@ dependencies {
     implementation(libs.google.firebasePerf)
     implementation(libs.google.openSourceLicensesLibrary)
     // Bottom nav libries
-    implementation(libs.fragNav)
     // Unit tests
     testImplementation(libs.robolectric)
     testImplementation(libs.coroutines.test)

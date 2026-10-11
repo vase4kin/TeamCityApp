@@ -42,7 +42,8 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.eq
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -89,8 +90,8 @@ class FilterBuildsActivityTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomIntentsTestRule<HomeActivity> =
-        CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule: CustomIntentsTestRule<MainActivity> =
+        CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()

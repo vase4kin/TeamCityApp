@@ -23,7 +23,7 @@ import com.github.vase4kin.teamcityapp.builds.data.homeBuildAccountKey
 import com.github.vase4kin.teamcityapp.builds.data.requireCurrentHomeBuildAccount
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import com.github.vase4kin.teamcityapp.home.data.HomeFilterEvents
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import javax.inject.Inject
 import javax.inject.Provider
@@ -96,7 +96,7 @@ class AppRunningBuildsRepository @Inject constructor(
         }
 
         @Subscribe
-        fun onFilterChanged(@Suppress("UNUSED_PARAMETER") event: HomeDataManager.RunningBuildsFilterChangedEvent) = changed(currentQuery())
+        fun onFilterChanged(@Suppress("UNUSED_PARAMETER") event: HomeFilterEvents.RunningBuildsFilterChangedEvent) = changed(currentQuery())
     }
 
     private companion object {

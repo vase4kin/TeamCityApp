@@ -62,7 +62,7 @@ fun HomeScreen(
     @Composable fun TabIcon(tab: HomeTab) {
         BadgedBox(badge = {
             when (val badge = state.badges[tab]) {
-                is HomeBadge.Count -> if (badge.value > 0) Badge { Text(badge.value.toString()) }
+                is HomeBadge.Count -> if (badge.value > 0) Badge { Text(badge.value.toString(), Modifier.testTag("home:count:${tab.name}")) }
 
                 is HomeBadge.Failed -> {
                     val description = stringResource(badge.message)

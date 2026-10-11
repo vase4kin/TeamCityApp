@@ -38,6 +38,8 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.hasDestination
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -74,7 +76,7 @@ class HomeActivityTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule = CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -127,7 +129,7 @@ class HomeActivityTest {
         assertTextVisible("New project")
         row("project:child").assertTextContains("Contains a lot of projects")
         row("configuration:child-build").assertTextContains("Build and run tests")
-        intended(hasDestination(ProjectDestination("id", "Project", false)))
+        org.junit.Assert.assertEquals(ProjectDestination("id", "Project", false), currentRootSnapshot().entries.last().destination)
         verify(teamCityService).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
         verify(teamCityService).listBuildTypes("id")
         row("project:child").performClick()
@@ -141,7 +143,7 @@ class HomeActivityTest {
         activityRule.launchActivity(null)
         awaitRow("configuration:build_type_id")
         row("configuration:build_type_id").performClick()
-        intended(hasDestination(BuildHistoryDestination("build_type_id", "build type")))
+        org.junit.Assert.assertEquals(BuildHistoryDestination("build_type_id", "build type"), currentRootSnapshot().entries.last().destination)
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:back").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
     }
@@ -172,7 +174,7 @@ class HomeActivityTest {
     }
 
     @Test fun completedRootDataSurvivesRecreationWithoutAnotherRequest() {
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitRow("project:id")
             scenario.recreate()
             awaitRow("project:id")
@@ -189,8 +191,8 @@ class HomeActivityTest {
             inset = ViewCompat.getRootWindowInsets(activityRule.activity.window.decorView)
                 ?.getInsets(WindowInsetsCompat.Type.statusBars())?.top ?: 0
         }
-        val title = compose.onNodeWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true)
-            .fetchSemanticsNode().boundsInWindow
+        val title = compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true)
+            .fetchSemanticsNodes().minBy { it.boundsInWindow.top }.boundsInWindow
         assertThat(title.top.toInt(), greaterThanOrEqualTo(inset))
     }
 
@@ -200,7 +202,7 @@ class HomeActivityTest {
     }
     private fun assertTextVisible(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithText(value, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText(value, useUnmergedTree = true).assertIsDisplayed()
+        compose.onAllNodesWithText(value, useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
     private fun text(id: Int) = context.getString(id)
 }

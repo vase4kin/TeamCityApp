@@ -92,7 +92,7 @@ class AppAccountFlowNavigationTest {
         val coordinator = AppAccountFlowNavigation(preparation, backgroundScope)
         coordinator.home()
         runCurrent()
-        assertEquals(AccountActivationDestination(failed = true), coordinator.session.value.initial)
+        assertEquals(AccountActivationDestination(failed = true, destination = HomeDestination()), coordinator.session.value.initial)
         preparationAction = {}
         coordinator.home()
         runCurrent()
@@ -128,11 +128,28 @@ class AppAccountFlowNavigationTest {
         val coordinator = AppAccountFlowNavigation(preparation, backgroundScope)
         coordinator.home(resetSession = false)
         runCurrent()
-        assertEquals(AccountActivationDestination(failed = true, resetSession = false), coordinator.session.value.initial)
+        assertEquals(AccountActivationDestination(failed = true, resetSession = false, destination = HomeDestination()), coordinator.session.value.initial)
         preparationAction = {}
         coordinator.home(resetSession = false)
         runCurrent()
         assertEquals(listOf(false, false), resets)
         assertEquals(HomeDestination(), coordinator.session.value.initial)
+    }
+
+    @Test fun preparationRetainsTheRequestedDestinationThroughFailureAndRetry() = runTest {
+        val destination = HomeDestination(teamcityapp.features.home.api.HomeTab.Queue)
+        preparationAction = { error("cookies") }
+        val coordinator = AppAccountFlowNavigation(preparation, backgroundScope)
+        coordinator.activate(destination, resetSession = false)
+        runCurrent()
+        val failed = coordinator.session.value.initial as AccountActivationDestination
+        assertEquals(destination, failed.destination)
+        assertTrue(failed.failed)
+        assertFalse(failed.resetSession)
+        preparationAction = {}
+        coordinator.activate(failed.destination!!, failed.resetSession)
+        runCurrent()
+        assertEquals(destination, coordinator.session.value.initial)
+        assertEquals(listOf(false, false), resets)
     }
 }

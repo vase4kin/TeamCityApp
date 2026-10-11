@@ -16,8 +16,11 @@
 
 package teamcityapp.libraries.navigation
 
+import androidx.navigation3.runtime.NavKey
+
 /** UI requests account routing; app-owned preparation survives the source destination's removal. */
 interface AccountFlowNavigation {
     fun home(resetSession: Boolean = true)
+    fun activate(destination: NavKey, resetSession: Boolean = true)
     fun login()
 }

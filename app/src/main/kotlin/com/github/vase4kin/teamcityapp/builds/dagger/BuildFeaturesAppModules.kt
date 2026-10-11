@@ -27,9 +27,7 @@ import com.github.vase4kin.teamcityapp.overview.data.AppBuildOverviewEvents
 import com.github.vase4kin.teamcityapp.overview.data.AppBuildOverviewRepository
 import com.github.vase4kin.teamcityapp.overview.router.AppBuildOverviewRouterImpl
 import com.github.vase4kin.teamcityapp.queue.data.AppBuildQueueRepository
-import com.github.vase4kin.teamcityapp.queue.router.BuildQueueAppRouterImpl
 import com.github.vase4kin.teamcityapp.runningbuilds.data.AppRunningBuildsRepository
-import com.github.vase4kin.teamcityapp.runningbuilds.router.RunningBuildsAppRouterImpl
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.data.AppSnapshotDependenciesRepository
 import com.github.vase4kin.teamcityapp.snapshot_dependencies.router.AppSnapshotDependenciesRouter
 import dagger.Binds
@@ -52,9 +50,7 @@ import teamcityapp.features.build_history.api.BuildHistoryRepository
 import teamcityapp.features.build_overview.api.BuildOverviewAppRouter
 import teamcityapp.features.build_overview.api.BuildOverviewEvents
 import teamcityapp.features.build_overview.api.BuildOverviewRepository
-import teamcityapp.features.build_queue.api.BuildQueueAppRouter
 import teamcityapp.features.build_queue.api.BuildQueueRepository
-import teamcityapp.features.running_builds.api.RunningBuildsAppRouter
 import teamcityapp.features.running_builds.api.RunningBuildsRepository
 import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesAppRouter
 import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesRepository
@@ -114,11 +110,6 @@ abstract class BuildFeaturesActivityRouterModule {
 @Module
 @InstallIn(FragmentComponent::class)
 abstract class BuildFeaturesFragmentRouterModule {
-    @Binds @FragmentScoped
-    abstract fun running(implementation: RunningBuildsAppRouterImpl): RunningBuildsAppRouter
-
-    @Binds @FragmentScoped
-    abstract fun queue(implementation: BuildQueueAppRouterImpl): BuildQueueAppRouter
 
     @Binds @FragmentScoped
     abstract fun snapshots(implementation: AppSnapshotDependenciesRouter): SnapshotDependenciesAppRouter

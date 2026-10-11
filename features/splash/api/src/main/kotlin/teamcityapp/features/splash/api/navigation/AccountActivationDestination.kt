@@ -17,7 +17,8 @@
 package teamcityapp.features.splash.api.navigation
 
 import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Polymorphic
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AccountActivationDestination(val failed: Boolean = false, val resetSession: Boolean = true) : NavKey
+data class AccountActivationDestination(val failed: Boolean = false, val resetSession: Boolean = true, @Polymorphic val destination: NavKey? = null) : NavKey

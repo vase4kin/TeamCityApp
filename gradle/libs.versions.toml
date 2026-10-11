@@ -70,7 +70,6 @@ errorView = { module = "com.github.xiprox:ErrorView", version = "3.0.0" }
 eventBus = { module = "org.greenrobot:eventbus", version = "3.0.0" }
 materialTapTargetPrompt = { module = "uk.co.samuelwall:material-tap-target-prompt", version = "3.0.0" }
 jodaTime = { module = "joda-time:joda-time", version = "2.8.1" }
-fragNav = { module = "com.github.ncapdevi:fragnav", version = "3.1.0" }
 junit = { module = "junit:junit", version = "4.13.2" }
 hamcrestJunit = { module = "org.hamcrest:hamcrest-junit", version = "2.0.0.0" }
 hamcrestLibrary = { module = "org.hamcrest:hamcrest-library", version.ref = "hamcrest" }

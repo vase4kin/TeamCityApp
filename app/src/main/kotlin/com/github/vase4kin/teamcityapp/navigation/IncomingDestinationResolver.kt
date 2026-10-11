@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.navigation
 import android.content.Intent
 import androidx.core.content.IntentCompat
 import androidx.navigation3.runtime.NavKey
+import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import java.io.Serializable
 import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutDestination
@@ -32,12 +33,15 @@ import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.filter_builds.api.navigation.FilterBuildsDestination
+import teamcityapp.features.home.api.HomeDestination
+import teamcityapp.features.home.api.HomeTab
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.run_build.api.navigation.RunBuildDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
+import teamcityapp.features.splash.api.navigation.AccountActivationDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
@@ -48,6 +52,8 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     fun destination(intent: Intent): NavKey? {
         intent.getStringExtra(MainActivity.EXTRA_DESTINATION)?.let { return registry.decodeDestination(it) }
         return when (intent.component?.className) {
+            HOME_COMPONENT -> HomeDestination(HomeTab.entries.getOrElse(intent.getIntExtra(HOME_TAB, -1)) { HomeTab.Projects })
+
             RUN_BUILD_COMPONENT, LEGACY_RUN_BUILD_COMPONENT -> RunBuildDestination(intent.getStringExtra("BuildTypeId").orEmpty())
 
             FILTER_BUILDS_COMPONENT, LEGACY_FILTER_BUILDS_COMPONENT -> FilterBuildsDestination(intent.getStringExtra("BuildTypeId").orEmpty())
@@ -86,7 +92,13 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
         // still belong to their compatibility codec/cache boundary.
         if (destination is BuildHistoryDestination) removeExtra(BuildHistoryNavigation.EXTRA_LEGACY_FILTER)
         if (destination is ArtifactsDestination) removeExtra(ArtifactsNavigation.BUILD)
+        if (destination is HomeDestination || destination is AccountActivationDestination) {
+            removeExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD)
+            removeExtra(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED)
+        }
     }
+
+    fun requiresHomeReset(intent: Intent) = intent.getBooleanExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false) || intent.getBooleanExtra(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED, false)
 
     private fun historyLocator(intent: Intent): String? {
         if (intent.hasExtra(BuildHistoryNavigation.EXTRA_LOCATOR)) return intent.getStringExtra(BuildHistoryNavigation.EXTRA_LOCATOR)
@@ -103,6 +115,8 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     }
 
     companion object {
+        const val HOME_COMPONENT = "com.github.vase4kin.teamcityapp.home.view.HomeActivity"
+        const val HOME_TAB = "arg_tab"
         const val RUN_BUILD_COMPONENT = "teamcityapp.features.run_build.impl.RunBuildActivity"
         const val LEGACY_RUN_BUILD_COMPONENT = "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity"
         const val FILTER_BUILDS_COMPONENT = "teamcityapp.features.filter_builds.impl.FilterBuildsActivity"

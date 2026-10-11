@@ -39,9 +39,11 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -80,7 +82,7 @@ class FavoritesFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomIntentsTestRule(HomeActivity::class.java)
+    val activityRule = CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -120,11 +122,11 @@ class FavoritesFragmentTest {
     @Test fun addFavoritesFabOffersTheProjectsTab() {
         openFavorites()
         assertTextVisible(text(FavoritesR.string.favorites_empty))
-        onView(withId(R.id.home_floating_action_button)).perform(click())
-        onView(withText(R.string.text_info_add)).check(matches(isDisplayed()))
-        onView(withText(R.string.text_info_add_action)).perform(click())
+        compose.onNodeWithTag("home:fab").performClick()
+        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_info_add)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_info_add_action)).performClick()
         awaitProjectRow()
-        compose.onNodeWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).assertIsDisplayed()
+        compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
 
     @Test fun addFromBuildListShowsTheConfigurationGroupedUnderItsProject() {
@@ -161,7 +163,7 @@ class FavoritesFragmentTest {
         openFavorites()
         awaitConfiguration("build_type_id")
         configuration("build_type_id").performClick()
-        intended(hasDestination(BuildHistoryDestination("build_type_id", "build type")))
+        org.junit.Assert.assertEquals(BuildHistoryDestination("build_type_id", "build type"), currentRootSnapshot().entries.last().destination)
         assertTextVisible("build type")
     }
 
@@ -170,7 +172,7 @@ class FavoritesFragmentTest {
         openFavorites()
         awaitConfiguration("build_type_id")
         project("projectId123").performClick()
-        intended(hasDestination(ProjectDestination("projectId123", "Secret project", false)))
+        org.junit.Assert.assertEquals(ProjectDestination("projectId123", "Secret project", false), currentRootSnapshot().entries.last().destination)
         assertTextVisible("Secret project")
     }
 
@@ -228,7 +230,7 @@ class FavoritesFragmentTest {
 
     @Test fun recreatingFavoritesRetainsRowsWithoutAnotherRequest() {
         storage.addBuildTypeToFavorites("build_type_id")
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjectRow()
             clickFavorites()
             awaitConfiguration("build_type_id")
@@ -241,19 +243,19 @@ class FavoritesFragmentTest {
 
     @Test fun homeRecreationRetainsBothTabsAndTheirSelectedState() {
         storage.addBuildTypeToFavorites("build_type_id")
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjectRow()
             clickFavorites()
             awaitConfiguration("build_type_id")
             scenario.recreate()
             awaitConfiguration("build_type_id")
-            compose.onNodeWithText(text(FavoritesR.string.favorites_title), useUnmergedTree = true).assertIsDisplayed()
+            compose.onAllNodesWithText(text(FavoritesR.string.favorites_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
             verify(teamCityService, times(1)).buildType("build_type_id")
-            onView(withId(R.id.projects)).perform(click())
+            compose.onNodeWithTag("home:tab:Projects").performClick()
             awaitProjectRow()
             scenario.recreate()
             awaitProjectRow()
-            compose.onNodeWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).assertIsDisplayed()
+            compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
             verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
             clickFavorites()
             awaitConfiguration("build_type_id")
@@ -275,14 +277,14 @@ class FavoritesFragmentTest {
         val bob = SingleSubject.create<BuildType>()
         `when`(teamCityService.buildType("alice-build")).thenReturn(alice)
         `when`(teamCityService.buildType("bob-build")).thenReturn(bob)
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjectRow()
             clickFavorites()
             compose.waitUntil(10_000) { alice.hasObservers() }
             scenario.onActivity { activity ->
                 storage.setUserActive(Mocks.URL, "bob")
                 activity.startActivity(
-                    Intent(activity, HomeActivity::class.java)
+                    Intent(activity, MainActivity::class.java).setClassName(activity, IncomingDestinationResolver.HOME_COMPONENT)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         .putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
                 )
@@ -343,7 +345,7 @@ class FavoritesFragmentTest {
         clickFavorites()
     }
     private fun clickFavorites() {
-        onView(withId(R.id.favorites)).perform(click())
+        compose.onNodeWithTag("home:tab:Favorites").performClick()
     }
     private fun awaitProjectRow() {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:row:project:id").fetchSemanticsNodes().isNotEmpty() }
@@ -353,7 +355,7 @@ class FavoritesFragmentTest {
     }
     private fun assertTextVisible(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithText(value, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText(value, useUnmergedTree = true).assertIsDisplayed()
+        compose.onAllNodesWithText(value, useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
     private fun text(id: Int) = context.getString(id)
 }

@@ -43,7 +43,7 @@ abstract class FeatureDestination<T : NavKey>(
     }
 
     final override fun entry(visit: NavigationEntry, navigator: Navigator): NavEntry<NavigationEntry> = NavEntry(visit, contentKey = visit.id, metadata = presentation.metadata) {
-        Content(keyType.java.cast(visit.destination), navigator, visit.id)
+        NavigationContentLifecycle { Content(keyType.java.cast(visit.destination), navigator, visit.id) }
     }
 
     @Composable

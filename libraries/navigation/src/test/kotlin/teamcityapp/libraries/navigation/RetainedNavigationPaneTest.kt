@@ -22,6 +22,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +35,9 @@ import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -98,12 +102,12 @@ class RetainedNavigationPaneTest {
     )
 
     private lateinit var registry: DestinationRegistry
-    private fun content() {
+    private fun content(cap: Lifecycle? = null) {
         compose.setContent {
             activity = checkNotNull(LocalActivity.current) as ComponentActivity
             registry = remember { registry() }
             nav = rememberNavigator(Root, registry)
-            NavigationHost(nav, registry, {})
+            CompositionLocalProvider(LocalNavigationContentLifecycle provides cap) { NavigationHost(nav, registry, {}) }
         }
         settle()
     }
@@ -116,6 +120,36 @@ class RetainedNavigationPaneTest {
         settle()
     }
     private fun model(tab: String) = models.getValue("${nav.current.id}/$tab")
+
+    @Test fun incomingRequestsPauseChildCollectorsWithoutClearingTheirOwners() {
+        val cap = object : LifecycleOwner {
+            val registry = LifecycleRegistry(this)
+            override val lifecycle: Lifecycle get() = registry
+        }
+        compose.runOnUiThread { cap.registry.currentState = Lifecycle.State.RESUMED }
+        content(cap.lifecycle)
+        val projects = model("projects")
+        assertEquals(1, projects.collectors)
+        compose.runOnIdle { cap.registry.currentState = Lifecycle.State.CREATED }
+        settle()
+        assertEquals(0, projects.collectors)
+        assertFalse(projects.cleared)
+        compose.runOnIdle { cap.registry.currentState = Lifecycle.State.RESUMED }
+        settle()
+        assertSame(projects, model("projects"))
+        assertEquals(1, projects.collectors)
+        compose.runOnIdle { cap.registry.currentState = Lifecycle.State.CREATED }
+        settle()
+        compose.runOnIdle { nav.reset(Root, "next-account") }
+        settle()
+        assertTrue(projects.cleared)
+        val replacement = model("projects")
+        assertNotSame(projects, replacement)
+        assertEquals(0, replacement.collectors)
+        compose.runOnIdle { cap.registry.currentState = Lifecycle.State.RESUMED }
+        settle()
+        assertEquals(1, replacement.collectors)
+    }
 
     @Test fun hiddenTabsStopCollectorsAndReleaseViewsWhileRetainingModelsAndUiState() {
         content()

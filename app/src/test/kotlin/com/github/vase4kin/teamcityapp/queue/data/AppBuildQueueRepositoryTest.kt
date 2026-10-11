@@ -25,7 +25,7 @@ import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.builds.data.homeBuildAccountKey
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import com.github.vase4kin.teamcityapp.home.data.HomeFilterEvents
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.gson.Gson
 import io.reactivex.Single
@@ -262,14 +262,14 @@ class AppBuildQueueRepositoryTest {
         val app = app(this)
         val observations = async { app.query.take(3).toList() }
         runCurrent()
-        assertTrue(bus.hasSubscriberForEvent(HomeDataManager.BuildQueueFilterChangedEvent::class.java))
-        bus.post(HomeDataManager.BuildQueueFilterChangedEvent())
+        assertTrue(bus.hasSubscriberForEvent(HomeFilterEvents.BuildQueueFilterChangedEvent::class.java))
+        bus.post(HomeFilterEvents.BuildQueueFilterChangedEvent())
         runCurrent()
         filters.queuedBuildsFilter = Filter.QUEUE_ALL
-        bus.post(HomeDataManager.BuildQueueFilterChangedEvent())
+        bus.post(HomeFilterEvents.BuildQueueFilterChangedEvent())
         runCurrent()
         active = account("bob", listOf("C"))
-        bus.post(HomeDataManager.BuildQueueFilterChangedEvent())
+        bus.post(HomeFilterEvents.BuildQueueFilterChangedEvent())
         val observed = observations.await()
         assertEquals(BuildQueueFilter.Favorites, observed[0].filter)
         assertEquals(listOf("A", "B"), observed[0].favoriteConfigurationIds)
@@ -277,7 +277,7 @@ class AppBuildQueueRepositoryTest {
         assertTrue(observed[1].favoriteConfigurationIds.isEmpty())
         assertTrue(observed[2].favoriteConfigurationIds.isEmpty())
         assertNotEquals(observed[1].accountKey, observed[2].accountKey)
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.BuildQueueFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.BuildQueueFilterChangedEvent::class.java))
     }
 
     @Test fun resubscriptionReadsLatestFavoritesAndPreviousQueriesAreImmutableSnapshots() = runTest {
@@ -297,7 +297,7 @@ class AppBuildQueueRepositoryTest {
         runCurrent()
         pending.cancel()
         runCurrent()
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.BuildQueueFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.BuildQueueFilterChangedEvent::class.java))
     }
 
     @Test fun accountQuerySwitchCancelsOldRxBatchAndOnlyPublishesTheNewAccountsResult() = runTest {
@@ -314,7 +314,7 @@ class AppBuildQueueRepositoryTest {
         assertTrue(oldResponse.hasObservers())
         active = account("bob", listOf("C"))
         current = next
-        bus.post(HomeDataManager.BuildQueueFilterChangedEvent())
+        bus.post(HomeFilterEvents.BuildQueueFilterChangedEvent())
         runCurrent()
         assertFalse(oldResponse.hasObservers())
         oldResponse.onSuccess(Builds(1, listOf(build("old"))))
@@ -326,7 +326,7 @@ class AppBuildQueueRepositoryTest {
         verify(legacy, never()).build(any(), any())
         collecting.cancel()
         runCurrent()
-        assertFalse(bus.hasSubscriberForEvent(HomeDataManager.BuildQueueFilterChangedEvent::class.java))
+        assertFalse(bus.hasSubscriberForEvent(HomeFilterEvents.BuildQueueFilterChangedEvent::class.java))
     }
 
     @Test fun zeroCountIsAuthoritativeEvenWhenTheResponseContainsRows() = runTest {

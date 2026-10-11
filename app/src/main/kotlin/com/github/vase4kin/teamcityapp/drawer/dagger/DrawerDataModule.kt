@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.running_builds.api
+package com.github.vase4kin.teamcityapp.drawer.dagger
+import com.github.vase4kin.teamcityapp.drawer.data.DrawerRepositoryImpl
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import teamcityapp.features.drawer.api.DrawerRepository
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class DrawerDataModule {
 
-import androidx.fragment.app.Fragment
-
-interface RunningBuildsNavigation {
-    fun createFragment(): Fragment
+    @Binds abstract fun repository(impl: DrawerRepositoryImpl): DrawerRepository
 }

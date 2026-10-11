@@ -21,16 +21,22 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import teamcityapp.features.home.api.HomeDestination
+import teamcityapp.features.home.api.HomeTabSelection
 import teamcityapp.features.splash.api.navigation.AccountActivationDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
+import teamcityapp.libraries.navigation.LocalNavigationContentLifecycle
 import teamcityapp.libraries.navigation.NavigationHost
 import teamcityapp.libraries.navigation.rememberNavigator
 import teamcityapp.libraries.theme.TeamCitySystemBars
@@ -47,13 +53,15 @@ class MainActivity : AppCompatActivity() {
     private val incomingRequest = mutableStateOf<DestinationRequest?>(null)
 
     private var activeNavigator: teamcityapp.libraries.navigation.Navigator? = null
+    private lateinit var navigationLifecycle: RootNavigationLifecycle
     internal val navigationSnapshot get() = activeNavigator?.snapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(RootActivitySavedState.forRoot(savedInstanceState))
+        navigationLifecycle = RootNavigationLifecycle(lifecycle)
         accounts.synchronize()
         val initialSessionKey = accounts.session.value.key
-        val requestedInitial = if (RootActivitySavedState.canRestoreLaunch(savedInstanceState, initialSessionKey)) {
+        var requestedInitial = if (RootActivitySavedState.canRestoreLaunch(savedInstanceState, initialSessionKey)) {
             incoming.destination(intent)
         } else {
             // Reject old arguments before decoding them, including old build snapshots.
@@ -63,6 +71,12 @@ class MainActivity : AppCompatActivity() {
             }
             setIntent(incoming.normalizedIntent(Intent(intent).replaceExtras(Bundle()), accounts.session.value.initial))
             null
+        }
+        val home = requestedInitial as? HomeDestination
+        if (home != null && (incoming.requiresHomeReset(intent) || initialSessionKey == "signed-out")) {
+            if (initialSessionKey == "signed-out") accounts.login() else accounts.activate(home, resetSession = true)
+            setIntent(incoming.normalizedIntent(intent, accounts.session.value.initial))
+            requestedInitial = null
         }
         requestedInitial?.let { setIntent(incoming.normalizedIntent(intent, it)) }
         enableEdgeToEdge()
@@ -76,24 +90,57 @@ class MainActivity : AppCompatActivity() {
                     activeNavigator = navigator
                     onDispose { if (activeNavigator === navigator) activeNavigator = null }
                 }
-                val handledRequest = rememberSaveable { mutableStateOf(session.requestId) }
-                LaunchedEffect(session.requestId) {
-                    if (session.requestId != null && handledRequest.value != session.requestId) {
+                val handledRequest = rememberSaveable(
+                    stateSaver = Saver<AccountRequestOwner, Any>(
+                        save = { arrayListOf(it.accountKey, it.requestId) },
+                        restore = { saved ->
+                            when {
+                                saved is List<*> && saved.size == 2 && saved[0] is String && (saved[1] == null || saved[1] is String) -> AccountRequestOwner(saved[0] as String, saved[1] as String?)
+
+                                // Earlier root versions saved only the request ID.
+                                saved is String -> AccountRequestOwner(savedInstanceState?.getString(RootActivitySavedState.ACCOUNT_KEY) ?: session.key, saved)
+
+                                else -> null
+                            }
+                        }
+                    )
+                ) { mutableStateOf(AccountRequestOwner(session.key, session.requestId)) }
+                if (handledRequest.value.accountKey != session.key) {
+                    // rememberNavigator already replaces owners when the account changes.
+                    handledRequest.value = AccountRequestOwner(session.key, session.requestId)
+                }
+                LaunchedEffect(session.key, session.requestId) {
+                    if (session.requestId != null && handledRequest.value.requestId != session.requestId) {
                         navigator.reset(session.initial, session.key)
-                        handledRequest.value = session.requestId
+                        handledRequest.value = AccountRequestOwner(session.key, session.requestId)
                     } else if (session.requestId == null && navigator.current.destination is AccountActivationDestination) {
                         // A dead process cannot retain its preparation job. Resume the saved policy
                         // so an interrupted account switch still clears the previous session.
                         val activation = navigator.current.destination as AccountActivationDestination
-                        if (!activation.failed) accounts.home(activation.resetSession)
+                        if (!activation.failed) activation.destination?.let { accounts.activate(it, activation.resetSession) } ?: accounts.home(activation.resetSession)
                     }
                 }
                 val request = incomingRequest.value
                 LaunchedEffect(request) {
-                    request?.let { navigator.push(it.destination) }
+                    request?.let {
+                        val home = it.destination as? HomeDestination
+                        if (home == null) {
+                            navigator.push(it.destination)
+                        } else {
+                            val existing = navigator.snapshot.entries.firstOrNull { entry -> entry.destination is HomeDestination }
+                            if (existing == null) navigator.reset(home, session.key) else navigator.popTo(existing.id, HomeTabSelection(home.tab))
+                        }
+                    }
                     incomingRequest.value = null
                 }
-                NavigationHost(navigator, registry, ::finish)
+                SideEffect {
+                    if (incomingRequest.value == null && (session.requestId == null || handledRequest.value.requestId == session.requestId) && navigator.snapshot.sessionKey == session.key) {
+                        navigationLifecycle.applied()
+                    }
+                }
+                CompositionLocalProvider(LocalNavigationContentLifecycle provides navigationLifecycle.lifecycle) {
+                    NavigationHost(navigator, registry, ::finish)
+                }
             }
         }
     }
@@ -106,7 +153,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        val destination = incoming.destination(intent)
+        var destination = incoming.destination(intent)
+        if (destination != null) navigationLifecycle.hold()
+        val home = destination as? HomeDestination
+        if (home != null) {
+            val previousKey = accounts.session.value.key
+            accounts.synchronize()
+            if (incoming.requiresHomeReset(intent) || previousKey != accounts.session.value.key || accounts.session.value.key == "signed-out") {
+                incomingRequest.value = null
+                if (accounts.session.value.key == "signed-out") accounts.login() else accounts.activate(home, resetSession = true)
+                destination = accounts.session.value.initial
+                // Account preparation publishes the replacement stack; do not also push it.
+                setIntent(incoming.normalizedIntent(Intent(intent).apply { component = this@MainActivity.intent.component }, destination))
+                return
+            }
+        }
         // Alias names have different Android component identities. Keep this host's launch
         // component stable while saving the normalized request for recreation.
         setIntent(
@@ -118,6 +179,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private class DestinationRequest(val destination: androidx.navigation3.runtime.NavKey)
+    private data class AccountRequestOwner(val accountKey: String, val requestId: String?)
     companion object {
         const val EXTRA_DESTINATION = "navigation.destination"
     }

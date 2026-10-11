@@ -19,7 +19,7 @@ package com.github.vase4kin.teamcityapp.agents.data
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
+import com.github.vase4kin.teamcityapp.home.data.HomeFilterEvents
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlinx.coroutines.CoroutineDispatcher
@@ -68,7 +68,7 @@ class AppAgentsRepository @Inject constructor(
         fun currentFilter() = if (provider.agentsFilter == Filter.AGENTS_DISCONNECTED) AgentsFilter.Disconnected else AgentsFilter.Connected
 
         @Subscribe
-        fun onFilterChanged(@Suppress("UNUSED_PARAMETER") event: HomeDataManager.AgentsFilterChangedEvent) {
+        fun onFilterChanged(@Suppress("UNUSED_PARAMETER") event: HomeFilterEvents.AgentsFilterChangedEvent) {
             changed(currentFilter())
         }
     }

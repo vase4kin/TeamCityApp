@@ -20,6 +20,7 @@ package teamcityapp.libraries.navigation
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalBottomSheetProperties
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -28,6 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.rememberLifecycleOwner
 import androidx.navigation3.runtime.NavEntry
@@ -87,6 +90,8 @@ private data class BottomSheetScene<T : Any>(
         val owner = rememberLifecycleOwner()
         val interactions = remember { SheetInteractions() }
         ModalBottomSheet(
+            modifier = Modifier.testTag("navigation:sheet"),
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
             onDismissRequest = { if (interactions.enabled) onDismiss() },
             sheetGesturesEnabled = interactions.enabled,
             properties = ModalBottomSheetProperties(

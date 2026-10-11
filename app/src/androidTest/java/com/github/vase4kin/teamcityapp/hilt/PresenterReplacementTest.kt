@@ -9,7 +9,8 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertNotSame
@@ -23,8 +24,13 @@ import org.mockito.Mockito.spy
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class PresenterReplacementTest {
-    @JvmField @Rule(order = 0) val hiltRule = HiltAndroidRule(this)
-    @JvmField @Rule(order = 1) val apiRule = HiltApiTestRule(hiltRule)
+    @JvmField
+    @Rule(order = 0)
+    val hiltRule = HiltAndroidRule(this)
+
+    @JvmField
+    @Rule(order = 1)
+    val apiRule = HiltApiTestRule(hiltRule)
 
     private val app: TeamCityApplicationBase
         get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -33,23 +39,6 @@ class PresenterReplacementTest {
     fun setUp() {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
-    }
-
-    @Test
-    fun homeDisposesOldPresenterBeforeAccountReload() {
-        ActivityScenario.launch<HomeActivity>(Intent(app, HomeActivity::class.java)).use { scenario ->
-            scenario.onActivity { activity ->
-                val previous = spy(activity.presenter)
-                activity.presenter = previous
-                dispatchNewIntent(activity, Intent(activity, HomeActivity::class.java)
-                    .putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true))
-                assertNotSame(previous, activity.presenter)
-                inOrder(previous).apply {
-                    verify(previous).onPause()
-                    verify(previous).onDestroy()
-                }
-            }
-        }
     }
 
     @Test
@@ -74,5 +63,4 @@ class PresenterReplacementTest {
             isAccessible = true
         }.invoke(activity, intent)
     }
-
 }

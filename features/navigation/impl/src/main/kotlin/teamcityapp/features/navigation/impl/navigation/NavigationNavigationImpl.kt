@@ -17,21 +17,13 @@
 package teamcityapp.features.navigation.impl.navigation
 
 import android.app.Activity
-import android.os.Bundle
 import javax.inject.Inject
 import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
-import teamcityapp.features.navigation.impl.NavigationFragment
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.navigation.DestinationLauncher
 
 class NavigationNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : NavigationNavigation {
-    override fun createFragment() = NavigationFragment().apply {
-        arguments = Bundle().apply {
-            putString(NavigationNavigation.PROJECT_ID, NavigationNavigation.ROOT_PROJECT_ID)
-            putString(NavigationNavigation.PROJECT_NAME, "")
-        }
-    }
     override fun open(activity: Activity, project: ProjectReference) {
         launcher.open(activity, ProjectDestination(project.id, project.name, false))
     }

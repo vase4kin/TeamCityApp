@@ -36,13 +36,16 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
+import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -62,6 +65,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.whenever
+import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.filter_bottom_sheet.impl.R as QuickR
 import teamcityapp.features.running_builds.impl.R as FeatureR
@@ -84,7 +88,7 @@ class RunningBuildsFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomActivityTestRule(HomeActivity::class.java)
+    val activityRule = CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.HOME_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -138,7 +142,7 @@ class RunningBuildsFragmentTest {
         assertTextVisible(text(FeatureR.string.running_builds_empty_favorites))
         showAllFromFilterFab()
         assertTextVisible(text(FeatureR.string.running_builds_empty_all))
-        onView(withText(R.string.text_filters_applied)).check(matches(isDisplayed()))
+        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_filters_applied)).assertIsDisplayed()
         assertBadgeCount(0)
         verify(teamCityService).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", null)
     }
@@ -172,36 +176,16 @@ class RunningBuildsFragmentTest {
         verify(teamCityService, times(1)).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", null)
     }
 
-    @Test fun rowNavigationPreservesTheCompleteBuildPayloadAndOriginalHomeFlags() {
+    @Test fun rowNavigationPreservesTheCompleteBuildPayloadInTheSameRoot() {
         val build = build("1", "top-level", "Configuration", "Project", "Complete payload", nestedId = "nested")
         storage.addBuildTypeToFavorites("top-level")
         stubFavorite("top-level", listOf(build))
         stubDetails(build)
-        Intents.intending(hasComponent(DETAILS_COMPONENT)).respondWith(android.app.Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         openTab()
         awaitRow("1")
         row("1").performClick()
-        val intent = Intents.getIntents().last { it.component?.className == DETAILS_COMPONENT }
-        Assert.assertTrue(intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0)
-        Assert.assertTrue(intent.flags and Intent.FLAG_ACTIVITY_SINGLE_TOP != 0)
-        Assert.assertNull(intent.getStringExtra(BundleExtractorValues.NAME))
-        @Suppress("DEPRECATION")
-        val actual = intent.getSerializableExtra(BundleExtractorValues.BUILD) as Build
-        Assert.assertEquals(build.id, actual.id)
-        Assert.assertEquals(build.href, actual.href)
-        Assert.assertEquals("top-level", actual.buildTypeId)
-        Assert.assertEquals("nested", actual.buildType!!.id)
-        Assert.assertNotNull(actual.changes)
-        Assert.assertNotNull(actual.artifacts)
-        Assert.assertNotNull(actual.testOccurrences)
-        Assert.assertNotNull(actual.snapshotBuilds)
-        Assert.assertEquals(2, actual.testOccurrences!!.count)
-        Assert.assertEquals("properties", actual.properties!!.id)
-        Assert.assertTrue(actual.properties!!.properties.single().isOwn)
-        Assert.assertTrue(actual.isPersonal)
-        Assert.assertTrue(actual.isPinned)
-        Assert.assertTrue(actual.isCleanSources)
-        Assert.assertTrue(actual.isQueueAtTop)
+        Assert.assertEquals(BuildDetailsDestination(AppBuildLaunchMapper().toLaunchData(build)), currentRootSnapshot().entries.last().destination)
+        Assert.assertTrue(currentRootSnapshot().entries.first().destination is teamcityapp.features.home.api.HomeDestination)
     }
 
     @Test fun headerNavigationKeepsTopLevelConfigurationIdAndName() {
@@ -209,11 +193,10 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("top-level")
         stubFavorite("top-level", listOf(build))
         stubDetails(build)
-        Intents.intending(hasDestination(BuildHistoryDestination("top-level", "Configuration title"))).respondWith(android.app.Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         openTab()
         awaitRow("1")
         compose.onNodeWithTag("running_builds:configuration:0").performClick()
-        Intents.intended(hasDestination(BuildHistoryDestination("top-level", "Configuration title")))
+        Assert.assertEquals(BuildHistoryDestination("top-level", "Configuration title"), currentRootSnapshot().entries.last().destination)
     }
 
     @Test fun initialErrorCanRetryWithoutRemovingFavorites() {
@@ -259,7 +242,7 @@ class RunningBuildsFragmentTest {
         doReturn(Single.defer { if (subscriptions.incrementAndGet() == 1) first else returned }).whenever(teamCityService).build(serviceUrl(build))
         openTab()
         compose.waitUntil(10_000) { first.hasObservers() }
-        onView(withId(R.id.projects)).perform(click())
+        compose.onNodeWithTag("home:tab:Projects").performClick()
         awaitProjects()
         compose.waitUntil(10_000) { !first.hasObservers() }
         clickTab()
@@ -281,7 +264,7 @@ class RunningBuildsFragmentTest {
         awaitRow("1")
         compose.onNodeWithTag("running_builds:list").performScrollToNode(hasTestTag("running_builds:build:12"))
         row("12").assertIsDisplayed()
-        onView(withId(R.id.projects)).perform(click())
+        compose.onNodeWithTag("home:tab:Projects").performClick()
         awaitProjects()
         clickTab()
         compose.waitUntil(10_000) { listCalls(favoriteLocator("A")) == 2 }
@@ -293,7 +276,7 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("A")
         stubFavorite("A", listOf(build))
         stubDetails(build)
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjects()
             clickTab()
             awaitRow("1")
@@ -309,11 +292,11 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("A")
         stubFavorite("A", listOf(build))
         stubDetails(build)
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjects()
             clickTab()
             awaitRow("1")
-            onView(withId(R.id.projects)).perform(click())
+            compose.onNodeWithTag("home:tab:Projects").performClick()
             awaitProjects()
             scenario.recreate()
             awaitProjects()
@@ -338,14 +321,14 @@ class RunningBuildsFragmentTest {
         val aliceBuild = build("alice", "alice-build", "Alice private configuration", "Alice", "Alice private row")
         val bobBuild = build("bob", "bob-build", "Bob configuration", "Bob", "Bob row")
         stubDetails(aliceBuild, bobBuild)
-        ActivityScenario.launch<HomeActivity>(Intent(context, HomeActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjects()
             clickTab()
             compose.waitUntil(10_000) { alice.hasObservers() }
             scenario.onActivity { activity ->
                 storage.setUserActive(Mocks.URL, "bob")
                 activity.startActivity(
-                    Intent(activity, HomeActivity::class.java)
+                    Intent(activity, MainActivity::class.java).setClassName(activity, IncomingDestinationResolver.HOME_COMPONENT)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         .putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
                 )
@@ -373,7 +356,7 @@ class RunningBuildsFragmentTest {
         clickTab()
     }
     private fun clickTab() {
-        onView(withId(R.id.running_builds)).perform(click())
+        compose.onNodeWithTag("home:tab:Running").performClick()
     }
     private fun awaitProjects() {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:row:project:id").fetchSemanticsNodes().isNotEmpty() }
@@ -384,21 +367,20 @@ class RunningBuildsFragmentTest {
     }
     private fun assertTextVisible(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithText(value, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText(value, useUnmergedTree = true).assertIsDisplayed()
+        compose.onAllNodesWithText(value, useUnmergedTree = true).onFirst().assertIsDisplayed()
     }
     private fun text(id: Int) = context.getString(id)
     private fun showAllFromFilterFab() {
-        onView(allOf(withId(R.id.home_floating_action_button), isDisplayed())).perform(click())
+        compose.onNodeWithTag("home:fab").performClick()
         compose.onNodeWithText(text(QuickR.string.text_show_running)).performClick()
     }
     private fun assertBadgeCount(expected: Int) {
         compose.waitUntil(10_000) {
-            var actual: Int? = null
-            InstrumentationRegistry.getInstrumentation().runOnMainSync {
-                val navigation = activityRule.activity.findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.navigation)
-                actual = navigation.getBadge(R.id.running_builds)?.number
+            if (expected == 0) {
+                compose.onAllNodesWithTag("home:count:Running", useUnmergedTree = true).fetchSemanticsNodes().isEmpty()
+            } else {
+                runCatching { compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals(expected.toString()) }.isSuccess
             }
-            actual == expected
         }
     }
     private fun favoriteLocator(id: String): String = "running:true,branch:default:any,personal:false,pinned:false,buildType:$id"

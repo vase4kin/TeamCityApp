@@ -26,19 +26,22 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
-import androidx.fragment.app.DialogFragment
+import androidx.navigation3.runtime.NavKey
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -48,13 +51,15 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.bottom_sheet.api.SheetMenuType
-import teamcityapp.features.drawer.impl.DrawerBottomSheetDialogFragment
-import teamcityapp.features.filter_bottom_sheet.impl.FilterBottomSheetDialogFragment
+import teamcityapp.features.bottom_sheet.api.navigation.ActionSheetDestination
+import teamcityapp.features.drawer.api.navigation.DrawerDestination
+import teamcityapp.features.filter_bottom_sheet.api.navigation.QuickFilterDestination
 import teamcityapp.libraries.app_theme.ThemeMode
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
-class NativeSheetHostTest {
+class RootSheetHostTest {
     @JvmField
     @Rule(order = 0)
     val hilt = HiltAndroidRule(this)
@@ -113,11 +118,11 @@ class NativeSheetHostTest {
     @Test fun drawerMultipleDark() = drawer(true, multiple = true)
 
     private fun action(dark: Boolean) = exercise("action", "sheet:Copy", dark) {
-        BottomSheetDialogFragment.createBottomSheetDialog("Configuration", "configuration-id", SheetMenuType.BuildType.ordinal)
+        ActionSheetDestination("Configuration", listOf("configuration-id"), SheetMenuType.BuildType, it.navigationSnapshot!!.entries.first().id, "host-test")
     }
 
     private fun quick(dark: Boolean) = exercise("quick", "quick-filter:apply", dark) {
-        FilterBottomSheetDialogFragment.createBottomSheetDialog(0)
+        QuickFilterDestination(0)
     }
 
     private val storageListener = object : com.github.vase4kin.teamcityapp.storage.SharedUserStorage.OnStorageListener {
@@ -131,24 +136,22 @@ class NativeSheetHostTest {
             if (multiple) saveUserAccountAndSetItAsActive("https://teamcity.example/secondary", "build.engineer", "test-password", true, storageListener)
             saveUserAccountAndSetItAsActive(Mocks.URL, "alex.morgan", "test-password", false, storageListener)
         }
-        exercise(if (multiple) "drawer_multiple" else "drawer", "drawer:add", dark) { DrawerBottomSheetDialogFragment() }
+        exercise(if (multiple) "drawer_multiple" else "drawer", "drawer:add", dark) { DrawerDestination }
     }
 
-    private fun exercise(name: String, rowTag: String, dark: Boolean, factory: () -> DialogFragment) {
+    @Inject lateinit var launcher: DestinationLauncher
+
+    private fun exercise(name: String, rowTag: String, dark: Boolean, factory: (MainActivity) -> NavKey) {
         this.dark = dark
         runBlocking { app.appInjector.themePreferences().setTheme(if (dark) ThemeMode.Dark else ThemeMode.Light) }
         instrumentation.runOnMainSync { AppCompatDelegate.setDefaultNightMode(if (dark) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO) }
-        ActivityScenario.launch<HomeActivity>(Intent(app, HomeActivity::class.java)).use { scenario ->
-            scenario.onActivity { factory().showNow(it.supportFragmentManager, TAG) }
+        ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java).setClassName(app, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
+            await("home:tab:Projects")
+            scenario.onActivity { launcher.open(it, factory(it)) }
             await(rowTag)
             assertHost(scenario)
             capture("${name}_initial")
-            scenario.onActivity {
-                (it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment).let { fragment ->
-                    (fragment.dialog as BottomSheetDialog).behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-            }
-            awaitState(scenario, BottomSheetBehavior.STATE_EXPANDED)
+            await("navigation:sheet")
             assertHost(scenario)
             if (name.startsWith("drawer")) {
                 assertDrawerSpacingAndMenuWidths(scenario)
@@ -161,19 +164,13 @@ class NativeSheetHostTest {
             } else {
                 assertRowEdgesAndRipple(name, rowTag, scenario)
             }
-            scenario.onActivity {
-                (it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment).let { fragment ->
-                    (fragment.dialog as BottomSheetDialog).behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                }
-            }
-            awaitState(scenario, BottomSheetBehavior.STATE_COLLAPSED)
-            assertHost(scenario)
             scenario.recreate()
             await(rowTag)
             assertHost(scenario)
             capture("${name}_recreated")
-            scenario.onActivity { (it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment).dismissNow() }
-            scenario.onActivity { factory().showNow(it.supportFragmentManager, TAG) }
+            pressBack()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:sheet").fetchSemanticsNodes().isEmpty() }
+            scenario.onActivity { launcher.open(it, factory(it)) }
             await(rowTag)
             assertHost(scenario)
             capture("${name}_reopened")
@@ -184,8 +181,9 @@ class NativeSheetHostTest {
                     scenario.onActivity {
                         val clipboard = it.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                         assertEquals("configuration-id", clipboard.primaryClip?.getItemAt(0)?.text?.toString())
-                        assertNull(it.supportFragmentManager.findFragmentByTag(TAG))
-                        if (!right) factory().showNow(it.supportFragmentManager, TAG)
+                        assertTrue(it.supportFragmentManager.fragments.isEmpty())
+                        assertEquals(1, it.navigationSnapshot!!.entries.size)
+                        if (!right) launcher.open(it, factory(it))
                     }
                     if (!right) await(rowTag)
                 }
@@ -207,48 +205,21 @@ class NativeSheetHostTest {
         SystemClock.sleep(500) // Native window animation is not driven by the Compose test clock.
         instrumentation.waitForIdleSync()
     }
-    private fun awaitState(scenario: ActivityScenario<HomeActivity>, target: Int) {
-        compose.waitUntil(10_000) {
-            var ready = false
-            scenario.onActivity { ready = ((it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment).dialog as BottomSheetDialog).behavior.state == target }
-            ready
-        }
-        instrumentation.waitForIdleSync()
-    }
-    private fun assertHost(scenario: ActivityScenario<HomeActivity>) {
-        scenario.onActivity {
-            val fragment = it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment
-            assertEquals(teamcityapp.libraries.theme.R.style.ThemeOverlay_TeamCity_ComposeBottomSheetDialog, fragment.theme)
-            val sheet = requireNotNull(fragment.dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet))
-            assertTrue(sheet.width > 0 && sheet.height > 0)
-            val bitmap = Bitmap.createBitmap(sheet.width, sheet.height, Bitmap.Config.ARGB_8888)
-            sheet.background?.apply {
-                setBounds(0, 0, bitmap.width, bitmap.height)
-                draw(Canvas(bitmap))
-            }
-            listOf(1 to 1, (bitmap.width - 2) to 1, (bitmap.width / 2) to (bitmap.height / 2)).forEach { (x, y) ->
-                assertEquals("Native host paints behind Compose corner", 0, Color.alpha(bitmap.getPixel(x, y)))
-            }
-            assertEquals(0f, sheet.elevation)
-        }
+    private fun assertHost(scenario: ActivityScenario<MainActivity>) {
+        compose.onNodeWithTag("navigation:sheet").assertIsDisplayed()
+        scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
     }
 
-    private fun assertDrawerSpacingAndMenuWidths(scenario: ActivityScenario<HomeActivity>) {
+    private fun assertDrawerSpacingAndMenuWidths(scenario: ActivityScenario<MainActivity>) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:active-card").fetchSemanticsNodes().isNotEmpty() }
         compose.onNode(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.StateDescription, "Current account")).assertIsDisplayed()
         val active = compose.onNodeWithTag("drawer:active-card")
         active.assertHasNoClickAction()
         val density = app.resources.displayMetrics.density
         compose.onNodeWithTag("drawer:manage").assertIsDisplayed().assertHeightIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget)
-        var left = 0
-        var right = 0
-        scenario.onActivity {
-            val sheet = requireNotNull((it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment).dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet))
-            val location = IntArray(2)
-            sheet.getLocationInWindow(location)
-            left = location[0]
-            right = left + sheet.width
-        }
+        val sheet = compose.onNodeWithTag("navigation:sheet").fetchSemanticsNode().boundsInWindow
+        val left = sheet.left
+        val right = sheet.right
         listOf("add", "settings", "about", "rate", "privacy").forEach { action ->
             val row = compose.onNodeWithTag("drawer:$action").performScrollTo()
             row.assertIsDisplayed().assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Button))
@@ -258,7 +229,7 @@ class NativeSheetHostTest {
         }
     }
 
-    private fun assertRowEdgesAndRipple(name: String, tag: String, scenario: ActivityScenario<HomeActivity>) {
+    private fun assertRowEdgesAndRipple(name: String, tag: String, scenario: ActivityScenario<MainActivity>) {
         val row = compose.onNodeWithTag(tag)
         if (name.startsWith("drawer")) {
             row.performScrollTo()
@@ -270,18 +241,18 @@ class NativeSheetHostTest {
         val bounds = row.fetchSemanticsNode().boundsInWindow
         var screenDeltaX = 0
         var screenDeltaY = 0
+        val sheet = compose.onNodeWithTag("navigation:sheet").fetchSemanticsNode().boundsInWindow
         scenario.onActivity {
-            val sheet = requireNotNull((it.supportFragmentManager.findFragmentByTag(TAG) as DialogFragment).dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet))
             val location = IntArray(2)
-            sheet.getLocationInWindow(location)
             val screen = IntArray(2)
-            sheet.getLocationOnScreen(screen)
+            it.window.decorView.getLocationInWindow(location)
+            it.window.decorView.getLocationOnScreen(screen)
             screenDeltaX = screen[0] - location[0]
             screenDeltaY = screen[1] - location[1]
-            val inset = if (name.startsWith("drawer")) 16f * app.resources.displayMetrics.density else 0f
-            assertEquals(location[0] + inset, bounds.left, 1f)
-            assertEquals(location[0] + sheet.width - inset, bounds.right, 1f)
         }
+        val inset = if (name.startsWith("drawer")) 16f * app.resources.displayMetrics.density else 0f
+        assertEquals(sheet.left + inset, bounds.left, 1f)
+        assertEquals(sheet.right - inset, bounds.right, 1f)
         val before = capture("${name}_idle")
         row.performTouchInput { down(center) }
         try {

@@ -18,12 +18,10 @@ package com.github.vase4kin.teamcityapp.navigation.dagger
 
 import com.github.vase4kin.teamcityapp.navigation.data.AppNavigationRatingRepository
 import com.github.vase4kin.teamcityapp.navigation.data.AppNavigationRepository
-import com.github.vase4kin.teamcityapp.navigation.router.NavigationAppRouterImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.navigation.api.NavigationAppRouter
 import teamcityapp.features.navigation.api.NavigationRatingRepository
 import teamcityapp.features.navigation.api.NavigationRepository
 
@@ -33,6 +31,4 @@ abstract class NavigationAppModule {
     @Binds abstract fun repository(implementation: AppNavigationRepository): NavigationRepository
 
     @Binds abstract fun rating(implementation: AppNavigationRatingRepository): NavigationRatingRepository
-
-    @Binds abstract fun router(implementation: NavigationAppRouterImpl): NavigationAppRouter
 }
