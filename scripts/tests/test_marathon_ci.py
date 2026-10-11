@@ -107,7 +107,7 @@ class MarathonSelectionTest(unittest.TestCase):
         self.assertEqual(ci.selection("full", self.catalog, self.available)["tests"], [])
 
     def test_single_can_select_outside_the_smoke_pool(self):
-        test = "com.github.vase4kin.teamcityapp.buildlist.view.BuildListActivityTest#testUserCanOpenFilterBuilds"
+        test = "com.github.vase4kin.teamcityapp.buildlist.view.BuildHistoryActivityTest#actualFilterBuildsScreenSerializesQueuedSelectionBackToHistory"
         self.assertNotIn(test, self.catalog["smoke"])
         self.assertEqual(ci.selection("single", self.catalog, self.available, test)["tests"], [test])
 
@@ -224,7 +224,7 @@ class ChangedSelectionTest(unittest.TestCase):
                 self.assertEqual(result["fallback_paths"], [])
 
     def test_changed_test_file_selects_every_active_method_in_that_class(self):
-        path = "app/src/androidTest/kotlin/com/github/vase4kin/teamcityapp/buildlist/view/BuildListActivityTest.kt"
+        path = "app/src/androidTest/kotlin/com/github/vase4kin/teamcityapp/buildlist/view/BuildHistoryActivityTest.kt"
         self.assertEqual(set(self.select(path)["tests"]), self.smoke | self.index[path])
 
     def test_new_methods_enter_changed_selection_without_catalog_updates(self):
