@@ -29,7 +29,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed History, Run Build, Filter Builds and detail destinations verified; Build Details tab callers migrate with its shell |
-| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Pending |
+| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, retained operation model and repository adapter verified; child registrations, root routing, sheets and onboarding remain pending |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | Pending |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
@@ -394,3 +394,20 @@ Verification passed with JDK 17:
 The first emulator run passed 28/29 cases: the Favorites test used the Espresso Back helper that reports closing the final activity as an error. Its unconditional-Back assertion now verifies the intended root exit; the complete corrected suite passes.
 
 Build Details still opens through the explicit legacy adapter. Its native tab callers and the remaining installed component/result compatibility entry points migrate in the next two phases. The Compose Build Details shell, artifact folders and action sheets, old-host removal, full process-restoration acceptance and final all-module/Marathon checks remain pending. The goal stays active; no push or PR has been created.
+
+
+### Build Details shell and retained operations
+
+Checkpoint `b2cf0e3` adds the owning `features/build-details/impl` module, a stateless Material 3 shell, Hilt ViewModel, private resources/tracker and a suspend repository contract with an app adapter. `BuildDetailsDestination` carries the complete immutable launch snapshot. Its serializable nested models preserve raw server values, opaque URLs, nullable section presence, test counts and parameter metadata; the legacy wire/cache DTOs remain unchanged.
+
+The ViewModel constructs conditional tabs from the incoming snapshot and saves refreshed action data separately. Selected tabs and counts survive restoration; equal build visits have independent owners. Cancel confirmations retain the exact snapshot the user confirms, select own/other-user messages, and allow re-add only when stopping a running build. Restart uses the refreshed configuration, branch and the complete parameter payload with the installed minimal request shape. Pending mutations survive collector loss during recreation, reject duplicate submissions and cancel with their owner. Process restoration retains confirmations, queued feedback and pending replacements without automatically repeating a mutation. Queued reads support retry and produce one replacement.
+
+The app adapter resolves one account repository per operation, disposes Rx subscriptions on coroutine cancellation and checks account identity before and after both success and failure. Same-server user changes cannot publish old results. Forbidden responses remain distinct from ordinary server failures; failed cancellation requests an Overview refresh.
+
+Verification passed with JDK 17:
+
+- 519 local cases: Build Details (120), shared builds (8) and app (391). Build Details includes 17 ViewModel, four destination/conditional-tab and three Compose interaction cases, plus 96 Roborazzi cases. Eight new app adapter cases verify request shape, parameter presence/metadata, forbidden responses, cancellation, account isolation and queued reads.
+- All 96 shell baselines were visually reviewed: seven selected tabs, five confirmation variants and four progress variants, each in light/dark phone, tablet and enlarged-text layouts. The shell uses deterministic child-content fixtures; child-feature visuals remain owned by their existing modules. Normal golden verification and `verifyRoborazziDebug` pass.
+- Build Details implementation lint, mock app/instrumentation APK builds, production debug Kotlin/Hilt compilation and formatting pass.
+
+This checkpoint prepares the shell without changing the existing Build Details entry point. Connecting its seven retained child destinations, action sheets/artifact folders, counts, platform actions and onboarding is the next phase-six slice. Build Details still opens through the legacy adapter until that integration is verified. Old-host removal and the final all-destination/process-restoration/Marathon checks remain pending. The goal stays active; no push or PR has been created.
