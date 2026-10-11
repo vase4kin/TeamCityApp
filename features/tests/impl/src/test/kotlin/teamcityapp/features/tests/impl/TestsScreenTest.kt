@@ -52,7 +52,7 @@ class TestsScreenTest {
     ) {
         compose.setContent {
             TeamCityTheme {
-                TestsScreen(state, filter, counts, count, rows.size, { rows[it] }, { rows[it] }, append, onFilter, {}, onRetry, onCountRetry, onTest, onAppendRetry)
+                TestsScreen(state, TestsPresentation(filter, counts), count, rows.size, { TestRowUiState(rows[it]) }, { TestRowUiState(rows[it]) }, append, onFilter, {}, onRetry, onCountRetry, onTest, onAppendRetry)
             }
         }
     }

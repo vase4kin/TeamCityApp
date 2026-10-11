@@ -16,6 +16,7 @@
 
 package teamcityapp.features.run_build.impl
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -25,7 +26,26 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.run_build.api.*
 
-data class RunBuildUiState(val branches: List<String>? = null, val branchesFailed: Boolean = false, val agents: List<BuildAgent>? = null, val agentsFailed: Boolean = false, val request: BuildRequest = BuildRequest(""), val queuing: Boolean = false, val queueError: QueueBuildResult? = null, val queuedHref: String? = null)
+data class RunBuildUiState(val branches: List<String>? = null, val branchesFailed: Boolean = false, val agents: List<BuildAgent>? = null, val agentsFailed: Boolean = false, val request: BuildRequest = BuildRequest(""), val queuing: Boolean = false, val queueError: QueueBuildResult? = null, val queuedHref: String? = null) {
+    @get:StringRes val queueLabelRes: Int = if (queuing) R.string.text_queueing_build else R.string.title_run_build
+
+    @get:StringRes val queueErrorMessageRes: Int? = when (queueError) {
+        QueueBuildResult.Forbidden -> R.string.error_forbidden_error
+        null -> null
+        else -> R.string.error_base_error
+    }
+
+    @get:StringRes val branchesMessageRes: Int = if (branchesFailed) R.string.branches_unavailable else R.string.text_no_branches_available
+
+    @get:StringRes val personalLabelRes: Int = if (request.personal) R.string.option_on else R.string.option_off
+
+    @get:StringRes val priorityLabelRes: Int = if (request.queueAtTop) R.string.priority_top else R.string.priority_normal
+
+    @get:StringRes val cleanSourcesLabelRes: Int = if (request.cleanSources) R.string.option_on else R.string.option_off
+
+    @get:StringRes val agentFallbackRes: Int = if (agents.isNullOrEmpty()) R.string.text_no_agents_available else R.string.hint_default_filter_agent
+    val selectedAgentName: String? = request.agent?.name?.takeIf { !agents.isNullOrEmpty() }
+}
 
 @HiltViewModel
 class RunBuildViewModel @Inject constructor(private val repository: RunBuildRepository, savedStateHandle: SavedStateHandle, private val tracker: RunBuildTracker) : ViewModel() {

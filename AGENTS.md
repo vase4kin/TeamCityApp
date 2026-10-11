@@ -149,6 +149,17 @@ to the requested behavior and the coherent migration slice needed to support it.
   composable obtains its Hilt ViewModel with `hiltViewModel()`, collects state with
   `collectAsStateWithLifecycle()`, and passes immutable state and callbacks to a
   separate stateless screen/content composable. Activities host the route.
+- Select state-dependent messages, action labels, status names, empty-state text,
+  and other text alternatives in ViewModel-produced immutable UI models. Expose
+  feature implementation resource IDs (`@StringRes`) or unresolved `UiText`
+  descriptors from `libraries/theme`; resolve them with `stringResource`/`UiText.resolve`
+  in the current composition. Keep feature resources out of domain models and
+  feature APIs. Do not inject `Context`, `Resources`, or localized-string providers
+  into ViewModels. Map paged row text before rendering, preserving complete domain
+  payloads for navigation and keeping Paging item access lazy.
+  Static screen copy and layout/theme choices remain in composables. Text driven
+  solely by local UI state (for example expansion, SSL consent dialogs, or platform
+  launch failures) belongs to that UI state rather than a retained ViewModel.
 - Derive UI state from repository flows with operators such as `map`, `onStart`,
   `catch`, and `stateIn(viewModelScope, SharingStarted.WhileSubscribed(...), ...)`.
   Prefer collection-driven loading over Activity calls to ViewModel `start`/`stop`.

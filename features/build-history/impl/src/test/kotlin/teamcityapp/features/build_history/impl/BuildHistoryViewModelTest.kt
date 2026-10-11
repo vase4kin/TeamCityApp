@@ -46,6 +46,16 @@ class BuildHistoryViewModelTest {
     private fun viewModel(handle: SavedStateHandle = SavedStateHandle(mapOf("id" to "configuration", "name" to "Build Android"))) = BuildHistoryViewModel(handle, repository, onboarding, tracker).also { store.put("history", it) }
     private fun TestScope.observe(vm: BuildHistoryViewModel) = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.controls.collect {} }
 
+    @Test fun pagingProducesLocalizedRowAndSectionDescriptorsWithoutChangingLaunchPayloads() = runTest(dispatcher) {
+        val queued = historyBuild("queued").copy(state = "queued", number = null, waitReason = null)
+        repository.loadPage = { BuildHistoryPage(listOf(queued)) }
+        val row = viewModel().selection.value.rows.asSnapshot().single()
+        assertEquals(queued, row.build)
+        assertEquals(teamcityapp.libraries.build_ui.R.string.build_queued, row.row.statusLabelRes)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(teamcityapp.libraries.build_ui.R.string.build_queued_fallback), row.row.statusText)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.history_queued_section), row.sectionTitle)
+    }
+
     @Test fun controlsLoadOnlyOnCollectionAndPagesStayLazy() = runTest(dispatcher) {
         val vm = viewModel()
         runCurrent()
@@ -115,6 +125,7 @@ class BuildHistoryViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(FavoriteState.Unavailable, vm.controls.value.favorite)
+        assertEquals(R.string.history_favorite_unavailable, vm.controls.value.favoriteFailureMessageRes)
         assertEquals(OnboardingState.Unavailable, vm.controls.value.onboarding)
         repository.loadFavorite = { true }
         vm.retryFavorite()
@@ -125,6 +136,8 @@ class BuildHistoryViewModelTest {
         vm.retryOnboarding()
         runCurrent()
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Favorite), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_favorite_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_favorite_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
         assertTrue(repository.requests.isEmpty())
     }
 
@@ -173,10 +186,16 @@ class BuildHistoryViewModelTest {
         assertEquals(FavoriteState.Available(true), vm.controls.value.favorite)
         assertEquals(listOf("configuration" to true), repository.writes)
         assertEquals(BuildHistoryNoticeKind.FavoriteAdded, vm.controls.value.notice?.kind)
+        assertEquals(R.string.history_favorite_added, vm.controls.value.notice?.messageRes)
+        assertEquals(R.string.history_view, vm.controls.value.notice?.actionLabelRes)
+        assertEquals(R.string.history_remove_favorite, vm.controls.value.favoriteActionLabelRes)
         vm.toggleFavorite()
         runCurrent()
         assertEquals(FavoriteState.Available(false), vm.controls.value.favorite)
         assertEquals(BuildHistoryNoticeKind.FavoriteRemoved, vm.controls.value.notice?.kind)
+        assertEquals(R.string.history_favorite_removed, vm.controls.value.notice?.messageRes)
+        assertNull(vm.controls.value.notice?.actionLabelRes)
+        assertEquals(R.string.history_add_favorite, vm.controls.value.favoriteActionLabelRes)
     }
 
     @Test fun favoriteWriteFailureRetainsMembershipAndRetriesSameIntent() = runTest(dispatcher) {
@@ -187,6 +206,7 @@ class BuildHistoryViewModelTest {
         vm.toggleFavorite()
         runCurrent()
         assertEquals(FavoriteState.Available(false, updateFailed = true), vm.controls.value.favorite)
+        assertEquals(R.string.history_favorite_update_failed, vm.controls.value.favoriteFailureMessageRes)
         assertNull(vm.controls.value.notice)
         repository.writeFavorite = { _, _ -> }
         vm.toggleFavorite()
@@ -201,13 +221,19 @@ class BuildHistoryViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Run), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_run_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_run_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
         vm.dismissPrompt()
         vm.dismissPrompt()
         runCurrent()
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Filter), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_filter_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_filter_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
         vm.dismissPrompt()
         runCurrent()
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Favorite), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_favorite_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_favorite_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
         vm.dismissPrompt()
         runCurrent()
         assertEquals(OnboardingState.Available(), vm.controls.value.onboarding)
@@ -223,10 +249,13 @@ class BuildHistoryViewModelTest {
         vm.dismissPrompt()
         runCurrent()
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Filter, saveFailed = true), vm.controls.value.onboarding)
+        assertEquals(R.string.history_retry, (vm.controls.value.onboarding as OnboardingState.Available).dismissLabelRes)
         onboarding.write = {}
         vm.dismissPrompt()
         runCurrent()
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Favorite), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_favorite_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_favorite_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
     }
 
     @Test fun pendingOnboardingSaveSurvivesConfigurationWithoutDuplicatingWrite() = runTest(dispatcher) {
@@ -360,9 +389,13 @@ class BuildHistoryViewModelTest {
         vm.prepareRefresh()
         runCurrent()
         assertEquals(BuildHistoryNoticeKind.Queued, vm.controls.value.notice?.kind)
+        assertEquals(R.string.history_queued, vm.controls.value.notice?.messageRes)
+        assertEquals(R.string.history_show, vm.controls.value.notice?.actionLabelRes)
         vm.applyFilter("running:true")
         runCurrent()
         assertEquals(BuildHistoryNoticeKind.FiltersApplied, vm.controls.value.notice?.kind)
+        assertEquals(R.string.history_filters_applied, vm.controls.value.notice?.messageRes)
+        assertEquals(R.string.history_reset, vm.controls.value.notice?.actionLabelRes)
         vm.prepareRefresh()
         runCurrent()
         assertNull(vm.controls.value.notice)
@@ -434,6 +467,8 @@ class BuildHistoryViewModelTest {
         vm.dismissNotice(old.id)
         runCurrent()
         assertEquals(BuildHistoryNoticeKind.Queued, vm.controls.value.notice?.kind)
+        assertEquals(R.string.history_queued, vm.controls.value.notice?.messageRes)
+        assertEquals(R.string.history_show, vm.controls.value.notice?.actionLabelRes)
     }
 
     @Test fun screenAndRunTelemetryAreExplicitUiEvents() {
@@ -453,6 +488,8 @@ class BuildHistoryViewModelTest {
         val pages = vm.selection.value.pages
         assertEquals(listOf(historyBuild()), pages.asSnapshot())
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Run), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_run_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_run_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
         vm.onPaused()
         repository.loadFavorite = { true }
         onboarding.pending = { emptyList() }
@@ -508,6 +545,8 @@ class BuildHistoryViewModelTest {
         runCurrent()
         assertEquals(FavoriteState.Available(true), vm.controls.value.favorite)
         assertEquals(OnboardingState.Available(BuildHistoryPrompt.Filter), vm.controls.value.onboarding)
+        assertEquals(R.string.history_prompt_filter_title, (vm.controls.value.onboarding as OnboardingState.Available).titleRes)
+        assertEquals(R.string.history_prompt_filter_description, (vm.controls.value.onboarding as OnboardingState.Available).descriptionRes)
         assertEquals(1, repository.writes.size)
         assertEquals(listOf(BuildHistoryPrompt.Run), onboarding.shown)
     }

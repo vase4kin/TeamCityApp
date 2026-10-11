@@ -42,34 +42,28 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCitySwitch
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.UiText
+import teamcityapp.libraries.theme.resolve
 
 /** Shared account fields; each screen owns state, validation, dialogs and submission. */
 @Composable
-fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, duplicateMessage: String = "", horizontalPadding: Dp = 0.dp) {
+fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, errorMessage: UiText? = state.errorMessage, horizontalPadding: Dp = TeamCityDimensions.noSpacing) {
     var urlText by remember { mutableStateOf(TextFieldValue(state.serverUrl, TextRange(state.serverUrl.length))) }
     val focus = LocalFocusManager.current
     val submit = {
         focus.clearFocus()
         if (!state.busy) onSubmit()
     }
-    val error = when (val value = state.error) {
-        AuthenticationError.EmptyUrl -> stringResource(R.string.server_cannot_be_empty)
-        AuthenticationError.EmptyUserName -> stringResource(R.string.server_user_name_cannot_be_empty)
-        AuthenticationError.EmptyPassword -> stringResource(R.string.server_password_cannot_be_empty)
-        AuthenticationError.SaveFailed -> stringResource(R.string.error_save_account)
-        AuthenticationError.DuplicateAccount -> duplicateMessage
-        is AuthenticationError.Server -> value.message
-        null -> null
-    }
+    val error = errorMessage?.resolve()
     val urlError = state.error == AuthenticationError.EmptyUrl
     val userError = state.error == AuthenticationError.EmptyUserName
     val passwordError = state.error == AuthenticationError.EmptyPassword
     val globalError = error != null && !urlError && !userError && !passwordError
-    Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
         if (globalError) {
             ErrorNotice(error.orEmpty(), modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).testTag("auth:error"))
         }
@@ -92,10 +86,10 @@ fun AuthenticationForm(state: AuthenticationFormState, onChange: (Authentication
         TeamCitySwitch(stringResource(R.string.text_guest_user_switch), state.guest, {
             focus.clearFocus()
             onChange(state.copy(guest = it))
-        }, Modifier.testTag("auth:guest"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) 16.dp else 8.dp))
+        }, Modifier.testTag("auth:guest"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.smallSpacing))
         if (!state.guest) {
             OutlinedTextField(
-                state.userName, { onChange(state.copy(userName = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) 16.dp else 0.dp).semantics { contentDataType = ContentDataType.None }.testTag("auth:username"), label = { Text(stringResource(R.string.hint_user_name)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = userError,
+                state.userName, { onChange(state.copy(userName = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.noSpacing).semantics { contentDataType = ContentDataType.None }.testTag("auth:username"), label = { Text(stringResource(R.string.hint_user_name)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = userError,
                 supportingText = if (userError) {
                     { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
                 } else {
@@ -104,7 +98,7 @@ fun AuthenticationForm(state: AuthenticationFormState, onChange: (Authentication
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
             )
             OutlinedTextField(
-                state.password, { onChange(state.copy(password = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) 16.dp else 0.dp).semantics { contentDataType = ContentDataType.None }.testTag("auth:password"), label = { Text(stringResource(R.string.hint_password)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = passwordError,
+                state.password, { onChange(state.copy(password = it)) }, Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).padding(top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.noSpacing).semantics { contentDataType = ContentDataType.None }.testTag("auth:password"), label = { Text(stringResource(R.string.hint_password)) }, singleLine = true, enabled = !state.busy, shape = MaterialTheme.shapes.medium, isError = passwordError,
                 supportingText = if (passwordError) {
                     { Text(error.orEmpty(), Modifier.testTag("auth:error")) }
                 } else {
@@ -113,18 +107,18 @@ fun AuthenticationForm(state: AuthenticationFormState, onChange: (Authentication
                 visualTransformation = PasswordVisualTransformation(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done), keyboardActions = KeyboardActions(onDone = { submit() })
             )
         }
-        TeamCitySwitch(stringResource(R.string.text_disable_ssl_switch), state.sslDisabled, onSslChange, Modifier.testTag("auth:ssl"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) 16.dp else 8.dp))
+        TeamCitySwitch(stringResource(R.string.text_disable_ssl_switch), state.sslDisabled, onSslChange, Modifier.testTag("auth:ssl"), !state.busy, PaddingValues(start = horizontalPadding, end = horizontalPadding, top = if (spaced) TeamCityDimensions.contentPadding else TeamCityDimensions.smallSpacing))
     }
 }
 
 @Composable
-fun AuthenticationWarning(http: Boolean = false, onAccept: () -> Unit, onDecline: () -> Unit) {
+fun AuthenticationWarning(message: AuthenticationWarningText = AuthenticationWarningText.Ssl, onAccept: () -> Unit, onDecline: () -> Unit) {
     AlertDialog(
         onDismissRequest = {},
         modifier = Modifier.testTag("auth:warning"),
         shape = MaterialTheme.shapes.large,
         title = { Text(stringResource(R.string.warning_ssl_dialog_title)) },
-        text = { if (http) Text(stringResource(R.string.server_not_secure_http)) else Text(sslWarningText()) },
+        text = { if (message.styled) Text(styledAuthenticationText(LocalResources.current.getText(message.messageRes))) else Text(stringResource(message.messageRes)) },
         confirmButton = { TextButton(onClick = onAccept) { Text(stringResource(R.string.dialog_ok_title)) } },
         dismissButton = { TextButton(onClick = onDecline) { Text(stringResource(R.string.warning_ssl_dialog_negative)) } }
     )
@@ -139,8 +133,8 @@ fun AuthenticationProgress(message: String, title: String? = null) {
         title = title?.let { { Text(it) } },
         text = {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                CircularProgressIndicator(Modifier.size(48.dp))
-                Text(message, Modifier.padding(start = 24.dp))
+                CircularProgressIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
+                Text(message, Modifier.padding(start = TeamCityDimensions.sectionSpacing))
             }
         },
         confirmButton = {}
@@ -151,9 +145,6 @@ fun AuthenticationProgress(message: String, title: String? = null) {
 private fun FormPreview() {
     TeamCityTheme { AuthenticationForm(AuthenticationFormState(), {}, {}, {}) }
 }
-
-@Composable
-private fun sslWarningText() = styledAuthenticationText(LocalResources.current.getText(R.string.warning_ssl_dialog_content))
 
 @Composable
 fun styledAuthenticationText(text: CharSequence) = run {

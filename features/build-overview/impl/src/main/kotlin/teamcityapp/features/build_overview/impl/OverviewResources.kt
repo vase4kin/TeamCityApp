@@ -17,9 +17,8 @@
 package teamcityapp.features.build_overview.impl
 
 import androidx.annotation.StringRes
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
 import teamcityapp.features.build_overview.api.BuildOverviewAction
+import teamcityapp.libraries.theme.UiText
 
 @StringRes internal fun OverviewField.label(): Int = when (this) {
     OverviewField.Result -> R.string.overview_result
@@ -47,7 +46,8 @@ import teamcityapp.features.build_overview.api.BuildOverviewAction
     BuildOverviewAction.Configuration -> R.string.overview_configuration
     BuildOverviewAction.Project -> R.string.overview_project
 }
-internal fun OverviewText.resource(): Int = when (this) {
+
+@StringRes internal fun OverviewText.resource(): Int = when (this) {
     OverviewText.DeletedUser -> R.string.overview_deleted_user
     OverviewText.DeletedConfiguration -> R.string.overview_deleted_configuration
     OverviewText.UnknownTrigger -> R.string.overview_unknown_trigger
@@ -56,7 +56,7 @@ internal fun OverviewText.resource(): Int = when (this) {
     is OverviewText.Literal -> error("Literal text has no resource")
 }
 
-@Composable internal fun OverviewText.resolve(): String = when (this) {
-    is OverviewText.Literal -> value
-    else -> stringResource(resource())
+internal fun OverviewText.toUiText(): UiText = when (this) {
+    is OverviewText.Literal -> UiText.Dynamic(value)
+    else -> UiText.Resource(resource())
 }

@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.agents.impl
+package teamcityapp.libraries.theme
 
 import androidx.annotation.StringRes
-import teamcityapp.features.agents.api.Agent
-import teamcityapp.features.agents.api.AgentsFilter
-import teamcityapp.libraries.list_state.ListUiState
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 
-data class AgentsUiState(
-    val filter: AgentsFilter = AgentsFilter.Connected,
-    val list: ListUiState<Agent> = ListUiState.Loading
-) {
-    @get:StringRes val emptyMessageRes: Int = if (filter == AgentsFilter.Connected) R.string.agents_empty_connected else R.string.agents_empty_disconnected
+/** Unresolved UI text. ViewModels select content; the current composition localizes it. */
+sealed interface UiText {
+    data class Resource(@get:StringRes val id: Int, val arguments: List<Any> = emptyList()) : UiText
+    data class Dynamic(val value: String) : UiText
+}
+
+@Composable
+fun UiText.resolve(): String = when (this) {
+    is UiText.Resource -> stringResource(id, *arguments.toTypedArray())
+    is UiText.Dynamic -> value
 }

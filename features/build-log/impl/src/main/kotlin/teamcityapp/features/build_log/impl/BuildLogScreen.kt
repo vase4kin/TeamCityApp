@@ -29,7 +29,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.build_log.api.BuildLogSession
 import teamcityapp.libraries.theme.*
 
@@ -42,11 +41,11 @@ fun BuildLogScreen(state: BuildLogUiState, onRetry: () -> Unit, onAuthenticate: 
             BuildLogUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry)
 
             is BuildLogUiState.Session -> when {
-                state.session.sslDisabled -> LogMessage(R.drawable.ic_warning_black_24dp, R.string.text_browse_build_log, R.string.text_browse_build_log_button, { onBrowser(state.session.url) }, "build-log:browser")
+                state.session.sslDisabled -> LogMessage(R.drawable.ic_warning_black_24dp, requireNotNull(state.messageRes), requireNotNull(state.actionLabelRes), { onBrowser(state.session.url) }, "build-log:browser")
 
-                state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize(), onAuthenticate, message = stringResource(R.string.log_authentication_error), actionLabel = stringResource(R.string.text_button_login))
+                state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize(), onAuthenticate, message = stringResource(requireNotNull(state.messageRes)), actionLabel = stringResource(requireNotNull(state.actionLabelRes)))
 
-                state.session.needsAuthentication -> LogMessage(R.drawable.ic_lock_24dp, R.string.text_login_again, R.string.text_button_login, onAuthenticate, "build-log:authenticate", !state.acknowledging)
+                state.session.needsAuthentication -> LogMessage(R.drawable.ic_lock_24dp, requireNotNull(state.messageRes), requireNotNull(state.actionLabelRes), onAuthenticate, "build-log:authenticate", !state.acknowledging)
 
                 else -> {
                     webContent(state, Modifier.fillMaxSize().alpha(if (state.page == BuildLogPage.Content) 1f else 0f))
@@ -60,12 +59,12 @@ fun BuildLogScreen(state: BuildLogUiState, onRetry: () -> Unit, onAuthenticate: 
 
 @Composable
 private fun LogMessage(icon: Int, message: Int, action: Int, onClick: () -> Unit, tag: String, enabled: Boolean = true) {
-    Box(Modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-        Card(Modifier.widthIn(max = 560.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-            Column(Modifier.verticalScroll(rememberScrollState()).padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(painterResource(icon), null, Modifier.size(64.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(stringResource(message), Modifier.padding(top = if (tag == "build-log:browser") 32.dp else 16.dp, bottom = 16.dp), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = if (tag == "build-log:browser") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
-                Button(onClick, enabled = enabled, shape = MaterialTheme.shapes.large, modifier = Modifier.heightIn(min = 56.dp).testTag(tag)) { Text(stringResource(action)) }
+    Box(Modifier.fillMaxSize().padding(TeamCityDimensions.contentPadding), contentAlignment = Alignment.Center) {
+        Card(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(TeamCityDimensions.sectionSpacing), horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(painterResource(icon), null, Modifier.size(TeamCityDimensions.messageIconSize), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(message), Modifier.padding(top = if (tag == "build-log:browser") TeamCityDimensions.extraLargeSpacing else TeamCityDimensions.contentPadding, bottom = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = if (tag == "build-log:browser") MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant)
+                Button(onClick, enabled = enabled, shape = MaterialTheme.shapes.large, modifier = Modifier.heightIn(min = TeamCityDimensions.controlMinHeight).testTag(tag)) { Text(stringResource(action)) }
             }
         }
     }

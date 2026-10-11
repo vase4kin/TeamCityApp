@@ -42,7 +42,7 @@ class ChangesScreenTest {
         var selected: ChangeDetails? = null
         compose.setContent {
             TeamCityTheme {
-                ChangesScreen(ListUiState.Content(listOf(detail)), ChangesCountState.Available(1), 1, { detail }, { detail.id }, ChangesAppendState.Idle, {}, {}, {}, { selected = it })
+                ChangesScreen(ListUiState.Content(listOf(detail)), ChangesCountState.Available(1), 1, { ChangeRowUiState(detail) }, { detail.id }, ChangesAppendState.Idle, {}, {}, {}, { selected = it })
             }
         }
         compose.onNodeWithText("Keep the build queue responsive").assertIsDisplayed()
@@ -59,7 +59,7 @@ class ChangesScreenTest {
         var countRetries = 0
         compose.setContent {
             TeamCityTheme {
-                ChangesScreen(ListUiState.Content(listOf(detail)), ChangesCountState.Unavailable, 1, { detail }, { detail.id }, ChangesAppendState.Error, {}, { pageRetries++ }, { countRetries++ }, {})
+                ChangesScreen(ListUiState.Content(listOf(detail)), ChangesCountState.Unavailable, 1, { ChangeRowUiState(detail) }, { detail.id }, ChangesAppendState.Error, {}, { pageRetries++ }, { countRetries++ }, {})
             }
         }
         compose.onNodeWithText("Keep the build queue responsive").assertIsDisplayed()

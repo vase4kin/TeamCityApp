@@ -16,6 +16,7 @@
 
 package teamcityapp.features.build_log.impl
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +31,20 @@ enum class BuildLogPage { Loading, Content, Error }
 sealed interface BuildLogUiState {
     data object Loading : BuildLogUiState
     data object Error : BuildLogUiState
-    data class Session(val session: BuildLogSession, val page: BuildLogPage = BuildLogPage.Loading, val attempt: Int = 0, val acknowledging: Boolean = false, val authenticationFailed: Boolean = false) : BuildLogUiState
+    data class Session(val session: BuildLogSession, val page: BuildLogPage = BuildLogPage.Loading, val attempt: Int = 0, val acknowledging: Boolean = false, val authenticationFailed: Boolean = false) : BuildLogUiState {
+        @get:StringRes val messageRes: Int? = when {
+            session.sslDisabled -> R.string.text_browse_build_log
+            authenticationFailed -> R.string.log_authentication_error
+            session.needsAuthentication -> R.string.text_login_again
+            else -> null
+        }
+
+        @get:StringRes val actionLabelRes: Int? = when {
+            session.sslDisabled -> R.string.text_browse_build_log_button
+            authenticationFailed || session.needsAuthentication -> R.string.text_button_login
+            else -> null
+        }
+    }
 }
 
 @HiltViewModel

@@ -40,7 +40,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 
 internal val LocalDarkTheme = staticCompositionLocalOf { false }
 
@@ -69,7 +68,7 @@ fun TeamCityScreen(
     scrollToolbarWithContent: Boolean = false,
     appBarHeight: Dp = TopAppBarDefaults.TopAppBarExpandedHeight,
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    titleStartPadding: Dp = 0.dp,
+    titleStartPadding: Dp = TeamCityDimensions.noSpacing,
     appBarColors: TopAppBarColors? = null,
     containerColor: Color = MaterialTheme.colorScheme.background,
     contentMaxWidth: Dp = TeamCityDimensions.screenContentMaxWidth,
@@ -135,16 +134,16 @@ fun TeamCityScreen(
 fun LoadingContent(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.primary) {
     Box(modifier, contentAlignment = Alignment.Center) {
         Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-            CircularProgressIndicator(Modifier.padding(24.dp), color = color)
+            CircularProgressIndicator(Modifier.padding(TeamCityDimensions.sectionSpacing), color = color)
         }
     }
 }
 
 @Composable
 fun MessageContent(message: String, modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null) {
-    Box(modifier.padding(24.dp), contentAlignment = Alignment.Center) {
-        Card(Modifier.widthIn(max = 480.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-            Column(Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+    Box(modifier.padding(TeamCityDimensions.sectionSpacing), contentAlignment = Alignment.Center) {
+        Card(Modifier.widthIn(max = TeamCityDimensions.messageMaxWidth), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+            Column(Modifier.padding(TeamCityDimensions.sectionSpacing), horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(message, style = MaterialTheme.typography.titleMedium, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 action?.invoke()
             }

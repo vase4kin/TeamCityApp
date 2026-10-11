@@ -28,9 +28,19 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.build_history.api.*
 import teamcityapp.features.build_history.impl.tracker.BuildHistoryTracker
+import teamcityapp.libraries.build_ui.BuildRowUiState
 import teamcityapp.libraries.builds.BuildLaunchData
+import teamcityapp.libraries.theme.UiText
 
-internal data class HistorySelection(val query: BuildHistoryQuery, val pages: Flow<PagingData<BuildLaunchData>>)
+internal data class HistorySelection(val query: BuildHistoryQuery, val pages: Flow<PagingData<BuildLaunchData>>) {
+    val rows: Flow<PagingData<HistoryBuildRow>> = pages.map { page -> page.map(::HistoryBuildRow) }
+}
+
+internal data class HistoryBuildRow(val build: BuildLaunchData) {
+    val row: BuildRowUiState = BuildRowUiState(build)
+    val sectionKey: String = historySectionKey(build)
+    val sectionTitle: UiText = if (build.isQueued) UiText.Resource(R.string.history_queued_section) else historyDate(build)?.let(UiText::Dynamic) ?: UiText.Resource(R.string.history_unknown_date)
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel

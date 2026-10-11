@@ -59,11 +59,15 @@ class BuildLogViewModelTest {
         val vm = vm(this)
         runCurrent()
         assertTrue((vm.state.value as BuildLogUiState.Session).session.needsAuthentication)
+        assertEquals(R.string.text_login_again, (vm.state.value as BuildLogUiState.Session).messageRes)
+        assertEquals(R.string.text_button_login, (vm.state.value as BuildLogUiState.Session).actionLabelRes)
         vm.authenticate()
         vm.authenticate()
         runCurrent()
         assertEquals(1, acknowledgements)
         assertFalse((vm.state.value as BuildLogUiState.Session).session.needsAuthentication)
+        assertNull((vm.state.value as BuildLogUiState.Session).messageRes)
+        assertNull((vm.state.value as BuildLogUiState.Session).actionLabelRes)
     }
 
     @Test fun consentSaveFailureIsExplicitAndCanBeRetried() = runTest(dispatcher) {
@@ -73,11 +77,14 @@ class BuildLogViewModelTest {
         vm.authenticate()
         runCurrent()
         assertTrue((vm.state.value as BuildLogUiState.Session).authenticationFailed)
+        assertEquals(R.string.log_authentication_error, (vm.state.value as BuildLogUiState.Session).messageRes)
         failAck = false
         vm.authenticate()
         runCurrent()
         assertFalse((vm.state.value as BuildLogUiState.Session).authenticationFailed)
         assertFalse((vm.state.value as BuildLogUiState.Session).session.needsAuthentication)
+        assertNull((vm.state.value as BuildLogUiState.Session).messageRes)
+        assertNull((vm.state.value as BuildLogUiState.Session).actionLabelRes)
     }
 
     @Test fun pageFinishedNeverHidesAnErrorAndRetryStartsANewAttempt() = runTest(dispatcher) {

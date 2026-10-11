@@ -69,6 +69,7 @@ class RunBuildViewModelTest {
         assertFalse(vm.state.value.request.personal)
         assertFalse(vm.state.value.request.queueAtTop)
         assertEquals(agentValues, vm.state.value.agents)
+        assertEquals(R.string.hint_default_filter_agent, vm.state.value.agentFallbackRes)
     }
 
     @Test fun multipleBranchesLeaveTheDefaultAndDoNotForceAgentSelection() = runTest(dispatcher) {
@@ -84,7 +85,9 @@ class RunBuildViewModelTest {
         val vm = vm(this)
         runCurrent()
         assertTrue(vm.state.value.branchesFailed)
+        assertEquals(R.string.branches_unavailable, vm.state.value.branchesMessageRes)
         assertEquals(agentValues, vm.state.value.agents)
+        assertEquals(R.string.hint_default_filter_agent, vm.state.value.agentFallbackRes)
         assertFalse(vm.state.value.agentsFailed)
     }
 
@@ -104,6 +107,10 @@ class RunBuildViewModelTest {
         vm.queue()
         runCurrent()
         assertEquals(request.copy(buildTypeId = "Build"), queued.single())
+        assertEquals(R.string.option_on, vm.state.value.personalLabelRes)
+        assertEquals(R.string.priority_top, vm.state.value.priorityLabelRes)
+        assertEquals(R.string.option_off, vm.state.value.cleanSourcesLabelRes)
+        assertEquals(agentValues.single().name, vm.state.value.selectedAgentName)
         assertEquals("/queue/1", vm.state.value.queuedHref)
         assertTrue(vm.consumeSuccess("/queue/1"))
         assertFalse(vm.consumeSuccess("/queue/1"))
@@ -119,6 +126,7 @@ class RunBuildViewModelTest {
         vm.update(BuildRequest("Build", "changed"))
         runCurrent()
         assertEquals(1, queued.size)
+        assertEquals(R.string.text_queueing_build, vm.state.value.queueLabelRes)
         assertEquals("main", vm.state.value.request.branch)
         pending!!.complete(result)
         runCurrent()
@@ -131,15 +139,19 @@ class RunBuildViewModelTest {
         vm.queue()
         runCurrent()
         assertEquals(result, vm.state.value.queueError)
+        assertEquals(R.string.error_forbidden_error, vm.state.value.queueErrorMessageRes)
         assertFalse(vm.state.value.queuing)
         result = QueueBuildResult.Error
         vm.queue()
         runCurrent()
         assertEquals(result, vm.state.value.queueError)
+        assertEquals(R.string.error_base_error, vm.state.value.queueErrorMessageRes)
         result = QueueBuildResult.Success("/queue/2")
         vm.queue()
         runCurrent()
         assertEquals("/queue/2", vm.state.value.queuedHref)
+        assertNull(vm.state.value.queueErrorMessageRes)
+        assertEquals(R.string.title_run_build, vm.state.value.queueLabelRes)
     }
 
     @Test fun parametersAllowEmptyValuesAndDuplicateNamesAndClearTogether() = runTest(dispatcher) {

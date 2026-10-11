@@ -30,7 +30,7 @@ import teamcityapp.features.changes.impl.router.ChangesRouter
 @Composable
 internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = hiltViewModel()) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val visiblePages = remember(viewModel, lifecycle) { viewModel.changes.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
+    val visiblePages = remember(viewModel, lifecycle) { viewModel.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
     val changes = visiblePages.collectAsLazyPagingItems()
     val count by viewModel.count.collectAsStateWithLifecycle()
     LaunchedEffect(count, router) {
@@ -44,11 +44,11 @@ internal fun ChangesRoute(router: ChangesRouter, viewModel: ChangesViewModel = h
     val refresh = changes.loadState.refresh
     if (refresh is LoadState.NotLoading) SideEffect { completed = true }
     // Snapshot items are used only for shell presentation; row access still uses Paging[index].
-    val state = changesListState(changes.itemSnapshotList.items, refresh, completed)
+    val state = changesListState(changes.itemSnapshotList.items.map { it.change }, refresh, completed)
     ChangesScreen(
         state, count, changes.itemCount,
         itemAt = { changes[it] },
-        itemKey = { changes.peek(it)?.id ?: "changes:placeholder:$it" },
+        itemKey = { changes.peek(it)?.change?.id ?: "changes:placeholder:$it" },
         appendState = when (changes.loadState.append) {
             is LoadState.Loading -> ChangesAppendState.Loading
             is LoadState.Error -> ChangesAppendState.Error

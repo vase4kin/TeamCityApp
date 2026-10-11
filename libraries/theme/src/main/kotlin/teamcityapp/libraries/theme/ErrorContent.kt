@@ -32,7 +32,6 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 /** One full-screen failure presentation; the owner supplies the recovery action and specific copy. */
 @Composable
@@ -45,36 +44,36 @@ fun ErrorContent(
 ) {
     Box(modifier, contentAlignment = Alignment.Center) {
         Column(
-            Modifier.widthIn(max = 480.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(24.dp),
+            Modifier.widthIn(max = TeamCityDimensions.messageMaxWidth).fillMaxWidth().verticalScroll(rememberScrollState()).padding(TeamCityDimensions.sectionSpacing),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Surface(
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 44.dp, bottomEnd = 28.dp, bottomStart = 44.dp),
+                shape = RoundedCornerShape(topStart = TeamCityDimensions.largeCornerRadius, topEnd = TeamCityDimensions.errorIllustrationCornerRadius, bottomEnd = TeamCityDimensions.largeCornerRadius, bottomStart = TeamCityDimensions.errorIllustrationCornerRadius),
                 color = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
-                Box(Modifier.size(88.dp), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(R.drawable.ic_cloud_off_24dp), null, Modifier.size(36.dp))
+                Box(Modifier.size(TeamCityDimensions.errorIllustrationSize), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(R.drawable.ic_cloud_off_24dp), null, Modifier.size(TeamCityDimensions.errorIllustrationIconSize))
                 }
             }
             Text(
                 title ?: stringResource(R.string.error_load_title),
-                Modifier.padding(top = 24.dp).semantics { liveRegion = LiveRegionMode.Polite },
+                Modifier.padding(top = TeamCityDimensions.sectionSpacing).semantics { liveRegion = LiveRegionMode.Polite },
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
             Text(
                 message ?: stringResource(R.string.error_load_message),
-                Modifier.padding(top = 8.dp),
+                Modifier.padding(top = TeamCityDimensions.smallSpacing),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center
             )
-            Button(onClick = onRetry, modifier = Modifier.padding(top = 24.dp).heightIn(min = 56.dp)) {
+            Button(onClick = onRetry, modifier = Modifier.padding(top = TeamCityDimensions.sectionSpacing).heightIn(min = TeamCityDimensions.controlMinHeight)) {
                 if (actionLabel == null) {
-                    Icon(painterResource(R.drawable.ic_refresh_24dp), null, Modifier.size(20.dp))
-                    Spacer(Modifier.width(8.dp))
+                    Icon(painterResource(R.drawable.ic_refresh_24dp), null, Modifier.size(TeamCityDimensions.compactIconSize))
+                    Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
                 }
                 Text(actionLabel ?: stringResource(R.string.action_retry), textAlign = TextAlign.Center)
             }
@@ -99,15 +98,15 @@ fun ErrorNotice(
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val scroll = if (constraints.hasBoundedHeight) Modifier.verticalScroll(rememberScrollState()) else Modifier
-            val stacked = maxWidth < 324.dp || LocalDensity.current.fontScale >= 1.3f
-            Box(scroll.padding(12.dp)) {
+            val stacked = maxWidth < TeamCityDimensions.errorNoticeInlineMinWidth || LocalDensity.current.fontScale >= 1.3f
+            Box(scroll.padding(TeamCityDimensions.mediumSpacing)) {
                 if (stacked) {
                     Column {
                         ErrorNoticeMessage(message, Modifier.fillMaxWidth())
                         Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { ErrorNoticeAction(onRetry, enabled, actionLabel) }
                     }
                 } else {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
                         ErrorNoticeMessage(message, Modifier.weight(1f))
                         ErrorNoticeAction(onRetry, enabled, actionLabel)
                     }
@@ -119,8 +118,8 @@ fun ErrorNotice(
 
 @Composable
 private fun ErrorNoticeMessage(message: String, modifier: Modifier) {
-    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Icon(painterResource(R.drawable.ic_error_outline_24dp), null, Modifier.size(24.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
+        Icon(painterResource(R.drawable.ic_error_outline_24dp), null, Modifier.size(TeamCityDimensions.iconSize), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(message, Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite }, style = MaterialTheme.typography.bodyMedium)
     }
 }
@@ -128,7 +127,7 @@ private fun ErrorNoticeMessage(message: String, modifier: Modifier) {
 @Composable
 private fun ErrorNoticeAction(onRetry: (() -> Unit)?, enabled: Boolean, actionLabel: String?) {
     if (onRetry != null) {
-        TextButton(onClick = onRetry, enabled = enabled, modifier = Modifier.widthIn(max = 200.dp).heightIn(min = 48.dp)) {
+        TextButton(onClick = onRetry, enabled = enabled, modifier = Modifier.widthIn(max = TeamCityDimensions.retryActionMaxWidth).heightIn(min = TeamCityDimensions.minimumTouchTarget)) {
             Text(actionLabel ?: stringResource(R.string.action_retry), textAlign = TextAlign.Center)
         }
     }

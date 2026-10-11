@@ -26,7 +26,9 @@ import kotlinx.coroutines.launch
 import teamcityapp.features.login.api.*
 import teamcityapp.libraries.authentication.*
 
-data class LoginUiState(val form: AuthenticationFormState = AuthenticationFormState(), val demo: DemoServer? = null, val demoLoading: Boolean = true, val httpConfirmation: Boolean = false, val guestUnauthorized: Boolean = false, val signedIn: Boolean = false)
+data class LoginUiState(val form: AuthenticationFormState = AuthenticationFormState(), val demo: DemoServer? = null, val demoLoading: Boolean = true, val httpConfirmation: Boolean = false, val guestUnauthorized: Boolean = false, val signedIn: Boolean = false) {
+    val httpWarning: AuthenticationWarningText? = if (httpConfirmation) AuthenticationWarningText.Http else null
+}
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val authentication: AuthenticationRepository, private val repository: LoginRepository, private val tracker: LoginTracker) : ViewModel() {

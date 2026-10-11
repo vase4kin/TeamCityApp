@@ -68,10 +68,10 @@ private fun BuildHistoryPagingContent(
     listState: LazyListState
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val visiblePages = remember(selection.pages, lifecycle) { selection.pages.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED) }
+    val visiblePages = remember(selection.rows, lifecycle) { selection.rows.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED) }
     val builds = visiblePages.collectAsLazyPagingItems()
     if (builds.loadState.refresh is LoadState.NotLoading) SideEffect { onCompleted() }
-    val state = historyListState(builds.itemSnapshotList.items, builds.loadState.refresh, completed)
+    val state = historyListState(builds.itemSnapshotList.items.map { it.build }, builds.loadState.refresh, completed)
     val refresh = {
         viewModel.prepareRefresh()
         builds.refresh()
@@ -94,19 +94,8 @@ private fun BuildHistoryPagingContent(
 
     val snackbar = remember { SnackbarHostState() }
     val notice = controls.notice
-    val message = when (notice?.kind) {
-        BuildHistoryNoticeKind.Queued -> stringResource(R.string.history_queued)
-        BuildHistoryNoticeKind.FiltersApplied -> stringResource(R.string.history_filters_applied)
-        BuildHistoryNoticeKind.FavoriteAdded -> stringResource(R.string.history_favorite_added)
-        BuildHistoryNoticeKind.FavoriteRemoved -> stringResource(R.string.history_favorite_removed)
-        null -> ""
-    }
-    val action = when (notice?.kind) {
-        BuildHistoryNoticeKind.Queued -> stringResource(R.string.history_show)
-        BuildHistoryNoticeKind.FiltersApplied -> stringResource(R.string.history_reset)
-        BuildHistoryNoticeKind.FavoriteAdded -> stringResource(R.string.history_view)
-        else -> null
-    }
+    val message = notice?.let { stringResource(it.messageRes) }.orEmpty()
+    val action = notice?.actionLabelRes?.let { stringResource(it) }
     LaunchedEffect(notice?.id, snackbar) {
         if (notice == null) return@LaunchedEffect
         val result = snackbar.showSnackbar(

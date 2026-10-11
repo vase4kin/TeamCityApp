@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 
 /** The app's standard rounded-square FAB, using Material 3's theme colors and elevation. */
 @Composable
@@ -57,11 +56,11 @@ fun TeamCityExtendedFloatingActionButton(
 @Composable
 private fun FloatingActionButtonsPreview() {
     TeamCityTheme {
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)) {
             TeamCityFloatingActionButton({}) { Icon(painterResource(R.drawable.ic_add_black_24dp), null) }
             TeamCityExtendedFloatingActionButton({}) {
                 Icon(painterResource(R.drawable.ic_add_black_24dp), null)
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
                 Text(stringResource(R.string.app_name))
             }
         }

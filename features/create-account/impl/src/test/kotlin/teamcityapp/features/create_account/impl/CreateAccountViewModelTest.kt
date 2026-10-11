@@ -84,6 +84,7 @@ class CreateAccountViewModelTest {
         vm.submit()
         runCurrent()
         assertEquals(AuthenticationError.DuplicateAccount, vm.state.value.form.error)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.add_new_account_dialog_account_exist_error_message), vm.state.value.formErrorMessage)
         result = AuthenticationResult.SaveFailed
         vm.submit()
         runCurrent()
@@ -98,6 +99,7 @@ class CreateAccountViewModelTest {
         vm.submit()
         runCurrent()
         assertEquals(AuthenticationError.Server("Unauthorized"), vm.state.value.form.error)
+        assertEquals(teamcityapp.libraries.theme.UiText.Dynamic("Unauthorized"), vm.state.value.formErrorMessage)
         result = AuthenticationResult.Success
         vm.submit()
         runCurrent()

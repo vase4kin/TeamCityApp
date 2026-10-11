@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.build_queue.api.BuildQueueFilter
 import teamcityapp.libraries.build_ui.TeamCityBuildConfigurationHeader
 import teamcityapp.libraries.build_ui.TeamCityBuildRow
@@ -58,19 +57,19 @@ internal fun BuildQueueScreen(
         })
     }) { padding ->
         TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.padding(padding).fillMaxSize(), empty = {
-            TeamCityListEmpty(stringResource(if (state.query.filter == BuildQueueFilter.Favorites) R.string.build_queue_empty_favorites else R.string.build_queue_empty_all))
+            TeamCityListEmpty(stringResource(state.emptyMessageRes))
         }) {
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("build_queue:list"), contentPadding = PaddingValues(bottom = 16.dp)) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("build_queue:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         if (index == 0 || buildConfigurationTitle(rows[index - 1]) != buildConfigurationTitle(build)) {
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("build_queue:configuration:$index"))
                         }
                         TeamCityBuildRow(
-                            build,
+                            state.rows[index],
                             { onBuild(build) },
                             Modifier.testTag("build_queue:build:${build.id}"),
                             position = listRowPosition(

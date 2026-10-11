@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.running_builds.api.RunningBuildsFilter
 import teamcityapp.libraries.build_ui.TeamCityBuildConfigurationHeader
 import teamcityapp.libraries.build_ui.TeamCityBuildRow
@@ -58,19 +57,19 @@ internal fun RunningBuildsScreen(
         })
     }) { padding ->
         TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.padding(padding).fillMaxSize(), empty = {
-            TeamCityListEmpty(stringResource(if (state.query.filter == RunningBuildsFilter.Favorites) R.string.running_builds_empty_favorites else R.string.running_builds_empty_all))
+            TeamCityListEmpty(stringResource(state.emptyMessageRes))
         }) {
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("running_builds:list"), contentPadding = PaddingValues(bottom = 16.dp)) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("running_builds:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         if (index == 0 || buildConfigurationTitle(rows[index - 1]) != buildConfigurationTitle(build)) {
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("running_builds:configuration:$index"))
                         }
                         TeamCityBuildRow(
-                            build,
+                            state.rows[index],
                             { onBuild(build) },
                             Modifier.testTag("running_builds:build:${build.id}"),
                             position = listRowPosition(

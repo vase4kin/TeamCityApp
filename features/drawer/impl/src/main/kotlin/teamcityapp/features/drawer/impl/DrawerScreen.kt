@@ -38,7 +38,6 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.drawer.api.*
 import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.ErrorNotice
@@ -79,16 +78,16 @@ fun DrawerScreen(
                 item("title") { DrawerHeading(state.canInteract, onManageAccounts) }
                 when (val accounts = state.accounts) {
                     DrawerAccountsUiState.Loading -> item("loading") {
-                        Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding * 2, vertical = TeamCityDimensions.contentPadding).testTag("drawer:loading"), verticalAlignment = Alignment.CenterVertically) {
-                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = 2.dp)
+                        Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:loading"), verticalAlignment = Alignment.CenterVertically) {
+                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                             Spacer(Modifier.width(TeamCityDimensions.contentPadding))
-                            Text(stringResource(R.string.drawer_loading), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(requireNotNull(state.accountsMessageRes)), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
 
-                    DrawerAccountsUiState.Error -> item("load_error") { DrawerFailure(R.string.drawer_load_error, onRetry, "drawer:load_error") }
+                    DrawerAccountsUiState.Error -> item("load_error") { DrawerFailure(requireNotNull(state.accountsMessageRes), onRetry, "drawer:load_error") }
 
-                    DrawerAccountsUiState.Empty -> item("empty") { Text(stringResource(R.string.drawer_empty_accounts), Modifier.padding(horizontal = 32.dp, vertical = 16.dp).testTag("drawer:empty"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    DrawerAccountsUiState.Empty -> item("empty") { Text(stringResource(requireNotNull(state.accountsMessageRes)), Modifier.padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:empty"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
 
                     is DrawerAccountsUiState.Content -> {
                         items(accounts.accounts.filter { it.isActive }, key = { accountTag(it.id) }) { DrawerAccountRow(it, state.canInteract, onSelect) }
@@ -100,12 +99,12 @@ fun DrawerScreen(
                     item("switching") {
                         Column(Modifier.padding(horizontal = TeamCityDimensions.contentPadding).testTag("drawer:switching")) {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
-                            Text(stringResource(R.string.drawer_switching), Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(requireNotNull(state.selectionMessageRes)), Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
-                if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerFailure(R.string.drawer_switch_error, onRetrySelection, "drawer:switch_error") }
-                if (state.selection == AccountSwitchUiState.Missing) item("missing") { DrawerMessage(R.string.drawer_missing_account, R.string.drawer_dismiss, onDismissMissing, "drawer:missing") }
+                if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerFailure(requireNotNull(state.selectionMessageRes), onRetrySelection, "drawer:switch_error") }
+                if (state.selection == AccountSwitchUiState.Missing) item("missing") { DrawerMessage(requireNotNull(state.selectionMessageRes), R.string.drawer_dismiss, onDismissMissing, "drawer:missing") }
                 item("add") {
                     FilledTonalButton(
                         onClick = onAddAccount,
@@ -175,14 +174,14 @@ private fun DrawerAccountRow(account: DrawerAccount, enabled: Boolean, onSelect:
                         Surface(
                             Modifier.testTag("drawer:current-marker").clearAndSetSemantics {},
                             color = colors.primary.copy(alpha = 0.16f),
-                            shape = RoundedCornerShape(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                            shape = RoundedCornerShape(TeamCityDimensions.smallCornerRadius)
                         ) {
                             Row(
                                 Modifier.padding(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.extraSmallSpacing),
                                 horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.contentPadding), tint = content)
+                                Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.smallIconSize), tint = content)
                                 Text(stringResource(R.string.drawer_current_short), style = MaterialTheme.typography.labelMedium, color = content)
                             }
                         }
@@ -197,12 +196,12 @@ private fun DrawerAccountRow(account: DrawerAccount, enabled: Boolean, onSelect:
 
 @Composable
 private fun DrawerMenu(icon: Int, label: String, tag: String, enabled: Boolean, onClick: () -> Unit, first: Boolean = false, last: Boolean = false, emphasized: Boolean = false) {
-    val outer = TeamCityDimensions.contentPadding + TeamCityDimensions.extraSmallSpacing
+    val outer = TeamCityDimensions.mediumCornerRadius
     val inner = TeamCityDimensions.extraSmallSpacing
     val labelColor = if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
     val iconColor = if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
     Surface(
-        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding).then(if (!last) Modifier.padding(bottom = 2.dp) else Modifier),
+        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding).then(if (!last) Modifier.padding(bottom = TeamCityDimensions.drawerRowSpacing) else Modifier),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(topStart = if (first) outer else inner, topEnd = if (first) outer else inner, bottomStart = if (last) outer else inner, bottomEnd = if (last) outer else inner)
     ) {
@@ -227,7 +226,7 @@ private fun DrawerFailure(message: Int, onRetry: () -> Unit, tag: String) {
 
 @Composable
 private fun DrawerMessage(message: Int, action: Int, onAction: () -> Unit, tag: String) {
-    Column(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding * 2, vertical = TeamCityDimensions.contentPadding).testTag(tag)) {
+    Column(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag(tag)) {
         Text(stringResource(message), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
         TextButton(onClick = onAction) { Text(stringResource(action)) }
     }

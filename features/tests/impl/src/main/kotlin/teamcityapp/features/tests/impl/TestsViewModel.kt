@@ -17,6 +17,7 @@
 
 package teamcityapp.features.tests.impl
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,6 +25,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -36,9 +38,52 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import teamcityapp.features.tests.api.*
+import teamcityapp.libraries.theme.UiText
 
 /** A filter and its generation travel together so old rows cannot acquire a new filter label. */
-internal data class TestsSelection(val filter: TestsFilter, val pages: Flow<PagingData<TestOccurrence>>)
+internal data class TestsSelection(val filter: TestsFilter, val pages: Flow<PagingData<TestOccurrence>>, val counts: TestsCounts = TestsCounts(0, 0, 0)) {
+    val presentation: TestsPresentation = TestsPresentation(filter, counts)
+    val rows: Flow<PagingData<TestRowUiState>> = pages.map { page -> page.map(::TestRowUiState) }
+}
+
+internal data class TestsPresentation(val filter: TestsFilter, val counts: TestsCounts) {
+    val filterOptions: List<TestFilterUiState> = TestsFilter.entries.filter { it == filter || counts.count(it) > 0 }.map { TestFilterUiState(it, testFilterLabel(it)) }
+    val showFilters: Boolean = TestsFilter.entries.any { counts.count(it) > 0 }
+
+    @get:StringRes val emptyMessageRes: Int = when (filter) {
+        TestsFilter.Failed -> R.string.tests_empty_failed
+        TestsFilter.Passed -> R.string.tests_empty_passed
+        TestsFilter.Ignored -> R.string.tests_empty_ignored
+    }
+    val sectionTitles: Map<TestsFilter, UiText> = mapOf(
+        TestsFilter.Failed to UiText.Resource(R.string.tests_section_failed, listOf(counts.failed)),
+        TestsFilter.Passed to UiText.Resource(R.string.tests_section_passed, listOf(counts.passed)),
+        TestsFilter.Ignored to UiText.Resource(R.string.tests_section_ignored, listOf(counts.ignored))
+    )
+}
+
+internal data class TestFilterUiState(val filter: TestsFilter, @get:StringRes val labelRes: Int)
+
+@StringRes private fun testFilterLabel(filter: TestsFilter): Int = when (filter) {
+    TestsFilter.Failed -> R.string.tests_filter_failed
+    TestsFilter.Passed -> R.string.tests_filter_passed
+    TestsFilter.Ignored -> R.string.tests_filter_ignored
+}
+
+internal data class TestRowUiState(val test: TestOccurrence) {
+    val section: TestsFilter = when (test.status) {
+        TestStatus.Failed -> TestsFilter.Failed
+        TestStatus.Passed -> TestsFilter.Passed
+        TestStatus.Ignored, TestStatus.Error -> TestsFilter.Ignored
+    }
+
+    @get:StringRes val statusLabelRes: Int = when (test.status) {
+        TestStatus.Failed -> R.string.tests_filter_failed
+        TestStatus.Passed -> R.string.tests_filter_passed
+        TestStatus.Ignored -> R.string.tests_filter_ignored
+        TestStatus.Error -> R.string.tests_status_error
+    }
+}
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -80,7 +125,7 @@ class TestsViewModel @Inject constructor(
             PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 2, enablePlaceholders = false),
             pagingSourceFactory = { TestsPagingSource(repository, url, filter, generation.forceRefresh) }
         ).flow.cachedIn(scope)
-        generation.selection = TestsSelection(filter, pages)
+        generation.selection = TestsSelection(filter, pages, counts)
         return generation
     }
 

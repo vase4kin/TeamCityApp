@@ -26,7 +26,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.build_ui.TeamCityBuildConfigurationHeader
 import teamcityapp.libraries.build_ui.TeamCityBuildRow
 import teamcityapp.libraries.build_ui.buildConfigurationTitle
@@ -40,7 +39,7 @@ import teamcityapp.libraries.theme.TeamCityDimensions
 
 @Composable
 internal fun SnapshotDependenciesScreen(
-    state: ListUiState<BuildLaunchData>,
+    state: SnapshotDependenciesUiState,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     onBuild: (BuildLaunchData) -> Unit,
@@ -49,15 +48,15 @@ internal fun SnapshotDependenciesScreen(
 ) {
     Surface(modifier.fillMaxSize().testTag("snapshot:screen")) {
         TeamCityListContainer(
-            state,
+            state.list,
             onRefresh,
             onRetry,
             empty = { TeamCityListEmpty(stringResource(R.string.snapshot_dependencies_empty)) }
         ) {
-            val rows = (state as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
+            val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list"), contentPadding = PaddingValues(bottom = 16.dp)) {
+                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         val title = buildConfigurationTitle(build)
@@ -65,7 +64,7 @@ internal fun SnapshotDependenciesScreen(
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("snapshot:configuration:$index"))
                         }
                         TeamCityBuildRow(
-                            build,
+                            state.rows[index],
                             { onBuild(build) },
                             Modifier.testTag("snapshot:build:${build.id}"),
                             position = listRowPosition(
