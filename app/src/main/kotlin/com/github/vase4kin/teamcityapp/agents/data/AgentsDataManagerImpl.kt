@@ -16,41 +16,18 @@
 
 package com.github.vase4kin.teamcityapp.agents.data
 
-import com.github.vase4kin.teamcityapp.agents.api.Agent
-import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManagerImpl
 import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
-import com.github.vase4kin.teamcityapp.base.tabs.data.OnTextTabChangeEvent
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.addTo
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.greenrobot.eventbus.EventBus
 
-/**
- * Impl of [AgentsDataManager]
- */
-class AgentsDataManagerImpl(
-    private val repository: Repository,
-    private val eventBus: EventBus
-) : BaseListRxDataManagerImpl<Agents, Agent>(),
-    AgentsDataManager {
+/** Keeps Home's callback count contract until Home's state is migrated. */
+class AgentsDataManagerImpl(private val repository: Repository) : AgentsDataManager {
+    private val subscriptions = CompositeDisposable()
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun load(
-        includeDisconnected: Boolean?,
-        loadingListener: OnLoadingListener<List<Agent>>,
-        update: Boolean
-    ) {
-        load(repository.listAgents(includeDisconnected, null, null, update), loadingListener)
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     override fun loadCount(loadingListener: OnLoadingListener<Int>, includeDisconnected: Boolean?) {
         subscriptions.clear()
         repository.listAgents(includeDisconnected, "count", null, false)
@@ -59,14 +36,8 @@ class AgentsDataManagerImpl(
             .subscribeBy(
                 onSuccess = { loadingListener.onSuccess(it.count) },
                 onError = { loadingListener.onSuccess(0) }
-            )
-            .addTo(subscriptions)
+            ).addTo(subscriptions)
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    override fun postUpdateTabTitleEvent(size: Int, type: Int) {
-        eventBus.post(OnTextTabChangeEvent(size, type))
-    }
+    override fun unsubscribe() = subscriptions.clear()
 }

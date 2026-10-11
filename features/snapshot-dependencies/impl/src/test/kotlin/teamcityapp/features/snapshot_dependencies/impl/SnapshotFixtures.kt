@@ -1,0 +1,29 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.snapshot_dependencies.impl
+
+import teamcityapp.libraries.builds.*
+
+internal fun snapshotBuild(id: String = "1") = BuildLaunchData(
+    id, "/builds/id:$id", webUrl = "https://ci.example.com/build/$id", number = id,
+    state = "finished", status = "SUCCESS", statusText = "Success", branchName = "main",
+    buildTypeId = "Android_Debug", configuration = BuildConfigurationData("Android_Debug", "Android Debug", "Mobile", "Mobile"),
+    triggered = BuildTrigger("user", user = BuildUser("andrey", "Andrey")),
+    tests = BuildTests("/tests/$id", 10, 2, 1), changes = BuildCollectionLink("/changes/$id"),
+    artifacts = BuildCollectionLink("/artifacts/$id"), properties = BuildProperties(listOf(BuildProperty("environment", "test"))),
+    snapshotDependencies = BuildCollectionLink(null, 0)
+)

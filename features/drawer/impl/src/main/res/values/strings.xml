@@ -26,7 +26,6 @@
     <string name="drawer_switch_error">The account could not be switched.</string>
     <string name="drawer_missing_account">This account is no longer available.</string>
     <string name="drawer_switching">Switching account</string>
-    <string name="drawer_retry">Try again</string>
     <string name="drawer_dismiss">Dismiss</string>
     <string name="drawer_current_account">Current account</string>
     <string name="drawer_current_short">Current</string>

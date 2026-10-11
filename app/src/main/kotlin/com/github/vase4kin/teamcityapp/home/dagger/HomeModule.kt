@@ -46,7 +46,12 @@ import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.features.agents.api.AgentsNavigation
+import teamcityapp.features.build_queue.api.BuildQueueNavigation
 import teamcityapp.features.drawer.api.navigation.DrawerNavigation
+import teamcityapp.features.favorites.api.FavoritesNavigation
+import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.running_builds.api.RunningBuildsNavigation
 import teamcityapp.libraries.cache_manager.CacheManager
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.storage.Storage
@@ -74,7 +79,7 @@ object HomeModule {
     fun providesFirebaseRootTracker(firebaseAnalytics: FirebaseAnalytics): HomeTracker = HomeTrackerImpl(firebaseAnalytics)
 
     @Provides
-    fun providesFragmentFactory(): FragmentFactory = FragmentFactoryImpl()
+    fun providesFragmentFactory(agentsNavigation: AgentsNavigation, navigation: NavigationNavigation, favorites: FavoritesNavigation, running: RunningBuildsNavigation, queue: BuildQueueNavigation): FragmentFactory = FragmentFactoryImpl(agentsNavigation, navigation, favorites, running, queue)
 
     @Provides
     @ActivityScoped

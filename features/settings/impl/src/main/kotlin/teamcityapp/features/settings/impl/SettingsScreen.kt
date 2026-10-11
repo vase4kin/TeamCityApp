@@ -25,7 +25,6 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -36,8 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.app_theme.ThemeMode
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.ErrorContent
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LoadingContent
-import teamcityapp.libraries.theme.MessageContent
 import teamcityapp.libraries.theme.ScreenNavigation
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityScreen
@@ -56,11 +56,7 @@ fun SettingsScreen(
         when (state) {
             SettingsUiState.Loading -> LoadingContent(modifier)
 
-            SettingsUiState.Error -> CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-                MessageContent(stringResource(R.string.theme_load_error), modifier) {
-                    TextButton(onClick = onRetry) { Text(stringResource(R.string.retry_theme)) }
-                }
-            }
+            SettingsUiState.Error -> ErrorContent(modifier, onRetry, message = stringResource(R.string.theme_load_error))
 
             is SettingsUiState.Content -> Column(modifier.verticalScroll(rememberScrollState())) {
                 Text(
@@ -75,10 +71,7 @@ fun SettingsScreen(
                     if (state.selected !in state.options) Text(stringResource(R.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (state.saving) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("settings:saving"))
                     if (state.saveFailed) {
-                        Column(Modifier.padding(horizontal = TeamCityDimensions.contentPadding).testTag("settings:save_error")) {
-                            Text(stringResource(R.string.theme_save_error), color = MaterialTheme.colorScheme.onSurface, style = MaterialTheme.typography.bodyMedium)
-                            TextButton(onClick = onRetrySave) { Text(stringResource(R.string.retry_theme)) }
-                        }
+                        ErrorNotice(stringResource(R.string.theme_save_error), onRetrySave, Modifier.testTag("settings:save_error"))
                     }
                     state.options.forEach { mode ->
                         Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {

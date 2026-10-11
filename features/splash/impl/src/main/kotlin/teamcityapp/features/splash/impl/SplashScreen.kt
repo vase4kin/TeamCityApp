@@ -19,8 +19,6 @@ package teamcityapp.features.splash.impl
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,23 +27,15 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @Composable
 fun SplashScreen(state: SplashUiState, modifier: Modifier = Modifier, onRetry: () -> Unit = {}) {
-    Surface(modifier.fillMaxSize().testTag("splash:screen"), color = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onSurface) {
+    Surface(modifier.fillMaxSize().testTag("splash:screen"), color = if (state == SplashUiState.Error) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onSurface) {
         Box(contentAlignment = Alignment.Center) {
             if (state == SplashUiState.Error) {
-                Column(
-                    Modifier.widthIn(max = 480.dp).padding(TeamCityDimensions.sectionSpacing).verticalScroll(rememberScrollState()).testTag("splash:error"),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SplashLogo()
-                    Spacer(Modifier.height(TeamCityDimensions.sectionSpacing))
-                    Text(stringResource(R.string.splash_load_error), style = MaterialTheme.typography.bodyLarge)
-                    TextButton(onClick = onRetry) { Text(stringResource(R.string.splash_retry)) }
-                }
+                ErrorContent(Modifier.fillMaxSize().testTag("splash:error"), onRetry, message = stringResource(R.string.splash_load_error))
             } else {
                 Box(
                     Modifier.testTag(

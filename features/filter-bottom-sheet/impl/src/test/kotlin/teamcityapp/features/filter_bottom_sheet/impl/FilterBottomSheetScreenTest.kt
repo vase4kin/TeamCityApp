@@ -20,6 +20,8 @@ import android.app.Application
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -46,6 +48,11 @@ class FilterBottomSheetScreenTest {
         compose.runOnIdle { state.value = state.value.copy(applying = false, failed = true) }
         compose.onNodeWithTag("quick-filter:apply").assertIsEnabled().performClick()
         assertEquals(1, applied)
+        compose.onNodeWithText("Try again").assertIsEnabled().performClick()
+        assertEquals(2, applied)
+        compose.runOnIdle { state.value = state.value.copy(applying = true) }
+        compose.onNodeWithText("Try again").assertIsNotEnabled().performClick()
+        assertEquals(2, applied)
     }
 
     @Test fun currentModeIsSelectedAndOnlyAlternativeChangesTheFilter() {
@@ -67,5 +74,19 @@ class FilterBottomSheetScreenTest {
         row.performTouchInput { click(androidx.compose.ui.geometry.Offset(1f, height / 2f)) }
         row.performTouchInput { click(androidx.compose.ui.geometry.Offset(width - 1f, height / 2f)) }
         assertEquals(2, applied)
+    }
+
+    @Test fun shortSheetAtDoubleTextCanScrollToFailureRecovery() {
+        var applied = 0
+        compose.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(360.dp, 300.dp))) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    TeamCityTheme { FilterBottomSheetScreen(FilterBottomSheetUiState(failed = true)) { applied++ } }
+                }
+            }
+        }
+        compose.onNodeWithText("Try again").performScrollTo().assertIsDisplayed().performClick()
+        assertEquals(1, applied)
+        compose.onNodeWithTag("quick-filter:selected").performScrollTo().assertIsDisplayed()
     }
 }

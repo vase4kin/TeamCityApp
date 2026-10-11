@@ -1,5 +1,6 @@
 /*
  * Copyright 2019 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +42,12 @@ abstract class BaseTabsViewModelImpl(
     private lateinit var adapter: FragmentAdapter
     private var tabSelectionListener: TabLayout.OnTabSelectedListener? = null
 
+    protected open val retainRestoredFragments: Boolean = false
+
     override fun initViews() {
         unbinder = ButterKnife.bind(this, view)
         // Make sure there're no fragments saved in fragment manager (in case the view was reloaded)
-        removeAllFragmentsFromFragmentManager()
+        if (!retainRestoredFragments) removeAllFragmentsFromFragmentManager()
         adapter = FragmentAdapter(activity.supportFragmentManager, activity)
         addFragments(adapter)
         setTabSelectionListener(object : TabLayout.OnTabSelectedListener {

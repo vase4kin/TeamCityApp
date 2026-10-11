@@ -1,5 +1,6 @@
 /*
  * Copyright 2019 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +108,7 @@ class FilterBuildsActivityTest {
     fun setUp() {
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
+        app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage()
             .saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
@@ -123,19 +125,16 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Click on filter fab
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("state:any,canceled:any,failedToStart:any,branch:default:any,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:default:any,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -143,10 +142,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Click on pin switcher
         compose.onNodeWithTag("filter-builds:pinned").performClick()
@@ -155,10 +154,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("state:any,canceled:any,failedToStart:any,branch:default:any,personal:false,pinned:true,count:10")
-        )
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:default:any,personal:false,pinned:true,count:10")
     }
 
     @Test
@@ -166,10 +162,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Click on pin switcher
         compose.onNodeWithTag("filter-builds:personal").performClick()
@@ -178,10 +174,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify<TeamCityService>(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("state:any,canceled:any,failedToStart:any,branch:default:any,personal:true,pinned:false,count:10")
-        )
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:default:any,personal:true,pinned:false,count:10")
     }
 
     @Test
@@ -196,10 +189,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Choose branch from autocomplete and verify it is appeared
         compose.onNodeWithTag("branches:input")
@@ -210,10 +203,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("state:any,canceled:any,failedToStart:any,branch:name:dev1,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("state:any,canceled:any,failedToStart:any,branch:name:dev1,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -221,10 +211,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Check switchers are shown
         compose.onNodeWithTag("filter-builds:pinned").assertIsDisplayed()
@@ -244,10 +234,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:Success").performScrollTo().performClick()
@@ -256,10 +246,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("status:SUCCESS,branch:default:any,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("status:SUCCESS,branch:default:any,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -267,10 +254,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:Failed").performScrollTo().performClick()
@@ -279,10 +266,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("status:FAILURE,branch:default:any,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("status:FAILURE,branch:default:any,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -290,10 +274,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:Error").performScrollTo().performClick()
@@ -302,10 +286,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("status:ERROR,branch:default:any,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("status:ERROR,branch:default:any,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -313,10 +294,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:Cancelled").performScrollTo().performClick()
@@ -325,10 +306,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("canceled:true,branch:default:any,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("canceled:true,branch:default:any,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -336,10 +314,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:FailedToStart").performScrollTo().performClick()
@@ -348,10 +326,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("failedToStart:true,branch:default:any,personal:false,pinned:false,count:10")
-        )
+        assertBuildQuery("failedToStart:true,branch:default:any,personal:false,pinned:false,count:10")
     }
 
     @Test
@@ -359,10 +334,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:Running").performScrollTo().performClick()
@@ -371,10 +346,7 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("running:true,branch:default:any,personal:false,pinned:false")
-        )
+        assertBuildQuery("running:true,branch:default:any,personal:false,pinned:false")
     }
 
     @Test
@@ -382,10 +354,10 @@ class FilterBuildsActivityTest {
         activityRule.launchActivity(null)
 
         // Open build type
-        onView(withText("build type")).perform(click())
+        openHistoryConfiguration()
 
         // Pressing filter builds toolbar item
-        onView(withId(R.id.filter_builds)).perform(click())
+        openHistoryFilters()
 
         // Filter by success
         compose.onNodeWithTag("filter-builds:status:Queued").performScrollTo().performClick()
@@ -394,9 +366,28 @@ class FilterBuildsActivityTest {
         compose.onNodeWithTag("filter-builds:apply").performClick()
 
         // Check data was loaded with new filter
-        verify(teamCityService, timeout(5_000)).listBuilds(
-            anyString(),
-            eq("state:queued,branch:default:any,personal:false,pinned:any")
-        )
+        assertBuildQuery("state:queued,branch:default:any,personal:false,pinned:any")
+    }
+    private fun assertBuildQuery(locator: String) {
+        // Pump Compose's dispatcher so the returned filter resumes History's Paging presenter.
+        compose.waitUntil(10_000) {
+            org.mockito.Mockito.mockingDetails(teamCityService).invocations.any { invocation ->
+                invocation.method.name == "listBuilds" && invocation.arguments.getOrNull(1) == locator
+            }
+        }
+        verify(teamCityService).listBuilds(anyString(), eq(locator))
+    }
+
+    private fun openHistoryConfiguration() {
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithTag("navigation:row:configuration:build_type_id").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithTag("navigation:row:configuration:build_type_id").performClick()
+    }
+
+    private fun openHistoryFilters() {
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:filter").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("history:filter").performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("filter-builds:apply").fetchSemanticsNodes().isNotEmpty() }
     }
 }

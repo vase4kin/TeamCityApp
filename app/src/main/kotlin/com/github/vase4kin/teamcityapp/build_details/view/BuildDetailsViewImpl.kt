@@ -26,24 +26,25 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import butterknife.BindView
 import com.github.vase4kin.teamcityapp.R
-import com.github.vase4kin.teamcityapp.artifact.view.ArtifactListFragment
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
 import com.github.vase4kin.teamcityapp.base.tabs.view.BaseTabsViewModelImpl
 import com.github.vase4kin.teamcityapp.base.tabs.view.FragmentAdapter
+import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsArguments
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewTimeout.Companion.TIMEOUT_TEXT_COPIED_SNACKBAR
-import com.github.vase4kin.teamcityapp.changes.view.ChangesFragment
+import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.overview.data.BuildDetails
-import com.github.vase4kin.teamcityapp.overview.view.OverviewFragment
-import com.github.vase4kin.teamcityapp.snapshot_dependencies.view.SnapshotDependenciesFragment
-import com.github.vase4kin.teamcityapp.tests.view.TestOccurrencesFragment
 import com.github.vase4kin.teamcityapp.utils.createProgressDialog
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.build_log.api.BuildLogNavigation
+import teamcityapp.features.build_overview.api.BuildOverviewNavigation
+import teamcityapp.features.changes.api.ChangesNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
 import teamcityapp.features.properties.api.Property
+import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesNavigation
+import teamcityapp.features.tests.api.TestsNavigation
 
 private const val TAB_TITLE = "tabTitle"
 
@@ -53,9 +54,15 @@ private const val TAB_TITLE = "tabTitle"
 class BuildDetailsViewImpl(
     view: View,
     activity: AppCompatActivity,
-    valueExtractor: BaseValueExtractor,
+    private val arguments: BuildDetailsArguments,
+    private val mapper: AppBuildLaunchMapper,
+    private val overviewNavigation: BuildOverviewNavigation,
+    private val artifactsNavigation: ArtifactsNavigation,
+    private val snapshotsNavigation: SnapshotDependenciesNavigation,
     private val propertiesNavigation: PropertiesNavigation,
-    private val featureNavigation: BuildLogNavigation
+    private val featureNavigation: BuildLogNavigation,
+    private val changesNavigation: ChangesNavigation,
+    private val testsNavigation: TestsNavigation
 ) : BaseTabsViewModelImpl(view, activity),
     BuildDetailsView {
 
@@ -65,7 +72,7 @@ class BuildDetailsViewImpl(
     @BindView(R.id.container)
     lateinit var container: View
 
-    private val buildDetails: BuildDetails = valueExtractor.buildDetails
+    private val buildDetails: BuildDetails get() = arguments.current
     private var onBuildDetailsViewListener: OnBuildDetailsViewListener? = null
 
     private var tabTitle: String? = null
@@ -87,22 +94,24 @@ class BuildDetailsViewImpl(
      * TODO: Move logic to presenter
      */
     override fun addFragments(fragmentAdapter: FragmentAdapter) {
+        val buildDetails = arguments.initialDetails
+        val launchData = mapper.toLaunchData(buildDetails.toBuild())
         fragmentAdapter.add(
             R.string.tab_overview,
-            OverviewFragment.newInstance(buildDetails.toBuild())
+            overviewNavigation.createFragment(launchData)
         )
         val changesHref = buildDetails.changesHref
         if (changesHref != null) {
             fragmentAdapter.add(
                 R.string.tab_changes,
-                ChangesFragment.newInstance(changesHref)
+                changesNavigation.createFragment(changesHref)
             )
         }
         val testsHref = buildDetails.testsHref
         if (testsHref != null) {
             fragmentAdapter.add(
                 R.string.tab_tests,
-                TestOccurrencesFragment.newInstance(
+                testsNavigation.createFragment(
                     testsHref,
                     buildDetails.passedTestCount,
                     buildDetails.failedTestCount,
@@ -118,24 +127,27 @@ class BuildDetailsViewImpl(
         }
         fragmentAdapter.add(
             R.string.tab_parameters,
-            propertiesNavigation.create(buildDetails.toBuild().properties?.properties.orEmpty().map { Property(it.name, it.value) })
+            propertiesNavigation.create(buildDetails.toBuild().properties?.properties.orEmpty().map { Property(it.name.orEmpty(), it.value.orEmpty()) })
         )
         val artifactsHref = buildDetails.artifactsHref
         if (artifactsHref != null) {
             if (!buildDetails.isQueued && !buildDetails.isRunning) {
                 fragmentAdapter.add(
                     R.string.tab_artifacts,
-                    ArtifactListFragment.newInstance(buildDetails.toBuild(), artifactsHref)
+                    artifactsNavigation.createFragment(launchData, artifactsHref)
                 )
             }
         }
         if (buildDetails.hasSnapshotDependencies()) {
             fragmentAdapter.add(
                 R.string.tab_snapshot_dependencies,
-                SnapshotDependenciesFragment.newInstance(buildDetails.id)
+                snapshotsNavigation.createFragment(buildDetails.id, "")
             )
         }
     }
+
+    // FragmentPagerAdapter reconnects restored tabs, retaining their ViewModels and pages.
+    override val retainRestoredFragments: Boolean = true
 
     /**
      * {@inheritDoc}

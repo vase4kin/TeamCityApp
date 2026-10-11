@@ -33,6 +33,5 @@
 
     <dimen name="dp_recycler_view_horizontal">@dimen/dp_0</dimen>
 
-    <integer name="shimmer_length">1000</integer>
 
 </resources>

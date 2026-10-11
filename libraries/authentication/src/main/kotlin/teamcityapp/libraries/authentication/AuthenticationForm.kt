@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCitySwitch
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -70,9 +71,7 @@ fun AuthenticationForm(state: AuthenticationFormState, onChange: (Authentication
     val globalError = error != null && !urlError && !userError && !passwordError
     Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (globalError) {
-            Surface(modifier = Modifier.padding(horizontal = horizontalPadding), color = MaterialTheme.colorScheme.errorContainer, shape = MaterialTheme.shapes.medium) {
-                Text(error.orEmpty(), Modifier.fillMaxWidth().padding(16.dp).testTag("auth:error"), color = MaterialTheme.colorScheme.onErrorContainer, style = MaterialTheme.typography.bodyMedium)
-            }
+            ErrorNotice(error.orEmpty(), modifier = Modifier.fillMaxWidth().padding(horizontal = horizontalPadding).testTag("auth:error"))
         }
         // Preserve the account fields' existing opt-out from platform autofill.
         OutlinedTextField(

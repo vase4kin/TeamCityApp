@@ -81,13 +81,13 @@ class SplashScreenTest {
     @Test fun errorUsesProvidedSurfaceAndTypography() {
         compose.setContent {
             MaterialTheme(
-                colorScheme = lightColorScheme(primaryContainer = Color.Green, onSurface = Color.Red),
+                colorScheme = lightColorScheme(surface = Color.Green, onSurface = Color.Red),
                 typography = Typography(bodyLarge = TextStyle(fontSize = 22.sp), bodyMedium = TextStyle(fontSize = 18.sp), headlineSmall = TextStyle(fontSize = 28.sp))
             ) {
                 SplashScreen(SplashUiState.Error)
             }
         }
-        assertThemeText("Accounts could not be loaded.", 22, Color.Red)
+        assertThemeText("Couldn’t load content", 28, Color.Red)
         val pixels = compose.onNodeWithTag("splash:screen").captureToImage().toPixelMap()
         assertEquals(Color.Green, pixels[0, 0])
     }

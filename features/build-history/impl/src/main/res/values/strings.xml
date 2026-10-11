@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright 2016 Andrey Tolpeev
+  ~ Copyright 2026 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="history_back">Back</string>
+    <string name="history_filter">Filter builds</string>
+    <string name="history_run">Run build</string>
+    <string name="history_add_favorite">Add to favorites</string>
+    <string name="history_remove_favorite">Remove from favorites</string>
+    <string name="history_empty">No builds</string>
+    <string name="history_queued_section">Queued</string>
+    <string name="history_unknown_date">Date unavailable</string>
+    <string name="history_favorite_unavailable">Favorites are unavailable.</string>
+    <string name="history_favorite_update_failed">Could not update favorites.</string>
+    <string name="history_onboarding_unavailable">Build controls tips are unavailable.</string>
+    <string name="history_retry">Retry</string>
+    <string name="history_cancel">Cancel</string>
+    <string name="history_show">Show</string>
+    <string name="history_view">Open favorites</string>
+    <string name="history_reset">Reset filters</string>
+    <string name="history_got_it">Got it</string>
+    <string name="history_opening">Opening build..</string>
+    <string name="history_open_failed">We encountered problem opening build</string>
+    <string name="history_queued">Build is added to build queue</string>
+    <string name="history_filters_applied">Build filters have been applied</string>
+    <string name="history_favorite_added">The configuration has been added to favorites</string>
+    <string name="history_favorite_removed">The configuration has been removed from favorites</string>
+    <string name="history_prompt_run_title">Run builds</string>
+    <string name="history_prompt_run_description">Choose a branch, an agent or even provide custom parameters</string>
+    <string name="history_prompt_filter_title">Filter builds</string>
+    <string name="history_prompt_filter_description">Filter by branch, build status or show only personal or pinned ones</string>
+    <string name="history_prompt_favorite_title">Add to favorites</string>
+    <string name="history_prompt_favorite_description">Add configurations to favorites to able manage them in one place</string>
+    <string name="history_prompt_save_failed">Could not save this tip. Try again.</string>
+</resources>

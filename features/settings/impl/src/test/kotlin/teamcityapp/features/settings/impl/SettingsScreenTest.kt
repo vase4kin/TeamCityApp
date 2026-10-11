@@ -65,7 +65,7 @@ class SettingsScreenTest {
         var retries = 0
         compose.setContent { TeamCityTheme { SettingsScreen(SettingsUiState.Error, {}, { retries++ }, {}, {}) } }
         compose.onNodeWithText("Unable to load theme settings").assertIsDisplayed()
-        compose.onNodeWithText("Retry").performClick()
+        compose.onNodeWithText("Try again").performClick()
         assertEquals(1, retries)
     }
 
@@ -73,7 +73,7 @@ class SettingsScreenTest {
         var retries = 0
         compose.setContent { TeamCityTheme { SettingsScreen(content.copy(saveFailed = true), {}, {}, { retries++ }, {}) } }
         compose.onNodeWithTag("settings:current").assertTextEquals("Current theme: Follow system")
-        compose.onNodeWithText("Retry").performClick()
+        compose.onNodeWithText("Try again").performClick()
         assertEquals(1, retries)
     }
 
