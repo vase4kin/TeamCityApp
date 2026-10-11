@@ -549,3 +549,18 @@ Verification:
 - Mock app/instrumentation builds, production-debug Kotlin/Hilt compilation, both form modules' lint, formatting and whitespace checks passed.
 
 Only Home and Build Details remain as application-owned legacy activities. Their fifteen feature fragment/sheet hosts, native shell layouts/presenters/DI, obsolete APIs/adapters and dependencies must be removed after migrating their integration fixtures. Cold restoration must validate entry arguments against the active account and discard legacy FragmentManager state safely. Complete process restoration and final all-module/both-flavor checks remain required. The goal remains active; no push or PR was created.
+
+
+## Root restoration checkpoint
+
+MainActivity now records the account owning its saved UI and validates that marker before decoding restored launch arguments. A different user on the same server replaces the old arguments and destination owners, prepares the new account with cache/cookie/Build Log consent reset, and opens Home. A removed account returns to Login. Replacing rejected extras prevents a second recreation from replaying the old alias payload; missing old markers also reject launch arguments without assuming a known account change.
+
+The root strips retired FragmentManager state from a copied platform/SavedStateRegistry bundle while preserving Compose navigation and all other saved state. The framework regression test saves a real fragment, replaces its recorded class with a removed class, proves normal restoration fails, and verifies the cleaned bundle restores safely. Runtime coverage preserves same-account artifact content and visit identity, verifies two recreations after a same-server account change, covers logout during saving, and retains the Compose stack while discarding a real saved fragment.
+
+Validation:
+
+- All 409 app local tests passed, including four new restoration tests.
+- Both app lint variants, mock app/instrumentation APKs, production Kotlin compilation, and formatting passed.
+- All 56 API 37 integration cases passed: restoration, root navigation, Home/startup/account switching, Build Details, workflows, installed form/component aliases, Login and Create Account.
+
+The fix is saved in local checkpoint `e7bc0e046`. Home and Build Details remain the only native application activities; fifteen feature fragment/sheet hosts and their superseded infrastructure still need removal. Complete process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
