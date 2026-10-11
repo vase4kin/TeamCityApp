@@ -33,40 +33,39 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.filter_builds.api.*
 import teamcityapp.libraries.theme.*
 
 @Composable
 fun FilterBuildsScreen(state: FilterBuildsUiState, onChange: (BuildFilter) -> Unit, onApply: () -> Unit, onClose: () -> Unit) {
     val filter = state.filter
-    val labels = stringArrayResource(R.array.build_filters)
     val scrollState = rememberScrollState()
     TeamCityScreen(stringResource(R.string.title_filter_builds), onClose, bottomBar = {
         TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("filter-builds:bottom-action")) {
-            Button(onApply, Modifier.fillMaxWidth().padding(16.dp).heightIn(min = 56.dp).testTag("filter-builds:apply")) {
+            Button(onApply, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("filter-builds:apply")) {
                 Icon(painterResource(R.drawable.ic_done_24px), null)
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
                 Text(stringResource(R.string.text_apply_filters_button))
             }
         }
     }) { modifier ->
         Column(modifier) {
-            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("filter-builds:scroll").padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("filter-builds:scroll").padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)) {
                 Text(stringResource(R.string.text_filters), style = MaterialTheme.typography.headlineMedium)
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    Column(Modifier.padding(16.dp)) {
-                        FlowRow(Modifier.fillMaxWidth().selectableGroup().testTag("filter-builds:chooser"), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            BuildStatusFilter.entries.forEach { status ->
-                                FilterChip(selected = filter.status == status, onClick = { onChange(filter.copy(status = status)) }, label = { Text(if (status == BuildStatusFilter.None) stringResource(R.string.text_filters_none) else labels[status.ordinal]) }, modifier = Modifier.testTag("filter-builds:status:$status").semantics { role = Role.RadioButton })
+                    Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                        FlowRow(Modifier.fillMaxWidth().selectableGroup().testTag("filter-builds:chooser"), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+                            state.statusOptions.forEach { option ->
+                                val status = option.status
+                                FilterChip(selected = filter.status == status, onClick = { onChange(filter.copy(status = status)) }, label = { Text(stringResource(option.labelRes)) }, modifier = Modifier.testTag("filter-builds:status:$status").semantics { role = Role.RadioButton })
                             }
                         }
                     }
                 }
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    BranchField(state.branches, state.branchesFailed, filter.branch, { onChange(filter.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(if (state.branchesFailed) R.string.branches_unavailable else R.string.text_no_branches_available_to_filter), stringResource(R.string.hint_default_filter_branch), filter = true)
-                    TeamCitySwitch(stringResource(R.string.text_switcher_for_personal), filter.personal, { onChange(filter.copy(personal = it)) }, Modifier.testTag("filter-builds:personal"), contentPadding = PaddingValues(16.dp))
-                    if (filter.status != BuildStatusFilter.Queued) TeamCitySwitch(stringResource(R.string.text_switcher_for_pinned), filter.pinned, { onChange(filter.copy(pinned = it)) }, Modifier.testTag("filter-builds:pinned"), contentPadding = PaddingValues(16.dp))
+                    BranchField(state.branches, state.branchesFailed, filter.branch, { onChange(filter.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(state.branchesMessageRes), stringResource(R.string.hint_default_filter_branch), filter = true)
+                    TeamCitySwitch(stringResource(R.string.text_switcher_for_personal), filter.personal, { onChange(filter.copy(personal = it)) }, Modifier.testTag("filter-builds:personal"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding))
+                    if (filter.status != BuildStatusFilter.Queued) TeamCitySwitch(stringResource(R.string.text_switcher_for_pinned), filter.pinned, { onChange(filter.copy(pinned = it)) }, Modifier.testTag("filter-builds:pinned"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding))
                 }
             }
         }

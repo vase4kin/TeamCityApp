@@ -16,6 +16,7 @@
 
 package teamcityapp.features.filter_bottom_sheet.impl
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,7 +27,28 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import teamcityapp.features.filter_bottom_sheet.api.*
 
-data class FilterBottomSheetUiState(val filter: QuickFilter = QuickFilter.RunningAll, val applying: Boolean = false, val applied: Boolean = false, val failed: Boolean = false)
+data class FilterBottomSheetUiState(val filter: QuickFilter = QuickFilter.RunningAll, val applying: Boolean = false, val applied: Boolean = false, val failed: Boolean = false) {
+    @get:StringRes val titleRes: Int = when (filter) {
+        QuickFilter.RunningAll, QuickFilter.RunningFavorites -> R.string.title_filter_running_builds
+        QuickFilter.QueuedAll, QuickFilter.QueuedFavorites -> R.string.title_filter_queued_builds
+        else -> R.string.title_filter_agents
+    }
+
+    @get:StringRes val descriptionRes: Int = when (filter) {
+        QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.string.text_show_favorites
+        QuickFilter.RunningFavorites -> R.string.text_show_running
+        QuickFilter.QueuedFavorites -> R.string.text_show_queued
+        QuickFilter.AgentsConnected -> R.string.text_show_disconnected
+        QuickFilter.AgentsDisconnected -> R.string.text_show_connected
+    }
+
+    @get:StringRes val selectedRes: Int = when (filter) {
+        QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.string.selected_all
+        QuickFilter.RunningFavorites, QuickFilter.QueuedFavorites -> R.string.selected_favorites
+        QuickFilter.AgentsConnected -> R.string.selected_connected
+        QuickFilter.AgentsDisconnected -> R.string.selected_disconnected
+    }
+}
 
 @HiltViewModel
 class FilterBottomSheetViewModel @Inject constructor(private val repository: QuickFilterRepository, savedStateHandle: SavedStateHandle) : ViewModel() {

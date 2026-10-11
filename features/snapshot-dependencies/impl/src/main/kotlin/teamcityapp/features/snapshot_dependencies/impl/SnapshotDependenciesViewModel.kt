@@ -24,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesRepository
 import teamcityapp.libraries.list_state.ListUiState
@@ -37,7 +38,7 @@ class SnapshotDependenciesViewModel @Inject constructor(
     private val buildId = checkNotNull(savedStateHandle.get<String>(SnapshotDependenciesFragment.BUILD_ID)).also { require(it.isNotBlank()) }
     val buildTypeName: String = savedStateHandle[SnapshotDependenciesFragment.BUILD_TYPE_NAME] ?: ""
     private val loader = RefreshableListLoader(flowOf(buildId), repository::dependencies)
-    val state = loader.state.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), ListUiState.Loading)
+    val state = loader.state.map(::SnapshotDependenciesUiState).stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), SnapshotDependenciesUiState())
     private var paused = false
 
     fun refresh() = loader.refresh()

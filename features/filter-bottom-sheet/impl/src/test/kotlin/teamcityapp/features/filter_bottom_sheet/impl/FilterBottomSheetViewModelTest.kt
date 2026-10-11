@@ -44,6 +44,15 @@ class FilterBottomSheetViewModelTest {
                 },
                 SavedStateHandle(mapOf("arg_code" to filter.ordinal))
             )
+            val expected = listOf(
+                Triple(R.string.title_filter_running_builds, R.string.text_show_favorites, R.string.selected_all),
+                Triple(R.string.title_filter_running_builds, R.string.text_show_running, R.string.selected_favorites),
+                Triple(R.string.title_filter_queued_builds, R.string.text_show_favorites, R.string.selected_all),
+                Triple(R.string.title_filter_queued_builds, R.string.text_show_queued, R.string.selected_favorites),
+                Triple(R.string.title_filter_agents, R.string.text_show_disconnected, R.string.selected_connected),
+                Triple(R.string.title_filter_agents, R.string.text_show_connected, R.string.selected_disconnected)
+            )[filter.ordinal]
+            assertEquals(expected, Triple(vm.state.value.titleRes, vm.state.value.descriptionRes, vm.state.value.selectedRes))
             vm.apply()
             vm.apply()
             runCurrent()

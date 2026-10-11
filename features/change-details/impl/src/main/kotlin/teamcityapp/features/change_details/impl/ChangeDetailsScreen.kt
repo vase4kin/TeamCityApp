@@ -34,7 +34,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.libraries.theme.TeamCityDimensions
@@ -59,8 +58,8 @@ fun ChangeDetailsScreen(
         if (state is ChangeDetailsUiState.Content) {
             val details = state.details
             LazyColumn(
-                modifier.widthIn(max = 720.dp).testTag("change_details:list"),
-                contentPadding = PaddingValues(8.dp)
+                modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).testTag("change_details:list"),
+                contentPadding = PaddingValues(TeamCityDimensions.smallSpacing)
             ) {
                 item("details") {
                     ChangeCard(details, { onOpenUrl(details.webUrl) }, Modifier.padding(TeamCityDimensions.smallSpacing))
@@ -78,7 +77,7 @@ fun ChangeDetailsScreen(
 @Composable
 private fun ChangeCard(details: ChangeDetails, onOpenUrl: () -> Unit, modifier: Modifier = Modifier) {
     Surface(modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.primaryContainer, shape = MaterialTheme.shapes.large) {
-        Column(Modifier.padding(24.dp)) {
+        Column(Modifier.padding(TeamCityDimensions.sectionSpacing)) {
             DetailField(stringResource(R.string.text_comment), details.comment, MaterialTheme.typography.headlineSmall)
             HorizontalDivider(Modifier.padding(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.outlineVariant)
             SelectionContainer { DetailField(stringResource(R.string.text_revision), details.revision, TeamCityMonospace) }
@@ -126,7 +125,7 @@ private fun ChangedFileRow(file: ChangedFile, onClick: () -> Unit, modifier: Mod
     Row(
         modifier
             .fillMaxWidth()
-            .heightIn(min = 56.dp).clickable(role = Role.Button, onClick = onClick)
+            .heightIn(min = TeamCityDimensions.controlMinHeight).clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = TeamCityDimensions.contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {

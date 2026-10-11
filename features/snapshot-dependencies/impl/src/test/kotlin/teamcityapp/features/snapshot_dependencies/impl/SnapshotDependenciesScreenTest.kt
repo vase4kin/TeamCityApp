@@ -41,7 +41,7 @@ class SnapshotDependenciesScreenTest {
     @Test fun rowPassesFullLaunchSnapshot() {
         val build = snapshotBuild().copy(personal = true, pinned = true)
         var opened: BuildLaunchData? = null
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Content(listOf(build)), {}, {}, { opened = it }, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Content(listOf(build))), {}, {}, { opened = it }, { _, _ -> }) } }
         compose.onNodeWithTag("snapshot:build:1").performClick()
         assertSame(build, opened)
         compose.onNodeWithContentDescription("Personal build").assertExists()
@@ -50,7 +50,7 @@ class SnapshotDependenciesScreenTest {
 
     @Test fun sectionOpensHistoryWithConfigurationIdAndName() {
         var history: Pair<String, String>? = null
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Content(listOf(snapshotBuild())), {}, {}, {}, { id, name -> history = id to name }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Content(listOf(snapshotBuild()))), {}, {}, {}, { id, name -> history = id to name }) } }
         compose.onNodeWithTag("snapshot:configuration:0").performClick()
         assertEquals("Android_Debug" to "Android Debug", history)
     }
@@ -60,7 +60,7 @@ class SnapshotDependenciesScreenTest {
         val b = snapshotBuild("2").copy(configuration = BuildConfigurationData("Android_Debug", "Android Debug", "Mobile", "Mobile"))
         val c = snapshotBuild("3").copy(buildTypeId = "other", configuration = null)
         val d = snapshotBuild("4")
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Content(listOf(a, b, c, d)), {}, {}, {}, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Content(listOf(a, b, c, d))), {}, {}, {}, { _, _ -> }) } }
         compose.onNodeWithTag("snapshot:configuration:0").assertExists()
         compose.onNodeWithTag("snapshot:configuration:1").assertDoesNotExist()
         compose.onNodeWithTag("snapshot:configuration:2").assertExists()
@@ -71,14 +71,14 @@ class SnapshotDependenciesScreenTest {
         val build = snapshotBuild().copy(configuration = BuildConfigurationData("different-id", "Debug", projectName = null))
         assertEquals("Android_Debug", buildConfigurationTitle(build))
         var history: Pair<String, String>? = null
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Content(listOf(build.copy(configuration = null))), {}, {}, {}, { id, name -> history = id to name }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Content(listOf(build.copy(configuration = null)))), {}, {}, {}, { id, name -> history = id to name }) } }
         compose.onNodeWithTag("snapshot:configuration:0").performClick()
         assertEquals("Android_Debug" to "", history)
     }
 
     @Test fun queuedWaitReasonAndMissingNumberAreRendered() {
         val build = snapshotBuild().copy(state = "queued", number = null, waitReason = "Waiting for a compatible agent", statusText = "ignored server status")
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Content(listOf(build)), {}, {}, {}, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Content(listOf(build))), {}, {}, {}, { _, _ -> }) } }
         compose.onNodeWithText("Waiting for a compatible agent", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText("#No number", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText("ignored server status", useUnmergedTree = true).assertDoesNotExist()
@@ -86,21 +86,21 @@ class SnapshotDependenciesScreenTest {
 
     @Test fun initialFailureRetriesThroughSharedContainer() {
         var retries = 0
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Error, {}, { retries++ }, {}, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Error), {}, { retries++ }, {}, { _, _ -> }) } }
         compose.onNodeWithText("Try again").performClick()
         assertEquals(1, retries)
     }
 
     @Test fun refreshFailureKeepsLaunchableRows() {
         var opened = false
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Content(listOf(snapshotBuild()), refreshFailed = true), {}, {}, { opened = true }, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Content(listOf(snapshotBuild()), refreshFailed = true)), {}, {}, { opened = true }, { _, _ -> }) } }
         compose.onNodeWithTag("snapshot:build:1").performClick()
         assertTrue(opened)
         compose.onNodeWithText("Couldn’t refresh. Try again.").assertExists()
     }
 
     @Test fun snapshotEmptyMessageIsSpecificToThisTab() {
-        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(ListUiState.Empty(), {}, {}, {}, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme { SnapshotDependenciesScreen(SnapshotDependenciesUiState(ListUiState.Empty()), {}, {}, {}, { _, _ -> }) } }
         compose.onNodeWithText("No snapshot dependencies").assertIsDisplayed()
     }
 }

@@ -94,11 +94,11 @@ class BuildUiScreenshotTest(private val stateName: String, private val variant: 
                     LazyColumn(Modifier.widthIn(max = 720.dp).fillMaxSize()) {
                         item { TeamCityBuildConfigurationHeader(row, { _, _ -> }) }
                         if (stateName == "grouped") {
-                            item { TeamCityBuildRow(row, {}, position = ListRowPosition.First) }
-                            item { TeamCityBuildRow(row.copy(id = "2", number = "43", state = "running", statusText = "Building and running tests"), {}, position = ListRowPosition.Middle) }
-                            item { TeamCityBuildRow(row.copy(id = "3", number = "44", status = "FAILURE", statusText = "Tests failed"), {}, position = ListRowPosition.Last) }
+                            item { TeamCityBuildRow(BuildRowUiState(row), {}, position = ListRowPosition.First) }
+                            item { TeamCityBuildRow(BuildRowUiState(row.copy(id = "2", number = "43", state = "running", statusText = "Building and running tests")), {}, position = ListRowPosition.Middle) }
+                            item { TeamCityBuildRow(BuildRowUiState(row.copy(id = "3", number = "44", status = "FAILURE", statusText = "Tests failed")), {}, position = ListRowPosition.Last) }
                         } else {
-                            item { TeamCityBuildRow(row, {}, Modifier.testTag("row")) }
+                            item { TeamCityBuildRow(BuildRowUiState(row), {}, Modifier.testTag("row")) }
                         }
                     }
                 }

@@ -41,6 +41,8 @@ class OverviewRowsTest {
 
     @Test fun queuedMissingReasonHasTheLegacyFallbackAndNoEstimate() {
         assertEquals(OverviewText.QueuedBuild, row("queued_fallback", OverviewField.WaitReason).value)
+        assertEquals(R.string.overview_wait_reason, row("queued_fallback", OverviewField.WaitReason).labelRes)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.overview_queued_build), row("queued_fallback", OverviewField.WaitReason).text)
         assertFalse(rows("queued_fallback").any { it.field == OverviewField.EstimatedTime })
     }
 
@@ -61,6 +63,7 @@ class OverviewRowsTest {
 
     @Test fun deletedUserAndConfigurationHaveExplicitFallbacks() {
         assertEquals(OverviewText.DeletedUser, row("deleted_user", OverviewField.TriggeredBy).value)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.overview_deleted_user), row("deleted_user", OverviewField.TriggeredBy).text)
         assertEquals(OverviewText.DeletedConfiguration, row("deleted_configuration", OverviewField.TriggeredBy).value)
     }
 

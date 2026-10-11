@@ -15,6 +15,8 @@
  */
 
 package teamcityapp.features.drawer.impl
+
+import androidx.annotation.StringRes
 import teamcityapp.features.drawer.api.DrawerAccount
 import teamcityapp.features.drawer.api.DrawerAccountId
 sealed interface DrawerAccountsUiState {
@@ -34,5 +36,18 @@ data class DrawerUiState(
     val selection: AccountSwitchUiState = AccountSwitchUiState.Idle,
     val openHome: Boolean = false
 ) {
+    @get:StringRes val accountsMessageRes: Int? = when (accounts) {
+        DrawerAccountsUiState.Loading -> R.string.drawer_loading
+        DrawerAccountsUiState.Empty -> R.string.drawer_empty_accounts
+        DrawerAccountsUiState.Error -> R.string.drawer_load_error
+        is DrawerAccountsUiState.Content -> null
+    }
+
+    @get:StringRes val selectionMessageRes: Int? = when (selection) {
+        is AccountSwitchUiState.Switching -> R.string.drawer_switching
+        is AccountSwitchUiState.Error -> R.string.drawer_switch_error
+        AccountSwitchUiState.Missing -> R.string.drawer_missing_account
+        AccountSwitchUiState.Idle -> null
+    }
     val canInteract: Boolean get() = selection !is AccountSwitchUiState.Switching && !openHome
 }

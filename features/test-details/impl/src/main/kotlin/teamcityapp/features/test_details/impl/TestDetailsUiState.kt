@@ -21,5 +21,7 @@ sealed interface TestDetailsUiState {
     data object Empty : TestDetailsUiState
     data object Error : TestDetailsUiState
     data object InvalidInput : TestDetailsUiState
-    data class Content(val details: String) : TestDetailsUiState
+    data class Content(val details: String) : TestDetailsUiState {
+        val formattedDetails: String = formatTestDetails(details)
+    }
 }

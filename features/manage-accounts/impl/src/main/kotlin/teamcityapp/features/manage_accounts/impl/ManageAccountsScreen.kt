@@ -41,7 +41,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.manage_accounts.api.ManagedAccount
 import teamcityapp.features.manage_accounts.api.ManagedAccountId
 import teamcityapp.libraries.resources.R as SharedR
@@ -74,9 +73,9 @@ fun ManageAccountsScreen(
             val removalFailed = state.removal is AccountRemovalUiState.Error
             val reserveActionLane = removalFailed || state.accounts == AccountListUiState.Error
             var addActionHeight by remember { mutableIntStateOf(0) }
-            val addActionSpace = if (addActionHeight == 0) 112.dp else with(LocalDensity.current) { addActionHeight.toDp() }
+            val addActionSpace = if (addActionHeight == 0) TeamCityDimensions.floatingActionLaneHeight else with(LocalDensity.current) { addActionHeight.toDp() }
             val feedbackMaxHeight = maxHeight / 3
-            Column(Modifier.fillMaxSize().padding(bottom = if (reserveActionLane) addActionSpace else 0.dp)) {
+            Column(Modifier.fillMaxSize().padding(bottom = if (reserveActionLane) addActionSpace else TeamCityDimensions.noSpacing)) {
                 Box(Modifier.weight(1f).fillMaxWidth()) {
                     when (val accounts = state.accounts) {
                         AccountListUiState.Loading -> LoadingContent(Modifier.fillMaxSize().testTag("accounts:loading"))
@@ -87,7 +86,7 @@ fun ManageAccountsScreen(
 
                         is AccountListUiState.Content -> LazyColumn(
                             Modifier.fillMaxSize().testTag("accounts:list"),
-                            contentPadding = PaddingValues(bottom = if (removalFailed) 0.dp else addActionSpace)
+                            contentPadding = PaddingValues(bottom = if (removalFailed) TeamCityDimensions.noSpacing else addActionSpace)
                         ) {
                             items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->
                                 AccountRow(account, state.canInteract, { onRemove(account.id) }, onSslWarning)
@@ -109,7 +108,7 @@ fun ManageAccountsScreen(
                 modifier = Modifier.align(Alignment.BottomEnd).onSizeChanged { addActionHeight = it.height }.padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }
             ) {
                 Icon(painterResource(ThemeR.drawable.ic_add_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
                 Text(stringResource(R.string.accounts_add))
             }
         }
@@ -117,8 +116,8 @@ fun ManageAccountsScreen(
     if (state.canInteract) {
         when (dialog) {
             ManageAccountsDialog.None -> Unit
-            ManageAccountsDialog.SslWarning -> AccountsDialog(true, onDismissDialog, {})
-            is ManageAccountsDialog.ConfirmRemoval -> AccountsDialog(false, onDismissDialog) { onConfirmRemoval(dialog.id) }
+            ManageAccountsDialog.SslWarning -> AccountsDialog(dialog, onDismissDialog, {})
+            is ManageAccountsDialog.ConfirmRemoval -> AccountsDialog(dialog, onDismissDialog) { onConfirmRemoval(dialog.id) }
         }
     }
 }
@@ -140,7 +139,7 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
                 Row(
                     Modifier.weight(1f).semantics(mergeDescendants = true) { if (account.isActive) stateDescription = current }.testTag("${accountTag(account.id)}:identity"),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                    horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)
                 ) {
                     Surface(Modifier.size(TeamCityDimensions.minimumTouchTarget), color = colors.surfaceContainerLowest, shape = MaterialTheme.shapes.medium) {
                         Box(contentAlignment = Alignment.Center) {
@@ -157,14 +156,14 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
                             Surface(
                                 Modifier.testTag("${accountTag(account.id)}:current").clearAndSetSemantics {},
                                 color = colors.primary.copy(alpha = 0.16f),
-                                shape = RoundedCornerShape(TeamCityDimensions.smallSpacing + TeamCityDimensions.extraSmallSpacing)
+                                shape = RoundedCornerShape(TeamCityDimensions.smallCornerRadius)
                             ) {
                                 Row(
                                     Modifier.padding(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.extraSmallSpacing),
                                     horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.contentPadding), tint = content)
+                                    Icon(painterResource(R.drawable.ic_check), null, Modifier.size(TeamCityDimensions.smallIconSize), tint = content)
                                     Text(stringResource(R.string.accounts_current_short), style = MaterialTheme.typography.labelMedium, color = content)
                                 }
                             }
@@ -199,9 +198,9 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
 }
 
 @Composable
-private fun warningText() = run {
+private fun warningText(@androidx.annotation.StringRes messageRes: Int) = run {
     val resources = LocalResources.current
-    val text = resources.getText(SharedR.string.warning_ssl_dialog_content)
+    val text = resources.getText(messageRes)
     val linkColor = MaterialTheme.colorScheme.primary
     remember(text, linkColor) {
         buildAnnotatedString {
@@ -216,21 +215,18 @@ private fun warningText() = run {
 }
 
 @Composable
-private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+private fun AccountsDialog(dialog: ManageAccountsDialog, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    val warning = dialog == ManageAccountsDialog.SslWarning
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.testTag("accounts:dialog"),
-        title = if (warning) {
-            { Text(stringResource(SharedR.string.warning_ssl_dialog_title)) }
-        } else {
-            null
-        },
+        title = dialog.titleRes?.let { title -> { Text(stringResource(title)) } },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 if (warning) {
-                    Text(warningText(), style = MaterialTheme.typography.bodyLarge)
+                    Text(warningText(requireNotNull(dialog.messageRes)), style = MaterialTheme.typography.bodyLarge)
                 } else {
-                    Text(stringResource(R.string.dialog_remove_not_active_account_positive_content_text), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(requireNotNull(dialog.messageRes)), style = MaterialTheme.typography.bodyLarge)
                 }
             }
         },
@@ -245,7 +241,7 @@ private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: (
         },
         confirmButton = {
             TextButton(onClick = if (warning) onDismiss else onConfirm) {
-                Text(stringResource(if (warning) android.R.string.ok else R.string.dialog_remove_active_account_positive_button_text))
+                Text(stringResource(requireNotNull(dialog.confirmLabelRes)))
             }
         }
     )
@@ -258,5 +254,5 @@ private fun AccountsPreview() {
 
 @Preview @Composable
 private fun WarningPreview() {
-    TeamCityTheme { AccountsDialog(true, {}, {}) }
+    TeamCityTheme { AccountsDialog(ManageAccountsDialog.SslWarning, {}, {}) }
 }

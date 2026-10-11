@@ -78,6 +78,7 @@ class RunningBuildsViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(ListUiState.Empty(), vm.state.value.list)
+        assertEquals(R.string.running_builds_empty_favorites, vm.state.value.emptyMessageRes)
         vm.refresh()
         runCurrent()
         assertTrue(repository.calls.isEmpty())
@@ -131,6 +132,7 @@ class RunningBuildsViewModelTest {
         assertTrue(cancelled)
         assertEquals(RunningBuildsFilter.All, vm.state.value.query.filter)
         assertEquals(ListUiState.Empty(), vm.state.value.list)
+        assertEquals(R.string.running_builds_empty_all, vm.state.value.emptyMessageRes)
     }
 
     @Test fun sortsConfigurationIdsIgnoringCaseAndKeepsEqualIdQueueOrder() = runTest(dispatcher) {

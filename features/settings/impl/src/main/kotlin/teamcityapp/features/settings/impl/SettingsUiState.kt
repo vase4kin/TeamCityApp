@@ -16,10 +16,26 @@
 
 package teamcityapp.features.settings.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.libraries.app_theme.ThemeMode
+import teamcityapp.libraries.resources.R as SharedR
 
 sealed interface SettingsUiState {
     data object Loading : SettingsUiState
     data object Error : SettingsUiState
-    data class Content(val selected: ThemeMode, val options: List<ThemeMode>, val saving: Boolean = false, val saveFailed: Boolean = false) : SettingsUiState
+    data class Content(val selected: ThemeMode, val options: List<ThemeMode>, val saving: Boolean = false, val saveFailed: Boolean = false) : SettingsUiState {
+        val themeOptions: List<ThemeOptionUiState> = options.map { ThemeOptionUiState(it, themeLabel(it)) }
+
+        @get:StringRes val selectedThemeLabelRes: Int = if (selected in options) themeLabel(selected) else R.string.theme_unavailable
+    }
+}
+
+/** Resource selection is part of the ViewModel-produced state; localization stays in Compose. */
+data class ThemeOptionUiState(val mode: ThemeMode, @get:StringRes val labelRes: Int)
+
+@StringRes private fun themeLabel(mode: ThemeMode): Int = when (mode) {
+    ThemeMode.Light -> SharedR.string.name_light_theme
+    ThemeMode.Dark -> SharedR.string.name_dark_theme
+    ThemeMode.AutoBattery -> SharedR.string.name_auto_battery
+    ThemeMode.System -> SharedR.string.name_follow_system
 }

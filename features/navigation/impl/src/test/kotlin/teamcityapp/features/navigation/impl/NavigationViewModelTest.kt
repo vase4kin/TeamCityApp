@@ -90,6 +90,15 @@ class NavigationViewModelTest {
     private fun viewModel(args: Map<String, Any?> = emptyMap()) = NavigationViewModel(SavedStateHandle(args), repository, rating, tracker).also { store.put("navigation", it) }
     private fun TestScope.observe(vm: NavigationViewModel) = backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.state.collect {} }
 
+    @Test fun recursiveHostModePreservesBackEvenWhenItsProjectIsRoot() = runTest(dispatcher) {
+        val vm = viewModel(mapOf(NavigationViewModel.ROOT_SCREEN to false))
+        observe(vm)
+        runCurrent()
+        assertFalse(vm.state.value.root)
+        assertEquals(teamcityapp.libraries.theme.UiText.Dynamic(""), vm.state.value.title)
+        assertEquals(R.string.navigation_back, vm.state.value.navigationLabelRes)
+    }
+
     @Test fun collectionLoadsRootOnceAndResumeOnlyTracksView() = runTest(dispatcher) {
         val vm = viewModel()
         vm.onResumed()
@@ -98,6 +107,8 @@ class NavigationViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(listOf("_Root" to false), calls)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.navigation_projects_title), vm.state.value.title)
+        assertEquals(R.string.navigation_open_drawer, vm.state.value.navigationLabelRes)
         assertEquals(ListUiState.Content(rows), vm.state.value.list)
         assertEquals(RatingPromptState.Available(), vm.state.value.rating)
         assertEquals(listOf("view", "show"), events)

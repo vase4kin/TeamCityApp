@@ -25,8 +25,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import teamcityapp.features.create_account.api.CreateAccountTracker
 import teamcityapp.libraries.authentication.*
+import teamcityapp.libraries.theme.UiText
 
-data class CreateAccountUiState(val form: AuthenticationFormState = AuthenticationFormState(), val created: Boolean = false)
+data class CreateAccountUiState(val form: AuthenticationFormState = AuthenticationFormState(), val created: Boolean = false) {
+    val formErrorMessage: UiText? = if (form.error == AuthenticationError.DuplicateAccount) UiText.Resource(R.string.add_new_account_dialog_account_exist_error_message) else form.errorMessage
+}
 
 @HiltViewModel
 class CreateAccountViewModel @Inject constructor(private val repository: AuthenticationRepository, private val tracker: CreateAccountTracker) : ViewModel() {

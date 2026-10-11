@@ -34,11 +34,12 @@ class NavigationActivity : AppCompatActivity() {
     private val viewModel: NavigationViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        intent.putExtra(NavigationViewModel.ROOT_SCREEN, false)
         enableEdgeToEdge()
         setContent {
             TeamCityTheme {
                 TeamCitySystemBars(window)
-                NavigationRoute(router, root = false, viewModel = viewModel)
+                NavigationRoute(router, viewModel = viewModel)
             }
         }
     }

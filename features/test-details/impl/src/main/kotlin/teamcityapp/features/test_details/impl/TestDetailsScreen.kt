@@ -25,13 +25,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.theme.*
 
 @Composable
@@ -52,10 +50,10 @@ fun TestDetailsScreen(state: TestDetailsUiState, onRetry: () -> Unit, onClose: (
 
             TestDetailsUiState.InvalidInput -> Unit
 
-            is TestDetailsUiState.Content -> androidx.compose.material3.Surface(modifier.padding(16.dp), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
+            is TestDetailsUiState.Content -> androidx.compose.material3.Surface(modifier.padding(TeamCityDimensions.contentPadding), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
                 SelectionContainer(Modifier.fillMaxSize()) {
                     Text(
-                        text = remember(state.details) { formatTestDetails(state.details) },
+                        text = state.formattedDetails,
                         color = MaterialTheme.colorScheme.onSurface,
                         style = TeamCityMonospace,
                         modifier = Modifier.fillMaxSize().testTag("test_details:text")

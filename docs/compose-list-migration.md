@@ -76,6 +76,49 @@ Shared leading surfaces, section headings, and loading placeholders use the same
 
 The same error components are used by Settings, Manage Accounts, Splash, Build Log, Drawer, About, authentication forms, Run Build, and Quick Filter. Feature-specific explanations and recovery callbacks remain with their owners: an authentication failure offers Sign in, and download/count failures retry their own operation. Favorites presents one all-failed explanation rather than duplicating a generic failure. Field validation remains attached to its field, and consent/permission dialogs retain their existing purpose.
 
+## Compose text ownership
+
+Compose screens resolve localized text against the current composition, while
+ViewModel-produced UI models select state-dependent resource IDs. Use `@StringRes`
+for a simple message or action label and `UiText` from `libraries/theme` for text
+that can contain formatting arguments or server-provided content. The descriptor
+survives configuration changes without retaining a localized string or Android
+resources. Feature resource IDs stay in feature implementations, outside domain
+models and feature API contracts.
+
+Paged Tests, Changes, and Build History map presentation rows before rendering;
+finite build lists expose presentation rows alongside their complete launch
+snapshots. Rendering still uses lazy Paging item access and preserves list refresh
+flags, navigation payloads, and page caching. Navigation host mode is an explicit
+ViewModel input so recursive screens keep Back even when opened for the root
+project. The action sheet and Overview expose labeled action items in their state.
+
+The audit covers every current Compose feature and the shared text-bearing
+components:
+
+| Features/components | Text ownership |
+| --- | --- |
+| Build History | Notice messages/actions, favorite labels/failures, coachmarks, row status and section text in UI models |
+| Tests and Changes | Filter/empty/section/status labels and file-count badges selected before rendering paged rows |
+| Running Builds, Build Queue, Snapshot Dependencies | Empty-filter messages and shared build-row presentation selected in UI state |
+| Navigation and Favorites | Host title/navigation labels and failure feedback in UI state |
+| Build Overview and Action Bottom Sheet | Row labels/fallback values and action labels in UI models |
+| Run Build, Filter Builds, Quick Filter Bottom Sheet | Submission/error text, option summaries, branch fallback text and filter labels in UI state |
+| Login and Create Account | Shared authentication error descriptors; duplicate-account text belongs to Create Account |
+| Build Log and Drawer | Recovery messages/actions and account status messages in UI state |
+| Settings and Properties | Theme names/availability and empty property-value descriptors in UI state |
+| Artifacts and Manage Accounts | Local platform-error/consent/removal dialog models carry resource descriptors |
+| About, Splash, Change Details, Test Details | Fixed screen/section/state copy has no alternative text-selection mapping; test detail formatting is produced with content state |
+| Shared theme, list, authentication and build components | Resolve descriptors supplied by state; retain fixed component copy and visual/layout decisions |
+
+Static titles, fixed section copy, plurals resolved by Android, and theme/layout
+choices remain in composables. Expansion labels remain with the local expansion
+state, as do UI-scoped consent dialogs and platform launch errors. Do not move UI
+lifecycle or platform action execution into a retained ViewModel to relocate text.
+Existing screenshot baselines verify that the ownership change preserves wording
+and layout; resource assertions exercise state transitions, and the shared text
+resolver has a locale-change test using a retained descriptor.
+
 ## Lifecycle and failure policy
 
 Home hides and shows fragments without pausing them. Its list routes therefore need explicit visibility gates alongside lifecycle collection. Hidden finite lists should cancel unfinished requests. Navigation retains completed content; Agents and Favorites reload with normal cache policy after a genuine return. Configuration recreation retains completed content without duplicating requests.

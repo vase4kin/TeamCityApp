@@ -16,6 +16,7 @@
 
 package teamcityapp.features.favorites.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.list_state.ListUiState
 
@@ -23,7 +24,9 @@ data class FavoritesUiState(
     val list: ListUiState<BuildConfigurationSummary> = ListUiState.Loading,
     val failure: FavoritesFailure = FavoritesFailure.None,
     val savedIds: List<String> = emptyList()
-)
+) {
+    @get:StringRes val refreshFailureMessageRes: Int? = if (failure == FavoritesFailure.AllFailed) R.string.favorites_all_failed else null
+}
 
 sealed interface FavoritesFailure {
     data object None : FavoritesFailure

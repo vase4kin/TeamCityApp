@@ -58,7 +58,7 @@ class SnapshotDependenciesViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(listOf("parent" to false), repository.calls)
-        assertEquals(ListUiState.Content(rows), vm.state.value)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
     }
 
     @Test fun returnedOrderAndFullLaunchSnapshotsRemainUnchanged() = runTest(dispatcher) {
@@ -66,8 +66,8 @@ class SnapshotDependenciesViewModelTest {
         val vm = vm()
         observe(vm)
         runCurrent()
-        assertEquals(ListUiState.Content(rows.reversed()), vm.state.value)
-        assertNotNull((vm.state.value as ListUiState.Content).items.first().tests)
+        assertEquals(ListUiState.Content(rows.reversed()), vm.state.value.list)
+        assertNotNull((vm.state.value.list as ListUiState.Content).items.first().tests)
     }
 
     @Test fun refreshUsesFreshListWhileRetainingRows() = runTest(dispatcher) {
@@ -78,11 +78,11 @@ class SnapshotDependenciesViewModelTest {
         repository.load = { deferred.await() }
         vm.refresh()
         runCurrent()
-        assertEquals(ListUiState.Content(rows, isRefreshing = true), vm.state.value)
+        assertEquals(ListUiState.Content(rows, isRefreshing = true), vm.state.value.list)
         assertEquals("parent" to true, repository.calls.last())
         deferred.complete(emptyList())
         runCurrent()
-        assertEquals(ListUiState.Empty(), vm.state.value)
+        assertEquals(ListUiState.Empty(), vm.state.value.list)
     }
 
     @Test fun failedRefreshRetainsRowsAndRetryForcesData() = runTest(dispatcher) {
@@ -92,11 +92,11 @@ class SnapshotDependenciesViewModelTest {
         repository.load = { error("offline") }
         vm.refresh()
         runCurrent()
-        assertEquals(ListUiState.Content(rows, refreshFailed = true), vm.state.value)
+        assertEquals(ListUiState.Content(rows, refreshFailed = true), vm.state.value.list)
         repository.load = { rows }
         vm.retry()
         runCurrent()
-        assertEquals(ListUiState.Content(rows), vm.state.value)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
         assertEquals("parent" to true, repository.calls.last())
     }
 
@@ -105,11 +105,11 @@ class SnapshotDependenciesViewModelTest {
         val vm = vm()
         observe(vm)
         runCurrent()
-        assertEquals(ListUiState.Error, vm.state.value)
+        assertEquals(ListUiState.Error, vm.state.value.list)
         repository.load = { rows }
         vm.retry()
         runCurrent()
-        assertEquals(ListUiState.Content(rows), vm.state.value)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
         assertEquals("parent" to true, repository.calls.last())
     }
 
@@ -128,11 +128,11 @@ class SnapshotDependenciesViewModelTest {
         collector.cancel()
         runCurrent()
         assertTrue(cancelled)
-        assertEquals(ListUiState.Loading, vm.state.value)
+        assertEquals(ListUiState.Loading, vm.state.value.list)
         repository.load = { rows }
         observe(vm)
         runCurrent()
-        assertEquals(ListUiState.Content(rows), vm.state.value)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
     }
 
     @Test fun visibleConfigurationRecreationKeepsCompletedResults() = runTest(dispatcher) {

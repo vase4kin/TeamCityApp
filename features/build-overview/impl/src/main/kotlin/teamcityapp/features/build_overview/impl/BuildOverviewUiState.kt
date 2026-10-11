@@ -16,6 +16,7 @@
 
 package teamcityapp.features.build_overview.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
@@ -24,7 +25,11 @@ data class BuildOverviewUiState(
     val list: ListUiState<OverviewRow> = ListUiState.Loading,
     val build: BuildLaunchData? = null,
     val actions: List<BuildOverviewAction> = emptyList()
-)
+) {
+    val actionItems: List<OverviewActionUiState> = actions.map { OverviewActionUiState(it, it.label()) }
+}
+
+data class OverviewActionUiState(val action: BuildOverviewAction, @get:StringRes val labelRes: Int)
 internal fun buildOverviewState(state: ListUiState<BuildLaunchData>): BuildOverviewUiState = when (state) {
     ListUiState.Loading -> BuildOverviewUiState()
 

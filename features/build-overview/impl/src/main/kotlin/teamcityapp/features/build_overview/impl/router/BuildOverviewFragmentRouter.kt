@@ -56,7 +56,7 @@ class BuildOverviewFragmentRouter @Inject constructor(
             OverviewRowAction.Configuration -> SheetMenuType.BuildType
             OverviewRowAction.Project -> SheetMenuType.Project
         }
-        val dialog = sheets.createBottomSheetDialog(activity.getString(row.field.label()), value, type)
+        val dialog = sheets.createBottomSheetDialog(activity.getString(row.labelRes), value, type)
         watchSheet(dialog)
         dialog.show(activity.supportFragmentManager, TAG)
     }

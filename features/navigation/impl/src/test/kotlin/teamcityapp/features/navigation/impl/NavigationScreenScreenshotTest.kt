@@ -90,7 +90,7 @@ class NavigationScreenScreenshotTest(private val stateName: String, private val 
             else -> NavigationUiState(project, ListUiState.Content(rows))
         }
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { NavigationScreen(state, stateName == "root_content", {}, {}, {}, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { NavigationScreen(state.copy(root = stateName == "root_content"), {}, {}, {}, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("navigation_${stateName}_${variant.name}.png")

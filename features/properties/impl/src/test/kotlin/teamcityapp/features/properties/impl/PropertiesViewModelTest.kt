@@ -29,28 +29,35 @@ class PropertiesViewModelTest {
 
     @Test fun keepsOrderDuplicateNamesAndEmptyValues() {
         val properties = listOf(Property("sdk", "24"), Property("sdk", ""), Property("secret", "•••"))
-        assertEquals(PropertiesUiState.Content(properties), model(properties).state.value)
+        val state = model(properties).state.value as PropertiesUiState.Content
+        assertEquals(PropertiesUiState.Content(properties), state)
+        assertEquals(listOf(teamcityapp.libraries.theme.UiText.Dynamic("24"), teamcityapp.libraries.theme.UiText.Resource(R.string.text_property_value_empty), teamcityapp.libraries.theme.UiText.Dynamic("•••")), state.rows.map { it.valueText })
     }
 
     @Test fun restoringSavedArgumentsKeepsContent() {
         val properties = listOf(Property("env.CI", "true"))
         val saved = mapOf(
             PropertiesViewModel.ARG_NAMES to arrayListOf("env.CI"),
-            PropertiesViewModel.ARG_VALUES to arrayListOf("true"))
+            PropertiesViewModel.ARG_VALUES to arrayListOf("true")
+        )
         assertEquals(PropertiesUiState.Content(properties), PropertiesViewModel(SavedStateHandle(saved)).state.value)
     }
 
     @Test fun ownsSnapshotRatherThanMutableArgumentLists() {
         val names = arrayListOf("sdk")
         val values = arrayListOf("24")
-        val model = PropertiesViewModel(SavedStateHandle(mapOf(
-            PropertiesViewModel.ARG_NAMES to names, PropertiesViewModel.ARG_VALUES to values)))
+        val model = PropertiesViewModel(SavedStateHandle(mapOf(PropertiesViewModel.ARG_NAMES to names, PropertiesViewModel.ARG_VALUES to values)))
         names.clear()
         values[0] = "changed"
         assertEquals(PropertiesUiState.Content(listOf(Property("sdk", "24"))), model.state.value)
     }
 
-    private fun model(properties: List<Property>) = PropertiesViewModel(SavedStateHandle(mapOf(
-        PropertiesViewModel.ARG_NAMES to ArrayList(properties.map { it.name }),
-        PropertiesViewModel.ARG_VALUES to ArrayList(properties.map { it.value }))))
+    private fun model(properties: List<Property>) = PropertiesViewModel(
+        SavedStateHandle(
+            mapOf(
+                PropertiesViewModel.ARG_NAMES to ArrayList(properties.map { it.name }),
+                PropertiesViewModel.ARG_VALUES to ArrayList(properties.map { it.value })
+            )
+        )
+    )
 }

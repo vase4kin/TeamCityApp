@@ -78,6 +78,7 @@ class BuildQueueViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(ListUiState.Empty(), vm.state.value.list)
+        assertEquals(R.string.build_queue_empty_favorites, vm.state.value.emptyMessageRes)
         vm.refresh()
         runCurrent()
         assertTrue(repository.calls.isEmpty())
@@ -131,6 +132,7 @@ class BuildQueueViewModelTest {
         assertTrue(cancelled)
         assertEquals(BuildQueueFilter.All, vm.state.value.query.filter)
         assertEquals(ListUiState.Empty(), vm.state.value.list)
+        assertEquals(R.string.build_queue_empty_all, vm.state.value.emptyMessageRes)
     }
 
     @Test fun sortsConfigurationIdsIgnoringCaseAndKeepsEqualIdQueueOrder() = runTest(dispatcher) {

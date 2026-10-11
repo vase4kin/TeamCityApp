@@ -26,10 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /**
@@ -50,7 +50,7 @@ fun TeamCityListContainer(
 ) {
     Surface(modifier) {
         BoxWithConstraints(Modifier.fillMaxSize()) {
-            val failureMaxHeight = (maxHeight / 3).coerceAtLeast(48.dp)
+            val failureMaxHeight = (maxHeight / 3).coerceAtLeast(TeamCityDimensions.minimumTouchTarget)
             when (state) {
                 ListUiState.Loading -> loading()
 
@@ -98,7 +98,7 @@ private fun RefreshFailure(onRetry: () -> Unit, enabled: Boolean, message: Strin
     ErrorNotice(
         message = message ?: stringResource(R.string.list_refresh_failed),
         onRetry = onRetry,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).heightIn(max = maxHeight),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).heightIn(max = maxHeight),
         actionLabel = stringResource(R.string.list_action_retry),
         enabled = enabled
     )

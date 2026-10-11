@@ -34,11 +34,13 @@ class BottomSheetViewModelTest {
         val vm = BottomSheetViewModel(SavedStateHandle(mapOf("arg_title" to "Build branch", "arg_bottom_sheet_type" to 1, "arg_description" to arrayOf("main"))))
         assertEquals("Build branch", vm.state.value.title)
         assertEquals(sheetItems(SheetMenuType.Branch, listOf("main")), vm.state.value.items)
+        assertEquals(listOf(R.string.build_element_copy, R.string.build_element_show_all_builds_built_branch), vm.state.value.menuItems.map { it.labelRes })
     }
 
     @Test fun missingOrInvalidArgumentsHaveASafeDefault() {
         val vm = BottomSheetViewModel(SavedStateHandle(mapOf("arg_bottom_sheet_type" to -10)))
         assertEquals(listOf(SheetItem(SheetAction.Copy, "")), vm.state.value.items)
+        assertEquals(listOf(R.string.build_element_copy), vm.state.value.menuItems.map { it.labelRes })
     }
 
     @Test fun artifactNamesMatchLegacyTrailingSlashBehavior() {

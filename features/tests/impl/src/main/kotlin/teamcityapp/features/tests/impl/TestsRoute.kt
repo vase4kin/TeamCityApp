@@ -44,13 +44,13 @@ internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltVie
     // render with the newly selected filter. A configuration recreation reuses its generation.
     key(selection.filter.name) {
         val lifecycle = LocalLifecycleOwner.current.lifecycle
-        val visiblePages = remember(selection.pages, lifecycle) { selection.pages.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
+        val visiblePages = remember(selection.rows, lifecycle) { selection.rows.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED) }
         val tests = visiblePages.collectAsLazyPagingItems()
         var completed by rememberSaveable { mutableStateOf(false) }
         val refresh = tests.loadState.refresh
         if (refresh is LoadState.NotLoading) SideEffect { completed = true }
         val state: ListUiState<TestOccurrence> = if (tests.itemCount > 0) {
-            ListUiState.Content(tests.itemSnapshotList.items, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
+            ListUiState.Content(tests.itemSnapshotList.items.map { it.test }, isRefreshing = refresh is LoadState.Loading, refreshFailed = refresh is LoadState.Error)
         } else {
             when (refresh) {
                 is LoadState.Loading -> if (completed) ListUiState.Empty(isRefreshing = true) else ListUiState.Loading
@@ -60,8 +60,7 @@ internal fun TestsRoute(router: TestsRouter, viewModel: TestsViewModel = hiltVie
         }
         TestsScreen(
             state = state,
-            filter = selection.filter,
-            counts = viewModel.counts,
+            presentation = selection.presentation,
             countState = count,
             itemCount = tests.itemCount,
             itemAt = { tests[it] },

@@ -16,6 +16,7 @@
 
 package teamcityapp.features.agents.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.features.agents.api.Agent
 import teamcityapp.features.agents.api.AgentsFilter
 import teamcityapp.libraries.list_state.ListUiState
@@ -23,4 +24,6 @@ import teamcityapp.libraries.list_state.ListUiState
 data class AgentsUiState(
     val filter: AgentsFilter = AgentsFilter.Connected,
     val list: ListUiState<Agent> = ListUiState.Loading
-)
+) {
+    @get:StringRes val emptyMessageRes: Int = if (filter == AgentsFilter.Connected) R.string.agents_empty_connected else R.string.agents_empty_disconnected
+}

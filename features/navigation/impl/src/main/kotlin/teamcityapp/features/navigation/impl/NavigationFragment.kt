@@ -39,7 +39,7 @@ class NavigationFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) = ComposeView(requireContext()).apply {
         visible = !isHidden
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent { TeamCityTheme { NavigationRoute(router, root = true, visible = visible) } }
+        setContent { TeamCityTheme { NavigationRoute(router, visible = visible) } }
     }
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
