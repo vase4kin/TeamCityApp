@@ -25,40 +25,23 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.features.create_account.api.router.CreateAccountAppRouter
+import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.create_account.impl.navigation.CreateAccountNavigationImpl
-import teamcityapp.features.create_account.impl.router.CreateAccountRouterImpl
 import teamcityapp.features.create_account.impl.tracker.CreateAccountTrackerImpl
 import teamcityapp.libraries.authentication.AuthenticationAnalytics
-import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class CreateAccountOwnershipTest {
-    @Test fun navigationPreservesLaunchBehavior() {
-        val owner = spy(Robolectric.buildActivity(Activity::class.java).setup().get())
-        doNothing().`when`(owner).startActivity(any(Intent::class.java))
-        CreateAccountNavigationImpl().open(owner)
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        verify(owner).startActivity(intent.capture())
-        assertEquals(CreateAccountActivity::class.java.name, intent.value.component!!.className)
-        assertEquals(0, intent.value.flags)
-        verify(owner).overridePendingTransition(SharedR.anim.slide_in_bottom, SharedR.anim.hold)
-    }
-
-    @Test fun successfulNavigationPreservesCloseOrder() {
+    @Test fun compatibilityCallerOpensTheRootDestination() {
         val owner = mock(Activity::class.java)
-        val destination = mock(CreateAccountAppRouter::class.java)
-        CreateAccountRouterImpl(owner, destination).openProjects()
-        val order = inOrder(owner, destination)
-
-        order.verify(owner).finish()
-        order.verify(owner).overridePendingTransition(SharedR.anim.hold, SharedR.anim.slide_out_bottom)
-        order.verify(destination).openProjects(owner)
-        order.verifyNoMoreInteractions()
+        val launcher = mock(DestinationLauncher::class.java)
+        CreateAccountNavigationImpl(launcher).open(owner)
+        verify(launcher).open(owner, CreateAccountDestination, 0)
+        verifyNoInteractions(owner)
     }
 
     @Test fun analyticsPreserveScreenAndActionEvents() {

@@ -17,7 +17,6 @@
 package teamcityapp.features.login.impl
 import android.content.ComponentName
 import android.content.Context
-import android.content.pm.ActivityInfo
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.*
@@ -25,11 +24,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class FeatureActivityAliasesTest {
-    @Test fun legacyComponentsResolveToFeatureOwnedActivities() {
+    @Test fun legacyComponentsResolveToTheirCurrentOwningActivity() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val targets = mapOf(
-            "com.github.vase4kin.teamcityapp.login.view.LoginActivity" to "teamcityapp.features.login.impl.LoginActivity",
-            "com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity" to "teamcityapp.features.create_account.impl.CreateAccountActivity",
+            "com.github.vase4kin.teamcityapp.login.view.LoginActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
+            "com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "com.github.vase4kin.teamcityapp.runbuild.view.RunBuildActivity" to "teamcityapp.features.run_build.impl.RunBuildActivity",
             "com.github.vase4kin.teamcityapp.filter_builds.view.FilterBuildsActivity" to "teamcityapp.features.filter_builds.impl.FilterBuildsActivity"
         )
@@ -39,7 +38,6 @@ class FeatureActivityAliasesTest {
             assertFalse(alias.exported)
             val activity = context.packageManager.getActivityInfo(ComponentName(context, target), 0)
             assertFalse(activity.exported)
-            if (legacy.contains("login.view")) assertEquals(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, activity.screenOrientation)
         }
     }
 }

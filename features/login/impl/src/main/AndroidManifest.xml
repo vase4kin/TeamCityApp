@@ -14,11 +14,4 @@ Copyright 2026 Andrey Tolpeev
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
-    <application>
-        <activity android:name="teamcityapp.features.login.impl.LoginActivity" android:exported="false" android:screenOrientation="portrait"
-            android:theme="@style/LoginActivityTheme"
-            tools:ignore="LockedOrientationActivity" />
-        <activity-alias android:name="com.github.vase4kin.teamcityapp.login.view.LoginActivity" android:targetActivity="teamcityapp.features.login.impl.LoginActivity" android:exported="false" />
-    </application>
-</manifest>
+<manifest />

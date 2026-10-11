@@ -23,6 +23,8 @@ import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
+import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
+import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
@@ -40,6 +42,8 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
             TEST_DETAILS_COMPONENT -> TestDetailsDestination(intent.getStringExtra("arg_test_url").orEmpty())
             CHANGE_DETAILS_COMPONENT -> ChangeDetailsDestination(changeDetails(intent))
             MANAGE_ACCOUNTS_COMPONENT -> ManageAccountsDestination
+            LOGIN_COMPONENT, LEGACY_LOGIN_COMPONENT -> LoginDestination
+            CREATE_ACCOUNT_COMPONENT, LEGACY_CREATE_ACCOUNT_COMPONENT -> CreateAccountDestination
             else -> null
         }
     }
@@ -53,6 +57,10 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     }
 
     companion object {
+        const val LOGIN_COMPONENT = "teamcityapp.features.login.impl.LoginActivity"
+        const val LEGACY_LOGIN_COMPONENT = "com.github.vase4kin.teamcityapp.login.view.LoginActivity"
+        const val CREATE_ACCOUNT_COMPONENT = "teamcityapp.features.create_account.impl.CreateAccountActivity"
+        const val LEGACY_CREATE_ACCOUNT_COMPONENT = "com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity"
         const val TEST_DETAILS_COMPONENT = "teamcityapp.features.test_details.impl.TestDetailsActivity"
         const val CHANGE_DETAILS_COMPONENT = "teamcityapp.features.change_details.impl.ChangeDetailsActivity"
         const val MANAGE_ACCOUNTS_COMPONENT = "teamcityapp.features.manage_accounts.impl.ManageAccountsActivity"

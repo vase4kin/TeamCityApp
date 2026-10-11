@@ -18,14 +18,13 @@
 package teamcityapp.features.create_account.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
+import javax.inject.Inject
+import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.create_account.api.navigation.CreateAccountNavigation
-import teamcityapp.features.create_account.impl.CreateAccountActivity
-import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-internal class CreateAccountNavigationImpl : CreateAccountNavigation {
+class CreateAccountNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : CreateAccountNavigation {
     override fun open(activity: Activity) {
-        activity.startActivity(Intent(activity, CreateAccountActivity::class.java))
-        activity.overridePendingTransition(SharedR.anim.slide_in_bottom, SharedR.anim.hold)
+        launcher.open(activity, CreateAccountDestination)
     }
 }

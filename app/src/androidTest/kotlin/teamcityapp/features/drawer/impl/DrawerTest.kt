@@ -49,7 +49,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import teamcityapp.features.about.api.navigation.AboutDestination
-import teamcityapp.features.create_account.impl.CreateAccountActivity
+import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
 import teamcityapp.features.drawer.impl.navigation.DrawerNavigationImpl
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
@@ -153,7 +153,7 @@ class DrawerTest {
 
     @Test fun manageOpensManageAccountsDestination() = navigation("manage", MainActivity::class.java, ManageAccountsDestination)
 
-    @Test fun addOpensCreateAccountActivity() = navigation("add", CreateAccountActivity::class.java)
+    @Test fun addOpensCreateAccountDestination() = navigation("add", MainActivity::class.java, CreateAccountDestination)
 
     @Test fun privacyLaunchesTheExistingUrl() {
         launch().use {

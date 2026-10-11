@@ -29,6 +29,8 @@ import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
+import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
+import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
@@ -92,5 +94,15 @@ class IncomingDestinationResolverTest {
         assertEquals(ChangeDetailsDestination(), resolver.destination(incoming))
         incoming.putStringArrayListExtra("change:file_names", arrayListOf())
         assertEquals(ChangeDetailsDestination(ChangeDetails("id", "", "", "", emptyList(), "", "")), resolver.destination(incoming))
+    }
+
+    @Test fun bothInstalledAuthenticationComponentNamesDispatchToTheRootKeys() {
+        listOf(IncomingDestinationResolver.LOGIN_COMPONENT, IncomingDestinationResolver.LEGACY_LOGIN_COMPONENT).forEach { component ->
+            assertEquals(LoginDestination, resolver.destination(intent(component)))
+        }
+        listOf(IncomingDestinationResolver.CREATE_ACCOUNT_COMPONENT, IncomingDestinationResolver.LEGACY_CREATE_ACCOUNT_COMPONENT).forEach { component ->
+            assertEquals(CreateAccountDestination, resolver.destination(intent(component)))
+        }
+        verifyNoInteractions(registry)
     }
 }

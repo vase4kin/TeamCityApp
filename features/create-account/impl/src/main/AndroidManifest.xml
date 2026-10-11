@@ -14,10 +14,4 @@ Copyright 2026 Andrey Tolpeev
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
-    <application>
-        <activity android:name="teamcityapp.features.create_account.impl.CreateAccountActivity" android:exported="false" android:label="@string/title_activity_create_account"
-            android:theme="@style/Theme.MyApp" />
-        <activity-alias android:name="com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity" android:targetActivity="teamcityapp.features.create_account.impl.CreateAccountActivity" android:exported="false" />
-    </application>
-</manifest>
+<manifest />

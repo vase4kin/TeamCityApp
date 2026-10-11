@@ -30,6 +30,14 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" />
+        <activity-alias android:name="teamcityapp.features.login.impl.LoginActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.login.view.LoginActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.create_account.impl.CreateAccountActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="com.github.vase4kin.teamcityapp.account.create.view.CreateAccountActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="teamcityapp.features.test_details.impl.TestDetailsActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="teamcityapp.features.change_details.impl.ChangeDetailsActivity"

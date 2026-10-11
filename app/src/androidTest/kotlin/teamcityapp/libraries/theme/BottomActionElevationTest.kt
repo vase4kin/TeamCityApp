@@ -35,6 +35,8 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
@@ -42,7 +44,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import teamcityapp.features.create_account.impl.CreateAccountActivity
 import teamcityapp.features.filter_builds.impl.FilterBuildsActivity
 import teamcityapp.features.run_build.impl.RunBuildActivity
 import teamcityapp.libraries.app_theme.ThemeMode
@@ -124,7 +125,7 @@ class BottomActionElevationTest {
     }
     private fun create(dark: Boolean) {
         mode(dark)
-        ActivityScenario.launch<CreateAccountActivity>(Intent(app, CreateAccountActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setClassName(app, IncomingDestinationResolver.CREATE_ACCOUNT_COMPONENT)).use { scenario ->
             await("create-account")
             inspect(scenario, "create-account", "fit", false)
             landscape(scenario)

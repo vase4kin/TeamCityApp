@@ -16,26 +16,15 @@
 
 package teamcityapp.features.login.impl.dagger
 
-import android.app.Activity
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
 import teamcityapp.features.login.api.navigation.LoginNavigation
-import teamcityapp.features.login.api.router.LoginAppRouter
 import teamcityapp.features.login.impl.navigation.LoginNavigationImpl
-import teamcityapp.features.login.impl.router.LoginRouter
-import teamcityapp.features.login.impl.router.LoginRouterImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
-object LoginNavigationModule {
-    @Provides fun navigation(): LoginNavigation = LoginNavigationImpl()
-}
-
-@Module
-@InstallIn(ActivityComponent::class)
-object LoginActivityModule {
-    @Provides fun router(activity: Activity, appRouter: LoginAppRouter): LoginRouter = LoginRouterImpl(activity, appRouter)
+abstract class LoginNavigationModule {
+    @Binds abstract fun navigation(implementation: LoginNavigationImpl): LoginNavigation
 }

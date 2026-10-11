@@ -1,4 +1,5 @@
 /*
+ * Copyright 2019 Andrey Tolpeev
  * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,17 +15,15 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.login.impl.router
+package com.github.vase4kin.teamcityapp.helper
 
 import android.app.Activity
-import teamcityapp.features.login.api.router.LoginAppRouter
+import android.content.Intent
+import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.rule.ActivityTestRule
 
-class LoginRouterImpl(private val activity: Activity, private val appRouter: LoginAppRouter) : LoginRouter {
-    override fun close() {
-        activity.finish()
-    }
-    override fun openProjects() {
-        appRouter.openProjects(activity)
-        close()
+class CustomActivityTestRule<T : Activity>(activityClass: Class<T>, private val componentName: String? = null) : ActivityTestRule<T>(activityClass, false, false) {
+    override fun getActivityIntent(): Intent = (super.getActivityIntent() ?: Intent(Intent.ACTION_MAIN)).apply {
+        componentName?.let { setClassName(InstrumentationRegistry.getInstrumentation().targetContext, it) }
     }
 }

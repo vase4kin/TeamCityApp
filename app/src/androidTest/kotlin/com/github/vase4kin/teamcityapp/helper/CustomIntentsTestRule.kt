@@ -1,4 +1,5 @@
 /*
+ * Copyright 2019 Andrey Tolpeev
  * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,11 +15,15 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.login.api.router
+package com.github.vase4kin.teamcityapp.helper
 
 import android.app.Activity
+import android.content.Intent
+import androidx.test.espresso.intent.rule.IntentsTestRule
+import androidx.test.platform.app.InstrumentationRegistry
 
-/** Destinations owned by the application, called by the feature's UI-scoped router. */
-interface LoginAppRouter {
-    fun openProjects(activity: Activity)
+class CustomIntentsTestRule<T : Activity>(activityClass: Class<T>, private val componentName: String? = null) : IntentsTestRule<T>(activityClass, false, false) {
+    override fun getActivityIntent(): Intent = (super.getActivityIntent() ?: Intent(Intent.ACTION_MAIN)).apply {
+        componentName?.let { setClassName(InstrumentationRegistry.getInstrumentation().targetContext, it) }
+    }
 }

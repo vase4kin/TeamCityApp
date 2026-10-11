@@ -26,10 +26,7 @@ import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents.assertNoUnverifiedIntents
-import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.BundleMatchers.hasEntry
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -38,7 +35,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_AUTH
 import com.github.vase4kin.teamcityapp.dagger.modules.AppModule.CLIENT_BASE
@@ -47,8 +43,9 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.capture
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
 import com.github.vase4kin.teamcityapp.login.dagger.LoginActivityTestAppModule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -71,7 +68,6 @@ import org.hamcrest.CoreMatchers.containsString
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
-import org.hamcrest.core.AllOf.allOf
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Rule
@@ -84,11 +80,10 @@ import org.mockito.Mockito.doAnswer
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
 import org.mockito.kotlin.any
-import teamcityapp.features.login.impl.LoginActivity
 import teamcityapp.libraries.security.CryptoManager
 
 /**
- * Tests for [LoginActivity] with mocked internet connection
+ * Tests for [MainActivity] with mocked internet connection
  */
 @UninstallModules(AppModule::class)
 @HiltAndroidTest
@@ -113,8 +108,8 @@ class LoginActivityTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomIntentsTestRule<LoginActivity> =
-        CustomIntentsTestRule(LoginActivity::class.java)
+    val activityRule: CustomIntentsTestRule<MainActivity> =
+        CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.LOGIN_COMPONENT)
 
     @Captor
     lateinit var callbackArgumentCaptor: ArgumentCaptor<Callback>
@@ -157,6 +152,13 @@ class LoginActivityTest {
         `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
     }
 
+    private fun awaitHome() {
+        compose.waitUntil(15_000) { compose.onAllNodesWithTag("home:tab:Projects").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag("home:tab:Projects").assertIsDisplayed()
+        compose.onNodeWithTag("auth:password").assertDoesNotExist()
+        org.junit.Assert.assertEquals(MainActivity::class.java, activityRule.activity.javaClass)
+    }
+
     private val inputUrl = URL.replace("https://", "")
     private val messageEmpty = ""
 
@@ -189,17 +191,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:submit").performClick()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -207,6 +199,9 @@ class LoginActivityTest {
         assertThat(storageUtils.hasGuestAccountWithUrl(savedUrl), `is`(true))
         assertThat(storageUtils.activeUser.teamcityUrl, `is`(savedUrl))
         assertThat(storageUtils.activeUser.isSslDisabled, `is`(false))
+        val host = activityRule.activity
+        androidx.test.espresso.Espresso.pressBackUnconditionally()
+        compose.waitUntil(5_000) { host.isFinishing }
     }
 
     /**
@@ -240,17 +235,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("login:submit").performClick()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -287,17 +272,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("auth:url").performImeAction()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -333,17 +308,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("auth:url").performImeAction()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -383,17 +348,7 @@ class LoginActivityTest {
         compose.onNodeWithTag("auth:password").performImeAction()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -494,17 +449,7 @@ class LoginActivityTest {
         compose.onNodeWithText(context.getString(R.string.dialog_ok_title).uppercase()).performClick()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
@@ -530,7 +475,7 @@ class LoginActivityTest {
         compose.onNodeWithText(context.getString(teamcityapp.libraries.authentication.R.string.error_save_account)).assertIsDisplayed()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasAccountWithUrl(URL, "user"), `is`(false))
-        org.junit.Assert.assertEquals(0, androidx.test.espresso.intent.Intents.getIntents().count { it.component?.className == HomeActivity::class.java.name })
+        compose.onNodeWithTag("home:tab:Projects").assertDoesNotExist()
     }
 
     @Test
@@ -548,7 +493,7 @@ class LoginActivityTest {
         callbackArgumentCaptor.value.onResponse(call, Response.Builder().request(Request.Builder().url(URL).build()).protocol(Protocol.HTTP_1_1).code(200).message("OK").body("".toResponseBody()).build())
         compose.waitForIdle()
         compose.waitForIdle()
-        intended(hasComponent(HomeActivity::class.java.name))
+        awaitHome()
         val app = context.applicationContext as TeamCityApplicationBase
         assertThat(app.appInjector.sharedUserStorage().hasGuestAccountWithUrl(URL), `is`(true))
     }
@@ -607,17 +552,7 @@ class LoginActivityTest {
         compose.onNodeWithText(context.getString(teamcityapp.features.login.impl.R.string.dialog_try_it_out_title)).performClick()
 
         compose.waitForIdle()
-        intended(
-            allOf(
-                hasComponent(HomeActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        equalTo(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED),
-                        equalTo(true)
-                    )
-                )
-            )
-        )
+        awaitHome()
 
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase

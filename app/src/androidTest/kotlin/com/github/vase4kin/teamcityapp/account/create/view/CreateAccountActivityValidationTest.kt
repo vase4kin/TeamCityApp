@@ -39,6 +39,8 @@ import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -55,10 +57,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
-import teamcityapp.features.create_account.impl.CreateAccountActivity
 
 /**
- * Validation tests for [CreateAccountActivity]
+ * Validation tests for [MainActivity]
  */
 @UninstallModules(AppModule::class)
 @HiltAndroidTest
@@ -83,8 +84,8 @@ class CreateAccountActivityValidationTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomActivityTestRule<CreateAccountActivity> =
-        CustomActivityTestRule(CreateAccountActivity::class.java)
+    val activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.LEGACY_CREATE_ACCOUNT_COMPONENT)
 
     @BindValue
     @Mock

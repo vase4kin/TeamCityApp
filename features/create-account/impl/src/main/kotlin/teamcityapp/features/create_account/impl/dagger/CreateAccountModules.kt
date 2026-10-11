@@ -16,26 +16,15 @@
 
 package teamcityapp.features.create_account.impl.dagger
 
-import android.app.Activity
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
 import teamcityapp.features.create_account.api.navigation.CreateAccountNavigation
-import teamcityapp.features.create_account.api.router.CreateAccountAppRouter
 import teamcityapp.features.create_account.impl.navigation.CreateAccountNavigationImpl
-import teamcityapp.features.create_account.impl.router.CreateAccountRouter
-import teamcityapp.features.create_account.impl.router.CreateAccountRouterImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
-object CreateAccountNavigationModule {
-    @Provides fun navigation(): CreateAccountNavigation = CreateAccountNavigationImpl()
-}
-
-@Module
-@InstallIn(ActivityComponent::class)
-object CreateAccountActivityModule {
-    @Provides fun router(activity: Activity, appRouter: CreateAccountAppRouter): CreateAccountRouter = CreateAccountRouterImpl(activity, appRouter)
+abstract class CreateAccountNavigationModule {
+    @Binds abstract fun navigation(implementation: CreateAccountNavigationImpl): CreateAccountNavigation
 }

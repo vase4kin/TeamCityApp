@@ -19,14 +19,16 @@ package teamcityapp.features.login.impl.navigation
 
 import android.app.Activity
 import android.content.Intent
+import javax.inject.Inject
+import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.login.api.navigation.LoginNavigation
-import teamcityapp.features.login.impl.LoginActivity
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-internal class LoginNavigationImpl : LoginNavigation {
+class LoginNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : LoginNavigation {
     override fun open(activity: Activity) {
-        activity.startActivity(Intent(activity, LoginActivity::class.java))
+        launcher.open(activity, LoginDestination)
     }
     override fun openWithClearStack(activity: Activity) {
-        activity.startActivity(Intent(activity, LoginActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+        launcher.open(activity, LoginDestination, Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
     }
 }

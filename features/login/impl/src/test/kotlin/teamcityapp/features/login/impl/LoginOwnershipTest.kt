@@ -25,48 +25,31 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
-import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.features.login.api.router.LoginAppRouter
+import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.login.impl.navigation.LoginNavigationImpl
-import teamcityapp.features.login.impl.router.LoginRouterImpl
 import teamcityapp.features.login.impl.tracker.LoginTrackerImpl
 import teamcityapp.libraries.authentication.AuthenticationAnalytics
-import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class LoginOwnershipTest {
-    @Test fun navigationPreservesLaunchBehavior() {
-        val owner = spy(Robolectric.buildActivity(Activity::class.java).setup().get())
-        doNothing().`when`(owner).startActivity(any(Intent::class.java))
-        LoginNavigationImpl().open(owner)
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        verify(owner).startActivity(intent.capture())
-        assertEquals(LoginActivity::class.java.name, intent.value.component!!.className)
-        assertEquals(0, intent.value.flags)
-    }
-
-    @Test fun accountSwitchClearsTheTask() {
-        val owner = spy(Robolectric.buildActivity(Activity::class.java).setup().get())
-        doNothing().`when`(owner).startActivity(any(Intent::class.java))
-        LoginNavigationImpl().openWithClearStack(owner)
-        val intent = ArgumentCaptor.forClass(Intent::class.java)
-        verify(owner).startActivity(intent.capture())
-        assertEquals(LoginActivity::class.java.name, intent.value.component!!.className)
-        assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK, intent.value.flags)
-    }
-
-    @Test fun successfulNavigationPreservesCloseOrder() {
+    @Test fun compatibilityCallerOpensTheRootDestination() {
         val owner = mock(Activity::class.java)
-        val destination = mock(LoginAppRouter::class.java)
-        LoginRouterImpl(owner, destination).openProjects()
-        val order = inOrder(owner, destination)
-        order.verify(destination).openProjects(owner)
-        order.verify(owner).finish()
+        val launcher = mock(DestinationLauncher::class.java)
+        LoginNavigationImpl(launcher).open(owner)
+        verify(launcher).open(owner, LoginDestination, 0)
+        verifyNoInteractions(owner)
+    }
 
-        order.verifyNoMoreInteractions()
+    @Test fun accountSwitchRetainsTheClearTaskPolicy() {
+        val owner = mock(Activity::class.java)
+        val launcher = mock(DestinationLauncher::class.java)
+        LoginNavigationImpl(launcher).openWithClearStack(owner)
+        verify(launcher).open(owner, LoginDestination, Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        verifyNoInteractions(owner)
     }
 
     @Test fun analyticsPreserveScreenAndActionEvents() {
