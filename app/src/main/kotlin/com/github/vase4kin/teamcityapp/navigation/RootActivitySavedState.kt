@@ -21,10 +21,18 @@ import android.os.Bundle
 /** The root owns Compose state; retired native hosts must never reconstruct their fragments. */
 internal object RootActivitySavedState {
     const val ACCOUNT_KEY = "navigation.launch-account"
+    const val LAUNCH_ACCOUNT_KEY = "navigation.intent-account"
+    const val LAUNCH_DESTINATION = "navigation.saved-launch-destination"
     private const val FRAGMENTS_KEY = "android:support:fragments"
     private const val REGISTRY_KEY = "androidx.lifecycle.BundlableSavedStateRegistry.key"
 
-    fun canRestoreLaunch(savedState: Bundle?, accountKey: String): Boolean = savedState == null || savedState.getString(ACCOUNT_KEY) == accountKey
+    fun canRestoreLaunch(savedState: Bundle?, accountKey: String): Boolean = savedState == null || (savedState.getString(LAUNCH_ACCOUNT_KEY) ?: savedState.getString(ACCOUNT_KEY)) == accountKey
+
+    data class RestoredLaunch(val payload: String?)
+
+    fun restoredLaunch(savedState: Bundle?, accountKey: String): RestoredLaunch? = savedState?.takeIf { canRestoreLaunch(it, accountKey) && it.containsKey(LAUNCH_DESTINATION) }?.let {
+        RestoredLaunch(it.getString(LAUNCH_DESTINATION))
+    }
 
     fun accountChanged(savedState: Bundle?, accountKey: String): Boolean = savedState?.getString(ACCOUNT_KEY)?.let { it != accountKey } ?: false
 

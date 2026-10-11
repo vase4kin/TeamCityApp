@@ -213,6 +213,119 @@ class MainActivityRestorationTest {
         }
     }
 
+    @Test fun launcherRelaunchPreservesAnInstalledAliasArgumentsAndVisitAcrossRecreation() {
+        ActivityScenario.launch<MainActivity>(alias()).use { scenario ->
+            awaitText(destination.name)
+            var visit: String? = null
+            scenario.onActivity {
+                visit = it.navigationSnapshot!!.entries.single().id
+                deliverIncoming(it, requireNotNull(context.packageManager.getLaunchIntentForPackage(context.packageName)))
+                assertEquals(destination, it.incoming.destination(it.intent))
+                assertEquals(visit, it.navigationSnapshot!!.entries.single().id)
+            }
+            scenario.recreate()
+            awaitText(destination.name)
+            scenario.onActivity {
+                assertEquals(destination, it.navigationSnapshot!!.entries.single().destination)
+                assertEquals(visit, it.navigationSnapshot!!.entries.single().id)
+            }
+            verify(service, times(1)).listArtifacts(destination.href, "browseArchives:true")
+        }
+    }
+
+    @Test fun anIncomingRequestSavedBeforeTheNextFrameIsRestoredExactlyOnce() {
+        val initial = Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(HomeDestination()))
+        ActivityScenario.launch<MainActivity>(initial).use { scenario ->
+            awaitHome()
+            var homeVisit: String? = null
+            scenario.onActivity { homeVisit = it.navigationSnapshot!!.entries.single().id }
+            recreateDeliveringBeforeSave(scenario) {
+                deliverIncoming(it, Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(AboutDestination)))
+                assertEquals(homeVisit, it.navigationSnapshot!!.entries.single().id)
+            }
+            awaitText("restoration-server")
+            var aboutVisit: String? = null
+            scenario.onActivity {
+                assertEquals(2, it.navigationSnapshot!!.entries.size)
+                assertEquals(homeVisit, it.navigationSnapshot!!.entries.first().id)
+                assertEquals(AboutDestination, it.navigationSnapshot!!.entries.last().destination)
+                aboutVisit = it.navigationSnapshot!!.entries.last().id
+            }
+            scenario.recreate()
+            awaitText("restoration-server")
+            scenario.onActivity {
+                assertEquals(2, it.navigationSnapshot!!.entries.size)
+                assertEquals(aboutVisit, it.navigationSnapshot!!.entries.last().id)
+            }
+        }
+    }
+
+    @Test fun anAccountSwitchSavedBeforeTheNextFrameKeepsItsRequestedHomeTab() {
+        val initial = Intent(context, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(HomeDestination()))
+        ActivityScenario.launch<MainActivity>(initial).use { scenario ->
+            awaitHome()
+            var oldVisit: String? = null
+            scenario.onActivity { oldVisit = it.navigationSnapshot!!.entries.single().id }
+            runBlocking { consent.setAcknowledged(true) }
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
+            saveDifferentUser()
+            scenario.onActivity {
+                deliverIncoming(
+                    it,
+                    Intent().setClassName(context.packageName, IncomingDestinationResolver.HOME_COMPONENT)
+                        .putExtra(IncomingDestinationResolver.HOME_TAB, teamcityapp.features.home.api.HomeTab.Queue.ordinal)
+                )
+                assertEquals(oldVisit, it.navigationSnapshot!!.entries.single().id)
+            }
+            scenario.recreate()
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
+            awaitTag("home:tab:Queue")
+            compose.waitUntil(10_000) {
+                val entries = com.github.vase4kin.teamcityapp.helper.currentRootSnapshot().entries
+                entries.size == 1 && (entries.single().destination as? HomeDestination)?.tab == teamcityapp.features.home.api.HomeTab.Queue
+            }
+            scenario.onActivity {
+                assertNotEquals(oldVisit, it.navigationSnapshot!!.entries.single().id)
+                assertEquals("alice", storage.activeUser.userName)
+                assertTrue(it.navigationSnapshot!!.results.isEmpty())
+            }
+            assertFalse(runBlocking { consent.acknowledged() })
+            scenario.recreate()
+            awaitTag("home:tab:Queue")
+            scenario.onActivity { assertEquals(teamcityapp.features.home.api.HomeTab.Queue, (it.navigationSnapshot!!.entries.single().destination as HomeDestination).tab) }
+        }
+    }
+
+    private fun recreateDeliveringBeforeSave(scenario: ActivityScenario<MainActivity>, platformLaunch: Intent? = null, deliver: (MainActivity) -> Unit) {
+        var saves = 0
+        val callback = object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityPreSaveInstanceState(activity: Activity, state: Bundle) {
+                if (activity is MainActivity && saves++ == 0) deliver(activity)
+            }
+            override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) {
+                // Simulate process restoration supplying the task's older launch Intent.
+                if (activity is MainActivity && platformLaunch != null) activity.intent = Intent(platformLaunch)
+            }
+            override fun onActivityCreated(activity: Activity, state: Bundle?) {}
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        }
+        app.registerActivityLifecycleCallbacks(callback)
+        try {
+            scenario.recreate()
+        } finally {
+            app.unregisterActivityLifecycleCallbacks(callback)
+        }
+        assertEquals(1, saves)
+    }
+
+    private fun deliverIncoming(activity: MainActivity, request: Intent) {
+        MainActivity::class.java.getDeclaredMethod("onNewIntent", Intent::class.java).apply { isAccessible = true }.invoke(activity, request)
+    }
+
     private fun saveDifferentUser() {
         var persisted = false
         storage.saveUserAccountAndSetItAsActive(

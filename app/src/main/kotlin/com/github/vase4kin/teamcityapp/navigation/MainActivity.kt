@@ -52,6 +52,7 @@ class MainActivity : AppCompatActivity() {
     @Inject lateinit var accounts: AppAccountFlowNavigation
     private val incomingRequest = mutableStateOf<DestinationRequest?>(null)
 
+    private var launchAccountKey = "signed-out"
     private var activeNavigator: teamcityapp.libraries.navigation.Navigator? = null
     private lateinit var navigationLifecycle: RootNavigationLifecycle
     internal val navigationSnapshot get() = activeNavigator?.snapshot
@@ -61,8 +62,13 @@ class MainActivity : AppCompatActivity() {
         navigationLifecycle = RootNavigationLifecycle(lifecycle)
         accounts.synchronize()
         val initialSessionKey = accounts.session.value.key
+        val restoredLaunch = RootActivitySavedState.restoredLaunch(savedInstanceState, initialSessionKey)
+        if (restoredLaunch != null) {
+            // Saved payload and owner form one record; discard stale platform arguments/flags.
+            setIntent(Intent(intent).replaceExtras(Bundle()))
+        }
         var requestedInitial = if (RootActivitySavedState.canRestoreLaunch(savedInstanceState, initialSessionKey)) {
-            incoming.destination(intent)
+            if (restoredLaunch != null) restoredLaunch.payload?.let(registry::decodeDestination) else incoming.destination(intent)
         } else {
             // Reject old arguments before decoding them, including old build snapshots.
             // Replace them so another recreation cannot replay the rejected alias request.
@@ -72,6 +78,10 @@ class MainActivity : AppCompatActivity() {
             setIntent(incoming.normalizedIntent(Intent(intent).replaceExtras(Bundle()), accounts.session.value.initial))
             null
         }
+        if (requestedInitial is AccountActivationDestination && accounts.session.value.requestId != null) {
+            // A retained coordinator may already have completed the saved preparation.
+            requestedInitial = accounts.session.value.initial
+        }
         val home = requestedInitial as? HomeDestination
         if (home != null && (incoming.requiresHomeReset(intent) || initialSessionKey == "signed-out")) {
             if (initialSessionKey == "signed-out") accounts.login() else accounts.activate(home, resetSession = true)
@@ -79,6 +89,14 @@ class MainActivity : AppCompatActivity() {
             requestedInitial = null
         }
         requestedInitial?.let { setIntent(incoming.normalizedIntent(intent, it)) }
+        if (restoredLaunch != null && requestedInitial == null) setIntent(incoming.normalizedIntent(intent, accounts.session.value.initial))
+        launchAccountKey = accounts.session.value.key
+        savedInstanceState?.getString(PENDING_ACCOUNT)?.takeIf { it == launchAccountKey }?.let { owner ->
+            savedInstanceState.getString(PENDING_DESTINATION)?.let { payload ->
+                incomingRequest.value = DestinationRequest(registry.decodeDestination(payload), owner)
+                navigationLifecycle.hold()
+            }
+        }
         enableEdgeToEdge()
         setContent {
             TeamCityTheme {
@@ -119,10 +137,13 @@ class MainActivity : AppCompatActivity() {
                         val activation = navigator.current.destination as AccountActivationDestination
                         if (!activation.failed) activation.destination?.let { accounts.activate(it, activation.resetSession) } ?: accounts.home(activation.resetSession)
                     }
+                    if (session.requestId != null && session.initial !is AccountActivationDestination && launchAccountKey == session.key && incoming.destination(intent) is AccountActivationDestination) {
+                        setIntent(incoming.normalizedIntent(intent, session.initial))
+                    }
                 }
                 val request = incomingRequest.value
-                LaunchedEffect(request) {
-                    request?.let {
+                LaunchedEffect(request, session.key) {
+                    request?.takeIf { it.accountKey == session.key }?.let {
                         val home = it.destination as? HomeDestination
                         if (home == null) {
                             navigator.push(it.destination)
@@ -131,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                             if (existing == null) navigator.reset(home, session.key) else navigator.popTo(existing.id, HomeTabSelection(home.tab))
                         }
                     }
-                    incomingRequest.value = null
+                    if (incomingRequest.value === request) incomingRequest.value = null
                 }
                 SideEffect {
                     if (incomingRequest.value == null && (session.requestId == null || handledRequest.value.requestId == session.requestId) && navigator.snapshot.sessionKey == session.key) {
@@ -148,13 +169,21 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         // Record the account of the actual saved UI, including a not-yet-applied reset.
         outState.putString(RootActivitySavedState.ACCOUNT_KEY, navigationSnapshot?.sessionKey ?: accounts.session.value.key)
+        outState.putString(RootActivitySavedState.LAUNCH_ACCOUNT_KEY, launchAccountKey)
+        outState.putString(RootActivitySavedState.LAUNCH_DESTINATION, intent.getStringExtra(EXTRA_DESTINATION))
+        incomingRequest.value?.takeIf { it.accountKey == accounts.session.value.key }?.let { request ->
+            outState.putString(PENDING_ACCOUNT, request.accountKey)
+            outState.putString(PENDING_DESTINATION, registry.encodeDestination(request.destination))
+        }
         super.onSaveInstanceState(outState)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        var destination = incoming.destination(intent)
-        if (destination != null) navigationLifecycle.hold()
+        // A launcher/bring-to-front Intent has no destination. Keep the normalized
+        // arguments of this activity's installed alias for later recreation.
+        var destination = incoming.destination(intent) ?: return
+        navigationLifecycle.hold()
         val home = destination as? HomeDestination
         if (home != null) {
             val previousKey = accounts.session.value.key
@@ -163,24 +192,28 @@ class MainActivity : AppCompatActivity() {
                 incomingRequest.value = null
                 if (accounts.session.value.key == "signed-out") accounts.login() else accounts.activate(home, resetSession = true)
                 destination = accounts.session.value.initial
+                launchAccountKey = accounts.session.value.key
                 // Account preparation publishes the replacement stack; do not also push it.
                 setIntent(incoming.normalizedIntent(Intent(intent).apply { component = this@MainActivity.intent.component }, destination))
                 return
             }
         }
+        launchAccountKey = accounts.session.value.key
         // Alias names have different Android component identities. Keep this host's launch
         // component stable while saving the normalized request for recreation.
         setIntent(
-            (destination?.let { incoming.normalizedIntent(intent, it) } ?: Intent(intent)).apply {
+            incoming.normalizedIntent(intent, destination).apply {
                 component = this@MainActivity.intent.component
             }
         )
-        destination?.let { incomingRequest.value = DestinationRequest(it) }
+        incomingRequest.value = DestinationRequest(destination, launchAccountKey)
     }
 
-    private class DestinationRequest(val destination: androidx.navigation3.runtime.NavKey)
+    private class DestinationRequest(val destination: androidx.navigation3.runtime.NavKey, val accountKey: String)
     private data class AccountRequestOwner(val accountKey: String, val requestId: String?)
     companion object {
         const val EXTRA_DESTINATION = "navigation.destination"
+        private const val PENDING_ACCOUNT = "navigation.pending-account"
+        private const val PENDING_DESTINATION = "navigation.pending-destination"
     }
 }

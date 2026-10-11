@@ -54,6 +54,33 @@ class RootActivitySavedStateTest {
         assertTrue(RootActivitySavedState.accountChanged(saved, "signed-out"))
     }
 
+    @Test fun aNewAccountsLaunchCanRestoreWhileTheSavedUiStillBelongsToThePreviousUser() {
+        val saved = Bundle().apply {
+            putString(RootActivitySavedState.ACCOUNT_KEY, "server|alice")
+            putString(RootActivitySavedState.LAUNCH_ACCOUNT_KEY, "server|bob")
+        }
+        assertTrue(RootActivitySavedState.canRestoreLaunch(saved, "server|bob"))
+        assertTrue(RootActivitySavedState.accountChanged(saved, "server|bob"))
+        assertFalse(RootActivitySavedState.canRestoreLaunch(saved, "server|alice"))
+        assertFalse(RootActivitySavedState.canRestoreLaunch(saved, "signed-out"))
+    }
+
+    @Test fun theSavedLaunchPayloadIsBoundToItsOwnAccountBeforeAnyDecoding() {
+        val saved = Bundle().apply {
+            putString(RootActivitySavedState.ACCOUNT_KEY, "server|alice")
+            putString(RootActivitySavedState.LAUNCH_ACCOUNT_KEY, "server|bob")
+            putString(RootActivitySavedState.LAUNCH_DESTINATION, "bob-current-destination")
+        }
+        assertEquals("bob-current-destination", RootActivitySavedState.restoredLaunch(saved, "server|bob")?.payload)
+        assertNull(RootActivitySavedState.restoredLaunch(saved, "server|alice"))
+        assertNull(RootActivitySavedState.restoredLaunch(saved, "signed-out"))
+        saved.putString(RootActivitySavedState.LAUNCH_DESTINATION, null)
+        assertNotNull(RootActivitySavedState.restoredLaunch(saved, "server|bob"))
+        assertNull(RootActivitySavedState.restoredLaunch(saved, "server|bob")?.payload)
+        saved.remove(RootActivitySavedState.LAUNCH_DESTINATION)
+        assertNull(RootActivitySavedState.restoredLaunch(saved, "server|bob"))
+    }
+
     @Test fun legacyFragmentsAreRemovedWithoutMutatingInputOrOtherSavedState() {
         val registry = Bundle().apply {
             putBundle(fragmentsKey, Bundle().apply { putString("old", "fragment-state") })
