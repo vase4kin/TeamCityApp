@@ -23,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.lifecycle.Lifecycle
+import androidx.navigation3.runtime.NavKey
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.intent.Intents
@@ -36,20 +37,23 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import javax.inject.Inject
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.about.impl.AboutActivity
+import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.create_account.impl.CreateAccountActivity
 import teamcityapp.features.drawer.impl.navigation.DrawerNavigationImpl
 import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
-import teamcityapp.features.settings.impl.SettingsActivity
+import teamcityapp.features.settings.api.navigation.SettingsDestination
+import teamcityapp.libraries.navigation.DestinationRegistry
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -65,6 +69,8 @@ class DrawerTest {
     @JvmField
     @Rule(order = 2)
     val compose = createEmptyComposeRule()
+
+    @Inject lateinit var destinationRegistry: DestinationRegistry
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()
     private val app get() = instrumentation.targetContext.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
@@ -123,7 +129,7 @@ class DrawerTest {
             }
         }
     }
-    private fun navigation(tag: String, destination: Class<*>) {
+    private fun navigation(tag: String, destination: Class<*>, key: NavKey? = null) {
         launch().use {
             open()
             Intents.init()
@@ -131,15 +137,19 @@ class DrawerTest {
                 Intents.intending(hasComponent(destination.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
                 compose.onNodeWithTag("drawer:$tag").performScrollTo().performClick()
                 Intents.intended(hasComponent(destination.name))
+                if (key != null) {
+                    val request = Intents.getIntents().single { it.component?.className == destination.name }
+                    assertEquals(key, destinationRegistry.decodeDestination(checkNotNull(request.getStringExtra(MainActivity.EXTRA_DESTINATION))))
+                }
             } finally {
                 Intents.release()
             }
         }
     }
 
-    @Test fun aboutOpensAboutActivity() = navigation("about", AboutActivity::class.java)
+    @Test fun aboutOpensAboutDestination() = navigation("about", MainActivity::class.java, AboutDestination)
 
-    @Test fun settingsOpensSettingsActivity() = navigation("settings", SettingsActivity::class.java)
+    @Test fun settingsOpensSettingsDestination() = navigation("settings", MainActivity::class.java, SettingsDestination)
 
     @Test fun manageOpensManageAccountsActivity() = navigation("manage", ManageAccountsActivity::class.java)
 

@@ -20,8 +20,8 @@ import android.app.Activity
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
-import teamcityapp.features.about.impl.R
 import teamcityapp.features.about.impl.AboutAction
+import teamcityapp.features.about.impl.R
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
 
@@ -30,15 +30,30 @@ class AboutRouterTest {
     private val urls = mutableListOf<String>()
     private val tabs = object : ChromeCustomTabs {
         var bound = false
-        override fun initCustomsTabs() { bound = true }
-        override fun unbindCustomsTabs() { bound = false }
-        override fun launchUrl(url: String) { urls += url }
+        override fun initCustomsTabs() {
+            bound = true
+        }
+        override fun unbindCustomsTabs() {
+            bound = false
+        }
+        override fun launchUrl(url: String) {
+            urls += url
+        }
     }
     private val ratedActivities = mutableListOf<Activity>()
     private val rating = object : AppRating {
-        override fun open(activity: Activity) { ratedActivities += activity }
+        override fun open(activity: Activity) {
+            ratedActivities += activity
+        }
     }
     private val router = AboutRouterImpl(activity, tabs, rating)
+
+    @Test fun destinationCloseUsesNavigationWithoutFinishingHost() {
+        var backs = 0
+        AboutRouterImpl(activity, tabs, rating) { backs++ }.close()
+        assertEquals(1, backs)
+        verify(activity, never()).finish()
+    }
 
     @Test fun ratingUsesInjectedLauncherAndCurrentActivity() {
         router.open(AboutAction.Rate)

@@ -111,3 +111,5 @@ include(":features:build-artifacts:api")
 include(":features:build-artifacts:impl")
 include(":features:build-overview:api")
 include(":features:build-overview:impl")
+
+include(":libraries:navigation")

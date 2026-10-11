@@ -17,18 +17,18 @@
 package teamcityapp.features.about.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.about.api.navigation.AboutNavigation
-import teamcityapp.features.about.impl.AboutActivity
 import javax.inject.Inject
+import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.about.api.navigation.AboutNavigation
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-class AboutNavigationImpl @Inject constructor() : AboutNavigation {
+class AboutNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : AboutNavigation {
     override fun open(activity: Activity) {
-        activity.startActivity(Intent(activity, AboutActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
+        launcher.open(activity, AboutDestination)
     }
 }
 

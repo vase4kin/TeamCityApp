@@ -138,6 +138,7 @@ androidComponents {
 }
 
 dependencies {
+    implementation(projects.libraries.navigation)
     implementation(fileTree("libs") { include("*.jar") })
 
     implementation(projects.libraries.utils)

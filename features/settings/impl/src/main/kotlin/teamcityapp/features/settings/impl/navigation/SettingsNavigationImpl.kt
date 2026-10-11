@@ -17,13 +17,13 @@
 package teamcityapp.features.settings.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
 import javax.inject.Inject
+import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.settings.api.navigation.SettingsNavigation
-import teamcityapp.features.settings.impl.SettingsActivity
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-internal class SettingsNavigationImpl @Inject constructor() : SettingsNavigation {
+internal class SettingsNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : SettingsNavigation {
     override fun open(activity: Activity) {
-        activity.startActivity(Intent(activity, SettingsActivity::class.java))
+        launcher.open(activity, SettingsDestination)
     }
 }

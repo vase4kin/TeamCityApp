@@ -22,33 +22,40 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import teamcityapp.features.about.impl.R
-import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.features.about.impl.AboutAction
+import teamcityapp.features.about.impl.R
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabs
+import teamcityapp.libraries.resources.R as SharedR
 
 class AboutRouterImpl(
     private val activity: Activity,
     private val chromeTabs: ChromeCustomTabs,
     private val appRating: AppRating,
+    private val onClose: () -> Unit = activity::finish
 ) : AboutRouter {
     override fun start() = chromeTabs.initCustomsTabs()
     override fun stop() = chromeTabs.unbindCustomsTabs()
     override fun openUrl(url: String) = chromeTabs.launchUrl(url)
-    override fun close() = activity.finish()
+    override fun close() = onClose()
 
     override fun open(action: AboutAction) {
         when (action) {
             AboutAction.Rate -> appRating.open(activity)
+
             AboutAction.Issue -> chromeTabs.launchUrl(activity.getString(R.string.about_app_url_found_issue))
+
             AboutAction.Source -> chromeTabs.launchUrl(activity.getString(R.string.about_app_url_source_code))
+
             AboutAction.Website -> chromeTabs.launchUrl(activity.getString(R.string.about_app_url_web))
+
             AboutAction.Privacy -> chromeTabs.launchUrl(activity.getString(SharedR.string.about_app_url_privacy))
+
             AboutAction.Libraries -> {
                 OssLicensesMenuActivity.setActivityTitle(activity.getString(R.string.about_app_text_libraries))
                 activity.startActivity(Intent(activity, OssLicensesMenuActivity::class.java))
             }
+
             AboutAction.Email -> {
                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:${activity.getString(R.string.about_app_email)}"))
                     .putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.about_app_email_title))
@@ -60,5 +67,4 @@ class AboutRouterImpl(
             }
         }
     }
-
 }

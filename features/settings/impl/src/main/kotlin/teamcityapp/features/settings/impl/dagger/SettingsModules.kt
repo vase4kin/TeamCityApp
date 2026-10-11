@@ -26,11 +26,12 @@ import teamcityapp.features.settings.api.navigation.SettingsNavigation
 import teamcityapp.features.settings.impl.navigation.SettingsNavigationImpl
 import teamcityapp.features.settings.impl.router.SettingsRouter
 import teamcityapp.features.settings.impl.router.SettingsRouterImpl
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @Module
 @InstallIn(SingletonComponent::class)
 object SettingsModule {
-    @Provides fun navigation(): SettingsNavigation = SettingsNavigationImpl()
+    @Provides fun navigation(launcher: DestinationLauncher): SettingsNavigation = SettingsNavigationImpl(launcher)
 }
 
 @Module
