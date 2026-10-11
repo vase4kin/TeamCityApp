@@ -30,7 +30,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
-| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: About, Settings and Splash hosts/DI/activity routers removed; installed aliases verified; remaining hosts and native shells pending |
+| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: About, Settings, Splash, Test Details, Change Details and Manage Accounts hosts/DI removed; installed aliases verified; nine legacy activities, fragment/sheet hosts and native shells remain |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
 ## State and navigation contract
@@ -479,3 +479,22 @@ Verification passed with JDK 17:
 The first startup emulator run exposed two obsolete test assumptions: paused Android frames need not redraw the ready UI, and Projects text appears in both the toolbar and Home navigation. The tests now observe completed reads and the account coordinator while paused, and use unique content/tab tags. The corrected complete startup and related regression suites pass.
 
 Cleanup remains active. Next remove the remaining authentication/account/detail/build activities and their compatibility DI/routers, migrate their app integration coverage, and replace every legacy fragment/sheet and native Home/Build Details dependency. Complete installed argument/result dispatch and legacy saved-state compatibility during that removal. Full all-module/both-flavor checks and final process-restoration/Marathon acceptance remain required; the goal is not complete. No push or PR was created.
+
+
+### Detail and account-management host removal
+
+Checkpoint `135849324` removes Test Details, Change Details and Manage Accounts activity classes, their activity-scoped DI, the obsolete Manage Accounts outgoing app router/API, its unused native theme, and unused host dependencies. The app owns private aliases for their installed component names. Incoming legacy list/Drawer callers now request typed root destinations; their Activity adapters remain only until those native callers are removed.
+
+Installed test-occurrence URLs and complete change snapshots dispatch through the app resolver. Change file names/types must both be present and have matching lengths; missing or mismatched legacy arguments remain invalid input and close their owning destination. Valid snapshots retain all browser/diff arguments. Test Details retains its invalid-input message while delegating close to the destination owner, so nested routes pop and a root route exits.
+
+Manage Accounts integration coverage now verifies actual destination outcomes. Removing the active account replaces the stack with Home; removing the final account replaces it with Login; Back exits both roots. Adding an account pushes Create Account in the same activity, preserves the form and discard dialog through recreation, and returns to the retained account list after confirmation. The existing removal-dialog, storage, cancellation, native light/dark ripple and recreation cases continue to pass.
+
+Verification passed with JDK 17:
+
+- 657 local cases: Test Details (63), Change Details (54), Manage Accounts (139) and app (401). The total includes 168 existing screenshot cases, unchanged by host removal, and new root-adapter, legacy argument-validation and navigation-owned invalid-input feedback cases.
+- All 84 API 37 emulator cases passed: the three migrated host suites, Hilt smoke tests, legacy Drawer/Tests/Changes callers, and root, workflow, Home and Build Details regressions. Installed aliases resolve privately to MainActivity. Complete change arguments, browser/diff links, missing input, occurrence cancellation/retry/recreation, account removal and retained Back behavior pass.
+- Mock app/instrumentation APK builds, production Kotlin/Hilt compilation, affected lint and formatting passed. All three affected feature lint reports contain no issues.
+
+The first instrumentation compile caught duplicate imports in the migrated Hilt smoke test; they were corrected. The first emulator run passed 83/84 cases: the new Create Account Back test omitted its existing discard confirmation because the initial URL contains `https://`. The corrected test verifies that confirmation across recreation and then the retained account list; the complete 84-case rerun passes.
+
+Nine legacy activity hosts remain, along with feature fragment/sheet hosts and native Home/Build Details infrastructure. Login/Create Account host removal and root authentication integration coverage are next, followed by the remaining build/project hosts and all native shell callers. Installed argument/result compatibility, legacy saved-state compatibility, complete process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
