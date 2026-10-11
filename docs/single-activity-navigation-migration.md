@@ -25,10 +25,10 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Phase | Completion evidence | Current state |
 | --- | --- | --- |
 | Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Initial host/API inventory below; outgoing adapter audit remains |
-| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 34 navigation tests, pilot feature tests, production compilation and 24 emulator cases |
+| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 36 navigation tests, pilot feature tests, production compilation and 29 emulator cases |
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
-| Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Recursive projects verified; History, build actions and typed feature results pending |
+| Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed History, Run Build, Filter Builds and detail destinations verified; Build Details tab callers migrate with its shell |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Pending |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | Pending |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
@@ -375,3 +375,22 @@ Verification with JDK 17:
 The first emulator run exposed a duplicate visible-list reload during recreation; the shared recreation effect fixed it. A separate test lookup needed the toolbar's unmerged semantics. The corrected complete 24-case suite passed. Full process death, the remaining account submission paths in the root host, full app lint/Marathon and all-destination cleanup remain final acceptance work.
 
 History and Build Details still use explicit legacy navigation adapters for this checkpoint. Other compatibility entry points and old hosts remain until their callers migrate. Next: typed History/Run Build/Filter Builds/Test Details/Change Details routes and results, then the Compose Build Details shell, installed-entry dispatch and removal of superseded infrastructure. This checkpoint does not claim the complete single-activity goal.
+
+
+### Typed build workflows and origin-targeted results
+
+Checkpoint `89ec4b0` registers History, Run Build, Filter Builds, Test Details and Change Details in Navigation 3. Projects, Favorites, Running Builds and Build Queue navigate directly to typed History keys. The incoming History adapter now dispatches through MainActivity.
+
+Run Build and Filter Builds carry the opening History visit ID. Their serializable results retain the complete queued URL or immutable filter selection and are consumed once by that specific visit while resumed. Equal History payloads can have separate owners and results. Existing app adapters preserve filter-to-locator semantics, favorite storage, paging and queued-build feedback. History's selection and pages survive recreation; cancelled forms emit no result. The Test/Change detail registrations reuse their existing argument mappings and UI-scoped platform routers.
+
+The Favorites notice action returns to the existing Home visit, selects its Favorites tab and removes intermediate screens without replacing Home's owners. `Navigator.popTo` removes results owned by discarded entries and can deliver a typed result to the retained target. If no Home exists, the action creates a Home root as the legacy clear-stack launch did.
+
+Verification passed with JDK 17:
+
+- 1,086 local cases: navigation (36), Home (91), History (238), Run Build (147), Filter Builds (76), Test Details (62), Change Details (53) and app (383). The new cases cover all filter status payloads, repeated History visits, single-use restoration, expired targets, cancellation, account reset and owner-preserving return navigation. Existing affected goldens pass; stateless feature visuals are unchanged.
+- 29 API 37 emulator cases: five new workflow cases plus the prior 24 startup/Home/root/Drawer regressions. They verify filter selection and form recreation, effective History queries, cancelled/queued Run Build results, no queue resubmission after recreation, Test/Change arguments and Back, and the Favorites action's cleared back stack.
+- Mock app/instrumentation APKs, production debug Kotlin/Hilt compilation, affected feature/navigation/Home lint and formatting passed.
+
+The first emulator run passed 28/29 cases: the Favorites test used the Espresso Back helper that reports closing the final activity as an error. Its unconditional-Back assertion now verifies the intended root exit; the complete corrected suite passes.
+
+Build Details still opens through the explicit legacy adapter. Its native tab callers and the remaining installed component/result compatibility entry points migrate in the next two phases. The Compose Build Details shell, artifact folders and action sheets, old-host removal, full process-restoration acceptance and final all-module/Marathon checks remain pending. The goal stays active; no push or PR has been created.
