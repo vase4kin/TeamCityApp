@@ -29,7 +29,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed History, Run Build, Filter Builds and detail destinations verified; Build Details tab callers migrate with its shell |
-| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, root callers, artifact folders and action sheets verified; onboarding and initial/count-failure policy remain pending |
+| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | Pending |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
@@ -432,3 +432,18 @@ Verification with JDK 17 passed:
 The first emulator run exposed Kotlin-null-unsafe test matchers and incomplete fixtures. A subsequent test waited for a lazy Branch row below the viewport; the corrected tests wait for loaded Overview content. Product behavior was preserved while fixing those test assumptions.
 
 Remaining Build Details acceptance work: preserve menu onboarding preferences/copy; settle initial badge loading and optional count failures without reporting a failed count as zero; verify view/download cancellation when visits are removed and during account replacement. Then remove the legacy Activity/Fragment hosts, their outgoing APIs, native shell infrastructure and unused dependencies, preserve installed component dispatch, and run the full final acceptance gate. This checkpoint does not complete the single-activity migration.
+
+
+### Build Details counts, menu education and resource disposal
+
+Checkpoint `ae76513ae` loads Changes and Tests totals independently from the parent build visit, before either child tab is opened. Loading, available and unavailable totals stay distinct. A failed total displays `?` and has an explicit retry; successful totals survive recreation and process restoration without duplicate requests. Child count notices share this parent state and retry only their failed section. Losing the parent collector cancels unfinished reads; removing or replacing its owner cancels its work. Account checks reject old successes and failures even when two users share the same server.
+
+Stop, remove-from-queue and restart education uses the existing global preferences and exact copy. Its presentation follows the loaded action snapshot, appears only on the resumed Overview destination, survives recreation, and records only the dismissed prompt. Preference failures are explicitly retryable. Pending education does not block independent count publication.
+
+Verification passed with JDK 17:
+
+- 819 affected local cases: Build Details (177), Changes (94), Tests (153) and app (395). Build Details includes 138 verified screenshot cases: the previous 96 plus 42 visually reviewed baselines for three prompts, loading totals, partial/all count failures and failed education, in both themes, phone/tablet and enlarged text. The final ViewModel cleanup and unknown-build-state assertion passed again in the full 177-case Build Details suite.
+- All 39 API 37 emulator cases passed: ten Build Details cases and the existing workflow, startup/Home, root and Drawer suites. The four new cases prove initial independent totals and targeted retry across recreation; all three education preferences/copy and persisted dismissal; blocked artifact reads surviving recreation but closing on destination/account replacement without overwriting a completed file; and detached Build Log views being replaced by fresh WebViews on return and released on Back.
+- Mock app/instrumentation APK builds, production debug Kotlin/Hilt compilation, Build Details/Changes/Tests lint and formatting passed. Changes and Tests retain their existing modifier-parameter lint warnings. The final builds, Build Details lint and formatting passed again after cleanup of the obsolete shell count setter.
+
+Installed component dispatch, removal of superseded hosts/navigation/DI/layouts/dependencies, complete process-restoration and root authentication/platform acceptance, and the final all-module/both-flavor verification remain pending. The goal stays active; no push or PR was created.
