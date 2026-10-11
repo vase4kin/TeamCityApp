@@ -17,20 +17,13 @@
 package teamcityapp.features.build_history.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
 import javax.inject.Inject
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
-import teamcityapp.features.build_history.impl.R
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-class BuildHistoryNavigationImpl @Inject constructor() : BuildHistoryNavigation {
+class BuildHistoryNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : BuildHistoryNavigation {
     override fun open(activity: Activity, configurationId: String, configurationName: String, locator: String?) {
-        activity.startActivity(
-            Intent().setClassName(activity, BuildHistoryNavigation.LEGACY_ACTIVITY).apply {
-                putExtra(BuildHistoryNavigation.EXTRA_ID, configurationId)
-                putExtra(BuildHistoryNavigation.EXTRA_NAME, configurationName)
-                locator?.let { putExtra(BuildHistoryNavigation.EXTRA_LOCATOR, it) }
-            }
-        )
-        activity.overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left)
+        launcher.open(activity, BuildHistoryDestination(configurationId, configurationName, locator))
     }
 }

@@ -25,6 +25,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.change_details.impl" }
 dependencies {
+    implementation(projects.libraries.navigation)
     implementation(projects.features.changeDetails.api)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)

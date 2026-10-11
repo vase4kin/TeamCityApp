@@ -92,6 +92,20 @@ class Navigator(
         return true
     }
 
+    /** Returns to a live visit without replacing its owners, optionally delivering a typed result. */
+    fun popTo(entryId: String, result: NavigationResult? = null): Boolean {
+        val index = snapshot.entries.indexOfFirst { it.id == entryId }
+        if (index < 0) return false
+        val entries = snapshot.entries.take(index + 1)
+        val liveIds = entries.map { it.id }.toSet()
+        state.value = snapshot.copy(
+            entries = entries,
+            results = snapshot.results.filter { it.entryId in liveIds } +
+                if (result == null) emptyList() else listOf(PendingNavigationResult(entryId, result))
+        )
+        return true
+    }
+
     fun <T : NavigationResult> consumeResult(entryId: String, type: KClass<T>): T? {
         val index = snapshot.results.indexOfFirst { it.entryId == entryId && type.isInstance(it.value) }
         if (index == -1) return null

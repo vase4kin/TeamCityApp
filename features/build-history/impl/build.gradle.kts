@@ -23,6 +23,9 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_history.impl" }
 dependencies {
+    implementation(projects.features.buildDetails.api)
+    implementation(projects.features.home.api)
+    implementation(projects.libraries.navigation)
     implementation(projects.features.buildHistory.api)
     implementation(projects.features.runBuild.api)
     implementation(projects.features.filterBuilds.api)

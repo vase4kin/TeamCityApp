@@ -18,34 +18,36 @@ package teamcityapp.features.build_history.impl
 
 import android.app.Activity
 import android.app.Application
+import androidx.navigation3.runtime.NavKey
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.navigation.BuildHistoryNavigationImpl
 import teamcityapp.features.filter_builds.api.navigation.FilterBuildsNavigation
 import teamcityapp.features.run_build.api.navigation.RunBuildNavigation
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class BuildHistoryNavigationTest {
-    @Test fun navigationPreservesInstalledComponentIdNameAndNormalizedFilter() {
+    @Test fun incomingNavigationPreservesArgumentsAndDispatchesATypedRootDestination() {
         val controller = Robolectric.buildActivity(Activity::class.java).setup()
         try {
             val activity = controller.get()
-            BuildHistoryNavigationImpl().open(activity, "configuration", "Build Android", "personal:false,pinned:false")
-            val intent = shadowOf(activity).nextStartedActivity
-            assertEquals(BuildHistoryNavigation.LEGACY_ACTIVITY, intent.component?.className)
-            assertEquals(activity.packageName, intent.component?.packageName)
-            assertEquals("configuration", intent.getStringExtra("id"))
-            assertEquals("Build Android", intent.getStringExtra("name"))
-            assertEquals("personal:false,pinned:false", intent.getStringExtra(BuildHistoryNavigation.EXTRA_LOCATOR))
-            assertFalse(intent.hasExtra("filter"))
-            assertEquals(0, intent.flags)
+            var received: NavKey? = null
+            val launcher = object : DestinationLauncher {
+                override fun open(owner: Activity, destination: NavKey, flags: Int) {
+                    assertSame(activity, owner)
+                    received = destination
+                    assertEquals(0, flags)
+                }
+            }
+            BuildHistoryNavigationImpl(launcher).open(activity, "configuration", "Build Android", "personal:false,pinned:false")
+            assertEquals(BuildHistoryDestination("configuration", "Build Android", "personal:false,pinned:false"), received)
         } finally {
             controller.pause().stop().destroy()
         }

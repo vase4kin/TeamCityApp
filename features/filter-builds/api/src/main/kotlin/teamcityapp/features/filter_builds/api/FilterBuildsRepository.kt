@@ -16,7 +16,12 @@
 
 package teamcityapp.features.filter_builds.api
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class BuildStatusFilter { Success, Failed, Error, Cancelled, FailedToStart, Running, Queued, None }
+
+@Serializable
 data class BuildFilter(val status: BuildStatusFilter = BuildStatusFilter.None, val branch: String = "", val personal: Boolean = false, val pinned: Boolean = false)
 interface FilterBuildsRepository {
     suspend fun branches(buildTypeId: String): List<String>

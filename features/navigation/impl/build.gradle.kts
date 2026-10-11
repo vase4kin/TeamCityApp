@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.navigation.impl" }
 dependencies {
+    implementation(projects.features.buildHistory.api)
     implementation(projects.features.drawer.api)
     implementation(projects.libraries.navigation)
     implementation(projects.features.navigation.api)

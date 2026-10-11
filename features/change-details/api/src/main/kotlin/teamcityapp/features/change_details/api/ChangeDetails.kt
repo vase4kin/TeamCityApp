@@ -16,7 +16,10 @@
 
 package teamcityapp.features.change_details.api
 
+import kotlinx.serialization.Serializable
+
 /** Plain change details passed by the changes list; no network or Android dependencies. */
+@Serializable
 data class ChangeDetails(
     val id: String,
     val comment: String,
@@ -26,4 +29,6 @@ data class ChangeDetails(
     val revision: String,
     val webUrl: String
 )
+
+@Serializable
 data class ChangedFile(val name: String, val type: String)

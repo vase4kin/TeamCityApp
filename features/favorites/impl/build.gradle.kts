@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.favorites.impl" }
 dependencies {
+    implementation(projects.features.buildHistory.api)
     implementation(libs.androidx.activity.compose)
     implementation(projects.features.navigation.api)
     implementation(projects.features.drawer.api)

@@ -34,6 +34,7 @@ import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import javax.inject.Provider
 import kotlinx.coroutines.launch
+import kotlinx.serialization.modules.*
 import teamcityapp.features.agents.api.navigation.AgentsDestination
 import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
@@ -47,12 +48,24 @@ import teamcityapp.features.running_builds.api.navigation.RunningBuildsDestinati
 import teamcityapp.libraries.navigation.*
 
 class HomeDestinationRegistration @Inject constructor(private val registry: Provider<DestinationRegistry>) : FeatureDestination<HomeDestination>(HomeDestination::class, HomeDestination.serializer()) {
+    override fun registerSerializers(builder: SerializersModuleBuilder) {
+        super.registerSerializers(builder)
+        builder.polymorphic(NavigationResult::class) { subclass(HomeTabSelection::class, HomeTabSelection.serializer()) }
+    }
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content(destination: HomeDestination, navigator: Navigator, entryId: String) {
         val arguments = remember(destination) { Bundle().apply { putInt(HomeViewModel.SELECTED_TAB, destination.tab.ordinal) } }
         DestinationArguments(arguments) {
             val model = hiltViewModel<HomeViewModel>()
+            LifecycleResumeEffect(navigator.snapshot.results, model) {
+                while (true) {
+                    val selection = navigator.consumeResult(entryId, HomeTabSelection::class) ?: break
+                    model.select(selection.tab)
+                }
+                onPauseOrDispose {}
+            }
             val state by model.state.collectAsStateWithLifecycle()
             val snackbar = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()

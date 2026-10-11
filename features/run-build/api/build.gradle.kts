@@ -18,5 +18,10 @@ import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     id("teamcityapp.android.library")
+    alias(libs.plugins.kotlin.serialization)
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.run_build.api" }
+
+dependencies {
+    api(projects.libraries.navigation)
+}

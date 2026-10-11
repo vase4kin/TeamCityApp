@@ -25,7 +25,7 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import teamcityapp.features.build_details.api.BuildDetailsNavigation
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
 import teamcityapp.features.build_queue.impl.BuildQueueRoute
 import teamcityapp.features.build_queue.impl.router.BuildQueueRouter
@@ -33,7 +33,7 @@ import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.navigation.*
 
-class BuildQueueDestinationRegistration @Inject constructor(private val builds: BuildDetailsNavigation, private val history: BuildHistoryNavigation) : FeatureDestination<BuildQueueDestination>(BuildQueueDestination::class, BuildQueueDestination.serializer()) {
+class BuildQueueDestinationRegistration @Inject constructor(private val builds: BuildDetailsNavigation) : FeatureDestination<BuildQueueDestination>(BuildQueueDestination::class, BuildQueueDestination.serializer()) {
     @Composable override fun Content(destination: BuildQueueDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
         val router = remember(activity, navigator, entryId) {
@@ -42,7 +42,9 @@ class BuildQueueDestinationRegistration @Inject constructor(private val builds: 
                     navigator.push(DrawerDestination)
                 }
                 override fun openBuild(build: BuildLaunchData) = builds.open(activity, build)
-                override fun openBuildHistory(configurationId: String, configurationName: String) = history.open(activity, configurationId, configurationName)
+                override fun openBuildHistory(configurationId: String, configurationName: String) {
+                    navigator.push(BuildHistoryDestination(configurationId, configurationName))
+                }
             }
         }
         BuildQueueRoute(router)

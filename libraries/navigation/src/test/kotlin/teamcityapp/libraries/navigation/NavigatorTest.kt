@@ -141,4 +141,26 @@ class NavigatorTest {
     fun orphanResultIsRejected() {
         NavigationSnapshot(listOf(NavigationEntry("root", Root)), listOf(PendingNavigationResult("missing", Selected("branch"))))
     }
+
+    @Test fun returningToALiveVisitPreservesItsIdentityAndDropsRemovedOwnersResults() {
+        val nav = navigator()
+        val history = nav.push(Detail("history"))
+        nav.push(Detail("filter"))
+        nav.finish(Selected("old-history-result"), history)
+        nav.push(Detail("nested"))
+        assertTrue(nav.popTo("root", Selected("favorites-tab")))
+        assertEquals("root", nav.current.id)
+        assertEquals(1, nav.snapshot.entries.size)
+        assertNull(nav.consumeResult(history, Selected::class))
+        assertEquals(Selected("favorites-tab"), nav.consumeResult("root", Selected::class))
+        assertNull(nav.consumeResult("root", Selected::class))
+    }
+
+    @Test fun returningToAnExpiredVisitDoesNotModifyTheStackOrPendingResults() {
+        val nav = navigator()
+        nav.push(Detail("history"))
+        val original = nav.snapshot
+        assertFalse(nav.popTo("removed", Selected("favorites")))
+        assertEquals(original, nav.snapshot)
+    }
 }

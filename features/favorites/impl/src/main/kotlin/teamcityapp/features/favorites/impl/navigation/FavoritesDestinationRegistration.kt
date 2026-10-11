@@ -24,6 +24,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.features.favorites.api.FavoritesAppRouter
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
@@ -34,7 +35,7 @@ import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.libraries.build_configurations.*
 import teamcityapp.libraries.navigation.*
 
-class FavoritesDestinationRegistration @Inject constructor(private val appRouter: FavoritesAppRouter, private val tracker: FavoritesTracker) : FeatureDestination<FavoritesDestination>(FavoritesDestination::class, FavoritesDestination.serializer()) {
+class FavoritesDestinationRegistration @Inject constructor(private val tracker: FavoritesTracker) : FeatureDestination<FavoritesDestination>(FavoritesDestination::class, FavoritesDestination.serializer()) {
     @Composable override fun Content(destination: FavoritesDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
         val router = remember(activity, navigator, entryId) {
@@ -47,7 +48,7 @@ class FavoritesDestinationRegistration @Inject constructor(private val appRouter
                 }
                 override fun openConfiguration(configuration: BuildConfigurationSummary) {
                     tracker.configurationOpened()
-                    appRouter.openBuildConfiguration(activity, configuration)
+                    navigator.push(BuildHistoryDestination(configuration.id, configuration.name))
                 }
             }
         }

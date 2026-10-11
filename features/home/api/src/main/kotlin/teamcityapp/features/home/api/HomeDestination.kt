@@ -18,9 +18,13 @@ package teamcityapp.features.home.api
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
+import teamcityapp.libraries.navigation.NavigationResult
 
 @Serializable
 enum class HomeTab { Projects, Favorites, Running, Queue, Agents }
 
 @Serializable
 data class HomeDestination(val tab: HomeTab = HomeTab.Projects) : NavKey
+
+@Serializable
+data class HomeTabSelection(val tab: HomeTab) : NavigationResult

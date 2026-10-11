@@ -25,6 +25,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
+import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.features.navigation.api.*
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
@@ -34,7 +35,7 @@ import teamcityapp.features.navigation.impl.router.NavigationRouter
 import teamcityapp.libraries.app_rating.AppRating
 import teamcityapp.libraries.navigation.*
 
-class ProjectDestinationRegistration @Inject constructor(private val appRouter: NavigationAppRouter, private val rating: AppRating) : FeatureDestination<ProjectDestination>(ProjectDestination::class, ProjectDestination.serializer()) {
+class ProjectDestinationRegistration @Inject constructor(private val rating: AppRating) : FeatureDestination<ProjectDestination>(ProjectDestination::class, ProjectDestination.serializer()) {
     @Composable override fun Content(destination: ProjectDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
         val arguments = remember(destination) {
@@ -56,7 +57,10 @@ class ProjectDestinationRegistration @Inject constructor(private val appRouter: 
                 override fun open(entry: teamcityapp.features.navigation.api.NavigationEntry) {
                     when (entry) {
                         is teamcityapp.features.navigation.api.NavigationEntry.Project -> navigator.push(ProjectDestination(entry.reference.id, entry.reference.name, false))
-                        is teamcityapp.features.navigation.api.NavigationEntry.Configuration -> appRouter.openBuildConfiguration(activity, entry.configuration)
+
+                        is teamcityapp.features.navigation.api.NavigationEntry.Configuration -> {
+                            navigator.push(BuildHistoryDestination(entry.configuration.id, entry.configuration.name))
+                        }
                     }
                 }
                 override fun openRating() = rating.open(activity)
