@@ -33,12 +33,15 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -51,7 +54,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.build_log.impl.BuildLogFragment
 
 /**
  * Tests for [BuildLogFragment]
@@ -59,6 +61,10 @@ import teamcityapp.features.build_log.impl.BuildLogFragment
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class BuildLogFragmentTest {
+
+    @JvmField
+    @Rule(order = 4)
+    val compose = androidx.compose.ui.test.junit4.createEmptyComposeRule()
 
     @JvmField
     @Rule(order = 0)
@@ -74,8 +80,8 @@ class BuildLogFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule: CustomIntentsTestRule<BuildDetailsActivity> =
-        CustomIntentsTestRule(BuildDetailsActivity::class.java)
+    val activityRule: CustomIntentsTestRule<MainActivity> =
+        CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @Spy
     private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
@@ -118,10 +124,7 @@ class BuildLogFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking build log tab title
-        onView(withText("Build Log"))
-            .perform(scrollTo())
-            .check(matches(isDisplayed()))
-            .perform(click())
+        compose.tapBuildDetailsTab("Build Log")
 
         // Check web view content
         onWebView()

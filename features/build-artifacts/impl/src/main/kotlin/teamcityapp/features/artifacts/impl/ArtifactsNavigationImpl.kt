@@ -18,25 +18,14 @@
 package teamcityapp.features.artifacts.impl
 
 import android.app.Activity
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import javax.inject.Inject
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.navigation.DestinationLauncher
 
-class ArtifactsNavigationImpl @Inject constructor(private val codec: BuildLaunchCodec, private val launcher: DestinationLauncher) : ArtifactsNavigation {
-    override fun createFragment(build: BuildLaunchData, url: String): Fragment = ArtifactsFragment().apply {
-        arguments = launchArguments(build, url, "")
-    }
+class ArtifactsNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : ArtifactsNavigation {
     override fun open(activity: Activity, name: String, build: BuildLaunchData, url: String) {
         launcher.open(activity, ArtifactsDestination(build, url, name))
-    }
-    private fun launchArguments(build: BuildLaunchData, url: String, name: String) = Bundle().apply {
-        putSerializable(ArtifactsNavigation.BUILD, codec.encode(build))
-        putString(ArtifactsNavigation.URL, url)
-        putString(ArtifactsNavigation.NAME, name)
     }
 }

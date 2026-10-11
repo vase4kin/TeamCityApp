@@ -38,10 +38,10 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.Companion.RUN_BUILD_TYPE_ID
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
-import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -103,7 +103,7 @@ class FilterBuildsBranchesAutoCompleteTest {
     fun testUserCanNoBranchesAvailableForFilterIfBuildTypeHasSingleBranchAvailable() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID)
+        intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check the branches autocomplete field is not visible
@@ -118,7 +118,7 @@ class FilterBuildsBranchesAutoCompleteTest {
         `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(ArrayList())))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID)
+        intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check the branches autocomplete field is not visible
@@ -136,7 +136,7 @@ class FilterBuildsBranchesAutoCompleteTest {
         `when`(teamCityService.listBranches(anyString())).thenReturn(Single.just(Branches(branches)))
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, TYPE_ID)
+        intent.putExtra(RUN_BUILD_TYPE_ID, TYPE_ID)
         // Starting the activity
         activityRule.launchActivity(intent)
         // Choose branch from autocomplete and verify it is appeared

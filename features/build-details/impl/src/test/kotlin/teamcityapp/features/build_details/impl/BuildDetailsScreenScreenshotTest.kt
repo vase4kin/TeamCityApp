@@ -19,8 +19,10 @@ package teamcityapp.features.build_details.impl
 import android.app.Application
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
@@ -84,6 +86,16 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
                 BuildDetailsUiState(snapshot, counts = counts, prompt = BuildDetailsPromptUi(kind, description = description))
             }
 
+            stateName.startsWith("notice_") -> {
+                val notice = when (stateName) {
+                    "notice_stopped" -> BuildDetailsNotice(1, R.string.text_build_is_stopped)
+                    "notice_removed" -> BuildDetailsNotice(1, R.string.text_build_is_removed_from_queue)
+                    "notice_restarted" -> BuildDetailsNotice(1, R.string.text_build_is_restarted, openQueued = true)
+                    else -> BuildDetailsNotice(1, R.string.error_opening_build, openQueued = true)
+                }
+                BuildDetailsUiState(snapshot, counts = counts, notice = notice)
+            }
+
             stateName == "counts_loading" -> BuildDetailsUiState(snapshot)
 
             stateName == "counts_partial_failed" -> BuildDetailsUiState(snapshot, counts = mapOf(BuildDetailsTab.Changes to 12), countFailures = setOf(BuildDetailsTab.Tests))
@@ -110,7 +122,13 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         compose.mainClock.autoAdvance = false
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
-                BuildDetailsScreen(state, variant.width >= 600, {}, {}, {}, {}, {}, remember { SnackbarHostState() }) {
+                val snackbar = remember { SnackbarHostState() }
+                val message = state.notice?.let { stringResource(it.message) }
+                val action = state.notice?.actionLabel?.let { stringResource(it) }
+                LaunchedEffect(message, action) {
+                    message?.let { snackbar.showSnackbar(it, action, duration = SnackbarDuration.Indefinite) }
+                }
+                BuildDetailsScreen(state, variant.width >= 600, {}, {}, {}, {}, {}, snackbar) {
                     Surface(Modifier.fillMaxSize()) {
                         Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
                             Text("Build #42", style = MaterialTheme.typography.headlineSmall)
@@ -130,7 +148,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (BuildDetailsTab.entries.map { "tab_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (BuildDetailsTab.entries.map { "tab_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted", "notice_opening_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

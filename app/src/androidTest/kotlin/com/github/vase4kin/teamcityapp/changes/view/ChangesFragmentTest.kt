@@ -30,13 +30,16 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.changes.api.Changes
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -66,7 +69,7 @@ class ChangesFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomActivityTestRule(BuildDetailsActivity::class.java)
+    val activityRule = CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -96,7 +99,7 @@ class ChangesFragmentTest {
 
     @Test fun failedChangesCanBeRetriedWithinTheBuildTab() {
         `when`(teamCityService.listChanges(anyString())).thenReturn(Single.error(RuntimeException("offline")))
-        openChanges("Changes (0)")
+        openChanges("Changes (?)")
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         val fake = FakeTeamCityServiceImpl()
         `when`(teamCityService.listChanges(anyString())).thenAnswer { fake.listChanges(it.getArgument(0)) }
@@ -117,7 +120,7 @@ class ChangesFragmentTest {
             val url: String = it.getArgument(0)
             if (url.contains("fields=count") && countFails.get()) Single.error<Changes>(RuntimeException("count offline")) else fake.listChanges(url)
         }
-        openChanges("Changes (0)")
+        openChanges("Changes (?)")
         assertTextVisible("Do you believe?")
         assertTextVisible(text(ChangesR.string.changes_count_unavailable))
         countFails.set(false)
@@ -137,17 +140,13 @@ class ChangesFragmentTest {
             )
         )
         awaitTab(title)
-        onView(withText(title)).perform(click())
+        compose.tapBuildDetailsTab(title)
     }
 
     private fun awaitTab(title: String) {
         compose.waitUntil(10_000) {
-            val found = AtomicBoolean()
-            InstrumentationRegistry.getInstrumentation().runOnMainSync {
-                val tabs = activityRule.activity.findViewById<TabLayout>(R.id.tabLayout)
-                found.set((0 until tabs.tabCount).any { tabs.getTabAt(it)?.text.toString() == title })
-            }
-            found.get()
+            compose.onAllNodes(hasTestTag("details:tab:Changes") and hasText(title))
+                .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
     }
 

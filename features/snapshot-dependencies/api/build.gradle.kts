@@ -24,5 +24,4 @@ extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.snaps
 dependencies {
     api(projects.libraries.navigation)
     api(projects.libraries.builds)
-    api(libs.androidx.fragment)
 }

@@ -21,7 +21,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -29,17 +28,15 @@ import kotlinx.serialization.json.Json
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.impl.tracker.ArtifactsTracker
 import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.list_state.RefreshableListLoader
 
 @HiltViewModel
 class ArtifactsViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ArtifactsRepository,
-    codec: BuildLaunchCodec,
     private val tracker: ArtifactsTracker
 ) : ViewModel() {
-    val build = savedStateHandle.get<String>(JSON_BUILD)?.let { Json.decodeFromString<BuildLaunchData>(it) } ?: codec.decode(requireNotNull(savedStateHandle.get<Serializable>(ArtifactsNavigation.BUILD)))
+    val build = Json.decodeFromString<BuildLaunchData>(requireNotNull(savedStateHandle.get<String>(JSON_BUILD)))
     private val url = savedStateHandle.get<String>(ArtifactsNavigation.URL).orEmpty()
     private val title = savedStateHandle.get<String>(ArtifactsNavigation.NAME).orEmpty()
     private val loader = RefreshableListLoader(flowOf(url)) { path, force -> repository.entries(path, force) }

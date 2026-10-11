@@ -50,8 +50,14 @@ internal data class BuildDetailsTabLabel(@StringRes val title: Int, @StringRes v
 internal data class BuildDetailsMenuAction(val action: BuildDetailsAction, @StringRes val label: Int)
 
 @Serializable
-internal data class BuildDetailsNotice(val id: Long, @StringRes val message: Int, val openQueued: Boolean = false)
-internal data class BuildDetailsReplacement(val id: Long, val build: BuildLaunchData)
+internal data class BuildDetailsNotice(val id: Long, @StringRes val message: Int, val openQueued: Boolean = false) {
+    @get:StringRes val actionLabel: Int? get() = when {
+        !openQueued -> null
+        message == R.string.error_opening_build -> R.string.text_retry
+        else -> R.string.text_show_build
+    }
+}
+internal data class BuildDetailsReplacement(val id: Long, val build: BuildLaunchData, val completion: BuildDetailsCompletion? = null)
 internal data class BuildDetailsUiState(
     val incoming: BuildLaunchData,
     val current: BuildLaunchData = incoming,

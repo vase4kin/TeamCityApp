@@ -23,6 +23,5 @@ extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build
 dependencies {
     api(projects.libraries.navigation)
     api(projects.libraries.builds)
-    api(libs.androidx.fragment)
     api(libs.coroutines.android)
 }

@@ -23,5 +23,4 @@ plugins {
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.properties.api" }
 dependencies {
     api(projects.libraries.navigation)
-    api(libs.androidx.fragment)
 }

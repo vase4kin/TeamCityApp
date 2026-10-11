@@ -53,7 +53,11 @@ class BuildDetailsScreenTest {
     @Test fun cancellationCheckboxIsExplicitAndConfirmationHasOneCallback() {
         var confirmed: Boolean? = null
         compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, confirmation = BuildConfirmation(build, ConfirmationKind.Stop)), false, {}, {}, {}, { confirmed = it }, {}, remember { SnackbarHostState() }) { Surface {} } } }
+        compose.onNodeWithText("Re-add build to the queue").performClick()
+        compose.onNodeWithTag("details:readd").assertIsOn()
         compose.onNodeWithTag("details:readd").performClick()
+        compose.onNodeWithTag("details:readd").assertIsOff()
+        compose.onNodeWithText("Re-add build to the queue").performClick()
         compose.onNodeWithTag("details:confirm").performClick()
         assertEquals(true, confirmed)
     }

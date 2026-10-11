@@ -17,9 +17,6 @@
 
 package teamcityapp.features.artifacts.impl.router
 
-import android.app.Activity
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentManager
 import kotlinx.coroutines.flow.Flow
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.bottom_sheet.api.*
@@ -46,27 +43,4 @@ internal fun artifactMenu(file: Artifact): Pair<SheetMenuType, Array<String>> {
         file.isBrowserFile -> SheetMenuType.ArtifactBrowser to arrayOf(file.contentHref.orEmpty(), file.href)
         else -> SheetMenuType.ArtifactDefault to arrayOf(file.contentHref.orEmpty())
     }
-}
-
-internal class ArtifactsRouterDelegate(
-    private val activity: AppCompatActivity,
-    private val fragments: FragmentManager,
-    private val navigation: ArtifactsNavigation,
-    private val sheet: BottomSheetNavigation,
-    private val app: ArtifactsAppRouter,
-    private val events: ArtifactsEvents,
-    private val up: () -> Unit
-) : ArtifactsRouter {
-    override val actions get() = events.actions
-    override fun navigateUp() = up()
-    override fun openFolder(name: String, build: BuildLaunchData, href: String) = navigation.open(activity, name, build, href)
-    override fun openActions(file: Artifact) {
-        val (menu, values) = artifactMenu(file)
-        sheet.createBottomSheetDialog(file.name, values, menu).show(fragments, "Tag bottom sheet")
-    }
-    override fun permission(file: ArtifactDownload) = app.permission(activity, file)
-    override fun openFile(file: DownloadedArtifact) = app.openDownloadedFile(activity, file)
-    override fun openBrowser(build: BuildLaunchData, href: String) = app.openBrowser(activity, build, href)
-    override fun downloadFailed() = events.downloadFailed()
-    override fun dispose() = app.dispose(activity)
 }

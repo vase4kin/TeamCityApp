@@ -46,13 +46,13 @@ class ChangesViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val repository: ChangesRepository
 ) : ViewModel() {
-    private val url: String = checkNotNull(savedStateHandle[ChangesFragment.ARG_URL])
+    private val url: String = checkNotNull(savedStateHandle[ChangesViewModel.ARG_URL])
     private var forceRefresh = false
 
     /**
-     * Paging retains pages and in-flight requests for this Fragment's ViewModel lifetime.
+     * Paging retains pages and in-flight requests for this destination's ViewModel lifetime.
      * View recreation resubscribes to the same generation without duplicate page requests;
-     * destroying the Fragment clears the scope and cancels repository work.
+     * removing the destination clears the scope and cancels repository work.
      */
     internal val changes = Pager(
         config = PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 2, enablePlaceholders = false),
@@ -91,6 +91,9 @@ class ChangesViewModel @Inject constructor(
     internal fun retryCount() {
         completedCount = null
         countRequest.value++
+    }
+    companion object {
+        internal const val ARG_URL = "url"
     }
 }
 

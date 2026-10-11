@@ -38,7 +38,6 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
@@ -47,9 +46,12 @@ import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -88,7 +90,7 @@ class SnapshotDependenciesFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomActivityTestRule(BuildDetailsActivity::class.java)
+    val activityRule = CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -117,7 +119,7 @@ class SnapshotDependenciesFragmentTest {
     private fun awaitTag(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
     }
-    private fun tab(title: String) = compose.tapNativePagerTab(title)
+    private fun tab(title: String) = compose.tapBuildDetailsTab(title)
     private fun sheet(label: String) {
         awaitText(label)
         compose.onNodeWithText(label).performClick()
@@ -131,8 +133,8 @@ class SnapshotDependenciesFragmentTest {
     @Test fun absentSnapshotCollectionDoesNotCreateATab() {
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
         activityRule.launchActivity(BuildComposeFixtures.intent(BuildComposeFixtures.incoming.copy(snapshotDependencies = null)))
-        onView(withText(R.string.tab_parameters)).perform(scrollTo())
-        onView(withText(R.string.tab_snapshot_dependencies)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
+        awaitTag("details:tab:Parameters")
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.tab_snapshot_dependencies)).assertCountEquals(0)
     }
 
     @Test fun presentEmptySnapshotCollectionStillCreatesTabAndEmptyState() {
@@ -159,10 +161,10 @@ class SnapshotDependenciesFragmentTest {
         start()
         awaitTag("snapshot:build:dependency-2")
         compose.onNodeWithTag("snapshot:build:dependency-2").performClick()
-        intended(allOf(hasComponent(BuildDetailsActivity::class.java.name), hasExtra(BundleExtractorValues.NAME, ""), BuildComposeFixtures.fullPayload(BundleExtractorValues.BUILD, running)))
+        assertRootDestination(teamcityapp.features.build_details.api.BuildDetailsDestination(running, ""))
         awaitTag("overview:list")
-        onView(withText("Artifacts")).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
-        onView(withText(R.string.tab_snapshot_dependencies)).perform(scrollTo()).check(matches(isDisplayed()))
+        compose.onNodeWithTag("details:tab:Artifacts").assertDoesNotExist()
+        compose.onNodeWithTag("details:tab:Snapshots").performScrollTo().assertIsDisplayed()
     }
 
     @Test fun configurationHeaderLaunchesTheCorrectHistory() {
@@ -170,7 +172,7 @@ class SnapshotDependenciesFragmentTest {
         start()
         awaitTag("snapshot:configuration:0")
         compose.onNodeWithTag("snapshot:configuration:0").performClick()
-        intended(hasDestination(BuildHistoryDestination("current-config", "Current configuration")))
+        assertRootDestination(BuildHistoryDestination("current-config", "Current configuration"))
     }
 
     @Test fun initialFailureCanRetryTheDependencyQuery() {
@@ -199,7 +201,7 @@ class SnapshotDependenciesFragmentTest {
             lists.incrementAndGet()
             Single.just(Builds(3, snapshots.map(BuildComposeFixtures::legacy)))
         }
-        ActivityScenario.launch<BuildDetailsActivity>(BuildComposeFixtures.intent()).use { scenario ->
+        ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
             tab(text(R.string.tab_snapshot_dependencies))
             awaitTag("snapshot:build:dependency-1")
             val completedLists = lists.get()
@@ -207,7 +209,7 @@ class SnapshotDependenciesFragmentTest {
             awaitTag("snapshot:build:dependency-1")
             assertEquals(completedLists, lists.get())
             compose.onNodeWithTag("snapshot:build:dependency-2").performClick()
-            intended(allOf(hasComponent(BuildDetailsActivity::class.java.name), BuildComposeFixtures.fullPayload(BundleExtractorValues.BUILD, running)))
+            assertRootDestination(teamcityapp.features.build_details.api.BuildDetailsDestination(running, ""))
         }
     }
 
@@ -238,5 +240,9 @@ class SnapshotDependenciesFragmentTest {
         `when`(teamCityService.build(BuildComposeFixtures.incoming.href)).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
         activityRule.launchActivity(BuildComposeFixtures.intent())
         tab(text(R.string.tab_snapshot_dependencies))
+    }
+    private fun assertRootDestination(expected: androidx.navigation3.runtime.NavKey) {
+        compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == expected }
+        org.junit.Assert.assertEquals(expected, currentRootSnapshot().entries.last().destination)
     }
 }

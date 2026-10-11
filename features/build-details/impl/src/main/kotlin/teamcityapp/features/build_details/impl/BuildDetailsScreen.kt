@@ -19,6 +19,7 @@ package teamcityapp.features.build_details.impl
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -123,8 +125,8 @@ internal fun BuildDetailsScreen(
                 Column {
                     Text(stringResource(confirmation.message))
                     if (confirmation.kind == ConfirmationKind.Stop) {
-                        Row {
-                            Checkbox(checked = reAdd, onCheckedChange = { reAdd = it }, modifier = Modifier.testTag("details:readd"))
+                        Row(Modifier.testTag("details:readd").toggleable(value = reAdd, role = Role.Checkbox, onValueChange = { reAdd = it })) {
+                            Checkbox(checked = reAdd, onCheckedChange = null, modifier = Modifier.minimumInteractiveComponentSize())
                             Text(stringResource(R.string.text_re_add_build), modifier = Modifier.padding(top = 12.dp))
                         }
                     }

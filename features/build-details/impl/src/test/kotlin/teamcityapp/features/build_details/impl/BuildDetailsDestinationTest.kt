@@ -41,7 +41,7 @@ class BuildDetailsDestinationTest {
     }
 
     @Test fun destinationSerializationPreservesCompleteSnapshotAndFallbackName() {
-        val destination = BuildDetailsDestination(base.copy(branchName = "feature:opaque,branch", tests = BuildTests("/tests", 7, 8, 9, 24), properties = BuildProperties(null, "wrapper", "/properties")), "Fallback")
+        val destination = BuildDetailsDestination(base.copy(branchName = "feature:opaque,branch", tests = BuildTests("/tests", 7, 8, 9, 24), properties = BuildProperties(null, "wrapper", "/properties")), "Fallback", completion = BuildDetailsCompletion.Stopped)
         assertEquals(destination, Json.decodeFromString<BuildDetailsDestination>(Json.encodeToString(destination)))
     }
 }

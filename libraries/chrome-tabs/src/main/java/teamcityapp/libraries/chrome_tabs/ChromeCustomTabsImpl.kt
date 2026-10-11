@@ -24,7 +24,7 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsServiceConnection
 import androidx.browser.customtabs.CustomTabsSession
-import teamcityapp.libraries.utils.getThemeColor
+import teamcityapp.libraries.theme.getThemeColor
 
 private const val CUSTOM_TAB_PACKAGE_NAME = "com.android.chrome"
 

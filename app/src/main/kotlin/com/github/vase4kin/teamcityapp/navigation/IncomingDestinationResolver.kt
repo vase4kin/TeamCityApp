@@ -25,6 +25,7 @@ import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
+import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.BuildHistoryFilterAdapter
 import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
@@ -52,11 +53,16 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     fun destination(intent: Intent): NavKey? {
         intent.getStringExtra(MainActivity.EXTRA_DESTINATION)?.let { return registry.decodeDestination(it) }
         return when (intent.component?.className) {
+            BUILD_DETAILS_COMPONENT -> {
+                val payload = requireNotNull(IntentCompat.getSerializableExtra(intent, BundleExtractorValues.BUILD, Serializable::class.java))
+                BuildDetailsDestination(codec.decode(payload), intent.getStringExtra(BundleExtractorValues.NAME))
+            }
+
             HOME_COMPONENT -> HomeDestination(HomeTab.entries.getOrElse(intent.getIntExtra(HOME_TAB, -1)) { HomeTab.Projects })
 
-            RUN_BUILD_COMPONENT, LEGACY_RUN_BUILD_COMPONENT -> RunBuildDestination(intent.getStringExtra("BuildTypeId").orEmpty())
+            RUN_BUILD_COMPONENT, LEGACY_RUN_BUILD_COMPONENT -> RunBuildDestination(intent.getStringExtra(RUN_BUILD_TYPE_ID).orEmpty())
 
-            FILTER_BUILDS_COMPONENT, LEGACY_FILTER_BUILDS_COMPONENT -> FilterBuildsDestination(intent.getStringExtra("BuildTypeId").orEmpty())
+            FILTER_BUILDS_COMPONENT, LEGACY_FILTER_BUILDS_COMPONENT -> FilterBuildsDestination(intent.getStringExtra(RUN_BUILD_TYPE_ID).orEmpty())
 
             ABOUT_COMPONENT -> AboutDestination
 
@@ -92,6 +98,7 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
         // still belong to their compatibility codec/cache boundary.
         if (destination is BuildHistoryDestination) removeExtra(BuildHistoryNavigation.EXTRA_LEGACY_FILTER)
         if (destination is ArtifactsDestination) removeExtra(ArtifactsNavigation.BUILD)
+        if (destination is BuildDetailsDestination) removeExtra(BundleExtractorValues.BUILD)
         if (destination is HomeDestination || destination is AccountActivationDestination) {
             removeExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD)
             removeExtra(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED)
@@ -115,6 +122,8 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     }
 
     companion object {
+        const val RUN_BUILD_TYPE_ID = "BuildTypeId"
+        const val BUILD_DETAILS_COMPONENT = "com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity"
         const val HOME_COMPONENT = "com.github.vase4kin.teamcityapp.home.view.HomeActivity"
         const val HOME_TAB = "arg_tab"
         const val RUN_BUILD_COMPONENT = "teamcityapp.features.run_build.impl.RunBuildActivity"

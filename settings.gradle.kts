@@ -37,7 +37,6 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 include(":app")
 include(":libraries:api")
-include(":libraries:utils")
 include(":libraries:app-rating")
 include(":libraries:coroutines")
 include(":libraries:theme")

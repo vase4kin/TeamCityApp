@@ -21,7 +21,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.io.Serializable
 import javax.inject.Inject
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
@@ -29,12 +28,11 @@ import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
 import teamcityapp.features.build_overview.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.list_state.*
 
 @HiltViewModel
-class BuildOverviewViewModel @Inject constructor(private val savedStateHandle: SavedStateHandle, repository: BuildOverviewRepository, codec: BuildLaunchCodec) : ViewModel() {
-    private val incoming = savedStateHandle.get<String>(JSON_BUILD)?.let { Json.decodeFromString<BuildLaunchData>(it) } ?: codec.decode(requireNotNull(savedStateHandle.get<Serializable>(BuildOverviewNavigation.BUILD)))
+class BuildOverviewViewModel @Inject constructor(private val savedStateHandle: SavedStateHandle, repository: BuildOverviewRepository) : ViewModel() {
+    private val incoming = Json.decodeFromString<BuildLaunchData>(requireNotNull(savedStateHandle.get<String>(JSON_BUILD)))
     private var hostRefresh = savedStateHandle.get<Long>(HOST_REFRESH) ?: 0L
     private var loaded = false
     private var currentHref = incoming.href

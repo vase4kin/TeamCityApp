@@ -276,7 +276,7 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("A")
         stubFavorite("A", listOf(build))
         stubDetails(build)
-        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjects()
             clickTab()
             awaitRow("1")
@@ -292,7 +292,7 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("A")
         stubFavorite("A", listOf(build))
         stubDetails(build)
-        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjects()
             clickTab()
             awaitRow("1")
@@ -321,14 +321,14 @@ class RunningBuildsFragmentTest {
         val aliceBuild = build("alice", "alice-build", "Alice private configuration", "Alice", "Alice private row")
         val bobBuild = build("bob", "bob-build", "Bob configuration", "Bob", "Bob row")
         stubDetails(aliceBuild, bobBuild)
-        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
             awaitProjects()
             clickTab()
             compose.waitUntil(10_000) { alice.hasObservers() }
             scenario.onActivity { activity ->
                 storage.setUserActive(Mocks.URL, "bob")
                 activity.startActivity(
-                    Intent(activity, MainActivity::class.java).setClassName(activity, IncomingDestinationResolver.HOME_COMPONENT)
+                    Intent(activity, MainActivity::class.java).setClassName(activity, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT).setClassName(activity, IncomingDestinationResolver.HOME_COMPONENT)
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         .putExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, true)
                 )

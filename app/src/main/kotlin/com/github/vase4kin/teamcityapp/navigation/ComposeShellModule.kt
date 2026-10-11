@@ -51,7 +51,7 @@ abstract class ComposeShellModule {
 
     @Binds abstract fun consent(implementation: AppBuildLogConsentStorage): BuildLogConsentStorage
 
-    @Binds abstract fun builds(implementation: LegacyBuildDetailsNavigation): BuildDetailsNavigation
+    @Binds abstract fun builds(implementation: AppBuildDetailsNavigation): BuildDetailsNavigation
     companion object {
         @Provides @Singleton @AccountNavigationScope
         fun accountScope(@MainDispatcher main: CoroutineDispatcher): CoroutineScope = CoroutineScope(SupervisorJob() + main)

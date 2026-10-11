@@ -35,8 +35,8 @@ class SnapshotDependenciesViewModel @Inject constructor(
     repository: SnapshotDependenciesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val buildId = checkNotNull(savedStateHandle.get<String>(SnapshotDependenciesFragment.BUILD_ID)).also { require(it.isNotBlank()) }
-    val buildTypeName: String = savedStateHandle[SnapshotDependenciesFragment.BUILD_TYPE_NAME] ?: ""
+    private val buildId = checkNotNull(savedStateHandle.get<String>(SnapshotDependenciesViewModel.BUILD_ID)).also { require(it.isNotBlank()) }
+    val buildTypeName: String = savedStateHandle[SnapshotDependenciesViewModel.BUILD_TYPE_NAME] ?: ""
     private val loader = RefreshableListLoader(flowOf(buildId), repository::dependencies)
     val state = loader.state.map(::SnapshotDependenciesUiState).stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), SnapshotDependenciesUiState())
     private var paused = false
@@ -55,5 +55,9 @@ class SnapshotDependenciesViewModel @Inject constructor(
     }
     fun onConfigurationRecreation(wasVisible: Boolean) {
         if (wasVisible) paused = false
+    }
+    companion object {
+        internal const val BUILD_ID = "id"
+        internal const val BUILD_TYPE_NAME = "name"
     }
 }

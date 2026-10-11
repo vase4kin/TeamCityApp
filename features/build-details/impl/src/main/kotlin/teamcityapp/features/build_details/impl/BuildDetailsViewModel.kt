@@ -50,10 +50,18 @@ internal class BuildDetailsViewModel @Inject constructor(
             confirmation = savedState.get<String>(CONFIRMATION)?.let { Json.decodeFromString<BuildConfirmation>(it) },
             overviewRefresh = savedState.get<Long>(OVERVIEW_REFRESH) ?: 0,
             notice = savedState.get<String>(NOTICE)?.let { Json.decodeFromString<BuildDetailsNotice>(it) },
-            replacement = savedState.get<String>(REPLACEMENT)?.let { BuildDetailsReplacement(checkNotNull(savedState[REPLACEMENT_ID]), Json.decodeFromString<BuildLaunchData>(it)) }
+            replacement = savedState.get<String>(REPLACEMENT)?.let { BuildDetailsReplacement(checkNotNull(savedState[REPLACEMENT_ID]), Json.decodeFromString<BuildLaunchData>(it), savedState.get<String>(REPLACEMENT_COMPLETION)?.let(BuildDetailsCompletion::valueOf)) }
         )
     )
     val state = mutableState.asStateFlow()
+
+    init {
+        if (!savedState.contains(NOTICE)) {
+            savedState.get<String>(COMPLETION)?.let(BuildDetailsCompletion::valueOf)?.let { completion ->
+                notice(if (completion == BuildDetailsCompletion.Stopped) R.string.text_build_is_stopped else R.string.text_build_is_removed_from_queue)
+            }
+        }
+    }
 
     fun viewed() = tracker.viewed()
     fun select(tab: BuildDetailsTab) {
@@ -129,7 +137,7 @@ internal class BuildDetailsViewModel @Inject constructor(
                     else -> when (val result = repository.cancel(confirmation.build, reAdd && operation == BuildDetailsOperation.Stop)) {
                         is BuildDetailsMutation.Success -> {
                             tracker.cancelSucceeded()
-                            replace(result.value)
+                            replace(result.value, if (operation == BuildDetailsOperation.Stop) BuildDetailsCompletion.Stopped else BuildDetailsCompletion.RemovedFromQueue)
                         }
 
                         BuildDetailsMutation.Forbidden -> {
@@ -192,15 +200,17 @@ internal class BuildDetailsViewModel @Inject constructor(
             mutableState.value = state.value.copy(notice = null)
         }
     }
-    private fun replace(build: BuildLaunchData) {
+    private fun replace(build: BuildLaunchData, completion: BuildDetailsCompletion? = null) {
         savedState[REPLACEMENT] = Json.encodeToString(build)
+        savedState[REPLACEMENT_COMPLETION] = completion?.name
         val replacementId = id()
         savedState[REPLACEMENT_ID] = replacementId
-        mutableState.value = state.value.copy(replacement = BuildDetailsReplacement(replacementId, build))
+        mutableState.value = state.value.copy(replacement = BuildDetailsReplacement(replacementId, build, completion))
     }
     fun consumeReplacement(id: Long) {
         if (state.value.replacement?.id == id) {
             savedState[REPLACEMENT] = null
+            savedState[REPLACEMENT_COMPLETION] = null
             savedState[REPLACEMENT_ID] = null
             mutableState.value = state.value.copy(replacement = null)
         }
@@ -208,6 +218,8 @@ internal class BuildDetailsViewModel @Inject constructor(
     companion object {
         internal const val BUILD = "details.incoming"
         internal const val NAME = "details.name"
+        internal const val COMPLETION = "details.completion"
+        private const val REPLACEMENT_COMPLETION = "details.replacement-completion"
         private const val OVERVIEW_REFRESH = "details.overview.refresh"
         private const val CURRENT = "details.current"
         private const val SELECTED = "details.tab"

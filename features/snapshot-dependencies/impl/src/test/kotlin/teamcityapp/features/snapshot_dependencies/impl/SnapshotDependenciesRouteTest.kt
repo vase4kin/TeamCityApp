@@ -124,62 +124,6 @@ class SnapshotDependenciesRouteTest {
         assertEquals(listOf(false, false), calls)
     }
 
-    @Suppress("DEPRECATION")
-    @Test
-    fun pagerHintStopsOffscreenCollectionAndRestartsWhenSelected() {
-        val fragment = SnapshotDependenciesFragment()
-        fragment.userVisibleHint = false
-        val calls = mutableListOf<Boolean>()
-        var cancelled = false
-        val vm = viewModel { force ->
-            calls += force
-            if (calls.size == 1) {
-                try {
-                    awaitCancellation()
-                } finally {
-                    cancelled = true
-                }
-            }
-            listOf(snapshotBuild())
-        }
-        val tracker = object : SnapshotDependenciesTracker {
-            override fun viewShown() {}
-        }
-        compose.setContent { TeamCityTheme { SnapshotDependenciesRoute(router, tracker, vm, fragment.contentVisible) } }
-        compose.waitForIdle()
-        assertTrue(calls.isEmpty())
-        compose.runOnIdle { fragment.userVisibleHint = true }
-        compose.waitForIdle()
-        assertTrue(fragment.contentVisible)
-        compose.waitUntil(5_000) { calls.size == 1 }
-        compose.runOnIdle { fragment.userVisibleHint = false }
-        compose.waitForIdle()
-        assertFalse(fragment.contentVisible)
-        compose.waitUntil(5_000) { cancelled }
-        compose.runOnIdle { fragment.userVisibleHint = true }
-        compose.waitForIdle()
-        compose.waitUntil(5_000) { calls.size == 2 }
-        compose.onNodeWithTag("snapshot:build:1").assertIsDisplayed()
-        assertEquals(listOf(false, false), calls)
-    }
-
-    @Suppress("DEPRECATION")
-    @Test
-    fun hiddenAndPagerHintsMustBothAllowVisibility() {
-        val fragment = SnapshotDependenciesFragment()
-        assertTrue(fragment.contentVisible)
-        fragment.onHiddenChanged(true)
-        fragment.userVisibleHint = false
-        fragment.userVisibleHint = true
-        assertFalse(fragment.contentVisible)
-        fragment.onHiddenChanged(false)
-        assertTrue(fragment.contentVisible)
-        fragment.userVisibleHint = false
-        fragment.onHiddenChanged(true)
-        fragment.onHiddenChanged(false)
-        assertFalse(fragment.contentVisible)
-    }
-
     private fun viewModel(load: suspend (Boolean) -> List<BuildLaunchData>) = SnapshotDependenciesViewModel(
         object : SnapshotDependenciesRepository {
             override suspend fun dependencies(buildId: String, forceRefresh: Boolean) = load(forceRefresh)

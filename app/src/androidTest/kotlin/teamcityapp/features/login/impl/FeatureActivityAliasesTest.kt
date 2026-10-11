@@ -29,6 +29,7 @@ class FeatureActivityAliasesTest {
     @Test fun legacyComponentsResolveToTheirCurrentOwningActivity() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val targets = mapOf(
+            "com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "com.github.vase4kin.teamcityapp.home.view.HomeActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "teamcityapp.features.navigation.impl.NavigationActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",
             "com.github.vase4kin.teamcityapp.navigation.view.NavigationActivity" to "com.github.vase4kin.teamcityapp.navigation.MainActivity",

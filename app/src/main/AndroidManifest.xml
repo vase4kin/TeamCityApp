@@ -81,10 +81,8 @@
         </activity-alias>
         <activity-alias android:name=".home.view.HomeActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="false" />
-        <activity
-            android:name=".build_details.view.BuildDetailsActivity"
-            android:label="@string/title_activity_build"
-            android:theme="@style/Theme.MyApp" />
+        <activity-alias android:name=".build_details.view.BuildDetailsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesActivity"
             android:theme="@style/OssTheme.MyApp" />

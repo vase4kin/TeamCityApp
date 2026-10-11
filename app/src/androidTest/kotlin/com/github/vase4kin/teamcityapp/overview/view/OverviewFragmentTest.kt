@@ -39,7 +39,6 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered
@@ -52,9 +51,13 @@ import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarSubTitle
 import com.github.vase4kin.teamcityapp.helper.TestUtils.Companion.matchToolbarTitle
+import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -98,7 +101,7 @@ class OverviewFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomActivityTestRule(BuildDetailsActivity::class.java)
+    val activityRule = CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -138,7 +141,7 @@ class OverviewFragmentTest {
     private fun awaitTag(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
     }
-    private fun tab(title: String) = compose.tapNativePagerTab(title)
+    private fun tab(title: String) = compose.tapBuildDetailsTab(title)
     private fun sheet(label: String) {
         awaitText(label)
         compose.onNodeWithText(label).performClick()
@@ -158,8 +161,8 @@ class OverviewFragmentTest {
         row("TriggeredBy", "code-lover")
         row("Configuration", "build type name")
         row("Project", "project name")
-        matchToolbarTitle("#2459")
-        matchToolbarSubTitle("build type name")
+        awaitText("#2459")
+        awaitText("build type name")
     }
 
     @Test fun initialErrorRetriesIntoCurrentContent() {
@@ -176,7 +179,7 @@ class OverviewFragmentTest {
         openLegacy(Mocks.successBuild())
         clickRow("Result")
         sheet(text(SheetR.string.build_element_copy))
-        onView(withText(R.string.build_element_copy_text)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.build_element_copy_text))
         InstrumentationRegistry.getInstrumentation().runOnMainSync {
             val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
             assertEquals("Success", clipboard.primaryClip!!.getItemAt(0).text.toString())
@@ -233,7 +236,7 @@ class OverviewFragmentTest {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Branch")
         sheet(text(SheetR.string.build_element_show_all_builds_built_branch))
-        intended(hasDestination(BuildHistoryDestination("current-config", "Current configuration", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10")))
+        assertRootDestination(BuildHistoryDestination("current-config", "Current configuration", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10"))
         verify(teamCityService).listBuilds("current-config", "state:any,canceled:any,failedToStart:any,branch:name:current-branch,personal:false,pinned:false,count:10")
     }
 
@@ -241,14 +244,14 @@ class OverviewFragmentTest {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Configuration")
         sheet(text(SheetR.string.build_element_open_build_type))
-        intended(hasDestination(BuildHistoryDestination("current-config", "Current configuration")))
+        assertRootDestination(BuildHistoryDestination("current-config", "Current configuration"))
     }
 
     @Test fun projectNavigationUsesLoadedProjectAndInstalledAlias() {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Project")
         sheet(text(SheetR.string.build_element_open_project))
-        intended(hasDestination(ProjectDestination("current-project", "Current project", false)))
+        assertRootDestination(ProjectDestination("current-project", "Current project", false))
     }
 
     @Test fun shareUsesTheCurrentWebUrl() {
@@ -274,18 +277,19 @@ class OverviewFragmentTest {
         doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
-        onView(withText(R.string.text_stop_the_build)).check(matches(isDisplayed()))
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
         verify(teamCityService).cancelBuild("/builds/42", BuildCancelRequest(false))
-        onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()))
     }
 
     @Test fun stoppingCanReAddTheCurrentBuild() {
         doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
-        onView(withText(R.string.text_re_add_build)).perform(click())
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).onFirst().performClick()
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(R.string.text_build_is_stopped))
         verify(teamCityService).cancelBuild("/builds/42", BuildCancelRequest(true))
     }
 
@@ -293,8 +297,9 @@ class OverviewFragmentTest {
         doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.incoming)
         menu(text(OverviewR.string.overview_remove))
-        onView(withText(R.string.text_re_add_build)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
-        onView(withText(R.string.text_remove_from_queue_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).assertCountEquals(0)
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(R.string.text_build_is_removed_from_queue))
         verify(teamCityService).cancelBuild("/queue/42", BuildCancelRequest(false))
     }
 
@@ -310,14 +315,15 @@ class OverviewFragmentTest {
         doReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))).`when`(teamCityService).queueBuild(com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
-        onView(withText(R.string.text_restart_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(R.string.text_build_is_restarted))
         val queued = org.mockito.kotlin.argumentCaptor<Build>()
         verify(teamCityService).queueBuild(queued.capture())
         assertEquals("current-config", queued.firstValue.buildType?.id)
         assertEquals("current-branch", queued.firstValue.branchName)
         assertEquals("env", queued.firstValue.properties!!.properties.single().name)
         assertEquals("production", queued.firstValue.properties!!.properties.single().value)
-        onView(withText(R.string.text_build_is_restarted)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
     }
 
     @Test fun restartForbiddenIsReported() {
@@ -334,16 +340,16 @@ class OverviewFragmentTest {
             calls.incrementAndGet()
             Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.loaded))
         }
-        ActivityScenario.launch<BuildDetailsActivity>(BuildComposeFixtures.intent()).use { scenario ->
+        ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
             row("Result", "Running current build")
             val completedCalls = calls.get()
             scenario.recreate()
             row("Result", "Running current build")
-            matchToolbarTitle("#latest-number")
-            matchToolbarSubTitle("Current configuration")
+            compose.awaitDisplayedText("#latest-number")
+            compose.awaitDisplayedText("Current configuration")
             assertEquals(completedCalls, calls.get())
             menu(text(OverviewR.string.overview_stop))
-            onView(withText(R.string.text_stop_the_build)).check(matches(isDisplayed()))
+            compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
         }
     }
 
@@ -362,7 +368,7 @@ class OverviewFragmentTest {
         val pending = SingleSubject.create<Build>()
         val cancellations = AtomicInteger()
         `when`(teamCityService.build(anyString())).thenReturn(pending.doOnDispose { cancellations.incrementAndGet() })
-        ActivityScenario.launch<BuildDetailsActivity>(BuildComposeFixtures.intent()).use { scenario ->
+        ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent()).use { scenario ->
             compose.waitUntil(10_000) { pending.hasObservers() }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
             compose.waitUntil(10_000) { cancellations.get() == 1 }
@@ -374,30 +380,19 @@ class OverviewFragmentTest {
         }
     }
 
-    @Test fun restartOnboardingIsDismissedWhenOverviewLosesVisibility() {
+    @Test fun restartOnboardingCanBeDismissedBeforeVisitingAnotherTab() {
         TestUtils.enableOnboarding()
         `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
         openLegacy(Mocks.successBuild(), BuildComposeFixtures.finished)
-        com.azimolabs.conditionwatcher.ConditionWatcher.waitForCondition(object : com.azimolabs.conditionwatcher.Instruction() {
-            override fun getDescription() = "Build overview onboarding is displayed"
-            override fun checkCondition() = try {
-                onView(withId(R.id.material_target_prompt_view)).check(matches(isDisplayed()))
-                true
-            } catch (ignored: Exception) {
-                false
-            }
-        })
-        // Select through the actual native host while the prompt overlay owns touch input.
-        InstrumentationRegistry.getInstrumentation().runOnMainSync {
-            val tabs = activityRule.activity.findViewById<com.google.android.material.tabs.TabLayout>(R.id.tabLayout)
-            (0 until tabs.tabCount).mapNotNull(tabs::getTabAt).single { it.text.toString() == "Artifacts" }.select()
-        }
+        awaitTag("details:dismiss-prompt")
+        compose.onNodeWithText("Restart, share or open finished builds in a browser").assertIsDisplayed()
+        compose.onNodeWithTag("details:dismiss-prompt").performClick()
         tab("Artifacts")
         awaitText("AndroidManifest.xml")
-        onView(withId(R.id.material_target_prompt_view)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
+        compose.onNodeWithTag("details:dismiss-prompt").assertDoesNotExist()
     }
 
-    @Test fun newIntentReplacesQueuedTabsCancelsOldOverviewAndUsesNewLoadedConfiguration() {
+    @Test fun newIntentCreatesFreshBuildTabsCancelsHiddenOverviewAndUsesNewLoadedConfiguration() {
         val queued = BuildComposeFixtures.incoming.copy(waitReason = "Previous queued build")
         val nextIncoming = BuildComposeFixtures.finished.copy(
             id = "replacement-43",
@@ -415,20 +410,13 @@ class OverviewFragmentTest {
         )
         doReturn(Single.just(BuildComposeFixtures.legacy(queued))).`when`(teamCityService).build(queued.href)
         doReturn(Single.just(BuildComposeFixtures.legacy(nextLoaded))).`when`(teamCityService).build(nextIncoming.href)
-        intending(destinationIntent { it is BuildHistoryDestination }).respondWith(ActivityResult(Activity.RESULT_CANCELED, null))
         val oldRefresh = SingleSubject.create<Build>()
         val oldCancellations = AtomicInteger()
 
-        ActivityScenario.launch<BuildDetailsActivity>(BuildComposeFixtures.intent(queued)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(queued)).use { scenario ->
             row("WaitReason", "Previous queued build")
-            onView(withText(R.string.tab_artifacts)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
-            lateinit var oldOverview: teamcityapp.features.build_overview.impl.BuildOverviewFragment
-            lateinit var oldOverviewLifecycle: androidx.lifecycle.Lifecycle
-            scenario.onActivity { activity ->
-                oldOverview = activity.supportFragmentManager.fragments
-                    .filterIsInstance<teamcityapp.features.build_overview.impl.BuildOverviewFragment>().single()
-                oldOverviewLifecycle = oldOverview.lifecycle
-            }
+            compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.tab_artifacts)).assertCountEquals(0)
+            val oldEntry = currentRootSnapshot().entries.last()
 
             // Pending work makes disposal observable, beyond replacing the native presenter.
             doReturn(oldRefresh.doOnDispose { oldCancellations.incrementAndGet() }).`when`(teamCityService).build(queued.href)
@@ -439,35 +427,31 @@ class OverviewFragmentTest {
                 activity.javaClass.getDeclaredMethod("onNewIntent", Intent::class.java).apply {
                     isAccessible = true
                 }.invoke(activity, replacement)
-                assertTrue(BuildComposeFixtures.fullPayload(BundleExtractorValues.BUILD, nextIncoming).matches(activity.intent))
-                assertEquals(androidx.lifecycle.Lifecycle.State.DESTROYED, oldOverviewLifecycle.currentState)
-                assertFalse(oldOverview.isAdded)
+                assertEquals(teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name"), activity.registry.decodeDestination(checkNotNull(activity.intent.getStringExtra(MainActivity.EXTRA_DESTINATION))))
+                assertFalse(activity.intent.hasExtra(BundleExtractorValues.BUILD))
             }
             compose.waitUntil(10_000) { oldCancellations.get() == 1 }
             assertFalse(oldRefresh.hasObservers())
             oldRefresh.onSuccess(BuildComposeFixtures.legacy(queued.copy(waitReason = "Stale queued response")))
 
             row("Result", "Replacement build succeeded")
-            matchToolbarTitle("#replacement-loaded")
-            matchToolbarSubTitle("Replacement loaded configuration")
+            compose.awaitDisplayedText("#replacement-loaded")
+            compose.awaitDisplayedText("Replacement loaded configuration")
             compose.onNodeWithText("Stale queued response").assertDoesNotExist()
-            onView(withText(R.string.tab_artifacts)).perform(scrollTo()).check(matches(isDisplayed()))
-            scenario.onActivity { activity ->
-                val replacementOverview = activity.supportFragmentManager.fragments
-                    .filterIsInstance<teamcityapp.features.build_overview.impl.BuildOverviewFragment>().single()
-                assertNotSame(oldOverview, replacementOverview)
-            }
+            compose.onNodeWithTag("details:tab:Artifacts").performScrollTo().assertIsDisplayed()
+            val nextEntry = currentRootSnapshot().entries.last()
+            assertNotEquals(oldEntry.id, nextEntry.id)
+            assertEquals(teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name"), nextEntry.destination)
+            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
             verify(teamCityService, times(1)).build(nextIncoming.href)
 
             clickRow("Configuration")
             sheet(text(SheetR.string.build_element_open_build_type))
-            intended(
-                hasDestination(BuildHistoryDestination("replacement-loaded-config", "Replacement loaded configuration"))
-            )
+            assertRootDestination(BuildHistoryDestination("replacement-loaded-config", "Replacement loaded configuration"))
         }
     }
 
-    private fun openLegacy(build: Build, incoming: BuildLaunchData = BuildComposeFixtures.incoming) {
+    private fun openLegacy(build: Build, incoming: BuildLaunchData = BuildComposeFixtures.incoming.copy(id = requireNotNull(build.id))) {
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
         activityRule.launchActivity(BuildComposeFixtures.intent(incoming))
         awaitTag("overview:list")
@@ -488,8 +472,8 @@ class OverviewFragmentTest {
         compose.onNodeWithTag("overview:row:$field").performClick()
     }
     private fun menu(label: String) {
-        openActionBarOverflowOrOptionsMenu(context)
-        onView(withText(label)).perform(click())
+        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
+        compose.onNodeWithText(label).performClick()
     }
     private fun cancellation(user: User, expected: String) {
         openLegacy(Mocks.successBuild().apply { canceledInfo = CanceledInfo("20161223T151154+0300", user) })
@@ -504,16 +488,20 @@ class OverviewFragmentTest {
         doReturn(Single.error<Build>(HttpException(Response.error<Build>(code, "offline".toResponseBody())))).`when`(teamCityService).cancelBuild(anyString(), com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.loaded)
         menu(text(OverviewR.string.overview_stop))
-        onView(withText(R.string.text_stop_button)).perform(click())
-        onView(withText(message)).check(matches(isDisplayed()))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(message))
         row("Result", "Running current build")
     }
     private fun restartFailure(code: Int, message: Int) {
         doReturn(Single.error<Build>(HttpException(Response.error<Build>(code, "offline".toResponseBody())))).`when`(teamCityService).queueBuild(com.github.vase4kin.teamcityapp.helper.any())
         openCurrent(BuildComposeFixtures.finished)
         menu(text(OverviewR.string.overview_restart))
-        onView(withText(R.string.text_restart_button)).perform(click())
-        onView(withText(message)).check(matches(isDisplayed()))
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
+        compose.awaitDisplayedText(text(message))
         row("Result", "Current build succeeded")
+    }
+    private fun assertRootDestination(expected: androidx.navigation3.runtime.NavKey) {
+        compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == expected }
+        org.junit.Assert.assertEquals(expected, currentRootSnapshot().entries.last().destination)
     }
 }

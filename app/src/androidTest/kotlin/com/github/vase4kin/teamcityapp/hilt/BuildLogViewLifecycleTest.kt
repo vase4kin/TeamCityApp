@@ -20,29 +20,33 @@ import android.content.Intent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotSame
-import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.build_log.impl.BuildLogFragment
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class BuildLogViewLifecycleTest {
+    @javax.inject.Inject lateinit var consent: teamcityapp.features.build_log.api.BuildLogConsentStorage
+
     @JvmField
     @Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
@@ -63,36 +67,36 @@ class BuildLogViewLifecycleTest {
         val storage = app.appInjector.sharedUserStorage()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
+        TestUtils.disableOnboarding()
+        kotlinx.coroutines.runBlocking { consent.setAcknowledged(true) }
     }
 
     @Test
-    fun sameFragmentCanCreateAndDestroyItsViewRepeatedly() {
-        val intent = Intent(app, BuildDetailsActivity::class.java)
+    fun retainedBuildLogCreatesAndDisposesItsWebViewOnEachTabVisit() {
+        val intent = Intent(app, MainActivity::class.java).setClassName(app, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
             .putExtra(BundleExtractorValues.BUILD, Mocks.successBuild())
-        ActivityScenario.launch<BuildDetailsActivity>(intent).use { scenario ->
-            val fragment = BuildLogFragment.newInstance("123")
-            scenario.onActivity { activity ->
-                activity.supportFragmentManager.beginTransaction().add(android.R.id.content, fragment).commitNow()
+        ActivityScenario.launch<MainActivity>(intent).use { scenario ->
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("details:tab:BuildLog").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+            compose.onNodeWithTag("details:tab:BuildLog").performScrollTo().performClick()
+            var webView: WebView? = null
+            compose.waitUntil(10_000) {
+                scenario.onActivity { webView = it.window.decorView.findWebView() }
+                webView != null
             }
-            compose.waitForIdle()
             repeat(2) {
-                lateinit var previousView: View
-                lateinit var previousWebView: WebView
-                scenario.onActivity { activity ->
-                    previousView = fragment.requireView()
-                    previousWebView = requireNotNull(previousView.findWebView())
-                    activity.supportFragmentManager.beginTransaction().detach(fragment).commitNow()
-                    assertNull(fragment.view)
-                    activity.supportFragmentManager.beginTransaction().attach(fragment).commitNow()
+                val previous = requireNotNull(webView)
+                compose.onNodeWithTag("details:tab:Parameters").performScrollTo().performClick()
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag("properties:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+                scenario.onActivity { assertFalse(previous.isAttachedToWindow) }
+                compose.onNodeWithTag("details:tab:BuildLog").performScrollTo().performClick()
+                webView = null
+                compose.waitUntil(10_000) {
+                    scenario.onActivity { webView = it.window.decorView.findWebView() }
+                    webView != null
                 }
-                compose.waitForIdle()
-                scenario.onActivity {
-                    assertNotNull(fragment.view)
-                    assertNotSame(previousView, fragment.requireView())
-                    assertNotSame(previousWebView, fragment.requireView().findWebView())
-                    assertNotNull(fragment.requireView().findWebView())
-                }
+                assertNotSame(previous, webView)
             }
+            scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
 

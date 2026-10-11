@@ -42,7 +42,6 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.artifact.api.File
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
@@ -50,9 +49,12 @@ import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.helper.tapNativePagerTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -95,7 +97,7 @@ class ArtifactListFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomActivityTestRule(BuildDetailsActivity::class.java)
+    val activityRule = CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -123,7 +125,7 @@ class ArtifactListFragmentTest {
     private fun awaitTag(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
     }
-    private fun tab(title: String) = compose.tapNativePagerTab(title)
+    private fun tab(title: String) = compose.tapBuildDetailsTab(title)
     private fun sheet(label: String) {
         awaitText(label)
         compose.onNodeWithText(label).performClick()
@@ -162,7 +164,7 @@ class ArtifactListFragmentTest {
     @Test fun folderClickOpensInstalledAliasWithFullBuildAndExactChildrenUrl() {
         folders()
         clickFile("/metadata/res")
-        intended(hasDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res")))
+        assertRootDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res"))
         awaitText("Nested file.txt")
     }
 
@@ -170,7 +172,7 @@ class ArtifactListFragmentTest {
         folders()
         compose.onNodeWithTag("artifacts:row:/metadata/res").performTouchInput { longClick() }
         sheet(text(SheetR.string.artifact_open))
-        intended(hasDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res")))
+        assertRootDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/res", "res"))
         awaitText("Nested file.txt")
     }
 
@@ -182,7 +184,7 @@ class ArtifactListFragmentTest {
         clickFile("/metadata/bundle.zip")
         awaitText(text(SheetR.string.artifact_download))
         sheet(text(SheetR.string.artifact_open))
-        intended(hasDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/bundle.zip!", "bundle.zip!")))
+        assertRootDestination(ArtifactsDestination(BuildComposeFixtures.finished, "/children/bundle.zip!", "bundle.zip!"))
         awaitText("Inner file.txt")
     }
 
@@ -218,11 +220,14 @@ class ArtifactListFragmentTest {
         openArtifacts(Files(listOf(file("retry.unknown", "/metadata/retry"))))
         download("/metadata/retry")
         awaitText(text(ArtifactsR.string.artifacts_download_failed))
-        onView(withText(R.string.download_artifact_retry_snack_bar_text)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(ArtifactsR.string.artifacts_download_failed))
         `when`(teamCityService.downloadFile(anyString())).thenReturn(Single.just("retried".toResponseBody()))
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_retry_download)).performClick()
         compose.waitUntil(10_000) { androidx.test.espresso.intent.Intents.getIntents().any { it.action == Intent.ACTION_VIEW } }
-        compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
+        compose.waitUntil(10_000) {
+            compose.onAllNodesWithText(text(ArtifactsR.string.artifacts_download_failed))
+                .fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty()
+        }
     }
 
     @Test fun cancelDownloadDisposesTheNetworkRequestWithoutFailureNotification() {
@@ -238,7 +243,7 @@ class ArtifactListFragmentTest {
         assertFalse(pending.hasObservers())
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_downloading_title)).assertDoesNotExist()
         compose.onNodeWithText(text(ArtifactsR.string.artifacts_download_failed)).assertDoesNotExist()
-        onView(withText(R.string.download_artifact_retry_snack_bar_text)).check(androidx.test.espresso.assertion.ViewAssertions.doesNotExist())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(ArtifactsR.string.artifacts_download_failed)).assertCountEquals(0)
     }
 
     @Test fun restoredArtifactsRetainsPagesAndPendingDownloadWithoutDuplicateWork() {
@@ -254,7 +259,7 @@ class ArtifactListFragmentTest {
             downloads.incrementAndGet()
             pending
         }
-        ActivityScenario.launch<BuildDetailsActivity>(BuildComposeFixtures.intent(BuildComposeFixtures.finished)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(BuildComposeFixtures.intent(BuildComposeFixtures.finished)).use { scenario ->
             awaitTag("overview:list")
             tab("Artifacts")
             download("/metadata/restore")
@@ -268,9 +273,9 @@ class ArtifactListFragmentTest {
             compose.onNodeWithText(text(ArtifactsR.string.artifacts_cancel)).performClick()
             compose.waitUntil(10_000) { !pending.hasObservers() }
             awaitText("restore.unknown")
-            // After closing the download dialog, query the native host's restored toolbar.
-            TestUtils.matchToolbarTitle("#latest-number")
-            TestUtils.matchToolbarSubTitle("Current configuration")
+            // The retained destination restores its loaded toolbar after the dialog closes.
+            compose.awaitDisplayedText("#latest-number")
+            compose.awaitDisplayedText("Current configuration")
         }
     }
 
@@ -353,5 +358,9 @@ class ArtifactListFragmentTest {
     private fun download(href: String) {
         clickFile(href)
         sheet(text(SheetR.string.artifact_download))
+    }
+    private fun assertRootDestination(expected: androidx.navigation3.runtime.NavKey) {
+        compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == expected }
+        org.junit.Assert.assertEquals(expected, currentRootSnapshot().entries.last().destination)
     }
 }

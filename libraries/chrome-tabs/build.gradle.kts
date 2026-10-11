@@ -27,7 +27,6 @@ extensions.configure<LibraryExtension> {
 dependencies {
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
 
     implementation(libs.google.material)
     implementation(libs.androidx.appcompat)

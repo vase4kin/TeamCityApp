@@ -26,8 +26,6 @@ extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build
 dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(projects.libraries.navigation)
-    implementation(libs.androidx.fragment)
-    implementation(projects.libraries.utils)
     implementation(projects.libraries.chromeTabs)
     implementation(projects.features.buildLog.api)
 

@@ -37,12 +37,14 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.google.android.material.tabs.TabLayout
@@ -85,7 +87,7 @@ class TestOccurrencesFragmentTest {
 
     @JvmField
     @Rule(order = 3)
-    val activityRule = CustomIntentsTestRule(BuildDetailsActivity::class.java)
+    val activityRule = CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @JvmField
     @Rule(order = 4)
@@ -121,9 +123,9 @@ class TestOccurrencesFragmentTest {
         openTests()
         assertTextVisible("Test 1")
         compose.onNodeWithText("Test 1").performClick()
-        intended(hasComponent(MainActivity::class.java.name))
-        val request = androidx.test.espresso.intent.Intents.getIntents().single { it.component?.className == MainActivity::class.java.name }
-        org.junit.Assert.assertEquals(TestDetailsDestination("/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)"), destinationRegistry.decodeDestination(checkNotNull(request.getStringExtra(MainActivity.EXTRA_DESTINATION))))
+        val expected = TestDetailsDestination("/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)")
+        compose.waitUntil(10_000) { currentRootSnapshot().entries.last().destination == expected }
+        org.junit.Assert.assertEquals(expected, currentRootSnapshot().entries.last().destination)
     }
 
     @Test fun passedFilterRetainsBuildCountsAndRowsWithoutLaunchingDetails() {
@@ -188,7 +190,7 @@ class TestOccurrencesFragmentTest {
                 fake.listTestOccurrences(url)
             }
         }
-        openTests("Tests (0)")
+        openTests("Tests (?)")
         assertTextVisible("Test 1")
         assertTextVisible(text(TestsR.string.tests_count_unavailable))
         val beforeRetry = pageCalls.get()
@@ -208,9 +210,9 @@ class TestOccurrencesFragmentTest {
             if (!url.contains("fields=count")) pageCalls.incrementAndGet()
             fake.listTestOccurrences(url)
         }
-        ActivityScenario.launch<BuildDetailsActivity>(buildIntent()).use { scenario ->
+        ActivityScenario.launch<MainActivity>(buildIntent()).use { scenario ->
             awaitTab("Tests (16)", scenario)
-            onView(withText("Tests (16)")).perform(scrollTo(), click())
+            compose.tapBuildDetailsTab("Tests")
             selectFilter("Passed", "Test 5")
             val beforeRecreation = pageCalls.get()
             scenario.recreate()
@@ -231,29 +233,22 @@ class TestOccurrencesFragmentTest {
     private fun openTests(title: String = "Tests (16)") {
         activityRule.launchActivity(buildIntent())
         awaitTab(title)
-        onView(withText(title)).perform(scrollTo(), click())
+        compose.tapBuildDetailsTab(title)
     }
 
-    private fun buildIntent() = Intent(InstrumentationRegistry.getInstrumentation().targetContext, BuildDetailsActivity::class.java).putExtras(
-        Bundle().apply {
-            putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild())
-            putString(BundleExtractorValues.NAME, "name")
-        }
-    )
+    private fun buildIntent() = Intent(InstrumentationRegistry.getInstrumentation().targetContext, MainActivity::class.java)
+        .setClassName(InstrumentationRegistry.getInstrumentation().targetContext, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
+        .putExtras(
+            Bundle().apply {
+                putSerializable(BundleExtractorValues.BUILD, Mocks.failedBuild())
+                putString(BundleExtractorValues.NAME, "name")
+            }
+        )
 
-    private fun awaitTab(title: String, scenario: ActivityScenario<BuildDetailsActivity>? = null) {
+    private fun awaitTab(title: String, scenario: ActivityScenario<MainActivity>? = null) {
         compose.waitUntil(10_000) {
-            val found = AtomicBoolean()
-            val inspect: (BuildDetailsActivity) -> Unit = { activity ->
-                val tabs = activity.findViewById<TabLayout>(R.id.tabLayout)
-                found.set((0 until tabs.tabCount).any { tabs.getTabAt(it)?.text.toString() == title })
-            }
-            if (scenario == null) {
-                InstrumentationRegistry.getInstrumentation().runOnMainSync { inspect(activityRule.activity) }
-            } else {
-                scenario.onActivity { inspect(it) }
-            }
-            found.get()
+            compose.onAllNodes(hasTestTag("details:tab:Tests") and hasText(title))
+                .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
     }
 

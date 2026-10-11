@@ -23,7 +23,10 @@ import teamcityapp.libraries.builds.BuildLaunchData
 
 /** Each visit retains its incoming snapshot for tab construction, independently of refreshed actions. */
 @Serializable
-data class BuildDetailsDestination(val build: BuildLaunchData, val configurationName: String? = null, val forceOverviewRefresh: Boolean = false) : NavKey
+data class BuildDetailsDestination(val build: BuildLaunchData, val configurationName: String? = null, val forceOverviewRefresh: Boolean = false, val completion: BuildDetailsCompletion? = null) : NavKey
+
+@Serializable
+enum class BuildDetailsCompletion { Stopped, RemovedFromQueue }
 
 enum class BuildDetailsTab { Overview, Changes, Tests, BuildLog, Parameters, Artifacts, Snapshots }
 

@@ -25,9 +25,6 @@ plugins {
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.bottom_sheet.impl" }
 dependencies {
     implementation(projects.libraries.navigation)
-    implementation(libs.androidx.fragment)
-    implementation(projects.libraries.utils)
-    implementation(libs.google.material)
     implementation(projects.features.bottomSheet.api)
 
     implementation(projects.libraries.theme)

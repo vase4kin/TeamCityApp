@@ -70,6 +70,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             Bundle().apply {
                 putString(BuildDetailsViewModel.BUILD, Json.encodeToString(destination.build))
                 putString(BuildDetailsViewModel.NAME, destination.configurationName)
+                putString(BuildDetailsViewModel.COMPLETION, destination.completion?.name)
             }
         }
         DestinationArguments(arguments) {
@@ -84,7 +85,6 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             val snackbar = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
             val copied = stringResource(R.string.build_element_copy_text)
-            val show = stringResource(R.string.text_show_build)
             val platformFailed = stringResource(R.string.platform_action_failed)
             val tabs = remember(activity, entryId) { ChromeCustomTabsImpl(activity) }
             LifecycleResumeEffect(tabs, model) {
@@ -118,7 +118,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                         )
                         when (action) {
                             BuildDetailsCommand.Share -> try {
-                                activity.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, build.webUrl), null))
+                                activity.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, build.webUrl), activity.getString(R.string.title_share_build)))
                             } catch (_: Exception) {
                                 scope.launch { snackbar.showSnackbar(platformFailed) }
                             }
@@ -151,7 +151,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             LifecycleResumeEffect(state.replacement, model) {
                 state.replacement?.takeIf { navigator.current.id == entryId }?.let { replacement ->
                     model.consumeReplacement(replacement.id)
-                    navigator.replace(BuildDetailsDestination(replacement.build, state.subtitle, forceOverviewRefresh = true))
+                    navigator.replace(BuildDetailsDestination(replacement.build, state.subtitle, forceOverviewRefresh = true, completion = replacement.completion))
                 }
                 onPauseOrDispose {}
             }
@@ -159,7 +159,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
             LaunchedEffect(state.notice, lifecycle) {
                 val notice = state.notice ?: return@LaunchedEffect
                 lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                    val result = snackbar.showSnackbar(activity.getString(notice.message), if (notice.openQueued) show else null)
+                    val result = snackbar.showSnackbar(activity.getString(notice.message), notice.actionLabel?.let(activity::getString))
                     model.consumeNotice(notice.id)
                     if (result == SnackbarResult.ActionPerformed && notice.openQueued) model.openQueued()
                 }

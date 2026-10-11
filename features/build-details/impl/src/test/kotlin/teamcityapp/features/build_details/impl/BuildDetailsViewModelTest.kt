@@ -182,6 +182,7 @@ class BuildDetailsViewModelTest {
         val replacement = requireNotNull(model.state.value.replacement)
         assertNull(model.state.value.operation)
         assertEquals("finished", replacement.build.state)
+        assertEquals(BuildDetailsCompletion.Stopped, replacement.completion)
         val restoredSaved = restored(saved)
         val recreated = model(restoredSaved, "restored")
         assertEquals(replacement, recreated.state.value.replacement)
@@ -191,6 +192,22 @@ class BuildDetailsViewModelTest {
         assertNull(recreated.state.value.replacement)
         assertNull(model(restored(restoredSaved), "again").state.value.replacement)
         assertEquals(1, cancellations.size)
+    }
+
+    @Test fun replacementCancellationFeedbackRestoresUntilConsumedAndDoesNotReplay() {
+        BuildDetailsCompletion.entries.forEach { completion ->
+            val saved = handle().apply { this[BuildDetailsViewModel.COMPLETION] = completion.name }
+            val completed = model(saved, "completed-${completion.name}")
+            val notice = requireNotNull(completed.state.value.notice)
+            assertEquals(if (completion == BuildDetailsCompletion.Stopped) R.string.text_build_is_stopped else R.string.text_build_is_removed_from_queue, notice.message)
+            assertNull(notice.actionLabel)
+            val restoredSaved = restored(saved)
+            val restoredModel = model(restoredSaved, "restored-${completion.name}")
+            assertEquals(notice, restoredModel.state.value.notice)
+            restoredModel.consumeNotice(notice.id)
+            assertNull(model(restored(restoredSaved), "consumed-${completion.name}").state.value.notice)
+        }
+        assertTrue(cancellations.isEmpty())
     }
 
     @Test fun forbiddenCancellationDoesNotRefreshAndServerFailureDoes() = runTest(dispatcher) {
@@ -225,6 +242,7 @@ class BuildDetailsViewModelTest {
         runCurrent()
         assertEquals(listOf(finished), restarts)
         assertEquals(R.string.text_build_is_restarted, model.state.value.notice?.message)
+        assertEquals(R.string.text_show_build, model.state.value.notice?.actionLabel)
         assertTrue(model.state.value.notice?.openQueued == true)
         val recreated = model(restored(saved), "restored")
         assertEquals(model.state.value.notice, recreated.state.value.notice)
@@ -249,6 +267,7 @@ class BuildDetailsViewModelTest {
         runCurrent()
         assertEquals(R.string.error_opening_build, model.state.value.notice?.message)
         assertTrue(model.state.value.notice?.openQueued == true)
+        assertEquals(R.string.text_retry, model.state.value.notice?.actionLabel)
         assertNull(model.state.value.replacement)
         queued = { loaded.copy(id = "next") }
         model.openQueued()
@@ -373,5 +392,6 @@ class BuildDetailsViewModelTest {
         runCurrent()
         assertEquals(1, restarts.size)
         assertEquals(R.string.text_build_is_restarted, model.state.value.notice?.message)
+        assertEquals(R.string.text_show_build, model.state.value.notice?.actionLabel)
     }
 }

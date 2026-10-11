@@ -40,18 +40,22 @@ import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.any
+import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.capture
-import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import okhttp3.ResponseBody
 import org.hamcrest.CoreMatchers
 import org.hamcrest.Matchers.equalTo
@@ -92,9 +96,9 @@ class RestartBuildTest {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
         compose.waitForIdle()
         compose.waitUntil(10_000) {
-            runCatching { onView(withContentDescription("More options")).check(matches(isDisplayed())) }.isSuccess
+            compose.onAllNodesWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
     }
 
     private fun assertOverviewResult(expected: String) {
@@ -121,8 +125,8 @@ class RestartBuildTest {
 
     @Rule(order = 3)
     @JvmField
-    val activityRule: CustomIntentsTestRule<BuildDetailsActivity> =
-        CustomIntentsTestRule(BuildDetailsActivity::class.java)
+    val activityRule: CustomIntentsTestRule<MainActivity> =
+        CustomIntentsTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @Captor
     lateinit var buildArgumentCaptor: ArgumentCaptor<Build>
@@ -206,16 +210,16 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_restart_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
 
         // Check dialog text is displayed
-        onView(withText(R.string.text_restart_the_build)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_the_build))
 
         // Click on restart button
-        onView(withText(R.string.text_restart_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_restarted)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
 
         // Checking passed params
         verify(teamCityService).queueBuild(capture(buildArgumentCaptor))
@@ -227,20 +231,17 @@ class RestartBuildTest {
         assertThat(capturedProperty.value, `is`(equalTo(PROPERTY_VALUE)))
 
         // Click on show button of queued build snack bar
-        onView(withText(R.string.text_show_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_show_build)).onFirst().performClick()
 
         // Check build is opened
-        intended(
-            allOf(
-                hasComponent(BuildDetailsActivity::class.java.name),
-                hasExtras(
-                    hasEntry(
-                        CoreMatchers.equalTo(BundleExtractorValues.BUILD),
-                        CoreMatchers.equalTo(build2)
-                    )
-                )
-            )
-        )
+        compose.waitUntil(10_000) {
+            (currentRootSnapshot().entries.last().destination as? teamcityapp.features.build_details.api.BuildDetailsDestination)?.let {
+                it.forceOverviewRefresh && it.build == com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper().toLaunchData(build2)
+            } == true
+        }
+        val destination = currentRootSnapshot().entries.last().destination as teamcityapp.features.build_details.api.BuildDetailsDestination
+        org.junit.Assert.assertEquals(com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper().toLaunchData(build2), destination.build)
+        org.junit.Assert.assertTrue(destination.forceOverviewRefresh)
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")
@@ -284,35 +285,35 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_restart_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
 
         // Click on restart button
-        onView(withText(R.string.text_restart_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_restarted)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_restarted))
 
         // Click on show button of queued build snack bar
-        onView(withText(R.string.text_show_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_show_build)).onFirst().performClick()
 
         // Check error snack bar
-        onView(withText(R.string.error_opening_build)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_opening_build))
 
         // Click on retry button
         compose.waitUntil(10_000) {
-            runCatching { onView(withText(R.string.download_artifact_retry_snack_bar_retry_button)).check(matches(isDisplayingAtLeast(90))) }.isSuccess
+            compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.download_artifact_retry_snack_bar_retry_button)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
-        onView(withText(R.string.download_artifact_retry_snack_bar_retry_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.download_artifact_retry_snack_bar_retry_button)).onFirst().performClick()
 
         // Check error snack bar
-        onView(withText(R.string.error_opening_build)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_opening_build))
     }
 
     @Test
     fun testUserCanSeeForbiddenErrorWhenRestartingBuild() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val httpException = HttpException(Response.error<Build>(CODE_FORBIDDEN, responseBody))
+        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
         `when`(teamCityService.queueBuild(any())).thenReturn(
             Single.error(
                 httpException
@@ -336,13 +337,13 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_restart_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
 
         // Click on restart button
-        onView(withText(R.string.text_restart_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.error_restart_build_forbidden_error)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_restart_build_forbidden_error))
     }
 
     @Test
@@ -373,12 +374,12 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_restart_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
 
         // Click on restart button
-        onView(withText(R.string.text_restart_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.error_base_restart_build_error)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_base_restart_build_error))
     }
 }

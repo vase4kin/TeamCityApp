@@ -17,11 +17,9 @@
 package teamcityapp.features.artifacts.api
 
 import android.app.Activity
-import androidx.fragment.app.Fragment
 import teamcityapp.libraries.builds.BuildLaunchData
 
 interface ArtifactsNavigation {
-    fun createFragment(build: BuildLaunchData, url: String): Fragment
     fun open(activity: Activity, name: String, build: BuildLaunchData, url: String)
     companion object {
         const val BUILD = "build"

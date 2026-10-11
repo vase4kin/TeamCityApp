@@ -18,7 +18,6 @@ package teamcityapp.features.artifacts.impl
 import android.app.Activity
 import android.app.Application
 import androidx.navigation3.runtime.NavKey
-import java.io.Serializable
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,36 +27,20 @@ import org.robolectric.annotation.Config
 import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.libraries.builds.*
-import teamcityapp.libraries.builds.compatibility.BuildLaunchCodec
 import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class ArtifactsNavigationTest {
     private val build = BuildLaunchData("42", "/build/42", branchName = "raw/branch", tests = BuildTests("/tests", failed = 2), properties = BuildProperties(listOf(BuildProperty("env", "test"))))
-    private val encoded = mutableListOf<BuildLaunchData>()
-    private val codec = object : BuildLaunchCodec {
-        override fun encode(build: BuildLaunchData): Serializable {
-            encoded += build
-            return "legacy-payload"
-        }
-        override fun decode(payload: Serializable) = build
-    }
+
     private val requests = mutableListOf<Triple<Activity, NavKey, Int>>()
     private val launcher = object : DestinationLauncher {
         override fun open(activity: Activity, destination: NavKey, flags: Int) {
             requests += Triple(activity, destination, flags)
         }
     }
-    private val navigation = ArtifactsNavigationImpl(codec, launcher)
-
-    @Test fun remainingFragmentCallerRetainsItsCompatibleArguments() {
-        val fragment = navigation.createFragment(build, "/children/archive!path")
-        assertTrue(fragment is ArtifactsFragment)
-        assertEquals(listOf(build), encoded)
-        assertEquals("legacy-payload", fragment.requireArguments().getSerializable(ArtifactsNavigation.BUILD))
-        assertEquals("/children/archive!path", fragment.requireArguments().getString(ArtifactsNavigation.URL))
-    }
+    private val navigation = ArtifactsNavigationImpl(launcher)
 
     @Test fun folderNavigationLaunchesTheRootWithTheCompletePlainSnapshot() {
         val controller = Robolectric.buildActivity(Activity::class.java).setup()
@@ -65,7 +48,6 @@ class ArtifactsNavigationTest {
             val activity = controller.get()
             navigation.open(activity, "Archive folder", build, "/children/archive!path")
             assertEquals(listOf(Triple(activity, ArtifactsDestination(build, "/children/archive!path", "Archive folder"), 0)), requests)
-            assertTrue(encoded.isEmpty())
         } finally {
             controller.pause().stop().destroy()
         }

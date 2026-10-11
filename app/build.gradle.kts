@@ -24,7 +24,6 @@ plugins {
     id("teamcityapp.android.compose")
     id("org.jetbrains.kotlin.plugin.parcelize")
     id("teamcityapp.android.hilt")
-    id("teamcityapp.android.data-binding")
     id("teamcityapp.android.coverage")
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.firebase.performance)
@@ -145,7 +144,6 @@ dependencies {
     implementation(projects.libraries.navigation)
     implementation(fileTree("libs") { include("*.jar") })
 
-    implementation(projects.libraries.utils)
     implementation(projects.libraries.coroutines)
     implementation(projects.libraries.api)
     implementation(projects.libraries.resources)
@@ -230,16 +228,7 @@ dependencies {
 
     // Android support libraries
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.cardView)
-    implementation(libs.androidx.legacySupport)
-    implementation(libs.androidx.recyclerView)
     implementation(libs.google.material)
-    implementation(libs.androidx.constraintLayout)
-    implementation(libs.androidx.lifecycle.lifeCycle)
-    implementation(libs.androidx.lifecycle.lifeCycleLiveData)
-    implementation(libs.androidx.lifecycle.lifeCycleViewModel)
-    implementation(libs.androidx.lifecycle.lifeCycleCommonJava8)
-    kapt(libs.androidx.lifecycle.lifeCycleCompiler)
     // Api third party libraries
     implementation(libs.okhttp.okhttp)
     implementation(libs.okhttp.loggingInterceptor)
@@ -249,14 +238,11 @@ dependencies {
     // Dialogs
     // Views
     // View injection
-    implementation(libs.butterknife.butterKnife)
-    kapt(libs.butterknife.butterKnifeCompiler)
     // Event bus
     implementation(libs.eventBus)
     // Others
     implementation(libs.jodaTime)
     // Onboarding
-    implementation(libs.materialTapTargetPrompt)
     // Dagger
     implementation(libs.dagger.dagger)
     kapt(libs.dagger.compiler)
@@ -323,7 +309,6 @@ dependencies {
         kaptAndroidTest(libs.hilt.compiler)
         // Resolve conflits between apks
         androidTestImplementation(libs.google.material)
-        androidTestImplementation(libs.androidx.recyclerView)
     }
     // Crashlytics
     implementation(libs.google.crashlytics)

@@ -19,7 +19,6 @@ package com.github.vase4kin.teamcityapp.overview.data
 
 import android.app.Application
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsArguments
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import io.reactivex.Single
@@ -65,14 +64,13 @@ class AppBuildOverviewRepositoryTest {
         assertTrue(pending.isCancelled)
     }
 
-    @Test fun aCancelledRefreshCannotReplaceCompletedHostArgumentsEvenWhenOldRxCompletesLate() = runTest {
+    @Test fun aCancelledRefreshCannotPublishLateRxContent() = runTest {
         val legacy = mock<Repository>()
         val response = SingleSubject.create<Build>()
         doReturn(response).whenever(legacy).build("/builds/42", true)
         val repository = AppBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
-        val arguments = BuildDetailsArguments(overviewArguments())
-        arguments.publishLoaded(mapper.toLegacyBuild(loadedOverview))
-        val pending = async { arguments.publishLoaded(mapper.toLegacyBuild(repository.build("/builds/42", true))) }
+        var current = loadedOverview
+        val pending = async { current = repository.build("/builds/42", true) }
         runCurrent()
         assertTrue(response.hasObservers())
         pending.cancel()
@@ -80,7 +78,7 @@ class AppBuildOverviewRepositoryTest {
         assertFalse(response.hasObservers())
         response.onSuccess(mapper.toLegacyBuild(loadedOverview.copy(number = "obsolete-refresh")))
         runCurrent()
-        assertEquals("latest-number", arguments.current.number)
+        assertEquals("latest-number", current.number)
         assertTrue(pending.isCancelled)
     }
 

@@ -42,8 +42,8 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.capture
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.Companion.RUN_BUILD_TYPE_ID
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
-import com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -119,7 +119,7 @@ class RunBuildActivityTest {
     fun testUserCanSeeSingleBranchChosenIfBuildTypeHasSingleBranchAvailable() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check the branches autocomplete field has branch as master and it's disabled
@@ -130,7 +130,7 @@ class RunBuildActivityTest {
     fun testUserCanStartTheBuild() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Starting the build
@@ -164,7 +164,7 @@ class RunBuildActivityTest {
         )
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Choose agent
@@ -185,7 +185,7 @@ class RunBuildActivityTest {
     fun testUserCanSeeChooseDefaultAgentIfAgentsAvailable() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check hint for selected agent
@@ -202,7 +202,7 @@ class RunBuildActivityTest {
         )
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check no agents
@@ -213,7 +213,7 @@ class RunBuildActivityTest {
     fun testUserCleanAllFilesCheckBoxIsCheckedByDefault() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check clean all files is checked by default
@@ -225,7 +225,7 @@ class RunBuildActivityTest {
     fun testUserCanStartTheBuildWithDefaultParams() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Check personal
@@ -254,7 +254,7 @@ class RunBuildActivityTest {
     fun testUserCanStartTheBuildWithCustomParams() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Scroll to
@@ -290,7 +290,7 @@ class RunBuildActivityTest {
     fun testUserCanStartTheBuildWithClearAllCustomParams() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Scroll to
@@ -325,7 +325,7 @@ class RunBuildActivityTest {
     fun testUserCanNotCreateEmptyBuildParamWithEmptyName() {
         // Prepare intent
         val intent = Intent()
-        intent.putExtra(EXTRA_BUILD_TYPE_ID, "href")
+        intent.putExtra(RUN_BUILD_TYPE_ID, "href")
         // Starting the activity
         activityRule.launchActivity(intent)
         // Scroll to

@@ -37,19 +37,23 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
-import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsActivity
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.capture
-import com.github.vase4kin.teamcityapp.runbuild.interactor.CODE_FORBIDDEN
+import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
+import java.net.HttpURLConnection.HTTP_FORBIDDEN
 import okhttp3.ResponseBody
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.`is`
@@ -84,9 +88,9 @@ class CancelBuildTest {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
         compose.waitForIdle()
         compose.waitUntil(10_000) {
-            runCatching { onView(withContentDescription("More options")).check(matches(isDisplayed())) }.isSuccess
+            compose.onAllNodesWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
-        openActionBarOverflowOrOptionsMenu(InstrumentationRegistry.getInstrumentation().targetContext)
+        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
     }
 
     private fun assertOverviewResult(expected: String) {
@@ -113,8 +117,8 @@ class CancelBuildTest {
 
     @Rule(order = 3)
     @JvmField
-    var activityRule: CustomActivityTestRule<BuildDetailsActivity> =
-        CustomActivityTestRule(BuildDetailsActivity::class.java)
+    var activityRule: CustomActivityTestRule<MainActivity> =
+        CustomActivityTestRule(MainActivity::class.java, IncomingDestinationResolver.BUILD_DETAILS_COMPONENT)
 
     @Captor
     private lateinit var buildCancelRequestArgumentCaptor: ArgumentCaptor<BuildCancelRequest>
@@ -189,16 +193,16 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
 
         // Check dialog text is displayed
-        onView(withText(R.string.text_remove_build_from_queue)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_build_from_queue))
 
         // Click on cancel build
-        onView(withText(R.string.text_remove_from_queue_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_removed_from_queue)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_removed_from_queue))
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")
@@ -233,16 +237,16 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
 
         // Check dialog text is displayed
-        onView(withText(R.string.text_remove_build_from_queue_2)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_build_from_queue_2))
 
         // Click on cancel build
-        onView(withText(R.string.text_remove_from_queue_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_removed_from_queue)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_removed_from_queue))
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")
@@ -252,7 +256,7 @@ class CancelBuildTest {
     fun testUserCanSeeForbiddenErrorWhenRemovingBuildFromQueue() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
-        val httpException = HttpException(Response.error<Build>(CODE_FORBIDDEN, responseBody))
+        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
         `when`(
             teamCityService.cancelBuild(
                 build.href,
@@ -277,17 +281,13 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
 
         // Click on cancel build
-        onView(withText(R.string.text_remove_from_queue_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.error_remove_build_from_queue_forbidden_error)).check(
-            matches(
-                isDisplayed()
-            )
-        )
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_remove_build_from_queue_forbidden_error))
     }
 
     @Test
@@ -319,17 +319,13 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
 
         // Click on cancel build
-        onView(withText(R.string.text_remove_from_queue_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.error_base_remove_build_from_queue_error)).check(
-            matches(
-                isDisplayed()
-            )
-        )
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_base_remove_build_from_queue_error))
     }
 
     @Test
@@ -361,16 +357,16 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_stop_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
 
         // Check dialog text is displayed
-        onView(withText(R.string.text_stop_the_build_2)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build_2))
 
         // Click on cancel build
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
 
         // Checking Result was changed
         assertOverviewResult("Error with smth")
@@ -419,16 +415,16 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_stop_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
 
         // Check dialog text is displayed
-        onView(withText(R.string.text_stop_the_build)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
 
         // Click on cancel build
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
 
         // Checking Result was changed
         assertOverviewResult("Error with smth")
@@ -438,7 +434,7 @@ class CancelBuildTest {
     fun testUserCanSeeForbiddenErrorWhenStoppingBuild() {
         // Prepare mocks
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(Mocks.runningBuild()))
-        val httpException = HttpException(Response.error<Build>(CODE_FORBIDDEN, responseBody))
+        val httpException = HttpException(Response.error<Build>(HTTP_FORBIDDEN, responseBody))
         `when`(
             teamCityService.cancelBuild(
                 Mocks.runningBuild().href,
@@ -463,13 +459,13 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_stop_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
 
         // Click on cancel build
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.error_stop_build_forbidden_error)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_stop_build_forbidden_error))
     }
 
     @Test
@@ -501,13 +497,13 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_stop_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
 
         // Click on cancel build
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.error_base_stop_build_error)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.error_base_stop_build_error))
     }
 
     @Test
@@ -539,18 +535,17 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_stop_build)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
 
         // Check re-add text is displayed and click on it
-        onView(withText(R.string.text_re_add_build))
-            .check(matches(isDisplayed()))
-            .perform(click())
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build))
+        compose.onNodeWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).performClick()
 
         // Click on cancel build
-        onView(withText(R.string.text_stop_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_stopped)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_stopped))
 
         // Checking Result was changed
         assertOverviewResult("Error with smth")
@@ -593,17 +588,16 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        onView(withText(R.string.text_menu_remove_build_from_queue)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
 
         // Check re-add text is displayed and click on it
-        onView(withText(R.string.text_re_add_build))
-            .check(doesNotExist())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).assertCountEquals(0)
 
         // Click on cancel build
-        onView(withText(R.string.text_remove_from_queue_button)).perform(click())
+        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
 
         // Check snack bar is displayed
-        onView(withText(R.string.text_build_is_removed_from_queue)).check(matches(isDisplayed()))
+        compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_build_is_removed_from_queue))
 
         // Checking Result was changed
         assertOverviewResult("This build will not start because there are no compatible agents which can run it")

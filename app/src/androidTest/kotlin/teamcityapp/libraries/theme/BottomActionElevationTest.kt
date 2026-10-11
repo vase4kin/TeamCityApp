@@ -99,7 +99,7 @@ class BottomActionElevationTest {
     }
     private fun run(dark: Boolean) {
         mode(dark)
-        val intent = Intent().setClassName(app.packageName, IncomingDestinationResolver.RUN_BUILD_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.runbuild.interactor.EXTRA_BUILD_TYPE_ID, "href")
+        val intent = Intent().setClassName(app.packageName, IncomingDestinationResolver.RUN_BUILD_COMPONENT).putExtra(com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver.RUN_BUILD_TYPE_ID, "href")
         ActivityScenario.launch<MainActivity>(intent).use { scenario ->
             await("run-build")
             inspect(scenario, "run-build", "fit", false)
