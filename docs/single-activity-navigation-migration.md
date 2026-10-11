@@ -25,11 +25,11 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Phase | Completion evidence | Current state |
 | --- | --- | --- |
 | Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Initial host/API inventory below; outgoing adapter audit remains |
-| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 36 navigation tests, pilot feature tests, production compilation and 29 emulator cases |
+| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 37 navigation tests, feature tests, production compilation and root-host emulator cases |
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed History, Run Build, Filter Builds and detail destinations verified; Build Details tab callers migrate with its shell |
-| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, retained operation model and repository adapter verified; child registrations, root routing, sheets and onboarding remain pending |
+| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, root callers, artifact folders and action sheets verified; onboarding and initial/count-failure policy remain pending |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | Pending |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
@@ -411,3 +411,24 @@ Verification passed with JDK 17:
 - Build Details implementation lint, mock app/instrumentation APK builds, production debug Kotlin/Hilt compilation and formatting pass.
 
 This checkpoint prepares the shell without changing the existing Build Details entry point. Connecting its seven retained child destinations, action sheets/artifact folders, counts, platform actions and onboarding is the next phase-six slice. Build Details still opens through the legacy adapter until that integration is verified. Old-host removal and the final all-destination/process-restoration/Marathon checks remain pending. The goal stays active; no push or PR has been created.
+
+
+### Build Details routes, folders and scoped sheet results
+
+Checkpoint `95b12b307` saves this integration on `codex/single-activity-navigation`.
+
+Build Details now registers its Compose shell in the root activity. History, Running Builds, Build Queue and Snapshot Dependencies open its typed destination directly. Each of its seven conditional tabs owns a stable child visit, scoped to the particular parent visit. Existing feature routes retain their ViewModels and saveable state across selection and recreation while hidden tabs release their collectors and view resources.
+
+The shell constructs tabs and parameter content from the complete incoming snapshot. Loaded Overview data updates its title and action arguments without rebuilding those child owners. Cancel/restart confirmation and submitted operations survive recreation. Successful mutations replace the visit and all its old tab owners; the replacement forces an initial fresh Overview read to avoid reloading a stale cached pre-mutation build. Failed cancellation refresh tokens also survive saved-state restoration.
+
+Artifact folders are separate root destinations. Action sheets return serializable results to a live parent visit and name the exact retained child consumer. A consumer leaves another child's results untouched. Artifact actions queue until the resumed route can receive them, preserving download delivery during sheet dismissal and recreation. Platform routers are created for the destination UI and release Activity-bound resources with that UI. Clipboard, sharing and browser launches remain UI actions.
+
+Verification with JDK 17 passed:
+
+- 1,439 local cases: navigation (37), Build Details (123), Overview (198), Artifacts (117), Changes (94), Tests (153), Build Log (65), Properties (53), Snapshot Dependencies (100), Action Sheet (81), History (238), Running Builds (90) and Build Queue (90). These include existing screenshot verification and the 96 reviewed shell baselines. The final saved refresh-token assertion also passed in the 17-case Build Details ViewModel suite.
+- All 35 API 37 emulator regression cases pass: six new Build Details cases plus the existing workflow, startup/Home, root and Drawer suites. The new cases cover all seven tabs and initial parameters across recreation; exact loaded configuration/branch routing from a restored sheet; artifact folder and real download delivery without duplicate reopening; stop/re-add submitted once with replacement; restart submitted once and queued-build replacement; and independent tab selection for repeated visits to the same build. These root flows assert that no feature Fragments were created.
+- Focused Build Details/Overview/Artifacts/navigation lint, mock app and instrumentation APK builds, production Kotlin/Hilt compilation, and repository formatting passed. Lint retains the existing navigation test-helper naming warning; all three feature implementations report no issues. A parallel broad check exhausted the default 2 GB heap; the complete affected-module run passed with one worker, no parallel execution and a 4 GB heap.
+
+The first emulator run exposed Kotlin-null-unsafe test matchers and incomplete fixtures. A subsequent test waited for a lazy Branch row below the viewport; the corrected tests wait for loaded Overview content. Product behavior was preserved while fixing those test assumptions.
+
+Remaining Build Details acceptance work: preserve menu onboarding preferences/copy; settle initial badge loading and optional count failures without reporting a failed count as zero; verify view/download cancellation when visits are removed and during account replacement. Then remove the legacy Activity/Fragment hosts, their outgoing APIs, native shell infrastructure and unused dependencies, preserve installed component dispatch, and run the full final acceptance gate. This checkpoint does not complete the single-activity migration.
