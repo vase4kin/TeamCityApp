@@ -17,16 +17,13 @@
 package teamcityapp.features.test_details.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
-import teamcityapp.features.test_details.api.TestDetailsNavigation
-import teamcityapp.features.test_details.impl.TestDetailsActivity
-import teamcityapp.features.test_details.impl.TestDetailsViewModel
 import javax.inject.Inject
+import teamcityapp.features.test_details.api.TestDetailsNavigation
+import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-class TestDetailsNavigationImpl @Inject constructor() : TestDetailsNavigation {
+class TestDetailsNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : TestDetailsNavigation {
     override fun open(activity: Activity, url: String) {
-        activity.startActivity(Intent(activity, TestDetailsActivity::class.java)
-            .putExtra(TestDetailsViewModel.ARG_TEST_URL, url))
-        activity.overridePendingTransition(teamcityapp.libraries.utils.R.anim.slide_in_bottom, teamcityapp.libraries.utils.R.anim.hold)
+        launcher.open(activity, TestDetailsDestination(url))
     }
 }

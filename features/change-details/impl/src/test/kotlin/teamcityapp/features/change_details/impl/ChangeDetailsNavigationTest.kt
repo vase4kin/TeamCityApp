@@ -23,35 +23,35 @@ import androidx.lifecycle.SavedStateHandle
 import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mockito.mock
-import org.robolectric.Robolectric
+import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.change_details.impl.navigation.ChangeDetailsNavigationImpl
 import teamcityapp.features.change_details.impl.tracker.ChangeDetailsTracker
+import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class ChangeDetailsNavigationTest {
-    @Test fun navigationLaunchesActivityWithRestorablePlainArgumentsAndAnimation() {
-        Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            val activity = controller.get()
-            ChangeDetailsNavigationImpl().open(activity, fixture)
-            val intent = shadowOf(activity).nextStartedActivity
-            assertEquals(ChangeDetailsActivity::class.java.name, intent.component!!.className)
-            val parcel = Parcel.obtain()
-            try {
-                parcel.writeBundle(intent.extras)
-                parcel.setDataPosition(0)
-                val restored = parcel.readBundle(javaClass.classLoader)!!
-                val arguments = restored.keySet().associateWith { restored.get(it) }
-                assertEquals(ChangeDetailsUiState.Content(fixture), ChangeDetailsViewModel(SavedStateHandle(arguments), mock(ChangeDetailsTracker::class.java)).state.value)
-            } finally {
-                parcel.recycle()
-            }
-            assertEquals(teamcityapp.libraries.utils.R.anim.slide_in_bottom, shadowOf(activity).pendingTransitionEnterAnimationResourceId)
-            assertEquals(teamcityapp.libraries.utils.R.anim.hold, shadowOf(activity).pendingTransitionExitAnimationResourceId)
+    @Test fun navigationKeepsTheCompletePlainSnapshotInTheRootDestination() {
+        val owner = mock(Activity::class.java)
+        val launcher = mock(DestinationLauncher::class.java)
+        ChangeDetailsNavigationImpl(launcher).open(owner, fixture)
+        verify(launcher).open(owner, ChangeDetailsDestination(fixture), 0)
+        verifyNoInteractions(owner)
+    }
+
+    @Test fun entryArgumentsRemainRestorableThroughAndroidSavedState() {
+        val parcel = Parcel.obtain()
+        try {
+            parcel.writeBundle(ChangeDetailsArguments.bundle(fixture))
+            parcel.setDataPosition(0)
+            val restored = parcel.readBundle(javaClass.classLoader)!!
+            val arguments = restored.keySet().associateWith { restored.get(it) }
+            assertEquals(ChangeDetailsUiState.Content(fixture), ChangeDetailsViewModel(SavedStateHandle(arguments), mock(ChangeDetailsTracker::class.java)).state.value)
+        } finally {
+            parcel.recycle()
         }
     }
 }

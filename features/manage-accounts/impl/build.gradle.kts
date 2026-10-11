@@ -30,7 +30,6 @@ dependencies {
     implementation(projects.features.manageAccounts.api)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.resources)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

@@ -44,4 +44,13 @@ class TestDetailsRouterTest {
         }
     }
 
+    @Test fun invalidInputUsesTheNavigationOwnerCloseCallback() {
+        Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
+            var closed = false
+            TestDetailsRouterImpl(controller.get()) { closed = true }.closeInvalidInput()
+            assertEquals("There's an error loading the page", ShadowToast.getTextOfLatestToast())
+            assertTrue(closed)
+            assertFalse(controller.get().isFinishing)
+        }
+    }
 }

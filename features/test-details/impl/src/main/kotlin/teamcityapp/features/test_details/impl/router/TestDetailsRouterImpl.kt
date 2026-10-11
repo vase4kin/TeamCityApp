@@ -22,8 +22,8 @@ import android.app.Activity
 import android.widget.Toast
 import teamcityapp.libraries.resources.R
 
-class TestDetailsRouterImpl(private val activity: Activity) : TestDetailsRouter {
-    override fun close() = activity.finish()
+class TestDetailsRouterImpl(private val activity: Activity, private val onClose: () -> Unit = activity::finish) : TestDetailsRouter {
+    override fun close() = onClose()
     override fun closeInvalidInput() {
         Toast.makeText(activity, R.string.error_view_error_text, Toast.LENGTH_LONG).show()
         close()

@@ -18,7 +18,7 @@ package teamcityapp.features.change_details.api.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
-import teamcityapp.libraries.navigation.NavigationResult
 
+/** Missing legacy arguments remain an invalid-input destination, closed by its UI owner. */
 @Serializable
-data class ChangeDetailsDestination(val details: teamcityapp.features.change_details.api.ChangeDetails) : NavKey
+data class ChangeDetailsDestination(val details: teamcityapp.features.change_details.api.ChangeDetails? = null) : NavKey

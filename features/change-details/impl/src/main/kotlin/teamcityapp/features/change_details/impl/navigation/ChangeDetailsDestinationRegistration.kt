@@ -36,7 +36,7 @@ import teamcityapp.libraries.storage.Storage
 class ChangeDetailsDestinationRegistration @Inject constructor(private val storage: Storage) : FeatureDestination<ChangeDetailsDestination>(ChangeDetailsDestination::class, ChangeDetailsDestination.serializer()) {
     @Composable override fun Content(destination: ChangeDetailsDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
-        val arguments = remember(destination) { ChangeDetailsArguments.bundle(destination.details) }
+        val arguments = remember(destination) { destination.details?.let(ChangeDetailsArguments::bundle) ?: android.os.Bundle() }
         val router = remember(activity, navigator, entryId) {
             val platform = ChangeDetailsRouterImpl(activity, ChromeCustomTabsImpl(activity), storage)
             object : ChangeDetailsRouter by platform {

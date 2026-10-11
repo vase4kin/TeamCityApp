@@ -20,8 +20,13 @@ import android.content.Intent
 import androidx.navigation3.runtime.NavKey
 import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.change_details.api.ChangeDetails
+import teamcityapp.features.change_details.api.ChangedFile
+import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
+import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 /** The app owns installed component compatibility; feature APIs retain only destination keys. */
@@ -32,10 +37,25 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
             ABOUT_COMPONENT -> AboutDestination
             SETTINGS_COMPONENT -> SettingsDestination
             SPLASH_COMPONENT -> SplashNavigationDestination
+            TEST_DETAILS_COMPONENT -> TestDetailsDestination(intent.getStringExtra("arg_test_url").orEmpty())
+            CHANGE_DETAILS_COMPONENT -> ChangeDetailsDestination(changeDetails(intent))
+            MANAGE_ACCOUNTS_COMPONENT -> ManageAccountsDestination
             else -> null
         }
     }
+    private fun changeDetails(intent: Intent): ChangeDetails? {
+        val id = intent.getStringExtra("change:id") ?: return null
+        val names = intent.getStringArrayListExtra("change:file_names") ?: return null
+        val types = intent.getStringArrayListExtra("change:file_types") ?: return null
+        if (names.size != types.size) return null
+        fun text(key: String) = intent.getStringExtra(key).orEmpty()
+        return ChangeDetails(id, text("change:comment"), text("change:user"), text("change:date"), names.indices.map { ChangedFile(names[it], types[it]) }, text("change:revision"), text("change:web_url"))
+    }
+
     companion object {
+        const val TEST_DETAILS_COMPONENT = "teamcityapp.features.test_details.impl.TestDetailsActivity"
+        const val CHANGE_DETAILS_COMPONENT = "teamcityapp.features.change_details.impl.ChangeDetailsActivity"
+        const val MANAGE_ACCOUNTS_COMPONENT = "teamcityapp.features.manage_accounts.impl.ManageAccountsActivity"
         const val SPLASH_COMPONENT = "teamcityapp.features.splash.impl.SplashActivity"
         const val ABOUT_COMPONENT = "teamcityapp.features.about.impl.AboutActivity"
         const val SETTINGS_COMPONENT = "teamcityapp.features.settings.impl.SettingsActivity"

@@ -33,9 +33,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.change_details.impl.ChangeDetailsActivity
-import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
-import teamcityapp.features.test_details.impl.TestDetailsActivity
 import teamcityapp.features.test_details.impl.TestDetailsViewModel
 
 @HiltAndroidTest
@@ -60,7 +57,7 @@ class HiltMigrationSmokeTest {
 
     @Test
     fun changeDetailsInjectsAndRecreates() {
-        val intent = Intent(app, ChangeDetailsActivity::class.java).putExtras(
+        val intent = Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.CHANGE_DETAILS_COMPONENT)).putExtras(
             android.os.Bundle().apply {
                 putString("change:id", "123")
                 putString("change:comment", "Commit")
@@ -72,7 +69,7 @@ class HiltMigrationSmokeTest {
                 putString("change:web_url", Mocks.URL)
             }
         )
-        ActivityScenario.launch<ChangeDetailsActivity>(intent).use {
+        ActivityScenario.launch<MainActivity>(intent).use {
             assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)
@@ -90,9 +87,9 @@ class HiltMigrationSmokeTest {
 
     @Test
     fun testDetailsInjectsAndRecreates() {
-        val intent = Intent(app, TestDetailsActivity::class.java)
+        val intent = Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.TEST_DETAILS_COMPONENT))
             .putExtra(TestDetailsViewModel.ARG_TEST_URL, "/app/rest/testOccurrences/id:123")
-        ActivityScenario.launch<TestDetailsActivity>(intent).use {
+        ActivityScenario.launch<MainActivity>(intent).use {
             assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)
@@ -110,7 +107,7 @@ class HiltMigrationSmokeTest {
 
     @Test
     fun manageAccountsInjectsAndRecreates() {
-        ActivityScenario.launch<ManageAccountsActivity>(Intent(app, ManageAccountsActivity::class.java)).use {
+        ActivityScenario.launch<MainActivity>(Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.MANAGE_ACCOUNTS_COMPONENT))).use {
             assertEquals(Lifecycle.State.RESUMED, it.state)
             it.recreate()
             assertEquals(Lifecycle.State.RESUMED, it.state)

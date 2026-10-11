@@ -16,24 +16,19 @@
 
 package teamcityapp.features.manage_accounts.impl
 
-import android.app.Activity
-import android.app.Instrumentation.ActivityResult
 import android.content.Intent
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.intent.Intents.intended
-import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
-import com.github.vase4kin.teamcityapp.home.view.HomeActivity
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.flow.first
@@ -43,8 +38,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.create_account.impl.CreateAccountActivity
-import teamcityapp.features.login.impl.LoginActivity
 import teamcityapp.libraries.app_theme.ThemeMode
 
 @HiltAndroidTest
@@ -68,11 +61,12 @@ class ManageAccountsActivityTest {
     private val warning = "Ignore SSL certificate validity is enabled for this account"
 
     @Before fun before() {
+        com.github.vase4kin.teamcityapp.helper.TestUtils.disableOnboarding()
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(first, false)
         storage.saveGuestUserAccountAndSetItAsActive(second, true)
     }
-    private fun launch() = ActivityScenario.launch<ManageAccountsActivity>(Intent(app, ManageAccountsActivity::class.java))
+    private fun launch() = ActivityScenario.launch<MainActivity>(Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.MANAGE_ACCOUNTS_COMPONENT)))
     private fun row(url: String) = compose.onNodeWithTag("accounts:row:$url:Guest user:remove")
     private fun awaitRows() {
         compose.waitUntil(5_000) { compose.onAllNodesWithText(second).fetchSemanticsNodes().isNotEmpty() }
@@ -247,61 +241,56 @@ class ManageAccountsActivityTest {
         }
     }
 
-    @Test fun activeRemovalSwitchesAccountAndOpensHome() {
-        Intents.init()
-        try {
-            intending(hasComponent(HomeActivity::class.java.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-            launch().use {
-                awaitRows()
-                row(second).performClick()
-                awaitDialog()
-                compose.onNodeWithText("Remove").performClick()
-                compose.waitUntil(5_000) { Intents.getIntents().any { it.component?.className == HomeActivity::class.java.name } }
-                intended(hasComponent(HomeActivity::class.java.name))
-                assertEquals(first, storage.activeUser.teamcityUrl)
-                assertEquals(1, storage.userAccounts.size)
-            }
-        } finally {
-            Intents.release()
+    private fun awaitDestination(tag: String) {
+        compose.waitUntil(15_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithTag(tag).assertIsDisplayed()
+    }
+
+    @Test fun activeRemovalSwitchesAccountAndOpensHomeInTheSameActivity() {
+        launch().use { scenario ->
+            awaitRows()
+            row(second).performClick()
+            awaitDialog()
+            compose.onNodeWithText("Remove").performClick()
+            awaitDestination("home:tab:Projects")
+            assertEquals(first, storage.activeUser.teamcityUrl)
+            assertEquals(1, storage.userAccounts.size)
+            scenario.onActivity { assertEquals(MainActivity::class.java, it.javaClass) }
+            androidx.test.espresso.Espresso.pressBackUnconditionally()
+            compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }
 
-    @Test fun lastRemovalClearsStorageAndOpensLogin() {
+    @Test fun lastRemovalClearsStorageAndReplacesTheStackWithLogin() {
         storage.clearAll()
         storage.saveGuestUserAccountAndSetItAsActive(first, false)
-        Intents.init()
-        try {
-            intending(hasComponent(LoginActivity::class.java.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-            launch().use {
-                compose.waitUntil(5_000) { compose.onAllNodesWithText(first).fetchSemanticsNodes().isNotEmpty() }
-                row(first).performClick()
-                awaitDialog()
-                compose.onNodeWithText("Remove").performClick()
-                compose.waitUntil(10_000) { storage.userAccounts.isEmpty() }
-                compose.waitUntil(10_000) {
-                    val failure = compose.onAllNodesWithTag("accounts:remove_error").fetchSemanticsNodes().isNotEmpty()
-                    check(!failure) { "Last-account cleanup failed" }
-                    Intents.getIntents().any { it.component?.className == LoginActivity::class.java.name }
-                }
-                intended(hasComponent(LoginActivity::class.java.name))
-                assertFalse(storage.hasUserAccounts())
-            }
-        } finally {
-            Intents.release()
+        launch().use { scenario ->
+            compose.waitUntil(5_000) { compose.onAllNodesWithText(first).fetchSemanticsNodes().isNotEmpty() }
+            row(first).performClick()
+            awaitDialog()
+            compose.onNodeWithText("Remove").performClick()
+            awaitDestination("login:submit")
+            assertFalse(storage.hasUserAccounts())
+            androidx.test.espresso.Espresso.pressBackUnconditionally()
+            compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }
 
-    @Test fun addAccountOpensTheExistingCreateAccountScreen() {
-        Intents.init()
-        try {
-            intending(hasComponent(CreateAccountActivity::class.java.name)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-            launch().use {
-                awaitRows()
-                compose.onNodeWithTag("accounts:add").performClick()
-                intended(hasComponent(CreateAccountActivity::class.java.name))
-            }
-        } finally {
-            Intents.release()
+    @Test fun addAccountPushesCreateAccountAndBackReturnsToRetainedAccounts() {
+        launch().use { scenario ->
+            awaitRows()
+            compose.onNodeWithTag("accounts:add").performClick()
+            awaitDestination("create-account:submit")
+            scenario.recreate()
+            awaitDestination("create-account:submit")
+            androidx.test.espresso.Espresso.pressBack()
+            awaitDestination("create-account:discard")
+            scenario.recreate()
+            awaitDestination("create-account:discard")
+            compose.onNodeWithText("Discard").performClick()
+            awaitRows()
+            row(second).assertIsDisplayed()
+            assertEquals(2, storage.userAccounts.size)
         }
     }
 

@@ -43,6 +43,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -57,9 +58,10 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.`when`
 import org.mockito.Spy
-import teamcityapp.features.test_details.impl.TestDetailsActivity
+import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.features.test_details.impl.TestDetailsViewModel
 import teamcityapp.features.tests.impl.R as TestsR
+import teamcityapp.libraries.navigation.DestinationRegistry
 
 private const val FAILED_URL = "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:FAILURE,count:10"
 private const val PASSED_URL = "/guestAuth/app/rest/testOccurrences?locator=build:(id:835695),status:SUCCESS,count:10"
@@ -89,6 +91,8 @@ class TestOccurrencesFragmentTest {
     @Rule(order = 4)
     val compose = createEmptyComposeRule()
 
+    @javax.inject.Inject lateinit var destinationRegistry: DestinationRegistry
+
     @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
 
     companion object {
@@ -117,12 +121,9 @@ class TestOccurrencesFragmentTest {
         openTests()
         assertTextVisible("Test 1")
         compose.onNodeWithText("Test 1").performClick()
-        intended(
-            allOf(
-                hasComponent(TestDetailsActivity::class.java.name),
-                hasExtras(hasEntry(equalTo(TestDetailsViewModel.ARG_TEST_URL), equalTo("/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)")))
-            )
-        )
+        intended(hasComponent(MainActivity::class.java.name))
+        val request = androidx.test.espresso.intent.Intents.getIntents().single { it.component?.className == MainActivity::class.java.name }
+        org.junit.Assert.assertEquals(TestDetailsDestination("/guestAuth/app/rest/testOccurrences/id:4482,build:(id:835695)"), destinationRegistry.decodeDestination(checkNotNull(request.getStringExtra(MainActivity.EXTRA_DESTINATION))))
     }
 
     @Test fun passedFilterRetainsBuildCountsAndRowsWithoutLaunchingDetails() {

@@ -17,29 +17,17 @@
 package teamcityapp.features.test_details.impl.navigation
 
 import android.app.Activity
-import android.app.Application
-import org.junit.Assert.*
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.Robolectric
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.Shadows.shadowOf
-import org.robolectric.annotation.Config
-import teamcityapp.features.test_details.impl.TestDetailsActivity
-import teamcityapp.features.test_details.impl.TestDetailsViewModel
+import org.mockito.Mockito.*
+import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [35], application = Application::class)
 class TestDetailsNavigationTest {
-    @Test fun opensDetailsWithOriginalUrlAndSlideTransition() {
-        Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            val activity = controller.get()
-            TestDetailsNavigationImpl().open(activity, "/guestAuth/test?id=123")
-            val intent = shadowOf(activity).nextStartedActivity
-            assertEquals(TestDetailsActivity::class.java.name, intent.component!!.className)
-            assertEquals("/guestAuth/test?id=123", intent.getStringExtra(TestDetailsViewModel.ARG_TEST_URL))
-            assertEquals(teamcityapp.libraries.utils.R.anim.slide_in_bottom, shadowOf(activity).pendingTransitionEnterAnimationResourceId)
-            assertEquals(teamcityapp.libraries.utils.R.anim.hold, shadowOf(activity).pendingTransitionExitAnimationResourceId)
-        }
+    @Test fun opensTheRootDestinationWithTheOriginalOccurrenceUrl() {
+        val launcher = mock(DestinationLauncher::class.java)
+        val owner = mock(Activity::class.java)
+        TestDetailsNavigationImpl(launcher).open(owner, "/guestAuth/test?id=123")
+        verify(launcher).open(owner, TestDetailsDestination("/guestAuth/test?id=123"), 0)
+        verifyNoInteractions(owner)
     }
 }

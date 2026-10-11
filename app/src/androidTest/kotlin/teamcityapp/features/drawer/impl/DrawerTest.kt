@@ -51,7 +51,7 @@ import org.junit.runner.RunWith
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.create_account.impl.CreateAccountActivity
 import teamcityapp.features.drawer.impl.navigation.DrawerNavigationImpl
-import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 
@@ -151,7 +151,7 @@ class DrawerTest {
 
     @Test fun settingsOpensSettingsDestination() = navigation("settings", MainActivity::class.java, SettingsDestination)
 
-    @Test fun manageOpensManageAccountsActivity() = navigation("manage", ManageAccountsActivity::class.java)
+    @Test fun manageOpensManageAccountsDestination() = navigation("manage", MainActivity::class.java, ManageAccountsDestination)
 
     @Test fun addOpensCreateAccountActivity() = navigation("add", CreateAccountActivity::class.java)
 

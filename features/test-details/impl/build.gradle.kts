@@ -32,8 +32,6 @@ dependencies {
     implementation(projects.features.testDetails.api)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
-    implementation(projects.libraries.utils)
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.lifeCycleViewModel)
     implementation(libs.androidx.hilt.viewModelCompose)

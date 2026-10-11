@@ -16,26 +16,15 @@
 
 package teamcityapp.features.manage_accounts.impl.dagger
 
-import android.app.Activity
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.components.SingletonComponent
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsNavigation
-import teamcityapp.features.manage_accounts.api.router.ManageAccountsAppRouter
 import teamcityapp.features.manage_accounts.impl.navigation.ManageAccountsNavigationImpl
-import teamcityapp.features.manage_accounts.impl.router.ManageAccountsRouter
-import teamcityapp.features.manage_accounts.impl.router.ManageAccountsRouterImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
-object ManageAccountsModule {
-    @Provides fun navigation(): ManageAccountsNavigation = ManageAccountsNavigationImpl()
-}
-
-@Module
-@InstallIn(ActivityComponent::class)
-object ManageAccountsActivityModule {
-    @Provides fun router(activity: Activity, appRouter: ManageAccountsAppRouter): ManageAccountsRouter = ManageAccountsRouterImpl(activity, appRouter)
+abstract class ManageAccountsModule {
+    @Binds abstract fun navigation(implementation: ManageAccountsNavigationImpl): ManageAccountsNavigation
 }

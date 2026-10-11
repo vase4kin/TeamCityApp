@@ -17,16 +17,14 @@
 package teamcityapp.features.change_details.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
 import javax.inject.Inject
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangeDetailsNavigation
-import teamcityapp.features.change_details.impl.ChangeDetailsActivity
-import teamcityapp.features.change_details.impl.ChangeDetailsArguments
+import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-class ChangeDetailsNavigationImpl @Inject constructor() : ChangeDetailsNavigation {
+class ChangeDetailsNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : ChangeDetailsNavigation {
     override fun open(activity: Activity, details: ChangeDetails) {
-        activity.startActivity(Intent(activity, ChangeDetailsActivity::class.java).putExtras(ChangeDetailsArguments.bundle(details)))
-        activity.overridePendingTransition(teamcityapp.libraries.utils.R.anim.slide_in_bottom, teamcityapp.libraries.utils.R.anim.hold)
+        launcher.open(activity, ChangeDetailsDestination(details))
     }
 }

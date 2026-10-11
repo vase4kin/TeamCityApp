@@ -26,8 +26,13 @@ import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.change_details.api.ChangeDetails
+import teamcityapp.features.change_details.api.ChangedFile
+import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.features.splash.api.navigation.SplashNavigationDestination
+import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 @RunWith(RobolectricTestRunner::class)
@@ -57,5 +62,35 @@ class IncomingDestinationResolverTest {
         assertNull(resolver.destination(intent("teamcityapp.features.splash.view.SplashActivity")))
         assertNull(resolver.destination(intent("unknown.component")))
         verifyNoInteractions(registry)
+    }
+
+    @Test fun installedAccountAndTestComponentsRetainTheirArguments() {
+        assertEquals(ManageAccountsDestination, resolver.destination(intent(IncomingDestinationResolver.MANAGE_ACCOUNTS_COMPONENT)))
+        assertEquals(TestDetailsDestination("/occurrence?id=1"), resolver.destination(intent(IncomingDestinationResolver.TEST_DETAILS_COMPONENT).putExtra("arg_test_url", "/occurrence?id=1")))
+        assertEquals(TestDetailsDestination(""), resolver.destination(intent(IncomingDestinationResolver.TEST_DETAILS_COMPONENT)))
+    }
+
+    @Test fun changeAliasKeepsCompletePlainArgumentsIncludingFileTypesAndBrowserUrls() {
+        val incoming = intent(IncomingDestinationResolver.CHANGE_DETAILS_COMPONENT)
+            .putExtra("change:id", "123 &456")
+            .putExtra("change:comment", " comment ")
+            .putExtra("change:user", "user")
+            .putExtra("change:date", "date")
+            .putStringArrayListExtra("change:file_names", arrayListOf("path + Test.kt", "second"))
+            .putStringArrayListExtra("change:file_types", arrayListOf("edited", "added"))
+            .putExtra("change:revision", "revision")
+            .putExtra("change:web_url", "https://server/change")
+        assertEquals(ChangeDetailsDestination(ChangeDetails("123 &456", " comment ", "user", "date", listOf(ChangedFile("path + Test.kt", "edited"), ChangedFile("second", "added")), "revision", "https://server/change")), resolver.destination(incoming))
+    }
+
+    @Test fun malformedChangeAliasesRemainInvalidInsteadOfOpeningStartupOrPartialContent() {
+        val incoming = intent(IncomingDestinationResolver.CHANGE_DETAILS_COMPONENT)
+        assertEquals(ChangeDetailsDestination(), resolver.destination(incoming))
+        incoming.putExtra("change:id", "id").putStringArrayListExtra("change:file_names", arrayListOf("file"))
+        assertEquals(ChangeDetailsDestination(), resolver.destination(incoming))
+        incoming.putStringArrayListExtra("change:file_types", arrayListOf())
+        assertEquals(ChangeDetailsDestination(), resolver.destination(incoming))
+        incoming.putStringArrayListExtra("change:file_names", arrayListOf())
+        assertEquals(ChangeDetailsDestination(ChangeDetails("id", "", "", "", emptyList(), "", "")), resolver.destination(incoming))
     }
 }

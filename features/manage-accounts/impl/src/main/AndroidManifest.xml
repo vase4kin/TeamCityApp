@@ -15,6 +15,4 @@
   ~ limitations under the License.
   -->
 
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application><activity android:name=".ManageAccountsActivity" android:label="@string/title_activity_account_list" android:launchMode="singleTop" android:theme="@style/AccountsListTheme" /></application>
-</manifest>
+<manifest />

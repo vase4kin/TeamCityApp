@@ -30,6 +30,12 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTask" />
+        <activity-alias android:name="teamcityapp.features.test_details.impl.TestDetailsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.change_details.impl.ChangeDetailsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
+        <activity-alias android:name="teamcityapp.features.manage_accounts.impl.ManageAccountsActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="false" />
         <activity-alias android:name="teamcityapp.features.about.impl.AboutActivity"
             android:targetActivity=".navigation.MainActivity" android:exported="false"
             android:label="@string/drawer_item_about" />

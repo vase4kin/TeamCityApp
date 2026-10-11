@@ -37,11 +37,8 @@ class TestDetailsDestinationRegistration @Inject constructor() : FeatureDestinat
         val activity = checkNotNull(LocalActivity.current)
         val arguments = remember(destination) { Bundle().apply { putString(teamcityapp.features.test_details.impl.TestDetailsViewModel.ARG_TEST_URL, destination.url) } }
         val router = remember(activity, navigator, entryId) {
-            object : TestDetailsRouter {
-                override fun close() {
-                    if (!navigator.pop()) activity.finish()
-                }
-                override fun closeInvalidInput() = close()
+            teamcityapp.features.test_details.impl.router.TestDetailsRouterImpl(activity) {
+                if (!navigator.pop()) activity.finish()
             }
         }
         DestinationArguments(arguments) { TestDetailsRoute(router) }

@@ -35,6 +35,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -65,7 +67,7 @@ class ChangeDetailsActivityTest {
         app.appInjector.sharedUserStorage().clearAll()
         app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
     }
-    private fun intent(files: Boolean = true) = Intent(app, ChangeDetailsActivity::class.java).putExtras(
+    private fun intent(files: Boolean = true) = Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.CHANGE_DETAILS_COMPONENT)).putExtras(
         Bundle().apply {
             putString("change:id", "123 & 456")
             putString("change:comment", "  $comment  ")
@@ -83,7 +85,7 @@ class ChangeDetailsActivityTest {
     }
 
     @Test fun detailsSurviveActivityRecreationAndReturningFromBackground() {
-        ActivityScenario.launch<ChangeDetailsActivity>(intent()).use { scenario ->
+        ActivityScenario.launch<MainActivity>(intent()).use { scenario ->
             awaitText(comment)
             compose.onNodeWithText("By Developer on 01 Oct 2026").assertIsDisplayed()
             compose.onNodeWithText(file).assertIsDisplayed()
@@ -96,7 +98,7 @@ class ChangeDetailsActivityTest {
     }
 
     @Test fun noFilesHidesDiffHint() {
-        ActivityScenario.launch<ChangeDetailsActivity>(intent(false)).use {
+        ActivityScenario.launch<MainActivity>(intent(false)).use {
             awaitText("Changed files (0)")
             compose.onNodeWithText("Click on a file to view a diff").assertDoesNotExist()
         }
@@ -106,7 +108,7 @@ class ChangeDetailsActivityTest {
         Intents.init()
         try {
             intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-            ActivityScenario.launch<ChangeDetailsActivity>(intent()).use {
+            ActivityScenario.launch<MainActivity>(intent()).use {
                 awaitText(comment)
                 compose.onNodeWithText("More details").performClick()
                 intended(hasData(webUrl))
@@ -120,7 +122,7 @@ class ChangeDetailsActivityTest {
         Intents.init()
         try {
             intending(hasAction(Intent.ACTION_VIEW)).respondWith(ActivityResult(Activity.RESULT_OK, null))
-            ActivityScenario.launch<ChangeDetailsActivity>(intent()).use {
+            ActivityScenario.launch<MainActivity>(intent()).use {
                 awaitText(file)
                 compose.onNodeWithTag("change_details:file:0").performClick()
                 val expected = Uri.parse(Mocks.URL).buildUpon().appendPath("diffView.html")
@@ -133,7 +135,7 @@ class ChangeDetailsActivityTest {
     }
 
     @Test fun closeFinishesActivity() {
-        ActivityScenario.launch<ChangeDetailsActivity>(intent()).use { scenario ->
+        ActivityScenario.launch<MainActivity>(intent()).use { scenario ->
             awaitText(comment)
             compose.onNodeWithContentDescription("Close").performClick()
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
@@ -141,7 +143,7 @@ class ChangeDetailsActivityTest {
     }
 
     @Test fun missingInputClosesActivity() {
-        ActivityScenario.launch<ChangeDetailsActivity>(Intent(app, ChangeDetailsActivity::class.java)).use { scenario ->
+        ActivityScenario.launch<MainActivity>(Intent().setComponent(android.content.ComponentName(app.packageName, IncomingDestinationResolver.CHANGE_DETAILS_COMPONENT))).use { scenario ->
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
     }

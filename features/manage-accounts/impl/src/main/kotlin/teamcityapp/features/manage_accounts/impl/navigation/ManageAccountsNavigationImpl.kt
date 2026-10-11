@@ -17,15 +17,13 @@
 package teamcityapp.features.manage_accounts.impl.navigation
 
 import android.app.Activity
-import android.content.Intent
+import javax.inject.Inject
+import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsNavigation
-import teamcityapp.features.manage_accounts.impl.ManageAccountsActivity
+import teamcityapp.libraries.navigation.DestinationLauncher
 
-internal class ManageAccountsNavigationImpl : ManageAccountsNavigation {
+class ManageAccountsNavigationImpl @Inject constructor(private val launcher: DestinationLauncher) : ManageAccountsNavigation {
     override fun open(activity: Activity) {
-        activity.startActivity(
-            Intent(activity, ManageAccountsActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        )
+        launcher.open(activity, ManageAccountsDestination)
     }
 }

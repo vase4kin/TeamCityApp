@@ -150,8 +150,8 @@ class MainActivityNavigationTest {
         }
     }
 
-    @Test fun installedAboutAndSettingsAliasesArePrivateAndTargetTheRootActivity() {
-        listOf(IncomingDestinationResolver.ABOUT_COMPONENT, IncomingDestinationResolver.SETTINGS_COMPONENT).forEach { name ->
+    @Test fun installedFeatureAliasesArePrivateAndTargetTheRootActivity() {
+        listOf(IncomingDestinationResolver.ABOUT_COMPONENT, IncomingDestinationResolver.SETTINGS_COMPONENT, IncomingDestinationResolver.SPLASH_COMPONENT, IncomingDestinationResolver.TEST_DETAILS_COMPONENT, IncomingDestinationResolver.CHANGE_DETAILS_COMPONENT, IncomingDestinationResolver.MANAGE_ACCOUNTS_COMPONENT).forEach { name ->
             val component = android.content.ComponentName(app.packageName, name)
             val activity = app.packageManager.getActivityInfo(component, 0)
             assertEquals(MainActivity::class.java.name, activity.targetActivity)
