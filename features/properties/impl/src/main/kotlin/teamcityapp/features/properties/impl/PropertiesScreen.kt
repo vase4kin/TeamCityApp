@@ -51,6 +51,7 @@ import teamcityapp.features.properties.api.Property
 import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.resolve
 
 @Composable
 fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modifier: Modifier = Modifier) {
@@ -79,8 +80,8 @@ fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modif
             is PropertiesUiState.Content -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
                     // Duplicate parameter names are valid; preserve their order and identities by index.
-                    itemsIndexed(state.properties) { index, property ->
-                        PropertyRow(property, { onCopy(property) }, index, state.properties.lastIndex)
+                    itemsIndexed(state.rows) { index, row ->
+                        PropertyRow(row, { onCopy(row.property) }, index, state.rows.lastIndex)
                     }
                 }
             }
@@ -89,7 +90,8 @@ fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modif
 }
 
 @Composable
-private fun PropertyRow(property: Property, onCopy: () -> Unit, index: Int, lastIndex: Int) {
+private fun PropertyRow(row: PropertyRowUiState, onCopy: () -> Unit, index: Int, lastIndex: Int) {
+    val property = row.property
     val empty = property.value.isEmpty()
     var expanded by rememberSaveable(property.name, property.value) { mutableStateOf(false) }
     var overflows by remember(property.value) { mutableStateOf(false) }
@@ -116,7 +118,7 @@ private fun PropertyRow(property: Property, onCopy: () -> Unit, index: Int, last
                     if (!expanded) {
                         SelectionContainer {
                             Text(
-                                text = if (empty) stringResource(R.string.text_property_value_empty) else property.value,
+                                text = row.valueText.resolve(),
                                 color = if (empty) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.bodyLarge,
                                 maxLines = 2,

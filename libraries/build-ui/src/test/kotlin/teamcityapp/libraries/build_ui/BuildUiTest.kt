@@ -43,7 +43,7 @@ class BuildUiTest {
 
     @Test fun rowIsAnAccessibleActionWithPersonalAndPinnedLabels() {
         var opened = false
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(build.copy(personal = true, pinned = true), { opened = true }, androidx.compose.ui.Modifier.testTag("row")) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(build.copy(personal = true, pinned = true)), { opened = true }, androidx.compose.ui.Modifier.testTag("row")) } }
         compose.onNodeWithTag("row").performClick()
         assertTrue(opened)
         compose.onNodeWithContentDescription("Personal build").assertExists()
@@ -51,25 +51,25 @@ class BuildUiTest {
     }
 
     @Test fun queuedFallbackAndNullNumberMatchLegacyFormatting() {
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(build.copy(state = "queued", number = null), {}) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(build.copy(state = "queued", number = null)), {}) } }
         compose.onNodeWithText("Queued build", useUnmergedTree = true).assertExists()
         compose.onNodeWithText("#No number", useUnmergedTree = true).assertExists()
     }
 
     @Test fun queuedWaitReasonReplacesStatusText() {
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(build.copy(state = "queued", waitReason = "Waiting for an agent"), {}) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(build.copy(state = "queued", waitReason = "Waiting for an agent")), {}) } }
         compose.onNodeWithText("Waiting for an agent", useUnmergedTree = true).assertExists()
         compose.onNodeWithText("Success", useUnmergedTree = true).assertDoesNotExist()
     }
 
     @Test fun runningIndicatorHasStatusDescription() {
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(build.copy(state = "running"), {}) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(build.copy(state = "running")), {}) } }
         compose.onNodeWithContentDescription("Running").assertExists()
     }
 
     @Test fun statusIsVisibleTextEvenWhenServerDetailIsMissingOrUsesDifferentWording() {
         val current = mutableStateOf(build.copy(statusText = null))
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(current.value, {}) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(current.value), {}) } }
         val cases = listOf(
             build.copy(statusText = null) to "Success",
             build.copy(status = "FAILURE", statusText = "2 tests failed") to "Failed",
@@ -85,7 +85,7 @@ class BuildUiTest {
     }
 
     @Test fun matchingServerStatusDoesNotRepeatTheVisibleLabel() {
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(build, {}) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(build), {}) } }
         compose.onAllNodesWithText("Success", useUnmergedTree = true).assertCountEquals(1)
     }
 
@@ -98,7 +98,7 @@ class BuildUiTest {
             pinned = true
         )
         var opened = false
-        compose.setContent { TeamCityTheme { TeamCityBuildRow(snapshot, { opened = true }, androidx.compose.ui.Modifier.testTag("row")) } }
+        compose.setContent { TeamCityTheme { TeamCityBuildRow(BuildRowUiState(snapshot), { opened = true }, androidx.compose.ui.Modifier.testTag("row")) } }
         compose.onNodeWithText("#${snapshot.number}", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText(snapshot.statusText!!, useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText(snapshot.branchName!!, useUnmergedTree = true).assertIsDisplayed()

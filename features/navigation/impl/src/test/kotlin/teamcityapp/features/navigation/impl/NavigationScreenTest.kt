@@ -43,7 +43,7 @@ class NavigationScreenTest {
 
     @Test fun projectAndConfigurationRowsHaveIndependentActionsAndOptionalDescriptions() {
         val clicked = mutableListOf<NavigationEntry>()
-        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries)), false, {}, {}, {}, { clicked += it }, {}, {}) } }
+        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries)), {}, {}, {}, { clicked += it }, {}, {}) } }
         compose.onNodeWithText("Project description").assertIsDisplayed()
         compose.onNodeWithTag("navigation:row:project:project").performClick()
         compose.onNodeWithTag("navigation:row:configuration:build").performClick()
@@ -52,14 +52,14 @@ class NavigationScreenTest {
 
     @Test fun rootDrawerAndNestedBackExposeAccessibleNavigation() {
         var opened = 0
-        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(), true, {}, {}, { opened++ }, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(), {}, {}, { opened++ }, {}, {}, {}) } }
         compose.onNodeWithContentDescription("Open navigation drawer").performClick()
         assertEquals(1, opened)
     }
 
     @Test fun nestedActivityToolbarUsesArgumentTitleAndBack() {
         var backs = 0
-        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project), false, {}, {}, { backs++ }, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, root = false), {}, {}, { backs++ }, {}, {}, {}) } }
         compose.onNodeWithText("TeamCity").assertIsDisplayed()
         compose.onNodeWithContentDescription("Back").performClick()
         assertEquals(1, backs)
@@ -69,7 +69,7 @@ class NavigationScreenTest {
         var cancelled = 0
         var rated = 0
         var rowsClicked = 0
-        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), RatingPromptState.Available()), false, {}, {}, {}, { rowsClicked++ }, { cancelled++ }, { rated++ }) } }
+        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), RatingPromptState.Available()), {}, {}, {}, { rowsClicked++ }, { cancelled++ }, { rated++ }) } }
         compose.onNodeWithText("Cancel").performClick()
         compose.onNodeWithText("Rate", useUnmergedTree = true).performClick()
         assertEquals(1, cancelled)
@@ -78,13 +78,13 @@ class NavigationScreenTest {
     }
 
     @Test fun savingDisablesBothRatingActions() {
-        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), RatingPromptState.Available(isSaving = true)), false, {}, {}, {}, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), RatingPromptState.Available(isSaving = true)), {}, {}, {}, {}, {}, {}) } }
         compose.onNodeWithTag("navigation:rate-cancel").assertIsNotEnabled()
         compose.onNodeWithTag("navigation:rate-now").assertIsNotEnabled()
     }
 
     @Test fun emptyListDoesNotRenderAnEligibleRatingCard() {
-        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Empty(), RatingPromptState.Available()), false, {}, {}, {}, {}, {}, {}) } }
+        compose.setContent { TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Empty(), RatingPromptState.Available()), {}, {}, {}, {}, {}, {}) } }
         compose.onNodeWithText("No projects or build configurations").assertIsDisplayed()
         compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
     }
@@ -94,7 +94,7 @@ class NavigationScreenTest {
         var nodeRetries = 0
         compose.setContent {
             TeamCityTheme {
-                NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), RatingPromptState.Unavailable), false, {}, { nodeRetries++ }, {}, {}, {}, {}, onRatingRetry = { ratingRetries++ })
+                NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), RatingPromptState.Unavailable), {}, { nodeRetries++ }, {}, {}, {}, {}, onRatingRetry = { ratingRetries++ })
             }
         }
         compose.onNodeWithTag("navigation:rating-unavailable").assertIsDisplayed()

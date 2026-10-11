@@ -57,7 +57,7 @@ internal fun BuildQueueScreen(
         })
     }) { padding ->
         TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.padding(padding).fillMaxSize(), empty = {
-            TeamCityListEmpty(stringResource(if (state.query.filter == BuildQueueFilter.Favorites) R.string.build_queue_empty_favorites else R.string.build_queue_empty_all))
+            TeamCityListEmpty(stringResource(state.emptyMessageRes))
         }) {
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
@@ -69,7 +69,7 @@ internal fun BuildQueueScreen(
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("build_queue:configuration:$index"))
                         }
                         TeamCityBuildRow(
-                            build,
+                            state.rows[index],
                             { onBuild(build) },
                             Modifier.testTag("build_queue:build:${build.id}"),
                             position = listRowPosition(

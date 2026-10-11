@@ -53,18 +53,18 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
             Button(onQueue, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("run-build:submit"), enabled = !state.queuing) {
                 Icon(painterResource(R.drawable.ic_directions_run_white_24px), null)
                 Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
-                Text(stringResource(if (state.queuing) R.string.text_queueing_build else R.string.title_run_build))
+                Text(stringResource(state.queueLabelRes))
             }
         }
     }) { modifier ->
         Column(modifier) {
             if (state.queueError != null) {
-                ErrorNotice(stringResource(if (state.queueError == QueueBuildResult.Forbidden) R.string.error_forbidden_error else R.string.error_base_error), modifier = Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("run-build:error"))
+                ErrorNotice(stringResource(requireNotNull(state.queueErrorMessageRes)), modifier = Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("run-build:error"))
             }
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("run-build:scroll").padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)) {
                 Text(stringResource(R.string.quick_setup), style = MaterialTheme.typography.headlineMedium)
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    BranchField(state.branches, state.branchesFailed, request.branch, { onChange(request.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(if (state.branchesFailed) R.string.branches_unavailable else R.string.text_no_branches_available), stringResource(R.string.hint_default_build_branch), enabled = !state.queuing)
+                    BranchField(state.branches, state.branchesFailed, request.branch, { onChange(request.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(state.branchesMessageRes), stringResource(R.string.hint_default_build_branch), enabled = !state.queuing)
                     Column(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.selectionRowMinHeight).clickable(enabled = !state.queuing && !state.agents.isNullOrEmpty(), onClick = onSelectAgent).padding(TeamCityDimensions.contentPadding).testTag("run-build:agent")) {
                         Text(stringResource(R.string.text_agents), style = MaterialTheme.typography.titleMedium)
                         if (state.agents == null) {
@@ -77,11 +77,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                                 ErrorNotice(stringResource(R.string.agents_unavailable), modifier = Modifier.padding(top = TeamCityDimensions.smallSpacing))
                             } else {
                                 Text(
-                                    if (state.agents.isEmpty()) {
-                                        stringResource(R.string.text_no_agents_available)
-                                    } else {
-                                        request.agent?.name ?: stringResource(R.string.hint_default_filter_agent)
-                                    },
+                                    state.selectedAgentName ?: stringResource(state.agentFallbackRes),
                                     style = MaterialTheme.typography.bodyLarge,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -100,9 +96,9 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                         Text(
                             stringResource(
                                 R.string.run_options_summary,
-                                stringResource(if (request.personal) R.string.option_on else R.string.option_off),
-                                stringResource(if (request.queueAtTop) R.string.priority_top else R.string.priority_normal),
-                                stringResource(if (request.cleanSources) R.string.option_on else R.string.option_off)
+                                stringResource(state.personalLabelRes),
+                                stringResource(state.priorityLabelRes),
+                                stringResource(state.cleanSourcesLabelRes)
                             ),
                             Modifier.padding(horizontal = TeamCityDimensions.contentPadding).testTag("run-build:summary"),
                             style = MaterialTheme.typography.bodyMedium,

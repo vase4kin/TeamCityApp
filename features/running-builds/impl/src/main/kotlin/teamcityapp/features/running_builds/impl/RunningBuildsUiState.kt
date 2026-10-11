@@ -16,11 +16,18 @@
 
 package teamcityapp.features.running_builds.impl
 
+import androidx.annotation.StringRes
+import teamcityapp.features.running_builds.api.RunningBuildsFilter
 import teamcityapp.features.running_builds.api.RunningBuildsQuery
+import teamcityapp.libraries.build_ui.BuildRowUiState
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 
 data class RunningBuildsUiState(
     val query: RunningBuildsQuery = RunningBuildsQuery(accountKey = ""),
     val list: ListUiState<BuildLaunchData> = ListUiState.Loading
-)
+) {
+    val rows: List<BuildRowUiState> = (list as? ListUiState.Content)?.items.orEmpty().map(::BuildRowUiState)
+
+    @get:StringRes val emptyMessageRes: Int = if (query.filter == RunningBuildsFilter.Favorites) R.string.running_builds_empty_favorites else R.string.running_builds_empty_all
+}

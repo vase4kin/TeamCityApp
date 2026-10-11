@@ -62,7 +62,7 @@ fun LoginScreen(state: LoginUiState, onChange: (AuthenticationFormState) -> Unit
     }
     when {
         state.form.busy -> AuthenticationProgress(stringResource(R.string.text_progress_bar_loading))
-        state.httpConfirmation -> AuthenticationWarning(http = true, onAccept = onConfirmHttp, onDecline = onDeclineHttp)
+        state.httpConfirmation -> AuthenticationWarning(message = requireNotNull(state.httpWarning), onAccept = onConfirmHttp, onDecline = onDeclineHttp)
         state.guestUnauthorized -> AlertDialog(onDismissRequest = onDismissUnauthorized, modifier = Modifier.testTag("login:unauthorized"), shape = MaterialTheme.shapes.large, title = { Text(stringResource(R.string.info_unauthorized_dialog_title)) }, text = { Text(stringResource(R.string.info_unauthorized_dialog_content)) }, confirmButton = { TextButton(onDismissUnauthorized) { Text(stringResource(android.R.string.ok)) } })
         dialog == LoginDialog.Ssl -> AuthenticationWarning(onAccept = onConfirm, onDecline = onDecline)
         dialog == LoginDialog.Demo -> AlertDialog(onDismissRequest = {}, modifier = Modifier.testTag("login:demo-dialog"), shape = MaterialTheme.shapes.large, title = { Text(stringResource(R.string.info_try_it_out_title)) }, text = { Text(styledAuthenticationText(androidx.core.text.HtmlCompat.fromHtml(stringResource(R.string.info_try_it_out_dialog_content, state.demo?.url.orEmpty()), androidx.core.text.HtmlCompat.FROM_HTML_MODE_COMPACT))) }, confirmButton = { TextButton(onConfirm) { Text(stringResource(R.string.dialog_try_it_out_title)) } }, dismissButton = { TextButton(onDecline) { Text(stringResource(teamcityapp.libraries.authentication.R.string.warning_ssl_dialog_negative)) } })

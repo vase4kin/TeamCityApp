@@ -16,6 +16,7 @@
 
 package teamcityapp.features.artifacts.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.libraries.list_state.ListUiState
 
@@ -30,4 +31,8 @@ sealed interface ArtifactDownloadState {
     data class Failed(val file: ArtifactDownload, val token: Long = 0) : ArtifactDownloadState
     data class Ready(val file: DownloadedArtifact, val token: Long) : ArtifactDownloadState
 }
-enum class ArtifactPlatformError { PermissionDenied, FileUnavailable, BrowserUnavailable }
+enum class ArtifactPlatformError(@get:StringRes val titleRes: Int, @get:StringRes val messageRes: Int) {
+    PermissionDenied(R.string.artifacts_permission_title, R.string.artifacts_permission_denied),
+    FileUnavailable(R.string.artifacts_open_failed_title, R.string.artifacts_file_unavailable),
+    BrowserUnavailable(R.string.artifacts_open_failed_title, R.string.artifacts_browser_unavailable)
+}

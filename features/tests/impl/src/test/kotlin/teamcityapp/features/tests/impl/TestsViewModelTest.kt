@@ -53,6 +53,9 @@ class TestsViewModelTest {
         val vm = viewModel()
         assertEquals(TestsFilter.Failed, vm.selection.value.filter)
         assertEquals(TestsCounts(12, 2, 2), vm.counts)
+        assertEquals(R.string.tests_empty_failed, vm.selection.value.presentation.emptyMessageRes)
+        assertEquals(teamcityapp.libraries.theme.UiText.Resource(R.string.tests_section_failed, listOf(2)), vm.selection.value.presentation.sectionTitles[TestsFilter.Failed])
+        assertEquals(listOf(R.string.tests_filter_failed, R.string.tests_filter_passed, R.string.tests_filter_ignored), vm.selection.value.presentation.filterOptions.map { it.labelRes })
         runCurrent()
         assertTrue(repository.requests.isEmpty())
         assertEquals(0, repository.countCalls)
@@ -67,6 +70,7 @@ class TestsViewModelTest {
         assertEquals(TestsFilter.Failed, vm.selection.value.filter)
         vm.selectFilter(TestsFilter.Passed)
         assertEquals(TestsFilter.Passed, vm.selection.value.filter)
+        assertEquals(R.string.tests_empty_passed, vm.selection.value.presentation.emptyMessageRes)
     }
 
     @Test fun selectedFilterSurvivesSavedStateRestoration() = runTest(dispatcher) {
@@ -196,6 +200,7 @@ class TestsViewModelTest {
         runCurrent()
         assertTrue(cancelled)
         assertEquals(TestsFilter.Passed, vm.selection.value.filter)
+        assertEquals(R.string.tests_empty_passed, vm.selection.value.presentation.emptyMessageRes)
         assertEquals(listOf(testOccurrence("2", TestStatus.Passed)), vm.selection.value.pages.asSnapshot())
         assertEquals(FakeTestsRepository.Request("build:42", TestsFilter.Passed, null, false), repository.requests.last())
         assertEquals(TestsFilter.Passed.name, handle.get<String>(TestsViewModel.ARG_FILTER))

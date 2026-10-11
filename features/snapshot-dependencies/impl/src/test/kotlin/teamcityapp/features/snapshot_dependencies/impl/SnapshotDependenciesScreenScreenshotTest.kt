@@ -96,7 +96,7 @@ class SnapshotDependenciesScreenScreenshotTest(private val stateName: String, pr
         }
         compose.mainClock.autoAdvance = false
         compose.setContent {
-            TeamCityTheme(darkTheme = variant.dark) { SnapshotDependenciesScreen(state, {}, {}, {}, { _, _ -> }) }
+            TeamCityTheme(darkTheme = variant.dark) { SnapshotDependenciesScreen(SnapshotDependenciesUiState(state), {}, {}, {}, { _, _ -> }) }
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()

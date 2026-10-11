@@ -16,9 +16,11 @@
 
 package teamcityapp.features.manage_accounts.impl
 
+import androidx.annotation.StringRes
 import teamcityapp.features.manage_accounts.api.AccountDestination
 import teamcityapp.features.manage_accounts.api.ManagedAccount
 import teamcityapp.features.manage_accounts.api.ManagedAccountId
+import teamcityapp.libraries.resources.R as SharedR
 
 sealed interface AccountListUiState {
     data object Loading : AccountListUiState
@@ -39,7 +41,19 @@ data class ManageAccountsUiState(
     val canInteract: Boolean get() = removal !is AccountRemovalUiState.Removing && destination == null
 }
 sealed interface ManageAccountsDialog {
+    @get:StringRes val titleRes: Int? get() = null
+
+    @get:StringRes val confirmLabelRes: Int? get() = null
+
+    @get:StringRes val messageRes: Int? get() = null
     data object None : ManageAccountsDialog
-    data object SslWarning : ManageAccountsDialog
-    data class ConfirmRemoval(val id: ManagedAccountId) : ManageAccountsDialog
+    data object SslWarning : ManageAccountsDialog {
+        override val titleRes: Int = SharedR.string.warning_ssl_dialog_title
+        override val messageRes: Int = SharedR.string.warning_ssl_dialog_content
+        override val confirmLabelRes: Int = android.R.string.ok
+    }
+    data class ConfirmRemoval(val id: ManagedAccountId) : ManageAccountsDialog {
+        override val confirmLabelRes: Int = R.string.dialog_remove_active_account_positive_button_text
+        override val messageRes: Int = R.string.dialog_remove_not_active_account_positive_content_text
+    }
 }

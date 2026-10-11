@@ -71,7 +71,7 @@ fun FavoritesScreen(
                     onRetry,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                     empty = { TeamCityListEmpty(stringResource(R.string.favorites_empty)) },
-                    refreshFailureMessage = if (state.failure == FavoritesFailure.AllFailed) stringResource(R.string.favorites_all_failed) else null
+                    refreshFailureMessage = state.refreshFailureMessageRes?.let { stringResource(it) }
                 ) {
                     val rows = (state.list as? ListUiState.Content<BuildConfigurationSummary>)?.items ?: return@TeamCityListContainer
                     // Group by identity even when separate projects share a display name.

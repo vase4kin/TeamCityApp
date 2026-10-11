@@ -37,38 +37,19 @@ import teamcityapp.libraries.theme.*
 
 @Composable
 fun FilterBottomSheetScreen(state: FilterBottomSheetUiState, onApply: () -> Unit) {
-    val filter = state.filter
-    val title = when (filter) {
-        QuickFilter.RunningAll, QuickFilter.RunningFavorites -> R.string.title_filter_running_builds
-        QuickFilter.QueuedAll, QuickFilter.QueuedFavorites -> R.string.title_filter_queued_builds
-        else -> R.string.title_filter_agents
-    }
-    val description = when (filter) {
-        QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.string.text_show_favorites
-        QuickFilter.RunningFavorites -> R.string.text_show_running
-        QuickFilter.QueuedFavorites -> R.string.text_show_queued
-        QuickFilter.AgentsConnected -> R.string.text_show_disconnected
-        QuickFilter.AgentsDisconnected -> R.string.text_show_connected
-    }
-    val selected = when (filter) {
-        QuickFilter.RunningAll, QuickFilter.QueuedAll -> R.string.selected_all
-        QuickFilter.RunningFavorites, QuickFilter.QueuedFavorites -> R.string.selected_favorites
-        QuickFilter.AgentsConnected -> R.string.selected_connected
-        QuickFilter.AgentsDisconnected -> R.string.selected_disconnected
-    }
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
         Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = TeamCityDimensions.largeCornerRadius, topEnd = TeamCityDimensions.largeCornerRadius)) {
             Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).selectableGroup().testTag("quick-filter:content")) {
-                TeamCitySheetHeader(stringResource(title))
+                TeamCitySheetHeader(stringResource(state.titleRes))
                 Surface(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.primaryContainer) {
                     Row(Modifier.padding(TeamCityDimensions.contentPadding).testTag("quick-filter:selected").semantics { this.selected = true }, verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(selected = true, onClick = null)
-                        Text(stringResource(selected), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(state.selectedRes), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 Row(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.selectionRowMinHeight).selectable(selected = false, enabled = !state.applying, role = Role.RadioButton, onClick = onApply).padding(start = TeamCityDimensions.extraLargeSpacing, end = TeamCityDimensions.extraLargeSpacing).testTag("quick-filter:apply"), verticalAlignment = Alignment.CenterVertically) {
                     if (state.applying) CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize)) else RadioButton(selected = false, onClick = null)
-                    Text(stringResource(description), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(state.descriptionRes), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.bodyLarge)
                 }
                 if (state.failed) ErrorNotice(stringResource(R.string.filter_apply_error), onApply, Modifier.padding(TeamCityDimensions.contentPadding).testTag("quick-filter:error"), enabled = !state.applying)
             }

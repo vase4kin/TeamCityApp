@@ -46,25 +46,19 @@ import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCitySwitch
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.UiText
+import teamcityapp.libraries.theme.resolve
 
 /** Shared account fields; each screen owns state, validation, dialogs and submission. */
 @Composable
-fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, duplicateMessage: String = "", horizontalPadding: Dp = TeamCityDimensions.noSpacing) {
+fun AuthenticationForm(state: AuthenticationFormState, onChange: (AuthenticationFormState) -> Unit, onSslChange: (Boolean) -> Unit, onSubmit: () -> Unit, modifier: Modifier = Modifier, spaced: Boolean = false, errorMessage: UiText? = state.errorMessage, horizontalPadding: Dp = TeamCityDimensions.noSpacing) {
     var urlText by remember { mutableStateOf(TextFieldValue(state.serverUrl, TextRange(state.serverUrl.length))) }
     val focus = LocalFocusManager.current
     val submit = {
         focus.clearFocus()
         if (!state.busy) onSubmit()
     }
-    val error = when (val value = state.error) {
-        AuthenticationError.EmptyUrl -> stringResource(R.string.server_cannot_be_empty)
-        AuthenticationError.EmptyUserName -> stringResource(R.string.server_user_name_cannot_be_empty)
-        AuthenticationError.EmptyPassword -> stringResource(R.string.server_password_cannot_be_empty)
-        AuthenticationError.SaveFailed -> stringResource(R.string.error_save_account)
-        AuthenticationError.DuplicateAccount -> duplicateMessage
-        is AuthenticationError.Server -> value.message
-        null -> null
-    }
+    val error = errorMessage?.resolve()
     val urlError = state.error == AuthenticationError.EmptyUrl
     val userError = state.error == AuthenticationError.EmptyUserName
     val passwordError = state.error == AuthenticationError.EmptyPassword
@@ -118,13 +112,13 @@ fun AuthenticationForm(state: AuthenticationFormState, onChange: (Authentication
 }
 
 @Composable
-fun AuthenticationWarning(http: Boolean = false, onAccept: () -> Unit, onDecline: () -> Unit) {
+fun AuthenticationWarning(message: AuthenticationWarningText = AuthenticationWarningText.Ssl, onAccept: () -> Unit, onDecline: () -> Unit) {
     AlertDialog(
         onDismissRequest = {},
         modifier = Modifier.testTag("auth:warning"),
         shape = MaterialTheme.shapes.large,
         title = { Text(stringResource(R.string.warning_ssl_dialog_title)) },
-        text = { if (http) Text(stringResource(R.string.server_not_secure_http)) else Text(sslWarningText()) },
+        text = { if (message.styled) Text(styledAuthenticationText(LocalResources.current.getText(message.messageRes))) else Text(stringResource(message.messageRes)) },
         confirmButton = { TextButton(onClick = onAccept) { Text(stringResource(R.string.dialog_ok_title)) } },
         dismissButton = { TextButton(onClick = onDecline) { Text(stringResource(R.string.warning_ssl_dialog_negative)) } }
     )
@@ -151,9 +145,6 @@ fun AuthenticationProgress(message: String, title: String? = null) {
 private fun FormPreview() {
     TeamCityTheme { AuthenticationForm(AuthenticationFormState(), {}, {}, {}) }
 }
-
-@Composable
-private fun sslWarningText() = styledAuthenticationText(LocalResources.current.getText(R.string.warning_ssl_dialog_content))
 
 @Composable
 fun styledAuthenticationText(text: CharSequence) = run {

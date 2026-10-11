@@ -61,7 +61,7 @@ internal fun HistoryTestScreen(
     snackbar: androidx.compose.material3.SnackbarHostState = androidx.compose.runtime.remember { androidx.compose.material3.SnackbarHostState() }
 ) {
     BuildHistoryScreen(
-        "Build Android and check all supported configurations", state, controls, rows.size, { rows[it] }, { rows[it] }, append,
+        "Build Android and check all supported configurations", state, controls, rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, append,
         onBack, onRun, onFilter, onFavorite, onFavoriteRetry, onPromptRetry, onPromptDismiss, onRetry, onRetry, onAppendRetry, onBuild, onQueuedRetry, onQueuedDismiss, snackbar = snackbar
     )
 }

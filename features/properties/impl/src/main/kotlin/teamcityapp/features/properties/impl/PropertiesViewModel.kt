@@ -20,14 +20,22 @@ package teamcityapp.features.properties.impl
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import teamcityapp.features.properties.api.Property
-import javax.inject.Inject
+import teamcityapp.libraries.theme.UiText
 
 sealed interface PropertiesUiState {
     data object Empty : PropertiesUiState
-    data class Content(val properties: List<Property>) : PropertiesUiState
+    data class Content(val properties: List<Property>) : PropertiesUiState {
+        val rows: List<PropertyRowUiState> = properties.map(::PropertyRowUiState)
+    }
+}
+
+/** Only expansion/overflow state belongs to the row composable. */
+data class PropertyRowUiState(val property: Property) {
+    val valueText: UiText = if (property.value.isEmpty()) UiText.Resource(R.string.text_property_value_empty) else UiText.Dynamic(property.value)
 }
 
 @HiltViewModel

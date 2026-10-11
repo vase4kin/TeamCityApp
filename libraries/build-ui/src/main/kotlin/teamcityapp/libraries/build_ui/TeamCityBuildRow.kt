@@ -33,25 +33,18 @@ import teamcityapp.libraries.list_ui.TeamCityListLeadingIcon
 import teamcityapp.libraries.list_ui.TeamCityListRow
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityStatusColors
 
 @Composable
 fun TeamCityBuildRow(
-    build: BuildLaunchData,
+    row: BuildRowUiState,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     position: ListRowPosition = ListRowPosition.Single
 ) {
-    val label = stringResource(
-        when {
-            build.isRunning -> R.string.build_running
-            build.isQueued -> R.string.build_queued
-            build.isFailed -> R.string.build_failed
-            build.status == "ERROR" -> R.string.build_error
-            build.status == "UNKNOWN" -> R.string.build_unknown
-            else -> R.string.build_success
-        }
-    )
+    val build = row.build
+    val label = stringResource(row.statusLabelRes)
     val icon = when {
         build.isQueued -> R.drawable.ic_clock_fast
         build.isFailed -> R.drawable.ic_error_black_24dp
@@ -60,7 +53,7 @@ fun TeamCityBuildRow(
         else -> R.drawable.ic_check_circle_black_24dp
     }
     val statusColors = teamCityStatusColors()
-    val statusText = if (build.isQueued) build.waitReason ?: stringResource(R.string.build_queued_fallback) else build.statusText.orEmpty()
+    val statusText = row.statusText.resolve()
     val containerColor = when {
         build.isRunning -> statusColors.info.container
         build.isQueued -> statusColors.warning.container
@@ -91,7 +84,7 @@ fun TeamCityBuildRow(
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                val number = build.number ?: stringResource(R.string.build_no_number)
+                val number = row.number.resolve()
                 Text(stringResource(R.string.build_number, number), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
                 if (build.personal) Icon(painterResource(R.drawable.ic_person_black_24dp), stringResource(R.string.build_personal), Modifier.padding(start = TeamCityDimensions.smallSpacing).size(TeamCityDimensions.statusIconSize))
                 if (build.pinned) Icon(painterResource(R.drawable.ic_pin), stringResource(R.string.build_pinned), Modifier.padding(start = TeamCityDimensions.smallSpacing).size(TeamCityDimensions.statusIconSize))
@@ -110,5 +103,5 @@ fun TeamCityBuildRow(
 @Preview
 @Composable
 private fun TeamCityBuildRowPreview() {
-    TeamCityTheme { TeamCityBuildRow(BuildLaunchData("1", "/builds/id:1", number = "42", status = "SUCCESS", state = "finished", statusText = "Success", branchName = "main"), {}) }
+    TeamCityTheme { TeamCityBuildRow(BuildRowUiState(BuildLaunchData("1", "/builds/id:1", number = "42", status = "SUCCESS", state = "finished", statusText = "Success", branchName = "main")), {}) }
 }

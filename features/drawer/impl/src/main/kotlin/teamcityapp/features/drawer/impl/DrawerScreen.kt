@@ -81,13 +81,13 @@ fun DrawerScreen(
                         Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:loading"), verticalAlignment = Alignment.CenterVertically) {
                             CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                             Spacer(Modifier.width(TeamCityDimensions.contentPadding))
-                            Text(stringResource(R.string.drawer_loading), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(requireNotNull(state.accountsMessageRes)), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
 
-                    DrawerAccountsUiState.Error -> item("load_error") { DrawerFailure(R.string.drawer_load_error, onRetry, "drawer:load_error") }
+                    DrawerAccountsUiState.Error -> item("load_error") { DrawerFailure(requireNotNull(state.accountsMessageRes), onRetry, "drawer:load_error") }
 
-                    DrawerAccountsUiState.Empty -> item("empty") { Text(stringResource(R.string.drawer_empty_accounts), Modifier.padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:empty"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    DrawerAccountsUiState.Empty -> item("empty") { Text(stringResource(requireNotNull(state.accountsMessageRes)), Modifier.padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:empty"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
 
                     is DrawerAccountsUiState.Content -> {
                         items(accounts.accounts.filter { it.isActive }, key = { accountTag(it.id) }) { DrawerAccountRow(it, state.canInteract, onSelect) }
@@ -99,12 +99,12 @@ fun DrawerScreen(
                     item("switching") {
                         Column(Modifier.padding(horizontal = TeamCityDimensions.contentPadding).testTag("drawer:switching")) {
                             LinearProgressIndicator(Modifier.fillMaxWidth())
-                            Text(stringResource(R.string.drawer_switching), Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(requireNotNull(state.selectionMessageRes)), Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
-                if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerFailure(R.string.drawer_switch_error, onRetrySelection, "drawer:switch_error") }
-                if (state.selection == AccountSwitchUiState.Missing) item("missing") { DrawerMessage(R.string.drawer_missing_account, R.string.drawer_dismiss, onDismissMissing, "drawer:missing") }
+                if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerFailure(requireNotNull(state.selectionMessageRes), onRetrySelection, "drawer:switch_error") }
+                if (state.selection == AccountSwitchUiState.Missing) item("missing") { DrawerMessage(requireNotNull(state.selectionMessageRes), R.string.drawer_dismiss, onDismissMissing, "drawer:missing") }
                 item("add") {
                     FilledTonalButton(
                         onClick = onAddAccount,

@@ -116,8 +116,8 @@ fun ManageAccountsScreen(
     if (state.canInteract) {
         when (dialog) {
             ManageAccountsDialog.None -> Unit
-            ManageAccountsDialog.SslWarning -> AccountsDialog(true, onDismissDialog, {})
-            is ManageAccountsDialog.ConfirmRemoval -> AccountsDialog(false, onDismissDialog) { onConfirmRemoval(dialog.id) }
+            ManageAccountsDialog.SslWarning -> AccountsDialog(dialog, onDismissDialog, {})
+            is ManageAccountsDialog.ConfirmRemoval -> AccountsDialog(dialog, onDismissDialog) { onConfirmRemoval(dialog.id) }
         }
     }
 }
@@ -198,9 +198,9 @@ private fun AccountRow(account: ManagedAccount, enabled: Boolean, onRemove: () -
 }
 
 @Composable
-private fun warningText() = run {
+private fun warningText(@androidx.annotation.StringRes messageRes: Int) = run {
     val resources = LocalResources.current
-    val text = resources.getText(SharedR.string.warning_ssl_dialog_content)
+    val text = resources.getText(messageRes)
     val linkColor = MaterialTheme.colorScheme.primary
     remember(text, linkColor) {
         buildAnnotatedString {
@@ -215,21 +215,18 @@ private fun warningText() = run {
 }
 
 @Composable
-private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+private fun AccountsDialog(dialog: ManageAccountsDialog, onDismiss: () -> Unit, onConfirm: () -> Unit) {
+    val warning = dialog == ManageAccountsDialog.SslWarning
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.testTag("accounts:dialog"),
-        title = if (warning) {
-            { Text(stringResource(SharedR.string.warning_ssl_dialog_title)) }
-        } else {
-            null
-        },
+        title = dialog.titleRes?.let { title -> { Text(stringResource(title)) } },
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 if (warning) {
-                    Text(warningText(), style = MaterialTheme.typography.bodyLarge)
+                    Text(warningText(requireNotNull(dialog.messageRes)), style = MaterialTheme.typography.bodyLarge)
                 } else {
-                    Text(stringResource(R.string.dialog_remove_not_active_account_positive_content_text), style = MaterialTheme.typography.bodyLarge)
+                    Text(stringResource(requireNotNull(dialog.messageRes)), style = MaterialTheme.typography.bodyLarge)
                 }
             }
         },
@@ -244,7 +241,7 @@ private fun AccountsDialog(warning: Boolean, onDismiss: () -> Unit, onConfirm: (
         },
         confirmButton = {
             TextButton(onClick = if (warning) onDismiss else onConfirm) {
-                Text(stringResource(if (warning) android.R.string.ok else R.string.dialog_remove_active_account_positive_button_text))
+                Text(stringResource(requireNotNull(dialog.confirmLabelRes)))
             }
         }
     )
@@ -257,5 +254,5 @@ private fun AccountsPreview() {
 
 @Preview @Composable
 private fun WarningPreview() {
-    TeamCityTheme { AccountsDialog(true, {}, {}) }
+    TeamCityTheme { AccountsDialog(ManageAccountsDialog.SslWarning, {}, {}) }
 }

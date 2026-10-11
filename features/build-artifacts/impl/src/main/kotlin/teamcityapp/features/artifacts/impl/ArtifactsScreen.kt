@@ -99,15 +99,11 @@ fun ArtifactsScreen(
     platformError?.let { error ->
         AlertDialog(
             onDismissRequest = onDismissPlatformError,
-            title = { Text(stringResource(if (error == ArtifactPlatformError.PermissionDenied) R.string.artifacts_permission_title else R.string.artifacts_open_failed_title)) },
+            title = { Text(stringResource(error.titleRes)) },
             text = {
                 Text(
                     stringResource(
-                        when (error) {
-                            ArtifactPlatformError.PermissionDenied -> R.string.artifacts_permission_denied
-                            ArtifactPlatformError.FileUnavailable -> R.string.artifacts_file_unavailable
-                            ArtifactPlatformError.BrowserUnavailable -> R.string.artifacts_browser_unavailable
-                        }
+                        error.messageRes
                     )
                 )
             },

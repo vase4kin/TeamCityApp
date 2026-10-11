@@ -66,7 +66,7 @@ fun AgentsScreen(
             empty = {
                 TeamCityListEmpty(
                     stringResource(
-                        if (state.filter == AgentsFilter.Connected) R.string.agents_empty_connected else R.string.agents_empty_disconnected
+                        state.emptyMessageRes
                     )
                 )
             }

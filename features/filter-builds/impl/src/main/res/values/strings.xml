@@ -27,14 +27,21 @@ Copyright 2026 Andrey Tolpeev
 <string name="text_filters_none">All builds</string>
 <string name="hint_default_filter_branch">Any</string>
 <string name="text_apply_filters_button">Apply filters</string>
+<string name="filter_status_success">Success</string>
+<string name="filter_status_failed">Failed</string>
+<string name="filter_status_server_error">Server error</string>
+<string name="filter_status_cancelled">Cancelled</string>
+<string name="filter_status_failed_to_start">Failed to start</string>
+<string name="filter_status_running">Running</string>
+<string name="filter_status_queued">Queued</string>
 <string-array name="build_filters">
-        <item>Success</item>
-        <item>Failed</item>
-        <item>Server error</item>
-        <item>Cancelled</item>
-        <item>Failed to start</item>
-        <item>Running</item>
-        <item>Queued</item>
+        <item>@string/filter_status_success</item>
+        <item>@string/filter_status_failed</item>
+        <item>@string/filter_status_server_error</item>
+        <item>@string/filter_status_cancelled</item>
+        <item>@string/filter_status_failed_to_start</item>
+        <item>@string/filter_status_running</item>
+        <item>@string/filter_status_queued</item>
     </string-array>
 <string name="branches_unavailable">Unable to load branches. The branch filter is unchanged.</string>
 </resources>
