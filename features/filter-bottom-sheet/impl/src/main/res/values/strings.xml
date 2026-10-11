@@ -15,6 +15,7 @@ Copyright 2026 Andrey Tolpeev
   limitations under the License.
 -->
 <resources>
+<string name="filter_apply_error">Couldn\'t update this filter. Try again to apply your selection.</string>
 <string name="text_filters">Filter</string>
 <string name="title_filter_running_builds">Filter running builds</string>
 <string name="title_filter_queued_builds">Filter queued builds</string>

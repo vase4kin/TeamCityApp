@@ -103,6 +103,16 @@ class CreateAccountScreenScreenshotTest(private val stateName: String, private v
             else -> null
         }
         if (tag == null) compose.onRoot().captureRoboImage("create_account_${stateName}_${variant.name}.png") else captureScreenRoboImage("create_account_${stateName}_${variant.name}.png")
+        if (stateName in listOf("save_error", "server_error", "duplicate") && (variant.fontScale > 1f || variant.width >= 600)) {
+            compose.mainClock.autoAdvance = true
+            // Add stays in the bottom bar while the failed form can scroll independently.
+            compose.onNodeWithTag("create-account:scroll").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) { it(0f, 10_000f) }
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("create-account:submit").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("create_account_${stateName}_${variant.name}_bottom.png")
+        }
     }
 
     companion object {

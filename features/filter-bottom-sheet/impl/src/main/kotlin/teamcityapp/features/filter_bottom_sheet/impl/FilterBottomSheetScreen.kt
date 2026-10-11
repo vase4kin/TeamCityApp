@@ -18,8 +18,10 @@ package teamcityapp.features.filter_bottom_sheet.impl
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -57,7 +59,7 @@ fun FilterBottomSheetScreen(state: FilterBottomSheetUiState, onApply: () -> Unit
     }
     Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
         Surface(Modifier.widthIn(max = TeamCityDimensions.paneMaxWidth).fillMaxWidth(), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = androidx.compose.foundation.shape.RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)) {
-            Column(Modifier.fillMaxWidth().navigationBarsPadding().selectableGroup().testTag("quick-filter:content")) {
+            Column(Modifier.fillMaxWidth().navigationBarsPadding().verticalScroll(rememberScrollState()).selectableGroup().testTag("quick-filter:content")) {
                 TeamCitySheetHeader(stringResource(title))
                 Surface(Modifier.fillMaxWidth().padding(horizontal = 16.dp), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.primaryContainer) {
                     Row(Modifier.padding(16.dp).testTag("quick-filter:selected").semantics { this.selected = true }, verticalAlignment = Alignment.CenterVertically) {
@@ -69,7 +71,7 @@ fun FilterBottomSheetScreen(state: FilterBottomSheetUiState, onApply: () -> Unit
                     if (state.applying) CircularProgressIndicator(Modifier.size(24.dp)) else RadioButton(selected = false, onClick = null)
                     Text(stringResource(description), Modifier.padding(start = 12.dp), style = MaterialTheme.typography.bodyLarge)
                 }
-                if (state.failed) Text(stringResource(teamcityapp.libraries.resources.R.string.error_view_error_text), Modifier.padding(16.dp), color = MaterialTheme.colorScheme.error)
+                if (state.failed) ErrorNotice(stringResource(R.string.filter_apply_error), onApply, Modifier.padding(16.dp).testTag("quick-filter:error"), enabled = !state.applying)
             }
         }
     }

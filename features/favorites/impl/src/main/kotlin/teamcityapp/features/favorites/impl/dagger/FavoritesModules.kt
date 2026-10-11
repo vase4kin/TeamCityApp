@@ -1,0 +1,43 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.favorites.impl.dagger
+
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
+import dagger.hilt.components.SingletonComponent
+import teamcityapp.features.favorites.api.FavoritesNavigation
+import teamcityapp.features.favorites.impl.navigation.FavoritesNavigationImpl
+import teamcityapp.features.favorites.impl.router.FavoritesRouter
+import teamcityapp.features.favorites.impl.router.FavoritesRouterImpl
+import teamcityapp.features.favorites.impl.tracker.FavoritesTracker
+import teamcityapp.features.favorites.impl.tracker.FavoritesTrackerImpl
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class FavoritesModules {
+    @Binds abstract fun navigation(implementation: FavoritesNavigationImpl): FavoritesNavigation
+
+    @Binds abstract fun tracker(implementation: FavoritesTrackerImpl): FavoritesTracker
+}
+
+@Module
+@InstallIn(FragmentComponent::class)
+abstract class FavoritesScreenModule {
+    @Binds abstract fun router(implementation: FavoritesRouterImpl): FavoritesRouter
+}

@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LoadingContent
 import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.ScreenNavigation
@@ -82,7 +83,7 @@ fun AboutScreen(
                                 AboutRow(stringResource(R.string.about_version), ThemeR.drawable.ic_info_outline_black_24dp, info.version)
                                 AboutRow(stringResource(R.string.about_app_text_server_url), R.drawable.ic_web_black_24dp, info.webUrl) { onOpenUrl(info.webUrl) }
                             } else {
-                                Text(stringResource(R.string.server_unavailable), Modifier.padding(16.dp).testTag("about:server-unavailable"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                ErrorNotice(stringResource(R.string.server_unavailable), modifier = Modifier.padding(16.dp).testTag("about:server-unavailable"))
                             }
                         }
                     }

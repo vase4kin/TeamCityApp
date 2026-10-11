@@ -24,12 +24,9 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.Espresso.pressBack
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
-import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
@@ -82,7 +79,9 @@ class DrawerTest {
     }
     private fun launch() = ActivityScenario.launch<HomeActivity>(Intent(app, HomeActivity::class.java))
     private fun open() {
-        onView(withContentDescription(R.string.content_navigation_content_description)).perform(click())
+        val description = app.getString(teamcityapp.features.navigation.impl.R.string.navigation_open_drawer)
+        compose.waitUntil(5_000) { runCatching { compose.onNodeWithContentDescription(description).assertIsDisplayed() }.isSuccess }
+        compose.onNodeWithContentDescription(description).performClick()
         awaitRows()
     }
     private fun awaitRows(url: String = first) {

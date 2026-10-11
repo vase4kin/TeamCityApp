@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright 2026 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="favorites_title">Favorites</string>
+    <string name="favorites_open_drawer">Open navigation drawer</string>
+    <string name="favorites_empty">No favorite configurations added</string>
+    <string name="favorites_all_failed">Couldn\'t load favorites. Your saved favorites are kept.</string>
+    <string name="favorites_retry">Retry</string>
+    <plurals name="favorites_partial_failed">
+        <item quantity="one">%d favorite couldn\'t be loaded. Your saved favorites are kept.</item>
+        <item quantity="other">%d favorites couldn\'t be loaded. Your saved favorites are kept.</item>
+    </plurals>
+</resources>

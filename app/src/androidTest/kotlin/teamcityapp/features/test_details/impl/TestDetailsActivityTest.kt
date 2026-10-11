@@ -97,10 +97,11 @@ class TestDetailsActivityTest {
     @Test fun failureCanBeRetried() {
         `when`(service.testOccurrence(anyString())).thenReturn(Single.error(IllegalStateException("offline")), Single.just(TestOccurrence(text)))
         launch().use {
-            awaitText("There's an error loading the page")
-            compose.onNodeWithText("Try again").performClick()
+            awaitText(app.getString(teamcityapp.libraries.theme.R.string.error_load_title))
+            compose.onNodeWithText(app.getString(teamcityapp.libraries.theme.R.string.error_load_message)).assertIsDisplayed()
+            compose.onNodeWithText(app.getString(teamcityapp.libraries.theme.R.string.action_retry)).performClick()
             awaitText(text)
-            compose.onNodeWithText("Try again").assertDoesNotExist()
+            compose.onNodeWithText(app.getString(teamcityapp.libraries.theme.R.string.action_retry)).assertDoesNotExist()
             verify(service, times(2)).testOccurrence(anyString())
         }
     }

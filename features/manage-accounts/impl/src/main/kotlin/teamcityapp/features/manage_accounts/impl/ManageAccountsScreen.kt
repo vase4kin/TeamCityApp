@@ -28,6 +28,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
@@ -68,24 +70,24 @@ fun ManageAccountsScreen(
         navigation = ScreenNavigation.Back,
         scrollToolbarWithContent = true
     ) { modifier ->
-        Box(modifier) {
+        BoxWithConstraints(modifier.testTag("accounts:body")) {
             val removalFailed = state.removal is AccountRemovalUiState.Error
-            Column(Modifier.fillMaxSize().padding(bottom = if (removalFailed) 112.dp else 0.dp)) {
+            val reserveActionLane = removalFailed || state.accounts == AccountListUiState.Error
+            var addActionHeight by remember { mutableIntStateOf(0) }
+            val addActionSpace = if (addActionHeight == 0) 112.dp else with(LocalDensity.current) { addActionHeight.toDp() }
+            val feedbackMaxHeight = maxHeight / 3
+            Column(Modifier.fillMaxSize().padding(bottom = if (reserveActionLane) addActionSpace else 0.dp)) {
                 Box(Modifier.weight(1f).fillMaxWidth()) {
                     when (val accounts = state.accounts) {
                         AccountListUiState.Loading -> LoadingContent(Modifier.fillMaxSize().testTag("accounts:loading"))
 
                         AccountListUiState.Empty -> MessageContent(stringResource(R.string.accounts_empty), Modifier.fillMaxSize().testTag("accounts:empty"))
 
-                        AccountListUiState.Error -> CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
-                            MessageContent(stringResource(R.string.accounts_load_error), Modifier.fillMaxSize()) {
-                                TextButton(onClick = onRetry) { Text(stringResource(R.string.accounts_retry)) }
-                            }
-                        }
+                        AccountListUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry, message = stringResource(R.string.accounts_load_error))
 
                         is AccountListUiState.Content -> LazyColumn(
                             Modifier.fillMaxSize().testTag("accounts:list"),
-                            contentPadding = PaddingValues(bottom = if (removalFailed) 0.dp else 112.dp)
+                            contentPadding = PaddingValues(bottom = if (removalFailed) 0.dp else addActionSpace)
                         ) {
                             items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->
                                 AccountRow(account, state.canInteract, { onRemove(account.id) }, onSslWarning)
@@ -94,23 +96,17 @@ fun ManageAccountsScreen(
                     }
                 }
                 if (removalFailed) {
-                    Surface(
-                        Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("accounts:remove_error"),
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = MaterialTheme.shapes.small,
-                        shadowElevation = 2.dp
-                    ) {
-                        Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-                            Text(stringResource(R.string.accounts_remove_error), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
-                            TextButton(onClick = onRetryRemoval) { Text(stringResource(R.string.accounts_retry)) }
-                        }
-                    }
+                    ErrorNotice(
+                        stringResource(R.string.accounts_remove_error),
+                        onRetryRemoval,
+                        Modifier.fillMaxWidth().heightIn(max = feedbackMaxHeight).padding(horizontal = TeamCityDimensions.contentPadding).testTag("accounts:remove_error")
+                    )
                 }
             }
             if (state.removal is AccountRemovalUiState.Removing) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("accounts:removing"))
             TeamCityExtendedFloatingActionButton(
                 onClick = { if (state.canInteract) onCreateAccount() },
-                modifier = Modifier.align(Alignment.BottomEnd).padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }
+                modifier = Modifier.align(Alignment.BottomEnd).onSizeChanged { addActionHeight = it.height }.padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }
             ) {
                 Icon(painterResource(ThemeR.drawable.ic_add_black_24dp), null, Modifier.size(TeamCityDimensions.iconSize))
                 Spacer(Modifier.width(12.dp))

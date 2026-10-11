@@ -85,7 +85,7 @@ class TestDetailsScreenTest {
             }
         }
         val message = org.robolectric.RuntimeEnvironment.getApplication()
-            .getString(teamcityapp.libraries.resources.R.string.error_view_error_text)
+            .getString(teamcityapp.libraries.theme.R.string.error_load_message)
         assertThemeText(message, 18, Color.Blue)
     }
 

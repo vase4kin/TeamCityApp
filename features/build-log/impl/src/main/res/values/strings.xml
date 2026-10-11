@@ -15,6 +15,7 @@ Copyright 2026 Andrey Tolpeev
   limitations under the License.
 -->
 <resources>
+<string name="log_authentication_error">Couldn\'t sign in to the build log. Sign in again to continue.</string>
 <string name="text_login_again">Sign in to view this build log.</string>
 <string name="text_browse_build_log">This account ignores SSL certificate validation. Open the build log in your browser.</string>
 <string name="text_button_login">Sign in</string>

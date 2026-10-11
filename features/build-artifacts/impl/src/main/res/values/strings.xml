@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2026 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<resources>
+ <string name="artifacts_title">Artifacts</string>
+ <string name="artifacts_empty">No artifacts</string>
+ <string name="artifacts_back">Back</string>
+ <string name="artifacts_downloading_title">Downloading artifact file..</string>
+ <string name="artifacts_downloading">Please wait…</string>
+ <string name="artifacts_cancel">Cancel</string>
+ <string name="artifacts_download_failed">Couldn’t download the artifact.</string>
+ <string name="artifacts_retry_download">Retry download</string>
+ <string name="artifacts_permission_title">Permissions warning</string>
+ <string name="artifacts_permission_denied">The download artifacts functionality is disabled. Please enable required permissions.</string>
+ <string name="artifacts_open_failed_title">Couldn’t open artifact</string>
+ <string name="artifacts_file_unavailable">No installed app could open this file.</string>
+ <string name="artifacts_browser_unavailable">Couldn’t open this artifact in the browser.</string>
+ <string name="artifacts_ok">OK</string>
+</resources>

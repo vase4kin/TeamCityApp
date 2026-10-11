@@ -27,7 +27,6 @@
     <string name="title_activity_account_list">Manage Accounts</string>
     <string name="accounts_load_error">Unable to load accounts</string>
     <string name="accounts_remove_error">Unable to finish removing the account. Please try again.</string>
-    <string name="accounts_retry">Retry</string>
     <string name="accounts_add">Add account</string>
 <string name="accounts_empty">No accounts yet. Add an account to connect to your TeamCity server.</string>
 <string name="accounts_current">Current account</string>

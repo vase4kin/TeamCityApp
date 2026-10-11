@@ -106,4 +106,18 @@ class AuthenticationFormTest {
         }
         assertEquals(0, changes)
     }
+
+    @Test fun serverFailureKeepsCredentialsAndValidationStaysWithItsField() {
+        val state = mutableStateOf(AuthenticationFormState(serverUrl = "https://server", guest = true, error = AuthenticationError.Server("Server unavailable")))
+        var submissions = 0
+        compose.setContent { TeamCityTheme { AuthenticationForm(state.value, { state.value = it }, {}, { submissions++ }) } }
+        compose.onNodeWithText("Server unavailable").assertIsDisplayed()
+        compose.onNodeWithTag("auth:url").assertTextContains("https://server")
+        compose.onNodeWithText("Try again").assertDoesNotExist()
+        assertEquals(0, submissions)
+        compose.runOnIdle { state.value = state.value.copy(serverUrl = "", error = AuthenticationError.EmptyUrl) }
+        compose.onNodeWithText("Server unavailable").assertDoesNotExist()
+        compose.onNodeWithTag("auth:error", useUnmergedTree = true).assertTextEquals("Server url cannot be empty")
+        compose.onNodeWithText("Couldn’t load content").assertDoesNotExist()
+    }
 }

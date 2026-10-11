@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2026 Andrey Tolpeev
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<resources>
+ <string name="overview_empty">No build details</string>
+ <string name="overview_result">Result</string>
+ <string name="overview_wait_reason">Wait reason</string>
+ <string name="overview_cancelled_by">Canceled by</string>
+ <string name="overview_cancellation_time">Cancellation time</string>
+ <string name="overview_time">Time</string>
+ <string name="overview_queued_time">Queued time</string>
+ <string name="overview_estimated_time">Time to start</string>
+ <string name="overview_branch">Branch</string>
+ <string name="overview_agent">Agent</string>
+ <string name="overview_triggered_by">Triggered by</string>
+ <string name="overview_restarted_by">Restarted by</string>
+ <string name="overview_personal">Personal of</string>
+ <string name="overview_configuration">Configuration</string>
+ <string name="overview_project">Project</string>
+ <string name="overview_share">Share</string>
+ <string name="overview_browser">Open in browser</string>
+ <string name="overview_stop">Stop</string>
+ <string name="overview_remove">Remove from queue</string>
+ <string name="overview_restart">Restart</string>
+ <string name="overview_deleted_user">Deleted user</string>
+ <string name="overview_deleted_configuration">Deleted configuration</string>
+ <string name="overview_unknown_trigger">Unknown trigger type!</string>
+ <string name="overview_queued_build">Queued build</string>
+ <string name="overview_unavailable">Unavailable</string>
+</resources>

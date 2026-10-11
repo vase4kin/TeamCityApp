@@ -32,6 +32,5 @@ dependencies {
 
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
-    implementation(libs.errorView)
     implementation(libs.kotlin.stdlib)
 }

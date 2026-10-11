@@ -20,10 +20,10 @@ import android.app.Activity
 import android.view.View
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractor
-import com.github.vase4kin.teamcityapp.base.list.extractor.BaseValueExtractorImpl
+import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsArguments
 import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsInteractor
 import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsInteractorImpl
+import com.github.vase4kin.teamcityapp.build_details.data.BuildDetailsRunBuildInteractor
 import com.github.vase4kin.teamcityapp.build_details.presenter.BuildDetailsPresenterImpl
 import com.github.vase4kin.teamcityapp.build_details.router.BuildDetailsRouter
 import com.github.vase4kin.teamcityapp.build_details.router.BuildDetailsRouterImpl
@@ -34,17 +34,25 @@ import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsView
 import com.github.vase4kin.teamcityapp.build_details.view.BuildDetailsViewImpl
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractor
 import com.github.vase4kin.teamcityapp.buildlist.data.BuildInteractorImpl
+import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractor
-import com.github.vase4kin.teamcityapp.runbuild.interactor.RunBuildInteractorImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.firebase.analytics.FirebaseAnalytics
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Named
 import org.greenrobot.eventbus.EventBus
+import teamcityapp.features.artifacts.api.ArtifactsNavigation
+import teamcityapp.features.build_history.api.BuildHistoryNavigation
+import teamcityapp.features.build_overview.api.BuildOverviewNavigation
+import teamcityapp.features.changes.api.ChangesNavigation
+import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.properties.api.PropertiesNavigation
+import teamcityapp.features.snapshot_dependencies.api.SnapshotDependenciesNavigation
+import teamcityapp.features.tests.api.TestsNavigation
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.utils.requireScreenOwner
 
@@ -58,41 +66,55 @@ object BuildDetailsModule {
     @Provides
     fun providesBuildTabsView(
         activity: BuildDetailsActivity,
-        @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
+        arguments: BuildDetailsArguments,
+        mapper: AppBuildLaunchMapper,
+        overview: BuildOverviewNavigation,
+        artifacts: ArtifactsNavigation,
+        snapshots: SnapshotDependenciesNavigation,
         propertiesNavigation: PropertiesNavigation,
-        featureNavigation: teamcityapp.features.build_log.api.BuildLogNavigation
+        featureNavigation: teamcityapp.features.build_log.api.BuildLogNavigation,
+        changesNavigation: ChangesNavigation,
+        testsNavigation: TestsNavigation
     ): BuildDetailsView = BuildDetailsViewImpl(
         activity.findViewById<View>(android.R.id.content),
         activity,
-        valueExtractor,
+        arguments,
+        mapper,
+        overview,
+        artifacts,
+        snapshots,
         propertiesNavigation,
-        featureNavigation
+        featureNavigation,
+        changesNavigation,
+        testsNavigation
     )
 
     @Provides
-    @Named("BuildDetailsActivity")
-    fun providesBuildTabsValueExtractor(activity: BuildDetailsActivity): BaseValueExtractor = BaseValueExtractorImpl(activity.intent.extras!!)
+    @ActivityScoped
+    fun providesBuildDetailsArguments(activity: BuildDetailsActivity): BuildDetailsArguments = BuildDetailsArguments(activity.intent.extras)
 
     @Provides
     fun providesBaseTabsDataManager(
         eventBus: EventBus,
-        @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor,
+        arguments: BuildDetailsArguments,
         sharedUserStorage: SharedUserStorage,
         repository: Repository
-    ): BuildDetailsInteractor = BuildDetailsInteractorImpl(eventBus, valueExtractor, sharedUserStorage, repository)
+    ): BuildDetailsInteractor = BuildDetailsInteractorImpl(eventBus, arguments, sharedUserStorage, repository)
 
     @Provides
-    fun providesBuildTabsRouter(activity: BuildDetailsActivity): BuildDetailsRouter = BuildDetailsRouterImpl(
+    fun providesBuildTabsRouter(activity: BuildDetailsActivity, navigation: NavigationNavigation, history: BuildHistoryNavigation): BuildDetailsRouter = BuildDetailsRouterImpl(
         activity,
-        ChromeCustomTabsImpl(activity)
+        ChromeCustomTabsImpl(activity),
+        navigation,
+        history
     )
 
     @Provides
     @Named("BuildDetailsActivity")
     fun providesRunBuildInteractor(
         repository: Repository,
-        @Named("BuildDetailsActivity") valueExtractor: BaseValueExtractor
-    ): RunBuildInteractor = RunBuildInteractorImpl(repository, valueExtractor.buildDetails.buildTypeId)
+        arguments: BuildDetailsArguments
+    ): RunBuildInteractor = BuildDetailsRunBuildInteractor(repository, arguments)
 
     @Provides
     @Named("BuildDetailsActivity")

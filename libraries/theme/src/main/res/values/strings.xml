@@ -19,4 +19,6 @@
     <string name="action_back">Back</string>
     <string name="app_name">Theme</string>
 <string name="action_retry">Try again</string>
+    <string name="error_load_title">Couldn’t load content</string>
+    <string name="error_load_message">Try again to reload this screen.</string>
 </resources>

@@ -17,5 +17,4 @@
 <resources>
     <string name="splash_logo_description">TeamCityApp</string>
     <string name="splash_load_error">Accounts could not be loaded.</string>
-    <string name="splash_retry">Try again</string>
 </resources>

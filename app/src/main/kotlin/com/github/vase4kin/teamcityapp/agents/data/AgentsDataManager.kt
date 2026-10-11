@@ -16,37 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.agents.data
 
-import com.github.vase4kin.teamcityapp.agents.api.Agent
-import com.github.vase4kin.teamcityapp.agents.api.Agents
-import com.github.vase4kin.teamcityapp.base.list.data.BaseListRxDataManager
 import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
 
-/**
- * Data manager for [com.github.vase4kin.teamcityapp.agents.view.AgentListFragment]
- */
-interface AgentsDataManager : BaseListRxDataManager<Agents, Agent> {
-
-    /**
-     * {@inheritDoc}
-     */
-    fun load(
-        includeDisconnected: Boolean?,
-        loadingListener: OnLoadingListener<List<Agent>>,
-        update: Boolean
-    )
-
-    /**
-     * Load count of agents
-     *
-     * @param loadingListener - Listener to handle loading server callbacks
-     */
+/** Compatibility adapter for the legacy Home agent-tab count. */
+interface AgentsDataManager {
     fun loadCount(loadingListener: OnLoadingListener<Int>, includeDisconnected: Boolean? = false)
-
-    /**
-     * Post update tab tile event
-     *
-     * @param size - Size of agents
-     * @param type - Agent tab type
-     */
-    fun postUpdateTabTitleEvent(size: Int, type: Int)
+    fun unsubscribe()
 }

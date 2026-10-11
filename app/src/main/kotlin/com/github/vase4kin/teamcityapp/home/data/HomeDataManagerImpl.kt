@@ -20,8 +20,6 @@ import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.agents.data.AgentsDataManagerImpl
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.base.loading.OnLoadingListener
-import com.github.vase4kin.teamcityapp.queue.data.BuildQueueDataManagerImpl
-import com.github.vase4kin.teamcityapp.runningbuilds.data.RunningBuildsDataManagerImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -38,10 +36,8 @@ class HomeDataManagerImpl(
     private val eventBus: EventBus
 ) : HomeDataManager {
 
-    private val runningBuildsDataManager =
-        RunningBuildsDataManagerImpl(repository, sharedUserStorage)
-    private val queuedBuildsDataManager = BuildQueueDataManagerImpl(repository, sharedUserStorage)
-    private val agentsDataManager = AgentsDataManagerImpl(repository, eventBus)
+    private val buildCounts = HomeBuildCounts(repository, sharedUserStorage)
+    private val agentsDataManager = AgentsDataManagerImpl(repository)
 
     private var listener: HomeDataManager.Listener? = null
 
@@ -93,36 +89,35 @@ class HomeDataManagerImpl(
      * {@inheritDoc}
      */
     override fun loadRunningBuildsCount(loadingListener: OnLoadingListener<Int>) {
-        runningBuildsDataManager.loadCount(loadingListener)
+        buildCounts.loadRunning(loadingListener)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun loadFavoriteRunningBuildsCount(loadingListener: OnLoadingListener<Int>) {
-        runningBuildsDataManager.loadFavoritesCount(loadingListener)
+        buildCounts.loadRunning(loadingListener, favorites = true)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun loadBuildQueueCount(loadingListener: OnLoadingListener<Int>) {
-        queuedBuildsDataManager.loadCount(loadingListener)
+        buildCounts.loadQueue(loadingListener)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun loadFavoriteBuildQueueCount(loadingListener: OnLoadingListener<Int>) {
-        queuedBuildsDataManager.loadFavoritesCount(loadingListener)
+        buildCounts.loadQueue(loadingListener, favorites = true)
     }
 
     /**
      * {@inheritDoc}
      */
     override fun unsubscribe() {
-        runningBuildsDataManager.unsubscribe()
-        queuedBuildsDataManager.unsubscribe()
+        buildCounts.unsubscribe()
         agentsDataManager.unsubscribe()
     }
 

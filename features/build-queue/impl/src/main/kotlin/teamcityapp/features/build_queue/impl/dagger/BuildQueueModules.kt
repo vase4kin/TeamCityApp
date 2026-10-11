@@ -1,0 +1,47 @@
+/*
+ * Copyright 2026 Andrey Tolpeev
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package teamcityapp.features.build_queue.impl.dagger
+
+import androidx.fragment.app.Fragment
+import dagger.Binds
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.FragmentComponent
+import dagger.hilt.components.SingletonComponent
+import teamcityapp.features.build_queue.api.BuildQueueAppRouter
+import teamcityapp.features.build_queue.api.BuildQueueNavigation
+import teamcityapp.features.build_queue.impl.BuildQueueFragment
+import teamcityapp.features.build_queue.impl.navigation.BuildQueueNavigationImpl
+import teamcityapp.features.build_queue.impl.router.BuildQueueRouter
+import teamcityapp.features.build_queue.impl.router.BuildQueueRouterImpl
+import teamcityapp.libraries.utils.requireScreenOwner
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class BuildQueueNavigationModule {
+    @Binds abstract fun navigation(implementation: BuildQueueNavigationImpl): BuildQueueNavigation
+}
+
+@Module
+@InstallIn(FragmentComponent::class)
+object BuildQueueRouterModule {
+    @Provides fun router(owner: Fragment, appRouter: BuildQueueAppRouter): BuildQueueRouter {
+        owner.requireScreenOwner<BuildQueueFragment>()
+        return BuildQueueRouterImpl(appRouter)
+    }
+}

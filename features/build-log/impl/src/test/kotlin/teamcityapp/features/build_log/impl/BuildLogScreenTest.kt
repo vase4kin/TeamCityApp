@@ -55,4 +55,17 @@ class BuildLogScreenTest {
         assertEquals(1, authenticated)
         assertEquals(0, webCreated)
     }
+
+    @Test fun authenticationFailureKeepsSignInActionSeparateFromPageRetry() {
+        var authenticated = 0
+        var retried = 0
+        var webCreated = 0
+        val state = BuildLogUiState.Session(BuildLogSession("https://server", needsAuthentication = true), authenticationFailed = true)
+        compose.setContent { TeamCityTheme { BuildLogScreen(state, { retried++ }, { authenticated++ }, {}, webContent = { _, _ -> webCreated++ }) } }
+        compose.onNodeWithText("Couldn't sign in to the build log. Sign in again to continue.").assertIsDisplayed()
+        compose.onNodeWithText("Sign in").performClick()
+        assertEquals(1, authenticated)
+        assertEquals(0, retried)
+        assertEquals(0, webCreated)
+    }
 }

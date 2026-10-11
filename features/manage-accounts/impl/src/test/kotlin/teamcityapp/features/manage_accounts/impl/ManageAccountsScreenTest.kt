@@ -96,10 +96,10 @@ class ManageAccountsScreenTest {
         var removal = 0
         val ui = mutableStateOf(ManageAccountsUiState(AccountListUiState.Error))
         compose.setContent { TeamCityTheme { ManageAccountsScreen(ui.value, {}, {}, {}, {}, { load++ }, { removal++ }) } }
-        compose.onNodeWithText("Retry").performClick()
+        compose.onNodeWithText("Try again").performClick()
         assertEquals(1, load)
         compose.runOnIdle { ui.value = ManageAccountsUiState(AccountListUiState.Empty, AccountRemovalUiState.Error(normal.id)) }
-        compose.onNodeWithText("Retry").performClick()
+        compose.onNodeWithText("Try again").performClick()
         assertEquals(1, removal)
     }
 
@@ -176,7 +176,46 @@ class ManageAccountsScreenTest {
         assertEquals(1, warnings)
         assertAboveFeedback("${accountTag(ssl.id)}:remove")
         assertEquals(ssl.id, removed)
-        compose.onNodeWithText("Retry").assertIsDisplayed()
+        compose.onNodeWithText("Try again").assertIsDisplayed()
+        compose.onNodeWithTag("accounts:add").assertIsDisplayed()
+    }
+
+    @Test fun shortLoadFailureKeepsScrolledRetryAboveTheAddAction() {
+        var retried = 0
+        var created = 0
+        compose.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(360.dp, 400.dp))) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    TeamCityTheme { ManageAccountsScreen(ManageAccountsUiState(AccountListUiState.Error), {}, {}, { created++ }, {}, onRetry = { retried++ }) }
+                }
+            }
+        }
+        val retry = compose.onNodeWithText("Try again").performScrollTo().assertIsDisplayed()
+        val add = compose.onNodeWithTag("accounts:add").assertIsDisplayed()
+        assertTrue(retry.fetchSemanticsNode().boundsInRoot.bottom <= add.fetchSemanticsNode().boundsInRoot.top)
+        retry.performClick()
+        add.performClick()
+        assertEquals(1, retried)
+        assertEquals(1, created)
+    }
+
+    @Test fun shortAccountScreenBoundsFeedbackAndKeepsBothRecoveryAndRowsReachable() {
+        var retried = 0
+        var removed: ManagedAccountId? = null
+        compose.setContent {
+            DeviceConfigurationOverride(DeviceConfigurationOverride.ForcedSize(DpSize(360.dp, 400.dp))) {
+                DeviceConfigurationOverride(DeviceConfigurationOverride.FontScale(2f)) {
+                    TeamCityTheme { ManageAccountsScreen(state.copy(removal = AccountRemovalUiState.Error(normal.id)), { removed = it }, {}, {}, {}, onRetryRemoval = { retried++ }) }
+                }
+            }
+        }
+        val body = compose.onNodeWithTag("accounts:body").fetchSemanticsNode().boundsInRoot
+        val feedback = compose.onNodeWithTag("accounts:remove_error").fetchSemanticsNode().boundsInRoot
+        assertTrue(feedback.height <= body.height / 3f + 1f)
+        compose.onNodeWithText("Try again").performScrollTo().assertIsDisplayed().performClick()
+        assertEquals(1, retried)
+        compose.onNodeWithTag("${accountTag(ssl.id)}:remove").performScrollTo().assertIsDisplayed().performClick()
+        assertEquals(ssl.id, removed)
         compose.onNodeWithTag("accounts:add").assertIsDisplayed()
     }
 

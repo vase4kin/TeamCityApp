@@ -28,7 +28,7 @@ interface BuildInteractor {
      * Load build by by href
      *
      * @param href - Build href
-     * @param loadingListener Listener to receive callbacks on [com.github.vase4kin.teamcityapp.buildlist.presenter.BuildListPresenterImpl]
+     * @param loadingListener Listener for the native Build Details queued-build action
      */
     fun loadBuild(href: String, loadingListener: OnLoadingListener<Build>)
 

@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import teamcityapp.features.drawer.api.*
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
@@ -85,7 +86,7 @@ fun DrawerScreen(
                         }
                     }
 
-                    DrawerAccountsUiState.Error -> item("load_error") { DrawerMessage(R.string.drawer_load_error, R.string.drawer_retry, onRetry, "drawer:load_error") }
+                    DrawerAccountsUiState.Error -> item("load_error") { DrawerFailure(R.string.drawer_load_error, onRetry, "drawer:load_error") }
 
                     DrawerAccountsUiState.Empty -> item("empty") { Text(stringResource(R.string.drawer_empty_accounts), Modifier.padding(horizontal = 32.dp, vertical = 16.dp).testTag("drawer:empty"), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
 
@@ -103,7 +104,7 @@ fun DrawerScreen(
                         }
                     }
                 }
-                if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerMessage(R.string.drawer_switch_error, R.string.drawer_retry, onRetrySelection, "drawer:switch_error") }
+                if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerFailure(R.string.drawer_switch_error, onRetrySelection, "drawer:switch_error") }
                 if (state.selection == AccountSwitchUiState.Missing) item("missing") { DrawerMessage(R.string.drawer_missing_account, R.string.drawer_dismiss, onDismissMissing, "drawer:missing") }
                 item("add") {
                     FilledTonalButton(
@@ -217,6 +218,11 @@ private fun DrawerMenu(icon: Int, label: String, tag: String, enabled: Boolean, 
             Icon(painterResource(R.drawable.ic_chevron_right), null, Modifier.size(TeamCityDimensions.iconSize), tint = iconColor)
         }
     }
+}
+
+@Composable
+private fun DrawerFailure(message: Int, onRetry: () -> Unit, tag: String) {
+    ErrorNotice(stringResource(message), onRetry, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag(tag))
 }
 
 @Composable

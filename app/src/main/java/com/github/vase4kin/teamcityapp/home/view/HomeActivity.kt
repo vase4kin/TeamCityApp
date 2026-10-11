@@ -54,6 +54,9 @@ class HomeActivity : AppCompatActivity() {
         presenter = presenterProvider.get()
         setContentView(R.layout.activity_home)
         presenter.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            intent.extras?.selectedTabOrNull()?.let(presenter::selectTab)
+        }
     }
 
     override fun onResume() {
@@ -89,11 +92,7 @@ class HomeActivity : AppCompatActivity() {
                 presenterResumed = true
             }
         }
-        val isTabSelected = bundle.isTabSelected()
-        if (isTabSelected) {
-            val tabToSelect = bundle.getSelectedTab()
-            presenter.selectTab(tabToSelect)
-        }
+        bundle.selectedTabOrNull()?.let(presenter::selectTab)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -165,6 +164,4 @@ class HomeActivity : AppCompatActivity() {
 
 private fun Bundle.isRequiredToReload(): Boolean = this.getBoolean(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false)
 
-private fun Bundle.isTabSelected(): Boolean = this.containsKey(HomeActivity.ARG_TAB)
-
-private fun Bundle.getSelectedTab(): AppNavigationItem = AppNavigationItem.values()[this.getInt(HomeActivity.ARG_TAB, 0)]
+private fun Bundle.selectedTabOrNull(): AppNavigationItem? = if (containsKey(HomeActivity.ARG_TAB)) AppNavigationItem.values().getOrNull(getInt(HomeActivity.ARG_TAB, -1)) else null

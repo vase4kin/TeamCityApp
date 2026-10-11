@@ -39,19 +39,19 @@ fun BuildLogScreen(state: BuildLogUiState, onRetry: () -> Unit, onAuthenticate: 
         when (state) {
             BuildLogUiState.Loading -> LoadingContent(Modifier.fillMaxSize())
 
-            BuildLogUiState.Error -> ErrorContent(Modifier.fillMaxSize().padding(16.dp), onRetry)
+            BuildLogUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry)
 
             is BuildLogUiState.Session -> when {
                 state.session.sslDisabled -> LogMessage(R.drawable.ic_warning_black_24dp, R.string.text_browse_build_log, R.string.text_browse_build_log_button, { onBrowser(state.session.url) }, "build-log:browser")
 
-                state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize().padding(16.dp), onAuthenticate)
+                state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize(), onAuthenticate, message = stringResource(R.string.log_authentication_error), actionLabel = stringResource(R.string.text_button_login))
 
                 state.session.needsAuthentication -> LogMessage(R.drawable.ic_lock_24dp, R.string.text_login_again, R.string.text_button_login, onAuthenticate, "build-log:authenticate", !state.acknowledging)
 
                 else -> {
                     webContent(state, Modifier.fillMaxSize().alpha(if (state.page == BuildLogPage.Content) 1f else 0f))
                     if (state.page == BuildLogPage.Loading) LoadingContent(Modifier.fillMaxSize())
-                    if (state.page == BuildLogPage.Error) ErrorContent(Modifier.fillMaxSize().padding(16.dp), onRetry)
+                    if (state.page == BuildLogPage.Error) ErrorContent(Modifier.fillMaxSize(), onRetry)
                 }
             }
         }
