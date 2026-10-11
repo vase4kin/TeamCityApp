@@ -25,12 +25,12 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Phase | Completion evidence | Current state |
 | --- | --- | --- |
 | Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Initial host/API inventory below; outgoing adapter audit remains |
-| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 37 navigation tests, feature tests, production compilation and root-host emulator cases |
+| Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 38 navigation tests, feature tests, production compilation and root-host emulator cases |
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
-| Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
+| Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native Home shell and its seven fragment/sheet hosts removed |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
-| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: thirteen legacy activity hosts removed; canonical/older installed aliases verified; Home/Build Details, fifteen fragment/sheet hosts and native shell infrastructure remain |
+| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: fourteen legacy activity hosts removed; canonical/older installed aliases verified; Build Details, eight fragment/sheet hosts and its native shell infrastructure remain |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
 ## State and navigation contract
@@ -564,3 +564,23 @@ Validation:
 - All 56 API 37 integration cases passed: restoration, root navigation, Home/startup/account switching, Build Details, workflows, installed form/component aliases, Login and Create Account.
 
 The fix is saved in local checkpoint `e7bc0e046`. Home and Build Details remain the only native application activities; fifteen feature fragment/sheet hosts and their superseded infrastructure still need removal. Complete process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
+
+
+## Home host removal checkpoint
+
+Local checkpoint `68e273b75` removes the native Home activity, presenter/view/router/count wiring, FragNav shell, XML bottom navigation and seven fragment/sheet hosts: Projects, Favorites, Running Builds, Build Queue, Agents, Drawer and Quick Filter. Their obsolete navigation APIs, app adapters, screen DI and unused dependencies are removed. Drawer repository bindings and the existing immutable filter-event boundary remain. The installed Home component is a private alias to MainActivity.
+
+Incoming Home requests preserve the requested tab, return to an existing Home visit when appropriate, and apply legacy reload/new-account policy once. Account preparation keeps its requested destination through failure, retry and recreation. Account request ownership includes the user/session key; navigation pauses old destination collectors before Android resumes the root for an incoming request. The cap applies only to destination content. Navigation 3's root and retained-tab decorators keep their original lifecycles so configuration changes retain completed ViewModels. Runtime tests verify cancellation and exact request counts for different users sharing a server.
+
+All Home and sheet integration fixtures now exercise the root Compose shell. Drawer/Quick Filter use Navigation 3 sheets with full initial expansion, keeping footer actions reachable. The sheet suite covers both themes, account rows/footer, edge interaction, clipboard, dismissal, recreation and reopening. Home badges expose stable positive-count semantics without changing rendered content.
+
+Verification with JDK 17:
+
+- 1,216 local tests passed across the app, navigation foundation, Home, five Home list features, Drawer, Quick Filter and Splash; this includes 600 unchanged Roborazzi baselines.
+- All 135 API 37 integration cases passed: Home tabs/badges/filters/onboarding, same-server account cancellation, content retention, Drawer/root sheets, filter results, saved-account restoration, installed aliases and root project/build workflows.
+- Both app flavor lint tasks, mock app/instrumentation APK builds, production compilation and formatting passed.
+- Production references to the retired Home component exist only in the required installed alias and compatibility decoder.
+
+The first broad run exposed duplicate list requests when Android resumed old content during an account switch. Guarding the whole navigation host stopped those requests but broke retention during recreation. Content-only lifecycle capping and unchanged decorator lifecycles resolve both regressions; the ten focused retention/account/alias cases and the complete 135-case suite pass with their original request-count assertions.
+
+Build Details remains the only application-owned native activity. Its eight fragment/sheet hosts, native shell and obsolete infrastructure still need removal. Actual process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
