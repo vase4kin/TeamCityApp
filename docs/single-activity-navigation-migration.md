@@ -16,7 +16,7 @@
 
 # Single activity navigation migration
 
-TeamCityApp is migrating all 26 existing Compose features into one application-owned activity using Navigation 3. Home and Build Details become Compose shells with Hilt ViewModels. Existing account, network and cache behavior remains behind repository adapters. External browser, sharing, permission and OSS licenses activities remain platform integrations.
+TeamCityApp now runs all 26 original Compose features in one application-owned activity using Navigation 3. Home and Build Details are Compose shells with Hilt ViewModels, bringing the feature API/implementation pairs to 28. Existing account, network and cache behavior remains behind repository adapters. External browser, sharing, permission and OSS licenses activities remain platform integrations.
 
 ## Execution and completion gates
 
@@ -24,14 +24,14 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 
 | Phase | Completion evidence | Current state |
 | --- | --- | --- |
-| Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Initial host/API inventory below; outgoing adapter audit remains |
+| Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Inventory and outgoing production-reference audit complete; external platform launches retained |
 | Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 38 navigation tests, feature tests, production compilation and root-host emulator cases |
-| Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Implemented; coordinator tests and launcher/same-server emulator cases pass; remaining installed entry dispatch belongs to cleanup |
+| Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Verified; coordinator, installed launcher/alias and same-server account-isolation cases pass |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native Home shell and its seven fragment/sheet hosts removed |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
-| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: fourteen legacy activity hosts removed; canonical/older installed aliases verified; Build Details, eight fragment/sheet hosts and its native shell infrastructure remain |
-| Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
+| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | All native application/feature hosts removed; aliases dispatch to MainActivity; production references audited |
+| Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Complete; all-module tests/goldens, both-flavor lint, builds, production compilation, formatting, 388 emulator cases and real process restoration pass |
 
 ## State and navigation contract
 
@@ -43,7 +43,7 @@ Account/session replacement creates fresh visit identities and discards previous
 
 Build Details constructs available tabs from the incoming complete launch snapshot and derives current actions from loaded build data. Build Log's WebView and callbacks belong to visible composition resources; downloads retain destination ViewModel state and close blocked reads when cancelled.
 
-The first foundation checkpoint routes About and Settings through MainActivity from existing callers. Their legacy hosts remain temporary test/compatibility boundaries until callers and integration tests migrate; they are not part of the final architecture.
+The foundation checkpoint initially kept About and Settings hosts as temporary compatibility boundaries. Final cleanup removed those hosts and migrated their callers and integration fixtures to MainActivity. The checkpoint sections below record verification at each stage; the completion table and final verification section describe the current architecture.
 
 ## Acceptance cases
 
@@ -584,3 +584,24 @@ Verification with JDK 17:
 The first broad run exposed duplicate list requests when Android resumed old content during an account switch. Guarding the whole navigation host stopped those requests but broke retention during recreation. Content-only lifecycle capping and unchanged decorator lifecycles resolve both regressions; the ten focused retention/account/alias cases and the complete 135-case suite pass with their original request-count assertions.
 
 Build Details remains the only application-owned native activity. Its eight fragment/sheet hosts, native shell and obsolete infrastructure still need removal. Actual process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
+
+
+## Final host removal and restoration verification
+
+The native Build Details activity, eight remaining fragment/sheet hosts, pager/presenter/menu infrastructure and event/router bridges have been removed. Its installed component dispatches through a private MainActivity alias. Incoming legacy build payloads are decoded into complete typed destinations at the app boundary; feature ViewModels use plain serialized arguments. Root routers retain browser, sharing, artifact-file and licenses platform integrations. The obsolete utilities module was removed after moving shared theme-color resolution into `libraries/theme`. Data Binding and the unused native UI dependencies were removed from the app.
+
+Production reference auditing finds MainActivity as the sole application-owned activity, no feature fragment hosts and no internal activity-result launches. Native-host integration fixtures now exercise root destinations, Compose tabs, menus/dialogs and full payload assertions, including external platform Intents.
+
+Cancellation carries its stopped/removed completion notice into the replacement destination, retains it across recreation, and does not replay a dismissed notice. The entire re-add row responds to clicks without changing existing layout. Failed queued-build opening offers Retry, successful queueing offers Show, and sharing retains its chooser title. Twenty-four new feedback screenshots cover both themes, compact/expanded layouts and enlarged text; visual review confirmed their text and actions remain readable. All existing baselines remain unchanged.
+
+Saved UI, normalized launch payloads and pending incoming requests carry their own account markers. Launch ownership is checked before decoding; a newly requested account destination can restore while the saved UI still belongs to the previous account. The saved payload wins over older platform task arguments. Pending requests saved before a Compose frame are applied once. A retained account coordinator's completed stage replaces obsolete activation input. Bare launcher Intents preserve the current normalized installed-alias arguments and visit state.
+
+Final verification with JDK 17:
+
+- All 3,514 application, feature and library local cases passed, including 2,432 Roborazzi screenshot cases. All 15 build-logic tests passed.
+- `testDebugUnitTest`, `:app:testMockDebugUnitTest`, `lintDebug`, `:app:lintMockDebug`, `:app:lintProdDebug`, `:app:assembleMockDebug`, `:app:assembleMockDebugAndroidTest`, `:app:compileProdDebugKotlin`, `:build-logic:test`, `spotlessApply` and `spotlessCheck` passed. The last root refinement was rebuilt and verified separately against both app lint variants, app unit tests, both APKs and production compilation.
+- All 388 API 37 emulator integration cases passed across 50 test classes. Coverage includes startup/authentication, installed aliases, account switching, pending/restored requests, Home and Build Details tabs, repeated visits, typed results, paging, filters, retained owners, cancel/restart feedback, sharing, downloads, WebView disposal, sheets, both themes and encrypted storage.
+- Real process restoration was checked outside ActivityScenario: the normal mock app was backgrounded until STOPPED, then killed with `am kill` while its Recents task remained. On the final APK, process 17203 exited and task 7490 resumed in new process 17528 with build #2459, Parameters selected, `sdk=24` and `userName=Murdock`. Back returned to the originating History and then Home. Earlier host-removal verification also restored Settings after process death and retained Settings on a warm installed-launcher relaunch. The final seven-case restoration suite verifies warm alias relaunch and saved launch precedence over older task arguments.
+- Production audits and whitespace checks passed: MainActivity is the sole application-owned activity, feature fragment hosts and internal activity-result launches are gone, and features have no implementation-to-implementation dependencies.
+
+All eight phases and completion gates are satisfied. The migration is saved as coherent local GitButler checkpoints on `codex/single-activity-navigation`; no push or pull request was created. Broader Room, network serialization, preference storage and WorkManager migrations remain outside this completed navigation goal.

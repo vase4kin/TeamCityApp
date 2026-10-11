@@ -11,94 +11,69 @@ to the requested behavior and the coherent migration slice needed to support it.
 ## Project snapshot
 
 - TeamCityApp is a native Android client for JetBrains TeamCity.
-- The app currently uses multiple activities and fragments, XML layouts, Data Binding,
-  presenters and legacy state holders, RxJava 2, Hilt for Android screen injection,
-  a separate Dagger account API graph, Retrofit/Gson,
-  RxCache, and SharedPreferences. Java and Kotlin coexist.
-- Every module under `features/` uses `api`/`impl`, Compose, Material 3, a Hilt
-  ViewModel, and lifecycle-aware StateFlow collection: About, Properties, Test
-  Details, Change Details, Settings, Manage Accounts, Drawer, Splash, Login,
-  Create Account, Run Build, Build Log, Filter Builds, Action Bottom Sheet, and
-  Quick Filter Bottom Sheet, Agents, Changes, Test Occurrences, Navigation,
-  Favorites, Build History, Running Builds, Build Queue, Snapshot Dependencies,
-  Build Overview, and Artifacts.
-  Kotlin sources and tests use the corresponding `kotlin` roots. Features expose
-  small contracts and immutable public models. Feature implementations own their
-  activity/fragment hosts, UI-scoped routers, trackers, and feature DI. Incoming
-  navigation uses feature APIs; app adapters own legacy API, cache, account-storage,
-  and outgoing navigation to destinations still owned by the app.
-- About's suspend repository adapts the existing Rx API and cache. Lifecycle-aware state collection
-  starts loading; losing the last collector cancels pending work immediately,
-  while completed content survives configuration changes. About is split into
-  `features/about/api` and `features/about/impl`, with Kotlin source roots.
-  The app retains the legacy server DTO and its serialized class name for RxCache
-  compatibility; the app repository maps it into About’s plain API model. About UI tests
-  run in the app instrumentation suite used by Marathon. The licenses action
-  still opens Google's OSS licenses screen.
-- Settings uses the shared `libraries/app-theme` DataStore contract, migrating the
-  existing theme preference without changing other preferences. Account storage
-  remains behind suspend app adapters using the existing encrypted store.
-  Properties retains a Fragment entry point, Drawer retains a native bottom-sheet
-  host with Compose content, and Splash retains its installed launcher component
-  through an activity alias. Activities and platform routers remain UI-scoped.
+- The app uses one application-owned `MainActivity`, Navigation 3, Compose,
+  Material 3, Hilt ViewModels, and lifecycle-aware StateFlow collection. Installed
+  activity names are aliases dispatched by the root; browser, sharing and Google's
+  OSS licenses activities remain platform integrations. Java and Kotlin coexist.
+- The original 26 Compose features and the Home/Build Details shells use `api`/`impl`
+  modules. APIs expose serializable destination keys, small contracts and immutable
+  public models. Implementations register existing route composables through Hilt,
+  own their UI, ViewModels, trackers and destination/platform routers, and have no
+  implementation-to-implementation feature dependencies. Kotlin sources and tests
+  use the corresponding `kotlin` roots.
+- `libraries/navigation` owns unique visit IDs, saved typed stacks and results,
+  destination ViewModel/saveable-state ownership, retained child panes and Compose
+  sheets. Results target a live originating visit and are consumed once. Popping,
+  replacing or resetting a visit clears its owners and pending results.
+  Home's five tabs and Build Details' seven conditional tabs retain independent
+  child owners through selection and recreation. Hidden content cancels unfinished
+  loads without discarding completed content or clearing retained ViewModels.
+- The app composition root owns installed Intent compatibility, account-flow
+  coordination and active-account adapters. Saved navigation and launch arguments
+  are validated against account identity before restoring content. Switching users,
+  including users on the same server, replaces old owners and cancels their work.
+  Account preparation owns API/cache/cookie initialization and Build Log consent
+  reset; signed-out sessions return to Login.
+- Existing Retrofit/Gson, RxJava 2, RxCache, encrypted SharedPreferences and the
+  separate Dagger account API graph remain behind suspend/Flow repository adapters.
+  Preserve wire DTOs and their serialized class names for cache compatibility.
+  Cancelling coroutine repository calls must dispose their Rx subscriptions.
+  Room, broader DataStore migration and WorkManager remain target technologies.
+- About maps the legacy server DTO into its plain API model. Settings uses the
+  shared `libraries/app-theme` DataStore contract, migrating the old theme preference
+  without changing other preferences. Google's licenses screen remains external.
+- Login and Create Account share stateless controls and authentication analytics
+  in `libraries/authentication`; server URL formatting belongs to `libraries/remote`.
+  App adapters preserve challenge-based Basic authentication, explicit HTTP/SSL
+  consent, encrypted persistence, duplicate detection and API initialization.
+  Pending submissions survive recreation without duplicate requests; passwords
+  stay in memory and are cleared after successful persistence.
+- Home preserves five tabs, badge counts, filters, onboarding and drawer actions.
+  Drawer, Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
+  Filter Builds deliver typed results to History's originating visit. Legacy filter
+  serialization remains behind app adapters to preserve existing request semantics.
+- Build Details constructs available tabs from the complete incoming launch
+  snapshot and derives current menus/actions from loaded build data. Separate
+  parent visits own their tab state, counts and actions. Overview, Changes, Tests,
+  Build Log, Properties, Artifacts and Snapshot Dependencies use registered routes.
+  Build Log's `AndroidView` WebView and callbacks exist only while its content is
+  visible; revisiting creates a fresh view. Downloads retain ViewModel state and
+  close blocked reads on cancellation without overwriting completed files.
+- Lists share immutable models and rows in `libraries/build-configurations`,
+  `libraries/builds` and `libraries/build-ui`, plus `libraries/list-ui` and
+  `libraries/list-state`. History, Changes and Tests use Paging with opaque TeamCity
+  continuation URLs and ViewModel-scoped retention. Optional counts are independently
+  retryable; Tests retains its status filter. Favorites preserves saved IDs during
+  partial/all-failed loads. Home lists have explicit account/query/visibility gates.
+- Superseded feature activities/fragments, native Home/Build Details shells,
+  presenters, pager/FragNav infrastructure and the old `libraries/utils` module
+  have been removed. Shared theme-color resolution belongs to `libraries/theme`.
+  See `docs/single-activity-navigation-migration.md` for the navigation contract,
+  compatibility inventory and verification; `docs/compose-list-migration.md` records
+  the earlier list migration.
 - Feature implementations own behavioral tests and Roborazzi PNG baselines for
-  every state in both themes, compact/expanded layouts, and enlarged text. Their
-  app-level Compose/Espresso integration tests remain in the Marathon APK.
-- Login and Create Account share stateless account controls and authentication
-  analytics in `libraries/authentication`; each feature owns its screen tracker.
-  Server URL formatting belongs to `libraries/remote`, with bindings for Hilt and
-  the existing account API graph. Legacy loading callbacks remain in app base loading.
-  Login and Create Account retain their installed component names through aliases.
-  Their app adapter preserves challenge-based Basic auth, explicit HTTP/SSL consent,
-  encrypted account persistence, duplicate detection, and API-session initialization.
-  Pending submissions survive configuration changes without duplicate requests;
-  passwords stay in memory and are cleared after successful persistence.
-- Run Build and Filter Builds own their activity hosts, routers, trackers, and
-  incoming navigation/result contracts. Activity aliases preserve old component names.
-  Filter Builds uses an app adapter to serialize its immutable selection into the
-  existing legacy result payload; request codes and extra keys remain unchanged.
-  The app repository maps immutable request models to the existing TeamCity wire DTOs
-  and cancels Rx subscriptions when coroutine loading is cancelled. Both bottom sheets
-  own their native fragment hosts and UI-scoped routers. The action sheet owns
-  clipboard access and dispatches artifact/navigation events through an app adapter.
-  Quick Filter owns analytics; its app repository preserves retained legacy filter
-  state and events. Callers create these fragments through injected feature APIs.
-- Build Log uses Compose state with a view-scoped WebView through `AndroidView`.
-  Detaching its fragment disposes the WebView and pending page callbacks; reattaching
-  creates a fresh view. The feature owns its host and Custom Tabs router; the app
-  supplies variant-specific page timeouts through the feature configuration API.
-  The existing consent preference remains behind the app adapter
-  because Home also resets it synchronously on account changes. That shared storage
-  boundary must migrate together when Home is modernized.
-- Agents, Changes, and Test Occurrences retain Fragment entry points and share the stateless
-  `libraries/list-ui` loading, empty, error, refresh, and append components.
-  Agents uses `libraries/list-state` for finite query-driven loading and explicit
-  Home visibility, cancelling unfinished work while hidden and retaining completed
-  content through configuration changes. Changes and Tests use Paging with opaque
-  TeamCity continuation URLs, ViewModel-scoped page retention, and independently retryable
-  tab counts. Tests retains its selected status filter across recreation. Build Details
-  reconnects restored tab fragments and clears them only when opening a different build.
-  App adapters preserve legacy RxCache DTO names and request policies.
-  Navigation and Favorites also use the shared finite list foundation and immutable
-  project/configuration models in `libraries/build-configurations`. Navigation owns
-  its recursive Activity alias and rating UI; Favorites retains explicit partial/all-failed
-  states without removing saved IDs. Home account reloads replace their owners, cancelling
-  old requests even when users share a server URL. Build History owns favorite actions
-  through the same active-account storage adapter.
-  Build History, Running Builds, Build Queue, and Snapshot Dependencies share complete
-  immutable launch snapshots in `libraries/builds` and Compose rows in `libraries/build-ui`.
-  History uses Paging; Home lists have explicit visibility and account/query gates.
-  Overview and Artifacts own their Compose Fragment hosts, with an Activity alias for
-  artifact folders. Downloads retain their ViewModel state and close blocked network
-  reads on cancellation without overwriting completed files. The native Build Details
-  shell shares activity-scoped arguments: incoming payloads construct tabs, loaded
-  snapshots drive current actions, restored tabs retain their ViewModels, and a new
-  Intent replaces the old owners. Home badge counts remain behind a narrow callback
-  adapter until its native shell is migrated. The old `base/list` foundation, sectioned
-  RecyclerView adapters, Mugen, and shimmer list layouts have been removed.
-  See `docs/compose-list-migration.md` for the inventory, architecture, and verification.
-- Screens owned by `app/` remain legacy. Room, broader DataStore migration,
-  WorkManager, and Navigation 3 remain target technologies.
+  distinct states in both themes, compact/expanded layouts and enlarged text.
+  App-level Compose/Espresso integration tests remain in the Marathon APK.
 - Builds use Kotlin DSL Gradle files, a version catalog, type-safe project accessors,
   an included `build-logic` build for conventions and SDK/application settings,
   and JDK 17.
@@ -108,7 +83,7 @@ to the requested behavior and the coherent migration slice needed to support it.
 ## Repository layout
 
 - `app/`: application, TeamCity API and cache integration, shared app flows, and
-  features that have not been moved to standalone modules.
+  root navigation/account composition and legacy integration adapters.
 - `features/`: feature `api`/`impl` modules. APIs own small contracts and plain
   public models; implementations own Compose UI, ViewModels, UI-scoped routers,
   private resources, behavioral tests, and screenshot baselines.
@@ -133,10 +108,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   and keep the legacy dependency behind a small, explicit adapter.
 - UI: use Jetpack Compose, Material 3, shared design-system components, and
   adaptive layouts. Use window size classes for window-level navigation/pane
-  decisions and local layout constraints for responsive components. The destination
-  is a single-activity app with
-  Navigation 3. Use Navigation 3 for new navigation infrastructure; preserve
-  existing activity/fragment entry points through adapters during screen migration.
+  decisions and local layout constraints for responsive components. The app uses one
+  activity with Navigation 3. Register new destinations through feature APIs and
+  implementations; preserve required installed component aliases in the app dispatcher.
 - State: use Jetpack ViewModels, Coroutines, and `Flow`/`StateFlow` with
   unidirectional data flow. State-changing and business events go to ViewModels;
   immutable UI state flows back to the UI. UI-only interactions, navigation
@@ -148,7 +122,7 @@ to the requested behavior and the coherent migration slice needed to support it.
 - Follow the Now in Android Bookmarks pattern for migrated screens: a route/container
   composable obtains its Hilt ViewModel with `hiltViewModel()`, collects state with
   `collectAsStateWithLifecycle()`, and passes immutable state and callbacks to a
-  separate stateless screen/content composable. Activities host the route.
+  separate stateless screen/content composable. Navigation 3 destination registrations host the route.
 - Select state-dependent messages, action labels, status names, empty-state text,
   and other text alternatives in ViewModel-produced immutable UI models. Expose
   feature implementation resource IDs (`@StringRes`) or unresolved `UiText`
@@ -222,20 +196,14 @@ to the requested behavior and the coherent migration slice needed to support it.
 - Keep network and persistence access behind existing repository, data manager,
   or storage interfaces while old implementations remain. Do not add direct
   Retrofit or SharedPreferences access to UI code.
-- Legacy screens use Hilt, RxJava, XML, and Data Binding. Keep them working
-  until their migration slice is implemented and verified. New screens use Compose
-  and ViewModels; do not add new presenters or callback-holding legacy state
-  holders. Use explicit adapters at old/new boundaries instead of mixing state
-  systems inside a screen.
-- Hilt screen modules are installed in every Activity/Fragment component. Use
-  `requireScreenOwner` for concrete owner bindings; these are runtime ownership
-  checks, not isolated screen graphs. Keep screen dependencies in their owning
-  screen and qualify shared types when several screens provide them.
-- Legacy `*StateHolder` classes are ordinary lifecycle observers, not Jetpack
-  ViewModels. They are scoped to their screen component and may hold UI callbacks.
-  Do not promote them to retained ViewModels while they capture Activities,
-  Fragments, adapters, or view callbacks. A Jetpack migration must move UI effects
-  to the view, use `@HiltViewModel`, and retrieve instances through `ViewModelProvider`.
+- Screens use Compose and ViewModels; do not add native hosts, presenters or
+  callback-holding state holders. Existing RxJava, cache and encrypted account
+  implementations remain behind explicit repository adapters. Keep those boundaries
+  working until their owning data/storage contracts are migrated.
+- Destination and platform routers are UI-scoped. Obtain retained state with
+  `@HiltViewModel` and `hiltViewModel()` inside registered entries; keep Activities,
+  Fragments, adapters and callbacks out of ViewModels. Use the root destination
+  owner and retained child-pane contracts rather than creating native screen hosts.
 - The app's `Repository` may extend migrated feature repository API contracts.
   Its production and mock implementations own their corresponding suspend/Flow
   behavior, including Rx bridges and DTO mappings when needed. Expose these
@@ -244,8 +212,9 @@ to the requested behavior and the coherent migration slice needed to support it.
 - API dependencies come from `ApiSession`, which initializes lazily and rebuilds
   on account/authentication changes. Clear the session when logging out. Access
   account storage through Hilt rather than through the account API graph.
-- Match resource acquisition and cleanup to the same lifecycle. View resources
-  must reinitialize after `onDestroyView`; dispose presenters before replacing them.
+- Match resource acquisition and cleanup to visible composition and destination
+  ownership. Reinitialize AndroidView resources when revisiting their content and
+  dispose pending callbacks and platform resources when that content leaves.
 - Keep UI rendering separate from data loading and business operations even
   before a screen is moved to Compose.
 - Follow local Kotlin/Java naming and formatting conventions. Prefer immutable
@@ -324,8 +293,8 @@ to the requested behavior and the coherent migration slice needed to support it.
   `./gradlew :features:about:impl:recordRoborazziDebug --tests '*AboutScreenScreenshotTest'`,
   review the PNG changes, then verify again. Use the corresponding variant task
   for flavored modules. Keep comparison images and HTML reports under `build/`.
-- Retain Espresso coverage for legacy screens and the existing app-level
-  instrumentation suite for end-to-end behavior. Verify lifecycle cancellation,
+- Retain Espresso coverage for platform views/WebViews and the existing app-level
+  Compose/instrumentation suite for end-to-end behavior. Verify lifecycle cancellation,
   state retention, and old/new integration boundaries when those behaviors change.
 - Run the narrowest relevant test first, then broader checks for changes that
   cross module boundaries. Report checks that cannot run and why.
