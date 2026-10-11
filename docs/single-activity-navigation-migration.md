@@ -30,7 +30,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native shell removal waits for the remaining caller migration |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
-| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: eleven legacy activity hosts removed; canonical/older installed aliases verified; four legacy activities, fifteen fragment/sheet hosts and native shells remain |
+| Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | In progress: thirteen legacy activity hosts removed; canonical/older installed aliases verified; Home/Build Details, fifteen fragment/sheet hosts and native shell infrastructure remain |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Pending |
 
 ## State and navigation contract
@@ -533,3 +533,19 @@ Verification for this checkpoint:
 - Mock app and instrumentation APKs, production-debug Kotlin/Hilt compilation, Navigation/History/Artifacts lint, formatting and whitespace checks passed. The app's generated Kotlin compiler cache was cleared after an incremental-cache failure; subsequent verification passed.
 
 Four legacy activities remain: Run Build, Filter Builds, Home and Build Details. Fifteen feature fragment/sheet hosts and the native shell infrastructure also remain. Next remove the two form hosts and unused activity-result entry adapters, then migrate native shell integration fixtures and remove Home/Build Details, fragment hosts and obsolete dependencies. Installed argument compatibility, legacy FragmentManager saved-state compatibility, account validation of cold restored entry arguments, complete process restoration and final all-module/both-flavor verification remain required. The goal stays active; no push or PR was created.
+
+### Run Build and Filter Builds host removal
+
+Run Build and Filter Builds now use MainActivity through private aliases for both generations of their installed component names. Incoming requests preserve the existing `BuildTypeId` argument and become typed destinations. Their standalone activities, activity routers/DI, navigation implementations and unused activity-result API contracts are removed. No production caller used those old result launchers after the History migration. The feature implementations no longer depend directly on AppCompat, the legacy screen-owner utilities or shared resources used only by their retired transitions. History retains the narrow legacy filter-serialization adapter at its data boundary; its screen results target the originating Navigation 3 visit.
+
+Form rendering/queue/autocomplete instrumentation now launches the root, and existing History filter cases execute their real typed-result flow. Both canonical and older aliases preserve the configuration ID, editable branch draft and destination identity across recreation, then close the standalone root. New root integration proves that a pending Run Build submission keeps one request through recreation, returns exactly one result to the retained History visit, and does not resubmit. Replacing its account navigation stack cancels the pending subscription; a late success cannot add a result or queued-build notice to the new Home visit.
+
+The shared deprecated activity/Intents test rules now apply their optional installed component to explicitly supplied Intents as well as default launches, copying explicit Intents before changing their component. The initial emulator run exposed that missing behavior because form fixtures supplied arguments explicitly. The corrected run also verifies authentication and Hilt regressions for those helpers.
+
+Verification:
+
+- 859 local cases passed: Run Build (144), Filter Builds (73), Build History (237), and app (405), including 352 unchanged screenshot cases and incoming alias tests.
+- All 144 API 37 integration cases passed: form rendering/queue/options/autocomplete, effective filters/results, both alias generations and draft retention, pending submission recreation/cancellation, History, root navigation/Home/Build Details, light/dark feedback, keyboard/rotation/action surfaces, authentication/validation and Hilt smoke coverage.
+- Mock app/instrumentation builds, production-debug Kotlin/Hilt compilation, both form modules' lint, formatting and whitespace checks passed.
+
+Only Home and Build Details remain as application-owned legacy activities. Their fifteen feature fragment/sheet hosts, native shell layouts/presenters/DI, obsolete APIs/adapters and dependencies must be removed after migrating their integration fixtures. Cold restoration must validate entry arguments against the active account and discard legacy FragmentManager state safely. Complete process restoration and final all-module/both-flavor checks remain required. The goal remains active; no push or PR was created.
