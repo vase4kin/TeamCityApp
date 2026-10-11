@@ -32,7 +32,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import teamcityapp.features.run_build.api.*
@@ -51,31 +50,31 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
     val scrollState = rememberScrollState()
     TeamCityScreen(stringResource(R.string.title_run_build), onClose, bottomBar = {
         TeamCityBottomActionSurface(scrollState.canScrollForward, Modifier.testTag("run-build:bottom-action")) {
-            Button(onQueue, Modifier.fillMaxWidth().padding(16.dp).heightIn(min = 56.dp).testTag("run-build:submit"), enabled = !state.queuing) {
+            Button(onQueue, Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("run-build:submit"), enabled = !state.queuing) {
                 Icon(painterResource(R.drawable.ic_directions_run_white_24px), null)
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
                 Text(stringResource(if (state.queuing) R.string.text_queueing_build else R.string.title_run_build))
             }
         }
     }) { modifier ->
         Column(modifier) {
             if (state.queueError != null) {
-                ErrorNotice(stringResource(if (state.queueError == QueueBuildResult.Forbidden) R.string.error_forbidden_error else R.string.error_base_error), modifier = Modifier.fillMaxWidth().padding(16.dp).testTag("run-build:error"))
+                ErrorNotice(stringResource(if (state.queueError == QueueBuildResult.Forbidden) R.string.error_forbidden_error else R.string.error_base_error), modifier = Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).testTag("run-build:error"))
             }
-            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("run-build:scroll").padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("run-build:scroll").padding(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.contentPadding)) {
                 Text(stringResource(R.string.quick_setup), style = MaterialTheme.typography.headlineMedium)
                 Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                     BranchField(state.branches, state.branchesFailed, request.branch, { onChange(request.copy(branch = it)) }, stringResource(R.string.text_build_branch), stringResource(R.string.text_loading_branches), stringResource(if (state.branchesFailed) R.string.branches_unavailable else R.string.text_no_branches_available), stringResource(R.string.hint_default_build_branch), enabled = !state.queuing)
-                    Column(Modifier.fillMaxWidth().heightIn(min = 64.dp).clickable(enabled = !state.queuing && !state.agents.isNullOrEmpty(), onClick = onSelectAgent).padding(16.dp).testTag("run-build:agent")) {
+                    Column(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.selectionRowMinHeight).clickable(enabled = !state.queuing && !state.agents.isNullOrEmpty(), onClick = onSelectAgent).padding(TeamCityDimensions.contentPadding).testTag("run-build:agent")) {
                         Text(stringResource(R.string.text_agents), style = MaterialTheme.typography.titleMedium)
                         if (state.agents == null) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.text_loading_agents), style = MaterialTheme.typography.bodyMedium)
-                                CircularProgressIndicator(Modifier.padding(start = 16.dp).size(20.dp), strokeWidth = 2.dp)
+                                CircularProgressIndicator(Modifier.padding(start = TeamCityDimensions.contentPadding).size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                             }
                         } else {
                             if (state.agentsFailed) {
-                                ErrorNotice(stringResource(R.string.agents_unavailable), modifier = Modifier.padding(top = 8.dp))
+                                ErrorNotice(stringResource(R.string.agents_unavailable), modifier = Modifier.padding(top = TeamCityDimensions.smallSpacing))
                             } else {
                                 Text(
                                     if (state.agents.isEmpty()) {
@@ -91,8 +90,8 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                     }
                 }
                 Card(Modifier.fillMaxWidth().testTag("run-build:options-card").animateContentSize(animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec()), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    Column(Modifier.padding(vertical = 16.dp)) {
-                        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.padding(vertical = TeamCityDimensions.contentPadding)) {
+                        Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {
                             Text(stringResource(R.string.run_options), Modifier.weight(1f), style = MaterialTheme.typography.titleLarge)
                             TextButton({ optionsExpanded = !optionsExpanded }, Modifier.testTag("run-build:options"), enabled = !state.queuing) {
                                 Text(stringResource(if (optionsExpanded) R.string.hide_options else R.string.edit_options))
@@ -105,22 +104,22 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                                 stringResource(if (request.queueAtTop) R.string.priority_top else R.string.priority_normal),
                                 stringResource(if (request.cleanSources) R.string.option_on else R.string.option_off)
                             ),
-                            Modifier.padding(horizontal = 16.dp).testTag("run-build:summary"),
+                            Modifier.padding(horizontal = TeamCityDimensions.contentPadding).testTag("run-build:summary"),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Text(stringResource(R.string.parameter_count, request.parameters.size), Modifier.padding(horizontal = 16.dp).padding(top = 8.dp).testTag("run-build:parameter-count"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(R.string.parameter_count, request.parameters.size), Modifier.padding(horizontal = TeamCityDimensions.contentPadding).padding(top = TeamCityDimensions.smallSpacing).testTag("run-build:parameter-count"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
                         if (optionsExpanded) {
-                            TeamCitySwitch(stringResource(R.string.text_switcher_run_as_personal), request.personal, { onChange(request.copy(personal = it)) }, Modifier.testTag("run-build:personal"), !state.queuing, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp))
-                            TeamCitySwitch(stringResource(R.string.text_switcher_run_as_queue_at_the_top), request.queueAtTop, { onChange(request.copy(queueAtTop = it)) }, Modifier.testTag("run-build:top"), !state.queuing, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp))
-                            TeamCitySwitch(stringResource(R.string.text_switcher_run_as_clean_all_files), request.cleanSources, { onChange(request.copy(cleanSources = it)) }, Modifier.testTag("run-build:clean"), !state.queuing, contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp))
-                            Column(Modifier.padding(horizontal = 16.dp)) {
-                                Text(stringResource(R.string.text_parameters), Modifier.padding(top = 16.dp), style = MaterialTheme.typography.titleMedium)
+                            TeamCitySwitch(stringResource(R.string.text_switcher_run_as_personal), request.personal, { onChange(request.copy(personal = it)) }, Modifier.testTag("run-build:personal"), !state.queuing, contentPadding = PaddingValues(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing))
+                            TeamCitySwitch(stringResource(R.string.text_switcher_run_as_queue_at_the_top), request.queueAtTop, { onChange(request.copy(queueAtTop = it)) }, Modifier.testTag("run-build:top"), !state.queuing, contentPadding = PaddingValues(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing))
+                            TeamCitySwitch(stringResource(R.string.text_switcher_run_as_clean_all_files), request.cleanSources, { onChange(request.copy(cleanSources = it)) }, Modifier.testTag("run-build:clean"), !state.queuing, contentPadding = PaddingValues(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing))
+                            Column(Modifier.padding(horizontal = TeamCityDimensions.contentPadding)) {
+                                Text(stringResource(R.string.text_parameters), Modifier.padding(top = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.titleMedium)
                                 request.parameters.forEach { parameter ->
-                                    Text(parameter.name, Modifier.padding(top = 12.dp), style = TeamCityMonospace)
+                                    Text(parameter.name, Modifier.padding(top = TeamCityDimensions.mediumSpacing), style = TeamCityMonospace)
                                     Text(parameter.value, style = TeamCityMonospace, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
-                                FlowRow(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                                FlowRow(Modifier.padding(top = TeamCityDimensions.smallSpacing), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
                                     FilledTonalButton(onAddParameter, enabled = !state.queuing, modifier = Modifier.testTag("run-build:add")) { Text(stringResource(R.string.text_add_parameter)) }
                                     OutlinedButton(onClearParameters, enabled = !state.queuing && request.parameters.isNotEmpty(), modifier = Modifier.testTag("run-build:clear")) { Text(stringResource(R.string.text_clear_parameters)) }
                                 }
@@ -134,18 +133,18 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
     if (state.queuing) {
         AlertDialog(onDismissRequest = {}, modifier = Modifier.testTag("run-build:progress"), shape = MaterialTheme.shapes.large, text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                CircularProgressIndicator(Modifier.size(48.dp))
-                Text(stringResource(R.string.text_queueing_build), Modifier.padding(start = 24.dp))
+                CircularProgressIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
+                Text(stringResource(R.string.text_queueing_build), Modifier.padding(start = TeamCityDimensions.sectionSpacing))
             }
         }, confirmButton = {})
     }
-    if (agentDialog) AlertDialog(onDismissRequest = onDismissDialog, modifier = Modifier.testTag("run-build:agent-dialog"), shape = MaterialTheme.shapes.large, title = { Text(stringResource(R.string.title_agent_chooser_dialog)) }, text = { Column(Modifier.verticalScroll(rememberScrollState())) { state.agents.orEmpty().forEach { agent -> Text(agent.name, Modifier.fillMaxWidth().clickable { onAgentSelected(agent) }.padding(vertical = 16.dp), style = MaterialTheme.typography.bodyLarge) } } }, confirmButton = {})
+    if (agentDialog) AlertDialog(onDismissRequest = onDismissDialog, modifier = Modifier.testTag("run-build:agent-dialog"), shape = MaterialTheme.shapes.large, title = { Text(stringResource(R.string.title_agent_chooser_dialog)) }, text = { Column(Modifier.verticalScroll(rememberScrollState())) { state.agents.orEmpty().forEach { agent -> Text(agent.name, Modifier.fillMaxWidth().clickable { onAgentSelected(agent) }.padding(vertical = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge) } } }, confirmButton = {})
     parameterDialog?.let { dialog ->
         Dialog(onDismissRequest = onDismissDialog, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-            Surface(Modifier.widthIn(max = 560.dp).fillMaxWidth().padding(horizontal = 24.dp).testTag("run-build:parameter-dialog"), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
-                Column(Modifier.padding(24.dp)) {
+            Surface(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth).fillMaxWidth().padding(horizontal = TeamCityDimensions.sectionSpacing).testTag("run-build:parameter-dialog"), shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surface) {
+                Column(Modifier.padding(TeamCityDimensions.sectionSpacing)) {
                     Text(stringResource(R.string.title_add_parameter), style = MaterialTheme.typography.headlineSmall)
-                    Column(Modifier.fillMaxWidth().padding(top = 16.dp).heightIn(max = 360.dp).verticalScroll(rememberScrollState())) {
+                    Column(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding).heightIn(max = TeamCityDimensions.parameterListMaxHeight).verticalScroll(rememberScrollState())) {
                         OutlinedTextField(
                             dialog.name,
                             { onParameterChange(dialog.copy(name = it, invalid = false)) },
@@ -162,7 +161,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                         )
                         OutlinedTextField(dialog.value, { onParameterChange(dialog.copy(value = it)) }, Modifier.fillMaxWidth().testTag("parameter:value"), label = { Text(stringResource(R.string.hint_parameter_value)) }, singleLine = true, shape = MaterialTheme.shapes.large)
                     }
-                    Row(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalArrangement = Arrangement.End) {
+                    Row(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding), horizontalArrangement = Arrangement.End) {
                         TextButton(onDismissDialog) { Text(stringResource(R.string.text_cancel_button)) }
                         TextButton(onConfirmParameter, Modifier.testTag("parameter:confirm")) { Text(stringResource(R.string.text_add_parameter_button)) }
                     }

@@ -30,7 +30,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.artifacts.api.Artifact
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
@@ -64,7 +63,7 @@ fun ArtifactsScreen(
     }) { padding ->
         Column(Modifier.padding(padding).fillMaxSize()) {
             if (state.download is ArtifactDownloadState.Failed) {
-                ErrorNotice(stringResource(R.string.artifacts_download_failed), onRetryDownload, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.artifacts_retry_download))
+                ErrorNotice(stringResource(R.string.artifacts_download_failed), onRetryDownload, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.artifacts_retry_download))
             }
             TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.weight(1f), empty = { TeamCityListEmpty(stringResource(R.string.artifacts_empty)) }) {
                 val rows = (state.list as? ListUiState.Content<Artifact>)?.items.orEmpty()
@@ -75,7 +74,7 @@ fun ArtifactsScreen(
                     "${file.href}:$occurrence"
                 }
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                         itemsIndexed(rows, key = { index, _ -> keys[index] }) { index, file ->
                             ArtifactRow(file, { onArtifactClick(file) }, { onArtifactLongClick(file) }, listRowPosition(index, rows.size))
                         }
@@ -91,7 +90,7 @@ fun ArtifactsScreen(
             text = {
                 Column {
                     Text(stringResource(R.string.artifacts_downloading))
-                    LinearProgressIndicator(Modifier.fillMaxWidth().padding(top = 16.dp))
+                    LinearProgressIndicator(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding))
                 }
             },
             confirmButton = { TextButton(onCancelDownload) { Text(stringResource(R.string.artifacts_cancel)) } }
@@ -131,7 +130,7 @@ internal fun ArtifactRow(file: Artifact, onClick: () -> Unit, onLongClick: () ->
             }
         }
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Text(file.name, style = MaterialTheme.typography.titleMedium)
             if (file.size != 0L) Text(Formatter.formatFileSize(context, file.size), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }

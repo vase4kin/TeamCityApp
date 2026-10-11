@@ -26,8 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.theme.ErrorContent
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @Composable
@@ -49,8 +49,8 @@ fun SplashScreen(state: SplashUiState, modifier: Modifier = Modifier, onRetry: (
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         SplashLogo()
                         if (state == SplashUiState.Loading) {
-                            Spacer(Modifier.height(32.dp))
-                            CircularProgressIndicator(Modifier.size(32.dp))
+                            Spacer(Modifier.height(TeamCityDimensions.extraLargeSpacing))
+                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize))
                         }
                     }
                 }
@@ -61,7 +61,7 @@ fun SplashScreen(state: SplashUiState, modifier: Modifier = Modifier, onRetry: (
 
 @Composable
 private fun SplashLogo() {
-    Image(painterResource(teamcityapp.libraries.resources.R.drawable.ic_launcher), stringResource(R.string.splash_logo_description), Modifier.size(160.dp).testTag("splash:logo"))
+    Image(painterResource(teamcityapp.libraries.resources.R.drawable.ic_launcher), stringResource(R.string.splash_logo_description), Modifier.size(TeamCityDimensions.splashLogoSize).testTag("splash:logo"))
 }
 
 @Preview(showBackground = true, widthDp = 360, heightDp = 800)

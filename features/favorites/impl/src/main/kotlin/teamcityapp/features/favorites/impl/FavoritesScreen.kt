@@ -28,7 +28,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
@@ -78,7 +77,7 @@ fun FavoritesScreen(
                     // Group by identity even when separate projects share a display name.
                     val groups = rows.groupBy { it.project.id }
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                        LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("favorites:list"), contentPadding = PaddingValues(vertical = 8.dp)) {
+                        LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("favorites:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                             if (state.failure is FavoritesFailure.Partial) {
                                 item(key = "partial", contentType = "partial") {
                                     FavoritesPartialFailure(state.failure.unavailableIds.size, onRetry, enabled = !state.list.isRefreshing())
@@ -127,7 +126,7 @@ internal fun FavoriteConfigurationRow(configuration: BuildConfigurationSummary, 
             }
         }
     ) {
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
             Text(configuration.name, style = MaterialTheme.typography.titleMedium)
             configuration.description?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }
@@ -136,7 +135,7 @@ internal fun FavoriteConfigurationRow(configuration: BuildConfigurationSummary, 
 
 @Composable
 private fun FavoritesPartialFailure(count: Int, onRetry: () -> Unit, enabled: Boolean) {
-    ErrorNotice(pluralStringResource(R.plurals.favorites_partial_failed, count, count), onRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("favorites:partial"), actionLabel = stringResource(R.string.favorites_retry), enabled = enabled)
+    ErrorNotice(pluralStringResource(R.plurals.favorites_partial_failed, count, count), onRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("favorites:partial"), actionLabel = stringResource(R.string.favorites_retry), enabled = enabled)
 }
 
 @Preview

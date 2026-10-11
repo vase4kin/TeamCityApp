@@ -32,7 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.app_theme.ThemeMode
 import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.ErrorContent
@@ -65,7 +64,7 @@ fun SettingsScreen(
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, top = TeamCityDimensions.sectionSpacing, bottom = TeamCityDimensions.smallSpacing)
                 )
-                Column(Modifier.fillMaxWidth().padding(16.dp).selectableGroup().testTag("settings:theme"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).selectableGroup().testTag("settings:theme"), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
                     Text(stringResource(R.string.title_theme), style = MaterialTheme.typography.headlineMedium)
                     Text(stringResource(R.string.current_theme, if (state.selected in state.options) themeName(state.selected) else stringResource(R.string.theme_unavailable)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (state.selected !in state.options) Text(stringResource(R.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -75,7 +74,7 @@ fun SettingsScreen(
                     }
                     state.options.forEach { mode ->
                         Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
-                            Row(Modifier.padding(20.dp).heightIn(min = 48.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Row(Modifier.padding(TeamCityDimensions.largeContentPadding).heightIn(min = TeamCityDimensions.minimumTouchTarget), verticalAlignment = Alignment.CenterVertically) {
                                 Column(Modifier.weight(1f)) {
                                     Text(themeName(mode), style = MaterialTheme.typography.titleMedium)
                                     MaterialTheme(
@@ -87,10 +86,10 @@ fun SettingsScreen(
                                             }
                                         )
                                     ) {
-                                        Row(Modifier.padding(top = 12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                        Row(Modifier.padding(top = TeamCityDimensions.mediumSpacing), horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.compactSpacing)) {
                                             repeat(3) { index ->
                                                 Surface(
-                                                    Modifier.size(if (index == 0) 32.dp else 24.dp),
+                                                    Modifier.size(if (index == 0) TeamCityDimensions.largeIconSize else TeamCityDimensions.iconSize),
                                                     shape = MaterialTheme.shapes.small,
                                                     color = when (index) {
                                                         0 -> MaterialTheme.colorScheme.primary

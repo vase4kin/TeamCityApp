@@ -37,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
 import teamcityapp.libraries.build_ui.TeamCityBuildRow
 import teamcityapp.libraries.build_ui.buildRowKeys
@@ -45,6 +44,7 @@ import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityExtendedFloatingActionButton
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -110,7 +110,7 @@ internal fun BuildHistoryScreen(
                                     modifier = Modifier.testTag("history:favorite").onGloballyPositioned { anchors[BuildHistoryPrompt.Favorite] = it.boundsInRoot() }
                                 ) {
                                     if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
-                                        CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+                                        CircularProgressIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                                     } else {
                                         Icon(
                                             painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
@@ -120,7 +120,7 @@ internal fun BuildHistoryScreen(
                                 }
                             }
                         )
-                        Text(title, Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp), style = MaterialTheme.typography.headlineSmall)
+                        Text(title, Modifier.fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, bottom = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.headlineSmall)
                     }
                 }
             },
@@ -131,17 +131,17 @@ internal fun BuildHistoryScreen(
                         Modifier.testTag("history:run").onGloballyPositioned { anchors[BuildHistoryPrompt.Run] = it.boundsInRoot() }
                     ) {
                         Icon(painterResource(R.drawable.ic_history_run), null)
-                        Spacer(Modifier.width(12.dp))
+                        Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
                         Text(stringResource(R.string.history_run))
                     }
                 }
             },
             snackbarHost = {
                 BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    val actionOnNewLine = maxWidth < 480.dp && LocalDensity.current.fontScale > 1f
+                    val actionOnNewLine = maxWidth < TeamCityDimensions.historyInlineActionMinWidth && LocalDensity.current.fontScale > 1f
                     if (controls.queuedBuild == QueuedBuildState.Failed) {
                         Snackbar(
-                            Modifier.padding(12.dp).testTag("history:queued-error"),
+                            Modifier.padding(TeamCityDimensions.mediumSpacing).testTag("history:queued-error"),
                             actionOnNewLine = actionOnNewLine,
                             action = { TextButton(onClick = onQueuedRetry, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)) { Text(stringResource(R.string.history_retry)) } },
                             dismissAction = { TextButton(onClick = onQueuedDismiss, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.inversePrimary)) { Text(stringResource(R.string.history_cancel)) } }
@@ -153,9 +153,9 @@ internal fun BuildHistoryScreen(
             }
         ) { padding ->
             val actionClearance = if (state == ListUiState.Error) {
-                0.dp
+                TeamCityDimensions.noSpacing
             } else {
-                with(LocalDensity.current) { anchors[BuildHistoryPrompt.Run]?.height?.toDp() ?: 56.dp } + 24.dp
+                with(LocalDensity.current) { anchors[BuildHistoryPrompt.Run]?.height?.toDp() ?: TeamCityDimensions.controlMinHeight } + TeamCityDimensions.sectionSpacing
             }
             // Reserve an action lane outside the scroll viewport: even a partially scrolled
             // append retry or build row must remain above the floating action's hit target.
@@ -179,7 +179,7 @@ internal fun BuildHistoryScreen(
                         Modifier.weight(1f).fillMaxWidth().testTag("history:main-content"),
                         empty = { TeamCityListEmpty(stringResource(R.string.history_empty)) }
                     ) {
-                        LazyColumn(Modifier.fillMaxSize().testTag("history:list"), state = listState, contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp)) {
+                        LazyColumn(Modifier.fillMaxSize().testTag("history:list"), state = listState, contentPadding = PaddingValues(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.contentPadding)) {
                             items(itemCount, key = { itemKeys[it] }, contentType = { "build" }) { index ->
                                 val build = itemAt(index)
                                 if (build == null) {
@@ -215,7 +215,7 @@ internal fun BuildHistoryScreen(
         QueuedBuildState.Loading -> AlertDialog(
             onDismissRequest = {},
             title = { Text(stringResource(R.string.history_opening)) },
-            text = { CircularProgressIndicator(Modifier.size(32.dp).testTag("history:opening-progress")) },
+            text = { CircularProgressIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize).testTag("history:opening-progress")) },
             confirmButton = {}
         )
 
@@ -231,7 +231,7 @@ private fun HistorySection(build: BuildLaunchData) {
 
 @Composable
 private fun HistoryOptionalFailure(message: String, onRetry: () -> Unit) {
-    ErrorNotice(message, onRetry, Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), actionLabel = stringResource(R.string.history_retry))
+    ErrorNotice(message, onRetry, Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), actionLabel = stringResource(R.string.history_retry))
 }
 
 @Preview
