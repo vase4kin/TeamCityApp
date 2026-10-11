@@ -29,6 +29,13 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".navigation.MainActivity" android:exported="false" android:launchMode="singleTop" />
+        <activity-alias android:name="teamcityapp.features.splash.view.SplashActivity"
+            android:targetActivity=".navigation.MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
         <activity
             android:name=".home.view.HomeActivity"
             android:label="@string/app_name"

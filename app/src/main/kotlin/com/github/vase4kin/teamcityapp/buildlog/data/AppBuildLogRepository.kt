@@ -33,13 +33,14 @@ class AppBuildLogRepository @Inject constructor(
     private val storage: Storage,
     @ApplicationContext private val context: Context,
     @Named("BuildLogOverrideUrl") private val overrideUrl: String,
-    @MainDispatcher private val mainDispatcher: CoroutineDispatcher
+    @MainDispatcher private val mainDispatcher: CoroutineDispatcher,
+    private val consent: BuildLogConsentStorage
 ) : BuildLogRepository {
     override suspend fun session(buildId: String): BuildLogSession = withContext(mainDispatcher) {
         val legacy = BuildLogInteractorImpl(storage, context, Bundle().apply { putString(BuildLogInteractor.BUILD_ID, buildId) })
-        BuildLogSession(overrideUrl.ifEmpty { BuildLogUrlProviderImpl(legacy).provideUrl() }, legacy.isSslDisabled, !legacy.isGuestUser && !legacy.isAuthDialogShown)
+        BuildLogSession(overrideUrl.ifEmpty { BuildLogUrlProviderImpl(legacy).provideUrl() }, legacy.isSslDisabled, !legacy.isGuestUser && !consent.acknowledged())
     }
     override suspend fun acknowledgeAuthentication() = withContext(mainDispatcher) {
-        BuildLogInteractorImpl(storage, context, null).setAuthDialogStatus(true)
+        consent.setAcknowledged(true)
     }
 }

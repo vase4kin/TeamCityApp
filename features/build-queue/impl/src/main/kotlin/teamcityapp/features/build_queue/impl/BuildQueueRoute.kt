@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.build_queue.impl.router.BuildQueueRouter
+import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 
 @Composable
 internal fun BuildQueueRoute(router: BuildQueueRouter, viewModel: BuildQueueViewModel = hiltViewModel(), visible: Boolean = true) {
@@ -33,6 +34,7 @@ internal fun BuildQueueRoute(router: BuildQueueRouter, viewModel: BuildQueueView
     } else {
         remember(viewModel) { viewModel.state.value }
     }
+    ConfigurationRecreationEffect(viewModel) { viewModel.onConfigurationRecreation(wasVisible = visible) }
     if (visible) {
         LifecycleResumeEffect(viewModel) {
             viewModel.onResumed()

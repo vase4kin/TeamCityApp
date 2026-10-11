@@ -20,14 +20,6 @@
 
         <activity android:name="teamcityapp.features.splash.impl.SplashActivity"
             android:exported="false" android:theme="@style/SplashTheme" />
-        <!-- Preserve installed launcher shortcuts and explicit launcher intents. -->
-        <activity-alias android:name="teamcityapp.features.splash.view.SplashActivity"
-            android:targetActivity="teamcityapp.features.splash.impl.SplashActivity" android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
 
     </application>
 

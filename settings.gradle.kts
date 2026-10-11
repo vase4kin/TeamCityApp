@@ -113,3 +113,7 @@ include(":features:build-overview:api")
 include(":features:build-overview:impl")
 
 include(":libraries:navigation")
+
+include(":features:home:api")
+include(":features:home:impl")
+include(":features:build-details:api")

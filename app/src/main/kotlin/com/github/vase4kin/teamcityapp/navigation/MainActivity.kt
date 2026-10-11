@@ -22,10 +22,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import teamcityapp.features.about.api.navigation.AboutDestination
+import teamcityapp.features.splash.api.navigation.AccountActivationDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
 import teamcityapp.libraries.navigation.NavigationHost
 import teamcityapp.libraries.navigation.rememberNavigator
@@ -36,16 +39,34 @@ import teamcityapp.libraries.theme.TeamCityTheme
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     @Inject lateinit var registry: DestinationRegistry
+
+    @Inject lateinit var accounts: AppAccountFlowNavigation
     private val incomingRequest = mutableStateOf<DestinationRequest?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val initial = intent.getStringExtra(EXTRA_DESTINATION)?.let(registry::decodeDestination) ?: AboutDestination
+        val requestedInitial = intent.getStringExtra(EXTRA_DESTINATION)?.let(registry::decodeDestination)
+        accounts.synchronize()
+        val initialSessionKey = accounts.session.value.key
         enableEdgeToEdge()
         setContent {
             TeamCityTheme {
                 TeamCitySystemBars(window)
-                val navigator = rememberNavigator(initial, registry)
+                val session by accounts.session.collectAsStateWithLifecycle()
+                val initial = if (session.key == initialSessionKey) requestedInitial ?: session.initial else session.initial
+                val navigator = rememberNavigator(initial, registry, session.key)
+                val handledRequest = rememberSaveable { mutableStateOf(session.requestId) }
+                LaunchedEffect(session.requestId) {
+                    if (session.requestId != null && handledRequest.value != session.requestId) {
+                        navigator.reset(session.initial, session.key)
+                        handledRequest.value = session.requestId
+                    } else if (session.requestId == null && navigator.current.destination is AccountActivationDestination) {
+                        // A dead process cannot retain its preparation job. Resume the saved policy
+                        // so an interrupted account switch still clears the previous session.
+                        val activation = navigator.current.destination as AccountActivationDestination
+                        if (!activation.failed) accounts.home(activation.resetSession)
+                    }
+                }
                 val request = incomingRequest.value
                 LaunchedEffect(request) {
                     request?.let { navigator.push(registry.decodeDestination(it.payload)) }

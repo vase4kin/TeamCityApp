@@ -43,25 +43,25 @@ class AppBuildLogRepositoryTest {
         whenever(account.teamcityUrl).thenReturn("https://teamcity.example")
         whenever(account.isGuestUser).thenReturn(true)
         whenever(account.isSslDisabled).thenReturn(true)
-        val repository = AppBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler))
+        val repository = AppBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler), AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)))
         assertEquals(BuildLogSession("https://teamcity.example/viewLog.html?buildId=42&tab=buildLog&guest=1", true, false), repository.session("42"))
     }
 
     @Test fun consentUsesThePreferenceThatHomeResetsOnAccountChanges() = runTest {
         whenever(storage.activeUser).thenReturn(account)
         whenever(account.teamcityUrl).thenReturn("https://teamcity.example")
-        val repository = AppBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler))
+        val repository = AppBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler), AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)))
         assertTrue(repository.session("42").needsAuthentication)
         repository.acknowledgeAuthentication()
         assertFalse(repository.session("42").needsAuthentication)
-        BuildLogInteractorImpl(storage, context, null).setAuthDialogStatus(false)
+        AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)).setAcknowledged(false)
         assertTrue(repository.session("42").needsAuthentication)
     }
 
     @Test fun mockFlavorOverridesOnlyTheLogUrl() = runTest {
         whenever(storage.activeUser).thenReturn(account)
         whenever(account.isSslDisabled).thenReturn(true)
-        val repository = AppBuildLogRepository(storage, context, "file:///android_asset/buildLog.html", StandardTestDispatcher(testScheduler))
+        val repository = AppBuildLogRepository(storage, context, "file:///android_asset/buildLog.html", StandardTestDispatcher(testScheduler), AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)))
         assertEquals(BuildLogSession("file:///android_asset/buildLog.html", true, true), repository.session("42"))
     }
 }

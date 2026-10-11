@@ -28,6 +28,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.lifecycle.Lifecycle
@@ -52,6 +53,7 @@ import org.robolectric.annotation.GraphicsMode
 class BottomSheetNavigationTest {
     @get:Rule val compose = createComposeRule()
     private lateinit var nav: Navigator
+    private lateinit var interactions: SheetInteractions
     private val lifecycles = mutableMapOf<String, Lifecycle>()
     private val resources = mutableMapOf<String, Int>()
 
@@ -66,6 +68,8 @@ class BottomSheetNavigationTest {
                 override val presentation = DestinationPresentation.BottomSheet
 
                 @Composable override fun Content(destination: Detail, navigator: Navigator, entryId: String) {
+                    val gate = checkNotNull(LocalSheetInteractions.current)
+                    SideEffect { interactions = gate }
                     Screen("sheet", entryId)
                     Button(onClick = { navigator.pop() }) { Text("dismiss") }
                 }
@@ -163,6 +167,23 @@ class BottomSheetNavigationTest {
         compose.onNodeWithText("dismiss").performClick()
         settle()
         compose.onNodeWithText("root:1").assertExists()
+    }
+
+    @Test fun busySheetsCannotBeDismissedThroughTheScrimAndUnlockAfterCompletion() {
+        content()
+        val rootId = nav.current.id
+        compose.runOnIdle { nav.push(Detail("account")) }
+        settle()
+        val sheetId = nav.current.id
+        compose.runOnIdle { interactions.updateEnabled(false) }
+        settle()
+        compose.onNodeWithContentDescription("Close sheet").assertDoesNotExist()
+        assertEquals(sheetId, nav.current.id)
+        compose.runOnIdle { interactions.updateEnabled(true) }
+        settle()
+        compose.onNodeWithContentDescription("Close sheet").performClick()
+        settle()
+        assertEquals(rootId, nav.current.id)
     }
 
     @Test(expected = IllegalArgumentException::class)

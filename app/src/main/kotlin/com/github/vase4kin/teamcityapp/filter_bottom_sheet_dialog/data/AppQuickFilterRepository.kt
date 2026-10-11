@@ -19,6 +19,7 @@ package com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.data
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
+import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import javax.inject.Inject
 import org.greenrobot.eventbus.EventBus
 import teamcityapp.features.filter_bottom_sheet.api.*
@@ -40,6 +41,14 @@ class AppQuickFilterRepository @Inject constructor(private val provider: FilterP
             }
         }
         tracker.selected(filter)
+        // Compose Home has no presenter to translate the sheet event for retained list queries.
+        eventBus.post(
+            when {
+                selected.isRunning -> HomeDataManager.RunningBuildsFilterChangedEvent()
+                selected.isQueued -> HomeDataManager.BuildQueueFilterChangedEvent()
+                else -> HomeDataManager.AgentsFilterChangedEvent()
+            }
+        )
         // Preserve the existing running-build event contract; consumers read the updated provider.
         eventBus.post(FilterAppliedEvent(if (selected.isRunning) selected.opposite() else selected))
     }

@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.navigation.impl.router.NavigationRouter
+import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 
 @Composable
 internal fun NavigationRoute(
@@ -31,6 +32,7 @@ internal fun NavigationRoute(
     visible: Boolean = true,
     viewModel: NavigationViewModel = hiltViewModel()
 ) {
+    ConfigurationRecreationEffect(viewModel) { viewModel.onConfigurationRecreation(wasVisible = visible) }
     if (visible) {
         LifecycleResumeEffect(viewModel) {
             viewModel.onResumed()

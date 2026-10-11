@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.create_account.impl" }
 dependencies {
+    implementation(projects.libraries.navigation)
     implementation(libs.androidx.appcompat)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)

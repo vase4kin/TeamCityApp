@@ -24,9 +24,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.favorites.impl.router.FavoritesRouter
+import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 
 @Composable
 internal fun FavoritesRoute(router: FavoritesRouter, viewModel: FavoritesViewModel = hiltViewModel(), visible: Boolean = true) {
+    ConfigurationRecreationEffect(viewModel) { viewModel.onConfigurationRecreation(wasVisible = visible) }
     if (visible) {
         LifecycleResumeEffect(viewModel) {
             viewModel.onResumed()

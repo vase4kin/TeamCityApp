@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.data
 
 import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.*
 import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
+import com.github.vase4kin.teamcityapp.home.data.HomeDataManager
 import kotlinx.coroutines.test.runTest
 import org.greenrobot.eventbus.EventBus
 import org.junit.Assert.*
@@ -38,6 +39,11 @@ class AppQuickFilterRepositoryTest {
             assertEquals(if (selected.isQueued) selected else Filter.QUEUE_FAVORITES, provider.queuedBuildsFilter)
             assertEquals(if (selected.isAgents) selected else Filter.AGENTS_CONNECTED, provider.agentsFilter)
             verify(bus).post(FilterAppliedEvent(if (selected.isRunning) selected.opposite() else selected))
+            when {
+                selected.isRunning -> verify(bus).post(isA<HomeDataManager.RunningBuildsFilterChangedEvent>())
+                selected.isQueued -> verify(bus).post(isA<HomeDataManager.BuildQueueFilterChangedEvent>())
+                else -> verify(bus).post(isA<HomeDataManager.AgentsFilterChangedEvent>())
+            }
             verify(tracker).selected(choice)
         }
     }

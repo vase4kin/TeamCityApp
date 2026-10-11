@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.agents.impl.router.AgentsRouter
+import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 
 @Composable
 internal fun AgentsRoute(router: AgentsRouter, viewModel: AgentsViewModel = hiltViewModel(), visible: Boolean = true) {
@@ -33,6 +34,7 @@ internal fun AgentsRoute(router: AgentsRouter, viewModel: AgentsViewModel = hilt
     } else {
         remember(viewModel) { viewModel.state.value }
     }
+    ConfigurationRecreationEffect(viewModel) { viewModel.onConfigurationRecreation(wasVisible = visible) }
     if (visible) {
         LifecycleResumeEffect(viewModel) {
             viewModel.onResumed()

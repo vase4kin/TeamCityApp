@@ -19,8 +19,15 @@ package teamcityapp.libraries.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.rememberLifecycleOwner
 import androidx.navigation3.runtime.NavEntry
@@ -45,6 +52,16 @@ enum class DestinationPresentation {
 
 private object BottomSheetKey : NavMetadataKey<Boolean>
 
+@Stable
+class SheetInteractions {
+    var enabled by mutableStateOf(true)
+        private set
+    fun updateEnabled(value: Boolean) {
+        enabled = value
+    }
+}
+val LocalSheetInteractions = staticCompositionLocalOf<SheetInteractions?> { null }
+
 /** Compose sheets participate in the same saved back stack and entry ownership as screens. */
 internal class BottomSheetSceneStrategy<T : Any> : SceneStrategy<T> {
     override fun SceneStrategyScope<T>.calculateScene(entries: List<NavEntry<T>>): Scene<T>? {
@@ -68,8 +85,16 @@ private data class BottomSheetScene<T : Any>(
     override val previousEntries: List<NavEntry<T>> = overlaidEntries
     override val content: @Composable () -> Unit = {
         val owner = rememberLifecycleOwner()
-        ModalBottomSheet(onDismissRequest = onDismiss) {
-            CompositionLocalProvider(LocalLifecycleOwner provides owner) { sheet.Content() }
+        val interactions = remember { SheetInteractions() }
+        ModalBottomSheet(
+            onDismissRequest = { if (interactions.enabled) onDismiss() },
+            sheetGesturesEnabled = interactions.enabled,
+            properties = ModalBottomSheetProperties(
+                shouldDismissOnBackPress = interactions.enabled,
+                shouldDismissOnClickOutside = interactions.enabled
+            )
+        ) {
+            CompositionLocalProvider(LocalLifecycleOwner provides owner, LocalSheetInteractions provides interactions) { sheet.Content() }
         }
     }
 }

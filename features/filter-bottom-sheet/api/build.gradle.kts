@@ -18,7 +18,11 @@ import com.android.build.api.dsl.LibraryExtension
 
 plugins {
     id("teamcityapp.android.library")
+    alias(libs.plugins.kotlin.serialization)
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.filter_bottom_sheet.api" }
 
-dependencies { api(libs.androidx.fragment) }
+dependencies {
+    api(projects.libraries.navigation)
+    api(libs.androidx.fragment)
+}
