@@ -41,11 +41,11 @@ fun BuildLogScreen(state: BuildLogUiState, onRetry: () -> Unit, onAuthenticate: 
             BuildLogUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry)
 
             is BuildLogUiState.Session -> when {
-                state.session.sslDisabled -> LogMessage(R.drawable.ic_warning_black_24dp, R.string.text_browse_build_log, R.string.text_browse_build_log_button, { onBrowser(state.session.url) }, "build-log:browser")
+                state.session.sslDisabled -> LogMessage(R.drawable.ic_warning_black_24dp, requireNotNull(state.messageRes), requireNotNull(state.actionLabelRes), { onBrowser(state.session.url) }, "build-log:browser")
 
-                state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize(), onAuthenticate, message = stringResource(R.string.log_authentication_error), actionLabel = stringResource(R.string.text_button_login))
+                state.authenticationFailed -> ErrorContent(Modifier.fillMaxSize(), onAuthenticate, message = stringResource(requireNotNull(state.messageRes)), actionLabel = stringResource(requireNotNull(state.actionLabelRes)))
 
-                state.session.needsAuthentication -> LogMessage(R.drawable.ic_lock_24dp, R.string.text_login_again, R.string.text_button_login, onAuthenticate, "build-log:authenticate", !state.acknowledging)
+                state.session.needsAuthentication -> LogMessage(R.drawable.ic_lock_24dp, requireNotNull(state.messageRes), requireNotNull(state.actionLabelRes), onAuthenticate, "build-log:authenticate", !state.acknowledging)
 
                 else -> {
                     webContent(state, Modifier.fillMaxSize().alpha(if (state.page == BuildLogPage.Content) 1f else 0f))

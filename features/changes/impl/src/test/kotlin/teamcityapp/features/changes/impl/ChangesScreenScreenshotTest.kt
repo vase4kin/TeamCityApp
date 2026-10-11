@@ -92,7 +92,7 @@ class ChangesScreenScreenshotTest(private val stateName: String, private val var
         compose.mainClock.autoAdvance = false
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
-                ChangesScreen(state, count, rows.size, { rows[it] }, { rows[it].id }, append, {}, {}, {}, {})
+                ChangesScreen(state, count, rows.size, { ChangeRowUiState(rows[it]) }, { rows[it].id }, append, {}, {}, {}, {})
             }
         }
         compose.mainClock.advanceTimeBy(500)

@@ -32,6 +32,7 @@ import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.resolve
 
 @Composable
 fun BuildOverviewScreen(state: BuildOverviewUiState, onRefresh: () -> Unit, onRetry: () -> Unit, onRowClick: (OverviewRow) -> Unit, modifier: Modifier = Modifier) {
@@ -68,8 +69,8 @@ internal fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit, position:
         }
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.extraSmallSpacing)) {
-            Text(stringResource(row.field.label()), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(row.value.resolve(), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(row.labelRes), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(row.text.resolve(), style = MaterialTheme.typography.titleMedium)
         }
     }
 }

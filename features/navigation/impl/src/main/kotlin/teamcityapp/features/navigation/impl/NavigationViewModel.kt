@@ -49,6 +49,7 @@ class NavigationViewModel @Inject constructor(
         savedStateHandle[NavigationNavigation.PROJECT_ID] ?: NavigationNavigation.ROOT_PROJECT_ID,
         savedStateHandle[NavigationNavigation.PROJECT_NAME] ?: ""
     )
+    private val root: Boolean = savedStateHandle[ROOT_SCREEN] ?: (project.id == NavigationNavigation.ROOT_PROJECT_ID)
     private val rating = MutableStateFlow<RatingPromptState>(RatingPromptState.Hidden)
     private val openRating = MutableStateFlow(false)
     private var ratingHandled = false
@@ -92,8 +93,8 @@ class NavigationViewModel @Inject constructor(
         }
     }
     val state = combine(list, ratingSource, openRating) { list, prompt, launch ->
-        NavigationUiState(project, list, prompt, launch)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), NavigationUiState(project))
+        NavigationUiState(project, list, prompt, launch, root)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), NavigationUiState(project, root = root))
 
     fun refresh() {
         loader.refresh()
@@ -143,4 +144,7 @@ class NavigationViewModel @Inject constructor(
         }
     }
     private data class RatingQuery(val hasEntries: Boolean, val revision: Long)
+    companion object {
+        internal const val ROOT_SCREEN = "navigationRootScreen"
+    }
 }

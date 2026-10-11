@@ -108,7 +108,7 @@ class TestsScreenScreenshotTest(private val stateName: String, private val varia
         compose.mainClock.autoAdvance = false
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
-                TestsScreen(state, filter, counts, count, rows.size, { rows[it] }, { rows[it] }, append, {}, {}, {}, {}, {})
+                TestsScreen(state, TestsPresentation(filter, counts), count, rows.size, { TestRowUiState(rows[it]) }, { TestRowUiState(rows[it]) }, append, {}, {}, {}, {}, {})
             }
         }
         compose.mainClock.advanceTimeBy(500)

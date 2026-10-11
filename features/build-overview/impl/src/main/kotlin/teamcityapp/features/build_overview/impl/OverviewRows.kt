@@ -17,10 +17,12 @@
 
 package teamcityapp.features.build_overview.impl
 
+import androidx.annotation.StringRes
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.theme.UiText
 
 enum class OverviewField { Result, WaitReason, CancelledBy, CancellationTime, Time, QueuedTime, EstimatedTime, Branch, Agent, TriggeredBy, RestartedBy, Personal, Configuration, Project }
 enum class OverviewIcon { Success, Failure, Error, Unknown, Running, Queued, Time, Branch, Agent, Person, Configuration, Project }
@@ -33,7 +35,10 @@ sealed interface OverviewText {
     data object QueuedBuild : OverviewText
     data object Unavailable : OverviewText
 }
-data class OverviewRow(val field: OverviewField, val value: OverviewText, val icon: OverviewIcon, val action: OverviewRowAction = OverviewRowAction.Copy)
+data class OverviewRow(val field: OverviewField, val value: OverviewText, val icon: OverviewIcon, val action: OverviewRowAction = OverviewRowAction.Copy) {
+    @get:StringRes val labelRes: Int = field.label()
+    val text: UiText = value.toUiText()
+}
 
 internal fun overviewRows(build: BuildLaunchData): List<OverviewRow> = buildList {
     fun add(field: OverviewField, value: OverviewText, icon: OverviewIcon, action: OverviewRowAction = OverviewRowAction.Copy) {

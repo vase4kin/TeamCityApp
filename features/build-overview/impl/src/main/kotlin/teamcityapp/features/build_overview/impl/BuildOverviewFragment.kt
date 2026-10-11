@@ -73,7 +73,7 @@ class BuildOverviewFragment :
     }
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         if (!visible.value) return
-        latest.actions.forEach { action -> menu.add(MENU_GROUP, MENU_BASE + action.ordinal, action.ordinal, action.label()).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER) }
+        latest.actionItems.forEach { item -> menu.add(MENU_GROUP, MENU_BASE + item.action.ordinal, item.action.ordinal, item.labelRes).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER) }
     }
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         val action = BuildOverviewAction.entries.firstOrNull { MENU_BASE + it.ordinal == menuItem.itemId } ?: return false

@@ -46,20 +46,8 @@ import teamcityapp.libraries.theme.TeamCityDimensions
 @Composable
 internal fun HistoryCoachmark(state: OnboardingState.Available, anchor: Rect, onDismiss: () -> Unit) {
     val prompt = state.prompt ?: return
-    val title = stringResource(
-        when (prompt) {
-            BuildHistoryPrompt.Run -> R.string.history_prompt_run_title
-            BuildHistoryPrompt.Filter -> R.string.history_prompt_filter_title
-            BuildHistoryPrompt.Favorite -> R.string.history_prompt_favorite_title
-        }
-    )
-    val description = stringResource(
-        when (prompt) {
-            BuildHistoryPrompt.Run -> R.string.history_prompt_run_description
-            BuildHistoryPrompt.Filter -> R.string.history_prompt_filter_description
-            BuildHistoryPrompt.Favorite -> R.string.history_prompt_favorite_description
-        }
-    )
+    val title = stringResource(state.titleRes ?: return)
+    val description = stringResource(state.descriptionRes ?: return)
     val density = LocalDensity.current
     BoxWithConstraints(
         Modifier.fillMaxSize().testTag("history:coachmark:$prompt").semantics { paneTitle = title }
@@ -94,7 +82,7 @@ internal fun HistoryCoachmark(state: OnboardingState.Available, anchor: Rect, on
                         if (state.saving) {
                             CircularProgressIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
                         } else {
-                            Text(stringResource(if (state.saveFailed) R.string.history_retry else R.string.history_got_it))
+                            Text(stringResource(state.dismissLabelRes))
                         }
                     }
                 }

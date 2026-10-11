@@ -99,9 +99,19 @@ class SettingsViewModelTest {
         assertEquals(0, subscriptions)
         vm.state.test {
             assertEquals(SettingsUiState.Loading, awaitItem())
-            assertEquals(SettingsUiState.Content(ThemeMode.System, options.modes), awaitItem())
+            assertEquals(
+                SettingsUiState.Content(ThemeMode.System, options.modes),
+                awaitItem().also {
+                    assertEquals(teamcityapp.libraries.resources.R.string.name_follow_system, (it as SettingsUiState.Content).selectedThemeLabelRes)
+                }
+            )
             r.choice.value = ThemeMode.Dark
-            assertEquals(SettingsUiState.Content(ThemeMode.Dark, options.modes), awaitItem())
+            assertEquals(
+                SettingsUiState.Content(ThemeMode.Dark, options.modes),
+                awaitItem().also {
+                    assertEquals(teamcityapp.libraries.resources.R.string.name_dark_theme, (it as SettingsUiState.Content).selectedThemeLabelRes)
+                }
+            )
         }
     }
 
@@ -289,7 +299,12 @@ class SettingsViewModelTest {
         runCurrent()
         r.load = flow { awaitCancellation() }
         vm.state.test {
-            assertEquals(SettingsUiState.Content(ThemeMode.System, options.modes), awaitItem())
+            assertEquals(
+                SettingsUiState.Content(ThemeMode.System, options.modes),
+                awaitItem().also {
+                    assertEquals(teamcityapp.libraries.resources.R.string.name_follow_system, (it as SettingsUiState.Content).selectedThemeLabelRes)
+                }
+            )
             runCurrent()
             expectNoEvents()
         }

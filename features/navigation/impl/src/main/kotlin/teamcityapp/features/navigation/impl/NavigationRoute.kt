@@ -28,7 +28,6 @@ import teamcityapp.features.navigation.impl.router.NavigationRouter
 @Composable
 internal fun NavigationRoute(
     router: NavigationRouter,
-    root: Boolean,
     visible: Boolean = true,
     viewModel: NavigationViewModel = hiltViewModel()
 ) {
@@ -50,5 +49,5 @@ internal fun NavigationRoute(
             onPauseOrDispose { }
         }
     }
-    NavigationScreen(state, root, viewModel::refresh, viewModel::retry, router::navigateUp, router::open, viewModel::onRateCancel, viewModel::onRateNow, onRatingRetry = viewModel::retryRating)
+    NavigationScreen(state, viewModel::refresh, viewModel::retry, router::navigateUp, router::open, viewModel::onRateCancel, viewModel::onRateNow, onRatingRetry = viewModel::retryRating)
 }

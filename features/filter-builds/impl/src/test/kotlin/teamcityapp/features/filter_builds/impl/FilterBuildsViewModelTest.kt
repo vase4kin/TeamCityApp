@@ -49,7 +49,11 @@ class FilterBuildsViewModelTest {
         vm.update(filter)
         runCurrent()
         assertEquals(filter, vm.apply())
+        assertEquals(BuildStatusFilter.entries, vm.state.value.statusOptions.map { it.status })
+        assertEquals(R.string.text_filters_none, vm.state.value.statusOptions.last().labelRes)
+        assertEquals(R.string.filter_status_server_error, vm.state.value.statusOptions.single { it.status == BuildStatusFilter.Error }.labelRes)
         assertEquals(listOf("main", "release"), vm.state.value.branches)
+        assertEquals(R.string.text_no_branches_available_to_filter, vm.state.value.branchesMessageRes)
     }
 
     @Test fun failureIsExplicitAndDoesNotPreventFiltering() = runTest(dispatcher) {
@@ -63,6 +67,7 @@ class FilterBuildsViewModelTest {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { vm.state.collect() }
         runCurrent()
         assertTrue(vm.state.value.branchesFailed)
+        assertEquals(R.string.branches_unavailable, vm.state.value.branchesMessageRes)
         assertEquals(BuildFilter(), vm.apply())
     }
 

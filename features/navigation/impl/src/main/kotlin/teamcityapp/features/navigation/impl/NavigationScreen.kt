@@ -36,12 +36,12 @@ import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.resolve
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NavigationScreen(
     state: NavigationUiState,
-    root: Boolean,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     onNavigateUp: () -> Unit,
@@ -55,12 +55,12 @@ fun NavigationScreen(
         modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(if (root) stringResource(R.string.navigation_projects_title) else state.project.name) },
+                title = { Text(state.title.resolve()) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp) {
                         Icon(
-                            painterResource(if (root) R.drawable.ic_navigation_drawer else R.drawable.ic_navigation_back),
-                            stringResource(if (root) R.string.navigation_open_drawer else R.string.navigation_back),
+                            painterResource(if (state.root) R.drawable.ic_navigation_drawer else R.drawable.ic_navigation_back),
+                            stringResource(state.navigationLabelRes),
                             Modifier.testTag("navigation:up")
                         )
                     }
@@ -180,5 +180,5 @@ private fun RatingPromptPreview() {
 private fun NavigationScreenPreview() {
     val project = ProjectReference("project", "TeamCity")
     val entries = listOf(NavigationEntry.Project(project), NavigationEntry.Configuration(BuildConfigurationSummary("build", "Android", "Release build", project)))
-    TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries)), true, {}, {}, {}, {}, {}, {}) }
+    TeamCityTheme { NavigationScreen(NavigationUiState(project, ListUiState.Content(entries), root = true), {}, {}, {}, {}, {}, {}) }
 }

@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.build_queue.impl
+package teamcityapp.features.snapshot_dependencies.impl
 
-import androidx.annotation.StringRes
-import teamcityapp.features.build_queue.api.BuildQueueFilter
-import teamcityapp.features.build_queue.api.BuildQueueQuery
 import teamcityapp.libraries.build_ui.BuildRowUiState
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 
-data class BuildQueueUiState(
-    val query: BuildQueueQuery = BuildQueueQuery(accountKey = ""),
-    val list: ListUiState<BuildLaunchData> = ListUiState.Loading
-) {
+data class SnapshotDependenciesUiState(val list: ListUiState<BuildLaunchData> = ListUiState.Loading) {
     val rows: List<BuildRowUiState> = (list as? ListUiState.Content)?.items.orEmpty().map(::BuildRowUiState)
-
-    @get:StringRes val emptyMessageRes: Int = if (query.filter == BuildQueueFilter.Favorites) R.string.build_queue_empty_favorites else R.string.build_queue_empty_all
 }

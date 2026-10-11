@@ -39,7 +39,7 @@ import teamcityapp.libraries.theme.TeamCityDimensions
 
 @Composable
 internal fun SnapshotDependenciesScreen(
-    state: ListUiState<BuildLaunchData>,
+    state: SnapshotDependenciesUiState,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     onBuild: (BuildLaunchData) -> Unit,
@@ -48,12 +48,12 @@ internal fun SnapshotDependenciesScreen(
 ) {
     Surface(modifier.fillMaxSize().testTag("snapshot:screen")) {
         TeamCityListContainer(
-            state,
+            state.list,
             onRefresh,
             onRetry,
             empty = { TeamCityListEmpty(stringResource(R.string.snapshot_dependencies_empty)) }
         ) {
-            val rows = (state as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
+            val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
@@ -64,7 +64,7 @@ internal fun SnapshotDependenciesScreen(
                             TeamCityBuildConfigurationHeader(build, onBuildHistory, Modifier.testTag("snapshot:configuration:$index"))
                         }
                         TeamCityBuildRow(
-                            build,
+                            state.rows[index],
                             { onBuild(build) },
                             Modifier.testTag("snapshot:build:${build.id}"),
                             position = listRowPosition(

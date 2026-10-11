@@ -47,6 +47,7 @@ import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityExtendedFloatingActionButton
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.resolve
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,8 +56,8 @@ internal fun BuildHistoryScreen(
     state: ListUiState<BuildLaunchData>,
     controls: BuildHistoryControls,
     itemCount: Int,
-    itemAt: (Int) -> BuildLaunchData?,
-    itemPeek: (Int) -> BuildLaunchData?,
+    itemAt: (Int) -> HistoryBuildRow?,
+    itemPeek: (Int) -> HistoryBuildRow?,
     appendState: HistoryAppendState,
     onBack: () -> Unit,
     onRunBuild: () -> Unit,
@@ -77,7 +78,7 @@ internal fun BuildHistoryScreen(
 ) {
     val itemKeys = remember(state, itemCount, itemPeek) {
         val snapshots = (0 until itemCount).map(itemPeek)
-        val buildKeys = buildRowKeys(snapshots.filterNotNull()).iterator()
+        val buildKeys = buildRowKeys(snapshots.filterNotNull().map { it.build }).iterator()
         snapshots.mapIndexed { index, build -> if (build == null) "history:placeholder:$index" else buildKeys.next() }
     }
     val anchors = remember { mutableStateMapOf<BuildHistoryPrompt, Rect>() }
@@ -114,7 +115,7 @@ internal fun BuildHistoryScreen(
                                     } else {
                                         Icon(
                                             painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
-                                            stringResource(if (favorite is FavoriteState.Available && favorite.favorite) R.string.history_remove_favorite else R.string.history_add_favorite)
+                                            stringResource(controls.favoriteActionLabelRes)
                                         )
                                     }
                                 }
@@ -166,8 +167,8 @@ internal fun BuildHistoryScreen(
                         Modifier.fillMaxWidth().heightIn(max = noticeMaxHeight).verticalScroll(rememberScrollState()).testTag("history:optional-errors")
                     ) {
                         when (val favorite = controls.favorite) {
-                            FavoriteState.Unavailable -> HistoryOptionalFailure(stringResource(R.string.history_favorite_unavailable), onFavoriteRetry)
-                            is FavoriteState.Available -> if (favorite.updateFailed) HistoryOptionalFailure(stringResource(R.string.history_favorite_update_failed), onFavorite)
+                            FavoriteState.Unavailable -> HistoryOptionalFailure(stringResource(requireNotNull(controls.favoriteFailureMessageRes)), onFavoriteRetry)
+                            is FavoriteState.Available -> if (favorite.updateFailed) HistoryOptionalFailure(stringResource(requireNotNull(controls.favoriteFailureMessageRes)), onFavorite)
                             FavoriteState.Loading -> Unit
                         }
                         if (controls.onboarding == OnboardingState.Unavailable) HistoryOptionalFailure(stringResource(R.string.history_onboarding_unavailable), onOnboardingRetry)
@@ -186,15 +187,15 @@ internal fun BuildHistoryScreen(
                                     TeamCityListLoadingRow()
                                 } else {
                                     val previous = if (index > 0) itemPeek(index - 1) else null
-                                    if (previous == null || historySectionKey(previous) != historySectionKey(build)) HistorySection(build)
+                                    if (previous == null || previous.sectionKey != build.sectionKey) HistorySection(build)
                                     val next = if (index + 1 < itemCount) itemPeek(index + 1) else null
                                     TeamCityBuildRow(
-                                        build,
-                                        { onBuild(build) },
-                                        Modifier.testTag("history:build:${build.id}"),
+                                        build.row,
+                                        { onBuild(build.build) },
+                                        Modifier.testTag("history:build:${build.build.id}"),
                                         position = listRowPosition(
-                                            hasPrevious = previous != null && historySectionKey(previous) == historySectionKey(build),
-                                            hasNext = next != null && historySectionKey(next) == historySectionKey(build)
+                                            hasPrevious = previous != null && previous.sectionKey == build.sectionKey,
+                                            hasNext = next != null && next.sectionKey == build.sectionKey
                                         )
                                     )
                                 }
@@ -224,9 +225,9 @@ internal fun BuildHistoryScreen(
 }
 
 @Composable
-private fun HistorySection(build: BuildLaunchData) {
-    val title = if (build.isQueued) stringResource(R.string.history_queued_section) else historyDate(build) ?: stringResource(R.string.history_unknown_date)
-    TeamCityListSectionHeader(title, Modifier.testTag("history:section:${historySectionKey(build)}"))
+private fun HistorySection(build: HistoryBuildRow) {
+    val title = build.sectionTitle.resolve()
+    TeamCityListSectionHeader(title, Modifier.testTag("history:section:${build.sectionKey}"))
 }
 
 @Composable
@@ -240,7 +241,7 @@ private fun BuildHistoryPreview() {
     val rows = listOf(BuildLaunchData("42", "/app/rest/builds/id:42", number = "42", state = "finished", status = "SUCCESS", startDate = "20261010T102030+0700", branchName = "main"))
     TeamCityTheme {
         BuildHistoryScreen(
-            "Build TeamCityApp", ListUiState.Content(rows), BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available()), rows.size, { rows[it] }, { rows[it] }, HistoryAppendState.Idle,
+            "Build TeamCityApp", ListUiState.Content(rows), BuildHistoryControls(FavoriteState.Available(false), OnboardingState.Available()), rows.size, { HistoryBuildRow(rows[it]) }, { HistoryBuildRow(rows[it]) }, HistoryAppendState.Idle,
             {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
         )
     }

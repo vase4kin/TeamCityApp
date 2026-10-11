@@ -61,6 +61,7 @@ class AgentsViewModelTest {
         runCurrent()
         assertEquals(listOf(AgentsFilter.Connected to false), repository.calls)
         assertEquals(ListUiState.Content(rows), vm.state.value.list)
+        assertEquals(R.string.agents_empty_connected, vm.state.value.emptyMessageRes)
     }
 
     @Test fun changedFilterCancelsOldRequestAndLoadsDisconnectedAgents() = runTest(dispatcher) {
@@ -82,6 +83,7 @@ class AgentsViewModelTest {
         runCurrent()
         assertTrue(cancelled)
         assertEquals(AgentsUiState(AgentsFilter.Disconnected, ListUiState.Empty()), vm.state.value)
+        assertEquals(R.string.agents_empty_disconnected, vm.state.value.emptyMessageRes)
         assertEquals(listOf(AgentsFilter.Connected to false, AgentsFilter.Disconnected to false), repository.calls)
     }
 
@@ -129,6 +131,7 @@ class AgentsViewModelTest {
         vm.retry()
         runCurrent()
         assertEquals(ListUiState.Content(rows), vm.state.value.list)
+        assertEquals(R.string.agents_empty_connected, vm.state.value.emptyMessageRes)
         assertEquals(AgentsFilter.Connected to true, repository.calls.last())
     }
 
@@ -152,6 +155,7 @@ class AgentsViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(ListUiState.Content(rows), vm.state.value.list)
+        assertEquals(R.string.agents_empty_connected, vm.state.value.emptyMessageRes)
         assertEquals(2, repository.calls.size)
     }
 
@@ -169,6 +173,7 @@ class AgentsViewModelTest {
         runCurrent()
         assertEquals(1, repository.calls.size)
         assertEquals(ListUiState.Content(rows), vm.state.value.list)
+        assertEquals(R.string.agents_empty_connected, vm.state.value.emptyMessageRes)
     }
 
     @Test fun hiddenTabRecreatedForConfigurationStillReloadsWhenSelected() = runTest(dispatcher) {
@@ -211,6 +216,7 @@ class AgentsViewModelTest {
         observe(vm)
         runCurrent()
         assertEquals(AgentsUiState(AgentsFilter.Disconnected, ListUiState.Empty()), vm.state.value)
+        assertEquals(R.string.agents_empty_disconnected, vm.state.value.emptyMessageRes)
     }
 
     private inner class FakeRepository : AgentsRepository {

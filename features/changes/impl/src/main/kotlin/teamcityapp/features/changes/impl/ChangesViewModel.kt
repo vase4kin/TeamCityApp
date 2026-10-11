@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
@@ -33,8 +34,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.changes.api.ChangesRepository
+import teamcityapp.libraries.theme.UiText
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -54,6 +58,8 @@ class ChangesViewModel @Inject constructor(
         config = PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 2, enablePlaceholders = false),
         pagingSourceFactory = { ChangesPagingSource(repository, url, forceRefresh) }
     ).flow.cachedIn(viewModelScope)
+
+    internal val rows = changes.map { page -> page.map(::ChangeRowUiState) }
 
     private var completedCount: ChangesCountState? = null
     private val countRequest = MutableStateFlow(0)
@@ -86,4 +92,8 @@ class ChangesViewModel @Inject constructor(
         completedCount = null
         countRequest.value++
     }
+}
+
+internal data class ChangeRowUiState(val change: ChangeDetails) {
+    val filesBadge: UiText = if (change.files.size > 9) UiText.Resource(R.string.changes_many_files) else UiText.Dynamic(change.files.size.toString())
 }

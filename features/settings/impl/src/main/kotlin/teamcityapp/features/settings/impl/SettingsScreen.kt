@@ -66,17 +66,18 @@ fun SettingsScreen(
                 )
                 Column(Modifier.fillMaxWidth().padding(TeamCityDimensions.contentPadding).selectableGroup().testTag("settings:theme"), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
                     Text(stringResource(R.string.title_theme), style = MaterialTheme.typography.headlineMedium)
-                    Text(stringResource(R.string.current_theme, if (state.selected in state.options) themeName(state.selected) else stringResource(R.string.theme_unavailable)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.current_theme, stringResource(state.selectedThemeLabelRes)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (state.selected !in state.options) Text(stringResource(R.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (state.saving) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("settings:saving"))
                     if (state.saveFailed) {
                         ErrorNotice(stringResource(R.string.theme_save_error), onRetrySave, Modifier.testTag("settings:save_error"))
                     }
-                    state.options.forEach { mode ->
+                    state.themeOptions.forEach { option ->
+                        val mode = option.mode
                         Surface(Modifier.fillMaxWidth().testTag("settings:option:$mode").selectable(state.selected == mode, enabled = !state.saving, role = Role.RadioButton, onClick = { onSelect(mode) }), shape = MaterialTheme.shapes.large, color = if (state.selected == mode) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerLow) {
                             Row(Modifier.padding(TeamCityDimensions.largeContentPadding).heightIn(min = TeamCityDimensions.minimumTouchTarget), verticalAlignment = Alignment.CenterVertically) {
                                 Column(Modifier.weight(1f)) {
-                                    Text(themeName(mode), style = MaterialTheme.typography.titleMedium)
+                                    Text(stringResource(option.labelRes), style = MaterialTheme.typography.titleMedium)
                                     MaterialTheme(
                                         colorScheme = teamcityapp.libraries.theme.teamCityColorScheme(
                                             when (mode) {
@@ -110,16 +111,6 @@ fun SettingsScreen(
         }
     }
 }
-
-@Composable
-private fun themeName(mode: ThemeMode) = stringResource(
-    when (mode) {
-        ThemeMode.Light -> SharedR.string.name_light_theme
-        ThemeMode.Dark -> SharedR.string.name_dark_theme
-        ThemeMode.AutoBattery -> SharedR.string.name_auto_battery
-        ThemeMode.System -> SharedR.string.name_follow_system
-    }
-)
 
 @Preview @Composable
 private fun SettingsPreview() {

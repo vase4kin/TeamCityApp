@@ -84,7 +84,7 @@ class NavigationRouteTest {
             listOf(NavigationEntry.Project(ProjectReference("child", "Child")))
         }
         val visible = mutableStateOf(true)
-        compose.setContent { TeamCityTheme { NavigationRoute(router, true, visible.value, vm) } }
+        compose.setContent { TeamCityTheme { NavigationRoute(router, visible.value, vm) } }
         compose.waitUntil(5_000) { calls == 1 }
         compose.runOnIdle { visible.value = false }
         compose.waitForIdle()
@@ -103,7 +103,7 @@ class NavigationRouteTest {
             rows
         }
         val visible = mutableStateOf(true)
-        compose.setContent { TeamCityTheme { NavigationRoute(router, true, visible.value, vm) } }
+        compose.setContent { TeamCityTheme { NavigationRoute(router, visible.value, vm) } }
         compose.onNodeWithTag("navigation:list").performScrollToNode(hasTestTag("navigation:row:project:30"))
         compose.onNodeWithTag("navigation:row:project:30").assertIsDisplayed()
         compose.runOnIdle { visible.value = false }
@@ -117,7 +117,7 @@ class NavigationRouteTest {
     @Test fun storeLaunchIsNotRepeatedWhenRouteReturns() {
         val vm = viewModel(eligible = true) { listOf(NavigationEntry.Project(ProjectReference("child", "Child"))) }
         val visible = mutableStateOf(true)
-        compose.setContent { TeamCityTheme { NavigationRoute(router, true, visible.value, vm) } }
+        compose.setContent { TeamCityTheme { NavigationRoute(router, visible.value, vm) } }
         compose.onNodeWithText("Rate", useUnmergedTree = true).performClick()
         compose.waitUntil(5_000) { launches == 1 }
         compose.runOnIdle { visible.value = false }
@@ -176,7 +176,7 @@ class NavigationRouteTest {
             listOf(NavigationEntry.Project(ProjectReference("child", "Child")))
         }
         val visible = mutableStateOf(true)
-        compose.setContent { TeamCityTheme { NavigationRoute(router, true, visible.value, vm) } }
+        compose.setContent { TeamCityTheme { NavigationRoute(router, visible.value, vm) } }
         compose.onNodeWithTag("navigation:rating").assertIsDisplayed()
         compose.runOnIdle { visible.value = false }
         compose.waitForIdle()

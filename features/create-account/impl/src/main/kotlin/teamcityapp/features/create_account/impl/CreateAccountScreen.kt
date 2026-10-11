@@ -44,7 +44,7 @@ fun CreateAccountScreen(state: CreateAccountUiState, onChange: (AuthenticationFo
         Column(modifier) {
             Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(scrollState).testTag("create-account:scroll").padding(TeamCityDimensions.contentPadding), horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally) {
                 Card(Modifier.widthIn(max = TeamCityDimensions.formMaxWidth).fillMaxWidth().testTag("create-account:form"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                    AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(vertical = TeamCityDimensions.sectionSpacing), duplicateMessage = stringResource(R.string.add_new_account_dialog_account_exist_error_message), horizontalPadding = TeamCityDimensions.sectionSpacing)
+                    AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.padding(vertical = TeamCityDimensions.sectionSpacing), errorMessage = state.formErrorMessage, horizontalPadding = TeamCityDimensions.sectionSpacing)
                 }
             }
         }

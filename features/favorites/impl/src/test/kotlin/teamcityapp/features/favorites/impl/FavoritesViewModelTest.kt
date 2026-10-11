@@ -116,6 +116,7 @@ class FavoritesViewModelTest {
         runCurrent()
         assertEquals(listOf(false, true), calls)
         assertEquals(FavoritesFailure.None, vm.state.value.failure)
+        assertNull(vm.state.value.refreshFailureMessageRes)
         assertEquals(ListUiState.Content(listOf(row)), vm.state.value.list)
     }
 
@@ -141,6 +142,7 @@ class FavoritesViewModelTest {
         runCurrent()
         assertEquals(ListUiState.Content(listOf(row), refreshFailed = true), vm.state.value.list)
         assertEquals(FavoritesFailure.AllFailed, vm.state.value.failure)
+        assertEquals(R.string.favorites_all_failed, vm.state.value.refreshFailureMessageRes)
         assertEquals(listOf("1", "2"), vm.state.value.savedIds)
     }
 
@@ -154,6 +156,7 @@ class FavoritesViewModelTest {
         assertEquals(ListUiState.Content(listOf(row), refreshFailed = true), vm.state.value.list)
         assertEquals(listOf("1"), vm.state.value.savedIds)
         assertEquals(FavoritesFailure.AllFailed, vm.state.value.failure)
+        assertEquals(R.string.favorites_all_failed, vm.state.value.refreshFailureMessageRes)
     }
 
     @Test fun refreshingPartialRowsRetainsMetadataUntilResultCompletes() = runTest(dispatcher) {
@@ -170,6 +173,7 @@ class FavoritesViewModelTest {
         result.complete(batch)
         runCurrent()
         assertEquals(FavoritesFailure.None, vm.state.value.failure)
+        assertNull(vm.state.value.refreshFailureMessageRes)
         assertEquals(listOf("1"), vm.state.value.savedIds)
     }
 
@@ -183,6 +187,7 @@ class FavoritesViewModelTest {
         runCurrent()
         assertEquals(ListUiState.Empty(refreshFailed = true), vm.state.value.list)
         assertEquals(FavoritesFailure.AllFailed, vm.state.value.failure)
+        assertEquals(R.string.favorites_all_failed, vm.state.value.refreshFailureMessageRes)
     }
 
     @Test fun allFailedAfterEmptyRetainsEmptySurfaceAndNewSavedIds() = runTest(dispatcher) {
@@ -195,6 +200,7 @@ class FavoritesViewModelTest {
         runCurrent()
         assertEquals(ListUiState.Empty(refreshFailed = true), vm.state.value.list)
         assertEquals(FavoritesFailure.AllFailed, vm.state.value.failure)
+        assertEquals(R.string.favorites_all_failed, vm.state.value.refreshFailureMessageRes)
         assertEquals(listOf("new"), vm.state.value.savedIds)
     }
 
