@@ -5,7 +5,10 @@
   },
   "home": {
     "paths": ["app/src/*/res/layout/activity_home.xml", "app/src/*/res/layout/*projects*"],
-    "tests": ["com.github.vase4kin.teamcityapp.hilt.PresenterReplacementTest#homeDisposesOldPresenterBeforeAccountReload"]
+    "tests": [
+      "com.github.vase4kin.teamcityapp.navigation.HomeStartupNavigationTest#switchingAccountsOnTheSameServerReplacesTheHomeOwnersAndClearsConsent",
+      "com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragmentTest#sameServerDifferentUserCancelsOldPendingListAndUsesOnlyNewFavorites"
+    ]
   },
   "buildlist": {"paths": ["app/src/*/res/layout/*build_list*"]},
   "login": {"paths": ["app/src/*/res/layout/activity_login.xml"]},

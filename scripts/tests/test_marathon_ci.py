@@ -215,7 +215,7 @@ class ChangedSelectionTest(unittest.TestCase):
     def test_build_log_sources_resources_and_mock_data_select_screen_and_lifecycle(self):
         expected = self.smoke | {
             "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragmentTest#testUserCanSeeBuildLog",
-            "com.github.vase4kin.teamcityapp.hilt.BuildLogViewLifecycleTest#sameFragmentCanCreateAndDestroyItsViewRepeatedly",
+            "com.github.vase4kin.teamcityapp.hilt.BuildLogViewLifecycleTest#retainedBuildLogCreatesAndDisposesItsWebViewOnEachTabVisit",
         }
         for path in ("app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt", "app/src/main/res/layout/fragment_build_log.xml", "app/src/mock/assets/fake_build_log.html"):
             with self.subTest(path=path):
@@ -252,7 +252,8 @@ class ChangedSelectionTest(unittest.TestCase):
         result = self.select(*paths)
         self.assertEqual(len(result["tests"]), len(set(result["tests"])))
         self.assertTrue(self.smoke <= set(result["tests"]))
-        self.assertIn("com.github.vase4kin.teamcityapp.hilt.PresenterReplacementTest#homeDisposesOldPresenterBeforeAccountReload", result["tests"])
+        self.assertIn("com.github.vase4kin.teamcityapp.navigation.HomeStartupNavigationTest#switchingAccountsOnTheSameServerReplacesTheHomeOwnersAndClearsConsent", result["tests"])
+        self.assertIn("com.github.vase4kin.teamcityapp.runningbuilds.view.RunningBuildsFragmentTest#sameServerDifferentUserCancelsOldPendingListAndUsesOnlyNewFavorites", result["tests"])
 
     def test_mapping_exceptions_reference_current_tests(self):
         for owner, rule in self.mapping.items():
