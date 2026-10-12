@@ -81,17 +81,17 @@ class PropertiesScreenTest {
         assertTextStyle("Empty", 30, Color.Blue)
     }
 
-    @Test fun emptyMessageInheritsColorsAndTypographyFromTheProvidedTheme() {
+    @Test fun emptyMessageUsesSharedMessageColorsAndTypography() {
         compose.setContent {
             MaterialTheme(
-                colorScheme = lightColorScheme(onSurfaceVariant = Color.Blue),
-                typography = Typography(bodyLarge = TextStyle(fontSize = 30.sp))
+                colorScheme = lightColorScheme(onSurface = Color.Red, onSurfaceVariant = Color.Blue),
+                typography = Typography(titleMedium = TextStyle(fontSize = 30.sp), bodyLarge = TextStyle(fontSize = 22.sp))
             ) {
                 PropertiesScreen(PropertiesUiState.Empty, {})
             }
         }
         val message = RuntimeEnvironment.getApplication().getString(R.string.empty_list_message_parameters)
-        assertTextStyle(message, 30, Color.Blue)
+        assertTextStyle(message, 30, Color.Red)
     }
 
     @Test fun longPreviewCopiesOriginalValueAndExpansionDoesNotCopy() {

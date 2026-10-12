@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -38,13 +37,10 @@ fun TestDetailsScreen(state: TestDetailsUiState, onRetry: () -> Unit, onClose: (
         when (state) {
             TestDetailsUiState.Loading -> LoadingContent(modifier)
 
-            TestDetailsUiState.Empty -> Box(modifier, contentAlignment = Alignment.Center) {
-                Text(
-                    text = stringResource(R.string.text_empty_test_details),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
+            TestDetailsUiState.Empty -> MessageContent(
+                message = stringResource(R.string.text_empty_test_details),
+                modifier = modifier
+            )
 
             TestDetailsUiState.Error -> ErrorContent(modifier, onRetry)
 
