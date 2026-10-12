@@ -32,10 +32,12 @@ import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.coachmarkAnchor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +56,7 @@ fun FavoritesScreen(
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.favorites_title)) },
                 navigationIcon = {
-                    IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up")) {
+                    IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
                         Icon(painterResource(R.drawable.ic_navigation_drawer), stringResource(R.string.favorites_open_drawer))
                     }
                 }

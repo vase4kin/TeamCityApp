@@ -83,6 +83,8 @@ class BuildDetailsScreenTest {
         var dismissals = 0
         val prompt = BuildDetailsPromptUi(BuildDetailsPrompt.Stop, description = R.string.text_onboarding_stop_build)
         compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, prompt = prompt), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }, onDismissPrompt = { dismissals++ }) { Surface {} } } }
+        compose.onNodeWithTag("details:coachmark:Stop").assertIsDisplayed()
+        compose.onNodeWithContentDescription("More actions").assertDoesNotExist()
         compose.onNodeWithText("Explore menu").assertExists()
         compose.onNodeWithText("Stop, share or open running builds in a browser").assertExists()
         compose.onNodeWithTag("details:dismiss-prompt").performClick()

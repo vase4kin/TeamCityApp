@@ -33,8 +33,10 @@ import teamcityapp.features.agents.api.AgentsFilter
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.coachmarkAnchor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +53,7 @@ fun AgentsScreen(
             CenterAlignedTopAppBar(
                 title = { Text(stringResource(R.string.agents_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("agents:drawer")) {
+                    IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("agents:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
                         Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.agents_open_drawer))
                     }
                 }

@@ -98,6 +98,39 @@ class HomeStartupNavigationTest {
     }
     private fun encoded(key: androidx.navigation3.runtime.NavKey) = Intent(app, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(key))
 
+    @Test fun homeCoachmarksFollowRealDrawerAndTabActionsAndPersistOnlyAfterDismissal() {
+        val prefs = app.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
+        val tips = listOf(HomeTab.Favorites to "AddToFavorites", HomeTab.Running to "RBFilter", HomeTab.Queue to "BQFilter", HomeTab.Agents to "AFilter")
+        prefs.edit().putBoolean("NavDrawerV1", false).apply { tips.forEach { putBoolean(it.second, false) } }.commit()
+        ActivityScenario.launch<MainActivity>(encoded(HomeDestination(HomeTab.Running))).use { scenario ->
+            awaitTag("home:coachmark:Drawer")
+            assertFalse(prefs.getBoolean("NavDrawerV1", false))
+            compose.onNodeWithTag("running_builds:drawer").assertDoesNotExist()
+            scenario.recreate()
+            awaitTag("home:coachmark:Drawer")
+            compose.onNodeWithTag("home:dismiss-prompt").performClick()
+            compose.waitUntil(10_000) { prefs.getBoolean("NavDrawerV1", false) }
+            // The initial Running tab also has its own first-use action tip.
+            awaitTag("home:coachmark:Running")
+            compose.onNodeWithTag("home:dismiss-prompt").performClick()
+            compose.waitUntil(10_000) { prefs.getBoolean("RBFilter", false) }
+            tips.filter { it.first != HomeTab.Running }.forEach { (tab, key) ->
+                compose.onNodeWithTag("home:tab:${tab.name}").performClick()
+                awaitTag("home:coachmark:${tab.name}")
+                assertFalse(prefs.getBoolean(key, false))
+                compose.onNodeWithTag("home:fab").assertDoesNotExist()
+                scenario.recreate()
+                awaitTag("home:coachmark:${tab.name}")
+                compose.onNodeWithTag("home:dismiss-prompt").performClick()
+                compose.waitUntil(10_000) { prefs.getBoolean(key, false) }
+                awaitTag("home:fab")
+            }
+            scenario.recreate()
+            awaitTag("home:fab")
+            compose.onAllNodesWithTag("home:coachmark:Agents").assertCountEquals(0)
+        }
+    }
+
     @Test fun installedLauncherAliasHostsStartupAndPreservesConsentForTheSavedAccount() {
         runBlocking { consent.setAcknowledged(true) }
         val alias = Intent().setComponent(ComponentName(app.packageName, "teamcityapp.features.splash.view.SplashActivity"))

@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
@@ -37,7 +38,7 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.home.api.*
-import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.*
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
@@ -76,7 +77,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
             stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
             stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
             stateName == "onboarding_failed" -> HomeUiState(badges = badges, onboardingFailed = true)
-            stateName.startsWith("prompt_") -> HomeUiState(badges = badges, prompt = HomePrompt.valueOf(stateName.removePrefix("prompt_")).ui())
+            stateName.startsWith("prompt_") -> HomePrompt.valueOf(stateName.removePrefix("prompt_")).let { HomeUiState(selected = if (it == HomePrompt.Drawer) HomeTab.Projects else HomeTab.valueOf(it.name), badges = badges, prompt = it.ui()) }
             else -> HomeUiState(selected = HomeTab.valueOf(stateName.removePrefix("tab_")), badges = badges)
         }
         compose.mainClock.autoAdvance = false
@@ -85,6 +86,9 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
                 HomeScreen(state, variant.width >= 600, {}, {}, {}, {}, remember { SnackbarHostState() }) {
                     Surface(Modifier.fillMaxSize()) {
                         Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                            if (state.prompt?.prompt == HomePrompt.Drawer) {
+                                IconButton({}, Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(teamcityapp.libraries.resources.R.drawable.ic_dehaze_black_24dp), "Open navigation drawer") }
+                            }
                             Text("TeamCity", style = MaterialTheme.typography.headlineSmall)
                             Text("Projects, configurations and builds", style = MaterialTheme.typography.bodyLarge)
                         }

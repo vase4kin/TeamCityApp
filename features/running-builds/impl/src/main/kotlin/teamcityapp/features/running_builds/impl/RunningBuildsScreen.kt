@@ -38,7 +38,9 @@ import teamcityapp.libraries.list_ui.TeamCityListContainer
 import teamcityapp.libraries.list_ui.TeamCityListEmpty
 import teamcityapp.libraries.list_ui.listRowPosition
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.coachmarkAnchor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +55,7 @@ internal fun RunningBuildsScreen(
 ) {
     Scaffold(modifier, topBar = {
         CenterAlignedTopAppBar(title = { Text(stringResource(R.string.running_builds_title)) }, navigationIcon = {
-            IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("running_builds:drawer")) { Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.running_builds_open_drawer)) }
+            IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("running_builds:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.running_builds_open_drawer)) }
         })
     }) { padding ->
         TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.padding(padding).fillMaxSize(), empty = {

@@ -34,5 +34,6 @@ dependencies {
     debugImplementation(libs.compose.ui.testManifest)
     implementation(projects.libraries.resources)
     implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.activity.compose)
     implementation(libs.google.material)
 }

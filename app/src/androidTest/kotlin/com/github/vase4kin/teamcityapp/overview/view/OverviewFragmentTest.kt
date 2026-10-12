@@ -381,7 +381,7 @@ class OverviewFragmentTest {
     @Test fun restartOnboardingCanBeDismissedBeforeVisitingAnotherTab() {
         TestUtils.enableOnboarding()
         `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
-        openLegacy(Mocks.successBuild(), BuildComposeFixtures.finished)
+        openLegacy(Mocks.successBuild(), BuildComposeFixtures.finished, openedTag = "details:dismiss-prompt")
         awaitTag("details:dismiss-prompt")
         compose.onNodeWithText("Restart, share or open finished builds in a browser").assertIsDisplayed()
         compose.onNodeWithTag("details:dismiss-prompt").performClick()
@@ -449,10 +449,10 @@ class OverviewFragmentTest {
         }
     }
 
-    private fun openLegacy(build: Build, incoming: BuildLaunchData = BuildComposeFixtures.incoming.copy(id = requireNotNull(build.id))) {
+    private fun openLegacy(build: Build, incoming: BuildLaunchData = BuildComposeFixtures.incoming.copy(id = requireNotNull(build.id)), openedTag: String = "overview:list") {
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(build))
         activityRule.launchActivity(BuildComposeFixtures.intent(incoming))
-        awaitTag("overview:list")
+        awaitTag(openedTag)
     }
     private fun openCurrent(build: BuildLaunchData) = openLegacy(BuildComposeFixtures.legacy(build))
     private fun row(field: String, value: String) {
