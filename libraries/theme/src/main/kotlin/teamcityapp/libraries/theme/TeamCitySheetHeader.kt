@@ -16,9 +16,7 @@
 
 package teamcityapp.libraries.theme
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun TeamCitySheetHeader(title: String) {
-    Box(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.mediumSpacing), contentAlignment = Alignment.Center) { Box(Modifier.size(TeamCityDimensions.sheetHandleWidth, TeamCityDimensions.sheetHandleHeight).background(MaterialTheme.colorScheme.onSurface.copy(alpha = .3f), RoundedCornerShape(TeamCityDimensions.sheetHandleCornerRadius))) }
     Box(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.sheetHeaderMinHeight).padding(horizontal = TeamCityDimensions.sectionSpacing, vertical = TeamCityDimensions.contentPadding), contentAlignment = Alignment.CenterStart) { Text(title, style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurface) }
 }
 

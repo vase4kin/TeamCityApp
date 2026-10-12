@@ -152,6 +152,7 @@ class RootSheetHostTest {
             assertHost(scenario)
             capture("${name}_initial")
             await("navigation:sheet")
+            compose.onAllNodesWithContentDescription("Drag handle", useUnmergedTree = true).assertCountEquals(1)
             assertHost(scenario)
             if (name.startsWith("drawer")) {
                 assertDrawerSpacingAndMenuWidths(scenario)
