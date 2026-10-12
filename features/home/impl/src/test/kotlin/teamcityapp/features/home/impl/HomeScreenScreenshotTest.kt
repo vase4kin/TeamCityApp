@@ -22,8 +22,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -41,7 +43,7 @@ import teamcityapp.features.home.api.*
 import teamcityapp.libraries.theme.*
 import teamcityapp.libraries.theme.TeamCityTheme
 
-@OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class)
+@OptIn(ExperimentalTestApi::class, ExperimentalRoborazziApi::class, ExperimentalMaterial3Api::class)
 @RunWith(ParameterizedRobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class, qualifiers = "en-rUS-mdpi")
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
@@ -77,6 +79,8 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
             stateName == "counts_failed" -> HomeUiState(badges = badges.mapValues { HomeBadge.Failed() })
             stateName == "partial_failure" -> HomeUiState(badges = badges + (HomeTab.Queue to HomeBadge.Failed()))
             stateName == "onboarding_failed" -> HomeUiState(badges = badges, onboardingFailed = true)
+            stateName == "favorites_count_failure" -> HomeUiState(selected = HomeTab.Favorites, badges = badges + (HomeTab.Running to HomeBadge.Failed()))
+            stateName == "favorites_toolbar" -> HomeUiState(selected = HomeTab.Favorites, badges = badges)
             stateName.startsWith("prompt_") -> HomePrompt.valueOf(stateName.removePrefix("prompt_")).let { HomeUiState(selected = if (it == HomePrompt.Drawer) HomeTab.Projects else HomeTab.valueOf(it.name), badges = badges, prompt = it.ui()) }
             else -> HomeUiState(selected = HomeTab.valueOf(stateName.removePrefix("tab_")), badges = badges)
         }
@@ -84,13 +88,31 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         compose.setContent {
             TeamCityTheme(darkTheme = variant.dark) {
                 HomeScreen(state, variant.width >= 600, {}, {}, {}, {}, remember { SnackbarHostState() }) {
-                    Surface(Modifier.fillMaxSize()) {
-                        Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-                            if (state.prompt?.prompt == HomePrompt.Drawer) {
-                                IconButton({}, Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(teamcityapp.libraries.resources.R.drawable.ic_dehaze_black_24dp), "Open navigation drawer") }
+                    if (stateName.startsWith("favorites_")) {
+                        // Exercise the tab-owned toolbar and a nonzero top inset together with Home.
+                        Scaffold(topBar = {
+                            CenterAlignedTopAppBar(
+                                title = { Text(stringResource(R.string.home_favorites)) },
+                                navigationIcon = { IconButton({}) { Icon(painterResource(teamcityapp.libraries.resources.R.drawable.ic_dehaze_black_24dp), "Open navigation drawer") } },
+                                windowInsets = WindowInsets(top = 24.dp)
+                            )
+                        }) { padding ->
+                            Column(Modifier.padding(padding).padding(TeamCityDimensions.contentPadding)) {
+                                Text("Kotlin / Kotlin Release", style = MaterialTheme.typography.titleSmall)
+                                Surface(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
+                                    Text("Aggregate (2.4.20)", Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.titleMedium)
+                                }
                             }
-                            Text("TeamCity", style = MaterialTheme.typography.headlineSmall)
-                            Text("Projects, configurations and builds", style = MaterialTheme.typography.bodyLarge)
+                        }
+                    } else {
+                        Surface(Modifier.fillMaxSize()) {
+                            Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                                if (state.prompt?.prompt == HomePrompt.Drawer) {
+                                    IconButton({}, Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(teamcityapp.libraries.resources.R.drawable.ic_dehaze_black_24dp), "Open navigation drawer") }
+                                }
+                                Text("TeamCity", style = MaterialTheme.typography.headlineSmall)
+                                Text("Projects, configurations and builds", style = MaterialTheme.typography.bodyLarge)
+                            }
                         }
                     }
                 }
@@ -106,7 +128,7 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("loading", "counts_failed", "partial_failure", "onboarding_failed") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("loading", "counts_failed", "partial_failure", "onboarding_failed", "favorites_toolbar", "favorites_count_failure") + HomeTab.entries.map { "tab_${it.name}" } + HomePrompt.entries.map { "prompt_${it.name}" }).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }
