@@ -605,3 +605,50 @@ Final verification with JDK 17:
 - Production audits and whitespace checks passed: MainActivity is the sole application-owned activity, feature fragment hosts and internal activity-result launches are gone, and features have no implementation-to-implementation dependencies.
 
 All eight phases and completion gates are satisfied. The migration is saved as coherent local GitButler checkpoints on `codex/single-activity-navigation`; no push or pull request was created. Broader Room, network serialization, preference storage and WorkManager migrations remain outside this completed navigation goal.
+
+## Follow-up cleanup and app structure proposal (2026-10-12)
+
+The post-migration audit covers all 28 feature implementations. Typed destination registrations, ViewModels, trackers, live platform routers and their Hilt scopes remain. The ten obsolete feature Activity-navigation interfaces/implementations and their navigation-only bindings are removed: About, Settings, Login, Create Account, Manage Accounts, Projects, Build History, Artifacts, Test Details and Change Details. The unused app Build Details launcher wrapper is also removed. Wrapper-only tests are retired; analytics, destination/result, installed-alias and runtime navigation coverage remain. The only remaining activity-entry test helper lives in `app/src/androidTest/kotlin`, with no production launcher interface/binding. Legacy Intent keys belong to the app dispatcher; implementation saved-state keys belong to their feature ViewModels. Three platform routers require an explicit close callback rather than defaulting to finishing the root activity.
+
+| Audited implementations | Outcome |
+| --- | --- |
+| About, Settings, Login, Create Account, Manage Accounts, Projects, Build History, Artifacts, Test Details, Change Details | Removed obsolete entry contracts, wrappers/bindings and forwarding-only tests; retained typed registrations and live behavior |
+| Home, Build Details | Retained typed shell navigation; replaced centered onboarding dialogs with the shared control-anchored coachmark |
+| Agents, Favorites, Running Builds, Build Queue | Retained typed retained-pane routes; drawer controls report their actual bounds to Home onboarding |
+| Drawer, Quick Filter, Action Bottom Sheet | Retained live typed sheet destinations/results and UI-scoped actions |
+| Build Overview, Changes, Test Occurrences, Build Log, Properties, Snapshot Dependencies | Retained live child destinations, retained state and platform resource contracts |
+| Splash, Run Build, Filter Builds | Retained startup/account preparation and origin-targeted workflow/results registrations |
+
+Home's drawer and action FABs, Build Details' menu and Build History's Run/Filter/Favorite buttons use the same shared spotlight/explanation component in `libraries/theme`. Anchors come from real layout coordinates, translated into the overlay host; removed child controls remove their anchors. Explanations appear beside the relevant screen edge, below toolbar controls or above FABs. The overlay blocks underlying actions and accessibility traversal, supports dismissal and retains History's persistence/retry behavior. Existing onboarding preference keys and acknowledgement behavior remain.
+
+The following app structure is a proposal only. No app data/storage/package reorganization has been executed as part of this follow-up.
+
+```text
+app/src/main/kotlin/com/github/vase4kin/teamcityapp/
+  application/                  # application initialization and app-wide composition
+  navigation/                   # MainActivity, root/account flow, incoming alias dispatcher
+  integration/
+    authentication/             # current auth and account-session compatibility adapters
+    features/<feature>/         # adapters still requiring app-owned API/cache/account state
+  di/                           # app composition bindings, organized by responsibility
+app/src/main/java/               # Java only; keep existing DTO packages until compatibility is verified
+features/<feature>/impl/         # feature UI, ViewModel, mapping, tracker, destination/platform router
+libraries/teamcity-data/{api,impl}/ # proposed shared server repositories, network/cache implementations
+libraries/account-session/{api,impl}/ # proposed account identity, session/auth/storage contracts
+```
+
+The inventory found 15 Kotlin files under `app/src/main/java` and 28 Java files there. Move those Kotlin sources to matching `src/main/kotlin` package paths first, preserving their fully qualified names; no simultaneous package/model rewrite is needed. Keep Kotlin in the Kotlin roots for every variant and test source set as well. The current app Kotlin tree contains composition, compatibility and repository adapters rather than remaining screen UI.
+
+Keep MainActivity, installed-alias decoding, account navigation coordination and app-wide DI composition in `app`. Keep feature behavior and feature-local mapping in the corresponding implementation. Once shared server/session contracts are extracted, adapters such as `AppAgentsRepository`, `AppBuildHistoryRepository` and `AppBuildOverviewRepository` can move into their feature implementations or dedicated shared data implementations without depending on `app`. Do not move them while they still require app-owned `Repository`, `ApiSession`, DTOs or storage.
+
+Shared TeamCity wire DTOs, Retrofit/Gson services, RxCache providers and cache implementations belong in the proposed shared data module, separate from immutable domain models. Preserve serialized class names, field names and cache schemas during extraction; moving a source file between roots/modules does not require changing its package. Shared encrypted account persistence and API-session ownership belong behind the proposed account-session contract. Replace the existing account-scoped Dagger graph with Hilt as a separate data/session migration, then remove its obsolete component/scope classes. A folder rename alone would leave the coupling intact.
+
+Use `di` for future binding packages rather than a mixture of `dagger`, `modules`, `data` and screen-named directories. Keep repository logic out of DI files. Avoid a new catch-all `utils`, `models` or `api` package: name data by its server/account responsibility and keep DTO, domain and UI representations distinct. Extract shared contracts before moving implementations, verify persistence/cache compatibility, then remove app adapters after their final callers migrate.
+
+Follow-up verification:
+
+- All 3,505 local cases passed, including 2,432 screenshot cases. The shared anchor placement/disposal and Home/Build Details interaction tests pass.
+- All 389 integration cases were verified on API 37. The broad run passed 388 cases and identified one Overview onboarding fixture waiting for content hidden by the active tooltip. The fixture now waits for the tip; all 31 Overview cases passed in the corrected APK. The new Home onboarding case covers a non-Projects initial tab, real retained-child drawer targets, recreation, all action tips and persisted acknowledgement.
+- Mock app/instrumentation APK builds, production-debug Kotlin compilation, all-library lint, both app flavor lint tasks and formatting passed. The corrected instrumentation fixture was rebuilt and its formatting checked separately.
+- Exactly 48 existing onboarding PNGs were updated after comparison and visual review: 30 Home and 18 Build Details. All 168 History screenshot cases and all non-onboarding baselines remain unchanged. Both themes, compact/expanded layouts and enlarged text are covered.
+- The follow-up is saved in separate local cleanup, onboarding and documentation checkpoints on `codex/single-activity-navigation`. No push or pull request was created. App data/storage/package moves remain a proposal.
