@@ -25,12 +25,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
+import androidx.compose.material3.FloatingToolbarDefaults.floatingToolbarVerticalNestedScroll
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -45,11 +46,10 @@ import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
-import teamcityapp.libraries.theme.TeamCityExtendedFloatingActionButton
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.resolve
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun BuildHistoryScreen(
     title: String,
@@ -83,10 +83,16 @@ internal fun BuildHistoryScreen(
     }
     val anchors = remember { mutableStateMapOf<BuildHistoryPrompt, Rect>() }
     val prompt = (controls.onboarding as? OnboardingState.Available)?.takeIf {
-        it.prompt != BuildHistoryPrompt.Run || state != ListUiState.Error
+        it.prompt != null && (it.prompt != BuildHistoryPrompt.Run || state != ListUiState.Error)
     }
     val promptBounds = prompt?.prompt?.let(anchors::get)
-    Box(modifier.fillMaxSize()) {
+    var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
+    val touchExplorationEnabled = rememberHistoryTouchExplorationEnabled()
+    val atTop by remember(listState) { derivedStateOf { !listState.canScrollBackward } }
+    val actionsExpanded = toolbarExpanded || atTop || prompt != null || touchExplorationEnabled || state !is ListUiState.Content
+    var actionHeight by remember { mutableStateOf(FloatingToolbarDefaults.ContainerSize) }
+    val density = LocalDensity.current
+    BoxWithConstraints(modifier.fillMaxSize()) {
         Scaffold(
             modifier = if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier,
             topBar = {
@@ -99,26 +105,6 @@ internal fun BuildHistoryScreen(
                                 IconButton(onClick = onBack, modifier = Modifier.testTag("history:back")) {
                                     Icon(painterResource(R.drawable.ic_history_back), stringResource(R.string.history_back))
                                 }
-                            },
-                            actions = {
-                                IconButton(onClick = onFilters, modifier = Modifier.testTag("history:filter").onGloballyPositioned { anchors[BuildHistoryPrompt.Filter] = it.boundsInRoot() }) {
-                                    Icon(painterResource(R.drawable.ic_history_filter), stringResource(R.string.history_filter))
-                                }
-                                val favorite = controls.favorite
-                                IconButton(
-                                    onClick = if (favorite == FavoriteState.Unavailable) onFavoriteRetry else onFavorite,
-                                    enabled = favorite != FavoriteState.Loading && (favorite !is FavoriteState.Available || !favorite.updating),
-                                    modifier = Modifier.testTag("history:favorite").onGloballyPositioned { anchors[BuildHistoryPrompt.Favorite] = it.boundsInRoot() }
-                                ) {
-                                    if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
-                                        CircularProgressIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
-                                    } else {
-                                        Icon(
-                                            painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),
-                                            stringResource(controls.favoriteActionLabelRes)
-                                        )
-                                    }
-                                }
                             }
                         )
                         Text(title, Modifier.fillMaxWidth().padding(start = TeamCityDimensions.contentPadding, end = TeamCityDimensions.contentPadding, bottom = TeamCityDimensions.contentPadding), style = MaterialTheme.typography.headlineSmall)
@@ -126,16 +112,18 @@ internal fun BuildHistoryScreen(
                 }
             },
             floatingActionButton = {
-                if (state != ListUiState.Error) {
-                    TeamCityExtendedFloatingActionButton(
-                        onRunBuild,
-                        Modifier.testTag("history:run").onGloballyPositioned { anchors[BuildHistoryPrompt.Run] = it.boundsInRoot() }
-                    ) {
-                        Icon(painterResource(R.drawable.ic_history_run), null)
-                        Spacer(Modifier.width(TeamCityDimensions.mediumSpacing))
-                        Text(stringResource(R.string.history_run))
-                    }
-                }
+                BuildHistoryActions(
+                    controls = controls,
+                    expanded = actionsExpanded,
+                    showRunBuild = state != ListUiState.Error,
+                    onRunBuild = onRunBuild,
+                    onFilters = onFilters,
+                    onFavorite = onFavorite,
+                    onFavoriteRetry = onFavoriteRetry,
+                    onAnchor = { target, bounds -> anchors[target] = bounds },
+                    modifier = Modifier.widthIn(max = (maxWidth - TeamCityDimensions.extraLargeSpacing).coerceAtLeast(TeamCityDimensions.minimumTouchTarget))
+                        .onSizeChanged { actionHeight = with(density) { it.height.toDp() } }
+                )
             },
             snackbarHost = {
                 BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -153,14 +141,11 @@ internal fun BuildHistoryScreen(
                 }
             }
         ) { padding ->
-            val actionClearance = if (state == ListUiState.Error) {
-                TeamCityDimensions.noSpacing
-            } else {
-                with(LocalDensity.current) { anchors[BuildHistoryPrompt.Run]?.height?.toDp() ?: TeamCityDimensions.controlMinHeight } + TeamCityDimensions.sectionSpacing
-            }
-            // Reserve an action lane outside the scroll viewport: even a partially scrolled
-            // append retry or build row must remain above the floating action's hit target.
-            BoxWithConstraints(Modifier.fillMaxSize().padding(padding).padding(bottom = actionClearance).testTag("history:body")) {
+            val actionClearance = actionHeight + TeamCityDimensions.sectionSpacing
+            // A retry footer needs an unobstructed hit target even when only partly scrolled
+            // into view. Ordinary history content can scroll behind the floating controls.
+            val retryClearance = if (appendState == HistoryAppendState.Error) actionClearance else TeamCityDimensions.noSpacing
+            BoxWithConstraints(Modifier.fillMaxSize().padding(padding).padding(bottom = retryClearance).testTag("history:body")) {
                 val noticeMaxHeight = maxHeight / 3
                 Column(Modifier.fillMaxSize()) {
                     Column(
@@ -180,7 +165,23 @@ internal fun BuildHistoryScreen(
                         Modifier.weight(1f).fillMaxWidth().testTag("history:main-content"),
                         empty = { TeamCityListEmpty(stringResource(R.string.history_empty)) }
                     ) {
-                        LazyColumn(Modifier.fillMaxSize().testTag("history:list"), state = listState, contentPadding = PaddingValues(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.contentPadding)) {
+                        LazyColumn(
+                            Modifier.fillMaxSize().testTag("history:list").then(
+                                if (prompt == null && !touchExplorationEnabled) {
+                                    Modifier.floatingToolbarVerticalNestedScroll(
+                                        expanded = toolbarExpanded,
+                                        onExpand = { toolbarExpanded = true },
+                                        onCollapse = { toolbarExpanded = false },
+                                        expandScrollDistanceThreshold = TeamCityDimensions.sectionSpacing,
+                                        collapseScrollDistanceThreshold = TeamCityDimensions.sectionSpacing
+                                    )
+                                } else {
+                                    Modifier
+                                }
+                            ),
+                            state = listState,
+                            contentPadding = PaddingValues(top = TeamCityDimensions.smallSpacing, bottom = actionClearance - retryClearance + TeamCityDimensions.contentPadding)
+                        ) {
                             items(itemCount, key = { itemKeys[it] }, contentType = { "build" }) { index ->
                                 val build = itemAt(index)
                                 if (build == null) {

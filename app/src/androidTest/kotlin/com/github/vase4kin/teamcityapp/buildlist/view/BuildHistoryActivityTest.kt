@@ -438,10 +438,10 @@ class BuildHistoryActivityTest {
             scenario.recreate()
             assertCoachmark("Run", "history:run", HistoryR.string.history_prompt_run_description, above = true)
             compose.onNodeWithTag("history:prompt-dismiss").performClick()
-            assertCoachmark("Filter", "history:filter", HistoryR.string.history_prompt_filter_description)
+            assertCoachmark("Filter", "history:filter", HistoryR.string.history_prompt_filter_description, above = true)
             Assert.assertTrue(prefs.getBoolean("RunBuild", false))
             compose.onNodeWithTag("history:prompt-dismiss").performClick()
-            assertCoachmark("Favorite", "history:favorite", HistoryR.string.history_prompt_favorite_description)
+            assertCoachmark("Favorite", "history:favorite", HistoryR.string.history_prompt_favorite_description, above = true)
             Assert.assertTrue(prefs.getBoolean("FilterBuilds", false))
             compose.onNodeWithTag("history:prompt-dismiss").performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("history:coachmark:Favorite").fetchSemanticsNodes().isEmpty() }

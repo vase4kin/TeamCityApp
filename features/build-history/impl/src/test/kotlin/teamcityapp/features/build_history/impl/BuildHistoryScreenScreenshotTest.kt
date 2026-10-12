@@ -75,7 +75,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             historyBuild("running", "running").copy(personal = true, pinned = true, statusText = "Running Android instrumented tests", branchName = "feature/lists"),
             historyBuild("42").copy(status = "FAILURE", statusText = "Compilation failed in the app integration module", branchName = "main"),
             historyBuild("43").copy(startDate = "20261009T102030Z", statusText = "All 214 tests passed")
-        )
+        ) + if (stateName.startsWith("toolbar_")) (44..63).map { historyBuild(it.toString()).copy(startDate = "20261008T102030Z") } else emptyList()
         val state: ListUiState<BuildLaunchData> = when (stateName) {
             "loading" -> ListUiState.Loading
             "error" -> ListUiState.Error
@@ -131,9 +131,24 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName == "toolbar_collapsed" || stateName == "toolbar_returned") {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .25f, durationMillis = 500) }
+            compose.onNodeWithTag("history:filter").assertDoesNotExist()
+            compose.onNodeWithTag("history:favorite").assertDoesNotExist()
+            if (stateName == "toolbar_returned") {
+                compose.onNodeWithTag("history:list").performTouchInput { swipeDown(startY = height * .25f, endY = height * .65f, durationMillis = 500) }
+                compose.onNodeWithTag("history:filter").assertIsDisplayed()
+                compose.onNodeWithTag("history:favorite").assertIsDisplayed()
+            }
+            compose.onNodeWithText("Run build").assertIsDisplayed()
+            compose.mainClock.autoAdvance = false
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+        }
         val roots = compose.onAllNodes(isRoot())
         roots[roots.fetchSemanticsNodes().lastIndex].captureRoboImage("history_${stateName}_${variant.name}.png")
-        if (state is ListUiState.Content && variant.fontScale > 1f && opening == QueuedBuildState.Idle && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
+        if (!stateName.startsWith("toolbar_") && state is ListUiState.Content && variant.fontScale > 1f && opening == QueuedBuildState.Idle && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
             compose.mainClock.autoAdvance = true
             if (append == HistoryAppendState.Idle) {
                 compose.onNodeWithTag("history:list").performScrollToNode(hasTestTag("history:build:43"))
@@ -162,7 +177,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
                 "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed", "queued_loading", "queued_failed",
-                "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed"
+                "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_collapsed", "toolbar_returned"
             ).flatMap { name ->
                 variants.map { arrayOf<Any>(name, it) }
             }
