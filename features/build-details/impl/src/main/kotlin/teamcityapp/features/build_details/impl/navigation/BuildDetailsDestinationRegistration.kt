@@ -20,7 +20,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.*
-import androidx.compose.material3.windowsizeclass.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -36,22 +35,15 @@ import javax.inject.Inject
 import javax.inject.Provider
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_details.impl.*
 import teamcityapp.features.build_details.impl.R
 import teamcityapp.features.build_history.api.BuildHistoryFilterAdapter
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
-import teamcityapp.features.build_log.api.navigation.BuildLogDestination
 import teamcityapp.features.build_overview.api.*
 import teamcityapp.features.build_overview.api.navigation.BuildOverviewDestination
-import teamcityapp.features.changes.api.navigation.ChangesDestination
 import teamcityapp.features.filter_builds.api.*
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
-import teamcityapp.features.properties.api.*
-import teamcityapp.features.properties.api.navigation.PropertiesDestination
-import teamcityapp.features.snapshot_dependencies.api.navigation.SnapshotDependenciesDestination
-import teamcityapp.features.tests.api.navigation.TestsDestination
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.navigation.*
@@ -60,9 +52,9 @@ class BuildDetailsDestinationRegistration @Inject constructor(
     private val registry: Provider<DestinationRegistry>,
     private val analytics: BuildOverviewAnalytics,
     private val filterResults: FilterBuildsResultAdapter,
-    private val historyFilters: BuildHistoryFilterAdapter
+    private val historyFilters: BuildHistoryFilterAdapter,
+    private val logLink: teamcityapp.features.build_details.impl.router.BuildDetailsLogLink
 ) : FeatureDestination<BuildDetailsDestination>(BuildDetailsDestination::class, BuildDetailsDestination.serializer()) {
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @Composable
     override fun Content(destination: BuildDetailsDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
@@ -96,10 +88,16 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                 object : BuildDetailsUiHost {
                     override val entryId = entryId
                     override val refreshVersion get() = latest.overviewRefresh
-                    override val current get() = latest.current
+                    override val current get() = model.state.value.current
                     override fun loaded(build: BuildLaunchData) = model.loaded(build)
                     override val countStates get() = latestMetadata.counts
-                    override fun retryCount(tab: BuildDetailsTab) = metadata.retryCount(tab)
+                    override fun retryCount(tab: BuildDetailsSection) = metadata.retryCount(tab)
+                    override fun openSection(section: BuildDetailsSection) {
+                        val currentState = model.state.value
+                        if (!currentState.busy && section in destination.build.detailsSections()) {
+                            navigator.push(BuildDetailsSectionDestination(destination.build, section, currentState.subtitle, currentState.current.number ?: currentState.current.id))
+                        }
+                    }
                     override fun copied() {
                         scope.launch { snackbar.showSnackbar(copied) }
                     }
@@ -109,6 +107,7 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                             when (action) {
                                 BuildDetailsCommand.Share -> BuildOverviewAction.Share
                                 BuildDetailsCommand.Browser -> BuildOverviewAction.Browser
+                                BuildDetailsCommand.Log -> BuildOverviewAction.Log
                                 BuildDetailsCommand.Cancel -> if (build.isRunning) BuildOverviewAction.Stop else BuildOverviewAction.RemoveFromQueue
                                 BuildDetailsCommand.Restart -> BuildOverviewAction.Restart
                                 BuildDetailsCommand.Configuration -> BuildOverviewAction.Configuration
@@ -125,6 +124,12 @@ class BuildDetailsDestinationRegistration @Inject constructor(
 
                             BuildDetailsCommand.Browser -> try {
                                 tabs.launchUrl(build.webUrl.orEmpty())
+                            } catch (_: Exception) {
+                                scope.launch { snackbar.showSnackbar(platformFailed) }
+                            }
+
+                            BuildDetailsCommand.Log -> try {
+                                if (!build.isQueued) tabs.launchUrl(logLink.url(build.id))
                             } catch (_: Exception) {
                                 scope.launch { snackbar.showSnackbar(platformFailed) }
                             }
@@ -164,40 +169,25 @@ class BuildDetailsDestinationRegistration @Inject constructor(
                     if (result == SnackbarResult.ActionPerformed && notice.openQueued) model.openQueued()
                 }
             }
-            val children = remember(destination, entryId) {
-                destination.build.detailsTabs().map { tab ->
-                    val build = destination.build
-                    val key = when (tab) {
-                        BuildDetailsTab.Overview -> BuildOverviewDestination(build, destination.forceOverviewRefresh)
-                        BuildDetailsTab.Changes -> ChangesDestination(checkNotNull(build.changes?.href))
-                        BuildDetailsTab.Tests -> checkNotNull(build.tests).let { TestsDestination(checkNotNull(it.href), it.passed, it.failed, it.ignored) }
-                        BuildDetailsTab.BuildLog -> BuildLogDestination(build.id)
-                        BuildDetailsTab.Parameters -> PropertiesDestination(build.properties?.items.orEmpty().map { Property(it.name.orEmpty(), it.value.orEmpty()) })
-                        BuildDetailsTab.Artifacts -> ArtifactsDestination(build, checkNotNull(build.artifacts?.href), showToolbar = false)
-                        BuildDetailsTab.Snapshots -> SnapshotDependenciesDestination(build.id)
-                    }
-                    NavigationEntry("$entryId/${tab.name}", key)
-                }
+            val overview = remember(destination, entryId) {
+                NavigationEntry("$entryId/Overview", BuildOverviewDestination(destination.build, destination.forceOverviewRefresh))
             }
             CompositionLocalProvider(LocalBuildDetailsUiHost provides host) {
                 val presentation = state.copy(
-                    counts = metadataState.counts.mapNotNull { (tab, count) -> (count as? BuildDetailsCount.Available)?.let { tab to it.count } }.toMap(),
                     countFailures = metadataState.counts.filterValues { it == BuildDetailsCount.Unavailable }.keys,
                     onboardingFailed = metadataState.onboardingFailed,
-                    prompt = metadataState.prompt.takeIf { state.selected == BuildDetailsTab.Overview && lifecycleState == Lifecycle.State.RESUMED && navigator.current.id == entryId }
+                    prompt = metadataState.prompt.takeIf { lifecycleState == Lifecycle.State.RESUMED && navigator.current.id == entryId }
                 )
                 BuildDetailsScreen(
                     presentation,
-                    calculateWindowSizeClass(activity).widthSizeClass != WindowWidthSizeClass.Compact,
                     onUp = { if (!navigator.pop()) activity.finish() },
-                    onSelect = model::select,
                     onAction = { action -> host.dispatch(action, state.current) },
                     onConfirm = model::confirm,
                     onDismissConfirmation = model::dismissConfirmation,
                     snackbar = snackbar,
                     onDismissPrompt = metadata::dismissPrompt,
                     onRetryMetadata = metadata::retryFailed
-                ) { RetainedNavigationPane(children, "$entryId/${state.selected.name}", navigator, registry.get()) }
+                ) { RetainedNavigationPane(listOf(overview), overview.id, navigator, registry.get()) }
             }
         }
     }

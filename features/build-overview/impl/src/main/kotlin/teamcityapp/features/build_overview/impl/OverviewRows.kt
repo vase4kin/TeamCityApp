@@ -82,10 +82,10 @@ internal fun overviewRows(build: BuildLaunchData): List<OverviewRow> = buildList
     }
     if (build.personal) add(OverviewField.Personal, userText(trigger?.user), OverviewIcon.Person)
     val configuration = build.configuration
-    if (configuration?.projectName != null) {
-        addText(OverviewField.Configuration, configuration.name, OverviewIcon.Configuration, OverviewRowAction.Configuration)
-        addText(OverviewField.Project, configuration.projectName, OverviewIcon.Project, OverviewRowAction.Project)
-    }
+    val configurationName = configuration?.name ?: build.buildTypeId
+    addText(OverviewField.Configuration, configurationName, OverviewIcon.Configuration, if (build.buildTypeId.isNullOrBlank()) OverviewRowAction.Copy else OverviewRowAction.Configuration)
+    val projectName = configuration?.projectName ?: configuration?.projectId
+    addText(OverviewField.Project, projectName, OverviewIcon.Project, if (configuration?.projectId.isNullOrBlank()) OverviewRowAction.Copy else OverviewRowAction.Project)
 }
 private fun userText(user: BuildUser?): OverviewText = if (user == null) OverviewText.DeletedUser else (user.name ?: user.username)?.let { OverviewText.Literal(it) } ?: OverviewText.DeletedUser
 private fun parseDate(raw: String?): Date? = raw?.let {

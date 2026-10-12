@@ -48,7 +48,6 @@ import org.mockito.Spy
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
-import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
@@ -80,7 +79,6 @@ class MainActivityRestorationTest {
 
     @Inject lateinit var launcher: RootDestinationLauncher
 
-    @Inject lateinit var consent: BuildLogConsentStorage
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
     private val app get() = context.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
@@ -118,7 +116,6 @@ class MainActivityRestorationTest {
     @Test fun aDifferentUserOnTheSameServerCannotRestoreAnOldArtifactRequestOrReplayItOnLaterRecreation() {
         ActivityScenario.launch<MainActivity>(alias()).use { scenario ->
             awaitText(destination.name)
-            runBlocking { consent.setAcknowledged(true) }
             val callback = object : Application.ActivityLifecycleCallbacks {
                 override fun onActivitySaveInstanceState(activity: Activity, state: Bundle) {
                     if (activity is MainActivity) {
@@ -141,7 +138,6 @@ class MainActivityRestorationTest {
                 app.unregisterActivityLifecycleCallbacks(callback)
             }
             awaitHome()
-            assertFalse(runBlocking { consent.acknowledged() })
             compose.onNodeWithText(destination.name).assertDoesNotExist()
             scenario.onActivity {
                 assertEquals("alice", storage.activeUser.userName)
@@ -265,7 +261,6 @@ class MainActivityRestorationTest {
             awaitHome()
             var oldVisit: String? = null
             scenario.onActivity { oldVisit = it.navigationSnapshot!!.entries.single().id }
-            runBlocking { consent.setAcknowledged(true) }
             scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)
             saveDifferentUser()
             scenario.onActivity {
@@ -288,7 +283,6 @@ class MainActivityRestorationTest {
                 assertEquals("alice", storage.activeUser.userName)
                 assertTrue(it.navigationSnapshot!!.results.isEmpty())
             }
-            assertFalse(runBlocking { consent.acknowledged() })
             scenario.recreate()
             awaitTag("home:tab:Queue")
             scenario.onActivity { assertEquals(teamcityapp.features.home.api.HomeTab.Queue, (it.navigationSnapshot!!.entries.single().destination as HomeDestination).tab) }

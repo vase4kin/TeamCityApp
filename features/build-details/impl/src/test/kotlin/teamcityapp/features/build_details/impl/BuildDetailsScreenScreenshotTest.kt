@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -40,6 +41,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.theme.LocalFloatingActionClearance
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -74,16 +76,20 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
 
     @Test fun rendersState() {
         val snapshot = BuildLaunchData("42", "/builds/42", number = "42", state = "finished", webUrl = "https://server/build/42", buildTypeId = "android", configuration = BuildConfigurationData("android", "Build Android application", "project", "Android"), changes = BuildCollectionLink("/changes"), tests = BuildTests("/tests", 100, 20, 3, 123), artifacts = BuildCollectionLink("/artifacts"), snapshotDependencies = BuildCollectionLink(null))
-        val counts = mapOf(BuildDetailsTab.Changes to 12, BuildDetailsTab.Tests to 123)
+        val counts = mapOf(BuildDetailsSection.Changes to 12, BuildDetailsSection.Tests to 123)
         val state = when {
             stateName.startsWith("prompt_") -> {
-                val kind = BuildDetailsPrompt.valueOf(stateName.removePrefix("prompt_"))
-                val description = when (kind) {
-                    BuildDetailsPrompt.Stop -> R.string.text_onboarding_stop_build
-                    BuildDetailsPrompt.Remove -> R.string.text_onboarding_remove_build_from_queue
-                    BuildDetailsPrompt.Restart -> R.string.text_onboarding_restart_build
-                }
-                BuildDetailsUiState(snapshot, counts = counts, prompt = BuildDetailsPromptUi(kind, description = description))
+                val kind = BuildDetailsPrompt.valueOf(stateName.removePrefix("prompt_").removeSuffix("_saving").removeSuffix("_failed"))
+                BuildDetailsUiState(
+                    snapshot.copy(
+                        state = when (kind) {
+                            BuildDetailsPrompt.Stop -> "running"
+                            BuildDetailsPrompt.Remove -> "queued"
+                            else -> "finished"
+                        }
+                    ),
+                    prompt = BuildDetailsPromptUi(kind, saving = stateName.endsWith("_saving"), saveFailed = stateName.endsWith("_failed"))
+                )
             }
 
             stateName.startsWith("notice_") -> {
@@ -93,18 +99,20 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
                     "notice_restarted" -> BuildDetailsNotice(1, R.string.text_build_is_restarted, openQueued = true)
                     else -> BuildDetailsNotice(1, R.string.error_opening_build, openQueued = true)
                 }
-                BuildDetailsUiState(snapshot, counts = counts, notice = notice)
+                BuildDetailsUiState(snapshot, notice = notice)
             }
 
             stateName == "counts_loading" -> BuildDetailsUiState(snapshot)
 
-            stateName == "counts_partial_failed" -> BuildDetailsUiState(snapshot, counts = mapOf(BuildDetailsTab.Changes to 12), countFailures = setOf(BuildDetailsTab.Tests))
+            stateName == "counts_partial_failed" -> BuildDetailsUiState(snapshot, countFailures = setOf(BuildDetailsSection.Tests))
 
-            stateName == "counts_all_failed" -> BuildDetailsUiState(snapshot, countFailures = setOf(BuildDetailsTab.Changes, BuildDetailsTab.Tests))
+            stateName == "counts_all_failed" -> BuildDetailsUiState(snapshot, countFailures = setOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests))
 
-            stateName == "tips_failed" -> BuildDetailsUiState(snapshot, counts = counts, onboardingFailed = true)
+            stateName == "tips_failed" -> BuildDetailsUiState(snapshot, onboardingFailed = true)
 
-            stateName.startsWith("tab_") -> BuildDetailsUiState(snapshot, selected = BuildDetailsTab.valueOf(stateName.removePrefix("tab_")), counts = counts)
+            stateName == "running" -> BuildDetailsUiState(snapshot.copy(state = "running"))
+
+            stateName == "queued" -> BuildDetailsUiState(snapshot.copy(state = "queued"))
 
             stateName.startsWith("dialog_") -> {
                 val kind = when {
@@ -112,12 +120,12 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
                     stateName.contains("Remove") -> ConfirmationKind.Remove
                     else -> ConfirmationKind.Restart
                 }
-                BuildDetailsUiState(snapshot, counts = counts, confirmation = BuildConfirmation(snapshot, kind, own = !stateName.endsWith("other")))
+                BuildDetailsUiState(snapshot, confirmation = BuildConfirmation(snapshot, kind, own = !stateName.endsWith("other")))
             }
 
-            stateName.startsWith("progress_") -> BuildDetailsUiState(snapshot, counts = counts, operation = BuildDetailsOperation.valueOf(stateName.removePrefix("progress_")))
+            stateName.startsWith("progress_") -> BuildDetailsUiState(snapshot, operation = BuildDetailsOperation.valueOf(stateName.removePrefix("progress_")))
 
-            else -> BuildDetailsUiState(snapshot, counts = counts)
+            else -> BuildDetailsUiState(snapshot)
         }
         compose.mainClock.autoAdvance = false
         compose.setContent {
@@ -128,11 +136,26 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
                 LaunchedEffect(message, action) {
                     message?.let { snackbar.showSnackbar(it, action, duration = SnackbarDuration.Indefinite) }
                 }
-                BuildDetailsScreen(state, variant.width >= 600, {}, {}, {}, {}, {}, snackbar) {
-                    Surface(Modifier.fillMaxSize()) {
-                        Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
-                            Text("Build #42", style = MaterialTheme.typography.headlineSmall)
-                            Text("${state.selected.name} content", style = MaterialTheme.typography.bodyLarge)
+                if (stateName.startsWith("section_")) {
+                    BuildDetailsSectionScreen(BuildDetailsSection.valueOf(stateName.removePrefix("section_")), "42", "Build Android application", {}) { Surface(Modifier.fillMaxSize()) {} }
+                } else {
+                    BuildDetailsScreen(state, {}, {}, {}, {}, snackbar) {
+                        if (stateName == "floating_content") {
+                            val clearance = LocalFloatingActionClearance.current
+                            androidx.compose.foundation.lazy.LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = clearance)) {
+                                items(20) { index ->
+                                    Surface(color = if (index % 2 == 0) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.tertiaryContainer) {
+                                        Text("Overview row ${index + 1}", Modifier.fillMaxWidth().padding(24.dp))
+                                    }
+                                }
+                            }
+                        } else {
+                            Surface(Modifier.fillMaxSize()) {
+                                Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                                    Text("Build #42", style = MaterialTheme.typography.headlineSmall)
+                                    Text("Overview content", style = MaterialTheme.typography.bodyLarge)
+                                }
+                            }
                         }
                     }
                 }
@@ -143,12 +166,14 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         compose.onRoot().captureRoboImage("details_${stateName}_${variant.name}.png")
     }
     companion object {
+        private val snapshotSections = listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests, BuildDetailsSection.Artifacts, BuildDetailsSection.Parameters, BuildDetailsSection.Snapshots)
+
         @JvmStatic
         @Parameters(name = "{0}_{1}")
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (BuildDetailsTab.entries.map { "tab_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted", "notice_opening_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("finished", "running", "queued", "floating_content", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.map { "section_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted", "notice_opening_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

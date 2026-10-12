@@ -16,13 +16,11 @@
  limitations under the License.
 -->
 <resources>
-    <string name="tab_overview">Overview</string>
     <string name="tab_changes">Changes</string>
     <string name="tab_tests">Tests</string>
-    <string name="tab_build_log">Build Log</string>
     <string name="tab_parameters">Parameters</string>
     <string name="tab_artifacts">Artifacts</string>
-    <string name="tab_snapshot_dependencies">Snapshot dependencies</string>
+    <string name="tab_snapshot_dependencies">Dependencies</string>
     <string name="text_stop_button">Stop</string>
     <string name="text_remove_from_queue_button">Remove from queue</string>
     <string name="text_restart_button">Restart</string>
@@ -55,16 +53,24 @@
     <string name="action_browser">Open in browser</string>
     <string name="action_configuration">Open configuration</string>
     <string name="action_project">Open project</string>
-    <string name="action_more">More actions</string>
-    <string name="tab_with_count">%1$s (%2$d)</string>
+    <string name="action_view_log">View log</string>
+    <string name="section_build_subtitle">#%1$s · %2$s</string>
+    <string name="action_stop_build">Stop build</string>
+    <string name="action_restart_build">Restart build</string>
+    <string name="build_actions">Build actions</string>
     <string name="build_element_copy_text">Text copied!</string>
     <string name="platform_action_failed">Couldn’t open this action.</string>
-    <string name="tab_plain">%1$s</string>
-    <string name="tab_with_unavailable_count">%1$s (?)</string>
     <string name="retry_build_metadata">Retry build counts and tips</string>
     <string name="continue_build_tip">Continue</string>
-    <string name="title_onboarding_build_menu">Explore menu</string>
-    <string name="text_onboarding_stop_build">Stop, share or open running builds in a browser</string>
-    <string name="text_onboarding_restart_build">Restart, share or open finished builds in a browser</string>
-    <string name="text_onboarding_remove_build_from_queue">Remove from queue, share or open builds in a browser</string>
+    <string name="title_onboarding_stop_build">Stop build</string>
+    <string name="title_onboarding_restart_build">Restart build</string>
+    <string name="title_onboarding_remove_build">Remove from queue</string>
+    <string name="title_onboarding_share_build">Share build</string>
+    <string name="title_onboarding_browser">Open in browser</string>
+    <string name="text_onboarding_stop_build">Stop this running build. You can also add it back to the queue.</string>
+    <string name="text_onboarding_restart_build">Run this build again with the same parameters.</string>
+    <string name="text_onboarding_remove_build_from_queue">Remove this build from the queue before it starts.</string>
+    <string name="text_onboarding_share_build">Share a link to this build with others.</string>
+    <string name="text_onboarding_browser">Open this build’s page in a browser.</string>
+    <string name="build_tip_save_failed">Couldn’t save this tip. Try Continue again.</string>
 </resources>

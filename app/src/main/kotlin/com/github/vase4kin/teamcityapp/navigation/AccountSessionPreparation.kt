@@ -17,16 +17,12 @@
 package com.github.vase4kin.teamcityapp.navigation
 
 import android.content.Context
-import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
-import kotlin.coroutines.resume
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
-import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.libraries.coroutines.MainDispatcher
 import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.session.requireCurrentHomeBuildAccount
@@ -39,7 +35,6 @@ interface AccountSessionPreparation {
 class AppAccountSessionPreparation @Inject constructor(
     private val storage: SharedUserStorage,
     @ApplicationContext private val context: Context,
-    private val consent: BuildLogConsentStorage,
     @MainDispatcher private val main: CoroutineDispatcher
 ) : AccountSessionPreparation {
     override fun currentKey() = if (storage.hasUserAccounts()) storage.activeUser.homeBuildAccountKey() else "signed-out"
@@ -48,8 +43,6 @@ class AppAccountSessionPreparation @Inject constructor(
         val app = context.applicationContext as TeamCityApplicationBase
         if (resetSession) {
             app.appInjector.cacheManager().evictAllCache()
-            suspendCancellableCoroutine { continuation -> CookieManager.getInstance().removeAllCookies { if (continuation.isActive) continuation.resume(Unit) } }
-            consent.setAcknowledged(false)
         }
         requireCurrentHomeBuildAccount(storage, expectedKey)
         app.buildRestApiInjectorWithBaseUrl(storage.activeUser.teamcityUrl)

@@ -16,7 +16,7 @@
 
 # Single activity navigation migration
 
-TeamCityApp now runs all 26 original Compose features in one application-owned activity using Navigation 3. Home and Build Details are Compose shells with Hilt ViewModels, bringing the feature API/implementation pairs to 28. Existing account, network and cache behavior remains behind repository adapters. External browser, sharing, permission and OSS licenses activities remain platform integrations.
+TeamCityApp runs its Compose features in one application-owned activity using Navigation 3. Home and Build Details are Compose shells with Hilt ViewModels, alongside the feature API/implementation pairs. Existing account, network and cache behavior remains behind repository adapters. External browser, sharing, permission and OSS licenses activities remain platform integrations.
 
 ## Execution and completion gates
 
@@ -29,7 +29,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Verified; coordinator, installed launcher/alias and same-server account-isolation cases pass |
 | Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native Home shell and its seven fragment/sheet hosts removed |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
-| Build Details | Compose shell and seven existing child routes; conditional tabs, counts and actions; loaded/incoming snapshot separation | Shell, seven retained child routes, folders/sheets, independent retained counts, menu education and view/download cancellation verified |
+| Build Details | Overview hub, floating actions, five conditional standalone section destinations, optional counts, and loaded/incoming snapshot separation | Grouped Overview, section headers/visits, artifact result ownership, and external build-log Custom Tabs replace the tabbed shell |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | All native application/feature hosts removed; aliases dispatch to MainActivity; production references audited |
 | Final verification | Local/screenshot tests, both-flavor lint, app/instrumentation builds, production compilation, formatting and emulator regressions | Complete; all-module tests/goldens, both-flavor lint, builds, production compilation, formatting, 388 emulator cases and real process restoration pass |
 
@@ -39,9 +39,9 @@ Feature APIs own serializable destination keys and plain argument models. Implem
 
 Each visit has a unique ID even when its destination arguments equal those of another visit. Navigation 3 uses that ID for saveable UI state and ViewModel ownership. A popped/replaced visit loses its owner and pending results. Results target an existing originating visit, survive saved-state restoration, and are consumed once by the appropriate result type.
 
-Account/session replacement creates fresh visit identities and discards previous-session results. The saved snapshot includes its session key; restoration compares it with the current account before composing any destination, because saveable input keys alone do not validate restored account state. Home tab and Build Details tab owners must remain scoped to their parent visit; they survive tab switching and recreation but are cleared when their parent/session is replaced. API session ownership uses account identity rather than server URL alone.
+Account/session replacement creates fresh visit identities and discards previous-session results. The saved snapshot includes its session key; restoration compares it with the current account before composing any destination, because saveable input keys alone do not validate restored account state. Home tab owners remain scoped to their parent visit. Build Details Overview and separate section visits retain their own state through recreation and Back; their owners are cleared when their visit/session is removed. API session ownership uses account identity rather than server URL alone.
 
-Build Details constructs available tabs from the incoming complete launch snapshot and derives current actions from loaded build data. Build Log's WebView and callbacks belong to visible composition resources; downloads retain destination ViewModel state and close blocked reads when cancelled.
+Build Details constructs available grouped section links from the complete incoming launch snapshot and derives status/actions from loaded build data. Section keys preserve that snapshot, including initial parameters, opaque URLs and test filters. Each section visit owns a retained content pane; its live parent receives artifact-sheet results. View Log opens the active account's server URL in a Chrome Custom Tab, preserving guest URLs. Browser authentication stays in the browser. The embedded log and its consent storage are removed. Downloads retain destination ViewModel state and close blocked reads when cancelled.
 
 The foundation checkpoint initially kept About and Settings hosts as temporary compatibility boundaries. Final cleanup removed those hosts and migrated their callers and integration fixtures to MainActivity. The checkpoint sections below record verification at each stage; the completion table and final verification section describe the current architecture.
 
@@ -49,7 +49,7 @@ The foundation checkpoint initially kept About and Settings hosts as temporary c
 
 - Startup selects the correct authentication or Home flow, preserves the installed launcher alias, and does not return to completed login/startup screens on Back.
 - Login/Create Account preserve Basic auth challenges, explicit HTTP/SSL consent, encrypted persistence, duplicate detection, pending submissions and in-memory password handling.
-- Switching accounts, including accounts on the same server, cancels old work and clears old destination/tab owners, cache/cookie/consent behavior and results appropriately.
+- Switching accounts, including accounts on the same server, cancels old work and clears old destination/tab owners, cache/API resources and results appropriately. External browser sessions remain browser-owned.
 - Home preserves Projects/Favorites/Running/Queue/Agents selection, selected-tab request precedence, scroll and content retention, partial failures, badges, filters, drawer actions and onboarding.
 - Recursive projects and repeated builds/projects have independent owners. Back returns to the previous visit with retained content.
 - History keeps effective filters, favorite actions, paging and scroll state. Run Build/Filter Builds return typed results only to their originating visit; cancellation returns no result.
@@ -694,3 +694,38 @@ Verification with JDK 17:
 - The final 13 variant/test source-root moves were independently rebuilt against both debug flavors, app tests, lint and formatting. `:app:compileProdR8VerificationKotlin` and `:app:compileProdR8VerificationAndroidTestKotlin -Pr8Verification` also passed; no R8 smoke-check code changed.
 - Source/dependency audits confirm unchanged wire/storage packages, no app dependencies from the new libraries and no feature implementation dependencies on other feature implementations.
 - Local checkpoints use the existing `codex/single-activity-navigation` branch. No push or pull request is part of this follow-up.
+
+## Build Details Overview hub (October 2026)
+
+Build Details now uses the approved Floating actions layout: status with View log,
+Results (Changes, Tests, Artifacts), Execution (branch, agent, trigger and optional
+execution details), Build setup (Parameters, Dependencies), and a separate
+Configuration/project group. Share and Open in browser sit in a floating toolbar
+paired with an extended Stop/Remove/Restart action. These controls overlay the
+scrollable content with no full-width bottom surface. Measured trailing scroll
+space keeps the final row reachable when controls wrap at enlarged text sizes.
+Build-action education uses History’s shared coachmark, anchored separately to
+Stop/Remove/Restart, Share and Open in browser. Existing mutation-tip preferences
+remain compatible; Share and Open in browser have independent DataStore preferences.
+Acknowledgement failures keep the same tip visible with an explicit retry.
+
+Grouped rows push a `BuildDetailsSectionDestination`; Back returns to Overview.
+Duplicate section visits have distinct owners. The Overview retains completed
+loads and scroll position while another visit is visible. Counts on Overview and
+standalone Changes/Tests screens have independently retryable owners. Installed
+Build Details aliases and serialized build DTO/cache contracts remain compatible.
+
+The `build-log` modules and obsolete WebView/cookie/consent adapters are removed.
+`BuildDetailsLogLink` builds the active server URL using an encoded build ID and
+`guest=1` for guest accounts. Custom Tabs receives no application credentials.
+
+Verification covers module ViewModels/mappers, section serialization and complete
+arguments, grouped-row and floating-action callbacks, count retries, screenshots
+in both themes and three layout/font variants, app unit tests and mock APKs, and
+emulator cases for recreation, repeated visits, artifact results and Custom Tabs.
+
+Validation: 722 local Android cases passed, including 372 screenshot cases;
+46 CI policy tests passed; all 98 affected emulator cases passed on the final APK.
+Mock app/test APKs, production Kotlin compilation, mock-debug lint and formatting
+checks passed. Lint ran separately after kapt compilation to avoid its generated
+stub analysis race.

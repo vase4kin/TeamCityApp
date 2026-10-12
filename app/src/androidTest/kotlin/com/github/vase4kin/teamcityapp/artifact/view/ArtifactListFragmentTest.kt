@@ -53,7 +53,7 @@ import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.LegacyArtifactsEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
@@ -125,7 +125,7 @@ class ArtifactListFragmentTest {
     private fun awaitTag(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
     }
-    private fun tab(title: String) = compose.tapBuildDetailsTab(title)
+    private fun tab(title: String) = compose.tapBuildDetailsSection(title)
     private fun sheet(label: String) {
         awaitText(label)
         compose.onNodeWithText(label).performClick()
@@ -274,8 +274,7 @@ class ArtifactListFragmentTest {
             compose.waitUntil(10_000) { !pending.hasObservers() }
             awaitText("restore.unknown")
             // The retained destination restores its loaded toolbar after the dialog closes.
-            compose.awaitDisplayedText("#latest-number")
-            compose.awaitDisplayedText("Current configuration")
+            compose.awaitDisplayedText("#latest-number · Current configuration")
         }
     }
 

@@ -46,7 +46,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -136,7 +136,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        compose.tapBuildDetailsTab("Parameters")
+        compose.tapBuildDetailsSection("Parameters")
 
         compose.onNodeWithText("sdk").assertIsDisplayed()
         compose.onNodeWithText("24").assertIsDisplayed()
@@ -163,7 +163,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        compose.tapBuildDetailsTab("Parameters")
+        compose.tapBuildDetailsSection("Parameters")
 
         // Checking empty message
         compose.onNodeWithText(activityRule.activity.getString(teamcityapp.features.properties.impl.R.string.empty_list_message_parameters)).assertIsDisplayed()
@@ -195,7 +195,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        compose.tapBuildDetailsTab("Parameters")
+        compose.tapBuildDetailsSection("Parameters")
 
         // Checking empty message
         compose.onNodeWithText(activityRule.activity.getString(teamcityapp.features.properties.impl.R.string.empty_list_message_parameters)).assertIsDisplayed()
@@ -222,7 +222,7 @@ class PropertiesFragmentTest {
         activityRule.launchActivity(intent)
 
         // Checking properties tab title
-        compose.tapBuildDetailsTab("Parameters")
+        compose.tapBuildDetailsSection("Parameters")
 
         // Value selection remains independent from the full-width copy action.
         compose.onNodeWithText("24", useUnmergedTree = true).performTouchInput { longClick() }

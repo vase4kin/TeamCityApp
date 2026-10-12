@@ -42,12 +42,13 @@ fun RetainedNavigationPane(
     selectedEntryId: String,
     navigator: Navigator,
     registry: DestinationRegistry,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    resultRecipientId: String? = null
 ) {
     require(children.map { it.id }.distinct().size == children.size) { "Child entry IDs must be unique" }
     require(children.any { it.id == selectedEntryId }) { "The selected child must exist" }
     val entryOwner = LocalNavigationEntryLifecycleOwner.current ?: LocalLifecycleOwner.current
-    CompositionLocalProvider(LocalLifecycleOwner provides entryOwner) {
+    CompositionLocalProvider(LocalLifecycleOwner provides entryOwner, LocalNavigationResultRecipient provides (resultRecipientId ?: LocalNavigationResultRecipient.current)) {
         val entries = rememberDecoratedNavEntries(
             backStack = children,
             entryDecorators = listOf(

@@ -40,6 +40,7 @@ import teamcityapp.libraries.theme.UiText
 @StringRes internal fun BuildOverviewAction.label(): Int = when (this) {
     BuildOverviewAction.Share -> R.string.overview_share
     BuildOverviewAction.Browser -> R.string.overview_browser
+    BuildOverviewAction.Log -> R.string.overview_view_log
     BuildOverviewAction.Stop -> R.string.overview_stop
     BuildOverviewAction.RemoveFromQueue -> R.string.overview_remove
     BuildOverviewAction.Restart -> R.string.overview_restart

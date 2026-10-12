@@ -53,7 +53,7 @@ import teamcityapp.libraries.navigation.*
 class ArtifactsDestinationRegistration @Inject constructor(private val platforms: ArtifactsPlatformRouterFactory) : FeatureDestination<ArtifactsDestination>(ArtifactsDestination::class, ArtifactsDestination.serializer()) {
     @Composable override fun Content(destination: ArtifactsDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
-        val recipient = LocalBuildDetailsUiHost.current?.entryId ?: entryId
+        val recipient = LocalBuildDetailsUiHost.current?.entryId ?: LocalNavigationResultRecipient.current ?: entryId
         val arguments = remember(destination) {
             Bundle().apply {
                 putString(ArtifactsViewModel.JSON_BUILD, Json.encodeToString(destination.build))

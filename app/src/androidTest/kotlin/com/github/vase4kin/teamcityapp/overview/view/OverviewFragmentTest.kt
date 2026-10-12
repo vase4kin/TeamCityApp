@@ -55,7 +55,7 @@ import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -78,6 +78,7 @@ import retrofit2.Response
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.build_overview.impl.OverviewField
 import teamcityapp.features.build_overview.impl.R as OverviewR
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.libraries.builds.*
@@ -139,7 +140,7 @@ class OverviewFragmentTest {
     private fun awaitTag(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
     }
-    private fun tab(title: String) = compose.tapBuildDetailsTab(title)
+    private fun tab(title: String) = compose.tapBuildDetailsSection(title)
     private fun sheet(label: String) {
         awaitText(label)
         compose.onNodeWithText(label).performClick()
@@ -241,14 +242,12 @@ class OverviewFragmentTest {
     @Test fun configurationNavigationUsesLoadedConfiguration() {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Configuration")
-        sheet(text(SheetR.string.build_element_open_build_type))
         assertRootDestination(BuildHistoryDestination("current-config", "Current configuration"))
     }
 
     @Test fun projectNavigationUsesLoadedProjectAndInstalledAlias() {
         openCurrent(BuildComposeFixtures.finished)
         clickRow("Project")
-        sheet(text(SheetR.string.build_element_open_project))
         assertRootDestination(ProjectDestination("current-project", "Current project", false))
     }
 
@@ -378,13 +377,17 @@ class OverviewFragmentTest {
         }
     }
 
-    @Test fun restartOnboardingCanBeDismissedBeforeVisitingAnotherTab() {
+    @Test fun actionOnboardingCanBeDismissedBeforeVisitingAnotherSection() {
         TestUtils.enableOnboarding()
         `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
         openLegacy(Mocks.successBuild(), BuildComposeFixtures.finished, openedTag = "details:dismiss-prompt")
         awaitTag("details:dismiss-prompt")
-        compose.onNodeWithText("Restart, share or open finished builds in a browser").assertIsDisplayed()
-        compose.onNodeWithTag("details:dismiss-prompt").performClick()
+        listOf("Run this build again with the same parameters.", "Share a link to this build with others.", "Open this build’s page in a browser.").forEach { copy ->
+            awaitText(copy)
+            compose.onNodeWithText(copy).assertIsDisplayed()
+            compose.onNodeWithTag("details:dismiss-prompt").performClick()
+            compose.waitForIdle()
+        }
         tab("Artifacts")
         awaitText("AndroidManifest.xml")
         compose.onNodeWithTag("details:dismiss-prompt").assertDoesNotExist()
@@ -436,7 +439,7 @@ class OverviewFragmentTest {
             compose.awaitDisplayedText("#replacement-loaded")
             compose.awaitDisplayedText("Replacement loaded configuration")
             compose.onNodeWithText("Stale queued response").assertDoesNotExist()
-            compose.onNodeWithTag("details:tab:Artifacts").performScrollTo().assertIsDisplayed()
+            compose.onNodeWithTag("overview:section:Artifacts").performScrollTo().assertIsDisplayed()
             val nextEntry = currentRootSnapshot().entries.last()
             assertNotEquals(oldEntry.id, nextEntry.id)
             assertEquals(teamcityapp.features.build_details.api.BuildDetailsDestination(nextIncoming, "Incoming configuration name"), nextEntry.destination)
@@ -444,7 +447,6 @@ class OverviewFragmentTest {
             verify(teamCityService, times(1)).build(nextIncoming.href)
 
             clickRow("Configuration")
-            sheet(text(SheetR.string.build_element_open_build_type))
             assertRootDestination(BuildHistoryDestination("replacement-loaded-config", "Replacement loaded configuration"))
         }
     }
@@ -466,12 +468,19 @@ class OverviewFragmentTest {
     }
     private fun clickRow(field: String) {
         awaitTag("overview:list")
-        compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:row:$field"))
+        // Bring the target above the floating controls, including on shorter cloud devices.
+        val key = if (field == "Result") "status" else OverviewField.valueOf(field)
+        compose.onNodeWithTag("overview:list").performScrollToKey(key)
         compose.onNodeWithTag("overview:row:$field").performClick()
     }
     private fun menu(label: String) {
-        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
-        compose.onNodeWithText(label).performClick()
+        val action = when (label) {
+            text(OverviewR.string.overview_share) -> "Share"
+            text(OverviewR.string.overview_browser) -> "Browser"
+            text(OverviewR.string.overview_restart) -> "Restart"
+            else -> "Cancel"
+        }
+        compose.onNodeWithTag("details:action:$action").performClick()
     }
     private fun cancellation(user: User, expected: String) {
         openLegacy(Mocks.successBuild().apply { canceledInfo = CanceledInfo("20161223T151154+0300", user) })

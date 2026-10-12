@@ -25,10 +25,11 @@ interface BuildDetailsUiHost {
     val refreshVersion: Long
     val current: BuildLaunchData
     fun loaded(build: BuildLaunchData)
-    val countStates: Map<BuildDetailsTab, BuildDetailsCount>
-    fun retryCount(tab: BuildDetailsTab)
+    val countStates: Map<BuildDetailsSection, BuildDetailsCount>
+    fun retryCount(tab: BuildDetailsSection)
     fun dispatch(action: BuildDetailsCommand, build: BuildLaunchData, branch: String? = null)
+    fun openSection(section: BuildDetailsSection)
     fun copied()
 }
-enum class BuildDetailsCommand { Share, Browser, Cancel, Restart, Configuration, Project }
+enum class BuildDetailsCommand { Share, Browser, Log, Cancel, Restart, Configuration, Project }
 val LocalBuildDetailsUiHost = staticCompositionLocalOf<BuildDetailsUiHost?> { null }

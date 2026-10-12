@@ -45,7 +45,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -141,11 +141,10 @@ class BuildActionsTest {
         )
 
         // Opening context menu
-        compose.waitUntil(10_000) { compose.onAllNodesWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
-        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_share_build)).onFirst().performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("details:action:Share").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+        compose.onNodeWithTag("details:action:Share").performClick()
 
         // Checking that share intent is triggered
         intended(
@@ -194,11 +193,10 @@ class BuildActionsTest {
         )
 
         // Opening context menu
-        compose.waitUntil(10_000) { compose.onAllNodesWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
-        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_open_browser)).onFirst().performClick()
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("details:action:Browser").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+        compose.onNodeWithTag("details:action:Browser").performClick()
 
         // Check filter builds activity is opened
         intended(

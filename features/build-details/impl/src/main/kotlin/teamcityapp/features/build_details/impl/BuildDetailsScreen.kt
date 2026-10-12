@@ -23,12 +23,17 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,9 +45,7 @@ import teamcityapp.libraries.theme.*
 @Composable
 internal fun BuildDetailsScreen(
     state: BuildDetailsUiState,
-    expanded: Boolean,
     onUp: () -> Unit,
-    onSelect: (BuildDetailsTab) -> Unit,
     onAction: (BuildDetailsAction) -> Unit,
     onConfirm: (Boolean) -> Unit,
     onDismissConfirmation: () -> Unit,
@@ -52,64 +55,45 @@ internal fun BuildDetailsScreen(
     onRetryMetadata: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
-    var menu by rememberSaveable { mutableStateOf(false) }
     BackHandler(state.busy) {}
     val anchors = remember { CoachmarkAnchors() }
     val prompt = state.prompt?.takeIf { !state.busy && state.confirmation == null }
-    val promptBounds = prompt?.let { anchors.bounds("details:menu") }
-    Box(modifier.fillMaxSize().coachmarkHost(anchors)) {
+    val promptBounds = prompt?.let { anchors.bounds("details:action:${it.action}") }
+    var actionHeight by remember { mutableStateOf(TeamCityDimensions.noSpacing) }
+    val density = LocalDensity.current
+    BoxWithConstraints(modifier.fillMaxSize().coachmarkHost(anchors)) {
         Scaffold(
             modifier = if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier,
             topBar = {
-                Column {
-                    TopAppBar(
-                        title = {
-                            Column {
-                                Text(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                                if (state.subtitle.isNotEmpty()) Text(state.subtitle, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                            }
-                        },
-                        navigationIcon = { IconButton(onClick = onUp, enabled = !state.busy) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) } },
-                        actions = {
-                            Box {
-                                IconButton(onClick = { menu = true }, enabled = !state.busy, modifier = Modifier.testTag("details:menu").coachmarkAnchor("details:menu", anchors)) { Icon(painterResource(R.drawable.ic_details_more), stringResource(R.string.action_more)) }
-                                DropdownMenu(expanded = menu && !state.busy, onDismissRequest = { menu = false }) {
-                                    state.menu.forEach { action ->
-                                        DropdownMenuItem(text = { Text(stringResource(action.label)) }, onClick = {
-                                            menu = false
-                                            onAction(action.action)
-                                        })
-                                    }
-                                }
-                            }
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            if (state.subtitle.isNotEmpty()) Text(state.subtitle, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
-                    )
-                    val tabs: @Composable () -> Unit = {
-                        state.tabs.forEach { tab ->
-                            val label = state.tabLabels.getValue(tab)
-                            Tab(
-                                selected = state.selected == tab,
-                                onClick = { onSelect(tab) },
-                                enabled = !state.busy,
-                                text = { Text(stringResource(label.format, stringResource(label.title), label.count), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                modifier = Modifier.testTag("details:tab:${tab.name}")
-                            )
-                        }
-                    }
-                    if (expanded) {
-                        PrimaryTabRow(state.tabs.indexOf(state.selected), tabs = tabs)
-                    } else {
-                        PrimaryScrollableTabRow(state.tabs.indexOf(state.selected), edgePadding = 0.dp, tabs = tabs)
-                    }
-                }
+                    },
+                    navigationIcon = { IconButton(onClick = onUp, enabled = !state.busy) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) } }
+                )
+            },
+            floatingActionButtonPosition = FabPosition.Center,
+            floatingActionButton = {
+                BuildDetailsFloatingActions(
+                    state,
+                    onAction,
+                    anchors,
+                    Modifier.widthIn(max = (maxWidth - TeamCityDimensions.extraLargeSpacing).coerceAtLeast(TeamCityDimensions.minimumTouchTarget))
+                        .onSizeChanged { actionHeight = with(density) { it.height.toDp() } }
+                )
             },
             snackbarHost = { SnackbarHost(snackbar) }
         ) { padding ->
-            Column(Modifier.fillMaxSize().padding(padding)) {
+            Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
                 if (state.countFailures.isNotEmpty() || state.onboardingFailed) {
                     TextButton(onClick = onRetryMetadata, enabled = !state.busy, modifier = Modifier.testTag("details:retry-metadata")) { Text(stringResource(R.string.retry_build_metadata)) }
                 }
-                Box(Modifier.weight(1f)) { content() }
+                CompositionLocalProvider(LocalFloatingActionClearance provides (actionHeight + TeamCityDimensions.extraLargeSpacing)) {
+                    Box(Modifier.weight(1f)) { content() }
+                }
             }
         }
         if (prompt != null && promptBounds != null) {
@@ -118,9 +102,12 @@ internal fun BuildDetailsScreen(
                 description = stringResource(prompt.description),
                 dismissLabel = stringResource(R.string.continue_build_tip),
                 anchor = promptBounds,
+                placement = CoachmarkPlacement.Above,
                 onDismiss = onDismissPrompt,
                 modifier = Modifier.testTag("details:coachmark:${prompt.prompt}"),
-                dismissModifier = Modifier.testTag("details:dismiss-prompt")
+                dismissModifier = Modifier.testTag("details:dismiss-prompt"),
+                saving = prompt.saving,
+                saveFailure = if (prompt.saveFailed) stringResource(R.string.build_tip_save_failed) else null
             )
         }
     }
@@ -163,8 +150,37 @@ internal fun BuildDetailsScreen(
 @Composable
 private fun BuildDetailsPreview() {
     TeamCityTheme {
-        BuildDetailsScreen(BuildDetailsUiState(BuildLaunchData("42", "/builds/42", number = "42", state = "finished"), configurationName = "Build Android"), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }) {
+        BuildDetailsScreen(BuildDetailsUiState(BuildLaunchData("42", "/builds/42", number = "42", state = "finished"), configurationName = "Build Android"), {}, {}, {}, {}, remember { SnackbarHostState() }) {
             Surface(Modifier.fillMaxSize()) { Text("Build #42", Modifier.padding(16.dp)) }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
+@Composable
+private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (BuildDetailsAction) -> Unit, anchors: CoachmarkAnchors, modifier: Modifier = Modifier) {
+    FlowRow(
+        modifier.fillMaxWidth().testTag("details:actions"),
+        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        if (state.floatingActions.isNotEmpty()) {
+            HorizontalFloatingToolbar(expanded = true) {
+                state.floatingActions.forEach { action ->
+                    IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors)) {
+                        Icon(painterResource(if (action.action == BuildDetailsAction.Share) R.drawable.ic_details_share else R.drawable.ic_details_browser), stringResource(action.label))
+                    }
+                }
+            }
+        }
+        val action = state.primaryAction
+        ExtendedFloatingActionButton(
+            onClick = { if (!state.busy) onAction(action.action) },
+            modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
+            containerColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
+            contentColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
+            icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) },
+            text = { Text(stringResource(action.label)) }
+        )
     }
 }

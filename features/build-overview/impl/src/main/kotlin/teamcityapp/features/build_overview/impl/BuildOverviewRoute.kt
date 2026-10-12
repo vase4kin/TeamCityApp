@@ -28,7 +28,7 @@ import teamcityapp.features.build_overview.api.*
 import teamcityapp.features.build_overview.impl.router.BuildOverviewRouter
 
 @Composable
-internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, onState: (BuildOverviewUiState) -> Unit, viewModel: BuildOverviewViewModel = hiltViewModel()) {
+internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, onState: (BuildOverviewUiState) -> Unit, viewModel: BuildOverviewViewModel = hiltViewModel(), onCountRetry: (teamcityapp.features.build_details.api.BuildDetailsSection) -> Unit = {}) {
     val state = if (visible) {
         val collected by viewModel.state.collectAsStateWithLifecycle(minActiveState = Lifecycle.State.RESUMED)
         collected
@@ -41,7 +41,7 @@ internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, o
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(router) { onDispose { router.dispose() } }
     LaunchedEffect(state, visible) { onState(if (visible) state else BuildOverviewUiState()) }
-    // Refresh requests must be retained while another BuildDetails tab is selected.
+    // Refresh requests must be retained while another Build Details screen is visible.
     LaunchedEffect(router, lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             router.requests.collect { request ->
@@ -69,5 +69,5 @@ internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, o
             onPauseOrDispose { router.dispose() }
         }
     }
-    BuildOverviewScreen(state, viewModel::refresh, viewModel::retry, router::row)
+    BuildOverviewScreen(state, viewModel::refresh, viewModel::retry, router::row, bottomContentPadding = teamcityapp.libraries.theme.LocalFloatingActionClearance.current, onCountRetry = onCountRetry, onSection = router::section, onLog = { latest.build?.let { router.dispatch(BuildOverviewAction.Log, it) } })
 }

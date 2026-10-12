@@ -84,9 +84,23 @@ class OverviewRowsTest {
         assertEquals(listOf(OverviewField.Result, OverviewField.Time, OverviewField.TriggeredBy), rows("minimal").map { it.field })
     }
 
-    @Test fun missingProjectNameHidesBothConfigurationRows() {
+    @Test fun missingProjectNameKeepsConfigurationAndFallsBackToProjectId() {
         val build = BuildOverviewFixtures.finished.copy(configuration = BuildConfigurationData("bt", "Build", "p", null))
-        assertFalse(overviewRows(build).any { it.field == OverviewField.Configuration || it.field == OverviewField.Project })
+        assertEquals(OverviewText.Literal("Build"), overviewRows(build).single { it.field == OverviewField.Configuration }.value)
+        assertEquals(OverviewText.Literal("p"), overviewRows(build).single { it.field == OverviewField.Project }.value)
+    }
+
+    @Test fun missingConfigurationSnapshotKeepsTheConfigurationIdLink() {
+        val row = overviewRows(BuildOverviewFixtures.finished.copy(configuration = null)).single { it.field == OverviewField.Configuration }
+        assertEquals(OverviewText.Literal("bt"), row.value)
+        assertEquals(OverviewRowAction.Configuration, row.action)
+    }
+
+    @Test fun missingNavigationIdsKeepNamesCopyableWithoutDeadLinks() {
+        val build = BuildOverviewFixtures.finished.copy(buildTypeId = null, configuration = BuildConfigurationData(null, "Build", null, "Project"))
+        val context = overviewRows(build).filter { it.field == OverviewField.Configuration || it.field == OverviewField.Project }
+        assertEquals(2, context.size)
+        assertTrue(context.all { it.action == OverviewRowAction.Copy })
     }
 
     @Test fun rowActionTypesDoNotDependOnLocalizedHeaders() {

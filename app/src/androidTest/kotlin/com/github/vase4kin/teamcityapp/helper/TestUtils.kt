@@ -115,6 +115,10 @@ class TestUtils {
             onboardingManager.saveRemoveBuildFromQueuePromptShown()
             onboardingManager.saveStopBuildPromptShown()
             onboardingManager.saveRestartBuildPromptShown()
+            kotlinx.coroutines.runBlocking {
+                onboardingManager.saveShareBuildPromptShown()
+                onboardingManager.saveOpenBuildInBrowserPromptShown()
+            }
             onboardingManager.saveAddFavPromptShown()
             onboardingManager.saveFavPromptShown()
             onboardingManager.saveRunningBuildsFilterPromptShown()
@@ -129,6 +133,11 @@ class TestUtils {
             context.getSharedPreferences(OnboardingManagerImpl.PREF_NAME, Context.MODE_PRIVATE)
                 .edit()
                 .clear().commit()
+            kotlinx.coroutines.runBlocking {
+                val onboardingManager = OnboardingManagerImpl(context)
+                onboardingManager.saveShareBuildPromptShown(false)
+                onboardingManager.saveOpenBuildInBrowserPromptShown(false)
+            }
         }
 
         @JvmStatic

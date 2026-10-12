@@ -15,7 +15,7 @@ to the requested behavior and the coherent migration slice needed to support it.
   Material 3, Hilt ViewModels, and lifecycle-aware StateFlow collection. Installed
   activity names are aliases dispatched by the root; browser, sharing and Google's
   OSS licenses activities remain platform integrations. Java and Kotlin coexist.
-- The original 26 Compose features and the Home/Build Details shells use `api`/`impl`
+- The Compose features and the Home/Build Details shells use `api`/`impl`
   modules. APIs expose serializable destination keys, small contracts and immutable
   public models. Implementations register existing route composables through Hilt,
   own their UI, ViewModels, trackers and destination/platform routers, and have no
@@ -25,15 +25,15 @@ to the requested behavior and the coherent migration slice needed to support it.
   destination ViewModel/saveable-state ownership, retained child panes and Compose
   sheets. Results target a live originating visit and are consumed once. Popping,
   replacing or resetting a visit clears its owners and pending results.
-  Home's five tabs and Build Details' seven conditional tabs retain independent
-  child owners through selection and recreation. Hidden content cancels unfinished
+  Home's five tabs retain independent child owners through selection and
+  recreation. Build Details retains its Overview and opens grouped sections as
+  separate visits with their own content owners. Hidden content cancels unfinished
   loads without discarding completed content or clearing retained ViewModels.
 - The app composition root owns installed Intent compatibility, account-flow
   coordination and active-account adapters. Saved navigation and launch arguments
   are validated against account identity before restoring content. Switching users,
   including users on the same server, replaces old owners and cancels their work.
-  Account preparation owns API/cache/cookie initialization and Build Log consent
-  reset; signed-out sessions return to Login.
+  Account preparation owns API/cache initialization; signed-out sessions return to Login.
 - `libraries/data` owns existing wire DTOs, Retrofit/Gson service/repository contracts,
   RxJava/RxCache integration and shared build mapping. `libraries/session` owns encrypted
   account storage, account identity/guards and opaque API-graph lifetime/clear contracts.
@@ -58,13 +58,18 @@ to the requested behavior and the coherent migration slice needed to support it.
   Drawer, Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
   Filter Builds deliver typed results to History's originating visit. Legacy filter
   serialization remains behind app adapters to preserve existing request semantics.
-- Build Details constructs available tabs from the complete incoming launch
-  snapshot and derives current menus/actions from loaded build data. Separate
-  parent visits own their tab state, counts and actions. Overview, Changes, Tests,
-  Build Log, Properties, Artifacts and Snapshot Dependencies use registered routes.
-  Build Log's `AndroidView` WebView and callbacks exist only while its content is
-  visible; revisiting creates a fresh view. Downloads retain ViewModel state and
-  close blocked reads on cancellation without overwriting completed files.
+- Build Details is an Overview hub with a prominent status card, Results,
+  Execution, Build setup, and Configuration/project groups. Available section
+  destinations use the complete incoming launch snapshot; floating Share/Browser
+  actions and Stop/Remove/Restart use loaded build data and retain confirmation,
+  retry and account isolation behavior. Changes, Tests, Parameters, Artifacts and
+  Snapshot Dependencies open separate saved visits with their own screen headers.
+  Artifact folders/sheets return results to a live section visit. View Log opens
+  the active server's build-log URL in a Chrome Custom Tab, preserving guest URLs
+  without exposing stored credentials. Browser sign-in and cookies belong to the
+  browser; the embedded-log modules, WebView and consent preference are retired.
+  Downloads retain ViewModel state and close blocked reads on cancellation without
+  overwriting completed files.
 - Lists share immutable models and rows in `libraries/build-configurations`,
   `libraries/builds` and `libraries/build-ui`, plus `libraries/list-ui` and
   `libraries/list-state`. History, Changes and Tests use Paging with opaque TeamCity

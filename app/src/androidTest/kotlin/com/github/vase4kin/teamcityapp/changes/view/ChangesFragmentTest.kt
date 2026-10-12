@@ -37,7 +37,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.material.tabs.TabLayout
@@ -125,7 +125,7 @@ class ChangesFragmentTest {
         assertTextVisible(text(ChangesR.string.changes_count_unavailable))
         countFails.set(false)
         compose.onNodeWithText(text(ChangesR.string.changes_retry_count)).performClick()
-        awaitTab("Changes (1)")
+        compose.waitUntil(10_000) { compose.onAllNodesWithText(text(ChangesR.string.changes_count_unavailable)).fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
         compose.onNodeWithText(text(ChangesR.string.changes_count_unavailable)).assertDoesNotExist()
         assertTextVisible("Do you believe?")
     }
@@ -140,12 +140,12 @@ class ChangesFragmentTest {
             )
         )
         awaitTab(title)
-        compose.tapBuildDetailsTab(title)
+        compose.tapBuildDetailsSection(title)
     }
 
     private fun awaitTab(title: String) {
         compose.waitUntil(10_000) {
-            compose.onAllNodes(hasTestTag("details:tab:Changes") and hasText(title))
+            compose.onAllNodes(hasTestTag("overview:section:Changes") and hasText(title.substringBefore(" (")))
                 .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
     }

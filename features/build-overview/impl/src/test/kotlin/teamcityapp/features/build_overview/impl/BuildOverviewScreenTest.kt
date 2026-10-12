@@ -19,6 +19,7 @@ package teamcityapp.features.build_overview.impl
 import android.app.Application
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -44,6 +46,30 @@ class BuildOverviewScreenTest {
         assertEquals(rows.single { it.field == OverviewField.Branch }, clicked)
     }
 
+    @Test fun groupedSectionAndLogHaveDistinctNavigationCallbacks() {
+        var selected: BuildDetailsSection? = null
+        var logs = 0
+        val state = buildOverviewState(ListUiState.Content(listOf(BuildOverviewFixtures.finished)), counts = mapOf(BuildDetailsSection.Tests to BuildDetailsCount.Available(16)))
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state, {}, {}, {}, onSection = { selected = it }, onLog = { logs++ }) } }
+        compose.onNodeWithTag("overview:log").performClick()
+        assertEquals(1, logs)
+        compose.onNodeWithTag("overview:section:Tests").performScrollTo().performClick()
+        assertEquals(BuildDetailsSection.Tests, selected)
+        compose.onNodeWithText("16").assertExists()
+    }
+
+    @Test fun unavailableCountHasItsOwnRetryAndStillOpensTheSection() {
+        var retries = 0
+        var selected: BuildDetailsSection? = null
+        val state = buildOverviewState(ListUiState.Content(listOf(BuildOverviewFixtures.finished)), counts = mapOf(BuildDetailsSection.Tests to BuildDetailsCount.Unavailable))
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state, {}, {}, {}, onSection = { selected = it }, onCountRetry = { retries++ }) } }
+        compose.onNodeWithTag("overview:retry-count:Tests").performScrollTo().performClick()
+        assertEquals(1, retries)
+        assertNull(selected)
+        compose.onNodeWithTag("overview:section:Tests").performClick()
+        assertEquals(BuildDetailsSection.Tests, selected)
+    }
+
     @Test fun initialErrorOffersRetry() {
         var retries = 0
         compose.setContent { TeamCityTheme { BuildOverviewScreen(BuildOverviewUiState(list = ListUiState.Error), {}, { retries++ }, {}) } }
@@ -57,5 +83,16 @@ class BuildOverviewScreenTest {
         compose.onNodeWithTag("overview:row:Result").assertIsDisplayed()
         compose.onNodeWithText("Retry").performClick()
         assertEquals(1, retries)
+    }
+
+    @Test fun finalProjectRowCanScrollAboveTheParentActionClearance() {
+        val state = buildOverviewState(ListUiState.Content(listOf(BuildOverviewFixtures.finished)))
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state, {}, {}, {}, bottomContentPadding = 180.dp) } }
+        compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:row:Project"))
+        compose.onNodeWithTag("overview:list").performTouchInput { swipeUp() }
+        compose.onNodeWithTag("overview:row:Project").assertIsDisplayed()
+        val viewport = compose.onNodeWithTag("overview:list").fetchSemanticsNode().boundsInRoot
+        val last = compose.onNodeWithTag("overview:row:Project").fetchSemanticsNode().boundsInRoot
+        assertTrue("Project should clear the parent controls", last.bottom <= viewport.bottom - 180)
     }
 }

@@ -36,15 +36,15 @@ class DefaultBuildDetailsMetadataRepository @Inject constructor(
     private val onboarding: OnboardingManager,
     @IoDispatcher private val io: CoroutineDispatcher
 ) : BuildDetailsMetadataRepository {
-    override suspend fun count(build: BuildLaunchData, tab: BuildDetailsTab): Int = withContext(io) {
+    override suspend fun count(build: BuildLaunchData, tab: BuildDetailsSection): Int = withContext(io) {
         val account = storage.activeUser.homeBuildAccountKey()
         requireCurrentHomeBuildAccount(storage, account)
         val session = repositories.get()
         requireCurrentHomeBuildAccount(storage, account)
         val count = try {
             when (tab) {
-                BuildDetailsTab.Changes -> session.listChanges("${checkNotNull(build.changes?.href)},count:${Int.MAX_VALUE}&fields=count", true).await().count
-                BuildDetailsTab.Tests -> session.listTestOccurrences("${checkNotNull(build.tests?.href)},count:${Int.MAX_VALUE}&fields=count", true).await().count
+                BuildDetailsSection.Changes -> session.listChanges("${checkNotNull(build.changes?.href)},count:${Int.MAX_VALUE}&fields=count", true).await().count
+                BuildDetailsSection.Tests -> session.listTestOccurrences("${checkNotNull(build.tests?.href)},count:${Int.MAX_VALUE}&fields=count", true).await().count
                 else -> error("Only Changes and Tests expose counts")
             }
         } catch (error: Exception) {
@@ -59,6 +59,8 @@ class DefaultBuildDetailsMetadataRepository @Inject constructor(
             if (!onboarding.isStopBuildPromptShown) add(BuildDetailsPrompt.Stop)
             if (!onboarding.isRemoveBuildFromQueuePromptShown) add(BuildDetailsPrompt.Remove)
             if (!onboarding.isRestartBuildPromptShown) add(BuildDetailsPrompt.Restart)
+            if (!onboarding.isShareBuildPromptShown()) add(BuildDetailsPrompt.Share)
+            if (!onboarding.isOpenBuildInBrowserPromptShown()) add(BuildDetailsPrompt.Browser)
         }
     }
     override suspend fun acknowledgePrompt(prompt: BuildDetailsPrompt) = withContext(io) {
@@ -66,6 +68,8 @@ class DefaultBuildDetailsMetadataRepository @Inject constructor(
             BuildDetailsPrompt.Stop -> onboarding.saveStopBuildPromptShown()
             BuildDetailsPrompt.Remove -> onboarding.saveRemoveBuildFromQueuePromptShown()
             BuildDetailsPrompt.Restart -> onboarding.saveRestartBuildPromptShown()
+            BuildDetailsPrompt.Share -> onboarding.saveShareBuildPromptShown()
+            BuildDetailsPrompt.Browser -> onboarding.saveOpenBuildInBrowserPromptShown()
         }
     }
 }

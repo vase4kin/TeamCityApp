@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.integration.platform.artifacts.ComposeArtifactsPlatformModule
 import dagger.hilt.android.testing.*
 import io.reactivex.Single
@@ -75,8 +76,6 @@ class BuildDetailsNavigationTest {
     @Spy private val service: TeamCityService = FakeTeamCityServiceImpl()
 
     @Inject lateinit var launcher: RootDestinationLauncher
-
-    @Inject lateinit var consent: teamcityapp.features.build_log.api.BuildLogConsentStorage
 
     @Inject lateinit var accountNavigation: teamcityapp.libraries.navigation.AccountFlowNavigation
     private val mapper = BuildLaunchMapper()
@@ -122,7 +121,7 @@ class BuildDetailsNavigationTest {
         awaitTag("overview:list")
     }
     private fun tab(name: String) {
-        compose.onNodeWithTag("details:tab:$name").performScrollTo().performClick()
+        compose.tapBuildDetailsSection(name)
     }
 
     @Test fun incomingTabsAndParametersRemainStableWhenOverviewLoadsADifferentSnapshot() {
@@ -138,13 +137,11 @@ class BuildDetailsNavigationTest {
             compose.onNodeWithText("loaded.parameter").assertDoesNotExist()
             scenario.recreate()
             awaitTag("properties:list")
-            compose.onNodeWithTag("details:tab:Parameters").assertIsSelected()
+            compose.onNodeWithTag("details:section:Parameters").assertIsDisplayed()
             tab("Changes")
             awaitTag("changes:list")
             tab("Tests")
             awaitTag("tests:list")
-            tab("BuildLog")
-            awaitTag("build-log:screen")
             tab("Artifacts")
             awaitTag("artifacts:list")
             tab("Snapshots")
@@ -203,7 +200,7 @@ class BuildDetailsNavigationTest {
             assertEquals(1, opened.size)
             pressBack()
             awaitTag("artifacts:list")
-            compose.onNodeWithTag("details:tab:Artifacts").assertIsSelected()
+            compose.onNodeWithTag("details:section:Artifacts").assertIsDisplayed()
             scenario.onActivity { assertTrue(it.supportFragmentManager.fragments.isEmpty()) }
         }
     }
@@ -219,15 +216,14 @@ class BuildDetailsNavigationTest {
         }.`when`(service).cancelBuild(running.href, BuildCancelRequest(true))
         launch().use { scenario ->
             open(scenario, running)
-            compose.onNodeWithContentDescription("More actions").performClick()
-            compose.onNodeWithText("Stop").performClick()
+            compose.onNodeWithTag("details:action:Cancel").performClick()
             awaitTag("details:confirm")
             scenario.recreate()
             awaitTag("details:confirm")
             compose.onNodeWithTag("details:readd").performClick()
             compose.onNodeWithTag("details:confirm").performClick()
             awaitText("#cancelled")
-            compose.onNodeWithTag("details:tab:Overview").assertIsSelected()
+            compose.onNodeWithTag("overview:screen").assertIsDisplayed()
             tab("Artifacts")
             awaitTag("artifacts:list")
             verify(service, times(1)).cancelBuild(running.href, BuildCancelRequest(true))
@@ -239,8 +235,7 @@ class BuildDetailsNavigationTest {
         val build = mapper.toLaunchData(Mocks.successBuild())
         launch().use { scenario ->
             open(scenario, build)
-            compose.onNodeWithContentDescription("More actions").performClick()
-            compose.onNodeWithText("Restart").performClick()
+            compose.onNodeWithTag("details:action:Restart").performClick()
             awaitTag("details:confirm")
             scenario.recreate()
             awaitTag("details:confirm")
@@ -248,8 +243,8 @@ class BuildDetailsNavigationTest {
             awaitText("Build is restarted successfully")
             compose.onNodeWithText("Show").performClick()
             awaitTag("overview:row:WaitReason")
-            compose.onNodeWithTag("details:tab:BuildLog").assertDoesNotExist()
-            compose.onNodeWithTag("details:tab:Artifacts").assertDoesNotExist()
+            compose.onNodeWithTag("overview:log").assertDoesNotExist()
+            compose.onNodeWithTag("overview:section:Artifacts").assertDoesNotExist()
             scenario.recreate()
             awaitTag("overview:row:WaitReason")
             verify(service, times(1)).queueBuild(org.mockito.kotlin.any())
@@ -266,18 +261,20 @@ class BuildDetailsNavigationTest {
             awaitTag("tests:list")
             scenario.onActivity { launcher.open(it, BuildDetailsDestination(build)) }
             awaitTag("overview:list")
-            compose.onNodeWithTag("details:tab:Overview").assertIsSelected()
+            compose.onNodeWithTag("overview:screen").assertIsDisplayed()
             scenario.recreate()
             awaitTag("overview:list")
             pressBack()
             awaitTag("tests:list")
-            compose.onNodeWithTag("details:tab:Tests").assertIsSelected()
+            compose.onNodeWithTag("details:section:Tests").assertIsDisplayed()
+            pressBack()
+            awaitTag("overview:list")
             pressBack()
             awaitTag("navigation:row:project:id")
         }
     }
 
-    @Test fun countsLoadBeforeTabVisitsAndRetainedFailureRetriesOnlyTheFailedSection() {
+    @Test fun hubCountsRetainTheirResultsAndRetryOnlyTheFailedSection() {
         val build = mapper.toLaunchData(Mocks.failedBuild())
         val testsHref = "${build.tests?.href},count:2147483647&fields=count"
         val changesHref = "${build.changes?.href},count:2147483647&fields=count"
@@ -285,49 +282,64 @@ class BuildDetailsNavigationTest {
         doAnswer { if (failed) Single.error<com.github.vase4kin.teamcityapp.tests.api.TestOccurrences>(IllegalStateException("offline count")) else Single.just(com.github.vase4kin.teamcityapp.tests.api.TestOccurrences(16)) }.`when`(service).listTestOccurrences(testsHref)
         launch().use { scenario ->
             open(scenario, build)
-            awaitText("Tests (?)")
-            awaitText("Changes (1)")
+            awaitTag("overview:retry-count:Tests")
             verify(service, times(1)).listTestOccurrences(testsHref)
             verify(service, times(1)).listChanges(changesHref)
             scenario.recreate()
-            awaitText("Tests (?)")
-            tab("Tests")
-            awaitTag("tests:list")
-            compose.onNodeWithText("The total test count couldn’t be loaded.").assertIsDisplayed()
-            verify(service, times(1)).listTestOccurrences(testsHref)
+            awaitTag("overview:retry-count:Tests")
             failed = false
-            compose.onNodeWithText("Retry count").performClick()
-            awaitText("Tests (16)")
-            compose.onNodeWithText("The total test count couldn’t be loaded.").assertDoesNotExist()
-            tab("Overview")
+            compose.onNodeWithTag("overview:retry-count:Tests").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:retry-count:Tests").fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
+            compose.onNodeWithTag("overview:section:Tests").assertTextContains("16")
             scenario.recreate()
-            awaitText("Tests (16)")
+            compose.onNodeWithTag("overview:section:Tests").assertTextContains("16")
             verify(service, times(2)).listTestOccurrences(testsHref)
             verify(service, times(1)).listChanges(changesHref)
         }
     }
 
-    @Test fun eachMenuTipSurvivesRecreationAndPersistsItsExistingPreferenceOnDismissal() {
+    @Test fun eachActionTipSurvivesRecreationAndPersistsItsOwnPreferenceOnDismissal() {
         val prefs = app.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("StopBuilds", false).putBoolean("RemoveBuildsFromQueue", false).putBoolean("RestartBuilds", false).commit()
+        prefs.edit().putBoolean("StopBuilds", true).putBoolean("RemoveBuildsFromQueue", true).putBoolean("RestartBuilds", true).commit()
+        val manager = teamcityapp.libraries.onboarding.OnboardingManagerImpl(app)
+        kotlinx.coroutines.runBlocking {
+            manager.saveShareBuildPromptShown()
+            manager.saveOpenBuildInBrowserPromptShown()
+        }
+        fun shown(preference: String): Boolean = kotlinx.coroutines.runBlocking {
+            when (preference) {
+                "ShareBuild" -> manager.isShareBuildPromptShown()
+                "OpenBuildInBrowser" -> manager.isOpenBuildInBrowserPromptShown()
+                else -> prefs.getBoolean(preference, false)
+            }
+        }
         val cases = listOf(
-            Triple(Mocks.runningBuild(), "StopBuilds", "Stop, share or open running builds in a browser"),
-            Triple(Mocks.queuedBuild1(), "RemoveBuildsFromQueue", "Remove from queue, share or open builds in a browser"),
-            Triple(Mocks.successBuild(), "RestartBuilds", "Restart, share or open finished builds in a browser")
+            Triple(Mocks.runningBuild(), "StopBuilds", "Stop this running build. You can also add it back to the queue."),
+            Triple(Mocks.queuedBuild1(), "RemoveBuildsFromQueue", "Remove this build from the queue before it starts."),
+            Triple(Mocks.successBuild(), "RestartBuilds", "Run this build again with the same parameters."),
+            Triple(Mocks.successBuild(), "ShareBuild", "Share a link to this build with others."),
+            Triple(Mocks.successBuild(), "OpenBuildInBrowser", "Open this build’s page in a browser.")
         )
         launch().use { scenario ->
             cases.forEach { (legacy, preference, copy) ->
+                kotlinx.coroutines.runBlocking {
+                    when (preference) {
+                        "ShareBuild" -> manager.saveShareBuildPromptShown(false)
+                        "OpenBuildInBrowser" -> manager.saveOpenBuildInBrowserPromptShown(false)
+                        else -> prefs.edit().putBoolean(preference, false).commit()
+                    }
+                }
                 val build = mapper.toLaunchData(legacy)
                 awaitTag("navigation:row:project:id")
                 scenario.onActivity { launcher.open(it, BuildDetailsDestination(build)) }
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
-                assertFalse(prefs.getBoolean(preference, false))
+                assertFalse(shown(preference))
                 scenario.recreate()
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
                 compose.onNodeWithTag("details:dismiss-prompt").performClick()
-                compose.waitUntil(10_000) { prefs.getBoolean(preference, false) }
+                compose.waitUntil(10_000) { shown(preference) }
                 awaitTag("overview:list")
                 pressBack()
                 awaitTag("navigation:row:project:id")
@@ -383,37 +395,6 @@ class BuildDetailsNavigationTest {
             }
         } finally {
             closed.countDown()
-        }
-    }
-
-    @Test fun hiddenBuildLogReleasesItsWebViewAndReturningCreatesAFreshView() {
-        kotlinx.coroutines.runBlocking { consent.setAcknowledged(true) }
-        fun webView(view: android.view.View): android.webkit.WebView? {
-            if (view is android.webkit.WebView) return view
-            if (view is android.view.ViewGroup) for (index in 0 until view.childCount) webView(view.getChildAt(index))?.let { return it }
-            return null
-        }
-        launch().use { scenario ->
-            open(scenario, mapper.toLaunchData(Mocks.successBuild()))
-            tab("BuildLog")
-            var first: android.webkit.WebView? = null
-            compose.waitUntil(10_000) {
-                scenario.onActivity { first = webView(it.window.decorView) }
-                first != null
-            }
-            tab("Parameters")
-            awaitTag("properties:list")
-            scenario.onActivity { assertFalse(checkNotNull(first).isAttachedToWindow) }
-            tab("BuildLog")
-            var second: android.webkit.WebView? = null
-            compose.waitUntil(10_000) {
-                scenario.onActivity { second = webView(it.window.decorView) }
-                second != null
-            }
-            assertNotSame(first, second)
-            pressBack()
-            awaitTag("navigation:row:project:id")
-            scenario.onActivity { assertFalse(checkNotNull(second).isAttachedToWindow) }
         }
     }
 }

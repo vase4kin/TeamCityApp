@@ -35,8 +35,6 @@ import teamcityapp.features.build_details.api.BuildDetailsMetadataRepository
 import teamcityapp.features.build_details.api.BuildDetailsRepository
 import teamcityapp.features.build_details.impl.data.DefaultBuildDetailsMetadataRepository
 import teamcityapp.features.build_details.impl.data.DefaultBuildDetailsRepository
-import teamcityapp.features.build_log.api.BuildLogConsentStorage
-import teamcityapp.features.build_log.impl.data.BuildLogConsentPreferences
 import teamcityapp.features.home.api.HomeRepository
 import teamcityapp.libraries.coroutines.MainDispatcher
 import teamcityapp.libraries.navigation.AccountFlowNavigation
@@ -51,8 +49,6 @@ abstract class ComposeShellModule {
     @Binds abstract fun preparation(implementation: AppAccountSessionPreparation): AccountSessionPreparation
 
     @Binds abstract fun accounts(implementation: AppAccountFlowNavigation): AccountFlowNavigation
-
-    @Binds abstract fun consent(implementation: BuildLogConsentPreferences): BuildLogConsentStorage
 
     companion object {
         @Provides @Singleton @AccountNavigationScope

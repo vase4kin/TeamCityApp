@@ -46,14 +46,14 @@ class ChangesDestinationRegistration @Inject constructor() : FeatureDestination<
                 }
             }
         }
-        val count = host?.countStates?.get(BuildDetailsTab.Changes)?.let { count ->
+        val count = host?.countStates?.get(BuildDetailsSection.Changes)?.let { count ->
             when (count) {
                 is BuildDetailsCount.Available -> ChangesCountState.Available(count.count)
                 BuildDetailsCount.Loading -> ChangesCountState.Loading
                 BuildDetailsCount.Unavailable -> ChangesCountState.Unavailable
             }
         }
-        DestinationArguments(arguments) { ChangesRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsTab.Changes) } }) }
+        DestinationArguments(arguments) { ChangesRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsSection.Changes) } }) }
     }
 }
 

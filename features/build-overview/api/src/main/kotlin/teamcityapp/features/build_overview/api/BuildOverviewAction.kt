@@ -23,4 +23,4 @@ sealed interface BuildOverviewRequest {
     data object Project : BuildOverviewRequest
 }
 
-enum class BuildOverviewAction { Share, Browser, Stop, RemoveFromQueue, Restart, Configuration, Project }
+enum class BuildOverviewAction { Share, Browser, Log, Stop, RemoveFromQueue, Restart, Configuration, Project }

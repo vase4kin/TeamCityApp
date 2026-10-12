@@ -47,7 +47,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.libraries.navigation.DestinationRegistry
@@ -67,8 +66,6 @@ class HomeInitialTabTest {
     @JvmField
     @Rule(order = 2)
     val compose = createEmptyComposeRule()
-
-    @Inject lateinit var consent: BuildLogConsentStorage
 
     @Inject lateinit var registry: DestinationRegistry
 
@@ -147,17 +144,13 @@ class HomeInitialTabTest {
 
     @Test fun bothInstalledReloadPoliciesResetConsentOnceAndKeepTheRequestedTabThroughRecreation() {
         listOf(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, BundleExtractorValues.IS_NEW_ACCOUNT_CREATED).forEach { flag ->
-            runBlocking { consent.setAcknowledged(true) }
             ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT).putExtra(IncomingDestinationResolver.HOME_TAB, HomeTab.Queue.ordinal).putExtra(flag, true)).use { scenario ->
                 awaitDisplayed("build_queue:drawer")
                 assertSelected(scenario, HomeTab.Queue)
-                assertFalse(runBlocking { consent.acknowledged() })
                 scenario.onActivity { assertFalse(it.intent.hasExtra(flag)) }
-                runBlocking { consent.setAcknowledged(true) }
                 scenario.recreate()
                 awaitDisplayed("build_queue:drawer")
                 assertSelected(scenario, HomeTab.Queue)
-                assertTrue(runBlocking { consent.acknowledged() })
             }
         }
     }
