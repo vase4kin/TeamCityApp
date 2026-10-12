@@ -25,8 +25,10 @@ to the requested behavior and the coherent migration slice needed to support it.
   destination ViewModel/saveable-state ownership, retained child panes and Compose
   sheets. Results target a live originating visit and are consumed once. Popping,
   replacing or resetting a visit clears its owners and pending results.
-  Home's five tabs retain independent child owners through selection and
-  recreation. Build Details retains its Overview and opens grouped sections as
+  Home has Projects, Favorites and Activity navigation destinations. Its five
+  content panes retain independent child owners through selection and recreation;
+  Activity groups Running, Queue and Agents and remembers its last selection.
+  Build Details retains its Overview and opens grouped sections as
   separate visits with their own content owners. Hidden content cancels unfinished
   loads without discarding completed content or clearing retained ViewModels.
 - The app composition root owns installed Intent compatibility, account-flow
@@ -53,9 +55,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   Pending submissions survive recreation without duplicate requests; passwords
   stay in memory and are cleared after successful persistence.
 - Sheet content must not draw its own handle; the Navigation 3 Material sheet host owns
-  the single built-in drag handle. Home preserves five tabs, badge counts, filters,
-  onboarding and drawer actions.
-  Drawer, Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
+  the single built-in drag handle. Home uses an account avatar and a full-screen
+  Account destination, preserving account switching and existing account/app actions.
+  Filters are inline actions; only Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
   Filter Builds deliver typed results to History's originating visit. Legacy filter
   serialization remains behind app adapters to preserve existing request semantics.
 - Build Details is an Overview hub with a prominent status card, Results,
