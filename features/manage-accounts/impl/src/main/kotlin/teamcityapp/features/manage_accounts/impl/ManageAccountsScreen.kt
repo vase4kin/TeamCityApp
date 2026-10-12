@@ -104,7 +104,7 @@ fun ManageAccountsScreen(
                     )
                 }
             }
-            if (state.removal is AccountRemovalUiState.Removing) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("accounts:removing"))
+            if (state.removal is AccountRemovalUiState.Removing) TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth().testTag("accounts:removing"))
             TeamCityExtendedFloatingActionButton(
                 onClick = { if (state.canInteract) onCreateAccount() },
                 modifier = Modifier.align(Alignment.BottomEnd).onSizeChanged { addActionHeight = it.height }.padding(TeamCityDimensions.contentPadding).testTag("accounts:add").semantics { if (!state.canInteract) disabled() }

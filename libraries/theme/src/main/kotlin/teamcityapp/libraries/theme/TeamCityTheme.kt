@@ -130,7 +130,7 @@ fun TeamCityScreen(
 fun LoadingContent(modifier: Modifier = Modifier, color: Color = MaterialTheme.colorScheme.primary) {
     Box(modifier, contentAlignment = Alignment.Center) {
         Surface(shape = MaterialTheme.shapes.extraLarge, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-            CircularProgressIndicator(Modifier.padding(TeamCityDimensions.sectionSpacing), color = color)
+            TeamCityLoadingIndicator(Modifier.padding(TeamCityDimensions.sectionSpacing), color = color)
         }
     }
 }

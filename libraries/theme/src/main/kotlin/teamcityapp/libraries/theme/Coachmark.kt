@@ -118,7 +118,7 @@ fun Coachmark(
                     saveFailure?.let { ErrorNotice(it, modifier = Modifier.fillMaxWidth()) }
                     Button(onClick = onDismiss, enabled = !saving, modifier = Modifier.align(Alignment.End).then(dismissModifier)) {
                         if (saving) {
-                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                            TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize))
                         } else {
                             Text(dismissLabel)
                         }

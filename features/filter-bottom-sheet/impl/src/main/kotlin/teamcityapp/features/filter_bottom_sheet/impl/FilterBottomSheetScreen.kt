@@ -48,7 +48,7 @@ fun FilterBottomSheetScreen(state: FilterBottomSheetUiState, onApply: () -> Unit
                     }
                 }
                 Row(Modifier.fillMaxWidth().heightIn(min = TeamCityDimensions.selectionRowMinHeight).selectable(selected = false, enabled = !state.applying, role = Role.RadioButton, onClick = onApply).padding(start = TeamCityDimensions.extraLargeSpacing, end = TeamCityDimensions.extraLargeSpacing).testTag("quick-filter:apply"), verticalAlignment = Alignment.CenterVertically) {
-                    if (state.applying) CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize)) else RadioButton(selected = false, onClick = null)
+                    if (state.applying) TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.iconSize)) else RadioButton(selected = false, onClick = null)
                     Text(stringResource(state.descriptionRes), Modifier.padding(start = TeamCityDimensions.mediumSpacing), style = MaterialTheme.typography.bodyLarge)
                 }
                 if (state.failed) ErrorNotice(stringResource(R.string.filter_apply_error), onApply, Modifier.padding(TeamCityDimensions.contentPadding).testTag("quick-filter:error"), enabled = !state.applying)

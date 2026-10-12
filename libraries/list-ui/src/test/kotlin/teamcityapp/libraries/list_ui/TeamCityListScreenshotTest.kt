@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import com.github.takahirom.roborazzi.captureRoboImage
@@ -101,6 +102,9 @@ class TeamCityListScreenshotTest(private val stateName: String, private val vari
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName in listOf("loading", "empty_refreshing", "refreshing", "append_loading")) {
+            compose.onAllNodes(hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)).onFirst().assertIsDisplayed()
+        }
         compose.onRoot().captureRoboImage("list_${stateName}_${variant.name}.png")
     }
 

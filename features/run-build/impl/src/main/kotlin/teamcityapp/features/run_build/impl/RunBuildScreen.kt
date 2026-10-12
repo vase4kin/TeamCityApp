@@ -70,7 +70,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
                         if (state.agents == null) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(stringResource(R.string.text_loading_agents), style = MaterialTheme.typography.bodyMedium)
-                                CircularProgressIndicator(Modifier.padding(start = TeamCityDimensions.contentPadding).size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                                TeamCityLoadingIndicator(Modifier.padding(start = TeamCityDimensions.contentPadding).size(TeamCityDimensions.compactProgressIndicatorSize))
                             }
                         } else {
                             if (state.agentsFailed) {
@@ -129,7 +129,7 @@ fun RunBuildScreen(state: RunBuildUiState, onChange: (BuildRequest) -> Unit, onQ
     if (state.queuing) {
         AlertDialog(onDismissRequest = {}, modifier = Modifier.testTag("run-build:progress"), shape = MaterialTheme.shapes.large, text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                CircularProgressIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
+                TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
                 Text(stringResource(R.string.text_queueing_build), Modifier.padding(start = TeamCityDimensions.sectionSpacing))
             }
         }, confirmButton = {})

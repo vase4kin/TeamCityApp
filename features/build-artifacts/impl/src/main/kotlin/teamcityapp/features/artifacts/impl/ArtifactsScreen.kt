@@ -39,6 +39,7 @@ import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LocalTeamCityAppBarState
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
@@ -101,7 +102,7 @@ fun ArtifactsScreen(
             text = {
                 Column {
                     Text(stringResource(R.string.artifacts_downloading))
-                    LinearProgressIndicator(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding))
+                    TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.contentPadding))
                 }
             },
             confirmButton = { TextButton(onCancelDownload) { Text(stringResource(R.string.artifacts_cancel)) } }

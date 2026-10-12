@@ -21,6 +21,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,7 +38,7 @@ import teamcityapp.libraries.theme.TeamCityTheme
  * Presentation shell for a list. The feature owns its lazy list, keys, rows and scroll state.
  * Refresh failures leave the last completed content visible and expose an accessible retry.
  */
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun TeamCityListContainer(
     state: ListUiState<*>,
@@ -69,9 +71,18 @@ fun TeamCityListContainer(
                         if (refreshFailed) {
                             RefreshFailure(onRetry, enabled = !refreshing, message = refreshFailureMessage, maxHeight = failureMaxHeight)
                         }
+                        val refreshState = rememberPullToRefreshState()
                         PullToRefreshBox(
                             isRefreshing = refreshing,
                             onRefresh = onRefresh,
+                            state = refreshState,
+                            indicator = {
+                                PullToRefreshDefaults.LoadingIndicator(
+                                    state = refreshState,
+                                    isRefreshing = refreshing,
+                                    modifier = Modifier.align(Alignment.TopCenter)
+                                )
+                            },
                             modifier = Modifier.weight(1f).fillMaxWidth()
                         ) {
                             if (state is ListUiState.Empty) {

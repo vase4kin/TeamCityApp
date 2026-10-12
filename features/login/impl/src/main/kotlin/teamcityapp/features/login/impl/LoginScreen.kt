@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import teamcityapp.libraries.authentication.*
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
 enum class LoginDialog { None, Ssl, Demo }
@@ -47,7 +48,7 @@ fun LoginScreen(state: LoginUiState, onChange: (AuthenticationFormState) -> Unit
                 Text(stringResource(R.string.text_app_description), Modifier.padding(top = TeamCityDimensions.smallSpacing), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 AuthenticationForm(state.form, onChange, onSslChange, onSubmit, Modifier.fillMaxWidth().padding(top = TeamCityDimensions.sectionSpacing).testTag("login:form"), horizontalPadding = TeamCityDimensions.sectionSpacing)
                 Button(onSubmit, Modifier.fillMaxWidth().padding(TeamCityDimensions.sectionSpacing).heightIn(min = TeamCityDimensions.controlMinHeight).testTag("login:submit"), enabled = !state.form.busy, shape = MaterialTheme.shapes.large) { Text(stringResource(R.string.text_login_button)) }
-                if (state.demoLoading) CircularProgressIndicator(Modifier.padding(bottom = TeamCityDimensions.sectionSpacing).testTag("login:demo-loading"))
+                if (state.demoLoading) TeamCityLoadingIndicator(Modifier.padding(bottom = TeamCityDimensions.sectionSpacing).testTag("login:demo-loading"))
                 if (state.demo?.available == true) {
                     Card(Modifier.fillMaxWidth().padding(start = TeamCityDimensions.sectionSpacing, end = TeamCityDimensions.sectionSpacing, bottom = TeamCityDimensions.sectionSpacing).testTag("login:demo-card"), shape = MaterialTheme.shapes.large, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer), elevation = CardDefaults.cardElevation(TeamCityDimensions.lowElevation)) {
                         Row(Modifier.padding(TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically) {

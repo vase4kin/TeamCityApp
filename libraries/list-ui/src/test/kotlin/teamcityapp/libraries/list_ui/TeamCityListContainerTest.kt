@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.Density
@@ -110,6 +111,23 @@ class TeamCityListContainerTest {
         }
         compose.waitForIdle()
         assertEquals(1, refreshes)
+    }
+
+    @Test fun refreshIndicatorDisappearsAfterCompletionWhileContentIsRetained() {
+        val state = mutableStateOf<ListUiState<String>>(ListUiState.Content(listOf("agent"), isRefreshing = true))
+        compose.setContent {
+            TeamCityTheme {
+                TeamCityListContainer(state.value, {}, {}, Modifier.fillMaxSize(), empty = {}) {
+                    LazyColumn { item { Text("Agent") } }
+                }
+            }
+        }
+        val progress = hasProgressBarRangeInfo(ProgressBarRangeInfo.Indeterminate)
+        compose.onNode(progress).assertIsDisplayed()
+        compose.onNodeWithText("Agent").assertIsDisplayed()
+        compose.runOnIdle { state.value = ListUiState.Content(listOf("agent")) }
+        compose.onNode(progress).assertDoesNotExist()
+        compose.onNodeWithText("Agent").assertIsDisplayed()
     }
 
     @Test fun sectionHeaderAndAppendRetryDispatchFeatureActions() {

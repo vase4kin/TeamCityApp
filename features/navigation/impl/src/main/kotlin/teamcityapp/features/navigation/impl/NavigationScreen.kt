@@ -39,6 +39,7 @@ import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.coachmarkAnchor
 import teamcityapp.libraries.theme.resolve
@@ -165,7 +166,7 @@ internal fun RatingPromptCard(state: RatingPromptState.Available, onCancel: () -
                 TextButton(onCancel, enabled = !state.isSaving, modifier = Modifier.testTag("navigation:rate-cancel")) { Text(stringResource(R.string.navigation_rate_cancel)) }
                 TextButton(onRateNow, enabled = !state.isSaving, modifier = Modifier.testTag("navigation:rate-now")) { Text(stringResource(R.string.navigation_rate_now)) }
             }
-            if (state.isSaving) LinearProgressIndicator(Modifier.fillMaxWidth())
+            if (state.isSaving) TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth())
         }
     }
 }

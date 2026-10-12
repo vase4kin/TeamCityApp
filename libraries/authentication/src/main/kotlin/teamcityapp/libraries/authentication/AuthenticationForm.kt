@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCitySwitch
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.UiText
@@ -133,7 +134,7 @@ fun AuthenticationProgress(message: String, title: String? = null) {
         title = title?.let { { Text(it) } },
         text = {
             Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                CircularProgressIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
+                TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.modalProgressIndicatorSize))
                 Text(message, Modifier.padding(start = TeamCityDimensions.sectionSpacing))
             }
         },
