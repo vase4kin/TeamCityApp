@@ -16,6 +16,7 @@
 
 package teamcityapp.libraries.theme
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -88,13 +90,18 @@ fun ErrorNotice(
     onRetry: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
     actionLabel: String? = null,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    onDismiss: (() -> Unit)? = null,
+    tonal: Boolean = false,
+    @DrawableRes leadingIcon: Int = R.drawable.ic_error_outline_24dp
 ) {
+    val colors = MaterialTheme.colorScheme
+    val iconTint = if (tonal) colors.onPrimaryContainer else colors.onSurfaceVariant
     Surface(
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        contentColor = MaterialTheme.colorScheme.onSurface
+        color = if (tonal) colors.primaryContainer else colors.surfaceContainerHigh,
+        contentColor = if (tonal) colors.onPrimaryContainer else colors.onSurface
     ) {
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             val scroll = if (constraints.hasBoundedHeight) Modifier.verticalScroll(rememberScrollState()) else Modifier
@@ -102,13 +109,13 @@ fun ErrorNotice(
             Box(scroll.padding(TeamCityDimensions.mediumSpacing)) {
                 if (stacked) {
                     Column {
-                        ErrorNoticeMessage(message, Modifier.fillMaxWidth())
-                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { ErrorNoticeAction(onRetry, enabled, actionLabel) }
+                        ErrorNoticeMessage(message, Modifier.fillMaxWidth(), leadingIcon, iconTint)
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) { ErrorNoticeActions(onRetry, enabled, actionLabel, onDismiss) }
                     }
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
-                        ErrorNoticeMessage(message, Modifier.weight(1f))
-                        ErrorNoticeAction(onRetry, enabled, actionLabel)
+                        ErrorNoticeMessage(message, Modifier.weight(1f), leadingIcon, iconTint)
+                        ErrorNoticeActions(onRetry, enabled, actionLabel, onDismiss)
                     }
                 }
             }
@@ -117,9 +124,21 @@ fun ErrorNotice(
 }
 
 @Composable
-private fun ErrorNoticeMessage(message: String, modifier: Modifier) {
+private fun ErrorNoticeActions(onRetry: (() -> Unit)?, enabled: Boolean, actionLabel: String?, onDismiss: (() -> Unit)?) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        ErrorNoticeAction(onRetry, enabled, actionLabel)
+        if (onDismiss != null) {
+            IconButton(onDismiss) {
+                Icon(painterResource(R.drawable.ic_close_black_24dp), stringResource(R.string.action_close))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ErrorNoticeMessage(message: String, modifier: Modifier, leadingIcon: Int, iconTint: Color) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
-        Icon(painterResource(R.drawable.ic_error_outline_24dp), null, Modifier.size(TeamCityDimensions.iconSize), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Icon(painterResource(leadingIcon), null, Modifier.size(TeamCityDimensions.iconSize), tint = iconTint)
         Text(message, Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite }, style = MaterialTheme.typography.bodyMedium)
     }
 }

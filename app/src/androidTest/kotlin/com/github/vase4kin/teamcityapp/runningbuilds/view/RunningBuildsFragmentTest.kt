@@ -122,7 +122,7 @@ class RunningBuildsFragmentTest {
 
     @Test fun toolbarAndEmptyFavoritesRenderThroughCompose() {
         openTab()
-        assertTextVisible(text(FeatureR.string.running_builds_title))
+        assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
         assertTextVisible(text(FeatureR.string.running_builds_empty_favorites))
         Assert.assertTrue(storage.favoriteBuildTypeIds.isEmpty())
         assertBadgeCount(0)
@@ -267,8 +267,26 @@ class RunningBuildsFragmentTest {
         compose.onNodeWithTag("home:tab:Projects").performClick()
         awaitProjects()
         clickTab()
-        compose.waitUntil(10_000) { listCalls(favoriteLocator("A")) == 2 }
+        compose.waitForIdle()
+        org.junit.Assert.assertEquals(1, listCalls(favoriteLocator("A")))
         row("12").assertIsDisplayed()
+    }
+
+    @Test fun polledNewBuildWaitsForTheUserToAcceptTheUpdate() {
+        val original = build("1", "A", "Alpha", "Project A", "Retained row")
+        val added = build("2", "A", "Alpha", "Project A", "New build")
+        storage.addBuildTypeToFavorites("A")
+        stubFavorite("A", listOf(original))
+        stubDetails(original, added)
+        openTab()
+        awaitRow("1")
+        stubFavorite("A", listOf(original, added))
+        compose.waitUntil(45_000) { compose.onAllNodesWithTag("list:updates").fetchSemanticsNodes().isNotEmpty() }
+        row("2").assertDoesNotExist()
+        row("1").assertIsDisplayed()
+        compose.onNodeWithText("Update").performClick()
+        awaitRow("2")
+        compose.onNodeWithTag("list:updates").assertDoesNotExist()
     }
 
     @Test fun visibleHomeRecreationRetainsRowsWithoutDuplicateListLoading() {
@@ -282,12 +300,12 @@ class RunningBuildsFragmentTest {
             awaitRow("1")
             scenario.recreate()
             awaitRow("1")
-            assertTextVisible(text(FeatureR.string.running_builds_title))
+            assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
             verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), null)
         }
     }
 
-    @Test fun hiddenHomeRecreationStillReloadsOnRealTabReturn() {
+    @Test fun hiddenHomeRecreationRetainsContentOnRealTabReturn() {
         val build = build("1", "A", "Alpha", "Project A", "Retained row")
         storage.addBuildTypeToFavorites("A")
         stubFavorite("A", listOf(build))
@@ -302,8 +320,8 @@ class RunningBuildsFragmentTest {
             awaitProjects()
             clickTab()
             awaitRow("1")
-            compose.waitUntil(10_000) { listCalls(favoriteLocator("A")) == 2 }
-            verify(teamCityService, times(2)).listRunningBuilds(favoriteLocator("A"), null)
+            compose.waitForIdle()
+            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), null)
         }
     }
 

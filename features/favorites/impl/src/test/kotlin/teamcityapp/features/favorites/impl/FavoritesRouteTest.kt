@@ -46,6 +46,7 @@ class FavoritesRouteTest {
     private val store = ViewModelStore()
     private val project = ProjectReference("project", "Project")
     private val router = object : FavoritesRouter {
+        override fun openProjects() {}
         override fun openDrawer() {}
         override fun openProject(project: ProjectReference) {}
         override fun openConfiguration(configuration: BuildConfigurationSummary) {}

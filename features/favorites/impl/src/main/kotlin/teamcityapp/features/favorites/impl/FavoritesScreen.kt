@@ -54,7 +54,8 @@ fun FavoritesScreen(
     onOpenDrawer: () -> Unit,
     onProjectClick: (ProjectReference) -> Unit,
     onConfigurationClick: (BuildConfigurationSummary) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBrowseProjects: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
@@ -86,7 +87,19 @@ fun FavoritesScreen(
                     onRefresh,
                     onRetry,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
-                    empty = { TeamCityListEmpty(stringResource(R.string.favorites_empty)) },
+                    empty = {
+                        TeamCityListEmpty(
+                            stringResource(R.string.favorites_empty),
+                            action = if (state.showAddAction) {
+                                {
+                                    Spacer(Modifier.height(TeamCityDimensions.contentPadding))
+                                    FilledTonalButton(onBrowseProjects, Modifier.testTag("favorites:add").coachmarkAnchor("home:action")) { Text(stringResource(R.string.favorites_add)) }
+                                }
+                            } else {
+                                null
+                            }
+                        )
+                    },
                     refreshFailureMessage = state.refreshFailureMessageRes?.let { stringResource(it) }
                 ) {
                     val rows = (state.list as? ListUiState.Content<BuildConfigurationSummary>)?.items ?: return@TeamCityListContainer

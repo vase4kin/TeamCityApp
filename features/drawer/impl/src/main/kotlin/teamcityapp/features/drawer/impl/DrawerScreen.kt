@@ -34,7 +34,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
@@ -73,10 +72,10 @@ fun DrawerScreen(
                     .nestedScroll(rememberNestedScrollInteropConnection()),
                 state = listState,
                 contentPadding = PaddingValues(
+                    top = TeamCityDimensions.contentPadding,
                     bottom = TeamCityDimensions.sectionSpacing
                 )
             ) {
-                item("title") { DrawerHeading(state.canInteract, onManageAccounts) }
                 when (val accounts = state.accounts) {
                     DrawerAccountsUiState.Loading -> item("loading") {
                         Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:loading"), verticalAlignment = Alignment.CenterVertically) {
@@ -107,38 +106,17 @@ fun DrawerScreen(
                 if (state.selection is AccountSwitchUiState.Error) item("switch_error") { DrawerFailure(requireNotNull(state.selectionMessageRes), onRetrySelection, "drawer:switch_error") }
                 if (state.selection == AccountSwitchUiState.Missing) item("missing") { DrawerMessage(requireNotNull(state.selectionMessageRes), R.string.drawer_dismiss, onDismissMissing, "drawer:missing") }
                 item("add") {
-                    FilledTonalButton(
-                        onClick = onAddAccount,
-                        enabled = state.canInteract,
-                        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding).padding(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.sectionSpacing).fillMaxWidth().heightIn(min = TeamCityDimensions.minimumTouchTarget).testTag("drawer:add"),
-                        shape = MaterialTheme.shapes.medium,
-                        contentPadding = PaddingValues(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.contentPadding)
-                    ) {
-                        Icon(painterResource(R.drawable.ic_accounts_add), null, Modifier.size(TeamCityDimensions.iconSize))
-                        Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
-                        Text(stringResource(R.string.text_add_account))
-                    }
+                    Spacer(Modifier.height(TeamCityDimensions.smallSpacing))
+                    DrawerMenu(R.drawable.ic_accounts_add, stringResource(R.string.text_add_account), "drawer:add", state.canInteract, onAddAccount, first = true, tonal = true)
+                }
+                item("manage") {
+                    DrawerMenu(R.drawable.ic_accounts, stringResource(R.string.drawer_manage), "drawer:manage", state.canInteract, onManageAccounts, last = true, tonal = true)
+                    Spacer(Modifier.height(TeamCityDimensions.sectionSpacing))
                 }
                 item("settings") { DrawerMenu(R.drawable.ic_settings_black_24dp, stringResource(SharedR.string.drawer_item_settings), "drawer:settings", state.canInteract, onSettings, first = true) }
                 item("about") { DrawerMenu(ThemeR.drawable.ic_info_outline_black_24dp, stringResource(SharedR.string.drawer_item_about), "drawer:about", state.canInteract, onAbout) }
                 item("footer") { DrawerFooter(state.canInteract, onPrivacy, onRate) }
             }
-        }
-    }
-}
-
-@Composable
-private fun DrawerHeading(enabled: Boolean, onManage: () -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(stringResource(R.string.drawer_accounts_title), Modifier.weight(1f).semantics { heading() }, style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
-        TextButton(onClick = onManage, enabled = enabled, modifier = Modifier.heightIn(min = TeamCityDimensions.minimumTouchTarget).testTag("drawer:manage")) {
-            Icon(painterResource(R.drawable.ic_accounts), null, Modifier.size(TeamCityDimensions.iconSize))
-            Spacer(Modifier.width(TeamCityDimensions.extraSmallSpacing))
-            Text(stringResource(R.string.drawer_manage))
         }
     }
 }
@@ -196,14 +174,26 @@ private fun DrawerAccountRow(account: DrawerAccount, enabled: Boolean, onSelect:
 }
 
 @Composable
-private fun DrawerMenu(icon: Int, label: String, tag: String, enabled: Boolean, onClick: () -> Unit, first: Boolean = false, last: Boolean = false, emphasized: Boolean = false) {
+private fun DrawerMenu(icon: Int, label: String, tag: String, enabled: Boolean, onClick: () -> Unit, first: Boolean = false, last: Boolean = false, emphasized: Boolean = false, tonal: Boolean = false) {
     val outer = TeamCityDimensions.mediumCornerRadius
     val inner = TeamCityDimensions.extraSmallSpacing
-    val labelColor = if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-    val iconColor = if (emphasized) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+    val labelColor = if (tonal) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else if (emphasized) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    val iconColor = if (tonal) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else if (emphasized) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
     Surface(
         modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding).then(if (!last) Modifier.padding(bottom = TeamCityDimensions.drawerRowSpacing) else Modifier),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+        color = if (tonal) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(topStart = if (first) outer else inner, topEnd = if (first) outer else inner, bottomStart = if (last) outer else inner, bottomEnd = if (last) outer else inner)
     ) {
         Row(

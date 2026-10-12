@@ -123,7 +123,7 @@ class HomeStartupNavigationTest {
                 awaitTag("home:coachmark:${tab.name}")
                 compose.onNodeWithTag("home:dismiss-prompt").performClick()
                 compose.waitUntil(10_000) { prefs.getBoolean(key, false) }
-                awaitTag("home:action")
+                awaitTag(if (tab == HomeTab.Favorites) "favorites:add" else "home:action")
             }
             scenario.recreate()
             awaitTag("home:action")
@@ -163,11 +163,11 @@ class HomeStartupNavigationTest {
             verify(service, times(1)).listBuildTypes("_Root")
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            verify(service, times(2)).listAgents(false, null, null)
+            verify(service, times(1)).listAgents(false, null, null)
             scenario.recreate()
             awaitTag("agents:list")
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
-            verify(service, times(2)).listAgents(false, null, null)
+            verify(service, times(1)).listAgents(false, null, null)
         }
     }
 

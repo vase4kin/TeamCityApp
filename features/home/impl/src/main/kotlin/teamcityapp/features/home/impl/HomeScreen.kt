@@ -55,6 +55,12 @@ fun HomeScreen(
     onActivity: () -> Unit = { onTabSelected(HomeTab.Running) },
     content: @Composable () -> Unit
 ) {
+    val retryMessage = state.retryMessageRes?.let { stringResource(it) }
+    val retryLabel = stringResource(state.retryLabelRes)
+    val retryAction by rememberUpdatedState(onRetry)
+    LaunchedEffect(retryMessage, state.query?.accountKey, state.retryAttempt) {
+        if (retryMessage != null && snackbar.showSnackbar(retryMessage, retryLabel, withDismissAction = true, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) retryAction()
+    }
     val anchors = remember { CoachmarkAnchors() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val prompt = state.prompt
@@ -101,7 +107,6 @@ fun HomeScreen(
                                 scrollBehavior = scrollBehavior,
                                 title = {
                                     Column {
-                                        state.query?.account?.serverUrl?.let { Text(it, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                                         Text(stringResource(state.titleRes), style = MaterialTheme.typography.headlineMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("home:title"))
                                     }
                                 },
@@ -147,7 +152,7 @@ fun HomeScreen(
                                     }
                                 }
                             }
-                            if (state.selected != HomeTab.Projects) {
+                            if (state.isActivity) {
                                 Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
                                     state.filterSummaryRes?.let { Text(stringResource(it), Modifier.weight(1f).testTag("home:filter-summary"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
                                     FilledTonalButton(onFab, Modifier.testTag("home:action").coachmarkAnchor("home:action", anchors)) {
@@ -162,20 +167,21 @@ fun HomeScreen(
                     bottomBar = {
                         Surface {
                             Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(if (expanded) WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom else WindowInsetsSides.Horizontal))) {
-                                state.retryMessageRes?.let { message ->
-                                    ErrorNotice(stringResource(message), onRetry, actionLabel = stringResource(state.retryLabelRes), modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("home:retry-notice"))
-                                }
                                 if (!expanded) {
                                     NavigationBar {
                                         destinations.forEach { (name, label, icon) ->
-                                            NavigationBarItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, label = { Text(stringResource(label), maxLines = 1, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.testTag("home:tab:$name"))
+                                            val destinationLabel = stringResource(label)
+                                            NavigationBarItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, modifier = Modifier.testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
                                         }
                                     }
                                 }
                             }
                         }
                     },
-                    snackbarHost = { SnackbarHost(snackbar) }
+                    snackbarHost = {
+                        val largeText = LocalDensity.current.fontScale >= 1.3f
+                        SnackbarHost(snackbar) { Snackbar(it, modifier = Modifier.testTag("home:snackbar"), actionOnNewLine = largeText) }
+                    }
                 ) { padding ->
                     CompositionLocalProvider(LocalTeamCityHeaderProvided provides true, LocalTeamCityAppBarState provides scrollBehavior.state) {
                         Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }

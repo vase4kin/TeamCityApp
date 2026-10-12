@@ -19,7 +19,6 @@ package teamcityapp.features.home.impl.navigation
 import android.os.Bundle
 import androidx.activity.compose.LocalActivity
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.windowsizeclass.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
@@ -33,11 +32,11 @@ import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 import javax.inject.Inject
 import javax.inject.Provider
-import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.*
 import teamcityapp.features.agents.api.navigation.AgentsDestination
 import teamcityapp.features.build_queue.api.navigation.BuildQueueDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
+import teamcityapp.features.favorites.api.LocalFavoritesProjectsAction
 import teamcityapp.features.favorites.api.navigation.FavoritesDestination
 import teamcityapp.features.filter_bottom_sheet.api.navigation.QuickFilterDestination
 import teamcityapp.features.home.api.*
@@ -69,9 +68,6 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
             }
             val state by model.state.collectAsStateWithLifecycle()
             val snackbar = remember { SnackbarHostState() }
-            val scope = rememberCoroutineScope()
-            val info = stringResource(R.string.text_info_add)
-            val add = stringResource(R.string.text_info_add_action)
             val buildsFiltered = stringResource(R.string.text_filters_applied)
             val agentsFiltered = stringResource(R.string.text_agents_filters_applied)
             var previousQuery by remember(entryId) { mutableStateOf<HomeQuery?>(null) }
@@ -103,22 +99,17 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                 state,
                 calculateWindowSizeClass(checkNotNull(LocalActivity.current)).widthSizeClass != WindowWidthSizeClass.Compact,
                 onTabSelected = {
-                    snackbar.currentSnackbarData?.dismiss()
                     model.select(it)
                 },
                 onFab = {
                     model.fabClicked()
-                    if (state.selected == HomeTab.Favorites) {
-                        scope.launch { if (snackbar.showSnackbar(info, add) == SnackbarResult.ActionPerformed) model.addProjects() }
-                    } else {
-                        state.query?.let { query ->
-                            val filter = when (state.selected) {
-                                HomeTab.Running -> query.runningFilter
-                                HomeTab.Queue -> query.queueFilter
-                                else -> query.agentsFilter
-                            }
-                            navigator.push(QuickFilterDestination(filter.ordinal))
+                    state.query?.let { query ->
+                        val filter = when (state.selected) {
+                            HomeTab.Running -> query.runningFilter
+                            HomeTab.Queue -> query.queueFilter
+                            else -> query.agentsFilter
                         }
+                        navigator.push(QuickFilterDestination(filter.ordinal))
                     }
                 },
                 onRetry = model::retry,
@@ -126,7 +117,16 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                 snackbar = snackbar,
                 onAccount = { navigator.push(DrawerDestination) },
                 onActivity = model::selectActivity
-            ) { RetainedNavigationPane(children, "$entryId/${state.selected.name}", navigator, registry.get()) }
+            ) {
+                CompositionLocalProvider(
+                    LocalFavoritesProjectsAction provides {
+                        model.fabClicked()
+                        model.addProjects()
+                    }
+                ) {
+                    RetainedNavigationPane(children, "$entryId/${state.selected.name}", navigator, registry.get())
+                }
+            }
         }
     }
 }

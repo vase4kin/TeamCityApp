@@ -50,6 +50,9 @@ class HomeScreenTest {
         compose.onNodeWithTag("home:count:Favorites", useUnmergedTree = true).assertDoesNotExist()
         compose.onNodeWithContentDescription("Open account for Andrey Tolpeev").performClick()
         assertEquals(1, accounts)
+        compose.onNodeWithText("https://teamcity.example").assertDoesNotExist()
+        listOf("Projects", "Favorites", "Activity").forEach { compose.onNodeWithTag("home:tab:$it").assertContentDescriptionEquals(it) }
+        compose.onAllNodesWithText("Favorites").assertCountEquals(0)
         compose.onNodeWithTag("home:fab").assertDoesNotExist()
         compose.onNodeWithTag("home:action").assertDoesNotExist()
     }
@@ -72,9 +75,9 @@ class HomeScreenTest {
         assertEquals(1, actions)
     }
 
-    @Test fun compactCountFailureStaysAboveNavigationWithoutMovingHeader() = assertFooter(false)
+    @Test fun compactCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(false)
 
-    @Test fun expandedCountFailureStaysBelowContentWithoutMovingHeader() = assertFooter(true)
+    @Test fun expandedCountFailureShowsSnackbarWithoutMovingHeader() = assertFooter(true)
     private fun assertFooter(expanded: Boolean) {
         val healthy = HomeUiState(selected = HomeTab.Favorites, query = query, badges = badges)
         val state = mutableStateOf(healthy)
@@ -90,10 +93,9 @@ class HomeScreenTest {
         val title = compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot
         compose.runOnIdle { state.value = healthy.copy(badges = healthy.badges + (HomeTab.Running to HomeBadge.Failed())) }
         assertEquals(title, compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot)
-        val notice = compose.onNodeWithTag("home:retry-notice").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        val notice = compose.onNodeWithText("Some tab counts couldn’t be loaded.").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
         assertTrue(notice.top > title.bottom)
-        assertTrue(compose.onNodeWithTag("home:action").fetchSemanticsNode().boundsInRoot.bottom <= notice.top)
-        if (!expanded) assertTrue(notice.bottom <= compose.onNodeWithTag("home:tab:Favorites").fetchSemanticsNode().boundsInRoot.top)
+        compose.onNodeWithTag("home:action").assertDoesNotExist()
         compose.onNodeWithTag("home:count-failed:Activity", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithText("Retry counts").performClick()
         assertEquals(1, retries)
@@ -126,7 +128,7 @@ class HomeScreenTest {
         var actions = 0
         val state = mutableStateOf(HomeUiState(selected = HomeTab.Favorites, query = query))
         compose.setContent { TeamCityTheme { HomeScreen(state.value, false, {}, { actions++ }, {}, { state.value = state.value.copy(prompt = null) }, remember { SnackbarHostState() }) { Text("Content") } } }
-        listOf(HomePrompt.Favorites, HomePrompt.Running, HomePrompt.Queue, HomePrompt.Agents).forEach { prompt ->
+        listOf(HomePrompt.Running, HomePrompt.Queue, HomePrompt.Agents).forEach { prompt ->
             compose.runOnIdle { state.value = HomeUiState(selected = HomeTab.valueOf(prompt.name), query = query) }
             val target = compose.onNodeWithTag("home:action").fetchSemanticsNode().boundsInRoot.center
             compose.runOnIdle { state.value = state.value.copy(prompt = prompt.ui()) }
@@ -138,7 +140,23 @@ class HomeScreenTest {
         }
     }
 
-    @Test fun onboardingFailureRetainsFooterRetry() {
+    @Test fun repeatedCountFailureOffersRetryAgainAfterAnExplicitAttempt() {
+        val state = mutableStateOf(HomeUiState(badges = badges + (HomeTab.Running to HomeBadge.Failed())))
+        var retries = 0
+        compose.setContent {
+            TeamCityTheme {
+                HomeScreen(state.value, false, {}, {}, {
+                    retries++
+                    state.value = state.value.copy(retryAttempt = retries.toLong())
+                }, {}, remember { SnackbarHostState() }) { Text("Content") }
+            }
+        }
+        repeat(2) { compose.onNodeWithText("Retry counts").assertIsDisplayed().performClick() }
+        assertEquals(2, retries)
+        compose.onNodeWithText("Some tab counts couldn’t be loaded.").assertIsDisplayed()
+    }
+
+    @Test fun onboardingFailureShowsSnackbarRetry() {
         var retries = 0
         compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(onboardingFailed = true), false, {}, {}, { retries++ }, {}, remember { SnackbarHostState() }) { Text("Content") } } }
         compose.onNodeWithText("Home tips couldn’t be loaded.").assertIsDisplayed()

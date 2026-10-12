@@ -118,12 +118,10 @@ class FavoritesFragmentTest {
         compose.onNodeWithTag("drawer:settings").assertIsDisplayed()
     }
 
-    @Test fun addFavoritesFabOffersTheProjectsTab() {
+    @Test fun emptyFavoritesActionSelectsTheProjectsTab() {
         openFavorites()
         assertTextVisible(text(FavoritesR.string.favorites_empty))
-        compose.onNodeWithTag("home:action").performClick()
-        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_info_add)).assertIsDisplayed()
-        compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_info_add_action)).performClick()
+        compose.onNodeWithTag("favorites:add").performClick()
         awaitProjectRow()
         compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
     }

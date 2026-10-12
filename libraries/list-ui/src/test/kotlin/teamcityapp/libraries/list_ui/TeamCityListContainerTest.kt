@@ -93,6 +93,39 @@ class TeamCityListContainerTest {
         assertEquals(1, retries)
     }
 
+    @Test fun floatingRefreshFailureDoesNotMoveRetainedContent() {
+        val state = mutableStateOf<ListUiState<String>>(ListUiState.Content(listOf("agent")))
+        compose.setContent {
+            TeamCityTheme {
+                TeamCityListContainer(state.value, {}, {}, Modifier.fillMaxSize(), empty = {}) {
+                    LazyColumn(Modifier.fillMaxSize().testTag("retained-list")) { items(20) { Text("Agent $it") } }
+                }
+            }
+        }
+        val bounds = compose.onNodeWithTag("retained-list").fetchSemanticsNode().boundsInRoot
+        compose.runOnIdle { state.value = ListUiState.Content(listOf("agent"), refreshFailed = true) }
+        compose.onNodeWithTag("list:refresh-failure").assertIsDisplayed()
+        assertEquals(bounds, compose.onNodeWithTag("retained-list").fetchSemanticsNode().boundsInRoot)
+        compose.onNodeWithContentDescription("Close").performClick()
+        compose.onNodeWithTag("list:refresh-failure").assertDoesNotExist()
+        compose.onNodeWithText("Agent 0").assertIsDisplayed()
+    }
+
+    @Test fun updateNoticeOffersAnExplicitActionAndKeepsTheList() {
+        var updates = 0
+        compose.setContent {
+            TeamCityTheme {
+                TeamCityListContainer(ListUiState.Content(listOf("agent")), {}, {}, Modifier.fillMaxSize(), empty = {}, updatesAvailable = true, onApplyUpdates = { updates++ }) {
+                    LazyColumn(Modifier.fillMaxSize().testTag("retained-list")) { items(20) { Text("Agent $it") } }
+                }
+            }
+        }
+        compose.onNodeWithTag("list:updates").assertIsDisplayed()
+        compose.onNodeWithText("Update").performClick()
+        assertEquals(1, updates)
+        compose.onNodeWithTag("retained-list").assertIsDisplayed()
+    }
+
     @Test fun emptyListSupportsPullToRefresh() = pullToRefresh(ListUiState.Empty())
 
     @Test fun populatedListSupportsPullToRefresh() = pullToRefresh(ListUiState.Content(listOf("agent")))

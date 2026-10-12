@@ -20,6 +20,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,14 +41,19 @@ import kotlinx.coroutines.flow.map
 @OptIn(ExperimentalCoroutinesApi::class)
 class RefreshableListLoader<Q, T>(
     private val queries: Flow<Q>,
+    private val pollIntervalMillis: Long? = null,
     private val load: suspend (query: Q, forceRefresh: Boolean) -> List<T>
 ) {
+    constructor(queries: Flow<Q>, load: suspend (Q, Boolean) -> List<T>) : this(queries, null, load)
+    init {
+        require(pollIntervalMillis == null || pollIntervalMillis > 0)
+    }
     private val lock = Any()
     private val requests = MutableStateFlow(Request(0, false))
     private var retained: Session<Q, T>? = null
 
-    /** Tags every state with its producing query, keeping filters and rows consistent. */
-    val queryState: Flow<Pair<Q, ListUiState<T>>> = channelFlow {
+    /** Polls only while collected; changed results remain pending until [applyUpdates]. */
+    val pollingState: Flow<PolledListState<Q, T>> = channelFlow {
         queries.distinctUntilChanged().collectLatest { query ->
             val session = synchronized(lock) {
                 retained?.takeIf { it.query == query } ?: Session<Q, T>(
@@ -56,9 +62,20 @@ class RefreshableListLoader<Q, T>(
                     forceRefresh = retained == null && requests.value.forceRefresh
                 ).also { retained = it }
             }
-            requests.collectLatest { request -> load(session, request) }
+            requests.collectLatest { request ->
+                load(session, request)
+                if (pollIntervalMillis != null && session.completed && session.state != ListUiState.Error) {
+                    while (true) {
+                        delay(pollIntervalMillis)
+                        poll(session, request)
+                    }
+                }
+            }
         }
     }.distinctUntilChanged()
+
+    /** Tags every state with its producing query, keeping filters and rows consistent. */
+    val queryState: Flow<Pair<Q, ListUiState<T>>> = pollingState.map { it.query to it.list }.distinctUntilChanged()
 
     val state: Flow<ListUiState<T>> = queryState.map { it.second }.distinctUntilChanged()
 
@@ -67,6 +84,13 @@ class RefreshableListLoader<Q, T>(
 
     /** Reloads through the repository's normal cache policy, retaining completed rows. */
     fun reload() = request(forceRefresh = false)
+
+    /** Applies the latest successfully checked snapshot without another network request. */
+    fun applyUpdates() {
+        synchronized(lock) {
+            if (retained?.candidate != null) requests.value = Request(requests.value.revision + 1, false, applyUpdates = true)
+        }
+    }
 
     private fun request(forceRefresh: Boolean) {
         synchronized(lock) {
@@ -77,17 +101,20 @@ class RefreshableListLoader<Q, T>(
     /** Retries using fresh data, including after an initial or refresh failure. */
     fun retry() = refresh()
 
-    private suspend fun ProducerScope<Pair<Q, ListUiState<T>>>.load(session: Session<Q, T>, request: Request) {
+    private suspend fun ProducerScope<PolledListState<Q, T>>.load(session: Session<Q, T>, request: Request) {
         val attempt = synchronized(lock) {
             if (session.revision != request.revision) {
                 session.revision = request.revision
-                session.completed = false
+                val candidate = session.candidate
+                session.completed = request.applyUpdates && candidate != null
+                if (session.completed) session.state = requireNotNull(candidate)
+                session.candidate = null
                 session.forceRefresh = request.forceRefresh
             }
             if (!session.completed) session.state = session.state.refreshing()
             Attempt(session.state, session.completed, session.forceRefresh)
         }
-        send(session.query to attempt.state)
+        send(PolledListState(session.query, attempt.state, session.candidate != null))
         if (attempt.completed) return
 
         val result = try {
@@ -110,7 +137,41 @@ class RefreshableListLoader<Q, T>(
                 true
             }
         }
-        if (isCurrent) send(session.query to result)
+        if (isCurrent) send(PolledListState(session.query, result))
+    }
+
+    private suspend fun ProducerScope<PolledListState<Q, T>>.poll(session: Session<Q, T>, request: Request) {
+        val result = try {
+            val items = load(session.query, true).toList()
+            currentCoroutineContext().ensureActive()
+            if (items.isEmpty()) ListUiState.Empty() else ListUiState.Content(items)
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            currentCoroutineContext().ensureActive()
+            null
+        }
+        currentCoroutineContext().ensureActive()
+        val emission = synchronized(lock) {
+            if (retained !== session || requests.value != request) {
+                null
+            } else {
+                if (result == null) {
+                    session.state = session.state.failed()
+                } else {
+                    session.state = session.state.recovered()
+                    session.candidate = result.takeUnless { it == session.state }
+                }
+                PolledListState(session.query, session.state, session.candidate != null)
+            }
+        }
+        if (emission != null) send(emission)
+    }
+
+    private fun ListUiState<T>.recovered(): ListUiState<T> = when (this) {
+        is ListUiState.Content -> copy(isRefreshing = false, refreshFailed = false)
+        is ListUiState.Empty -> copy(isRefreshing = false, refreshFailed = false)
+        else -> this
     }
 
     private fun ListUiState<T>.refreshing(): ListUiState<T> = when (this) {
@@ -132,9 +193,10 @@ class RefreshableListLoader<Q, T>(
     ) {
         var state: ListUiState<T> = ListUiState.Loading
         var completed = false
+        var candidate: ListUiState<T>? = null
     }
 
-    private data class Request(val revision: Long, val forceRefresh: Boolean)
+    private data class Request(val revision: Long, val forceRefresh: Boolean, val applyUpdates: Boolean = false)
 
     private data class Attempt<T>(
         val state: ListUiState<T>,
@@ -142,3 +204,5 @@ class RefreshableListLoader<Q, T>(
         val forceRefresh: Boolean
     )
 }
+
+data class PolledListState<Q, T>(val query: Q, val list: ListUiState<T>, val updatesAvailable: Boolean = false)

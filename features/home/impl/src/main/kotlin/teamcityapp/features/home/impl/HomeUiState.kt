@@ -30,7 +30,8 @@ data class HomeUiState(
     val badges: Map<HomeTab, HomeBadge> = HomeTab.entries.filter { it != HomeTab.Projects }.associateWith { HomeBadge.Loading },
     val query: HomeQuery? = null,
     val prompt: HomePromptUi? = null,
-    val onboardingFailed: Boolean = false
+    val onboardingFailed: Boolean = false,
+    val retryAttempt: Long = 0
 ) {
     val isActivity: Boolean get() = selected in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)
 

@@ -122,7 +122,7 @@ class BuildQueueFragmentTest {
 
     @Test fun toolbarAndEmptyFavoritesRenderThroughCompose() {
         openTab()
-        assertTextVisible(text(FeatureR.string.build_queue_title))
+        assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
         assertTextVisible(text(FeatureR.string.build_queue_empty_favorites))
         Assert.assertTrue(storage.favoriteBuildTypeIds.isEmpty())
         assertBadgeCount(0)
@@ -267,7 +267,8 @@ class BuildQueueFragmentTest {
         compose.onNodeWithTag("home:tab:Projects").performClick()
         awaitProjects()
         clickTab()
-        compose.waitUntil(10_000) { listCalls(favoriteLocator("A")) == 2 }
+        compose.waitForIdle()
+        org.junit.Assert.assertEquals(1, listCalls(favoriteLocator("A")))
         row("12").assertIsDisplayed()
     }
 
@@ -282,12 +283,12 @@ class BuildQueueFragmentTest {
             awaitRow("1")
             scenario.recreate()
             awaitRow("1")
-            assertTextVisible(text(FeatureR.string.build_queue_title))
+            assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
             verify(teamCityService, times(1)).listQueueBuilds(favoriteLocator("A"), null)
         }
     }
 
-    @Test fun hiddenHomeRecreationStillReloadsOnRealTabReturn() {
+    @Test fun hiddenHomeRecreationRetainsContentOnRealTabReturn() {
         val build = build("1", "A", "Alpha", "Project A", "Retained row")
         storage.addBuildTypeToFavorites("A")
         stubFavorite("A", listOf(build))
@@ -302,8 +303,8 @@ class BuildQueueFragmentTest {
             awaitProjects()
             clickTab()
             awaitRow("1")
-            compose.waitUntil(10_000) { listCalls(favoriteLocator("A")) == 2 }
-            verify(teamCityService, times(2)).listQueueBuilds(favoriteLocator("A"), null)
+            compose.waitForIdle()
+            verify(teamCityService, times(1)).listQueueBuilds(favoriteLocator("A"), null)
         }
     }
 

@@ -54,7 +54,6 @@ class AgentsViewModelTest {
 
     @Test fun initialLoadingIsCollectionDrivenAndFirstResumeDoesNotDuplicateIt() = runTest(dispatcher) {
         val vm = viewModel()
-        vm.onResumed()
         runCurrent()
         assertTrue(repository.calls.isEmpty())
         observe(vm)
@@ -161,14 +160,10 @@ class AgentsViewModelTest {
 
     @Test fun configurationRecreationRetainsContentWithoutReloading() = runTest(dispatcher) {
         val vm = viewModel()
-        vm.onResumed()
         val collector = observe(vm)
         runCurrent()
-        vm.onPaused()
         collector.cancel()
         runCurrent()
-        vm.onConfigurationRecreation(wasVisible = true)
-        vm.onResumed()
         observe(vm)
         runCurrent()
         assertEquals(1, repository.calls.size)
@@ -176,33 +171,26 @@ class AgentsViewModelTest {
         assertEquals(R.string.agents_empty_connected, vm.state.value.emptyMessageRes)
     }
 
-    @Test fun hiddenTabRecreatedForConfigurationStillReloadsWhenSelected() = runTest(dispatcher) {
+    @Test fun hiddenTabRecreatedForConfigurationRetainsContentWhenSelected() = runTest(dispatcher) {
         val vm = viewModel()
-        vm.onResumed()
         val collector = observe(vm)
         runCurrent()
-        vm.onPaused()
         collector.cancel()
         runCurrent()
-        vm.onConfigurationRecreation(wasVisible = false)
-        vm.onResumed()
         observe(vm)
         runCurrent()
-        assertEquals(listOf(AgentsFilter.Connected to false, AgentsFilter.Connected to false), repository.calls)
+        assertEquals(listOf(AgentsFilter.Connected to false), repository.calls)
     }
 
-    @Test fun realPauseAndResumeReloadsUsingNormalCachePolicy() = runTest(dispatcher) {
+    @Test fun realPauseAndResumeRetainsCompletedContent() = runTest(dispatcher) {
         val vm = viewModel()
-        vm.onResumed()
         val collector = observe(vm)
         runCurrent()
-        vm.onPaused()
         collector.cancel()
         runCurrent()
-        vm.onResumed()
         observe(vm)
         runCurrent()
-        assertEquals(listOf(AgentsFilter.Connected to false, AgentsFilter.Connected to false), repository.calls)
+        assertEquals(listOf(AgentsFilter.Connected to false), repository.calls)
     }
 
     @Test fun selectingDisconnectedWhileHiddenChangesEmptyMessageOnReturn() = runTest(dispatcher) {
@@ -217,6 +205,24 @@ class AgentsViewModelTest {
         runCurrent()
         assertEquals(AgentsUiState(AgentsFilter.Disconnected, ListUiState.Empty()), vm.state.value)
         assertEquals(R.string.agents_empty_disconnected, vm.state.value.emptyMessageRes)
+    }
+
+    @Test fun pollingOffersChangesWithoutReplacingRowsUntilUpdate() = runTest(dispatcher) {
+        val vm = viewModel()
+        observe(vm)
+        runCurrent()
+        val original = vm.state.value.list
+        val updated = listOf(Agent("new", "New agent"))
+        repository.load = { _, _ -> updated }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertEquals(original, vm.state.value.list)
+        assertTrue(vm.state.value.updatesAvailable)
+        vm.applyUpdates()
+        runCurrent()
+        assertEquals(ListUiState.Content(updated), vm.state.value.list)
+        assertFalse(vm.state.value.updatesAvailable)
+        assertEquals(2, repository.calls.size)
     }
 
     private inner class FakeRepository : AgentsRepository {

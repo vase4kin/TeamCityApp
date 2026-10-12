@@ -77,10 +77,10 @@ class HomeViewModel @Inject constructor(
             emitAll(prompts)
         }
     }
-    val state = combine(data, selected, promptState, onboardingFailed) { data, selected, prompts, failed ->
+    val state = combine(data, selected, promptState, onboardingFailed, refresh) { data, selected, prompts, failed, attempt ->
         val tab = HomeTab.entries.getOrElse(selected) { HomeTab.Projects }
         val prompt = if (HomePrompt.Drawer in prompts) HomePrompt.Drawer else HomePrompt.entries.firstOrNull { it.name == tab.name && it in prompts }
-        data.copy(selected = tab, prompt = prompt?.ui(), onboardingFailed = failed)
+        data.copy(selected = tab, prompt = prompt?.ui(), onboardingFailed = failed, retryAttempt = attempt)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), HomeUiState(selected = HomeTab.entries.getOrElse(selected.value) { HomeTab.Projects }))
 
     fun select(tab: HomeTab) {

@@ -51,7 +51,8 @@ fun AgentsScreen(
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     onOpenDrawer: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onApplyUpdates: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
@@ -78,6 +79,8 @@ fun AgentsScreen(
             state = state.list,
             onRefresh = onRefresh,
             onRetry = onRetry,
+            updatesAvailable = state.updatesAvailable,
+            onApplyUpdates = onApplyUpdates,
             modifier = Modifier.padding(padding).fillMaxSize(),
             empty = {
                 TeamCityListEmpty(

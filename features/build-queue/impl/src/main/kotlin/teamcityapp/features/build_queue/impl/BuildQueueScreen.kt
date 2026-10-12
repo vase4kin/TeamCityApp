@@ -57,7 +57,8 @@ internal fun BuildQueueScreen(
     onOpenDrawer: () -> Unit,
     onBuild: (BuildLaunchData) -> Unit,
     onBuildHistory: (String, String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onApplyUpdates: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
@@ -75,7 +76,7 @@ internal fun BuildQueueScreen(
             )
         }
     }) { padding ->
-        TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.padding(padding).fillMaxSize(), empty = {
+        TeamCityListContainer(state.list, onRefresh, onRetry, updatesAvailable = state.updatesAvailable, onApplyUpdates = onApplyUpdates, modifier = Modifier.padding(padding).fillMaxSize(), empty = {
             TeamCityListEmpty(stringResource(state.emptyMessageRes))
         }) {
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer

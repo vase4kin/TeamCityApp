@@ -25,6 +25,8 @@ data class FavoritesUiState(
     val failure: FavoritesFailure = FavoritesFailure.None,
     val savedIds: List<String> = emptyList()
 ) {
+    val showAddAction: Boolean get() = list is ListUiState.Empty && savedIds.isEmpty() && failure == FavoritesFailure.None
+
     @get:StringRes val refreshFailureMessageRes: Int? = if (failure == FavoritesFailure.AllFailed) R.string.favorites_all_failed else null
 }
 

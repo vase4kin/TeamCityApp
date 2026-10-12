@@ -93,6 +93,9 @@ class HomeScreenScreenshotTest(private val stateName: String, private val varian
                 HomeScreen(state, variant.width >= 600, {}, {}, {}, {}, remember { SnackbarHostState() }) {
                     Surface(Modifier.fillMaxSize()) {
                         Column(Modifier.padding(TeamCityDimensions.contentPadding)) {
+                            if (state.prompt?.prompt == HomePrompt.Favorites) {
+                                FilledTonalButton({}, Modifier.coachmarkAnchor("home:action")) { Text("Add to favorites") }
+                            }
                             Text("TeamCity App", style = MaterialTheme.typography.titleMedium)
                             Surface(Modifier.fillMaxWidth().padding(top = TeamCityDimensions.smallSpacing), color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
                                 Text(if (state.isActivity) "Mock debug · main" else "Mock debug", Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge)

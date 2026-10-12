@@ -52,7 +52,6 @@ class BuildQueueViewModelTest {
 
     @Test fun firstLoadIsCollectionDrivenAndInitialResumeDoesNotDuplicateIt() = runTest(dispatcher) {
         val vm = vm()
-        vm.onResumed()
         runCurrent()
         assertTrue(repository.calls.isEmpty())
         observe(vm)
@@ -198,45 +197,52 @@ class BuildQueueViewModelTest {
 
     @Test fun configurationRecreationKeepsCompletedRowsWithoutReload() = runTest(dispatcher) {
         val vm = vm()
-        vm.onResumed()
         val collector = observe(vm)
         runCurrent()
-        vm.onPaused()
         collector.cancel()
         runCurrent()
-        vm.onConfigurationRecreation(true)
-        vm.onResumed()
         observe(vm)
         runCurrent()
         assertEquals(1, repository.calls.size)
     }
 
-    @Test fun realReturnUsesNormalListCachePolicy() = runTest(dispatcher) {
+    @Test fun realReturnRetainsContentWithoutReload() = runTest(dispatcher) {
         val vm = vm()
-        vm.onResumed()
         val collector = observe(vm)
         runCurrent()
-        vm.onPaused()
         collector.cancel()
         runCurrent()
-        vm.onResumed()
         observe(vm)
         runCurrent()
-        assertEquals(listOf(false, false), repository.calls.map { it.second })
+        assertEquals(listOf(false), repository.calls.map { it.second })
     }
 
-    @Test fun hiddenConfigurationRecreationStillReloadsOnReturn() = runTest(dispatcher) {
+    @Test fun hiddenConfigurationRecreationRetainsContentOnReturn() = runTest(dispatcher) {
         val vm = vm()
-        vm.onResumed()
         val collector = observe(vm)
         runCurrent()
-        vm.onPaused()
         collector.cancel()
         runCurrent()
-        vm.onConfigurationRecreation(false)
-        vm.onResumed()
         observe(vm)
         runCurrent()
+        assertEquals(1, repository.calls.size)
+    }
+
+    @Test fun pollingOffersChangesWithoutReplacingRowsUntilUpdate() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        val original = vm.state.value.list
+        val updated = rows.map { it.copy(number = "updated") }
+        repository.load = { _, _ -> updated }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertEquals(original, vm.state.value.list)
+        assertTrue(vm.state.value.updatesAvailable)
+        vm.applyUpdates()
+        runCurrent()
+        assertEquals(ListUiState.Content(updated), vm.state.value.list)
+        assertFalse(vm.state.value.updatesAvailable)
         assertEquals(2, repository.calls.size)
     }
 

@@ -120,9 +120,21 @@ class FavoritesScreenTest {
         compose.onNodeWithText("Couldn’t refresh. Try again.").assertDoesNotExist()
         compose.onAllNodesWithText("Retry").assertCountEquals(1)
         compose.onNodeWithText("Retry").performClick()
-        compose.onNodeWithTag("favorites:configuration:1").performClick()
+        compose.onNodeWithTag("favorites:configuration:2").performClick()
         assertEquals(1, retries)
-        assertEquals(rows.first(), opened)
+        assertEquals(rows.last(), opened)
+    }
+
+    @Test fun addFavoritesActionOnlyAppearsInsideEmptyContent() {
+        val state = androidx.compose.runtime.mutableStateOf(FavoritesUiState(ListUiState.Empty()))
+        var browses = 0
+        compose.setContent { TeamCityTheme { FavoritesScreen(state.value, {}, {}, {}, {}, {}, onBrowseProjects = { browses++ }) } }
+        compose.onNodeWithText("No favorite configurations added").assertIsDisplayed()
+        compose.onNodeWithText("Browse projects and open a configuration to add it to your favorites.").assertDoesNotExist()
+        compose.onNodeWithTag("favorites:add").assertIsDisplayed().performClick()
+        assertEquals(1, browses)
+        compose.runOnIdle { state.value = FavoritesUiState(ListUiState.Content(rows)) }
+        compose.onNodeWithTag("favorites:add").assertDoesNotExist()
     }
 
     @Test fun drawerActionHasAccessibleLabel() {

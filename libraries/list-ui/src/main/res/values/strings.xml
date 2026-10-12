@@ -20,4 +20,6 @@
     <string name="list_append_failed">Couldn’t load more items.</string>
     <string name="list_loading_more">Loading more items</string>
     <string name="list_action_retry">Retry</string>
+    <string name="list_updates_available">Updates available</string>
+    <string name="list_action_update">Update</string>
 </resources>

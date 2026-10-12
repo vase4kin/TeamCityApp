@@ -100,7 +100,7 @@ class AgentListFragmentTest {
 
     @Test fun showsTheAgentsToolbarAndOpensTheDrawer() {
         openAgents()
-        assertTextVisible(text(AgentsR.string.agents_title))
+        assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
         compose.onNodeWithTag("home:account").performClick()
         compose.onNodeWithTag("drawer:list").assertExists()
     }
@@ -123,7 +123,7 @@ class AgentListFragmentTest {
         compose.onNodeWithText(text(AgentsR.string.agents_empty_connected)).assertDoesNotExist()
     }
 
-    @Test fun returningToTheAgentsTabReloadsItsCompletedList() {
+    @Test fun returningToTheAgentsTabRetainsItsCompletedList() {
         val calls = AtomicInteger()
         `when`(teamCityService.listAgents(false, null, null)).thenAnswer {
             calls.incrementAndGet()
@@ -134,8 +134,8 @@ class AgentListFragmentTest {
         Assert.assertEquals(1, calls.get())
         selectTab("Favorites")
         selectTab("Agents")
-        compose.waitUntil(10_000) { calls.get() >= 2 }
-        Assert.assertEquals(2, calls.get())
+        compose.waitForIdle()
+        Assert.assertEquals(1, calls.get())
         assertTextVisible("Visible agent")
     }
 
