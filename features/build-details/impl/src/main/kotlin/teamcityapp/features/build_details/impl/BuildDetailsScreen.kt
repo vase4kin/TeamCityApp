@@ -170,7 +170,7 @@ private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (B
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (state.floatingActions.isNotEmpty()) {
-            TeamCityFloatingToolbar {
+            TeamCityFloatingToolbar(modifier = Modifier.testTag("details:toolbar")) {
                 state.floatingActions.forEach { action ->
                     IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors)) {
                         Icon(painterResource(if (action.action == BuildDetailsAction.Share) R.drawable.ic_details_share else R.drawable.ic_details_browser), stringResource(action.label))
@@ -181,7 +181,7 @@ private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (B
         val action = state.primaryAction
         ExtendedFloatingActionButton(
             onClick = { if (!state.busy) onAction(action.action) },
-            modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
+            modifier = Modifier.heightIn(min = FloatingToolbarDefaults.ContainerSize).testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
             containerColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
             contentColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
             icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) },
