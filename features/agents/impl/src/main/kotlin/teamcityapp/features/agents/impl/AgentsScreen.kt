@@ -20,10 +20,12 @@ package teamcityapp.features.agents.impl
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,10 +35,12 @@ import teamcityapp.features.agents.api.AgentsFilter
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.coachmarkAnchor
+import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,10 +51,16 @@ fun AgentsScreen(
     onOpenDrawer: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+    BindTeamCityAppBarToList(listState, scrollBehavior.state)
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.testTag("screen:app-bar"),
+                colors = teamCityTopAppBarColors(),
+                scrollBehavior = scrollBehavior,
                 title = { Text(stringResource(R.string.agents_title)) },
                 navigationIcon = {
                     IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("agents:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
@@ -75,7 +85,7 @@ fun AgentsScreen(
         ) {
             val content = state.list as? ListUiState.Content<Agent> ?: return@TeamCityListContainer
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("agents:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("agents:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                     itemsIndexed(content.items, key = { _, agent -> agent.id }, contentType = { _, _ -> "agent" }) { index, agent ->
                         AgentRow(agent, position = listRowPosition(index, content.items.size))
                     }

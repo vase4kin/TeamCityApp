@@ -35,6 +35,7 @@ import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
 
 internal enum class ChangesAppendState { Idle, Loading, Error }
@@ -55,6 +56,7 @@ internal fun ChangesScreen(
     onAppendRetry: () -> Unit = onRetry,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberTeamCityLazyListState()
     Surface(modifier.fillMaxSize()) {
         Column {
             if (countState == ChangesCountState.Unavailable) {
@@ -68,7 +70,7 @@ internal fun ChangesScreen(
                 empty = { TeamCityListEmpty(stringResource(R.string.changes_empty)) }
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+                    LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("changes:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                         items(itemCount, key = itemKey, contentType = { "change" }) { index ->
                             val change = itemAt(index)
                             if (change == null) TeamCityListLoadingRow(position = listRowPosition(index, itemCount)) else ChangeRow(change, { onChange(change.change) }, listRowPosition(index, itemCount))

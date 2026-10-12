@@ -21,10 +21,12 @@ import android.text.format.Formatter
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -33,9 +35,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.artifacts.api.Artifact
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.LocalTeamCityAppBarState
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,9 +58,15 @@ fun ArtifactsScreen(
     onDismissPlatformError: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(modifier, topBar = {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+    BindTeamCityAppBarToList(listState, if (showToolbar) scrollBehavior.state else LocalTeamCityAppBarState.current)
+    Scaffold(modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
         if (showToolbar) {
             CenterAlignedTopAppBar(
+                modifier = Modifier.testTag("screen:app-bar"),
+                colors = teamCityTopAppBarColors(),
+                scrollBehavior = scrollBehavior,
                 title = { Text(state.title) },
                 navigationIcon = { IconButton(onNavigateUp) { Icon(painterResource(R.drawable.ic_artifacts_back), stringResource(R.string.artifacts_back)) } }
             )
@@ -74,7 +85,7 @@ fun ArtifactsScreen(
                     "${file.href}:$occurrence"
                 }
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+                    LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("artifacts:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                         itemsIndexed(rows, key = { index, _ -> keys[index] }) { index, file ->
                             ArtifactRow(file, { onArtifactClick(file) }, { onArtifactLongClick(file) }, listRowPosition(index, rows.size))
                         }

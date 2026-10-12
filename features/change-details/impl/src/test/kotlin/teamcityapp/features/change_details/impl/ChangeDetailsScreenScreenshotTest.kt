@@ -100,9 +100,22 @@ class ChangeDetailsScreenScreenshotTest(private val stateName: String, private v
             compose.onNodeWithText("More details").performScrollTo().assertIsDisplayed()
             compose.waitForIdle()
             compose.onRoot().captureRoboImage("${name}_action.png")
+            compose.onNodeWithTag("change_details:list").performScrollToIndex(0)
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("change_details:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("change_details_${stateName}_${variant.name}_scrolled.png")
             compose.onNodeWithTag("change_details:list").performScrollToIndex((state as ChangeDetailsUiState.Content).details.files.size + 1)
             compose.waitForIdle()
             compose.onRoot().captureRoboImage("${name}_bottom.png")
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("change_details:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("change_details_${stateName}_${variant.name}_returned.png")
         }
     }
 

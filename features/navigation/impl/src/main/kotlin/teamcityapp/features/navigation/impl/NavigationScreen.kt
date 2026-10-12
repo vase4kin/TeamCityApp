@@ -20,10 +20,12 @@ package teamcityapp.features.navigation.impl
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -33,12 +35,14 @@ import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.coachmarkAnchor
 import teamcityapp.libraries.theme.resolve
+import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,10 +57,16 @@ fun NavigationScreen(
     modifier: Modifier = Modifier,
     onRatingRetry: () -> Unit = onRetry
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+    BindTeamCityAppBarToList(listState, scrollBehavior.state)
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.testTag("screen:app-bar"),
+                colors = teamCityTopAppBarColors(),
+                scrollBehavior = scrollBehavior,
                 title = { Text(state.title.resolve()) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateUp, modifier = if (state.root) Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR) else Modifier) {
@@ -86,7 +96,7 @@ fun NavigationScreen(
                 "$identity:$occurrence"
             }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("navigation:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("navigation:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                     itemsIndexed(entries, key = { index, _ -> keys[index] }, contentType = { _, entry -> entry::class }) { index, entry ->
                         val hasRating = state.rating is RatingPromptState.Available || state.rating == RatingPromptState.Unavailable
                         val hasPrevious = index > 0 && entries[index - 1]::class == entry::class && !(index == 1 && hasRating)

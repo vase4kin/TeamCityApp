@@ -109,11 +109,23 @@ class ArtifactsScreenScreenshotTest(private val stateName: String, private val v
         }
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("artifacts:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("artifacts_${stateName}_${variant.name}_scrolled.png")
+            compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("artifacts:list").performScrollToNode(hasTestTag("artifacts:row:/file/30"))
             compose.mainClock.autoAdvance = false
             compose.mainClock.advanceTimeBy(100)
             compose.onNodeWithTag("artifacts:row:/file/30").assertIsDisplayed()
             compose.onRoot().captureRoboImage("artifacts_${stateName}_${variant.name}_bottom.png")
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("artifacts:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("artifacts_${stateName}_${variant.name}_returned.png")
         }
     }
 

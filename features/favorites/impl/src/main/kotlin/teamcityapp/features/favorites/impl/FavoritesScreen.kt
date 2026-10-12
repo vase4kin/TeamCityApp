@@ -19,10 +19,12 @@ package teamcityapp.features.favorites.impl
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -32,12 +34,14 @@ import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.coachmarkAnchor
+import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,10 +54,16 @@ fun FavoritesScreen(
     onConfigurationClick: (BuildConfigurationSummary) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+    BindTeamCityAppBarToList(listState, scrollBehavior.state)
     Scaffold(
-        modifier = modifier,
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             CenterAlignedTopAppBar(
+                modifier = Modifier.testTag("screen:app-bar"),
+                colors = teamCityTopAppBarColors(),
+                scrollBehavior = scrollBehavior,
                 title = { Text(stringResource(R.string.favorites_title)) },
                 navigationIcon = {
                     IconButton(onOpenDrawer, modifier = Modifier.testTag("favorites:up").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) {
@@ -79,7 +89,7 @@ fun FavoritesScreen(
                     // Group by identity even when separate projects share a display name.
                     val groups = rows.groupBy { it.project.id }
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                        LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("favorites:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+                        LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("favorites:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
                             if (state.failure is FavoritesFailure.Partial) {
                                 item(key = "partial", contentType = "partial") {
                                     FavoritesPartialFailure(state.failure.unavailableIds.size, onRetry, enabled = !state.list.isRefreshing())

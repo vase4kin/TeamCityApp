@@ -51,10 +51,12 @@ import teamcityapp.features.properties.api.Property
 import teamcityapp.libraries.theme.MessageContent
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
 
 @Composable
 fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modifier: Modifier = Modifier) {
+    val listState = rememberTeamCityLazyListState()
     Surface(modifier = modifier.fillMaxSize()) {
         when (state) {
             PropertiesUiState.Empty -> MessageContent(
@@ -63,7 +65,7 @@ fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modif
             )
 
             is PropertiesUiState.Content -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
                     // Duplicate parameter names are valid; preserve their order and identities by index.
                     itemsIndexed(state.rows) { index, row ->
                         PropertyRow(row, { onCopy(row.property) }, index, state.rows.lastIndex)

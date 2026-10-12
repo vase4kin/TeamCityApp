@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -65,7 +66,6 @@ fun TeamCityScreen(
     title: String,
     onClose: () -> Unit,
     navigation: ScreenNavigation = ScreenNavigation.Close,
-    scrollToolbarWithContent: Boolean = false,
     appBarHeight: Dp = TopAppBarDefaults.TopAppBarExpandedHeight,
     titleStyle: TextStyle = MaterialTheme.typography.titleLarge,
     titleStartPadding: Dp = TeamCityDimensions.noSpacing,
@@ -76,14 +76,8 @@ fun TeamCityScreen(
     bottomBar: (@Composable () -> Unit)? = null,
     content: @Composable (Modifier) -> Unit
 ) {
-    val scrollBehavior = if (scrollToolbarWithContent) TopAppBarDefaults.enterAlwaysScrollBehavior() else TopAppBarDefaults.pinnedScrollBehavior()
-    val colors = appBarColors ?: TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.surface,
-        scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
-        navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
-        titleContentColor = MaterialTheme.colorScheme.onSurface,
-        actionIconContentColor = MaterialTheme.colorScheme.onSurface
-    )
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val colors = appBarColors ?: teamCityTopAppBarColors()
     val description = stringResource(
         if (navigation == ScreenNavigation.Back) R.string.action_back else R.string.action_close
     )
@@ -94,7 +88,7 @@ fun TeamCityScreen(
         topBar = {
             Box {
                 TopAppBar(
-                    modifier = Modifier,
+                    modifier = Modifier.testTag("screen:app-bar"),
                     title = { Text(title, modifier = Modifier.padding(start = titleStartPadding), style = titleStyle, maxLines = 1, overflow = TextOverflow.Ellipsis) },
                     expandedHeight = appBarHeight,
                     navigationIcon = {
@@ -125,7 +119,9 @@ fun TeamCityScreen(
         }
     ) { padding ->
         Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding), contentAlignment = Alignment.TopCenter) {
-            content(Modifier.widthIn(max = contentMaxWidth).fillMaxWidth().fillMaxHeight())
+            CompositionLocalProvider(LocalTeamCityAppBarState provides scrollBehavior.state) {
+                content(Modifier.widthIn(max = contentMaxWidth).fillMaxWidth().fillMaxHeight())
+            }
         }
     }
 }

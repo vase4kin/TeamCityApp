@@ -31,6 +31,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -44,10 +45,13 @@ import teamcityapp.libraries.build_ui.buildRowKeys
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
+import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.TeamCityAppBarSurface
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.resolve
+import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -76,6 +80,8 @@ internal fun BuildHistoryScreen(
     snackbar: SnackbarHostState = remember { SnackbarHostState() },
     listState: LazyListState = rememberLazyListState()
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    BindTeamCityAppBarToList(listState, scrollBehavior.state)
     val itemKeys = remember(state, itemCount, itemPeek) {
         val snapshots = (0 until itemCount).map(itemPeek)
         val buildKeys = buildRowKeys(snapshots.filterNotNull().map { it.build }).iterator()
@@ -94,11 +100,13 @@ internal fun BuildHistoryScreen(
     val density = LocalDensity.current
     BoxWithConstraints(modifier.fillMaxSize()) {
         Scaffold(
-            modifier = if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier,
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).then(if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier),
             topBar = {
-                Surface {
+                TeamCityAppBarSurface(scrollBehavior, Modifier.testTag("screen:app-bar")) {
                     Column(Modifier.windowInsetsPadding(TopAppBarDefaults.windowInsets)) {
                         TopAppBar(
+                            colors = teamCityTopAppBarColors().copy(containerColor = androidx.compose.ui.graphics.Color.Transparent, scrolledContainerColor = androidx.compose.ui.graphics.Color.Transparent),
+                            scrollBehavior = scrollBehavior,
                             title = {},
                             windowInsets = WindowInsets(0, 0, 0, 0),
                             navigationIcon = {

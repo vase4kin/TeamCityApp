@@ -94,11 +94,23 @@ class FavoritesScreenScreenshotTest(private val stateName: String, private val v
         compose.onRoot().captureRoboImage("favorites_${stateName}_${variant.name}.png")
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("favorites:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("favorites_${stateName}_${variant.name}_scrolled.png")
+            compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("favorites:list").performScrollToNode(hasTestTag("favorites:configuration:30"))
             compose.mainClock.autoAdvance = false
             compose.mainClock.advanceTimeBy(100)
             compose.onNodeWithTag("favorites:configuration:30").assertIsDisplayed()
             compose.onRoot().captureRoboImage("favorites_${stateName}_${variant.name}_bottom.png")
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("favorites:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("favorites_${stateName}_${variant.name}_returned.png")
         }
     }
 

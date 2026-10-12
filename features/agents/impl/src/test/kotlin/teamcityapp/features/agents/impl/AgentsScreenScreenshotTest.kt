@@ -88,11 +88,23 @@ class AgentsScreenScreenshotTest(private val stateName: String, private val vari
         compose.onRoot().captureRoboImage("agents_${stateName}_${variant.name}.png")
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("agents:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("agents_${stateName}_${variant.name}_scrolled.png")
+            compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("agents:list").performScrollToNode(hasTestTag("agents:row:30"))
             compose.mainClock.autoAdvance = false
             compose.mainClock.advanceTimeBy(100)
             compose.onNodeWithTag("agents:row:30").assertIsDisplayed()
             compose.onRoot().captureRoboImage("agents_${stateName}_${variant.name}_bottom.png")
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("agents:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("agents_${stateName}_${variant.name}_returned.png")
         }
     }
 

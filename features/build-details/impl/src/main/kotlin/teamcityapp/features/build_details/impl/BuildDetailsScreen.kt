@@ -25,6 +25,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -55,6 +56,7 @@ internal fun BuildDetailsScreen(
     onRetryMetadata: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     BackHandler(state.busy) {}
     val anchors = remember { CoachmarkAnchors() }
     val prompt = state.prompt?.takeIf { !state.busy && state.confirmation == null }
@@ -63,9 +65,12 @@ internal fun BuildDetailsScreen(
     val density = LocalDensity.current
     BoxWithConstraints(modifier.fillMaxSize().coachmarkHost(anchors)) {
         Scaffold(
-            modifier = if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier,
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection).then(if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier),
             topBar = {
                 TopAppBar(
+                    modifier = Modifier.testTag("screen:app-bar"),
+                    colors = teamCityTopAppBarColors(),
+                    scrollBehavior = scrollBehavior,
                     title = {
                         Column {
                             Text(state.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -92,7 +97,7 @@ internal fun BuildDetailsScreen(
                     TextButton(onClick = onRetryMetadata, enabled = !state.busy, modifier = Modifier.testTag("details:retry-metadata")) { Text(stringResource(R.string.retry_build_metadata)) }
                 }
                 CompositionLocalProvider(LocalFloatingActionClearance provides (actionHeight + TeamCityDimensions.extraLargeSpacing)) {
-                    Box(Modifier.weight(1f)) { content() }
+                    Box(Modifier.weight(1f)) { CompositionLocalProvider(LocalTeamCityAppBarState provides scrollBehavior.state) { content() } }
                 }
             }
         }
