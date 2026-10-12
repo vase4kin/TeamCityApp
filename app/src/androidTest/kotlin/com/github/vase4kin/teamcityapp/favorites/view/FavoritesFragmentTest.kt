@@ -43,6 +43,7 @@ import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.BuildType
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -57,11 +58,9 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_history.impl.R as HistoryR
 import teamcityapp.features.favorites.impl.R as FavoritesR
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 
@@ -237,7 +236,7 @@ class FavoritesFragmentTest {
             scenario.recreate()
             awaitConfiguration("build_type_id")
             verify(teamCityService, times(1)).buildType("build_type_id")
-            verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         }
     }
 
@@ -256,7 +255,7 @@ class FavoritesFragmentTest {
             scenario.recreate()
             awaitProjectRow()
             compose.onAllNodesWithText(text(NavigationR.string.navigation_projects_title), useUnmergedTree = true).onFirst().assertIsDisplayed()
-            verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
             clickFavorites()
             awaitConfiguration("build_type_id")
             compose.waitUntil(10_000) { mockingDetails(teamCityService).invocations.count { it.method.name == "buildType" && it.arguments.contentEquals(arrayOf("build_type_id")) } == 2 }

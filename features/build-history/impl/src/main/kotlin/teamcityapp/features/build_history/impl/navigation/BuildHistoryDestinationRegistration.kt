@@ -49,9 +49,9 @@ class BuildHistoryDestinationRegistration @Inject constructor(
         val activity = checkNotNull(LocalActivity.current)
         val arguments = remember(destination) {
             Bundle().apply {
-                putString(BuildHistoryNavigation.EXTRA_ID, destination.configurationId)
-                putString(BuildHistoryNavigation.EXTRA_NAME, destination.configurationName)
-                destination.locator?.let { putString(BuildHistoryNavigation.EXTRA_LOCATOR, it) }
+                putString(BuildHistoryViewModel.EXTRA_ID, destination.configurationId)
+                putString(BuildHistoryViewModel.EXTRA_NAME, destination.configurationName)
+                destination.locator?.let { putString(BuildHistoryViewModel.EXTRA_LOCATOR, it) }
             }
         }
         DestinationArguments(arguments) {

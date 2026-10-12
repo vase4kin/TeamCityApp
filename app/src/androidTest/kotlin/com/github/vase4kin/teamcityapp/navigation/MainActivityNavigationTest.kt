@@ -28,6 +28,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import io.reactivex.Single
@@ -44,7 +45,6 @@ import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.settings.api.navigation.SettingsDestination
 import teamcityapp.libraries.app_theme.ThemeMode
-import teamcityapp.libraries.navigation.DestinationLauncher
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 @OptIn(ExperimentalTestApi::class)
@@ -71,7 +71,7 @@ class MainActivityNavigationTest {
 
     @Inject lateinit var registry: DestinationRegistry
 
-    @Inject lateinit var launcher: DestinationLauncher
+    @Inject lateinit var launcher: RootDestinationLauncher
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val info = ServerInfo("navigation-server", "https://navigation.example")
 

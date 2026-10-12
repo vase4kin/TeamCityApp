@@ -67,7 +67,6 @@ import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.snapshot_dependencies.impl.R as SnapshotR

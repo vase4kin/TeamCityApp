@@ -31,7 +31,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import teamcityapp.features.build_details.api.BuildDetailsMetadataRepository
-import teamcityapp.features.build_details.api.BuildDetailsNavigation
 import teamcityapp.features.build_details.api.BuildDetailsRepository
 import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.features.home.api.HomeRepository
@@ -51,7 +50,6 @@ abstract class ComposeShellModule {
 
     @Binds abstract fun consent(implementation: AppBuildLogConsentStorage): BuildLogConsentStorage
 
-    @Binds abstract fun builds(implementation: AppBuildDetailsNavigation): BuildDetailsNavigation
     companion object {
         @Provides @Singleton @AccountNavigationScope
         fun accountScope(@MainDispatcher main: CoroutineDispatcher): CoroutineScope = CoroutineScope(SupervisorJob() + main)

@@ -16,8 +16,6 @@
 
 package teamcityapp.features.create_account.impl
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.junit.Assert.assertEquals
@@ -27,23 +25,12 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.features.create_account.api.navigation.CreateAccountDestination
-import teamcityapp.features.create_account.impl.navigation.CreateAccountNavigationImpl
 import teamcityapp.features.create_account.impl.tracker.CreateAccountTrackerImpl
 import teamcityapp.libraries.authentication.AuthenticationAnalytics
-import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class CreateAccountOwnershipTest {
-    @Test fun compatibilityCallerOpensTheRootDestination() {
-        val owner = mock(Activity::class.java)
-        val launcher = mock(DestinationLauncher::class.java)
-        CreateAccountNavigationImpl(launcher).open(owner)
-        verify(launcher).open(owner, CreateAccountDestination, 0)
-        verifyNoInteractions(owner)
-    }
-
     @Test fun analyticsPreserveScreenAndActionEvents() {
         val analytics = mock(FirebaseAnalytics::class.java)
         val tracker = CreateAccountTrackerImpl(analytics, AuthenticationAnalytics(analytics))

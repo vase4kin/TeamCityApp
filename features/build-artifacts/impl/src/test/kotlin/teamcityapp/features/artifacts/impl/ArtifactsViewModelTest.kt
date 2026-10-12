@@ -49,7 +49,7 @@ class ArtifactsViewModelTest {
         Dispatchers.resetMain()
     }
     private fun vm() = ArtifactsViewModel(
-        SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(build), ArtifactsNavigation.URL to "/artifacts", ArtifactsNavigation.NAME to "Artifacts")),
+        SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(build), ArtifactsViewModel.URL to "/artifacts", ArtifactsViewModel.NAME to "Artifacts")),
         repository,
         object : ArtifactsTracker {
             override fun viewShown() {
@@ -329,7 +329,7 @@ class ArtifactsViewModelTest {
     @Test fun typedJsonBuildKeepsFullSnapshotWithoutDecodingALegacyArgument() = runTest(dispatcher) {
         val typed = build.copy(properties = BuildProperties(null), snapshotDependencies = BuildCollectionLink(null))
         val vm = ArtifactsViewModel(
-            SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(typed), ArtifactsNavigation.BUILD to "invalid legacy payload", ArtifactsNavigation.URL to "/typed")),
+            SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(typed), "build" to "invalid legacy payload", ArtifactsViewModel.URL to "/typed")),
             repository,
             object : ArtifactsTracker {
                 override fun viewShown() {}

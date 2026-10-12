@@ -61,7 +61,7 @@ class ArtifactsRouteTest {
         store.clear()
     }
     private fun viewModel(load: suspend () -> List<Artifact> = { emptyList() }, downloadResult: suspend () -> DownloadedArtifact = { DownloadedArtifact("/downloaded") }) = ArtifactsViewModel(
-        SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(build), ArtifactsNavigation.URL to "/artifacts")),
+        SavedStateHandle(mapOf(ArtifactsViewModel.JSON_BUILD to Json.encodeToString(build), ArtifactsViewModel.URL to "/artifacts")),
         object : ArtifactsRepository {
             override suspend fun entries(url: String, forceRefresh: Boolean) = load()
             override suspend fun download(file: ArtifactDownload) = downloadResult()

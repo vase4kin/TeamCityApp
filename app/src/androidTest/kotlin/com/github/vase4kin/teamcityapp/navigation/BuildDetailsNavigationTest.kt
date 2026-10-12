@@ -33,6 +33,7 @@ import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import dagger.hilt.android.testing.*
 import io.reactivex.Single
@@ -49,7 +50,6 @@ import org.mockito.Spy
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.*
-import teamcityapp.libraries.navigation.DestinationLauncher
 
 @OptIn(ExperimentalTestApi::class)
 @HiltAndroidTest
@@ -74,7 +74,7 @@ class BuildDetailsNavigationTest {
 
     @Spy private val service: TeamCityService = FakeTeamCityServiceImpl()
 
-    @Inject lateinit var launcher: DestinationLauncher
+    @Inject lateinit var launcher: RootDestinationLauncher
 
     @Inject lateinit var consent: teamcityapp.features.build_log.api.BuildLogConsentStorage
 

@@ -29,7 +29,6 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.NavigationRatingRepository
 import teamcityapp.features.navigation.api.NavigationRepository
 import teamcityapp.features.navigation.impl.tracker.NavigationTracker
@@ -46,10 +45,10 @@ class NavigationViewModel @Inject constructor(
     private val tracker: NavigationTracker
 ) : ViewModel() {
     private val project = ProjectReference(
-        savedStateHandle[NavigationNavigation.PROJECT_ID] ?: NavigationNavigation.ROOT_PROJECT_ID,
-        savedStateHandle[NavigationNavigation.PROJECT_NAME] ?: ""
+        savedStateHandle[NavigationViewModel.PROJECT_ID] ?: NavigationViewModel.ROOT_PROJECT_ID,
+        savedStateHandle[NavigationViewModel.PROJECT_NAME] ?: ""
     )
-    private val root: Boolean = savedStateHandle[ROOT_SCREEN] ?: (project.id == NavigationNavigation.ROOT_PROJECT_ID)
+    private val root: Boolean = savedStateHandle[ROOT_SCREEN] ?: (project.id == NavigationViewModel.ROOT_PROJECT_ID)
     private val rating = MutableStateFlow<RatingPromptState>(RatingPromptState.Hidden)
     private val openRating = MutableStateFlow(false)
     private var ratingHandled = false
@@ -145,6 +144,10 @@ class NavigationViewModel @Inject constructor(
     }
     private data class RatingQuery(val hasEntries: Boolean, val revision: Long)
     companion object {
+        internal const val PROJECT_ID = "id"
+        internal const val PROJECT_NAME = "name"
+        internal const val ROOT_PROJECT_ID = "_Root"
+
         internal const val ROOT_SCREEN = "navigationRootScreen"
     }
 }

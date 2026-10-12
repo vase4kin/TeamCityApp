@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package teamcityapp.features.settings.api.navigation
+package teamcityapp.features.build_history.api
 
-import android.app.Activity
+import java.io.Serializable
 
-interface SettingsNavigation {
-    fun open(activity: Activity)
+/** Decodes the app-owned legacy filter payload at the compatibility boundary. */
+interface BuildHistoryFilterAdapter {
+    fun locator(filter: Serializable): String
 }

@@ -16,37 +16,17 @@
 
 package com.github.vase4kin.teamcityapp.navigation
 
-import android.app.Activity
-import android.content.Intent
-import androidx.navigation3.runtime.NavKey
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Inject
 import javax.inject.Singleton
-import teamcityapp.libraries.navigation.DestinationLauncher
 import teamcityapp.libraries.navigation.DestinationRegistration
 import teamcityapp.libraries.navigation.DestinationRegistry
 
-class AppDestinationLauncher @Inject constructor(private val registry: DestinationRegistry) : DestinationLauncher {
-    override fun open(activity: Activity, destination: NavKey, flags: Int) {
-        activity.startActivity(
-            Intent(activity, MainActivity::class.java)
-                .putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(destination))
-                .addFlags(flags or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-        )
-    }
-}
-
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class NavigationModule {
-    @Binds abstract fun launcher(implementation: AppDestinationLauncher): DestinationLauncher
-
-    companion object {
-        @Provides @Singleton
-        fun registry(destinations: Set<@JvmSuppressWildcards DestinationRegistration>): DestinationRegistry = DestinationRegistry(destinations)
-    }
+object NavigationModule {
+    @Provides @Singleton
+    fun registry(destinations: Set<@JvmSuppressWildcards DestinationRegistration>): DestinationRegistry = DestinationRegistry(destinations)
 }

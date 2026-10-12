@@ -20,4 +20,8 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ProjectDestination(val projectId: String = "_Root", val projectName: String = "", val root: Boolean = projectId == "_Root") : NavKey
+data class ProjectDestination(val projectId: String = "_Root", val projectName: String = "", val root: Boolean = projectId == "_Root") : NavKey {
+    companion object {
+        const val ROOT_PROJECT_ID = "_Root"
+    }
+}

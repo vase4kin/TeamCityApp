@@ -16,8 +16,6 @@
 
 package teamcityapp.features.login.impl
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
 import org.junit.Assert.assertEquals
@@ -27,31 +25,12 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import teamcityapp.features.login.api.navigation.LoginDestination
-import teamcityapp.features.login.impl.navigation.LoginNavigationImpl
 import teamcityapp.features.login.impl.tracker.LoginTrackerImpl
 import teamcityapp.libraries.authentication.AuthenticationAnalytics
-import teamcityapp.libraries.navigation.DestinationLauncher
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = android.app.Application::class)
 class LoginOwnershipTest {
-    @Test fun compatibilityCallerOpensTheRootDestination() {
-        val owner = mock(Activity::class.java)
-        val launcher = mock(DestinationLauncher::class.java)
-        LoginNavigationImpl(launcher).open(owner)
-        verify(launcher).open(owner, LoginDestination, 0)
-        verifyNoInteractions(owner)
-    }
-
-    @Test fun accountSwitchRetainsTheClearTaskPolicy() {
-        val owner = mock(Activity::class.java)
-        val launcher = mock(DestinationLauncher::class.java)
-        LoginNavigationImpl(launcher).openWithClearStack(owner)
-        verify(launcher).open(owner, LoginDestination, Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        verifyNoInteractions(owner)
-    }
-
     @Test fun analyticsPreserveScreenAndActionEvents() {
         val analytics = mock(FirebaseAnalytics::class.java)
         val tracker = LoginTrackerImpl(analytics, AuthenticationAnalytics(analytics))

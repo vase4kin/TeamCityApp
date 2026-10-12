@@ -37,8 +37,8 @@ class ArtifactsViewModel @Inject constructor(
     private val tracker: ArtifactsTracker
 ) : ViewModel() {
     val build = Json.decodeFromString<BuildLaunchData>(requireNotNull(savedStateHandle.get<String>(JSON_BUILD)))
-    private val url = savedStateHandle.get<String>(ArtifactsNavigation.URL).orEmpty()
-    private val title = savedStateHandle.get<String>(ArtifactsNavigation.NAME).orEmpty()
+    private val url = savedStateHandle.get<String>(ArtifactsViewModel.URL).orEmpty()
+    private val title = savedStateHandle.get<String>(ArtifactsViewModel.NAME).orEmpty()
     private val loader = RefreshableListLoader(flowOf(url)) { path, force -> repository.entries(path, force) }
     private val download = MutableStateFlow<ArtifactDownloadState>(ArtifactDownloadState.Idle)
     private var downloadJob: Job? = null
@@ -91,6 +91,9 @@ class ArtifactsViewModel @Inject constructor(
         return ready.file
     }
     companion object {
+        internal const val URL = "url"
+        internal const val NAME = "name"
+
         internal const val JSON_BUILD = "artifacts.build.json"
     }
 }

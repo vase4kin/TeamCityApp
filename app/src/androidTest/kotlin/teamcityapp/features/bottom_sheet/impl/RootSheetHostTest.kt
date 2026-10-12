@@ -34,6 +34,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
@@ -55,7 +56,6 @@ import teamcityapp.features.bottom_sheet.api.navigation.ActionSheetDestination
 import teamcityapp.features.drawer.api.navigation.DrawerDestination
 import teamcityapp.features.filter_bottom_sheet.api.navigation.QuickFilterDestination
 import teamcityapp.libraries.app_theme.ThemeMode
-import teamcityapp.libraries.navigation.DestinationLauncher
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -139,7 +139,7 @@ class RootSheetHostTest {
         exercise(if (multiple) "drawer_multiple" else "drawer", "drawer:add", dark) { DrawerDestination }
     }
 
-    @Inject lateinit var launcher: DestinationLauncher
+    @Inject lateinit var launcher: RootDestinationLauncher
 
     private fun exercise(name: String, rowTag: String, dark: Boolean, factory: (MainActivity) -> NavKey) {
         this.dark = dark

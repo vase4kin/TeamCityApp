@@ -32,7 +32,7 @@ class AboutRouterImpl(
     private val activity: Activity,
     private val chromeTabs: ChromeCustomTabs,
     private val appRating: AppRating,
-    private val onClose: () -> Unit = activity::finish
+    private val onClose: () -> Unit
 ) : AboutRouter {
     override fun start() = chromeTabs.initCustomsTabs()
     override fun stop() = chromeTabs.unbindCustomsTabs()

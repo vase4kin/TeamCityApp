@@ -23,11 +23,9 @@ import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import java.io.Serializable
 import javax.inject.Inject
 import teamcityapp.features.about.api.navigation.AboutDestination
-import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.BuildHistoryFilterAdapter
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
@@ -38,7 +36,6 @@ import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.manage_accounts.api.navigation.ManageAccountsDestination
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.run_build.api.navigation.RunBuildDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
@@ -80,13 +77,13 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
 
             CREATE_ACCOUNT_COMPONENT, LEGACY_CREATE_ACCOUNT_COMPONENT -> CreateAccountDestination
 
-            PROJECT_COMPONENT, NavigationNavigation.LEGACY_ACTIVITY -> ProjectDestination(intent.getStringExtra(NavigationNavigation.PROJECT_ID) ?: NavigationNavigation.ROOT_PROJECT_ID, intent.getStringExtra(NavigationNavigation.PROJECT_NAME).orEmpty(), false)
+            PROJECT_COMPONENT, LegacyProjectEntry.LEGACY_ACTIVITY -> ProjectDestination(intent.getStringExtra(LegacyProjectEntry.PROJECT_ID) ?: LegacyProjectEntry.ROOT_PROJECT_ID, intent.getStringExtra(LegacyProjectEntry.PROJECT_NAME).orEmpty(), false)
 
-            HISTORY_COMPONENT, BuildHistoryNavigation.LEGACY_ACTIVITY -> BuildHistoryDestination(intent.getStringExtra(BuildHistoryNavigation.EXTRA_ID).orEmpty(), intent.getStringExtra(BuildHistoryNavigation.EXTRA_NAME).orEmpty(), historyLocator(intent))
+            HISTORY_COMPONENT, LegacyBuildHistoryEntry.LEGACY_ACTIVITY -> BuildHistoryDestination(intent.getStringExtra(LegacyBuildHistoryEntry.EXTRA_ID).orEmpty(), intent.getStringExtra(LegacyBuildHistoryEntry.EXTRA_NAME).orEmpty(), historyLocator(intent))
 
-            ARTIFACTS_COMPONENT, ArtifactsNavigation.LEGACY_ACTIVITY -> {
-                val payload = requireNotNull(IntentCompat.getSerializableExtra(intent, ArtifactsNavigation.BUILD, Serializable::class.java))
-                ArtifactsDestination(codec.decode(payload), intent.getStringExtra(ArtifactsNavigation.URL).orEmpty(), intent.getStringExtra(ArtifactsNavigation.NAME).orEmpty())
+            ARTIFACTS_COMPONENT, LegacyArtifactsEntry.LEGACY_ACTIVITY -> {
+                val payload = requireNotNull(IntentCompat.getSerializableExtra(intent, LegacyArtifactsEntry.BUILD, Serializable::class.java))
+                ArtifactsDestination(codec.decode(payload), intent.getStringExtra(LegacyArtifactsEntry.URL).orEmpty(), intent.getStringExtra(LegacyArtifactsEntry.NAME).orEmpty())
             }
 
             else -> null
@@ -96,8 +93,8 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
         putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(destination))
         // Only plain destination arguments enter subsequent recreation; legacy DTO names
         // still belong to their compatibility codec/cache boundary.
-        if (destination is BuildHistoryDestination) removeExtra(BuildHistoryNavigation.EXTRA_LEGACY_FILTER)
-        if (destination is ArtifactsDestination) removeExtra(ArtifactsNavigation.BUILD)
+        if (destination is BuildHistoryDestination) removeExtra(LegacyBuildHistoryEntry.EXTRA_LEGACY_FILTER)
+        if (destination is ArtifactsDestination) removeExtra(LegacyArtifactsEntry.BUILD)
         if (destination is BuildDetailsDestination) removeExtra(BundleExtractorValues.BUILD)
         if (destination is HomeDestination || destination is AccountActivationDestination) {
             removeExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD)
@@ -108,8 +105,8 @@ class IncomingDestinationResolver @Inject constructor(private val registry: Dest
     fun requiresHomeReset(intent: Intent) = intent.getBooleanExtra(BundleExtractorValues.IS_REQUIRED_TO_RELOAD, false) || intent.getBooleanExtra(BundleExtractorValues.IS_NEW_ACCOUNT_CREATED, false)
 
     private fun historyLocator(intent: Intent): String? {
-        if (intent.hasExtra(BuildHistoryNavigation.EXTRA_LOCATOR)) return intent.getStringExtra(BuildHistoryNavigation.EXTRA_LOCATOR)
-        return IntentCompat.getSerializableExtra(intent, BuildHistoryNavigation.EXTRA_LEGACY_FILTER, Serializable::class.java)?.let(historyFilters::locator)
+        if (intent.hasExtra(LegacyBuildHistoryEntry.EXTRA_LOCATOR)) return intent.getStringExtra(LegacyBuildHistoryEntry.EXTRA_LOCATOR)
+        return IntentCompat.getSerializableExtra(intent, LegacyBuildHistoryEntry.EXTRA_LEGACY_FILTER, Serializable::class.java)?.let(historyFilters::locator)
     }
 
     private fun changeDetails(intent: Intent): ChangeDetails? {

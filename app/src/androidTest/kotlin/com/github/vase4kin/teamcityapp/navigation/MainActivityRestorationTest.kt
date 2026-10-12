@@ -32,6 +32,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -46,13 +47,11 @@ import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.about.api.navigation.AboutDestination
 import teamcityapp.features.about.repository.models.ServerInfo
-import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.login.api.navigation.LoginDestination
 import teamcityapp.features.settings.api.navigation.SettingsDestination
-import teamcityapp.libraries.navigation.DestinationLauncher
 import teamcityapp.libraries.navigation.DestinationRegistry
 
 /** Root restoration must preserve valid visits without replaying another account's input. */
@@ -79,7 +78,7 @@ class MainActivityRestorationTest {
 
     @Inject lateinit var registry: DestinationRegistry
 
-    @Inject lateinit var launcher: DestinationLauncher
+    @Inject lateinit var launcher: RootDestinationLauncher
 
     @Inject lateinit var consent: BuildLogConsentStorage
     private val context get() = InstrumentationRegistry.getInstrumentation().targetContext
@@ -98,8 +97,8 @@ class MainActivityRestorationTest {
     }
 
     private fun alias() = Intent().setClassName(context.packageName, IncomingDestinationResolver.ARTIFACTS_COMPONENT)
-        .putExtra(ArtifactsNavigation.BUILD, BuildComposeFixtures.legacy(destination.build))
-        .putExtra(ArtifactsNavigation.URL, destination.href).putExtra(ArtifactsNavigation.NAME, destination.name)
+        .putExtra(LegacyArtifactsEntry.BUILD, BuildComposeFixtures.legacy(destination.build))
+        .putExtra(LegacyArtifactsEntry.URL, destination.href).putExtra(LegacyArtifactsEntry.NAME, destination.name)
 
     @Test fun sameAccountRecreationRetainsTheAliasVisitAndCompletedContent() {
         ActivityScenario.launch<MainActivity>(alias()).use { scenario ->
@@ -146,9 +145,9 @@ class MainActivityRestorationTest {
             compose.onNodeWithText(destination.name).assertDoesNotExist()
             scenario.onActivity {
                 assertEquals("alice", storage.activeUser.userName)
-                assertFalse(it.intent.hasExtra(ArtifactsNavigation.BUILD))
-                assertFalse(it.intent.hasExtra(ArtifactsNavigation.URL))
-                assertFalse(it.intent.hasExtra(ArtifactsNavigation.NAME))
+                assertFalse(it.intent.hasExtra(LegacyArtifactsEntry.BUILD))
+                assertFalse(it.intent.hasExtra(LegacyArtifactsEntry.URL))
+                assertFalse(it.intent.hasExtra(LegacyArtifactsEntry.NAME))
                 assertTrue(it.navigationSnapshot!!.entries.single().destination is HomeDestination)
                 assertTrue(it.navigationSnapshot!!.results.isEmpty())
             }
@@ -207,7 +206,7 @@ class MainActivityRestorationTest {
             scenario.onActivity {
                 assertEquals(LoginDestination, it.navigationSnapshot!!.entries.single().destination)
                 assertTrue(it.navigationSnapshot!!.results.isEmpty())
-                assertFalse(it.intent.hasExtra(ArtifactsNavigation.BUILD))
+                assertFalse(it.intent.hasExtra(LegacyArtifactsEntry.BUILD))
             }
             verify(service, times(1)).listArtifacts(destination.href, "browseArchives:true")
         }

@@ -44,6 +44,7 @@ import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.home.dagger.RateTheAppTestAppModule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.Module
@@ -59,9 +60,7 @@ import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 import teamcityapp.libraries.remote.RemoteService
@@ -183,7 +182,7 @@ class RateTheAppTest {
             awaitRows()
             compose.onNodeWithTag("navigation:rating").assertDoesNotExist()
             Assert.assertTrue(sharedPreferences.getBoolean("rated", false))
-            verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         }
     }
 

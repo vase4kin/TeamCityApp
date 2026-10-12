@@ -30,6 +30,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -39,7 +40,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.impl.R as NavigationR
 
 @HiltAndroidTest
@@ -94,7 +94,7 @@ class NavigationActivityTest {
             compose.onNodeWithText("Selected project", useUnmergedTree = true).assertIsDisplayed()
             verify(teamCityService).listBuildTypes("selected-project")
             scenario.onActivity {
-                Assert.assertEquals(NavigationNavigation.LEGACY_ACTIVITY, it.intent.component?.className)
+                Assert.assertEquals(LegacyProjectEntry.LEGACY_ACTIVITY, it.intent.component?.className)
                 Assert.assertEquals("selected-project", it.intent.getStringExtra("id"))
                 Assert.assertEquals("Selected project", it.intent.getStringExtra("name"))
             }
@@ -147,9 +147,9 @@ class NavigationActivityTest {
     }
 
     private fun launch(): ActivityScenario<MainActivity> = ActivityScenario.launch(
-        Intent().setClassName(context.packageName, NavigationNavigation.LEGACY_ACTIVITY)
-            .putExtra(NavigationNavigation.PROJECT_ID, "selected-project")
-            .putExtra(NavigationNavigation.PROJECT_NAME, "Selected project")
+        Intent().setClassName(context.packageName, LegacyProjectEntry.LEGACY_ACTIVITY)
+            .putExtra(LegacyProjectEntry.PROJECT_ID, "selected-project")
+            .putExtra(LegacyProjectEntry.PROJECT_NAME, "Selected project")
     )
     private fun awaitRows() {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("navigation:row:project:id").fetchSemanticsNodes().isNotEmpty() }

@@ -20,15 +20,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import teamcityapp.features.navigation.api.NavigationNavigation
-import teamcityapp.features.navigation.impl.navigation.NavigationNavigationImpl
 import teamcityapp.features.navigation.impl.tracker.NavigationTracker
 import teamcityapp.features.navigation.impl.tracker.NavigationTrackerImpl
 
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class NavigationModules {
-    @Binds abstract fun navigation(implementation: NavigationNavigationImpl): NavigationNavigation
 
     @Binds abstract fun tracker(implementation: NavigationTrackerImpl): NavigationTracker
 }

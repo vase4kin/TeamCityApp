@@ -30,6 +30,7 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -46,7 +47,6 @@ import teamcityapp.features.change_details.api.ChangeDetails
 import teamcityapp.features.change_details.api.ChangedFile
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.test_details.api.navigation.TestDetailsDestination
-import teamcityapp.libraries.navigation.DestinationLauncher
 
 @OptIn(ExperimentalTestApi::class)
 @HiltAndroidTest
@@ -70,7 +70,7 @@ class BuildWorkflowsNavigationTest {
 
     @Spy private val service: TeamCityService = FakeTeamCityServiceImpl()
 
-    @Inject lateinit var launcher: DestinationLauncher
+    @Inject lateinit var launcher: RootDestinationLauncher
 
     @Inject lateinit var accounts: AppAccountFlowNavigation
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase

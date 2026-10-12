@@ -35,6 +35,7 @@ import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.navigation.LegacyBuildHistoryEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.runbuild.api.Branch
 import com.github.vase4kin.teamcityapp.runbuild.api.Branches
@@ -53,7 +54,6 @@ import org.mockito.Mockito.*
 import org.mockito.Spy
 import org.mockito.kotlin.whenever
 import teamcityapp.features.build_details.api.BuildDetailsDestination
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.BuildHistoryQuery
 import teamcityapp.features.build_history.impl.R as HistoryR
 import teamcityapp.features.filter_builds.api.BuildStatusFilter
@@ -126,7 +126,7 @@ class BuildHistoryActivityTest {
             compose.onNodeWithText("build type", useUnmergedTree = true).assertIsDisplayed()
             verify(teamCityService).listBuilds("build_type_id", BuildHistoryQuery.DEFAULT_LOCATOR)
             scenario.onActivity {
-                Assert.assertEquals(BuildHistoryNavigation.LEGACY_ACTIVITY, it.intent.component?.className)
+                Assert.assertEquals(LegacyBuildHistoryEntry.LEGACY_ACTIVITY, it.intent.component?.className)
                 Assert.assertEquals("build_type_id", it.intent.getStringExtra("id"))
                 Assert.assertEquals("build type", it.intent.getStringExtra("name"))
             }
@@ -548,7 +548,7 @@ class BuildHistoryActivityTest {
         Assert.assertEquals(Lifecycle.State.DESTROYED, scenario.state)
     }
 
-    private fun launch(filter: BuildListFilterImpl? = null, component: String = BuildHistoryNavigation.LEGACY_ACTIVITY): ActivityScenario<MainActivity> = ActivityScenario.launch<MainActivity>(
+    private fun launch(filter: BuildListFilterImpl? = null, component: String = LegacyBuildHistoryEntry.LEGACY_ACTIVITY): ActivityScenario<MainActivity> = ActivityScenario.launch<MainActivity>(
         Intent().setClassName(context.packageName, component)
             .putExtra("id", "build_type_id").putExtra("name", "build type").apply { filter?.let { putExtra("filter", it) } }
     ).also { scenario = it }

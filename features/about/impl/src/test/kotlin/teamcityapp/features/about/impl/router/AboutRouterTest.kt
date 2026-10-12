@@ -46,7 +46,7 @@ class AboutRouterTest {
             ratedActivities += activity
         }
     }
-    private val router = AboutRouterImpl(activity, tabs, rating)
+    private val router = AboutRouterImpl(activity, tabs, rating) {}
 
     @Test fun destinationCloseUsesNavigationWithoutFinishingHost() {
         var backs = 0

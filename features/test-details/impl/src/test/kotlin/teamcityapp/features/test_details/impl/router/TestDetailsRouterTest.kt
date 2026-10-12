@@ -29,18 +29,12 @@ import org.robolectric.shadows.ShadowToast
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class TestDetailsRouterTest {
-    @Test fun closeFinishesTheUiOwner() {
+    @Test fun closeUsesTheNavigationOwnerWithoutFinishingTheActivity() {
         Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            TestDetailsRouterImpl(controller.get()).close()
-            assertTrue(controller.get().isFinishing)
-        }
-    }
-
-    @Test fun invalidInputShowsTheExistingMessageAndCloses() {
-        Robolectric.buildActivity(Activity::class.java).setup().use { controller ->
-            TestDetailsRouterImpl(controller.get()).closeInvalidInput()
-            assertEquals("There's an error loading the page", ShadowToast.getTextOfLatestToast())
-            assertTrue(controller.get().isFinishing)
+            var closes = 0
+            TestDetailsRouterImpl(controller.get()) { closes++ }.close()
+            assertEquals(1, closes)
+            assertFalse(controller.get().isFinishing)
         }
     }
 

@@ -39,6 +39,7 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyProjectEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.navigation.api.*
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -53,9 +54,7 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.features.navigation.impl.R as NavigationR
 
@@ -130,7 +129,7 @@ class HomeActivityTest {
         row("project:child").assertTextContains("Contains a lot of projects")
         row("configuration:child-build").assertTextContains("Build and run tests")
         org.junit.Assert.assertEquals(ProjectDestination("id", "Project", false), currentRootSnapshot().entries.last().destination)
-        verify(teamCityService).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+        verify(teamCityService).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         verify(teamCityService).listBuildTypes("id")
         row("project:child").performClick()
         assertTextVisible("New project")
@@ -179,7 +178,7 @@ class HomeActivityTest {
             scenario.recreate()
             awaitRow("project:id")
             row("configuration:build_type_id").assertIsDisplayed()
-            verify(teamCityService, times(1)).listBuildTypes(NavigationNavigation.ROOT_PROJECT_ID)
+            verify(teamCityService, times(1)).listBuildTypes(LegacyProjectEntry.ROOT_PROJECT_ID)
         }
     }
 

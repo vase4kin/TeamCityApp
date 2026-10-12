@@ -77,10 +77,8 @@ import retrofit2.HttpException
 import retrofit2.Response
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
-import teamcityapp.features.build_history.api.BuildHistoryNavigation
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_overview.impl.R as OverviewR
-import teamcityapp.features.navigation.api.NavigationNavigation
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.libraries.builds.*
 

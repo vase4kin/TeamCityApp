@@ -55,6 +55,7 @@ import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
 import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
+import com.github.vase4kin.teamcityapp.navigation.LegacyArtifactsEntry
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.gson.Gson
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -73,7 +74,6 @@ import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.artifacts.api.ArtifactsNavigation
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.R as ArtifactsR
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
@@ -314,16 +314,16 @@ class ArtifactListFragmentTest {
             lists.incrementAndGet()
             Single.just(Files(listOf(file("Alias file.txt", "/metadata/alias"))))
         }
-        listOf(ArtifactsNavigation.LEGACY_ACTIVITY, "teamcityapp.features.artifacts.impl.ArtifactsActivity").forEach { component ->
+        listOf(LegacyArtifactsEntry.LEGACY_ACTIVITY, "teamcityapp.features.artifacts.impl.ArtifactsActivity").forEach { component ->
             val alias = Intent().setComponent(ComponentName(context.packageName, component))
-                .putExtra(ArtifactsNavigation.BUILD, BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))
-                .putExtra(ArtifactsNavigation.NAME, "Folder title").putExtra(ArtifactsNavigation.URL, "/children/alias")
+                .putExtra(LegacyArtifactsEntry.BUILD, BuildComposeFixtures.legacy(BuildComposeFixtures.incoming))
+                .putExtra(LegacyArtifactsEntry.NAME, "Folder title").putExtra(LegacyArtifactsEntry.URL, "/children/alias")
             ActivityScenario.launch<com.github.vase4kin.teamcityapp.navigation.MainActivity>(alias).use { scenario ->
                 awaitText("Folder title")
                 awaitText("Alias file.txt")
                 scenario.onActivity {
                     assertEquals(ArtifactsDestination(BuildComposeFixtures.incoming, "/children/alias", "Folder title"), it.navigationSnapshot!!.entries.single().destination)
-                    org.junit.Assert.assertFalse(it.intent.hasExtra(ArtifactsNavigation.BUILD))
+                    org.junit.Assert.assertFalse(it.intent.hasExtra(LegacyArtifactsEntry.BUILD))
                 }
                 val completedLists = lists.get()
                 scenario.recreate()

@@ -32,6 +32,7 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
 import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
@@ -52,7 +53,6 @@ import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.about.repository.models.ServerInfo
 import teamcityapp.features.settings.api.navigation.SettingsDestination
-import teamcityapp.libraries.navigation.DestinationLauncher
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
@@ -74,7 +74,7 @@ class AboutActivityTest {
     @Rule(order = 3)
     val compose = createEmptyComposeRule()
 
-    @Inject lateinit var launcher: DestinationLauncher
+    @Inject lateinit var launcher: RootDestinationLauncher
 
     @Spy private val teamCityService: TeamCityService = FakeTeamCityServiceImpl()
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase

@@ -41,6 +41,7 @@ import kotlinx.serialization.json.Json
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.artifacts.impl.*
+import teamcityapp.features.artifacts.impl.ArtifactsViewModel
 import teamcityapp.features.artifacts.impl.R
 import teamcityapp.features.artifacts.impl.router.*
 import teamcityapp.features.bottom_sheet.api.*
@@ -56,8 +57,8 @@ class ArtifactsDestinationRegistration @Inject constructor(private val platforms
         val arguments = remember(destination) {
             Bundle().apply {
                 putString(ArtifactsViewModel.JSON_BUILD, Json.encodeToString(destination.build))
-                putString(ArtifactsNavigation.URL, destination.href)
-                putString(ArtifactsNavigation.NAME, destination.name)
+                putString(ArtifactsViewModel.URL, destination.href)
+                putString(ArtifactsViewModel.NAME, destination.name)
             }
         }
         val snackbar = remember { SnackbarHostState() }

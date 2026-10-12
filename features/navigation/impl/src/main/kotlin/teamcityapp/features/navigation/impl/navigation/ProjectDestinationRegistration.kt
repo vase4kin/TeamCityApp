@@ -40,8 +40,8 @@ class ProjectDestinationRegistration @Inject constructor(private val rating: App
         val activity = checkNotNull(LocalActivity.current)
         val arguments = remember(destination) {
             Bundle().apply {
-                putString(NavigationNavigation.PROJECT_ID, destination.projectId)
-                putString(NavigationNavigation.PROJECT_NAME, destination.projectName)
+                putString(NavigationViewModel.PROJECT_ID, destination.projectId)
+                putString(NavigationViewModel.PROJECT_NAME, destination.projectName)
                 putBoolean(NavigationViewModel.ROOT_SCREEN, destination.root)
             }
         }

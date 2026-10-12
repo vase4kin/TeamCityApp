@@ -27,7 +27,6 @@ import javax.inject.Inject
 import teamcityapp.features.change_details.api.navigation.ChangeDetailsDestination
 import teamcityapp.features.change_details.impl.ChangeDetailsArguments
 import teamcityapp.features.change_details.impl.ChangeDetailsRoute
-import teamcityapp.features.change_details.impl.router.ChangeDetailsRouter
 import teamcityapp.features.change_details.impl.router.ChangeDetailsRouterImpl
 import teamcityapp.libraries.chrome_tabs.ChromeCustomTabsImpl
 import teamcityapp.libraries.navigation.*
@@ -38,11 +37,8 @@ class ChangeDetailsDestinationRegistration @Inject constructor(private val stora
         val activity = checkNotNull(LocalActivity.current)
         val arguments = remember(destination) { destination.details?.let(ChangeDetailsArguments::bundle) ?: android.os.Bundle() }
         val router = remember(activity, navigator, entryId) {
-            val platform = ChangeDetailsRouterImpl(activity, ChromeCustomTabsImpl(activity), storage)
-            object : ChangeDetailsRouter by platform {
-                override fun close() {
-                    if (!navigator.pop()) activity.finish()
-                }
+            ChangeDetailsRouterImpl(ChromeCustomTabsImpl(activity), storage) {
+                if (!navigator.pop()) activity.finish()
             }
         }
         DestinationArguments(arguments) { ChangeDetailsRoute(router) }

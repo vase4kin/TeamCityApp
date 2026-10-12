@@ -18,7 +18,7 @@ package teamcityapp.features.navigation.impl
 
 import androidx.annotation.StringRes
 import teamcityapp.features.navigation.api.NavigationEntry
-import teamcityapp.features.navigation.api.NavigationNavigation
+import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.libraries.build_configurations.ProjectReference
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.UiText
@@ -28,7 +28,7 @@ data class NavigationUiState(
     val list: ListUiState<NavigationEntry> = ListUiState.Loading,
     val rating: RatingPromptState = RatingPromptState.Hidden,
     val openRating: Boolean = false,
-    val root: Boolean = project.id == NavigationNavigation.ROOT_PROJECT_ID
+    val root: Boolean = project.id == ProjectDestination.ROOT_PROJECT_ID
 ) {
     val title: UiText = if (root) UiText.Resource(R.string.navigation_projects_title) else UiText.Dynamic(project.name)
 
