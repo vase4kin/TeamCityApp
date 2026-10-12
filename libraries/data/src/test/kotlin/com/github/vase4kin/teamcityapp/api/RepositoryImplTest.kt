@@ -17,9 +17,11 @@
 package com.github.vase4kin.teamcityapp.api
 
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
+import com.github.vase4kin.teamcityapp.buildlist.api.Builds
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
 import io.rx_cache2.DynamicKey
+import io.rx_cache2.EvictDynamicKey
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -29,6 +31,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.verifyNoInteractions
 import org.mockito.Mockito.`when`
@@ -71,6 +74,46 @@ class RepositoryImplTest {
         }
 
         verifyNoInteractions(teamCityService, cacheProviders)
+    }
+
+    @Test fun runningBuildsProjectionsUseBoundedStableKeysAndPreserveRequestArguments() {
+        val locator = "running:true,buildType:" + "long-configuration".repeat(30)
+        val fields = "count,build(id,href,statusText,buildType(id,name,projectName),properties(property(name,value)))"
+        val otherFields = "count,build(id,href)"
+        val otherLocator = "$locator-other"
+        val upstream = Single.just(Builds(0, emptyList()))
+        `when`(teamCityService.listRunningBuilds(locator, fields)).thenReturn(upstream)
+        `when`(teamCityService.listRunningBuilds(locator, otherFields)).thenReturn(upstream)
+        `when`(teamCityService.listRunningBuilds(otherLocator, fields)).thenReturn(upstream)
+        `when`(cacheProviders.listRunningBuilds(eq(upstream), any<DynamicKey>(), any<EvictDynamicKey>())).thenReturn(upstream)
+        repository.listRunningBuilds(locator, fields, true).test().assertComplete().assertNoErrors()
+        repository.listRunningBuilds(locator, otherFields, false).test().assertComplete().assertNoErrors()
+        repository.listRunningBuilds(locator, fields, false).test().assertComplete().assertNoErrors()
+        repository.listRunningBuilds(otherLocator, fields, false).test().assertComplete().assertNoErrors()
+        val keys = argumentCaptor<DynamicKey>()
+        val eviction = argumentCaptor<EvictDynamicKey>()
+        verify(cacheProviders, times(4)).listRunningBuilds(eq(upstream), keys.capture(), eviction.capture())
+        val actual = keys.allValues.map { it.dynamicKey.toString() }
+        assertTrue(actual.all { it.length < 100 })
+        assertEquals(actual[0], actual[2])
+        assertEquals(3, actual.toSet().size)
+        assertEquals(listOf(true, false, false, false), eviction.allValues.map { it.evict() })
+        verify(teamCityService, times(2)).listRunningBuilds(locator, fields)
+        verify(teamCityService).listRunningBuilds(locator, otherFields)
+        verify(teamCityService).listRunningBuilds(otherLocator, fields)
+    }
+
+    @Test fun runningBuildsCountAndSummaryKeepTheirLegacyPersistedKeys() {
+        val locator = "running:true"
+        val upstream = Single.just(Builds(0, emptyList()))
+        `when`(teamCityService.listRunningBuilds(locator, null)).thenReturn(upstream)
+        `when`(teamCityService.listRunningBuilds(locator, "count")).thenReturn(upstream)
+        `when`(cacheProviders.listRunningBuilds(eq(upstream), any<DynamicKey>(), any<EvictDynamicKey>())).thenReturn(upstream)
+        repository.listRunningBuilds(locator, null, false).test().assertComplete().assertNoErrors()
+        repository.listRunningBuilds(locator, "count", false).test().assertComplete().assertNoErrors()
+        val keys = argumentCaptor<DynamicKey>()
+        verify(cacheProviders, times(2)).listRunningBuilds(eq(upstream), keys.capture(), any<EvictDynamicKey>())
+        assertEquals(listOf("running:truenull", "running:truecount"), keys.allValues.map { it.dynamicKey })
     }
 
     @Test fun serverInfoUsesCacheAndMapsItsResult() = runTest {

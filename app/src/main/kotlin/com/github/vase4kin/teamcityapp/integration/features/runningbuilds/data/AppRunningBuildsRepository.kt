@@ -40,7 +40,7 @@ import teamcityapp.features.running_builds.api.RunningBuildsQuery
 import teamcityapp.features.running_builds.api.RunningBuildsRepository
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.coroutines.IoDispatcher
-import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.session.requireCurrentHomeBuildAccount
 
@@ -50,7 +50,7 @@ class AppRunningBuildsRepository @Inject constructor(
     private val storage: SharedUserStorage,
     private val filterProvider: FilterProvider,
     private val eventBus: EventBus,
-    private val hydrator: BuildHydrator,
+    private val mapper: BuildLaunchMapper,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : RunningBuildsRepository {
     override val query = callbackFlow {
@@ -67,17 +67,18 @@ class AppRunningBuildsRepository @Inject constructor(
         if (query.filter == RunningBuildsFilter.Favorites && savedIds.isEmpty()) return@withContext emptyList()
         val session = repository.get()
         requireCurrentHomeBuildAccount(storage, query.accountKey)
-        val summaries = if (query.filter == RunningBuildsFilter.All) {
-            session.listRunningBuilds(RUNNING_LOCATOR, null, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() }
+        val rows = if (query.filter == RunningBuildsFilter.All) {
+            session.listRunningBuilds(RUNNING_LOCATOR, RUNNING_BUILD_FIELDS, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() }
         } else {
             coroutineScope {
                 savedIds.map { id ->
-                    async { session.listRunningBuilds("$RUNNING_LOCATOR,buildType:$id", null, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() } }
+                    async { session.listRunningBuilds("$RUNNING_LOCATOR,buildType:$id", RUNNING_BUILD_FIELDS, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() } }
                 }.awaitAll().flatten()
             }
         }
         requireCurrentHomeBuildAccount(storage, query.accountKey)
-        val builds = hydrator.hydrate(session, summaries)
+        // The collection projection already contains the complete launch snapshot.
+        val builds = rows.map(mapper::toLaunchData)
         requireCurrentHomeBuildAccount(storage, query.accountKey)
         builds
     }

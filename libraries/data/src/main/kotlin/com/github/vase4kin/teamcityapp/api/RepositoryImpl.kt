@@ -32,6 +32,7 @@ import io.rx_cache2.DynamicKey
 import io.rx_cache2.DynamicKeyGroup
 import io.rx_cache2.EvictDynamicKey
 import io.rx_cache2.EvictDynamicKeyGroup
+import java.security.MessageDigest
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.rx2.await
 import kotlinx.coroutines.withContext
@@ -120,9 +121,17 @@ class RepositoryImpl(
      */
     override fun listRunningBuilds(locator: String, fields: String?, update: Boolean): Single<Builds> = cacheProviders.listRunningBuilds(
         teamCityService.listRunningBuilds(locator, fields),
-        DynamicKey(locator + fields),
+        DynamicKey(runningBuildsCacheKey(locator, fields)),
         EvictDynamicKey(update)
     )
+
+    private fun runningBuildsCacheKey(locator: String, fields: String?): String {
+        // Preserve persisted Home count/legacy summary keys. Rich projections need bounded keys:
+        // RxCache uses the dynamic key in its disk filename, which cannot hold the full selector.
+        if (fields == null || fields == "count") return locator + fields
+        val digest = MessageDigest.getInstance("SHA-256").digest("$locator\u0000$fields".toByteArray(Charsets.UTF_8))
+        return "projection:" + digest.joinToString("") { "%02x".format(it) }
+    }
 
     /**
      * {@inheritDoc}
