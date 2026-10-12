@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import teamcityapp.features.build_history.api.BuildHistoryPrompt
 import teamcityapp.libraries.theme.Coachmark
 import teamcityapp.libraries.theme.CoachmarkPlacement
 
@@ -36,7 +35,7 @@ internal fun HistoryCoachmark(state: OnboardingState.Available, anchor: Rect, on
         onDismiss = onDismiss,
         modifier = Modifier.testTag("history:coachmark:$prompt"),
         dismissModifier = Modifier.testTag("history:prompt-dismiss"),
-        placement = if (prompt == BuildHistoryPrompt.Run) CoachmarkPlacement.Above else CoachmarkPlacement.Below,
+        placement = CoachmarkPlacement.Above,
         saving = state.saving,
         saveFailure = if (state.saveFailed) stringResource(R.string.history_prompt_save_failed) else null
     )
