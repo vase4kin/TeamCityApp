@@ -176,4 +176,37 @@ class NavigatorTest {
         assertEquals(Selected("first-child"), nav.consumeResult("root", Selected::class) { it.value == "first-child" })
         assertTrue(nav.snapshot.results.isEmpty())
     }
+
+    @Test fun childResultsStayWithTheirOriginAndParentSelectionPreservesChildHistory() {
+        val parent = navigator()
+        val child = Navigator(mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("tab-root", Detail("projects"))))), parent = parent)
+        val history = child.push(Detail("history"))
+        child.push(Detail("filter"))
+        assertTrue(child.finish(Selected("branch"), history))
+        assertNull(parent.consumeResult(history, Selected::class))
+        assertEquals(Selected("branch"), child.consumeResult(history, Selected::class))
+        assertNull(child.consumeResult(history, Selected::class))
+        val home = child.findEntry { it.destination == Root }!!
+        assertTrue(child.popTo(home.id, Selected("favorites")))
+        assertEquals(history, child.current.id)
+        assertEquals(Selected("favorites"), parent.consumeResult(home.id, Selected::class))
+        child.push(Detail("filter"))
+        child.popTo("tab-root")
+        child.push(Detail("later-filter"))
+        assertFalse(child.finish(Selected("stale"), history))
+    }
+
+    @Test fun returningToRootRetainsItsIdentityAndClearsResultsOfRemovedVisits() {
+        val nav = navigator()
+        val history = nav.push(Detail("history"))
+        nav.push(Detail("filter"))
+        nav.finish(Selected("old-filter"), history)
+        nav.push(Detail("build"))
+        assertTrue(nav.popToRoot())
+        assertEquals("root", nav.current.id)
+        assertEquals(1, nav.snapshot.entries.size)
+        assertTrue(nav.snapshot.results.isEmpty())
+        assertTrue(nav.popToRoot())
+        assertEquals("root", nav.current.id)
+    }
 }

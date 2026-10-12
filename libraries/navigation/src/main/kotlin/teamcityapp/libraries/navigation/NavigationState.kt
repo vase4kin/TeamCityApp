@@ -49,13 +49,36 @@ data class NavigationSnapshot(
 /** UI-owned navigation state; no Activity, Fragment or business operations are retained. */
 class Navigator(
     private val state: MutableState<NavigationSnapshot>,
+    private val parent: Navigator? = null,
+    private val useParent: (NavKey) -> Boolean = { false },
     private val nextId: () -> String = { UUID.randomUUID().toString() }
 ) {
+    private var activeChild: Pair<String, Navigator>? = null
     val snapshot: NavigationSnapshot get() = state.value
+
+    /** Active visit path for host diagnostics; saved ownership remains in each stack. */
+    val visibleSnapshot: NavigationSnapshot
+        get() {
+            val child = activeChild?.takeIf { it.first == current.id }?.second?.visibleSnapshot ?: return snapshot
+            val entries = snapshot.entries + child.entries.drop(1)
+            val ids = entries.map { it.id }.toSet()
+            return snapshot.copy(entries = entries, results = (snapshot.results + child.results).filter { it.entryId in ids })
+        }
+
+    internal fun attachAsActiveChild(parentEntryId: String): () -> Unit {
+        val owner = parent ?: return {}
+        val attachment = parentEntryId to this
+        owner.activeChild = attachment
+        return { if (owner.activeChild === attachment) owner.activeChild = null }
+    }
     val current: NavigationEntry get() = snapshot.entries.last()
     val canGoBack: Boolean get() = snapshot.entries.size > 1
 
+    /** Find a live visit in this stack or its containing stack. */
+    fun findEntry(predicate: (NavigationEntry) -> Boolean): NavigationEntry? = snapshot.entries.lastOrNull(predicate) ?: parent?.findEntry(predicate)
+
     fun push(destination: NavKey): String {
+        if (parent != null && useParent(destination)) return parent.push(destination)
         val entry = NavigationEntry(nextId(), destination)
         state.value = snapshot.copy(entries = snapshot.entries + entry)
         return entry.id
@@ -92,10 +115,13 @@ class Navigator(
         return true
     }
 
+    /** Reselecting a tab returns to its existing root and clears only its deeper visits. */
+    fun popToRoot(): Boolean = popTo(snapshot.entries.first().id)
+
     /** Returns to a live visit without replacing its owners, optionally delivering a typed result. */
     fun popTo(entryId: String, result: NavigationResult? = null): Boolean {
         val index = snapshot.entries.indexOfFirst { it.id == entryId }
-        if (index < 0) return false
+        if (index < 0) return parent?.popTo(entryId, result) ?: false
         val entries = snapshot.entries.take(index + 1)
         val liveIds = entries.map { it.id }.toSet()
         state.value = snapshot.copy(

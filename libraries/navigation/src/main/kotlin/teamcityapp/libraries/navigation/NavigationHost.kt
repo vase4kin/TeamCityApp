@@ -30,7 +30,7 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import java.util.UUID
 
 @Composable
-fun rememberNavigator(initialDestination: NavKey, registry: DestinationRegistry, sessionKey: String = "initial"): Navigator {
+fun rememberNavigator(initialDestination: NavKey, registry: DestinationRegistry, sessionKey: String = "initial", parent: Navigator? = null, useParent: (NavKey) -> Boolean = { false }): Navigator {
     val configuration = remember(registry) { SavedStateConfiguration { serializersModule = registry.serializers } }
     val snapshot = rememberSerializable(
         sessionKey,
@@ -44,7 +44,7 @@ fun rememberNavigator(initialDestination: NavKey, registry: DestinationRegistry,
     if (snapshot.value.sessionKey != sessionKey) {
         snapshot.value = NavigationSnapshot(listOf(NavigationEntry(UUID.randomUUID().toString(), initialDestination)), sessionKey = sessionKey)
     }
-    return remember(snapshot) { Navigator(snapshot) }
+    return remember(snapshot, parent) { Navigator(snapshot, parent = parent, useParent = useParent) }
 }
 
 @Composable

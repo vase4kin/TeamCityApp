@@ -216,9 +216,11 @@ class BuildWorkflowsNavigationTest {
         }
     }
 
-    @Test fun favoritesActionReturnsToTheExistingHomeVisitAndClearsHistoryFromBack() {
+    @Test fun favoritesActionSelectsTheExistingHomeAndPreservesTheProjectsHistory() {
         launch().use { scenario ->
             openHistory()
+            var historyVisit: String? = null
+            scenario.onActivity { historyVisit = it.navigationSnapshot!!.entries.last().id }
             compose.waitUntil(10_000) { runCatching { compose.onNodeWithTag("history:favorite").assertIsEnabled() }.isSuccess }
             compose.onNodeWithTag("history:favorite").performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithText("Open favorites").fetchSemanticsNodes().isNotEmpty() }
@@ -226,6 +228,11 @@ class BuildWorkflowsNavigationTest {
             awaitTag("home:tab:Favorites")
             compose.onNodeWithTag("home:tab:Favorites").assertIsSelected()
             compose.onNodeWithTag("history:list").assertDoesNotExist()
+            compose.onNodeWithTag("home:tab:Projects").performClick()
+            awaitTag("history:list")
+            scenario.onActivity { assertEquals(historyVisit, it.navigationSnapshot!!.entries.last().id) }
+            compose.onNodeWithTag("home:tab:Favorites").performClick()
+            awaitTag("favorites:configuration:build_type_id")
             androidx.test.espresso.Espresso.pressBackUnconditionally()
             compose.waitUntil(10_000) { scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
         }

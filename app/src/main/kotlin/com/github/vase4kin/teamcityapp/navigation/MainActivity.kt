@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
     private var launchAccountKey = "signed-out"
     private var activeNavigator: teamcityapp.libraries.navigation.Navigator? = null
     private lateinit var navigationLifecycle: RootNavigationLifecycle
-    internal val navigationSnapshot get() = activeNavigator?.snapshot
+    internal val navigationSnapshot get() = activeNavigator?.visibleSnapshot
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(RootActivitySavedState.forRoot(savedInstanceState))

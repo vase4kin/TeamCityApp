@@ -163,4 +163,27 @@ class HomeScreenTest {
         compose.onNodeWithText("Retry").performClick()
         assertEquals(1, retries)
     }
+
+    @Test fun nestedScreensKeepNavigationVisibleAndOwnTheirHeader() {
+        var selected = HomeTab.Projects
+        compose.setContent {
+            TeamCityTheme {
+                HomeScreen(HomeUiState(selected = HomeTab.Running, query = query), false, { selected = it }, {}, {}, {}, remember { SnackbarHostState() }, showHomeHeader = false) {
+                    Column {
+                        Text("Build details header")
+                        Text("Build content")
+                    }
+                }
+            }
+        }
+        compose.onNodeWithText("Build details header").assertIsDisplayed()
+        compose.onNodeWithText("Build content").assertIsDisplayed()
+        compose.onNodeWithTag("home:title").assertDoesNotExist()
+        compose.onNodeWithTag("home:account").assertDoesNotExist()
+        compose.onNodeWithTag("home:activity-views").assertDoesNotExist()
+        listOf("Projects", "Favorites", "Activity").forEach { compose.onNodeWithTag("home:tab:$it").assertIsDisplayed() }
+        compose.onNodeWithTag("home:tab:Activity").assertIsSelected()
+        compose.onNodeWithTag("home:tab:Favorites").performClick()
+        assertEquals(HomeTab.Favorites, selected)
+    }
 }
