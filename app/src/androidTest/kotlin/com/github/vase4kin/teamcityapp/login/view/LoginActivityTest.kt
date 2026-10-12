@@ -42,6 +42,7 @@ import com.github.vase4kin.teamcityapp.di.modules.AppModule.CLIENT_BASE_UNSAFE
 import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
+import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.login.dagger.LoginActivityTestAppModule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
@@ -148,6 +149,8 @@ class LoginActivityTest {
         val app =
             InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
         app.appInjector.sharedUserStorage().clearAll()
+        // Authentication checks Home content; onboarding has its own root-flow tests.
+        TestUtils.disableOnboarding()
         `when`(okHttpClient.newCall(any<Request>())).thenReturn(call)
         `when`(unsafeOkHttpClient.newCall(any<Request>())).thenReturn(call)
     }
