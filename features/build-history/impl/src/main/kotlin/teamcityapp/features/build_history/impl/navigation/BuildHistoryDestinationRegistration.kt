@@ -83,7 +83,7 @@ class BuildHistoryDestinationRegistration @Inject constructor(
                         navigator.push(FilterBuildsDestination(configurationId, entryId))
                     }
                     override fun openFavorites() {
-                        val home = navigator.snapshot.entries.lastOrNull { it.destination is HomeDestination }
+                        val home = navigator.findEntry { it.destination is HomeDestination }
                         if (home == null) {
                             navigator.reset(HomeDestination(HomeTab.Favorites))
                         } else {

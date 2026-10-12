@@ -17,12 +17,15 @@
 package teamcityapp.features.build_history.impl
 
 import android.app.Application
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.*
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.paging.LoadState
+import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.awaitCancellation
 import org.junit.After
@@ -265,6 +268,31 @@ class BuildHistoryRouteTest {
         compose.waitUntil(5_000) { compose.onAllNodesWithTag("history:coachmark:Run").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithTag("history:coachmark:Run").assertIsDisplayed()
         assertTrue(onboarding.shown.isEmpty())
+    }
+
+    @Test fun returningPresenterStartsWithCompletedRowsWithoutLoadingOrAnotherRequest() {
+        val vm = viewModel()
+        var visible by mutableStateOf(true)
+        val frames = mutableListOf<Pair<List<String>, Boolean>>()
+        compose.setContent {
+            if (visible) {
+                val selection by vm.selection.collectAsState()
+                val items = selection.rows.collectAsLazyPagingItems()
+                SideEffect { frames += items.itemSnapshotList.items.map { it.build.id } to (items.loadState.refresh is LoadState.Loading) }
+                Text("Rows: ${items.itemCount}")
+            }
+        }
+        compose.waitUntil(5_000) { frames.any { it.first == listOf("42") && !it.second } }
+        compose.runOnIdle { visible = false }
+        compose.waitForIdle()
+        compose.runOnIdle {
+            frames.clear()
+            visible = true
+        }
+        compose.waitForIdle()
+        assertTrue(frames.isNotEmpty())
+        assertTrue("Returning frames: $frames", frames.all { it.first == listOf("42") && !it.second })
+        assertEquals(1, repository.requests.size)
     }
 
     private class FakeRouter : BuildHistoryRouter {

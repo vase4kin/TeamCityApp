@@ -47,7 +47,7 @@ class BuildWorkflowNavigationTest {
     }
     private fun navigator(): Navigator {
         var next = 0
-        return Navigator(mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("first-history", BuildHistoryDestination("id", "Android"))))), { "visit-${++next}" })
+        return Navigator(mutableStateOf(NavigationSnapshot(listOf(NavigationEntry("first-history", BuildHistoryDestination("id", "Android"))))), nextId = { "visit-${++next}" })
     }
 
     @Test fun equalHistoryVisitsReceiveOnlyTheirOwnTypedResultsAndRestoreThemOnce() {

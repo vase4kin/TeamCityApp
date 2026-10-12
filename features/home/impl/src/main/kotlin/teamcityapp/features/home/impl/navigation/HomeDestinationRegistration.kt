@@ -91,41 +91,56 @@ class HomeDestinationRegistration @Inject constructor(private val registry: Prov
                     NavigationEntry("$entryId/Agents", AgentsDestination)
                 )
             }
+            val stacks = children.associate { child ->
+                child.id to key(child.id) {
+                    rememberNavigator(child.destination, registry.get(), "${navigator.snapshot.sessionKey}/${child.id}", parent = navigator, useParent = { it is DrawerDestination })
+                }
+            }
+            val selectedId = "$entryId/${state.selected.name}"
+            val selectedStack = stacks.getValue(selectedId)
             LifecycleResumeEffect(model) {
                 model.viewed()
                 onPauseOrDispose {}
             }
-            HomeScreen(
-                state,
-                calculateWindowSizeClass(checkNotNull(LocalActivity.current)).widthSizeClass != WindowWidthSizeClass.Compact,
-                onTabSelected = {
-                    model.select(it)
-                },
-                onFab = {
-                    model.fabClicked()
-                    state.query?.let { query ->
-                        val filter = when (state.selected) {
-                            HomeTab.Running -> query.runningFilter
-                            HomeTab.Queue -> query.queueFilter
-                            else -> query.agentsFilter
-                        }
-                        navigator.push(QuickFilterDestination(filter.ordinal))
+            val onTabSelected: (HomeTab) -> Unit = { tab ->
+                if (tab == state.selected) selectedStack.popToRoot()
+                model.select(tab)
+            }
+            val onFilter: () -> Unit = {
+                model.fabClicked()
+                state.query?.let { query ->
+                    val filter = when (state.selected) {
+                        HomeTab.Running -> query.runningFilter
+                        HomeTab.Queue -> query.queueFilter
+                        else -> query.agentsFilter
                     }
-                },
-                onRetry = model::retry,
-                onDismissPrompt = model::dismissPrompt,
-                snackbar = snackbar,
-                onAccount = { navigator.push(DrawerDestination) },
-                onActivity = model::selectActivity
-            ) {
-                CompositionLocalProvider(
-                    LocalFavoritesProjectsAction provides {
-                        model.fabClicked()
-                        model.addProjects()
-                    }
-                ) {
-                    RetainedNavigationPane(children, "$entryId/${state.selected.name}", navigator, registry.get())
+                    navigator.push(QuickFilterDestination(filter.ordinal))
                 }
+            }
+            val onAccount: () -> Unit = { navigator.push(DrawerDestination) }
+            CompositionLocalProvider(
+                LocalFavoritesProjectsAction provides {
+                    model.fabClicked()
+                    model.addProjects()
+                }
+            ) {
+                HomeNavigationScreen(
+                    state,
+                    calculateWindowSizeClass(checkNotNull(LocalActivity.current)).widthSizeClass != WindowWidthSizeClass.Compact,
+                    stacks,
+                    registry.get(),
+                    entryId,
+                    onTabSelected = onTabSelected,
+                    onFilter = onFilter,
+                    onRetry = model::retry,
+                    onDismissPrompt = model::dismissPrompt,
+                    snackbar = snackbar,
+                    onAccount = onAccount,
+                    onActivity = {
+                        if (state.isActivity) selectedStack.popToRoot()
+                        model.selectActivity()
+                    }
+                )
             }
         }
     }

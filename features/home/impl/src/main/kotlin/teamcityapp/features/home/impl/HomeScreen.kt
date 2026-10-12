@@ -53,17 +53,19 @@ fun HomeScreen(
     modifier: Modifier = Modifier,
     onAccount: () -> Unit = {},
     onActivity: () -> Unit = { onTabSelected(HomeTab.Running) },
+    showHomeHeader: Boolean = true,
+    showNavigation: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val retryMessage = state.retryMessageRes?.let { stringResource(it) }
     val retryLabel = stringResource(state.retryLabelRes)
     val retryAction by rememberUpdatedState(onRetry)
-    LaunchedEffect(retryMessage, state.query?.accountKey, state.retryAttempt) {
-        if (retryMessage != null && snackbar.showSnackbar(retryMessage, retryLabel, withDismissAction = true, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) retryAction()
+    LaunchedEffect(retryMessage, state.query?.accountKey, state.retryAttempt, showNavigation) {
+        if (showNavigation && retryMessage != null && snackbar.showSnackbar(retryMessage, retryLabel, withDismissAction = true, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed) retryAction()
     }
     val anchors = remember { CoachmarkAnchors() }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val prompt = state.prompt
+    val prompt = state.prompt.takeIf { showHomeHeader }
     val promptBounds = prompt?.let { anchors.bounds(if (it.prompt == HomePrompt.Drawer) DRAWER_COACHMARK_ANCHOR else "home:action") }
     val destinations = listOf(
         Triple("Projects", R.string.home_projects, R.drawable.ic_home_white_24dp),
@@ -89,7 +91,7 @@ fun HomeScreen(
     Box(modifier.fillMaxSize().coachmarkHost(anchors)) {
         CompositionLocalProvider(LocalCoachmarkAnchors provides anchors) {
             Row(Modifier.fillMaxSize().then(if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier)) {
-                if (expanded) {
+                if (expanded && showNavigation) {
                     NavigationRail {
                         destinations.forEach { (name, label, icon) ->
                             NavigationRailItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, label = { Text(stringResource(label)) }, modifier = Modifier.testTag("home:tab:$name"))
@@ -100,78 +102,82 @@ fun HomeScreen(
                     modifier = Modifier.weight(1f).nestedScroll(scrollBehavior.nestedScrollConnection),
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     topBar = {
-                        TeamCityAppBarSurface(scrollBehavior) {
-                            TopAppBar(
-                                modifier = Modifier.testTag("screen:app-bar"),
-                                colors = teamCityTopAppBarColors(),
-                                scrollBehavior = scrollBehavior,
-                                title = {
-                                    Column {
-                                        Text(stringResource(state.titleRes), style = MaterialTheme.typography.headlineMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("home:title"))
-                                    }
-                                },
-                                actions = {
-                                    val description = state.query?.account?.userName?.let { stringResource(R.string.home_open_named_account, it) } ?: stringResource(R.string.home_open_account)
-                                    FilledTonalIconButton(onAccount, Modifier.padding(end = TeamCityDimensions.smallSpacing).testTag("home:account").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR, anchors).semantics { contentDescription = description }) {
-                                        val initials = state.accountInitials
-                                        if (initials == null) {
-                                            Icon(painterResource(R.drawable.ic_account), null)
-                                        } else {
-                                            Text(initials, style = MaterialTheme.typography.labelLarge)
+                        if (showHomeHeader) {
+                            TeamCityAppBarSurface(scrollBehavior) {
+                                TopAppBar(
+                                    modifier = Modifier.testTag("screen:app-bar"),
+                                    colors = teamCityTopAppBarColors(),
+                                    scrollBehavior = scrollBehavior,
+                                    title = {
+                                        Column {
+                                            Text(stringResource(state.titleRes), style = MaterialTheme.typography.headlineMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("home:title"))
+                                        }
+                                    },
+                                    actions = {
+                                        val description = state.query?.account?.userName?.let { stringResource(R.string.home_open_named_account, it) } ?: stringResource(R.string.home_open_account)
+                                        FilledTonalIconButton(onAccount, Modifier.padding(end = TeamCityDimensions.smallSpacing).testTag("home:account").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR, anchors).semantics { contentDescription = description }) {
+                                            val initials = state.accountInitials
+                                            if (initials == null) {
+                                                Icon(painterResource(R.drawable.ic_account), null)
+                                            } else {
+                                                Text(initials, style = MaterialTheme.typography.labelLarge)
+                                            }
                                         }
                                     }
-                                }
-                            )
-                            if (state.isActivity) {
-                                val largeText = LocalDensity.current.fontScale > 1.3f
-                                Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding).selectableGroup().testTag("home:activity-views"), horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)) {
-                                    activityTabs.forEachIndexed { index, tab ->
-                                        ToggleButton(
-                                            checked = state.selected == tab,
-                                            onCheckedChange = { onTabSelected(tab) },
-                                            shapes = when (index) {
-                                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                                                activityTabs.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                                            },
-                                            contentPadding = PaddingValues(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.smallSpacing),
-                                            modifier = Modifier.weight(1f).testTag("home:tab:${tab.name}").semantics { selected = state.selected == tab }
-                                        ) {
-                                            if (largeText) {
-                                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                                    Text(stringResource(tab.labelRes()), maxLines = 1)
-                                                    if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
-                                                }
-                                            } else {
-                                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
-                                                    Text(stringResource(tab.labelRes()), maxLines = 1)
-                                                    if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                )
+                                if (state.isActivity) {
+                                    val largeText = LocalDensity.current.fontScale > 1.3f
+                                    Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding).selectableGroup().testTag("home:activity-views"), horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)) {
+                                        activityTabs.forEachIndexed { index, tab ->
+                                            ToggleButton(
+                                                checked = state.selected == tab,
+                                                onCheckedChange = { onTabSelected(tab) },
+                                                shapes = when (index) {
+                                                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                                    activityTabs.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                                                },
+                                                contentPadding = PaddingValues(horizontal = TeamCityDimensions.smallSpacing, vertical = TeamCityDimensions.smallSpacing),
+                                                modifier = Modifier.weight(1f).testTag("home:tab:${tab.name}").semantics { selected = state.selected == tab }
+                                            ) {
+                                                if (largeText) {
+                                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                        Text(stringResource(tab.labelRes()), maxLines = 1)
+                                                        if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                                    }
+                                                } else {
+                                                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                        Text(stringResource(tab.labelRes()), maxLines = 1)
+                                                        if (tab != HomeTab.Agents) HomeCountBadge(state.badges[tab], tab.name)
+                                                    }
                                                 }
                                             }
                                         }
                                     }
                                 }
-                            }
-                            if (state.isActivity) {
-                                Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
-                                    state.filterSummaryRes?.let { Text(stringResource(it), Modifier.weight(1f).testTag("home:filter-summary"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                                    FilledTonalButton(onFab, Modifier.testTag("home:action").coachmarkAnchor("home:action", anchors)) {
-                                        Icon(painterResource(if (state.selected == HomeTab.Favorites) R.drawable.ic_favorite_white_24dp else R.drawable.ic_filter_list_white_24px), null, Modifier.size(18.dp))
-                                        Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
-                                        Text(stringResource(state.fabLabelRes))
+                                if (state.isActivity) {
+                                    Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
+                                        state.filterSummaryRes?.let { Text(stringResource(it), Modifier.weight(1f).testTag("home:filter-summary"), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                                        FilledTonalButton(onFab, Modifier.testTag("home:action").coachmarkAnchor("home:action", anchors)) {
+                                            Icon(painterResource(if (state.selected == HomeTab.Favorites) R.drawable.ic_favorite_white_24dp else R.drawable.ic_filter_list_white_24px), null, Modifier.size(18.dp))
+                                            Spacer(Modifier.width(TeamCityDimensions.smallSpacing))
+                                            Text(stringResource(state.fabLabelRes))
+                                        }
                                     }
                                 }
                             }
                         }
                     },
                     bottomBar = {
-                        Surface {
-                            Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(if (expanded) WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom else WindowInsetsSides.Horizontal))) {
-                                if (!expanded) {
-                                    NavigationBar {
-                                        destinations.forEach { (name, label, icon) ->
-                                            val destinationLabel = stringResource(label)
-                                            NavigationBarItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, modifier = Modifier.testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
+                        if (showNavigation) {
+                            Surface {
+                                Column(Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.safeDrawing.only(if (expanded) WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom else WindowInsetsSides.Horizontal))) {
+                                    if (!expanded) {
+                                        NavigationBar {
+                                            destinations.forEach { (name, label, icon) ->
+                                                val destinationLabel = stringResource(label)
+                                                NavigationBarItem(selected(name), { select(name) }, { DestinationIcon(name, icon) }, modifier = Modifier.testTag("home:tab:$name").semantics { contentDescription = destinationLabel })
+                                            }
                                         }
                                     }
                                 }
@@ -179,11 +185,13 @@ fun HomeScreen(
                         }
                     },
                     snackbarHost = {
-                        val largeText = LocalDensity.current.fontScale >= 1.3f
-                        SnackbarHost(snackbar) { Snackbar(it, modifier = Modifier.testTag("home:snackbar"), actionOnNewLine = largeText) }
+                        if (showNavigation) {
+                            val largeText = LocalDensity.current.fontScale >= 1.3f
+                            SnackbarHost(snackbar) { Snackbar(it, modifier = Modifier.testTag("home:snackbar"), actionOnNewLine = largeText) }
+                        }
                     }
                 ) { padding ->
-                    CompositionLocalProvider(LocalTeamCityHeaderProvided provides true, LocalTeamCityAppBarState provides scrollBehavior.state) {
+                    CompositionLocalProvider(LocalTeamCityHeaderProvided provides showHomeHeader, LocalTeamCityAppBarState provides scrollBehavior.state.takeIf { showHomeHeader }) {
                         Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }
                     }
                 }

@@ -30,7 +30,6 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.currentStateAsState
-import androidx.lifecycle.flowWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
 import kotlinx.coroutines.delay
@@ -68,8 +67,9 @@ private fun BuildHistoryPagingContent(
     listState: LazyListState
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val visiblePages = remember(selection.rows, lifecycle) { selection.rows.flowWithLifecycle(lifecycle, Lifecycle.State.RESUMED) }
-    val builds = visiblePages.collectAsLazyPagingItems()
+    // The parent composes this presenter only while RESUMED. Keep the cached Flow intact:
+    // lifecycle wrappers hide Paging's replay cache and make returning content start empty.
+    val builds = selection.rows.collectAsLazyPagingItems()
     if (builds.loadState.refresh is LoadState.NotLoading) SideEffect { onCompleted() }
     val state = historyListState(builds.itemSnapshotList.items.map { it.build }, builds.loadState.refresh, completed)
     val refresh = {

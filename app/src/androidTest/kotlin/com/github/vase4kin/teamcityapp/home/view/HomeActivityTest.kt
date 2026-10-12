@@ -23,6 +23,7 @@ import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.matcher.IntentMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -52,9 +53,11 @@ import org.hamcrest.Matchers.greaterThanOrEqualTo
 import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.eq
+import org.mockito.ArgumentMatchers.nullable
 import org.mockito.Mockito.*
 import org.mockito.Spy
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
@@ -231,6 +234,127 @@ class HomeActivityTest {
         compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:Running").performClick()
         compose.onNodeWithTag("home:count:Running", useUnmergedTree = true).assertTextEquals("3")
+    }
+
+    @Test fun primaryTabsRetainTheirNestedVisitsAcrossRecreationAndBack() {
+        val storage = (context.applicationContext as TeamCityApplicationBase).appInjector.sharedUserStorage()
+        storage.addBuildTypeToFavorites("build_type_id")
+        val successful = Mocks.successBuild().apply { id = "history-build" }
+        val running = Mocks.runningBuild().apply { id = "running-build" }
+        doReturn(Single.just(Builds(1, listOf(successful)))).`when`(teamCityService).listBuilds(anyString(), anyString())
+        doReturn(Single.just(Builds(1, listOf(running)))).`when`(teamCityService).listRunningBuilds(anyString(), nullable(String::class.java))
+        doReturn(Single.just(successful)).`when`(teamCityService).build(successful.href)
+        doReturn(Single.just(running)).`when`(teamCityService).build(running.href)
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use { scenario ->
+            fun await(tag: String) {
+                compose.waitUntil(10_000) { compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
+                compose.onNodeWithTag(tag).assertIsDisplayed()
+            }
+            fun assertNavigation() {
+                listOf("Projects", "Favorites", "Activity").forEach { compose.onNodeWithTag("home:tab:$it").assertIsDisplayed() }
+                compose.onNodeWithTag("home:title").assertDoesNotExist()
+                compose.onAllNodesWithTag("screen:app-bar").assertCountEquals(1)
+            }
+            awaitRow("project:id")
+            row("project:id").performClick()
+            awaitRow("configuration:build_type_id")
+            assertNavigation()
+            val project = currentRootSnapshot().entries.last().id
+            row("configuration:build_type_id").performClick()
+            await("history:build:history-build")
+            assertNavigation()
+            val history = currentRootSnapshot().entries.last().id
+            compose.onNodeWithTag("history:build:history-build").performClick()
+            await("details:actions")
+            assertNavigation()
+            val build = currentRootSnapshot().entries.last().id
+
+            compose.onNodeWithTag("home:tab:Favorites").performClick()
+            await("favorites:configuration:build_type_id")
+            compose.onNodeWithTag("favorites:configuration:build_type_id").performClick()
+            await("history:list")
+            val favoriteHistory = currentRootSnapshot().entries.last().id
+            val historyRequests = mockingDetails(teamCityService).invocations.count { it.method.name == "listBuilds" }
+            assertNavigation()
+
+            compose.onNodeWithTag("home:tab:Activity").performClick()
+            await("running_builds:build:running-build")
+            compose.onNodeWithTag("running_builds:build:running-build").performClick()
+            await("details:actions")
+            val activityBuild = currentRootSnapshot().entries.last().id
+            assertNavigation()
+            scenario.recreate()
+            await("details:actions")
+            assertEquals(activityBuild, currentRootSnapshot().entries.last().id)
+
+            compose.onNodeWithTag("home:tab:Favorites").performClick()
+            await("history:list")
+            assertEquals(favoriteHistory, currentRootSnapshot().entries.last().id)
+            assertEquals(historyRequests, mockingDetails(teamCityService).invocations.count { it.method.name == "listBuilds" })
+            compose.onNodeWithTag("home:tab:Favorites").performClick()
+            await("favorites:configuration:build_type_id")
+            compose.onNodeWithTag("home:title").assertIsDisplayed()
+            assertTrue(currentRootSnapshot().entries.last().destination is teamcityapp.features.home.api.HomeDestination)
+            compose.onNodeWithTag("home:tab:Projects").performClick()
+            await("details:actions")
+            assertEquals(build, currentRootSnapshot().entries.last().id)
+            assertNavigation()
+            pressBack()
+            await("history:list")
+            assertEquals(history, currentRootSnapshot().entries.last().id)
+            pressBack()
+            awaitRow("configuration:build_type_id")
+            assertEquals(project, currentRootSnapshot().entries.last().id)
+            assertNavigation()
+        }
+    }
+
+    @Test fun runningBuildTransitionKeepsBothHeadersStableAndNavigationVisible() {
+        val storage = (context.applicationContext as TeamCityApplicationBase).appInjector.sharedUserStorage()
+        storage.addBuildTypeToFavorites("build_type_id")
+        val running = Mocks.runningBuild().apply { id = "running-transition" }
+        doReturn(Single.just(Builds(1, listOf(running)))).`when`(teamCityService).listRunningBuilds(anyString(), nullable(String::class.java))
+        doReturn(Single.just(running)).`when`(teamCityService).build(running.href)
+        ActivityScenario.launch<MainActivity>(Intent(context, MainActivity::class.java).setClassName(context, IncomingDestinationResolver.HOME_COMPONENT)).use {
+            awaitRow("project:id")
+            compose.onNodeWithTag("home:tab:Activity").performClick()
+            compose.waitUntil(10_000) { compose.onAllNodesWithTag("running_builds:build:running-transition").fetchSemanticsNodes().isNotEmpty() }
+            val navigationBounds = compose.onNodeWithTag("home:tab:Activity").fetchSemanticsNode().boundsInRoot
+            val headerBounds = compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot
+            val listBounds = compose.onNodeWithTag("running_builds:list").fetchSemanticsNode().boundsInRoot
+            compose.mainClock.autoAdvance = false
+            try {
+                compose.onNodeWithTag("running_builds:build:running-transition").performClick()
+                compose.mainClock.advanceTimeByFrame()
+                compose.waitForIdle()
+                compose.mainClock.advanceTimeBy(320)
+                compose.onNodeWithTag("running_builds:drawer").assertDoesNotExist()
+                compose.onNodeWithTag("details:actions").assertExists()
+                assertEquals(headerBounds, compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot)
+                assertEquals(listBounds, compose.onNodeWithTag("running_builds:list").fetchSemanticsNode().boundsInRoot)
+                assertEquals(navigationBounds, compose.onNodeWithTag("home:tab:Activity").fetchSemanticsNode().boundsInRoot)
+                compose.mainClock.advanceTimeBy(1_000)
+                compose.waitForIdle()
+                compose.onNodeWithTag("home:title").assertDoesNotExist()
+                val actionsBounds = compose.onNodeWithTag("details:actions").fetchSemanticsNode().boundsInRoot
+                pressBack()
+                compose.mainClock.advanceTimeByFrame()
+                compose.waitForIdle()
+                compose.mainClock.advanceTimeBy(320)
+                compose.onNodeWithTag("running_builds:drawer").assertDoesNotExist()
+                assertEquals(headerBounds, compose.onNodeWithTag("home:title").fetchSemanticsNode().boundsInRoot)
+                assertEquals(listBounds, compose.onNodeWithTag("running_builds:list").fetchSemanticsNode().boundsInRoot)
+                assertEquals(actionsBounds, compose.onNodeWithTag("details:actions").fetchSemanticsNode().boundsInRoot)
+                assertEquals(navigationBounds, compose.onNodeWithTag("home:tab:Activity").fetchSemanticsNode().boundsInRoot)
+                compose.mainClock.advanceTimeBy(1_000)
+                compose.waitForIdle()
+                compose.onNodeWithTag("home:title").assertIsDisplayed()
+                compose.onNodeWithTag("details:actions").assertDoesNotExist()
+                compose.onNodeWithTag("running_builds:build:running-transition").assertIsDisplayed()
+            } finally {
+                compose.mainClock.autoAdvance = true
+            }
+        }
     }
 
     private fun row(identity: String) = compose.onNodeWithTag("navigation:row:$identity")

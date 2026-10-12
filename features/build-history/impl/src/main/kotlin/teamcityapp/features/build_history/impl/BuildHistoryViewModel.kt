@@ -32,8 +32,10 @@ import teamcityapp.libraries.build_ui.BuildRowUiState
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.theme.UiText
 
-internal data class HistorySelection(val query: BuildHistoryQuery, val pages: Flow<PagingData<BuildLaunchData>>) {
-    val rows: Flow<PagingData<HistoryBuildRow>> = pages.map { page -> page.map(::HistoryBuildRow) }
+internal class HistorySelection(val query: BuildHistoryQuery, val pages: Flow<PagingData<BuildLaunchData>>, scope: CoroutineScope) {
+    // Cache the mapped presenter stream too, so a recreated LazyPagingItems can synchronously
+    // seed its rows and load states from Paging's replayed snapshot before collection resumes.
+    val rows: Flow<PagingData<HistoryBuildRow>> = pages.map { page -> page.map(::HistoryBuildRow) }.cachedIn(scope)
 }
 
 internal data class HistoryBuildRow(val build: BuildLaunchData) {
@@ -149,7 +151,8 @@ class BuildHistoryViewModel @Inject constructor(
             Pager(
                 PagingConfig(pageSize = 10, initialLoadSize = 10, prefetchDistance = 2, enablePlaceholders = false),
                 pagingSourceFactory = { BuildHistoryPagingSource(repository, query, generation.forceRefresh) }
-            ).flow.cachedIn(scope)
+            ).flow.cachedIn(scope),
+            scope
         )
         return generation
     }
