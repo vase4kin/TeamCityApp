@@ -78,6 +78,7 @@ import retrofit2.Response
 import teamcityapp.features.artifacts.api.navigation.ArtifactsDestination
 import teamcityapp.features.bottom_sheet.impl.R as SheetR
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
+import teamcityapp.features.build_overview.impl.OverviewField
 import teamcityapp.features.build_overview.impl.R as OverviewR
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
 import teamcityapp.libraries.builds.*
@@ -467,7 +468,9 @@ class OverviewFragmentTest {
     }
     private fun clickRow(field: String) {
         awaitTag("overview:list")
-        compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:row:$field"))
+        // Bring the target above the floating controls, including on shorter cloud devices.
+        val key = if (field == "Result") "status" else OverviewField.valueOf(field)
+        compose.onNodeWithTag("overview:list").performScrollToKey(key)
         compose.onNodeWithTag("overview:row:$field").performClick()
     }
     private fun menu(label: String) {
