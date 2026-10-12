@@ -17,11 +17,18 @@
 package teamcityapp.features.build_details.impl
 
 import android.app.Application
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -30,6 +37,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.theme.LocalFloatingActionClearance
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @OptIn(ExperimentalTestApi::class)
@@ -75,15 +83,53 @@ class BuildDetailsScreenTest {
         assertEquals(1, retries)
     }
 
-    @Test fun menuTipUsesPreservedCopyAndDismissesThroughTheViewModelCallback() {
+    @Test fun actionTipUsesSharedCoachmarkAndDismissesThroughTheViewModelCallback() {
         var dismissals = 0
-        val prompt = BuildDetailsPromptUi(BuildDetailsPrompt.Stop, description = R.string.text_onboarding_stop_build)
+        val prompt = BuildDetailsPromptUi(BuildDetailsPrompt.Stop)
         compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, prompt = prompt), {}, {}, {}, {}, remember { SnackbarHostState() }, onDismissPrompt = { dismissals++ }) { Surface {} } } }
         compose.onNodeWithTag("details:coachmark:Stop").assertIsDisplayed()
         compose.onNodeWithTag("details:actions").assertDoesNotExist()
-        compose.onNodeWithText("Explore build actions").assertIsDisplayed()
-        compose.onNodeWithText("Stop, share or open running builds in a browser").assertExists()
+        compose.onNodeWithText("Stop build").assertIsDisplayed()
+        compose.onNodeWithText("Stop this running build. You can also add it back to the queue.").assertExists()
         compose.onNodeWithTag("details:dismiss-prompt").assertIsDisplayed().performClick()
+        assertEquals(1, dismissals)
+    }
+
+    @Test fun floatingActionsOverlayTheScrollableViewportAndLastItemCanClearThem() {
+        compose.setContent {
+            TeamCityTheme {
+                BuildDetailsScreen(BuildDetailsUiState(build), {}, {}, {}, {}, remember { SnackbarHostState() }) {
+                    val clearance = LocalFloatingActionClearance.current
+                    LazyColumn(Modifier.fillMaxSize().testTag("content"), contentPadding = PaddingValues(bottom = clearance)) {
+                        items(30) { index -> Text("Item $index", Modifier.fillMaxWidth().height(80.dp).testTag("item:$index")) }
+                    }
+                }
+            }
+        }
+        val viewport = compose.onNodeWithTag("content").fetchSemanticsNode().boundsInRoot
+        val actions = compose.onNodeWithTag("details:actions").fetchSemanticsNode().boundsInRoot
+        assertTrue("Content should extend behind the actions", viewport.bottom > actions.bottom)
+        compose.onNodeWithTag("content").performScrollToIndex(29)
+        compose.onNodeWithTag("item:29").assertIsDisplayed()
+        assertTrue(compose.onNodeWithTag("item:29").fetchSemanticsNode().boundsInRoot.bottom <= actions.top)
+    }
+
+    @Test fun eachActionHasItsOwnTipAndSavingPreventsDuplicateDismissal() {
+        val prompt = mutableStateOf(BuildDetailsPromptUi(BuildDetailsPrompt.Share))
+        var dismissals = 0
+        compose.setContent {
+            TeamCityTheme {
+                BuildDetailsScreen(BuildDetailsUiState(build, prompt = prompt.value), {}, {}, {}, {}, remember { SnackbarHostState() }, onDismissPrompt = { dismissals++ }) { Surface {} }
+            }
+        }
+        compose.onNodeWithText("Share a link to this build with others.").assertIsDisplayed()
+        compose.runOnIdle { prompt.value = BuildDetailsPromptUi(BuildDetailsPrompt.Share, saving = true) }
+        compose.onNodeWithTag("details:dismiss-prompt").assertIsNotEnabled()
+        assertEquals(0, dismissals)
+        compose.runOnIdle { prompt.value = BuildDetailsPromptUi(BuildDetailsPrompt.Browser, saveFailed = true) }
+        compose.onNodeWithText("Open this build’s page in a browser.").assertIsDisplayed()
+        compose.onNodeWithText("Couldn’t save this tip. Try Continue again.").assertIsDisplayed()
+        compose.onNodeWithTag("details:dismiss-prompt").performClick()
         assertEquals(1, dismissals)
     }
 }

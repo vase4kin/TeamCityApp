@@ -376,13 +376,17 @@ class OverviewFragmentTest {
         }
     }
 
-    @Test fun restartOnboardingCanBeDismissedBeforeVisitingAnotherTab() {
+    @Test fun actionOnboardingCanBeDismissedBeforeVisitingAnotherSection() {
         TestUtils.enableOnboarding()
         `when`(teamCityService.listArtifacts(anyString(), anyString())).thenReturn(Single.just(Mocks.artifacts()))
         openLegacy(Mocks.successBuild(), BuildComposeFixtures.finished, openedTag = "details:dismiss-prompt")
         awaitTag("details:dismiss-prompt")
-        compose.onNodeWithText("Restart, share or open finished builds in a browser").assertIsDisplayed()
-        compose.onNodeWithTag("details:dismiss-prompt").performClick()
+        listOf("Run this build again with the same parameters.", "Share a link to this build with others.", "Open this build’s page in a browser.").forEach { copy ->
+            awaitText(copy)
+            compose.onNodeWithText(copy).assertIsDisplayed()
+            compose.onNodeWithTag("details:dismiss-prompt").performClick()
+            compose.waitForIdle()
+        }
         tab("Artifacts")
         awaitText("AndroidManifest.xml")
         compose.onNodeWithTag("details:dismiss-prompt").assertDoesNotExist()

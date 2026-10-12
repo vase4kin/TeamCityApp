@@ -298,27 +298,48 @@ class BuildDetailsNavigationTest {
         }
     }
 
-    @Test fun eachMenuTipSurvivesRecreationAndPersistsItsExistingPreferenceOnDismissal() {
+    @Test fun eachActionTipSurvivesRecreationAndPersistsItsOwnPreferenceOnDismissal() {
         val prefs = app.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
-        prefs.edit().putBoolean("StopBuilds", false).putBoolean("RemoveBuildsFromQueue", false).putBoolean("RestartBuilds", false).commit()
+        prefs.edit().putBoolean("StopBuilds", true).putBoolean("RemoveBuildsFromQueue", true).putBoolean("RestartBuilds", true).commit()
+        val manager = teamcityapp.libraries.onboarding.OnboardingManagerImpl(app)
+        kotlinx.coroutines.runBlocking {
+            manager.saveShareBuildPromptShown()
+            manager.saveOpenBuildInBrowserPromptShown()
+        }
+        fun shown(preference: String): Boolean = kotlinx.coroutines.runBlocking {
+            when (preference) {
+                "ShareBuild" -> manager.isShareBuildPromptShown()
+                "OpenBuildInBrowser" -> manager.isOpenBuildInBrowserPromptShown()
+                else -> prefs.getBoolean(preference, false)
+            }
+        }
         val cases = listOf(
-            Triple(Mocks.runningBuild(), "StopBuilds", "Stop, share or open running builds in a browser"),
-            Triple(Mocks.queuedBuild1(), "RemoveBuildsFromQueue", "Remove from queue, share or open builds in a browser"),
-            Triple(Mocks.successBuild(), "RestartBuilds", "Restart, share or open finished builds in a browser")
+            Triple(Mocks.runningBuild(), "StopBuilds", "Stop this running build. You can also add it back to the queue."),
+            Triple(Mocks.queuedBuild1(), "RemoveBuildsFromQueue", "Remove this build from the queue before it starts."),
+            Triple(Mocks.successBuild(), "RestartBuilds", "Run this build again with the same parameters."),
+            Triple(Mocks.successBuild(), "ShareBuild", "Share a link to this build with others."),
+            Triple(Mocks.successBuild(), "OpenBuildInBrowser", "Open this build’s page in a browser.")
         )
         launch().use { scenario ->
             cases.forEach { (legacy, preference, copy) ->
+                kotlinx.coroutines.runBlocking {
+                    when (preference) {
+                        "ShareBuild" -> manager.saveShareBuildPromptShown(false)
+                        "OpenBuildInBrowser" -> manager.saveOpenBuildInBrowserPromptShown(false)
+                        else -> prefs.edit().putBoolean(preference, false).commit()
+                    }
+                }
                 val build = mapper.toLaunchData(legacy)
                 awaitTag("navigation:row:project:id")
                 scenario.onActivity { launcher.open(it, BuildDetailsDestination(build)) }
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
-                assertFalse(prefs.getBoolean(preference, false))
+                assertFalse(shown(preference))
                 scenario.recreate()
                 awaitTag("details:dismiss-prompt")
                 compose.onNodeWithText(copy).assertIsDisplayed()
                 compose.onNodeWithTag("details:dismiss-prompt").performClick()
-                compose.waitUntil(10_000) { prefs.getBoolean(preference, false) }
+                compose.waitUntil(10_000) { shown(preference) }
                 awaitTag("overview:list")
                 pressBack()
                 awaitTag("navigation:row:project:id")

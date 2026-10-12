@@ -69,5 +69,5 @@ internal fun BuildOverviewRoute(router: BuildOverviewRouter, visible: Boolean, o
             onPauseOrDispose { router.dispose() }
         }
     }
-    BuildOverviewScreen(state, viewModel::refresh, viewModel::retry, router::row, onCountRetry = onCountRetry, onSection = router::section, onLog = { latest.build?.let { router.dispatch(BuildOverviewAction.Log, it) } })
+    BuildOverviewScreen(state, viewModel::refresh, viewModel::retry, router::row, bottomContentPadding = teamcityapp.libraries.theme.LocalFloatingActionClearance.current, onCountRetry = onCountRetry, onSection = router::section, onLog = { latest.build?.let { router.dispatch(BuildOverviewAction.Log, it) } })
 }

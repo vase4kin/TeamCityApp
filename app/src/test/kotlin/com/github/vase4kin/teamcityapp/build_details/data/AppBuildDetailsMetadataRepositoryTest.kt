@@ -47,7 +47,11 @@ class AppBuildDetailsMetadataRepositoryTest {
     private val onboarding = mock<OnboardingManager>()
     private var active = UserAccount("https://same-server", "alice", byteArrayOf(), false, true)
     private val build = BuildLaunchData("42", "/b", changes = BuildCollectionLink("/changes?opaque:42"), tests = BuildTests("/tests?opaque:42", 1, 2, 3, 6))
-    private fun repository(scope: TestScope) = DefaultBuildDetailsMetadataRepository(Provider { legacy }, storage, onboarding, StandardTestDispatcher(scope.testScheduler)).also { whenever(storage.activeUser).thenAnswer { active } }
+    private suspend fun repository(scope: TestScope) = DefaultBuildDetailsMetadataRepository(Provider { legacy }, storage, onboarding, StandardTestDispatcher(scope.testScheduler)).also {
+        whenever(storage.activeUser).thenAnswer { active }
+        whenever(onboarding.isShareBuildPromptShown()).thenReturn(false)
+        whenever(onboarding.isOpenBuildInBrowserPromptShown()).thenReturn(false)
+    }
 
     @Test fun independentCountsPreserveOpaqueUrlsAndInstalledForceRefreshPolicy() = runTest {
         val repository = repository(this)
@@ -94,7 +98,7 @@ class AppBuildDetailsMetadataRepositoryTest {
     @Test fun educationUsesTheExistingGlobalFlagsAndAcknowledgesOnlyTheDismissedKind() = runTest {
         val repository = repository(this)
         whenever(onboarding.isRestartBuildPromptShown).thenReturn(true)
-        assertEquals(setOf(BuildDetailsPrompt.Stop, BuildDetailsPrompt.Remove), repository.pendingPrompts())
+        assertEquals(setOf(BuildDetailsPrompt.Stop, BuildDetailsPrompt.Remove, BuildDetailsPrompt.Share, BuildDetailsPrompt.Browser), repository.pendingPrompts())
         repository.acknowledgePrompt(BuildDetailsPrompt.Stop)
         verify(onboarding).saveStopBuildPromptShown()
         verify(onboarding, never()).saveRestartBuildPromptShown()
@@ -103,5 +107,30 @@ class AppBuildDetailsMetadataRepositoryTest {
         repository.acknowledgePrompt(BuildDetailsPrompt.Restart)
         verify(onboarding).saveRemoveBuildFromQueuePromptShown()
         verify(onboarding).saveRestartBuildPromptShown()
+        repository.acknowledgePrompt(BuildDetailsPrompt.Share)
+        repository.acknowledgePrompt(BuildDetailsPrompt.Browser)
+        verify(onboarding).saveShareBuildPromptShown()
+        verify(onboarding).saveOpenBuildInBrowserPromptShown()
+    }
+
+    @Test fun newActionPreferencesPersistIndependentlyWithoutResettingExistingEducation() = runTest {
+        val context = org.robolectric.RuntimeEnvironment.getApplication()
+        val prefs = context.getSharedPreferences(teamcityapp.libraries.onboarding.OnboardingManagerImpl.PREF_NAME, android.content.Context.MODE_PRIVATE)
+        prefs.edit().clear().putBoolean("StopBuilds", true).putBoolean("RestartBuilds", true).commit()
+        val first = teamcityapp.libraries.onboarding.OnboardingManagerImpl(context)
+        first.saveShareBuildPromptShown(false)
+        first.saveOpenBuildInBrowserPromptShown(false)
+        assertFalse(first.isShareBuildPromptShown())
+        assertFalse(first.isOpenBuildInBrowserPromptShown())
+        first.saveShareBuildPromptShown()
+        val restored = teamcityapp.libraries.onboarding.OnboardingManagerImpl(context)
+        assertTrue(restored.isShareBuildPromptShown())
+        assertFalse(restored.isOpenBuildInBrowserPromptShown())
+        restored.saveOpenBuildInBrowserPromptShown()
+        val final = teamcityapp.libraries.onboarding.OnboardingManagerImpl(context)
+        assertTrue(final.isOpenBuildInBrowserPromptShown())
+        assertTrue(final.isStopBuildPromptShown)
+        assertTrue(final.isRestartBuildPromptShown)
+        assertFalse(final.isRemoveBuildFromQueuePromptShown)
     }
 }

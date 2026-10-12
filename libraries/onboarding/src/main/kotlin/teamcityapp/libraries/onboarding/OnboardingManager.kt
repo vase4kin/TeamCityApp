@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,6 +131,11 @@ interface OnboardingManager {
      * Save that add favorites from buildtype prompt is shown
      */
     fun saveFavPromptShown()
+
+    suspend fun isShareBuildPromptShown(): Boolean
+    suspend fun isOpenBuildInBrowserPromptShown(): Boolean
+    suspend fun saveShareBuildPromptShown(shown: Boolean = true)
+    suspend fun saveOpenBuildInBrowserPromptShown(shown: Boolean = true)
 
     interface OnPromptShownListener {
         /**

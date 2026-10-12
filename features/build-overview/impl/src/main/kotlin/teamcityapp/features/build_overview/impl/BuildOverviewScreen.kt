@@ -51,7 +51,8 @@ fun BuildOverviewScreen(
     modifier: Modifier = Modifier,
     onSection: (BuildDetailsSection) -> Unit = {},
     onLog: () -> Unit = {},
-    onCountRetry: (BuildDetailsSection) -> Unit = {}
+    onCountRetry: (BuildDetailsSection) -> Unit = {},
+    bottomContentPadding: androidx.compose.ui.unit.Dp = 0.dp
 ) {
     TeamCityListContainer(state.list, onRefresh, onRetry, modifier = modifier.fillMaxSize().testTag("overview:screen"), empty = { TeamCityListEmpty(stringResource(R.string.overview_empty)) }) {
         val rows = (state.list as? ListUiState.Content<OverviewRow>)?.items.orEmpty()
@@ -62,7 +63,7 @@ fun BuildOverviewScreen(
         val results = state.sections.filter { it.section in listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests, BuildDetailsSection.Artifacts) }
         val setup = state.sections.filter { it.section in listOf(BuildDetailsSection.Parameters, BuildDetailsSection.Snapshots) }
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-            LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list"), contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)) {
+            LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("overview:list"), contentPadding = PaddingValues(top = TeamCityDimensions.smallSpacing, bottom = TeamCityDimensions.smallSpacing + bottomContentPadding)) {
                 status?.let { row -> item(key = "status") { OverviewStatusCard(row, time, state.statusLabel, BuildOverviewAction.Log in state.actions, onRowClick, onLog) } }
                 if (results.isNotEmpty()) {
                     item(key = "results-title") { OverviewGroupHeading(R.string.overview_results) }

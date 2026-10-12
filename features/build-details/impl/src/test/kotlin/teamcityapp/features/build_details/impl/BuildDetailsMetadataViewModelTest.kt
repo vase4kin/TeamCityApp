@@ -211,27 +211,63 @@ class BuildDetailsMetadataViewModelTest {
         assertEquals(2, calls.size)
     }
 
-    @Test fun failedAcknowledgementRequiresExplicitRetryAndDoesNotRepeatDuringRecreation() = runTest(dispatcher) {
+    @Test fun failedAcknowledgementKeepsTheSameTipForExplicitRetryWithoutRepeatingWrites() = runTest(dispatcher) {
         acknowledge = { error("write failed") }
         val vm = model()
         val collector = observe(vm)
         runCurrent()
         vm.dismissPrompt()
         runCurrent()
-        assertTrue(vm.state.value.onboardingFailed)
+        assertTrue(vm.state.value.prompt!!.saveFailed)
         collector.cancel()
         runCurrent()
         observe(vm)
         runCurrent()
-        assertNull(vm.state.value.prompt)
+        assertEquals(BuildDetailsPrompt.Stop, vm.state.value.prompt?.prompt)
         assertEquals(1, acknowledged.size)
         acknowledge = {}
-        vm.retryFailed()
+        vm.dismissPrompt()
+        runCurrent()
+        assertNull(vm.state.value.prompt)
+        assertEquals(2, acknowledged.size)
+    }
+
+    @Test fun actionTipsAdvanceIndividuallyAndRestoreAtTheNextAvailableButton() = runTest(dispatcher) {
+        val saved = handle(build.copy(webUrl = "https://server/build/42"))
+        val vm = model(saved)
+        observe(vm)
+        runCurrent()
+        vm.dismissPrompt()
+        vm.dismissPrompt()
+        runCurrent()
+        assertEquals(listOf(BuildDetailsPrompt.Stop), acknowledged)
+        assertEquals(BuildDetailsPrompt.Share, vm.state.value.prompt?.prompt)
+        val restored = model(SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) }), "restored")
+        observe(restored)
+        runCurrent()
+        assertEquals(BuildDetailsPrompt.Share, restored.state.value.prompt?.prompt)
+        restored.dismissPrompt()
+        runCurrent()
+        assertEquals(BuildDetailsPrompt.Browser, restored.state.value.prompt?.prompt)
+        restored.dismissPrompt()
+        runCurrent()
+        assertNull(restored.state.value.prompt)
+        assertEquals(listOf(BuildDetailsPrompt.Stop, BuildDetailsPrompt.Share, BuildDetailsPrompt.Browser), acknowledged)
+    }
+
+    @Test fun missingWebUrlDoesNotOfferShareOrBrowserTipsAndDelayedSaveDoesNotAdvanceEarly() = runTest(dispatcher) {
+        acknowledge = { delay(1_000) }
+        val vm = model()
+        observe(vm)
         runCurrent()
         vm.dismissPrompt()
         runCurrent()
-        assertFalse(vm.state.value.onboardingFailed)
-        assertEquals(2, acknowledged.size)
+        assertTrue(vm.state.value.prompt!!.saving)
+        vm.dismissPrompt()
+        advanceTimeBy(1_000)
+        runCurrent()
+        assertNull(vm.state.value.prompt)
+        assertEquals(listOf(BuildDetailsPrompt.Stop), acknowledged)
     }
 
     @Test fun equalBuildVisitsHaveIndependentMetadataOwnersAndInvalidCountsAreFailures() = runTest(dispatcher) {

@@ -59,6 +59,8 @@ class DefaultBuildDetailsMetadataRepository @Inject constructor(
             if (!onboarding.isStopBuildPromptShown) add(BuildDetailsPrompt.Stop)
             if (!onboarding.isRemoveBuildFromQueuePromptShown) add(BuildDetailsPrompt.Remove)
             if (!onboarding.isRestartBuildPromptShown) add(BuildDetailsPrompt.Restart)
+            if (!onboarding.isShareBuildPromptShown()) add(BuildDetailsPrompt.Share)
+            if (!onboarding.isOpenBuildInBrowserPromptShown()) add(BuildDetailsPrompt.Browser)
         }
     }
     override suspend fun acknowledgePrompt(prompt: BuildDetailsPrompt) = withContext(io) {
@@ -66,6 +68,8 @@ class DefaultBuildDetailsMetadataRepository @Inject constructor(
             BuildDetailsPrompt.Stop -> onboarding.saveStopBuildPromptShown()
             BuildDetailsPrompt.Remove -> onboarding.saveRemoveBuildFromQueuePromptShown()
             BuildDetailsPrompt.Restart -> onboarding.saveRestartBuildPromptShown()
+            BuildDetailsPrompt.Share -> onboarding.saveShareBuildPromptShown()
+            BuildDetailsPrompt.Browser -> onboarding.saveOpenBuildInBrowserPromptShown()
         }
     }
 }

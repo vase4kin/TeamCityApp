@@ -25,6 +25,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -56,8 +58,10 @@ internal fun BuildDetailsScreen(
     BackHandler(state.busy) {}
     val anchors = remember { CoachmarkAnchors() }
     val prompt = state.prompt?.takeIf { !state.busy && state.confirmation == null }
-    val promptBounds = prompt?.let { anchors.bounds("details:actions") }
-    Box(modifier.fillMaxSize().coachmarkHost(anchors)) {
+    val promptBounds = prompt?.let { anchors.bounds("details:action:${it.action}") }
+    var actionHeight by remember { mutableStateOf(TeamCityDimensions.noSpacing) }
+    val density = LocalDensity.current
+    BoxWithConstraints(modifier.fillMaxSize().coachmarkHost(anchors)) {
         Scaffold(
             modifier = if (promptBounds != null) Modifier.clearAndSetSemantics { } else Modifier,
             topBar = {
@@ -71,14 +75,25 @@ internal fun BuildDetailsScreen(
                     navigationIcon = { IconButton(onClick = onUp, enabled = !state.busy) { Icon(painterResource(R.drawable.ic_details_back), stringResource(R.string.navigate_up)) } }
                 )
             },
-            bottomBar = { BuildDetailsFloatingActions(state, onAction, Modifier.coachmarkAnchor("details:actions", anchors)) },
+            floatingActionButtonPosition = FabPosition.Center,
+            floatingActionButton = {
+                BuildDetailsFloatingActions(
+                    state,
+                    onAction,
+                    anchors,
+                    Modifier.widthIn(max = (maxWidth - TeamCityDimensions.extraLargeSpacing).coerceAtLeast(TeamCityDimensions.minimumTouchTarget))
+                        .onSizeChanged { actionHeight = with(density) { it.height.toDp() } }
+                )
+            },
             snackbarHost = { SnackbarHost(snackbar) }
         ) { padding ->
             Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
                 if (state.countFailures.isNotEmpty() || state.onboardingFailed) {
                     TextButton(onClick = onRetryMetadata, enabled = !state.busy, modifier = Modifier.testTag("details:retry-metadata")) { Text(stringResource(R.string.retry_build_metadata)) }
                 }
-                Box(Modifier.weight(1f)) { content() }
+                CompositionLocalProvider(LocalFloatingActionClearance provides (actionHeight + TeamCityDimensions.extraLargeSpacing)) {
+                    Box(Modifier.weight(1f)) { content() }
+                }
             }
         }
         if (prompt != null && promptBounds != null) {
@@ -90,7 +105,9 @@ internal fun BuildDetailsScreen(
                 placement = CoachmarkPlacement.Above,
                 onDismiss = onDismissPrompt,
                 modifier = Modifier.testTag("details:coachmark:${prompt.prompt}"),
-                dismissModifier = Modifier.testTag("details:dismiss-prompt")
+                dismissModifier = Modifier.testTag("details:dismiss-prompt"),
+                saving = prompt.saving,
+                saveFailure = if (prompt.saveFailed) stringResource(R.string.build_tip_save_failed) else null
             )
         }
     }
@@ -141,16 +158,16 @@ private fun BuildDetailsPreview() {
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
 @Composable
-private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (BuildDetailsAction) -> Unit, modifier: Modifier = Modifier) {
+private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (BuildDetailsAction) -> Unit, anchors: CoachmarkAnchors, modifier: Modifier = Modifier) {
     FlowRow(
-        modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 12.dp).testTag("details:actions"),
+        modifier.fillMaxWidth().testTag("details:actions"),
         horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (state.floatingActions.isNotEmpty()) {
             HorizontalFloatingToolbar(expanded = true) {
                 state.floatingActions.forEach { action ->
-                    IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}")) {
+                    IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors)) {
                         Icon(painterResource(if (action.action == BuildDetailsAction.Share) R.drawable.ic_details_share else R.drawable.ic_details_browser), stringResource(action.label))
                     }
                 }
@@ -159,7 +176,7 @@ private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (B
         val action = state.primaryAction
         ExtendedFloatingActionButton(
             onClick = { if (!state.busy) onAction(action.action) },
-            modifier = Modifier.testTag("details:action:${action.action}").then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
+            modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors).then(if (state.busy) Modifier.semantics { disabled() } else Modifier),
             containerColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.primaryContainer,
             contentColor = if (action.action == BuildDetailsAction.Cancel) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onPrimaryContainer,
             icon = { Icon(painterResource(if (action.action == BuildDetailsAction.Cancel) R.drawable.ic_details_stop else R.drawable.ic_details_restart), null) },

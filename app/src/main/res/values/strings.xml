@@ -170,10 +170,6 @@
     <string name="text_onboarding_run_build">Choose a branch, an agent or even provide custom parameters</string>
     <string name="title_onboarding_filter_builds">Filter builds</string>
     <string name="text_onboarding_filter_builds">Filter by branch, build status or show only personal or pinned ones</string>
-    <string name="title_onboarding_build_menu">Explore menu</string>
-    <string name="text_onboarding_stop_build">Stop, share or open running builds in a browser</string>
-    <string name="text_onboarding_restart_build">Restart, share or open finished builds in a browser</string>
-    <string name="text_onboarding_remove_build_from_queue">Remove from queue, share or open builds in a browser</string>
     <string name="title_onboarding_add_fav">Add to favorites</string>
     <string name="text_onboarding_add_fav">Add configurations to favorites to able manage them in one place</string>
     <string name="title_onboarding_filter">Filter running builds</string>

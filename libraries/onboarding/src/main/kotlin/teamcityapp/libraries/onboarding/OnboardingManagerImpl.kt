@@ -1,5 +1,6 @@
 /*
  * Copyright 2020 Andrey Tolpeev
+ * Copyright 2026 Andrey Tolpeev
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +20,19 @@ package teamcityapp.libraries.onboarding
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.annotation.VisibleForTesting
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.first
+
+private val Context.buildActionTips by preferencesDataStore(name = "build_action_tips")
 
 /**
  * Impl of [OnboardingManager]
  */
-class OnboardingManagerImpl(context: Context) :
-    teamcityapp.libraries.onboarding.OnboardingManager {
+class OnboardingManagerImpl(context: Context) : teamcityapp.libraries.onboarding.OnboardingManager {
 
+    private val actionTips = context.applicationContext.buildActionTips
     private val sharedPreferences: SharedPreferences
 
     init {
@@ -91,6 +98,7 @@ class OnboardingManagerImpl(context: Context) :
      */
     override val isAgentsFilterPromptShown: Boolean
         get() = sharedPreferences.getBoolean(KEY_AGENTS_FILTER, false)
+
     /**
      * {@inheritDoc}
      */
@@ -174,10 +182,24 @@ class OnboardingManagerImpl(context: Context) :
         sharedPreferences.edit().putBoolean(KEY_FAV, true).apply()
     }
 
+    override suspend fun isShareBuildPromptShown(): Boolean = actionTips.data.first()[KEY_SHARE_BUILD] ?: false
+
+    override suspend fun isOpenBuildInBrowserPromptShown(): Boolean = actionTips.data.first()[KEY_BUILD_BROWSER] ?: false
+
+    override suspend fun saveShareBuildPromptShown(shown: Boolean) {
+        actionTips.edit { it[KEY_SHARE_BUILD] = shown }
+    }
+
+    override suspend fun saveOpenBuildInBrowserPromptShown(shown: Boolean) {
+        actionTips.edit { it[KEY_BUILD_BROWSER] = shown }
+    }
+
     companion object {
 
         @VisibleForTesting
         const val PREF_NAME = "OnboardingPref"
+        private val KEY_SHARE_BUILD = booleanPreferencesKey("ShareBuild")
+        private val KEY_BUILD_BROWSER = booleanPreferencesKey("OpenBuildInBrowser")
         private const val KEY_NAV_DRAWER = "NavDrawerV1"
         private const val KEY_RUN_BUILD = "RunBuild"
         private const val KEY_FILTER_BUILDS = "FilterBuilds"

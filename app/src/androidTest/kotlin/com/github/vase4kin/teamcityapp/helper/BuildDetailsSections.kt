@@ -34,7 +34,8 @@ fun ComposeTestRule.tapBuildDetailsSection(title: String) {
         else -> label
     }
     val tag = "overview:section:$section"
-    onNodeWithTag("overview:list").performScrollToNode(hasTestTag(tag))
+    // Align the row near the top, clear of the controls floating over the bottom.
+    onNodeWithTag("overview:list").performScrollToKey(teamcityapp.features.build_details.api.BuildDetailsSection.valueOf(section))
     onNodeWithTag(tag).performClick()
     waitForIdle()
 }

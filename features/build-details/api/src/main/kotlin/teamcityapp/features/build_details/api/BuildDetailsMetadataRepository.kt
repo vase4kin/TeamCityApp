@@ -19,14 +19,14 @@ package teamcityapp.features.build_details.api
 import kotlinx.serialization.Serializable
 import teamcityapp.libraries.builds.BuildLaunchData
 
-/** Independent optional counts and existing build-menu education preferences. */
+/** Independent optional counts and build action education preferences. */
 interface BuildDetailsMetadataRepository {
     suspend fun count(build: BuildLaunchData, tab: BuildDetailsSection): Int
     suspend fun pendingPrompts(): Set<BuildDetailsPrompt>
     suspend fun acknowledgePrompt(prompt: BuildDetailsPrompt)
 }
 
-enum class BuildDetailsPrompt { Stop, Remove, Restart }
+enum class BuildDetailsPrompt { Stop, Remove, Restart, Share, Browser }
 
 @Serializable
 sealed interface BuildDetailsCount {
