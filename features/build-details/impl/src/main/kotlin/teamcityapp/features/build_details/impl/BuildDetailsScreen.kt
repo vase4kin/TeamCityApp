@@ -170,7 +170,7 @@ private fun BuildDetailsFloatingActions(state: BuildDetailsUiState, onAction: (B
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         if (state.floatingActions.isNotEmpty()) {
-            HorizontalFloatingToolbar(expanded = true) {
+            TeamCityFloatingToolbar {
                 state.floatingActions.forEach { action ->
                     IconButton(onClick = { onAction(action.action) }, enabled = !state.busy, modifier = Modifier.testTag("details:action:${action.action}").coachmarkAnchor("details:action:${action.action}", anchors)) {
                         Icon(painterResource(if (action.action == BuildDetailsAction.Share) R.drawable.ic_details_share else R.drawable.ic_details_browser), stringResource(action.label))
