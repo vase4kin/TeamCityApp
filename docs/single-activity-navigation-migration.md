@@ -701,9 +701,13 @@ Build Details now uses the approved Floating actions layout: status with View lo
 Results (Changes, Tests, Artifacts), Execution (branch, agent, trigger and optional
 execution details), Build setup (Parameters, Dependencies), and a separate
 Configuration/project group. Share and Open in browser sit in a floating toolbar
-paired with an extended Stop/Remove/Restart action. The action area reserves space
-for content and wraps at enlarged text sizes. Build-action education appears above
-these controls and keeps the existing acknowledgement preferences.
+paired with an extended Stop/Remove/Restart action. These controls overlay the
+scrollable content with no full-width bottom surface. Measured trailing scroll
+space keeps the final row reachable when controls wrap at enlarged text sizes.
+Build-action education uses History’s shared coachmark, anchored separately to
+Stop/Remove/Restart, Share and Open in browser. Existing mutation-tip preferences
+remain compatible; Share and Open in browser have independent DataStore preferences.
+Acknowledgement failures keep the same tip visible with an explicit retry.
 
 Grouped rows push a `BuildDetailsSectionDestination`; Back returns to Overview.
 Duplicate section visits have distinct owners. The Overview retains completed
