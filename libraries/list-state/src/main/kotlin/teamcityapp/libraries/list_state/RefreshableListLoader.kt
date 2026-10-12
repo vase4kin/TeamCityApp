@@ -16,6 +16,8 @@
 
 package teamcityapp.libraries.list_state
 
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ProducerScope
@@ -123,8 +125,9 @@ class RefreshableListLoader<Q, T>(
             if (items.isEmpty()) ListUiState.Empty() else ListUiState.Content(items)
         } catch (cancelled: CancellationException) {
             throw cancelled
-        } catch (_: Exception) {
+        } catch (failure: Exception) {
             currentCoroutineContext().ensureActive()
+            Logger.getLogger("RefreshableListLoader").log(Level.SEVERE, "List load failed (forceRefresh=${attempt.forceRefresh})", failure)
             attempt.state.failed()
         }
         currentCoroutineContext().ensureActive()
@@ -147,8 +150,9 @@ class RefreshableListLoader<Q, T>(
             if (items.isEmpty()) ListUiState.Empty() else ListUiState.Content(items)
         } catch (cancelled: CancellationException) {
             throw cancelled
-        } catch (_: Exception) {
+        } catch (failure: Exception) {
             currentCoroutineContext().ensureActive()
+            Logger.getLogger("RefreshableListLoader").log(Level.SEVERE, "List poll failed", failure)
             null
         }
         currentCoroutineContext().ensureActive()

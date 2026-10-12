@@ -24,12 +24,14 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
+import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import teamcityapp.features.running_builds.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
+import teamcityapp.libraries.builds.BuildTests
 import teamcityapp.libraries.list_state.ListUiState
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -244,6 +246,49 @@ class RunningBuildsViewModelTest {
         assertEquals(ListUiState.Content(updated), vm.state.value.list)
         assertFalse(vm.state.value.updatesAvailable)
         assertEquals(2, repository.calls.size)
+    }
+
+    @Test fun identicalDeserializedPollsDoNotOfferUpdatesButChangedResultsDo() = runTest(dispatcher) {
+        val original = rows.map { it.copy(tests = BuildTests("/tests", count = 3, passed = 2, failed = 1)) }
+        repository.load = { _, _ -> original }
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.load = { _, _ -> original.map { Json.decodeFromString<BuildLaunchData>(Json.encodeToString(it)) } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertFalse(vm.state.value.updatesAvailable)
+        assertEquals(ListUiState.Content(original), vm.state.value.list)
+        val changed = original.map { it.copy(tests = it.tests!!.copy(count = 4, passed = 3)) }
+        repository.load = { _, _ -> changed }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertTrue(vm.state.value.updatesAvailable)
+        assertEquals(ListUiState.Content(original), vm.state.value.list)
+        vm.applyUpdates()
+        runCurrent()
+        assertEquals(ListUiState.Content(changed), vm.state.value.list)
+        assertFalse(vm.state.value.updatesAvailable)
+        assertEquals(3, repository.calls.size)
+    }
+
+    @Test fun changedStatusOrMembershipOffersUpdatesAndReversionClearsTheCard() = runTest(dispatcher) {
+        val vm = vm()
+        observe(vm)
+        runCurrent()
+        repository.load = { _, _ -> rows.map { it.copy(state = "finished", status = "FAILURE") } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertTrue(vm.state.value.updatesAvailable)
+        repository.load = { _, _ -> rows.map { it.copy() } }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertFalse(vm.state.value.updatesAvailable)
+        repository.load = { _, _ -> rows.dropLast(1) }
+        advanceTimeBy(30_000)
+        runCurrent()
+        assertTrue(vm.state.value.updatesAvailable)
+        assertEquals(ListUiState.Content(rows), vm.state.value.list)
     }
 
     private inner class FakeRepository : RunningBuildsRepository {

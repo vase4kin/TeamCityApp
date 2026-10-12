@@ -18,16 +18,15 @@
 package com.github.vase4kin.teamcityapp.api.cache
 
 import dagger.Lazy
-import io.rx_cache2.internal.RxCache
 import teamcityapp.libraries.cache_manager.CacheManager
 
 class CacheManagerImpl(
-    private val rxCache: RxCache,
+    private val rxCache: SharedRxCache,
     private val providers: Lazy<CacheProviders>
 ) : CacheManager {
     override fun evictAllCache() {
-        // RxCache creates its eviction proxy only after using(CacheProviders). Resolve the
-        // same singleton provider used by the API graph, even before that graph exists.
+        // Resolve the same singleton provider used by the API graph before clearing its cache,
+        // including when the account API graph has not been created yet.
         providers.get()
         rxCache.evictAll().ignoreElements().blockingAwait()
     }

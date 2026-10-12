@@ -18,7 +18,6 @@ package com.github.vase4kin.teamcityapp.api.cache
 
 import dagger.Lazy
 import io.reactivex.Observable
-import io.rx_cache2.internal.RxCache
 import io.victoralbertos.jolyglot.GsonSpeaker
 import org.junit.Assert.*
 import org.junit.Rule
@@ -30,13 +29,13 @@ class CacheManagerImplTest {
     @get:Rule val folder = TemporaryFolder()
 
     @Test fun aColdCacheCanBeEvictedBeforeTheAccountApiGraphHasBeenCreated() {
-        val cache = RxCache.Builder().persistence(folder.newFolder(), GsonSpeaker())
+        val cache = SharedRxCache.create(folder.newFolder(), GsonSpeaker())
         var initialized = false
         val manager = CacheManagerImpl(
             cache,
             Lazy {
                 initialized = true
-                cache.using(CacheProviders::class.java)
+                cache.providers
             }
         )
         assertFalse(initialized)
@@ -45,7 +44,7 @@ class CacheManagerImplTest {
     }
 
     @Test fun evictionWaitsForCompletionAndPropagatesFailuresForTheScreenToRetry() {
-        val cache = mock(RxCache::class.java)
+        val cache = mock(SharedRxCache::class.java)
         val failure = IllegalStateException("disk failure")
         `when`(cache.evictAll()).thenReturn(Observable.error(failure))
         val manager = CacheManagerImpl(cache, Lazy { mock(CacheProviders::class.java) })

@@ -56,6 +56,7 @@ import org.hamcrest.core.AllOf.allOf
 import org.junit.*
 import org.junit.runner.RunWith
 import org.mockito.Mockito.mockingDetails
+import org.mockito.Mockito.never
 import org.mockito.Mockito.times
 import org.mockito.Mockito.verify
 import org.mockito.Spy
@@ -68,6 +69,7 @@ import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.filter_bottom_sheet.impl.R as QuickR
 import teamcityapp.features.running_builds.impl.R as FeatureR
+import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
 import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.list_ui.R as ListR
 
@@ -112,7 +114,7 @@ class RunningBuildsFragmentTest {
         storage.saveGuestUserAccountAndSetItAsActive(Mocks.URL, false)
         app.appInjector.cacheManager().evictAllCache()
         app.getSharedPreferences("rateTheAppPref", android.content.Context.MODE_PRIVATE).edit().putBoolean("rated", true).commit()
-        // Isolate Home's live count requests from the pending row/detail subjects in these tests.
+        // Isolate Home's live count requests from the pending projected-list subjects in these tests.
         doReturn(Single.just(Builds(0, emptyList()))).whenever(teamCityService).listRunningBuilds(any(), eq("count"))
     }
 
@@ -137,14 +139,14 @@ class RunningBuildsFragmentTest {
     }
 
     @Test fun filterFabSwitchesEmptyFavoritesToAllAndKeepsTheEmptyCount() {
-        whenever(teamCityService.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", null)).thenReturn(Single.just(Builds(0, emptyList())))
+        whenever(teamCityService.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
         openTab()
         assertTextVisible(text(FeatureR.string.running_builds_empty_favorites))
         showAllFromFilterFab()
         assertTextVisible(text(FeatureR.string.running_builds_empty_all))
         compose.onNodeWithText(context.getString(teamcityapp.features.home.impl.R.string.text_filters_applied)).assertIsDisplayed()
         assertBadgeCount(0)
-        verify(teamCityService).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", null)
+        verify(teamCityService).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)
     }
 
     @Test fun favoritesAndAllPreserveGroupedRowsAndHomeLiveBadgeCounts() {
@@ -155,7 +157,7 @@ class RunningBuildsFragmentTest {
         storage.addBuildTypeToFavorites("B")
         stubFavorite("A", listOf(first), 1)
         stubFavorite("B", listOf(third), 1)
-        whenever(teamCityService.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", null)).thenReturn(Single.just(Builds(3, listOf(first, second, third))))
+        whenever(teamCityService.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(3, listOf(first, second, third))))
         whenever(teamCityService.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", "count")).thenReturn(Single.just(Builds(3, emptyList())))
         stubDetails(first, second, third)
         openTab()
@@ -171,9 +173,10 @@ class RunningBuildsFragmentTest {
         row("3").assertIsDisplayed()
         compose.onNodeWithTag("running_builds:configuration:2").assertTextEquals("Project B - Beta")
         assertBadgeCount(3)
-        verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), null)
-        verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("B"), null)
-        verify(teamCityService, times(1)).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", null)
+        verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS)
+        verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("B"), BUILD_LAUNCH_FIELDS)
+        verify(teamCityService, times(1)).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS)
+        verify(teamCityService, never()).build(any())
     }
 
     @Test fun rowNavigationPreservesTheCompleteBuildPayloadInTheSameRoot() {
@@ -183,6 +186,7 @@ class RunningBuildsFragmentTest {
         stubDetails(build)
         openTab()
         awaitRow("1")
+        verify(teamCityService, never()).build(any())
         row("1").performClick()
         Assert.assertEquals(BuildDetailsDestination(BuildLaunchMapper().toLaunchData(build)), currentRootSnapshot().entries.last().destination)
         Assert.assertTrue(currentRootSnapshot().entries.first().destination is teamcityapp.features.home.api.HomeDestination)
@@ -201,7 +205,7 @@ class RunningBuildsFragmentTest {
 
     @Test fun initialErrorCanRetryWithoutRemovingFavorites() {
         storage.addBuildTypeToFavorites("A")
-        whenever(teamCityService.listRunningBuilds(favoriteLocator("A"), null)).thenReturn(Single.error(RuntimeException("offline")))
+        whenever(teamCityService.listRunningBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS)).thenReturn(Single.error(RuntimeException("offline")))
         openTab()
         assertTextVisible(text(teamcityapp.libraries.theme.R.string.error_load_message))
         assertBadgeCount(0)
@@ -221,7 +225,7 @@ class RunningBuildsFragmentTest {
         stubDetails(build)
         openTab()
         awaitRow("1")
-        whenever(teamCityService.listRunningBuilds(favoriteLocator("A"), null)).thenReturn(Single.error(RuntimeException("offline refresh")))
+        whenever(teamCityService.listRunningBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS)).thenReturn(Single.error(RuntimeException("offline refresh")))
         compose.onNodeWithTag("running_builds:list").performTouchInput { swipeDown() }
         assertTextVisible(text(ListR.string.list_refresh_failed))
         row("1").assertIsDisplayed()
@@ -232,14 +236,14 @@ class RunningBuildsFragmentTest {
         Assert.assertEquals(listOf("A"), storage.favoriteBuildTypeIds)
     }
 
-    @Test fun actualHomeHideShowCancelsPendingDetailsAndReloadsOnReturn() {
+    @Test fun actualHomeHideShowCancelsPendingBulkLoadAndReloadsOnReturn() {
         val build = build("1", "A", "Alpha", "Project A", "Returned row")
         storage.addBuildTypeToFavorites("A")
-        stubFavorite("A", listOf(build))
-        val first = SingleSubject.create<Build>()
-        val returned = SingleSubject.create<Build>()
+        val first = SingleSubject.create<Builds>()
+        val returned = SingleSubject.create<Builds>()
         val subscriptions = AtomicInteger()
-        doReturn(Single.defer { if (subscriptions.incrementAndGet() == 1) first else returned }).whenever(teamCityService).build(serviceUrl(build))
+        doReturn(Single.defer { if (subscriptions.incrementAndGet() == 1) first else returned })
+            .whenever(teamCityService).listRunningBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS)
         openTab()
         compose.waitUntil(10_000) { first.hasObservers() }
         compose.onNodeWithTag("home:tab:Projects").performClick()
@@ -247,12 +251,13 @@ class RunningBuildsFragmentTest {
         compose.waitUntil(10_000) { !first.hasObservers() }
         clickTab()
         compose.waitUntil(10_000) { returned.hasObservers() }
-        first.onSuccess(this.build("old", "A", "Alpha", "Project A", "Late hidden result"))
-        returned.onSuccess(build)
+        first.onSuccess(Builds(1, listOf(this.build("old", "A", "Alpha", "Project A", "Late hidden result"))))
+        returned.onSuccess(Builds(1, listOf(build)))
         awaitRow("1")
         row("1").assertTextContains("Returned row")
         row("old").assertDoesNotExist()
         Assert.assertEquals(2, subscriptions.get())
+        verify(teamCityService, never()).build(any())
     }
 
     @Test fun completedRowsKeepScrollPositionAcrossActualHomeHideShow() {
@@ -301,7 +306,7 @@ class RunningBuildsFragmentTest {
             scenario.recreate()
             awaitRow("1")
             assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
-            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), null)
+            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS)
         }
     }
 
@@ -321,7 +326,7 @@ class RunningBuildsFragmentTest {
             clickTab()
             awaitRow("1")
             compose.waitForIdle()
-            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), null)
+            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("A"), BUILD_LAUNCH_FIELDS)
         }
     }
 
@@ -334,8 +339,8 @@ class RunningBuildsFragmentTest {
         storage.setUserActive(Mocks.URL, "alice")
         val alice = SingleSubject.create<Builds>()
         val bob = SingleSubject.create<Builds>()
-        whenever(teamCityService.listRunningBuilds(favoriteLocator("alice-build"), null)).thenReturn(alice)
-        whenever(teamCityService.listRunningBuilds(favoriteLocator("bob-build"), null)).thenReturn(bob)
+        whenever(teamCityService.listRunningBuilds(favoriteLocator("alice-build"), BUILD_LAUNCH_FIELDS)).thenReturn(alice)
+        whenever(teamCityService.listRunningBuilds(favoriteLocator("bob-build"), BUILD_LAUNCH_FIELDS)).thenReturn(bob)
         val aliceBuild = build("alice", "alice-build", "Alice private configuration", "Alice", "Alice private row")
         val bobBuild = build("bob", "bob-build", "Bob configuration", "Bob", "Bob row")
         stubDetails(aliceBuild, bobBuild)
@@ -363,8 +368,8 @@ class RunningBuildsFragmentTest {
             Assert.assertEquals("bob", storage.activeUser.userName)
             Assert.assertEquals(listOf("bob-build"), storage.favoriteBuildTypeIds)
             Assert.assertEquals(listOf("alice-build"), storage.userAccounts.single { it.userName == "alice" }.buildTypeIds)
-            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("alice-build"), null)
-            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("bob-build"), null)
+            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("alice-build"), BUILD_LAUNCH_FIELDS)
+            verify(teamCityService, times(1)).listRunningBuilds(favoriteLocator("bob-build"), BUILD_LAUNCH_FIELDS)
         }
     }
 
@@ -404,14 +409,14 @@ class RunningBuildsFragmentTest {
     }
     private fun favoriteLocator(id: String): String = "running:true,branch:default:any,personal:false,pinned:false,buildType:$id"
     private fun stubFavorite(id: String, rows: List<Build>, count: Int = rows.size) {
-        whenever(teamCityService.listRunningBuilds(favoriteLocator(id), null)).thenReturn(Single.just(Builds(rows.size, rows)))
+        whenever(teamCityService.listRunningBuilds(favoriteLocator(id), BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(rows.size, rows)))
         whenever(teamCityService.listRunningBuilds(favoriteLocator(id), "count")).thenReturn(Single.just(Builds(count, emptyList())))
     }
     private fun stubDetails(vararg rows: Build) {
         rows.forEach { whenever(teamCityService.build(serviceUrl(it))).thenReturn(Single.just(it)) }
     }
     private fun serviceUrl(build: Build) = build.href
-    private fun listCalls(locator: String?): Int = mockingDetails(teamCityService).invocations.count { it.method.name == "listRunningBuilds" && it.arguments.contentEquals(arrayOf(locator, null)) }
+    private fun listCalls(locator: String?): Int = mockingDetails(teamCityService).invocations.count { it.method.name == "listRunningBuilds" && it.arguments.contentEquals(arrayOf(locator, BUILD_LAUNCH_FIELDS)) }
     private fun saveUser(name: String) {
         var success = false
         storage.saveUserAccountAndSetItAsActive(

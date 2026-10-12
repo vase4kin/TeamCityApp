@@ -24,9 +24,9 @@ interface RunningBuildsRepository {
     val query: Flow<RunningBuildsQuery>
 
     /**
-     * Hydrates complete launch snapshots for the query's account/session. Reject stale account
-     * snapshots before requesting. Running summaries force fresh details; other cached details
-     * refresh when the summary/cached finished flag differs. forceRefresh evicts the list cache.
+     * Loads complete launch snapshots from the running-builds collection projection for the
+     * query's account/session, without per-build detail requests. Rejects stale account snapshots
+     * before requesting and publishing. forceRefresh evicts the projected list cache.
      * Uses the running builds locator on app/rest/builds.
      * Home continues to own the live count flow independently of this list.
      */
