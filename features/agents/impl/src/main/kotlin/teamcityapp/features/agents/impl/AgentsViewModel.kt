@@ -31,28 +31,13 @@ import teamcityapp.libraries.list_state.RefreshableListLoader
 class AgentsViewModel @Inject constructor(repository: AgentsRepository) : ViewModel() {
     private val loader = RefreshableListLoader(
         queries = repository.filter,
+        pollIntervalMillis = 30_000,
         load = repository::agents
     )
-    val state = loader.queryState.map { (selected, list) -> AgentsUiState(selected, list) }
+    val state = loader.pollingState.map { (selected, list, updates) -> AgentsUiState(selected, list, updates) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), AgentsUiState())
-
-    private var paused = false
 
     fun refresh() = loader.refresh()
     fun retry() = loader.retry()
-
-    /** Initial loading belongs to collection. Returning to the visible tab permits cached reloads. */
-    fun onResumed() {
-        if (paused) loader.reload()
-        paused = false
-    }
-
-    fun onPaused() {
-        paused = true
-    }
-
-    /** Called by the host when destruction is part of configuration recreation. */
-    fun onConfigurationRecreation(wasVisible: Boolean) {
-        if (wasVisible) paused = false
-    }
+    fun applyUpdates() = loader.applyUpdates()
 }

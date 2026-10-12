@@ -22,6 +22,8 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.favorites.api" }
 dependencies {
+    api(platform(libs.compose.bom))
+    api(libs.compose.runtime)
     api(projects.libraries.navigation)
     api(projects.libraries.buildConfigurations)
 }

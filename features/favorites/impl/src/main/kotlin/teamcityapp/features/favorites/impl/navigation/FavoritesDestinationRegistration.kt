@@ -39,6 +39,9 @@ class FavoritesDestinationRegistration @Inject constructor(private val tracker: 
         val activity = checkNotNull(LocalActivity.current)
         val router = remember(activity, navigator, entryId) {
             object : FavoritesRouter {
+                override fun openProjects() {
+                    navigator.push(ProjectDestination())
+                }
                 override fun openDrawer() {
                     navigator.push(DrawerDestination)
                 }

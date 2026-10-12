@@ -140,8 +140,8 @@ fun TeamCityListLeadingIcon(
 
 /** The owning feature resolves the message from its resources and current selection. */
 @Composable
-fun TeamCityListEmpty(message: String, modifier: Modifier = Modifier) {
-    MessageContent(message, modifier.fillMaxSize())
+fun TeamCityListEmpty(message: String, modifier: Modifier = Modifier, action: (@Composable () -> Unit)? = null) {
+    MessageContent(message, modifier.fillMaxSize(), action)
 }
 
 @Composable

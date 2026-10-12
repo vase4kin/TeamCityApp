@@ -161,14 +161,15 @@ class DrawerScreenTest {
         try {
             var manages = 0
             compose.setContent { TeamCityTheme { DrawerScreen(drawerFixture("long"), {}, {}, { manages++ }, {}, {}, {}, {}) } }
-            compose.onNodeWithTag("drawer:manage").assertIsDisplayed().assertHeightIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget).performClick()
-            assertEquals(1, manages)
             currentAccount().assertIsDisplayed()
             compose.onNodeWithTag("drawer:current-marker", useUnmergedTree = true).assertIsDisplayed().assertHasNoClickAction()
             val layouts = mutableListOf<TextLayoutResult>()
             compose.onNodeWithText("https://a-very-long-teamcity-server.example/projects/production/1", useUnmergedTree = true)
                 .performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(layouts) }
             assertFalse(layouts.single().hasVisualOverflow)
+            compose.onNodeWithTag("drawer:list").performScrollToKey("manage")
+            compose.onNodeWithTag("drawer:manage").assertIsDisplayed().assertHeightIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget).performClick()
+            assertEquals(1, manages)
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
             compose.onNodeWithTag("drawer:rate").assertIsDisplayed()
             val privacy = compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed().fetchSemanticsNode().boundsInRoot
@@ -190,10 +191,16 @@ class DrawerScreenTest {
         compose.onNodeWithTag(accountTag(active.id)).assertHasNoClickAction()
     }
 
-    @Test fun compactManageRetainsItsOwnAccessibleEdgeAction() {
+    @Test fun fullWidthManageRetainsItsOwnAccessibleEdgeAction() {
         var manages = 0
         compose.setContent { TeamCityTheme { DrawerScreen(drawerFixture("one"), {}, {}, { manages++ }, {}, {}, {}, {}) } }
+        compose.onNodeWithText("Your accounts").assertDoesNotExist()
+        val add = compose.onNodeWithTag("drawer:add").fetchSemanticsNode().boundsInRoot
         val manage = compose.onNodeWithTag("drawer:manage")
+        val manageBounds = manage.fetchSemanticsNode().boundsInRoot
+        assertEquals(2f, manageBounds.top - add.bottom, 0.5f)
+        assertEquals(add.left, manageBounds.left)
+        assertEquals(add.right, manageBounds.right)
         manage.assert(SemanticsMatcher.expectValue(androidx.compose.ui.semantics.SemanticsProperties.Role, androidx.compose.ui.semantics.Role.Button))
             .assertHeightIsAtLeast(teamcityapp.libraries.theme.TeamCityDimensions.minimumTouchTarget)
         manage.performTouchInput { click(androidx.compose.ui.geometry.Offset(1f, height / 2f)) }

@@ -21,10 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import teamcityapp.features.agents.impl.router.AgentsRouter
-import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 
 @Composable
 internal fun AgentsRoute(router: AgentsRouter, viewModel: AgentsViewModel = hiltViewModel(), visible: Boolean = true) {
@@ -34,12 +32,5 @@ internal fun AgentsRoute(router: AgentsRouter, viewModel: AgentsViewModel = hilt
     } else {
         remember(viewModel) { viewModel.state.value }
     }
-    ConfigurationRecreationEffect(viewModel) { viewModel.onConfigurationRecreation(wasVisible = visible) }
-    if (visible) {
-        LifecycleResumeEffect(viewModel) {
-            viewModel.onResumed()
-            onPauseOrDispose { viewModel.onPaused() }
-        }
-    }
-    AgentsScreen(state, viewModel::refresh, viewModel::retry, router::openDrawer)
+    AgentsScreen(state, viewModel::refresh, viewModel::retry, router::openDrawer, onApplyUpdates = viewModel::applyUpdates)
 }

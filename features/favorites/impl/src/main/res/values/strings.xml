@@ -24,4 +24,5 @@
         <item quantity="one">%d favorite couldn\'t be loaded. Your saved favorites are kept.</item>
         <item quantity="other">%d favorites couldn\'t be loaded. Your saved favorites are kept.</item>
     </plurals>
+    <string name="favorites_add">Add to favorites</string>
 </resources>

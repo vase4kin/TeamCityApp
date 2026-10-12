@@ -116,6 +116,7 @@ class AppHomeRepositoryTest {
         val app = app(this)
         val query = app.query.first()
         assertEquals(active.homeBuildAccountKey(), query.accountKey)
+        assertEquals(HomeAccount(active.userName, active.teamcityUrl), query.account)
         assertEquals(listOf("A", "B"), query.favoriteIds)
         assertEquals(QuickFilter.RunningFavorites, query.runningFilter)
     }

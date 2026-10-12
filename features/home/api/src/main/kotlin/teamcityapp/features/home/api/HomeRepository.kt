@@ -19,12 +19,15 @@ package teamcityapp.features.home.api
 import kotlinx.coroutines.flow.Flow
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 
+data class HomeAccount(val userName: String, val serverUrl: String)
+
 data class HomeQuery(
     val accountKey: String,
     val favoriteIds: List<String>,
     val runningFilter: QuickFilter,
     val queueFilter: QuickFilter,
-    val agentsFilter: QuickFilter
+    val agentsFilter: QuickFilter,
+    val account: HomeAccount? = null
 )
 sealed interface HomeCount {
     data class Available(val value: Int) : HomeCount

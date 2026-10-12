@@ -80,7 +80,7 @@ class RunningBuildsScreenScreenshotTest(private val stateName: String, private v
         val filter = if (stateName == "empty_all" || stateName == "content_all") teamcityapp.features.running_builds.api.RunningBuildsFilter.All else teamcityapp.features.running_builds.api.RunningBuildsFilter.Favorites
         val query = teamcityapp.features.running_builds.api.RunningBuildsQuery("account", filter)
         compose.mainClock.autoAdvance = false
-        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { RunningBuildsScreen(RunningBuildsUiState(query, state), {}, {}, {}, {}, { _, _ -> }) } }
+        compose.setContent { TeamCityTheme(darkTheme = variant.dark) { RunningBuildsScreen(RunningBuildsUiState(query, state, updatesAvailable = stateName == "updates_available"), {}, {}, {}, {}, { _, _ -> }) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("running_builds_${stateName}_${variant.name}.png")
@@ -116,7 +116,7 @@ class RunningBuildsScreenScreenshotTest(private val stateName: String, private v
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty_all", "empty_favorites", "empty_refreshing", "empty_refresh_failed", "content_all", "content_favorites", "refreshing", "refresh_failed", "long_content").flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            listOf("loading", "error", "empty_all", "empty_favorites", "empty_refreshing", "empty_refresh_failed", "content_all", "content_favorites", "refreshing", "refresh_failed", "updates_available", "long_content").flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

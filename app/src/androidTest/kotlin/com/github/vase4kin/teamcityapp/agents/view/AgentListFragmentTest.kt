@@ -100,8 +100,8 @@ class AgentListFragmentTest {
 
     @Test fun showsTheAgentsToolbarAndOpensTheDrawer() {
         openAgents()
-        assertTextVisible(text(AgentsR.string.agents_title))
-        compose.onNodeWithTag("agents:drawer").performClick()
+        assertTextVisible(text(teamcityapp.features.home.impl.R.string.home_activity))
+        compose.onNodeWithTag("home:account").performClick()
         compose.onNodeWithTag("drawer:list").assertExists()
     }
 
@@ -123,7 +123,7 @@ class AgentListFragmentTest {
         compose.onNodeWithText(text(AgentsR.string.agents_empty_connected)).assertDoesNotExist()
     }
 
-    @Test fun returningToTheAgentsTabReloadsItsCompletedList() {
+    @Test fun returningToTheAgentsTabRetainsItsCompletedList() {
         val calls = AtomicInteger()
         `when`(teamCityService.listAgents(false, null, null)).thenAnswer {
             calls.incrementAndGet()
@@ -134,8 +134,8 @@ class AgentListFragmentTest {
         Assert.assertEquals(1, calls.get())
         selectTab("Favorites")
         selectTab("Agents")
-        compose.waitUntil(10_000) { calls.get() >= 2 }
-        Assert.assertEquals(2, calls.get())
+        compose.waitForIdle()
+        Assert.assertEquals(1, calls.get())
         assertTextVisible("Visible agent")
     }
 
@@ -162,11 +162,12 @@ class AgentListFragmentTest {
     }
 
     private fun selectTab(tab: String) {
+        if (tab in listOf("Running", "Queue", "Agents")) compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:$tab").performClick()
     }
 
     private fun showDisconnected() {
-        compose.onNodeWithTag("home:fab").performClick()
+        compose.onNodeWithTag("home:action").performClick()
         compose.onNodeWithText(text(FilterR.string.text_show_disconnected)).performClick()
     }
 

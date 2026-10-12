@@ -23,7 +23,8 @@ import teamcityapp.libraries.list_state.ListUiState
 
 data class AgentsUiState(
     val filter: AgentsFilter = AgentsFilter.Connected,
-    val list: ListUiState<Agent> = ListUiState.Loading
+    val list: ListUiState<Agent> = ListUiState.Loading,
+    val updatesAvailable: Boolean = false
 ) {
     @get:StringRes val emptyMessageRes: Int = if (filter == AgentsFilter.Connected) R.string.agents_empty_connected else R.string.agents_empty_disconnected
 }

@@ -38,6 +38,8 @@ import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.LocalTeamCityAppBarState
+import teamcityapp.libraries.theme.LocalTeamCityHeaderProvided
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
@@ -60,25 +62,27 @@ fun NavigationScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
-    BindTeamCityAppBarToList(listState, scrollBehavior.state)
+    BindTeamCityAppBarToList(listState, LocalTeamCityAppBarState.current ?: scrollBehavior.state)
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier.testTag("screen:app-bar"),
-                colors = teamCityTopAppBarColors(),
-                scrollBehavior = scrollBehavior,
-                title = { Text(state.title.resolve()) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateUp, modifier = if (state.root) Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR) else Modifier) {
-                        Icon(
-                            painterResource(if (state.root) R.drawable.ic_navigation_drawer else R.drawable.ic_navigation_back),
-                            stringResource(state.navigationLabelRes),
-                            Modifier.testTag("navigation:up")
-                        )
+            if (!LocalTeamCityHeaderProvided.current || !state.root) {
+                CenterAlignedTopAppBar(
+                    modifier = Modifier.testTag("screen:app-bar"),
+                    colors = teamCityTopAppBarColors(),
+                    scrollBehavior = scrollBehavior,
+                    title = { Text(state.title.resolve()) },
+                    navigationIcon = {
+                        IconButton(onClick = onNavigateUp, modifier = if (state.root) Modifier.coachmarkAnchor(DRAWER_COACHMARK_ANCHOR) else Modifier) {
+                            Icon(
+                                painterResource(if (state.root) R.drawable.ic_navigation_drawer else R.drawable.ic_navigation_back),
+                                stringResource(state.navigationLabelRes),
+                                Modifier.testTag("navigation:up")
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     ) { padding ->
         TeamCityListContainer(

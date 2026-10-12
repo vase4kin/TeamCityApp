@@ -23,6 +23,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import teamcityapp.features.favorites.api.LocalFavoritesProjectsAction
 import teamcityapp.features.favorites.impl.router.FavoritesRouter
 import teamcityapp.libraries.list_ui.ConfigurationRecreationEffect
 
@@ -41,5 +42,5 @@ internal fun FavoritesRoute(router: FavoritesRouter, viewModel: FavoritesViewMod
     } else {
         remember(viewModel) { viewModel.state.value }
     }
-    FavoritesScreen(state, viewModel::refresh, viewModel::retry, router::openDrawer, router::openProject, router::openConfiguration)
+    FavoritesScreen(state, viewModel::refresh, viewModel::retry, router::openDrawer, router::openProject, router::openConfiguration, onBrowseProjects = LocalFavoritesProjectsAction.current ?: router::openProjects)
 }

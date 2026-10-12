@@ -37,7 +37,6 @@ import teamcityapp.libraries.navigation.*
 import teamcityapp.libraries.resources.R as SharedR
 
 class DrawerDestinationRegistration @Inject constructor(private val accounts: AccountFlowNavigation, private val rating: AppRating) : FeatureDestination<DrawerDestination>(DrawerDestination::class, DrawerDestination.serializer()) {
-    override val presentation = DestinationPresentation.BottomSheet
 
     @Composable override fun Content(destination: DrawerDestination, navigator: Navigator, entryId: String) {
         val activity = checkNotNull(LocalActivity.current)
@@ -54,22 +53,22 @@ class DrawerDestinationRegistration @Inject constructor(private val accounts: Ac
                     accounts.home()
                 }
                 override fun openAbout() {
-                    navigator.replace(AboutDestination)
+                    navigator.push(AboutDestination)
                 }
                 override fun openSettings() {
-                    navigator.replace(SettingsDestination)
+                    navigator.push(SettingsDestination)
                 }
                 override fun openAddAccount() {
-                    navigator.replace(CreateAccountDestination)
+                    navigator.push(CreateAccountDestination)
                 }
                 override fun openManageAccounts() {
-                    navigator.replace(ManageAccountsDestination)
+                    navigator.push(ManageAccountsDestination)
                 }
                 override fun openPrivacy() = tabs.launchUrl(activity.getString(SharedR.string.about_app_url_privacy))
                 override fun openRate() = rating.open(activity)
             }
         }
-        DrawerRoute(router)
+        DrawerRoute(router, onNavigateUp = { navigator.pop() })
     }
 }
 

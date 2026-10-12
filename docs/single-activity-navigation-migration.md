@@ -27,7 +27,7 @@ This is one continuous goal. Checkpoints are local savepoints, not scope reducti
 | Contract and inventory | Each host, navigation contract, argument, result and alias maps to a destination or platform action | Inventory and outgoing production-reference audit complete; external platform launches retained |
 | Navigation foundation | Typed keys, registered entries, saved visits/results, Back/reset/replace, per-entry and child ViewModel ownership, and Compose sheets | Verified with 38 navigation tests, feature tests, production compilation and root-host emulator cases |
 | Startup and accounts | Splash/Login/Create Account/Manage Accounts routes; launcher compatibility; same-server account isolation | Verified; coordinator, installed launcher/alias and same-server account-isolation cases pass |
-| Home | Compose shell/ViewModel/repository; five retained tabs; badges, filters, onboarding and drawer | Implemented and verified; native Home shell and its seven fragment/sheet hosts removed |
+| Home | Compose shell/ViewModel/repository; three navigation destinations with five retained panes; badges, inline filters, onboarding and Account | Implemented and verified; native Home shell and its seven fragment/sheet hosts removed |
 | Project and build workflows | Recursive projects, History, Run Build, Filter Builds and details; origin-targeted results | Typed recursive projects, History, Run Build, Filter Builds, detail/result destinations and Build Details callers verified |
 | Build Details | Overview hub, floating actions, five conditional standalone section destinations, optional counts, and loaded/incoming snapshot separation | Grouped Overview, section headers/visits, artifact result ownership, and external build-log Custom Tabs replace the tabbed shell |
 | Cleanup | No superseded activity/fragment hosts or native shell code; installed aliases dispatch to root | All native application/feature hosts removed; aliases dispatch to MainActivity; production references audited |
@@ -45,18 +45,75 @@ Build Details constructs available grouped section links from the complete incom
 
 The foundation checkpoint initially kept About and Settings hosts as temporary compatibility boundaries. Final cleanup removed those hosts and migrated their callers and integration fixtures to MainActivity. The checkpoint sections below record verification at each stage; the completion table and final verification section describe the current architecture.
 
+## Home navigation and account access
+
+Home has three primary destinations: Projects, Favorites and Activity. Activity contains
+Running, Queue and Agents, and restores its last view after visiting another destination
+or recreating the app. The five existing `HomeTab` values and their ordinals remain
+unchanged for installed Intent compatibility and saved navigation. Each content pane
+keeps its original retained owner.
+
+Home owns a shared pinned header with the selected destination title and account avatar.
+The compact bottom navigation uses icons with accessible destination descriptions. Hosted
+root screens suppress their own headers through the scoped `LocalTeamCityHeaderProvided`
+contract and bind list scrolling to the host's app-bar state. Nested project visits
+retain their own Back header. Activity's native Expressive connected toggle buttons
+show separate Running/Queue counts; larger text puts counts below their labels. The
+primary Activity badge sums Running and Queue only when both counts are known;
+loading and failures never produce a misleading partial total. Agents and Favorites
+have no notification-style badge in primary navigation.
+
+Filters are labeled inline controls with a visible current-query summary. Favorites
+embeds its add action in the existing shared empty-state message card for an empty
+saved-favorites list. The action selects the retained Projects pane directly. Existing onboarding keys remain
+compatible, with the former drawer tip targeting the avatar and action tips targeting
+the filters or the empty-state action. Optional count failures use a Snackbar with a
+Retry counts action rather than reserving permanent space above navigation.
+
+Activity panes retain completed content through selection, backgrounding and recreation.
+While visible and resumed, they check fresh repository snapshots every 30 seconds.
+Changed snapshots produce a floating Updates available card; Update applies the latest
+successful check. Returning to an opened pane waits for the next interval instead of
+reloading immediately. Polling stops when hidden and rejects canceled or superseded
+results. Manual refresh, query changes and unfinished initial-load resumption keep
+their existing behavior. Refresh failures float above retained list content, with
+Retry and Close actions; the list geometry and scroll position do not move. Update
+and refresh-failure notices share the same primary-container tonal surface, shape,
+spacing and action layout, with distinct refresh/error icons.
+
+The avatar opens the full-screen Account destination. Its serialized
+`DrawerDestination` key remains compatible, and the existing account ViewModel,
+repository, analytics and switching behavior remain in the owning feature. Account
+child destinations push onto the stack so Back returns to Account, then Home. Manage
+accounts and Add another account form one connected tonal row group, without a
+second accounts heading. Back and other interactions remain disabled while an account switch is pending. Quick
+Filter and Action Bottom Sheet keep their existing sheet presentation.
+
+Verification for this layout passed the owning feature and shared-list consumer unit
+and screenshot suites, Home repository adapter tests, both debug app builds and the
+mock instrumentation APK, app/feature lint and formatting. All 88 API 37 emulator
+cases were verified across Home startup/restoration, navigation, Favorites, Activity
+and Account. They include retained scroll/content on return, cancellation, same-server
+account isolation, Snackbar count retry, the empty-state Projects action, and a real
+30-second poll that keeps a new build pending until Update is tapped.
+
+The follow-up styling verification passed the shared-list/UI behavioral and golden
+suites and 28 native Favorites, Account, refresh-retry and polling-update cases. It
+covers the original empty-state card with an embedded action, one connected account
+action group, and matching tonal floating notices in both themes and larger text.
+
 ## Acceptance cases
 
 - Startup selects the correct authentication or Home flow, preserves the installed launcher alias, and does not return to completed login/startup screens on Back.
 - Login/Create Account preserve Basic auth challenges, explicit HTTP/SSL consent, encrypted persistence, duplicate detection, pending submissions and in-memory password handling.
 - Switching accounts, including accounts on the same server, cancels old work and clears old destination/tab owners, cache/API resources and results appropriately. External browser sessions remain browser-owned.
-- Home preserves Projects/Favorites/Running/Queue/Agents selection, selected-tab request precedence, scroll and content retention, partial failures, badges, filters, drawer actions and onboarding.
+- Home exposes Projects/Favorites/Activity navigation. Activity preserves Running/Queue/Agents selection, incoming-tab request precedence, independent scroll/content retention, partial failures, counts and filters. The avatar opens Account with existing account/app actions and onboarding.
 - Recursive projects and repeated builds/projects have independent owners. Back returns to the previous visit with retained content.
 - History keeps effective filters, favorite actions, paging and scroll state. Run Build/Filter Builds return typed results only to their originating visit; cancellation returns no result.
 - Build Details preserves conditional tab availability, counts, selected tabs, optional failures, current menus, cancel/restart confirmations and queued-build replacement.
 - Changes/Tests retain pages and filters; Properties, Snapshot Dependencies and Artifacts preserve complete arguments and navigation.
 - Artifact folders, downloads, sharing, clipboard, browser and licenses actions work from the root host. Download cancellation does not overwrite completed files.
-- Drawer, Action Bottom Sheet and Quick Filter use Compose sheets with correct dismissal/Back and action behavior.
+- Account is a full-screen destination; its child screens return to Account before Home. Action Bottom Sheet and Quick Filter use Compose sheets with correct dismissal/Back and action behavior.
 - Recreation and process restoration preserve navigation keys, visit identities, applicable UI state and unconsumed results. Popping or replacing owners cancels their work.
 
 ## Verification

@@ -80,7 +80,7 @@ class AgentsRouteTest {
         assertEquals(listOf(false, false), calls)
     }
 
-    @Test fun hidingAndShowingKeepsScrollPositionAndReloadsCompletedContent() {
+    @Test fun hidingAndShowingKeepsScrollPositionWithoutReloadingCompletedContent() {
         val calls = mutableListOf<Boolean>()
         val rows = (1..30).map { Agent("$it", "Agent $it") }
         val vm = viewModel {
@@ -96,9 +96,9 @@ class AgentsRouteTest {
         assertEquals(1, calls.size)
         compose.runOnIdle { visible.value = true }
         compose.waitForIdle()
-        compose.waitUntil(5_000) { calls.size == 2 }
+        assertEquals(1, calls.size)
         compose.onNodeWithTag("agents:row:30").assertIsDisplayed()
-        assertEquals(listOf(false, false), calls)
+        assertEquals(listOf(false), calls)
     }
 
     private fun viewModel(load: suspend (Boolean) -> List<Agent>) = AgentsViewModel(object : AgentsRepository {

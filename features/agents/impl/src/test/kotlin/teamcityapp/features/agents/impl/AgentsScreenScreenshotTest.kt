@@ -69,6 +69,7 @@ class AgentsScreenScreenshotTest(private val stateName: String, private val vari
     @Test fun rendersState() {
         val rows = listOf(Agent("1", "Linux build agent"), Agent("2", "Windows build agent with a very long name that wraps across multiple lines"), Agent("3", "macOS build agent"))
         val state = when (stateName) {
+            "updates_available" -> AgentsUiState(list = ListUiState.Content(rows), updatesAvailable = true)
             "loading" -> AgentsUiState()
             "error" -> AgentsUiState(list = ListUiState.Error)
             "empty_connected" -> AgentsUiState(list = ListUiState.Empty())
@@ -118,7 +119,7 @@ class AgentsScreenScreenshotTest(private val stateName: String, private val vari
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty_connected", "empty_disconnected", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "long_content").flatMap { state ->
+            listOf("loading", "error", "empty_connected", "empty_disconnected", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "updates_available", "long_content").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

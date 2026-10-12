@@ -24,13 +24,21 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.ErrorNotice
+import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -48,6 +56,8 @@ fun TeamCityListContainer(
     loading: @Composable () -> Unit = { TeamCityListLoading() },
     empty: @Composable () -> Unit,
     refreshFailureMessage: String? = null,
+    updatesAvailable: Boolean = false,
+    onApplyUpdates: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Surface(modifier) {
@@ -67,10 +77,8 @@ fun TeamCityListContainer(
                         is ListUiState.Empty -> state.refreshFailed
                         is ListUiState.Content -> state.refreshFailed
                     }
-                    Column(Modifier.fillMaxSize()) {
-                        if (refreshFailed) {
-                            RefreshFailure(onRetry, enabled = !refreshing, message = refreshFailureMessage, maxHeight = failureMaxHeight)
-                        }
+                    var failureDismissed by rememberSaveable(refreshFailed) { mutableStateOf(false) }
+                    Box(Modifier.fillMaxSize()) {
                         val refreshState = rememberPullToRefreshState()
                         PullToRefreshBox(
                             isRefreshing = refreshing,
@@ -83,7 +91,7 @@ fun TeamCityListContainer(
                                     modifier = Modifier.align(Alignment.TopCenter)
                                 )
                             },
-                            modifier = Modifier.weight(1f).fillMaxWidth()
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             if (state is ListUiState.Empty) {
                                 // A scrollable empty surface lets the same pull gesture reload an empty list.
@@ -97,6 +105,18 @@ fun TeamCityListContainer(
                                 content()
                             }
                         }
+                        if (refreshFailed && !failureDismissed) {
+                            RefreshFailure(onRetry, enabled = !refreshing, message = refreshFailureMessage, maxHeight = failureMaxHeight, onDismiss = { failureDismissed = true }, modifier = Modifier.align(Alignment.TopCenter))
+                        } else if (!refreshFailed && updatesAvailable) {
+                            ErrorNotice(
+                                message = stringResource(R.string.list_updates_available),
+                                onRetry = onApplyUpdates,
+                                actionLabel = stringResource(R.string.list_action_update),
+                                modifier = Modifier.align(Alignment.TopCenter).floatingNotice(failureMaxHeight).testTag("list:updates"),
+                                tonal = true,
+                                leadingIcon = ThemeR.drawable.ic_refresh_24dp
+                            )
+                        }
                     }
                 }
             }
@@ -105,15 +125,21 @@ fun TeamCityListContainer(
 }
 
 @Composable
-private fun RefreshFailure(onRetry: () -> Unit, enabled: Boolean, message: String?, maxHeight: androidx.compose.ui.unit.Dp) {
+private fun RefreshFailure(onRetry: () -> Unit, enabled: Boolean, message: String?, maxHeight: androidx.compose.ui.unit.Dp, onDismiss: () -> Unit, modifier: Modifier) {
     ErrorNotice(
         message = message ?: stringResource(R.string.list_refresh_failed),
         onRetry = onRetry,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).heightIn(max = maxHeight),
+        modifier = modifier.floatingNotice(maxHeight).testTag("list:refresh-failure"),
         actionLabel = stringResource(R.string.list_action_retry),
-        enabled = enabled
+        enabled = enabled,
+        onDismiss = onDismiss,
+        tonal = true
     )
 }
+
+@Composable
+private fun Modifier.floatingNotice(maxHeight: androidx.compose.ui.unit.Dp): Modifier = widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxWidth()
+    .padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).heightIn(max = maxHeight).shadow(6.dp, MaterialTheme.shapes.medium)
 
 @Preview
 @Composable

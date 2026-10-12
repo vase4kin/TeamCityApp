@@ -30,8 +30,51 @@ data class HomeUiState(
     val badges: Map<HomeTab, HomeBadge> = HomeTab.entries.filter { it != HomeTab.Projects }.associateWith { HomeBadge.Loading },
     val query: HomeQuery? = null,
     val prompt: HomePromptUi? = null,
-    val onboardingFailed: Boolean = false
+    val onboardingFailed: Boolean = false,
+    val retryAttempt: Long = 0
 ) {
+    val isActivity: Boolean get() = selected in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)
+
+    @get:StringRes val titleRes: Int get() = when (selected) {
+        HomeTab.Projects -> R.string.home_projects
+        HomeTab.Favorites -> R.string.home_favorites
+        else -> R.string.home_activity
+    }
+    val accountInitials: String? get() = query?.account?.userName?.trim()?.takeIf { it.isNotEmpty() }
+        ?.split(Regex("[\\s._-]+"))?.filter { it.isNotEmpty() }?.takeIf { it.isNotEmpty() }?.let { parts ->
+            if (parts.size > 1) "${parts.first().first()}${parts.last().first()}".uppercase() else parts.first().take(2).uppercase()
+        }
+    val activityBadge: HomeBadge get() {
+        val counts = listOf(HomeTab.Running, HomeTab.Queue).map { badges[it] ?: HomeBadge.Loading }
+        return when {
+            counts.any { it is HomeBadge.Failed } -> HomeBadge.Failed()
+            counts.any { it is HomeBadge.Loading } -> HomeBadge.Loading
+            else -> HomeBadge.Count(counts.sumOf { (it as HomeBadge.Count).value.toLong() }.coerceIn(0, Int.MAX_VALUE.toLong()).toInt())
+        }
+    }
+
+    @get:StringRes val filterSummaryRes: Int? get() = when (selected) {
+        HomeTab.Running -> when (query?.runningFilter) {
+            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.RunningFavorites -> R.string.home_filter_favorites
+            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.RunningAll -> R.string.home_filter_all_builds
+            else -> null
+        }
+
+        HomeTab.Queue -> when (query?.queueFilter) {
+            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.QueuedFavorites -> R.string.home_filter_favorites
+            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.QueuedAll -> R.string.home_filter_all_builds
+            else -> null
+        }
+
+        HomeTab.Agents -> when (query?.agentsFilter) {
+            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.AgentsConnected -> R.string.home_filter_connected
+            teamcityapp.features.filter_bottom_sheet.api.QuickFilter.AgentsDisconnected -> R.string.home_filter_disconnected
+            else -> null
+        }
+
+        else -> null
+    }
+
     @get:StringRes val retryMessageRes: Int? get() = when {
         onboardingFailed -> R.string.home_onboarding_failed
         badges.values.any { it is HomeBadge.Failed } -> R.string.home_counts_failed
@@ -43,7 +86,7 @@ data class HomeUiState(
     @get:StringRes val fabLabelRes: Int get() = if (selected == HomeTab.Favorites) R.string.home_add_favorite else R.string.home_filter
 }
 internal fun HomePrompt.ui() = when (this) {
-    HomePrompt.Drawer -> HomePromptUi(this, R.string.title_onboarding_navigation_drawer, R.string.text_onboarding_navigation_drawer)
+    HomePrompt.Drawer -> HomePromptUi(this, R.string.home_account_tip_title, R.string.home_account_tip_description)
     HomePrompt.Favorites -> HomePromptUi(this, R.string.title_onboarding_add_fav, R.string.text_onboarding_add_fav)
     HomePrompt.Running -> HomePromptUi(this, R.string.title_onboarding_filter, R.string.text_onboarding_filter)
     HomePrompt.Queue -> HomePromptUi(this, R.string.title_onboarding_filter_queued, R.string.text_onboarding_filter_queued)

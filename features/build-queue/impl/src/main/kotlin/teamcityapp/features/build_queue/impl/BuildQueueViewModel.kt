@@ -33,7 +33,7 @@ class BuildQueueViewModel @Inject constructor(repository: BuildQueueRepository) 
     private val queries = repository.query.map { query ->
         query.copy(favoriteConfigurationIds = if (query.filter == BuildQueueFilter.All) emptyList() else query.favoriteConfigurationIds.toList())
     }
-    private val loader = RefreshableListLoader(queries) { query, forceRefresh ->
+    private val loader = RefreshableListLoader(queries, pollIntervalMillis = 30_000) { query, forceRefresh ->
         if (query.filter == BuildQueueFilter.Favorites && query.favoriteConfigurationIds.isEmpty()) {
             emptyList()
         } else {
@@ -43,20 +43,9 @@ class BuildQueueViewModel @Inject constructor(repository: BuildQueueRepository) 
             }
         }
     }
-    val state = loader.queryState.map { (query, rows) -> BuildQueueUiState(query, rows) }
+    val state = loader.pollingState.map { (query, rows, updates) -> BuildQueueUiState(query, rows, updates) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), BuildQueueUiState())
-    private var paused = false
-
     fun refresh() = loader.refresh()
     fun retry() = loader.retry()
-    fun onResumed() {
-        if (paused) loader.reload()
-        paused = false
-    }
-    fun onPaused() {
-        paused = true
-    }
-    fun onConfigurationRecreation(wasVisible: Boolean) {
-        if (wasVisible) paused = false
-    }
+    fun applyUpdates() = loader.applyUpdates()
 }

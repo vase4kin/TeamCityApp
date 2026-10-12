@@ -86,9 +86,8 @@ class DrawerTest {
     }
     private fun launch() = ActivityScenario.launch<MainActivity>(Intent(app, MainActivity::class.java).setClassName(app, IncomingDestinationResolver.HOME_COMPONENT))
     private fun open() {
-        val description = app.getString(teamcityapp.features.navigation.impl.R.string.navigation_open_drawer)
-        compose.waitUntil(5_000) { runCatching { compose.onNodeWithContentDescription(description).assertIsDisplayed() }.isSuccess }
-        compose.onNodeWithContentDescription(description).performClick()
+        compose.waitUntil(5_000) { runCatching { compose.onNodeWithTag("home:account").assertIsDisplayed() }.isSuccess }
+        compose.onNodeWithTag("home:account").performClick()
         awaitRows()
     }
     private fun awaitRows(url: String = first) {
@@ -131,7 +130,7 @@ class DrawerTest {
             scenario.onActivity {
                 assertEquals(key, it.navigationSnapshot!!.entries.last().destination)
                 assertEquals(HomeDestination(), it.navigationSnapshot!!.entries.first().destination)
-                assertEquals(2, it.navigationSnapshot!!.entries.size)
+                assertEquals(3, it.navigationSnapshot!!.entries.size)
                 assertTrue(it.supportFragmentManager.fragments.isEmpty())
             }
         }
@@ -173,7 +172,7 @@ class DrawerTest {
         }
     }
 
-    @Test fun sheetSurvivesHostRecreationWithAllActions() {
+    @Test fun accountSurvivesHostRecreationWithAllActions() {
         launch().use { scenario ->
             open()
             scenario.recreate()
@@ -195,7 +194,7 @@ class DrawerTest {
         }
     }
 
-    @Test fun returningToSheetReadsNewAccounts() {
+    @Test fun returningToAccountReadsNewAccounts() {
         launch().use { scenario ->
             open()
             scenario.moveToState(Lifecycle.State.CREATED)
@@ -207,16 +206,15 @@ class DrawerTest {
         }
     }
 
-    @Test fun sheetScrollsManyAccountsToFooterAndSupportsDrag() {
+    @Test fun accountScrollsManyAccountsToFooterAndSupportsBack() {
         (1..20).forEach { storage.saveGuestUserAccountAndSetItAsActive("https://teamcity.example/server-$it", it % 2 == 0) }
         launch().use { scenario ->
             open()
             compose.onNodeWithTag("drawer:list").performScrollToKey("footer")
             compose.onNodeWithTag("drawer:privacy").performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("drawer:rate").assertIsDisplayed()
-            compose.onNodeWithTag("navigation:sheet").performTouchInput {
-                swipe(Offset(width / 2f, 5f), Offset(width / 2f, height.toFloat()), durationMillis = 300)
-            }
+            compose.onNodeWithTag("navigation:sheet").assertDoesNotExist()
+            compose.onNodeWithTag("account:back").performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("drawer:list").fetchSemanticsNodes().isEmpty() }
             scenario.onActivity { assertEquals(1, it.navigationSnapshot!!.entries.size) }
         }

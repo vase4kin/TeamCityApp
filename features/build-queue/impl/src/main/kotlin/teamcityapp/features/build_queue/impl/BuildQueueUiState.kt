@@ -25,7 +25,8 @@ import teamcityapp.libraries.list_state.ListUiState
 
 data class BuildQueueUiState(
     val query: BuildQueueQuery = BuildQueueQuery(accountKey = ""),
-    val list: ListUiState<BuildLaunchData> = ListUiState.Loading
+    val list: ListUiState<BuildLaunchData> = ListUiState.Loading,
+    val updatesAvailable: Boolean = false
 ) {
     val rows: List<BuildRowUiState> = (list as? ListUiState.Content)?.items.orEmpty().map(::BuildRowUiState)
 

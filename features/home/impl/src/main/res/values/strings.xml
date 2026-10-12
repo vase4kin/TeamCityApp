@@ -39,11 +39,20 @@
 
 
     <string name="home_projects">Projects</string>
+    <string name="home_activity">Activity</string>
+    <string name="home_open_account">Open account</string>
+    <string name="home_open_named_account">Open account for %1$s</string>
+    <string name="home_account_tip_title">Your accounts and preferences</string>
+    <string name="home_account_tip_description">Tap the account icon to switch accounts, manage servers and change app settings.</string>
+    <string name="home_filter_favorites">Favorite configurations</string>
+    <string name="home_filter_all_builds">All configurations</string>
+    <string name="home_filter_connected">Connected agents</string>
+    <string name="home_filter_disconnected">Disconnected agents</string>
     <string name="home_favorites">Favorites</string>
     <string name="home_running">Running</string>
     <string name="home_queue">Queue</string>
     <string name="home_agents">Agents</string>
-    <string name="home_filter">Filter</string>
+    <string name="home_filter">Filters</string>
     <string name="home_add_favorite">Add to favorites</string>
     <string name="home_count_failed">Count unavailable</string>
     <string name="home_retry_counts">Retry counts</string>

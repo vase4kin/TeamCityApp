@@ -88,10 +88,11 @@ class HomeStartupNavigationTest {
     }
     private fun awaitRoot() = awaitTag("navigation:row:project:id")
     private fun openDrawer() {
-        compose.onNodeWithTag("navigation:up", useUnmergedTree = true).performClick()
+        compose.onNodeWithTag("home:account", useUnmergedTree = true).performClick()
         awaitTag("drawer:list")
     }
     private fun select(tab: HomeTab) {
+        if (tab in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)) compose.onNodeWithTag("home:tab:Activity").performClick()
         compose.onNodeWithTag("home:tab:${tab.name}").performClick().assertIsSelected()
     }
     private fun encoded(key: androidx.navigation3.runtime.NavKey) = Intent(app, MainActivity::class.java).putExtra(MainActivity.EXTRA_DESTINATION, registry.encodeDestination(key))
@@ -113,18 +114,19 @@ class HomeStartupNavigationTest {
             compose.onNodeWithTag("home:dismiss-prompt").performClick()
             compose.waitUntil(10_000) { prefs.getBoolean("RBFilter", false) }
             tips.filter { it.first != HomeTab.Running }.forEach { (tab, key) ->
+                if (tab in listOf(HomeTab.Running, HomeTab.Queue, HomeTab.Agents)) compose.onNodeWithTag("home:tab:Activity").performClick()
                 compose.onNodeWithTag("home:tab:${tab.name}").performClick()
                 awaitTag("home:coachmark:${tab.name}")
                 assertFalse(prefs.getBoolean(key, false))
-                compose.onNodeWithTag("home:fab").assertDoesNotExist()
+                compose.onNodeWithTag("home:action").assertDoesNotExist()
                 scenario.recreate()
                 awaitTag("home:coachmark:${tab.name}")
                 compose.onNodeWithTag("home:dismiss-prompt").performClick()
                 compose.waitUntil(10_000) { prefs.getBoolean(key, false) }
-                awaitTag("home:fab")
+                awaitTag(if (tab == HomeTab.Favorites) "favorites:add" else "home:action")
             }
             scenario.recreate()
-            awaitTag("home:fab")
+            awaitTag("home:action")
             compose.onAllNodesWithTag("home:coachmark:Agents").assertCountEquals(0)
         }
     }
@@ -133,7 +135,7 @@ class HomeStartupNavigationTest {
         val alias = Intent().setComponent(ComponentName(app.packageName, "teamcityapp.features.splash.view.SplashActivity"))
         ActivityScenario.launch<MainActivity>(alias).use { scenario ->
             awaitRoot()
-            HomeTab.entries.forEach { compose.onNodeWithTag("home:tab:${it.name}").assertIsDisplayed() }
+            listOf("Projects", "Favorites", "Activity").forEach { compose.onNodeWithTag("home:tab:$it").assertIsDisplayed() }
             scenario.onActivity {
                 assertEquals(MainActivity::class.java, it.javaClass)
                 assertTrue(it.supportFragmentManager.fragments.isEmpty())
@@ -161,11 +163,11 @@ class HomeStartupNavigationTest {
             verify(service, times(1)).listBuildTypes("_Root")
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            verify(service, times(2)).listAgents(false, null, null)
+            verify(service, times(1)).listAgents(false, null, null)
             scenario.recreate()
             awaitTag("agents:list")
             compose.onNodeWithTag("home:tab:Agents").assertIsSelected()
-            verify(service, times(2)).listAgents(false, null, null)
+            verify(service, times(1)).listAgents(false, null, null)
         }
     }
 
@@ -188,12 +190,14 @@ class HomeStartupNavigationTest {
         }
     }
 
-    @Test fun drawerSettingsReplacesTheSheetAndBackRestoresTheHomeTab() {
+    @Test fun accountSettingsReturnsToAccountAndThenTheHomeTab() {
         launch().use { scenario ->
             awaitRoot()
             openDrawer()
             compose.onNodeWithTag("drawer:settings").performScrollTo().performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithText("Light theme").fetchSemanticsNodes().isNotEmpty() }
+            pressBack()
+            awaitTag("account:back")
             pressBack()
             awaitRoot()
             compose.onNodeWithTag("drawer:list").assertDoesNotExist()
@@ -206,7 +210,7 @@ class HomeStartupNavigationTest {
             awaitRoot()
             select(HomeTab.Agents)
             awaitTag("agents:list")
-            compose.onNodeWithTag("home:fab").performClick()
+            compose.onNodeWithTag("home:action").performClick()
             awaitTag("quick-filter:content")
             scenario.recreate()
             awaitTag("quick-filter:content")
@@ -238,7 +242,7 @@ class HomeStartupNavigationTest {
         assertTrue(persisted)
         ActivityScenario.launch<MainActivity>(encoded(HomeDestination(HomeTab.Agents))).use { scenario ->
             awaitTag("agents:list")
-            compose.onNodeWithContentDescription(app.getString(teamcityapp.features.agents.impl.R.string.agents_open_drawer)).performClick()
+            compose.onNodeWithTag("home:account").performClick()
             awaitTag("drawer:list")
             compose.onNodeWithTag("drawer:account:${Mocks.URL.length}:${Mocks.URL}:Guest user").performClick()
             awaitRoot()

@@ -20,6 +20,7 @@ import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 
 interface FavoritesRouter {
+    fun openProjects()
     fun openDrawer()
     fun openProject(project: ProjectReference)
     fun openConfiguration(configuration: BuildConfigurationSummary)
