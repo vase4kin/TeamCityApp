@@ -17,6 +17,7 @@
 package teamcityapp.features.favorites.impl
 
 import android.app.Application
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.assertEquals
@@ -40,6 +41,34 @@ class FavoritesScreenTest {
     private val first = ProjectReference("first", "Same title")
     private val second = ProjectReference("second", "Same title")
     private val rows = listOf(BuildConfigurationSummary("1", "Android", "Description", first), BuildConfigurationSummary("2", "Release", null, second))
+
+    @Test fun appBarStaysPinnedAndChangesColorOnlyWhileScrolled() {
+        var flat = androidx.compose.ui.graphics.Color.Unspecified
+        var raised = androidx.compose.ui.graphics.Color.Unspecified
+        compose.setContent {
+            TeamCityTheme {
+                flat = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                raised = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
+                FavoritesScreen(FavoritesUiState(ListUiState.Content((1..30).map { BuildConfigurationSummary("$it", "Configuration $it", null, ProjectReference("root", "Project")) })), {}, {}, {}, {}, {})
+            }
+        }
+        val bar = compose.onNodeWithTag("screen:app-bar")
+        val bounds = bar.fetchSemanticsNode().boundsInRoot
+        fun assertBar(expected: androidx.compose.ui.graphics.Color) {
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.waitForIdle()
+            bar.assertIsDisplayed()
+            assertEquals(bounds, bar.fetchSemanticsNode().boundsInRoot)
+            val pixels = bar.captureToImage().toPixelMap()
+            assertEquals(expected, pixels[pixels.width - 4, pixels.height / 2])
+        }
+        assertBar(flat)
+        val list = compose.onNodeWithTag("favorites:list")
+        list.performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+        assertBar(raised)
+        repeat(3) { list.performTouchInput { swipeDown(startY = height * .35f, endY = height * .65f, durationMillis = 1_000) } }
+        assertBar(flat)
+    }
 
     @Test fun sameNamedProjectsRemainDistinctAndHeadersNavigateToTheirOwnId() {
         val projects = mutableListOf<ProjectReference>()

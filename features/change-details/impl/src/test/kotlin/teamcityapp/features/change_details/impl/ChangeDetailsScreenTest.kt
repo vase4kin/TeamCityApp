@@ -22,6 +22,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -44,6 +45,34 @@ import teamcityapp.libraries.theme.TeamCityTheme
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 class ChangeDetailsScreenTest {
     @get:Rule val compose = createComposeRule()
+
+    @Test fun appBarStaysPinnedAndChangesColorOnlyWhileScrolled() {
+        var flat = androidx.compose.ui.graphics.Color.Unspecified
+        var raised = androidx.compose.ui.graphics.Color.Unspecified
+        compose.setContent {
+            TeamCityTheme {
+                flat = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                raised = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
+                ChangeDetailsScreen(ChangeDetailsUiState.Content(fixture.copy(files = (1..60).map { ChangedFile("File $it.kt", "changed") })), {}, { _, _ -> }, {})
+            }
+        }
+        val bar = compose.onNodeWithTag("screen:app-bar")
+        val bounds = bar.fetchSemanticsNode().boundsInRoot
+        fun assertBar(expected: androidx.compose.ui.graphics.Color) {
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.waitForIdle()
+            bar.assertIsDisplayed()
+            assertEquals(bounds, bar.fetchSemanticsNode().boundsInRoot)
+            val pixels = bar.captureToImage().toPixelMap()
+            assertEquals(expected, pixels[pixels.width - 4, pixels.height / 2])
+        }
+        assertBar(flat)
+        val list = compose.onNodeWithTag("change_details:list")
+        list.performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+        assertBar(raised)
+        repeat(3) { list.performTouchInput { swipeDown(startY = height * .35f, endY = height * .65f, durationMillis = 1_000) } }
+        assertBar(flat)
+    }
 
     @Test fun cardAndFilesRenderAndPlatformActionsReceiveExactValues() {
         var url: String? = null
@@ -83,18 +112,6 @@ class ChangeDetailsScreenTest {
         assertEquals(listOf("same.kt", "same.kt"), selected)
         compose.onNodeWithText("added").assertIsDisplayed()
         compose.onNodeWithText("removed").assertIsDisplayed()
-    }
-
-    @Test fun scrollingHidesToolbarAndScrollingBackRestoresIt() {
-        val data = fixture.copy(files = (0..60).map { ChangedFile("File $it.kt", "changed") })
-        compose.setContent { TeamCityTheme { ChangeDetailsScreen(ChangeDetailsUiState.Content(data), {}, { _, _ -> }, {}) } }
-        compose.onNodeWithText("Change details").assertIsDisplayed()
-        compose.onNodeWithTag("change_details:list").performTouchInput { swipeUp() }
-        compose.waitForIdle()
-        compose.onNodeWithText("Change details").assertIsNotDisplayed()
-        compose.onNodeWithTag("change_details:list").performTouchInput { swipeDown() }
-        compose.waitForIdle()
-        compose.onNodeWithText("Change details").assertIsDisplayed()
     }
 
     @Test fun contentUsesProvidedColorsAndTypography() {

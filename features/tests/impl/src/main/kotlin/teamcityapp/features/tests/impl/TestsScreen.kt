@@ -34,6 +34,7 @@ import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
 
 internal enum class TestsAppendState { Idle, Loading, Error }
@@ -56,6 +57,7 @@ internal fun TestsScreen(
     onAppendRetry: () -> Unit = onRetry,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberTeamCityLazyListState()
     Surface(modifier.fillMaxSize()) {
         Column {
             if (presentation.showFilters) {
@@ -85,7 +87,8 @@ internal fun TestsScreen(
             ) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                     LazyColumn(
-                        Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("tests:list"),
+                        state = listState,
+                        modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("tests:list"),
                         contentPadding = PaddingValues(vertical = TeamCityDimensions.smallSpacing)
                     ) {
                         items(itemCount, key = { itemPeek(it)?.test?.id ?: "tests:placeholder:$it" }, contentType = { "test" }) { index ->

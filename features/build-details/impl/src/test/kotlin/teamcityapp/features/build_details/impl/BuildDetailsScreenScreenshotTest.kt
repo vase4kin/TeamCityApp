@@ -137,10 +137,12 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
                     message?.let { snackbar.showSnackbar(it, action, duration = SnackbarDuration.Indefinite) }
                 }
                 if (stateName.startsWith("section_")) {
-                    BuildDetailsSectionScreen(BuildDetailsSection.valueOf(stateName.removePrefix("section_")), "42", "Build Android application", {}) { Surface(Modifier.fillMaxSize()) {} }
+                    BuildDetailsSectionScreen(BuildDetailsSection.valueOf(stateName.removePrefix("section_").removeSuffix("_scrolled")), "42", "Build Android application", {}) { if (stateName.endsWith("_scrolled")) AppBarScrollableTestContent() else Surface(Modifier.fillMaxSize()) {} }
                 } else {
                     BuildDetailsScreen(state, {}, {}, {}, {}, snackbar) {
-                        if (stateName == "floating_content") {
+                        if (stateName == "overview_scrolled") {
+                            AppBarScrollableTestContent()
+                        } else if (stateName == "floating_content") {
                             val clearance = LocalFloatingActionClearance.current
                             androidx.compose.foundation.lazy.LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(bottom = clearance)) {
                                 items(20) { index ->
@@ -163,7 +165,20 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName.endsWith("_scrolled")) {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("details:scroll").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+        }
         compose.onRoot().captureRoboImage("details_${stateName}_${variant.name}.png")
+        if (stateName.endsWith("_scrolled")) {
+            compose.onNodeWithTag("details:scroll").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onRoot().captureRoboImage("details_${stateName}_${variant.name}_returned.png")
+        }
     }
     companion object {
         private val snapshotSections = listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests, BuildDetailsSection.Artifacts, BuildDetailsSection.Parameters, BuildDetailsSection.Snapshots)
@@ -173,7 +188,7 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         fun cases(): List<Array<Any>> = listOf(false, true).flatMap { dark ->
             val theme = if (dark) "dark" else "light"
             val variants = listOf(Variant("phone_$theme", 360, 800, dark, 1f), Variant("tablet_$theme", 1000, 700, dark, 1f), Variant("large_font_$theme", 360, 800, dark, 1.5f))
-            (listOf("finished", "running", "queued", "floating_content", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.map { "section_${it.name}" } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted", "notice_opening_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
+            (listOf("finished", "running", "queued", "floating_content", "overview_scrolled", "prompt_Share_saving", "prompt_Share_failed") + snapshotSections.flatMap { listOf("section_${it.name}", "section_${it.name}_scrolled") } + listOf("dialog_Stop_own", "dialog_Stop_other", "dialog_Remove_own", "dialog_Remove_other", "dialog_Restart") + BuildDetailsOperation.entries.map { "progress_${it.name}" } + BuildDetailsPrompt.entries.map { "prompt_${it.name}" } + listOf("counts_loading", "counts_partial_failed", "counts_all_failed", "tips_failed", "notice_stopped", "notice_removed", "notice_restarted", "notice_opening_failed")).flatMap { state -> variants.map { arrayOf<Any>(state, it) } }
         }
     }
 }

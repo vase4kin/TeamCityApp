@@ -17,7 +17,9 @@
 package teamcityapp.features.navigation.impl
 
 import android.app.Application
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
+import androidx.compose.ui.test.junit4.StateRestorationTester
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.*
 import org.junit.Rule
@@ -40,6 +42,37 @@ class NavigationScreenTest {
     @get:Rule val compose = createComposeRule()
     private val project = ProjectReference("project", "TeamCity")
     private val entries = listOf(NavigationEntry.Project(project, "Project description"), NavigationEntry.Configuration(BuildConfigurationSummary("build", "Android", null, project)))
+
+    @Test fun appBarStaysPinnedAndChangesColorOnlyWhileScrolled() {
+        var flat = androidx.compose.ui.graphics.Color.Unspecified
+        var raised = androidx.compose.ui.graphics.Color.Unspecified
+        val restoration = StateRestorationTester(compose)
+        restoration.setContent {
+            TeamCityTheme {
+                flat = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                raised = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
+                NavigationScreen(NavigationUiState(ProjectReference("root", "Projects"), ListUiState.Content((1..30).map { NavigationEntry.Project(ProjectReference("$it", "Project $it"), null) })), {}, {}, {}, {}, {}, {})
+            }
+        }
+        val bar = compose.onNodeWithTag("screen:app-bar")
+        val bounds = bar.fetchSemanticsNode().boundsInRoot
+        fun assertBar(expected: androidx.compose.ui.graphics.Color) {
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.waitForIdle()
+            bar.assertIsDisplayed()
+            assertEquals(bounds, bar.fetchSemanticsNode().boundsInRoot)
+            val pixels = bar.captureToImage().toPixelMap()
+            assertEquals(expected, pixels[pixels.width - 4, pixels.height / 2])
+        }
+        assertBar(flat)
+        val list = compose.onNodeWithTag("navigation:list")
+        list.performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+        assertBar(raised)
+        restoration.emulateSavedInstanceStateRestore()
+        assertBar(raised)
+        repeat(3) { list.performTouchInput { swipeDown(startY = height * .35f, endY = height * .65f, durationMillis = 1_000) } }
+        assertBar(flat)
+    }
 
     @Test fun projectAndConfigurationRowsHaveIndependentActionsAndOptionalDescriptions() {
         val clicked = mutableListOf<NavigationEntry>()

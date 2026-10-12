@@ -17,6 +17,7 @@
 package teamcityapp.features.artifacts.impl
 
 import android.app.Application
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import org.junit.Assert.*
@@ -39,6 +40,34 @@ class ArtifactsScreenTest {
     private val folder = Artifact("folder", "/folder", childrenHref = "/children")
     private val file = Artifact("archive.zip", "/zip", 2048, "/content", "/zip/children")
     private val rows = ListUiState.Content(listOf(folder, file))
+
+    @Test fun appBarStaysPinnedAndChangesColorOnlyWhileScrolled() {
+        var flat = androidx.compose.ui.graphics.Color.Unspecified
+        var raised = androidx.compose.ui.graphics.Color.Unspecified
+        compose.setContent {
+            TeamCityTheme {
+                flat = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                raised = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
+                ArtifactsScreen(ArtifactsUiState("Folder", ListUiState.Content((1..30).map { Artifact("File $it", "/$it", 1000, "/content/$it") })), true, null, {}, {}, {}, {}, {}, {}, {}, {})
+            }
+        }
+        val bar = compose.onNodeWithTag("screen:app-bar")
+        val bounds = bar.fetchSemanticsNode().boundsInRoot
+        fun assertBar(expected: androidx.compose.ui.graphics.Color) {
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.waitForIdle()
+            bar.assertIsDisplayed()
+            assertEquals(bounds, bar.fetchSemanticsNode().boundsInRoot)
+            val pixels = bar.captureToImage().toPixelMap()
+            assertEquals(expected, pixels[pixels.width - 4, pixels.height / 2])
+        }
+        assertBar(flat)
+        val list = compose.onNodeWithTag("artifacts:list")
+        list.performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+        assertBar(raised)
+        repeat(3) { list.performTouchInput { swipeDown(startY = height * .35f, endY = height * .65f, durationMillis = 1_000) } }
+        assertBar(flat)
+    }
 
     @Test fun rowsDispatchClickAndLongClickWithTheirExactMetadata() {
         var clicked: Artifact? = null

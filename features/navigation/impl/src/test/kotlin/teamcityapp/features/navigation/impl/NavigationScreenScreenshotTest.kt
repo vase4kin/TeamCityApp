@@ -96,11 +96,23 @@ class NavigationScreenScreenshotTest(private val stateName: String, private val 
         compose.onRoot().captureRoboImage("navigation_${stateName}_${variant.name}.png")
         if (stateName == "long_content") {
             compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("navigation:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("navigation_${stateName}_${variant.name}_scrolled.png")
+            compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("navigation:list").performScrollToNode(hasTestTag("navigation:row:configuration:30"))
             compose.mainClock.autoAdvance = false
             compose.mainClock.advanceTimeBy(100)
             compose.onNodeWithTag("navigation:row:configuration:30").assertIsDisplayed()
             compose.onRoot().captureRoboImage("navigation_${stateName}_${variant.name}_bottom.png")
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("navigation:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+            compose.onRoot().captureRoboImage("navigation_${stateName}_${variant.name}_returned.png")
         }
     }
 

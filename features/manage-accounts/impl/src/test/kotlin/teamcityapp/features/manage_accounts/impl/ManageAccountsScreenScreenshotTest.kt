@@ -102,6 +102,7 @@ class ManageAccountsScreenScreenshotTest(private val stateName: String, private 
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         if (stateName == "scrolled") {
+            compose.onNodeWithTag("accounts:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
             compose.onNodeWithTag("accounts:list").performScrollToIndex(accounts.lastIndex)
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
@@ -111,6 +112,13 @@ class ManageAccountsScreenScreenshotTest(private val stateName: String, private 
             captureScreenRoboImage("$name.png")
         } else {
             compose.onRoot().captureRoboImage("$name.png")
+            if (stateName == "scrolled") {
+                compose.onNodeWithTag("accounts:list").performScrollToIndex(0)
+                compose.mainClock.advanceTimeBy(500)
+                compose.waitForIdle()
+                compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+                compose.onRoot().captureRoboImage("${name}_returned.png")
+            }
             if (stateName == "remove_error") {
                 compose.onNodeWithTag("${accountTag(secondary.id)}:ssl").performScrollTo().assertIsDisplayed()
                 compose.mainClock.advanceTimeBy(500)

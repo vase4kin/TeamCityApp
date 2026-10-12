@@ -75,7 +75,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             historyBuild("running", "running").copy(personal = true, pinned = true, statusText = "Running Android instrumented tests", branchName = "feature/lists"),
             historyBuild("42").copy(status = "FAILURE", statusText = "Compilation failed in the app integration module", branchName = "main"),
             historyBuild("43").copy(startDate = "20261009T102030Z", statusText = "All 214 tests passed")
-        ) + if (stateName.startsWith("toolbar_")) (44..63).map { historyBuild(it.toString()).copy(startDate = "20261008T102030Z") } else emptyList()
+        ) + if ((stateName.startsWith("toolbar_") || stateName.startsWith("app_bar_"))) (44..63).map { historyBuild(it.toString()).copy(startDate = "20261008T102030Z") } else emptyList()
         val state: ListUiState<BuildLaunchData> = when (stateName) {
             "loading" -> ListUiState.Loading
             "error" -> ListUiState.Error
@@ -146,9 +146,17 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
             compose.mainClock.advanceTimeBy(500)
             compose.waitForIdle()
         }
+        if (stateName.startsWith("app_bar_")) {
+            compose.mainClock.autoAdvance = true
+            compose.onNodeWithTag("history:list").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+            if (stateName == "app_bar_returned") compose.onNodeWithTag("history:list").performScrollToIndex(0)
+            compose.mainClock.advanceTimeBy(500)
+            compose.waitForIdle()
+            compose.onNodeWithTag("screen:app-bar").assertIsDisplayed()
+        }
         val roots = compose.onAllNodes(isRoot())
         roots[roots.fetchSemanticsNodes().lastIndex].captureRoboImage("history_${stateName}_${variant.name}.png")
-        if (!stateName.startsWith("toolbar_") && state is ListUiState.Content && variant.fontScale > 1f && opening == QueuedBuildState.Idle && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
+        if (!(stateName.startsWith("toolbar_") || stateName.startsWith("app_bar_")) && state is ListUiState.Content && variant.fontScale > 1f && opening == QueuedBuildState.Idle && (onboarding !is OnboardingState.Available || onboarding.prompt == null)) {
             compose.mainClock.autoAdvance = true
             if (append == HistoryAppendState.Idle) {
                 compose.onNodeWithTag("history:list").performScrollToNode(hasTestTag("history:build:43"))
@@ -177,7 +185,7 @@ class BuildHistoryScreenScreenshotTest(private val stateName: String, private va
                 "loading", "error", "empty", "empty_refreshing", "empty_refresh_failed", "content", "refreshing", "refresh_failed", "append_loading", "append_failed",
                 "favorite_loading", "favorite_unavailable", "favorite_updating", "favorite_update_failed", "favorite_selected", "onboarding_loading", "onboarding_unavailable",
                 "prompt_run", "prompt_filter", "prompt_favorite", "prompt_saving", "prompt_save_failed", "queued_loading", "queued_failed",
-                "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_collapsed", "toolbar_returned"
+                "notice_queued", "notice_filters", "notice_favorite_added", "notice_favorite_removed", "toolbar_expanded", "toolbar_collapsed", "toolbar_returned", "app_bar_scrolled", "app_bar_returned"
             ).flatMap { name ->
                 variants.map { arrayOf<Any>(name, it) }
             }

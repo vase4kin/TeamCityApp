@@ -46,6 +46,7 @@ import teamcityapp.features.manage_accounts.api.ManagedAccountId
 import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.*
 import teamcityapp.libraries.theme.R as ThemeR
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 
 internal fun accountTag(id: ManagedAccountId) = "accounts:row:${id.serverUrl}:${id.userName}"
 
@@ -66,9 +67,9 @@ fun ManageAccountsScreen(
     TeamCityScreen(
         stringResource(R.string.title_activity_account_list),
         onClose,
-        navigation = ScreenNavigation.Back,
-        scrollToolbarWithContent = true
+        navigation = ScreenNavigation.Back
     ) { modifier ->
+        val listState = rememberTeamCityLazyListState()
         BoxWithConstraints(modifier.testTag("accounts:body")) {
             val removalFailed = state.removal is AccountRemovalUiState.Error
             val reserveActionLane = removalFailed || state.accounts == AccountListUiState.Error
@@ -85,7 +86,8 @@ fun ManageAccountsScreen(
                         AccountListUiState.Error -> ErrorContent(Modifier.fillMaxSize(), onRetry, message = stringResource(R.string.accounts_load_error))
 
                         is AccountListUiState.Content -> LazyColumn(
-                            Modifier.fillMaxSize().testTag("accounts:list"),
+                            state = listState,
+                            modifier = Modifier.fillMaxSize().testTag("accounts:list"),
                             contentPadding = PaddingValues(bottom = if (removalFailed) TeamCityDimensions.noSpacing else addActionSpace)
                         ) {
                             items(accounts.accounts, key = { listOf(it.id.serverUrl, it.id.userName).joinToString("\u0000") }) { account ->

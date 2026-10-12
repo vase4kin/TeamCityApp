@@ -36,6 +36,7 @@ import teamcityapp.libraries.list_ui.TeamCityListContainer
 import teamcityapp.libraries.list_ui.TeamCityListEmpty
 import teamcityapp.libraries.list_ui.listRowPosition
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 
 @Composable
 internal fun SnapshotDependenciesScreen(
@@ -46,6 +47,7 @@ internal fun SnapshotDependenciesScreen(
     onBuildHistory: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val listState = rememberTeamCityLazyListState()
     Surface(modifier.fillMaxSize().testTag("snapshot:screen")) {
         TeamCityListContainer(
             state.list,
@@ -56,7 +58,7 @@ internal fun SnapshotDependenciesScreen(
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("snapshot:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         val title = buildConfigurationTitle(build)

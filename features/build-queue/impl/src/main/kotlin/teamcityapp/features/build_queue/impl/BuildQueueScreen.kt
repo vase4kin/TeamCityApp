@@ -19,11 +19,13 @@ package teamcityapp.features.build_queue.impl
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,9 +40,11 @@ import teamcityapp.libraries.list_ui.TeamCityListContainer
 import teamcityapp.libraries.list_ui.TeamCityListEmpty
 import teamcityapp.libraries.list_ui.listRowPosition
 import teamcityapp.libraries.resources.R as SharedR
+import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.DRAWER_COACHMARK_ANCHOR
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.coachmarkAnchor
+import teamcityapp.libraries.theme.teamCityTopAppBarColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,10 +57,19 @@ internal fun BuildQueueScreen(
     onBuildHistory: (String, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(modifier, topBar = {
-        CenterAlignedTopAppBar(title = { Text(stringResource(R.string.build_queue_title)) }, navigationIcon = {
-            IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("build_queue:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.build_queue_open_drawer)) }
-        })
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+    BindTeamCityAppBarToList(listState, scrollBehavior.state)
+    Scaffold(modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
+        CenterAlignedTopAppBar(
+            modifier = Modifier.testTag("screen:app-bar"),
+            colors = teamCityTopAppBarColors(),
+            scrollBehavior = scrollBehavior,
+            title = { Text(stringResource(R.string.build_queue_title)) },
+            navigationIcon = {
+                IconButton(onClick = onOpenDrawer, modifier = Modifier.testTag("build_queue:drawer").coachmarkAnchor(DRAWER_COACHMARK_ANCHOR)) { Icon(painterResource(SharedR.drawable.ic_dehaze_black_24dp), stringResource(R.string.build_queue_open_drawer)) }
+            }
+        )
     }) { padding ->
         TeamCityListContainer(state.list, onRefresh, onRetry, modifier = Modifier.padding(padding).fillMaxSize(), empty = {
             TeamCityListEmpty(stringResource(state.emptyMessageRes))
@@ -64,7 +77,7 @@ internal fun BuildQueueScreen(
             val rows = (state.list as? ListUiState.Content<BuildLaunchData>)?.items ?: return@TeamCityListContainer
             val rowKeys = remember(rows) { buildRowKeys(rows) }
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("build_queue:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
+                LazyColumn(state = listState, modifier = Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("build_queue:list"), contentPadding = PaddingValues(bottom = TeamCityDimensions.contentPadding)) {
                     items(rows.size, key = { index -> rowKeys[index] }, contentType = { "build" }) { index ->
                         val build = rows[index]
                         if (index == 0 || buildConfigurationTitle(rows[index - 1]) != buildConfigurationTitle(build)) {

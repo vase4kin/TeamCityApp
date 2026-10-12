@@ -24,6 +24,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsActions
@@ -56,6 +57,34 @@ class ManageAccountsScreenTest {
     private val normal = ManagedAccount(ManagedAccountId("https://server", "Alice"), false, false)
     private val ssl = ManagedAccount(ManagedAccountId("https://server", "Bob"), true, true)
     private val state = ManageAccountsUiState(AccountListUiState.Content(listOf(normal, ssl)))
+
+    @Test fun appBarStaysPinnedAndChangesColorOnlyWhileScrolled() {
+        var flat = androidx.compose.ui.graphics.Color.Unspecified
+        var raised = androidx.compose.ui.graphics.Color.Unspecified
+        compose.setContent {
+            TeamCityTheme {
+                flat = androidx.compose.material3.MaterialTheme.colorScheme.surface
+                raised = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainer
+                ManageAccountsScreen(ManageAccountsUiState(AccountListUiState.Content((1..30).map { ManagedAccount(ManagedAccountId("https://server/$it", "User $it"), false, false) })), {}, {}, {}, {})
+            }
+        }
+        val bar = compose.onNodeWithTag("screen:app-bar")
+        val bounds = bar.fetchSemanticsNode().boundsInRoot
+        fun assertBar(expected: androidx.compose.ui.graphics.Color) {
+            compose.mainClock.advanceTimeBy(1_000)
+            compose.waitForIdle()
+            bar.assertIsDisplayed()
+            assertEquals(bounds, bar.fetchSemanticsNode().boundsInRoot)
+            val pixels = bar.captureToImage().toPixelMap()
+            assertEquals(expected, pixels[pixels.width - 4, pixels.height / 2])
+        }
+        assertBar(flat)
+        val list = compose.onNodeWithTag("accounts:list")
+        list.performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
+        assertBar(raised)
+        repeat(3) { list.performTouchInput { swipeDown(startY = height * .35f, endY = height * .65f, durationMillis = 1_000) } }
+        assertBar(flat)
+    }
 
     @Test fun accountIdentityIsNonDestructiveAndRemoveIsExplicit() {
         val removed = mutableListOf<ManagedAccountId>()
@@ -214,6 +243,7 @@ class ManageAccountsScreenTest {
         assertTrue(feedback.height <= body.height / 3f + 1f)
         compose.onNodeWithText("Try again").performScrollTo().assertIsDisplayed().performClick()
         assertEquals(1, retried)
+        compose.onNodeWithTag("accounts:list").performScrollToNode(hasTestTag("${accountTag(ssl.id)}:remove"))
         compose.onNodeWithTag("${accountTag(ssl.id)}:remove").performScrollTo().assertIsDisplayed().performClick()
         assertEquals(ssl.id, removed)
         compose.onNodeWithTag("accounts:add").assertIsDisplayed()

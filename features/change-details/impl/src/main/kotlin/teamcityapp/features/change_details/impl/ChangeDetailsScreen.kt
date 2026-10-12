@@ -40,6 +40,7 @@ import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityMonospace
 import teamcityapp.libraries.theme.TeamCityScreen
 import teamcityapp.libraries.theme.TeamCityTheme
+import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.teamCityStatusColors
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,13 +53,14 @@ fun ChangeDetailsScreen(
 ) {
     TeamCityScreen(
         title = stringResource(R.string.title_activity),
-        onClose = onClose,
-        scrollToolbarWithContent = true
+        onClose = onClose
     ) { modifier ->
+        val listState = rememberTeamCityLazyListState()
         if (state is ChangeDetailsUiState.Content) {
             val details = state.details
             LazyColumn(
-                modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).testTag("change_details:list"),
+                state = listState,
+                modifier = modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).testTag("change_details:list"),
                 contentPadding = PaddingValues(TeamCityDimensions.smallSpacing)
             ) {
                 item("details") {
