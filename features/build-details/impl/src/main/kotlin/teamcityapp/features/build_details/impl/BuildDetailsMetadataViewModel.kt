@@ -29,7 +29,7 @@ import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
 
 internal data class BuildDetailsPromptUi(val prompt: BuildDetailsPrompt, @StringRes val title: Int = R.string.title_onboarding_build_menu, @StringRes val description: Int)
-internal data class BuildDetailsMetadataState(val counts: Map<BuildDetailsTab, BuildDetailsCount> = emptyMap(), val prompt: BuildDetailsPromptUi? = null, val onboardingFailed: Boolean = false)
+internal data class BuildDetailsMetadataState(val counts: Map<BuildDetailsSection, BuildDetailsCount> = emptyMap(), val prompt: BuildDetailsPromptUi? = null, val onboardingFailed: Boolean = false)
 
 /** Only collection starts reads. Completed results belong to this particular build visit. */
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -40,11 +40,11 @@ internal class BuildDetailsMetadataViewModel @Inject constructor(
 ) : ViewModel() {
     private val incoming = Json.decodeFromString<BuildLaunchData>(checkNotNull(savedState[BuildDetailsViewModel.BUILD]))
     private val current = MutableStateFlow(incoming)
-    private val tabs = listOf(BuildDetailsTab.Changes, BuildDetailsTab.Tests).filter { it in incoming.detailsTabs() }
+    private val tabs = listOf(BuildDetailsSection.Changes, BuildDetailsSection.Tests).filter { it in incoming.detailsSections() }
     private val requests = tabs.associateWith { MutableStateFlow(0L) }
     private val initialCounts = tabs.associateWith { tab -> savedState.get<String>(countKey(tab))?.let { Json.decodeFromString<BuildDetailsCount>(it) } ?: BuildDetailsCount.Loading }
-    private fun countKey(tab: BuildDetailsTab) = "details.metadata.count:${tab.name}"
-    private fun count(tab: BuildDetailsTab): Flow<Map<BuildDetailsTab, BuildDetailsCount>> = requests.getValue(tab).flatMapLatest {
+    private fun countKey(tab: BuildDetailsSection) = "details.metadata.count:${tab.name}"
+    private fun count(tab: BuildDetailsSection): Flow<Map<BuildDetailsSection, BuildDetailsCount>> = requests.getValue(tab).flatMapLatest {
         flow {
             val completed = savedState.get<String>(countKey(tab))?.let { Json.decodeFromString<BuildDetailsCount>(it) }
             if (completed != null) {
@@ -66,7 +66,7 @@ internal class BuildDetailsMetadataViewModel @Inject constructor(
             emit(mapOf(tab to result))
         }
     }
-    private val counts = if (tabs.isEmpty()) flowOf(emptyMap()) else combine(tabs.map(::count)) { sections -> sections.fold(emptyMap<BuildDetailsTab, BuildDetailsCount>()) { all, section -> all + section } }
+    private val counts = if (tabs.isEmpty()) flowOf(emptyMap()) else combine(tabs.map(::count)) { sections -> sections.fold(emptyMap<BuildDetailsSection, BuildDetailsCount>()) { all, section -> all + section } }
     private val promptRequests = MutableStateFlow(0L)
     private var completedPrompts: Set<BuildDetailsPrompt>? = null
     private val dismissed = MutableStateFlow(savedState.get<ArrayList<String>>(DISMISSED).orEmpty().mapNotNull { name -> BuildDetailsPrompt.entries.firstOrNull { it.name == name } }.toSet())
@@ -113,7 +113,7 @@ internal class BuildDetailsMetadataViewModel @Inject constructor(
     fun loaded(build: BuildLaunchData) {
         if (build.id == incoming.id) current.value = build
     }
-    fun retryCount(tab: BuildDetailsTab) {
+    fun retryCount(tab: BuildDetailsSection) {
         val request = requests[tab] ?: return
         savedState.remove<String>(countKey(tab))
         request.value++

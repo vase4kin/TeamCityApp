@@ -39,20 +39,17 @@ class BuildDetailsScreenTest {
     @get:Rule val compose = createComposeRule()
     private val build = BuildLaunchData("1", "/builds/1", number = "1", state = "running", changes = BuildCollectionLink("/changes"), webUrl = "https://server/build/1")
 
-    @Test fun selectingTabAndMenuActionCallsUiRouter() {
-        var selected: BuildDetailsTab? = null
+    @Test fun floatingBuildActionCallsUiRouterAndTabsAreAbsent() {
         var action: BuildDetailsAction? = null
-        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build), false, {}, { selected = it }, { action = it }, {}, {}, remember { SnackbarHostState() }) { Surface {} } } }
-        compose.onNodeWithTag("details:tab:Changes").performClick()
-        assertEquals(BuildDetailsTab.Changes, selected)
-        compose.onNodeWithContentDescription("More actions").performClick()
-        compose.onNodeWithText("Stop").performClick()
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build), {}, { action = it }, {}, {}, remember { SnackbarHostState() }) { Surface {} } } }
+        compose.onNodeWithTag("details:action:Cancel").performClick()
         assertEquals(BuildDetailsAction.Cancel, action)
+        compose.onNodeWithTag("details:tab:Changes").assertDoesNotExist()
     }
 
     @Test fun cancellationCheckboxIsExplicitAndConfirmationHasOneCallback() {
         var confirmed: Boolean? = null
-        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, confirmation = BuildConfirmation(build, ConfirmationKind.Stop)), false, {}, {}, {}, { confirmed = it }, {}, remember { SnackbarHostState() }) { Surface {} } } }
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, confirmation = BuildConfirmation(build, ConfirmationKind.Stop)), {}, {}, { confirmed = it }, {}, remember { SnackbarHostState() }) { Surface {} } } }
         compose.onNodeWithText("Re-add build to the queue").performClick()
         compose.onNodeWithTag("details:readd").assertIsOn()
         compose.onNodeWithTag("details:readd").performClick()
@@ -63,18 +60,17 @@ class BuildDetailsScreenTest {
     }
 
     @Test fun busyOperationDisablesNavigationAndDoesNotOfferConfirmation() {
-        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, operation = BuildDetailsOperation.Stop), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }) { Surface {} } } }
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, operation = BuildDetailsOperation.Stop), {}, {}, {}, {}, remember { SnackbarHostState() }) { Surface {} } } }
         compose.onNodeWithContentDescription("Navigate up").assertIsNotEnabled()
-        compose.onNodeWithContentDescription("More actions").assertIsNotEnabled()
+        compose.onNodeWithTag("details:action:Cancel").assertIsNotEnabled()
         compose.onNodeWithTag("details:confirm").assertDoesNotExist()
         compose.onNodeWithText("Stopping build..").assertExists()
     }
 
     @Test fun unavailableCountIsExplicitAndMetadataRetryHasOneCallback() {
         var retries = 0
-        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, countFailures = setOf(BuildDetailsTab.Changes)), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }, onRetryMetadata = { retries++ }) { Surface {} } } }
-        compose.onNodeWithText("Changes (?)").assertExists()
-        compose.onNodeWithText("Changes (0)").assertDoesNotExist()
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, countFailures = setOf(BuildDetailsSection.Changes)), {}, {}, {}, {}, remember { SnackbarHostState() }, onRetryMetadata = { retries++ }) { Surface {} } } }
+        compose.onNodeWithText("Retry build counts and tips").assertExists()
         compose.onNodeWithTag("details:retry-metadata").performClick()
         assertEquals(1, retries)
     }
@@ -82,12 +78,12 @@ class BuildDetailsScreenTest {
     @Test fun menuTipUsesPreservedCopyAndDismissesThroughTheViewModelCallback() {
         var dismissals = 0
         val prompt = BuildDetailsPromptUi(BuildDetailsPrompt.Stop, description = R.string.text_onboarding_stop_build)
-        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, prompt = prompt), false, {}, {}, {}, {}, {}, remember { SnackbarHostState() }, onDismissPrompt = { dismissals++ }) { Surface {} } } }
+        compose.setContent { TeamCityTheme { BuildDetailsScreen(BuildDetailsUiState(build, prompt = prompt), {}, {}, {}, {}, remember { SnackbarHostState() }, onDismissPrompt = { dismissals++ }) { Surface {} } } }
         compose.onNodeWithTag("details:coachmark:Stop").assertIsDisplayed()
-        compose.onNodeWithContentDescription("More actions").assertDoesNotExist()
-        compose.onNodeWithText("Explore menu").assertExists()
+        compose.onNodeWithTag("details:actions").assertDoesNotExist()
+        compose.onNodeWithText("Explore build actions").assertIsDisplayed()
         compose.onNodeWithText("Stop, share or open running builds in a browser").assertExists()
-        compose.onNodeWithTag("details:dismiss-prompt").performClick()
+        compose.onNodeWithTag("details:dismiss-prompt").assertIsDisplayed().performClick()
         assertEquals(1, dismissals)
     }
 }

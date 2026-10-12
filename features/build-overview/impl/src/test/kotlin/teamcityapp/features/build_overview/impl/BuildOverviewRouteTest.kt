@@ -194,6 +194,7 @@ class BuildOverviewRouteTest {
             resumes.add(build)
         }
         override fun row(row: OverviewRow) {}
+        override fun section(section: teamcityapp.features.build_details.api.BuildDetailsSection) {}
         override fun dispatch(action: BuildOverviewAction, build: BuildLaunchData, branch: String?) {
             actions.add(Triple(action, build, branch))
         }

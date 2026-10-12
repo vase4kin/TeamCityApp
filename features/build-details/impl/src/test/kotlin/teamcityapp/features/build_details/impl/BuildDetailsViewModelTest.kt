@@ -96,47 +96,30 @@ class BuildDetailsViewModelTest {
     private fun model(saved: SavedStateHandle = handle(), owner: String = "details") = BuildDetailsViewModel(saved, repository, tracker).also { store.put(owner, it) }
     private fun restored(saved: SavedStateHandle) = SavedStateHandle(saved.keys().associateWith { saved.get<Any?>(it) })
 
-    @Test fun refreshedActionsDoNotChangeIncomingTabsOrSelectedTab() = runTest(dispatcher) {
+    @Test fun refreshedActionsDoNotChangeTheIncomingSectionSnapshot() = runTest(dispatcher) {
         val model = model()
-        model.select(BuildDetailsTab.Tests)
         model.loaded(loaded)
         assertEquals(incoming, model.incoming)
-        assertEquals(incoming.detailsTabs(), model.state.value.tabs)
-        assertEquals(BuildDetailsTab.Tests, model.state.value.selected)
         assertEquals("#loaded", model.state.value.title)
         assertEquals("Loaded configuration", model.state.value.subtitle)
         model.loaded(loaded.copy(id = "99"))
         assertEquals(loaded, model.state.value.current)
     }
 
-    @Test fun processRestorationRetainsLoadedActionsAndSelection() = runTest(dispatcher) {
+    @Test fun processRestorationRetainsLoadedActions() = runTest(dispatcher) {
         val saved = handle()
         model(saved).apply {
             loaded(loaded)
-            select(BuildDetailsTab.Changes)
         }
         val recreated = model(restored(saved), "restored")
         assertEquals(loaded, recreated.state.value.current)
-        assertEquals(incoming.detailsTabs(), recreated.state.value.tabs)
-        assertEquals(BuildDetailsTab.Changes, recreated.state.value.selected)
     }
 
     @Test fun independentVisitsOfSameBuildKeepSeparateOwners() = runTest(dispatcher) {
         val first = model(handle(), "first")
         val second = model(handle(), "second")
-        first.select(BuildDetailsTab.Tests)
         first.loaded(loaded)
-        assertEquals(BuildDetailsTab.Overview, second.state.value.selected)
         assertEquals(incoming, second.state.value.current)
-        assertTrue(second.state.value.counts.isEmpty())
-    }
-
-    @Test fun invalidSelectionCannotCreateAnAbsentTab() = runTest(dispatcher) {
-        val model = model(handle(BuildLaunchData("1", "/b", state = "queued")))
-        model.select(BuildDetailsTab.BuildLog)
-        assertEquals(listOf(BuildDetailsTab.Overview, BuildDetailsTab.Parameters), model.state.value.tabs)
-        assertEquals(BuildDetailsTab.Overview, model.state.value.selected)
-        assertTrue(model.state.value.counts.isEmpty())
     }
 
     @Test fun cancellationConfirmsCurrentSnapshotAndIgnoresDuplicateSubmissions() = runTest(dispatcher) {

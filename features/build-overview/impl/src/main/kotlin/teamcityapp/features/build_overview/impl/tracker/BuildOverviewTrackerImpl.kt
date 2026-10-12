@@ -25,7 +25,7 @@ class BuildOverviewTrackerImpl @Inject constructor(private val analytics: Fireba
     override fun action(action: BuildOverviewAction, branch: String?) {
         val event = when (action) {
             BuildOverviewAction.Share -> "share_build"
-            BuildOverviewAction.Browser -> "open_browser_build"
+            BuildOverviewAction.Browser, BuildOverviewAction.Log -> "open_browser_build"
             BuildOverviewAction.Stop, BuildOverviewAction.RemoveFromQueue -> "cancel_build"
             BuildOverviewAction.Restart -> "restart_build"
             BuildOverviewAction.Configuration -> if (branch != null) "show_builds_filtered_by_branch" else "open_build_type"

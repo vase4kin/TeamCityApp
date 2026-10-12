@@ -26,6 +26,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.Json
+import teamcityapp.features.build_details.api.*
 import teamcityapp.features.build_overview.api.*
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.list_state.*
@@ -43,7 +44,11 @@ class BuildOverviewViewModel @Inject constructor(private val savedStateHandle: S
         loaded = true
         listOf(build)
     }
-    val state = loader.state.map(::buildOverviewState).stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), BuildOverviewUiState())
+    private val counts = MutableStateFlow<Map<BuildDetailsSection, BuildDetailsCount>>(emptyMap())
+    fun metadata(value: Map<BuildDetailsSection, BuildDetailsCount>) {
+        counts.value = value
+    }
+    val state = combine(loader.state, counts) { list, metadata -> buildOverviewState(list, incoming, metadata) }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(0), BuildOverviewUiState())
     fun refreshFromHost(version: Long) {
         if (version <= hostRefresh) return
         hostRefresh = version

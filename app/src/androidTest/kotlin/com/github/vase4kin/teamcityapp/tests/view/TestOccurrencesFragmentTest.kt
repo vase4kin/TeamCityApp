@@ -43,7 +43,7 @@ import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.tests.api.TestOccurrences
@@ -196,7 +196,7 @@ class TestOccurrencesFragmentTest {
         val beforeRetry = pageCalls.get()
         fails.set(false)
         compose.onNodeWithText(text(TestsR.string.tests_retry_count)).performClick()
-        awaitTab("Tests (16)")
+        compose.waitUntil(10_000) { compose.onAllNodesWithText(text(TestsR.string.tests_count_unavailable)).fetchSemanticsNodes(atLeastOneRootRequired = false).isEmpty() }
         compose.onNodeWithText(text(TestsR.string.tests_count_unavailable)).assertDoesNotExist()
         assertTextVisible("Test 1")
         Assert.assertEquals(beforeRetry, pageCalls.get())
@@ -212,7 +212,7 @@ class TestOccurrencesFragmentTest {
         }
         ActivityScenario.launch<MainActivity>(buildIntent()).use { scenario ->
             awaitTab("Tests (16)", scenario)
-            compose.tapBuildDetailsTab("Tests")
+            compose.tapBuildDetailsSection("Tests")
             selectFilter("Passed", "Test 5")
             val beforeRecreation = pageCalls.get()
             scenario.recreate()
@@ -233,7 +233,7 @@ class TestOccurrencesFragmentTest {
     private fun openTests(title: String = "Tests (16)") {
         activityRule.launchActivity(buildIntent())
         awaitTab(title)
-        compose.tapBuildDetailsTab(title)
+        compose.tapBuildDetailsSection(title)
     }
 
     private fun buildIntent() = Intent(InstrumentationRegistry.getInstrumentation().targetContext, MainActivity::class.java)
@@ -247,7 +247,7 @@ class TestOccurrencesFragmentTest {
 
     private fun awaitTab(title: String, scenario: ActivityScenario<MainActivity>? = null) {
         compose.waitUntil(10_000) {
-            compose.onAllNodes(hasTestTag("details:tab:Tests") and hasText(title))
+            compose.onAllNodes(hasTestTag("overview:section:Tests") and hasText(title.substringBefore(" (")))
                 .fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
         }
     }

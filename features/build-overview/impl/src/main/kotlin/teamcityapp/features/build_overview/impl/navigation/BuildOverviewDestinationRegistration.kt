@@ -54,7 +54,16 @@ class BuildOverviewDestinationRegistration @Inject constructor() : FeatureDestin
                 override val requests = emptyFlow<BuildOverviewRequest>()
                 override fun loaded(build: BuildLaunchData) = host.loaded(build)
                 override fun resumed(build: BuildLaunchData) = host.loaded(build)
+                override fun section(section: BuildDetailsSection) = host.openSection(section)
                 override fun row(row: OverviewRow) {
+                    if (row.action == OverviewRowAction.Configuration && !host.current.buildTypeId.isNullOrBlank()) {
+                        dispatch(BuildOverviewAction.Configuration, host.current)
+                        return
+                    }
+                    if (row.action == OverviewRowAction.Project && !host.current.configuration?.projectId.isNullOrBlank()) {
+                        dispatch(BuildOverviewAction.Project, host.current)
+                        return
+                    }
                     val value = when (val text = row.value) {
                         is OverviewText.Literal -> text.value
                         else -> activity.getString(text.resource())
@@ -71,6 +80,7 @@ class BuildOverviewDestinationRegistration @Inject constructor() : FeatureDestin
                     when (action) {
                         BuildOverviewAction.Share -> BuildDetailsCommand.Share
                         BuildOverviewAction.Browser -> BuildDetailsCommand.Browser
+                        BuildOverviewAction.Log -> BuildDetailsCommand.Log
                         BuildOverviewAction.Stop, BuildOverviewAction.RemoveFromQueue -> BuildDetailsCommand.Cancel
                         BuildOverviewAction.Restart -> BuildDetailsCommand.Restart
                         BuildOverviewAction.Configuration -> BuildDetailsCommand.Configuration
@@ -84,6 +94,7 @@ class BuildOverviewDestinationRegistration @Inject constructor() : FeatureDestin
         }
         DestinationArguments(arguments) {
             val model = hiltViewModel<BuildOverviewViewModel>()
+            LaunchedEffect(host.countStates, model) { model.metadata(host.countStates) }
             LaunchedEffect(host.refreshVersion, model) { model.refreshFromHost(host.refreshVersion) }
             LifecycleResumeEffect(navigator.snapshot.results, model, router) {
                 while (true) {
@@ -98,7 +109,7 @@ class BuildOverviewDestinationRegistration @Inject constructor() : FeatureDestin
                 }
                 onPauseOrDispose {}
             }
-            BuildOverviewRoute(router, true, {}, model)
+            BuildOverviewRoute(router, true, {}, model, host::retryCount)
         }
     }
 }

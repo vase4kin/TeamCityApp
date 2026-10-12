@@ -31,14 +31,14 @@ class BuildDetailsMetadataViewModelTest {
     private val dispatcher = StandardTestDispatcher()
     private val store = ViewModelStore()
     private val build = BuildLaunchData("42", "/b", state = "running", changes = BuildCollectionLink("/changes"), tests = BuildTests("/tests", 10, 2, 3, 15))
-    private val calls = mutableListOf<BuildDetailsTab>()
+    private val calls = mutableListOf<BuildDetailsSection>()
     private val acknowledged = mutableListOf<BuildDetailsPrompt>()
     private var promptReads = 0
-    private var count: suspend (BuildDetailsTab) -> Int = { if (it == BuildDetailsTab.Changes) 12 else 15 }
+    private var count: suspend (BuildDetailsSection) -> Int = { if (it == BuildDetailsSection.Changes) 12 else 15 }
     private var prompts: suspend () -> Set<BuildDetailsPrompt> = { BuildDetailsPrompt.entries.toSet() }
     private var acknowledge: suspend (BuildDetailsPrompt) -> Unit = {}
     private val repository = object : BuildDetailsMetadataRepository {
-        override suspend fun count(build: BuildLaunchData, tab: BuildDetailsTab): Int {
+        override suspend fun count(build: BuildLaunchData, tab: BuildDetailsSection): Int {
             calls += tab
             return count(tab)
         }
@@ -71,8 +71,8 @@ class BuildDetailsMetadataViewModelTest {
         assertEquals(0, promptReads)
         val collector = observe(vm)
         runCurrent()
-        assertEquals(BuildDetailsTab.Changes to BuildDetailsCount.Available(12), vm.state.value.counts.entries.first().toPair())
-        assertEquals(BuildDetailsCount.Available(15), vm.state.value.counts[BuildDetailsTab.Tests])
+        assertEquals(BuildDetailsSection.Changes to BuildDetailsCount.Available(12), vm.state.value.counts.entries.first().toPair())
+        assertEquals(BuildDetailsCount.Available(15), vm.state.value.counts[BuildDetailsSection.Tests])
         assertEquals(2, calls.size)
         collector.cancel()
         runCurrent()
@@ -83,24 +83,24 @@ class BuildDetailsMetadataViewModelTest {
     }
 
     @Test fun optionalFailureNeverBecomesZeroAndRetryOnlyReadsTheFailedSection() = runTest(dispatcher) {
-        count = { if (it == BuildDetailsTab.Tests) error("offline") else 12 }
+        count = { if (it == BuildDetailsSection.Tests) error("offline") else 12 }
         val vm = model()
         observe(vm)
         runCurrent()
-        assertEquals(BuildDetailsCount.Unavailable, vm.state.value.counts[BuildDetailsTab.Tests])
-        assertEquals(BuildDetailsCount.Available(12), vm.state.value.counts[BuildDetailsTab.Changes])
+        assertEquals(BuildDetailsCount.Unavailable, vm.state.value.counts[BuildDetailsSection.Tests])
+        assertEquals(BuildDetailsCount.Available(12), vm.state.value.counts[BuildDetailsSection.Changes])
         count = { 0 }
         vm.retryFailed()
         runCurrent()
-        assertEquals(BuildDetailsCount.Available(0), vm.state.value.counts[BuildDetailsTab.Tests])
-        assertEquals(1, calls.count { it == BuildDetailsTab.Changes })
-        assertEquals(2, calls.count { it == BuildDetailsTab.Tests })
+        assertEquals(BuildDetailsCount.Available(0), vm.state.value.counts[BuildDetailsSection.Tests])
+        assertEquals(1, calls.count { it == BuildDetailsSection.Changes })
+        assertEquals(2, calls.count { it == BuildDetailsSection.Tests })
     }
 
     @Test fun collectorLossCancelsPendingReadsWithoutDiscardingAnIndependentCompletedSection() = runTest(dispatcher) {
         var cancelled = false
         count = {
-            if (it == BuildDetailsTab.Changes) {
+            if (it == BuildDetailsSection.Changes) {
                 12
             } else {
                 try {
@@ -113,17 +113,17 @@ class BuildDetailsMetadataViewModelTest {
         val vm = model()
         val collector = observe(vm)
         runCurrent()
-        assertEquals(BuildDetailsCount.Available(12), vm.state.value.counts[BuildDetailsTab.Changes])
-        assertEquals(BuildDetailsCount.Loading, vm.state.value.counts[BuildDetailsTab.Tests])
+        assertEquals(BuildDetailsCount.Available(12), vm.state.value.counts[BuildDetailsSection.Changes])
+        assertEquals(BuildDetailsCount.Loading, vm.state.value.counts[BuildDetailsSection.Tests])
         collector.cancel()
         runCurrent()
         assertTrue(cancelled)
-        assertEquals(BuildDetailsCount.Loading, vm.state.value.counts[BuildDetailsTab.Tests])
+        assertEquals(BuildDetailsCount.Loading, vm.state.value.counts[BuildDetailsSection.Tests])
         count = { 15 }
         observe(vm)
         runCurrent()
-        assertEquals(1, calls.count { it == BuildDetailsTab.Changes })
-        assertEquals(2, calls.count { it == BuildDetailsTab.Tests })
+        assertEquals(1, calls.count { it == BuildDetailsSection.Changes })
+        assertEquals(2, calls.count { it == BuildDetailsSection.Tests })
     }
 
     @Test fun savedResultsAndDismissedEducationRestoreWithoutDuplicateCountReadsOrWrites() = runTest(dispatcher) {
@@ -171,8 +171,8 @@ class BuildDetailsMetadataViewModelTest {
         val vm = model(handle(build.copy(changes = null, tests = null)))
         observe(vm)
         runCurrent()
-        vm.retryCount(BuildDetailsTab.Changes)
-        vm.retryCount(BuildDetailsTab.Overview)
+        vm.retryCount(BuildDetailsSection.Changes)
+        vm.retryCount(BuildDetailsSection.Parameters)
         runCurrent()
         assertTrue(calls.isEmpty())
         assertTrue(vm.state.value.counts.isEmpty())
@@ -190,7 +190,7 @@ class BuildDetailsMetadataViewModelTest {
         val vm = model()
         observe(vm)
         runCurrent()
-        assertEquals(BuildDetailsCount.Available(12), vm.state.value.counts[BuildDetailsTab.Changes])
+        assertEquals(BuildDetailsCount.Available(12), vm.state.value.counts[BuildDetailsSection.Changes])
         store.clear()
         runCurrent()
         assertTrue(cancelled)

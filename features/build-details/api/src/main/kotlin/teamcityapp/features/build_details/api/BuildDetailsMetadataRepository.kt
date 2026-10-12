@@ -21,7 +21,7 @@ import teamcityapp.libraries.builds.BuildLaunchData
 
 /** Independent optional counts and existing build-menu education preferences. */
 interface BuildDetailsMetadataRepository {
-    suspend fun count(build: BuildLaunchData, tab: BuildDetailsTab): Int
+    suspend fun count(build: BuildLaunchData, tab: BuildDetailsSection): Int
     suspend fun pendingPrompts(): Set<BuildDetailsPrompt>
     suspend fun acknowledgePrompt(prompt: BuildDetailsPrompt)
 }

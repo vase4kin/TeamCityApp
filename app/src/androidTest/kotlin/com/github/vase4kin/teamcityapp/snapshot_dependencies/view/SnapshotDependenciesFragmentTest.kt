@@ -49,7 +49,7 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
 import com.github.vase4kin.teamcityapp.helper.destinationIntent
 import com.github.vase4kin.teamcityapp.helper.hasDestination
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -118,7 +118,7 @@ class SnapshotDependenciesFragmentTest {
     private fun awaitTag(value: String) {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag(value).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
     }
-    private fun tab(title: String) = compose.tapBuildDetailsTab(title)
+    private fun tab(title: String) = compose.tapBuildDetailsSection(title)
     private fun sheet(label: String) {
         awaitText(label)
         compose.onNodeWithText(label).performClick()
@@ -132,7 +132,8 @@ class SnapshotDependenciesFragmentTest {
     @Test fun absentSnapshotCollectionDoesNotCreateATab() {
         `when`(teamCityService.build(anyString())).thenReturn(Single.just(BuildComposeFixtures.legacy(BuildComposeFixtures.finished)))
         activityRule.launchActivity(BuildComposeFixtures.intent(BuildComposeFixtures.incoming.copy(snapshotDependencies = null)))
-        awaitTag("details:tab:Parameters")
+        awaitTag("overview:list")
+        compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:section:Parameters"))
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.tab_snapshot_dependencies)).assertCountEquals(0)
     }
 
@@ -162,8 +163,9 @@ class SnapshotDependenciesFragmentTest {
         compose.onNodeWithTag("snapshot:build:dependency-2").performClick()
         assertRootDestination(teamcityapp.features.build_details.api.BuildDetailsDestination(running, ""))
         awaitTag("overview:list")
-        compose.onNodeWithTag("details:tab:Artifacts").assertDoesNotExist()
-        compose.onNodeWithTag("details:tab:Snapshots").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("overview:section:Artifacts").assertDoesNotExist()
+        compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:section:Snapshots"))
+        compose.onNodeWithTag("overview:section:Snapshots").assertIsDisplayed()
     }
 
     @Test fun configurationHeaderLaunchesTheCorrectHistory() {

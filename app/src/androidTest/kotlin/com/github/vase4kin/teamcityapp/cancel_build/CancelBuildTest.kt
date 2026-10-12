@@ -46,7 +46,8 @@ import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildAction
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -86,11 +87,8 @@ class CancelBuildTest {
 
     private fun openOverviewMenu() {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("details:actions").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
         compose.waitForIdle()
-        compose.waitUntil(10_000) {
-            compose.onAllNodesWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
-        }
-        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
     }
 
     private fun assertOverviewResult(expected: String) {
@@ -193,7 +191,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_build_from_queue))
@@ -237,7 +235,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_build_from_queue_2))
@@ -281,7 +279,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Click on cancel build
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
@@ -319,7 +317,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Click on cancel build
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_remove_from_queue_button)).onFirst().performClick()
@@ -357,7 +355,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build_2))
@@ -415,7 +413,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Check dialog text is displayed
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_the_build))
@@ -459,7 +457,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Click on cancel build
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
@@ -497,7 +495,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Click on cancel build
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_stop_button)).onFirst().performClick()
@@ -535,7 +533,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_stop_build)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Check re-add text is displayed and click on it
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build))
@@ -588,7 +586,7 @@ class CancelBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_remove_build_from_queue)).onFirst().performClick()
+        compose.tapBuildAction("Cancel")
 
         // Check re-add text is displayed and click on it
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_re_add_build)).assertCountEquals(0)

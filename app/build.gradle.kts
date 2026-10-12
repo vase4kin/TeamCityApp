@@ -213,9 +213,6 @@ dependencies {
     implementation(projects.features.filterBottomSheet.api)
     implementation(projects.features.filterBottomSheet.impl)
 
-    implementation(projects.features.buildLog.api)
-    implementation(projects.features.buildLog.impl)
-
     implementation(projects.features.filterBuilds.api)
     implementation(projects.features.filterBuilds.impl)
 

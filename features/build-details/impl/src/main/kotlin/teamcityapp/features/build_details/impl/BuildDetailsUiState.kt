@@ -46,7 +46,6 @@ internal data class BuildConfirmation(val build: BuildLaunchData, val kind: Conf
         ConfirmationKind.Restart -> R.string.text_restart_button
     }
 }
-internal data class BuildDetailsTabLabel(@StringRes val title: Int, @StringRes val format: Int, val count: Int)
 internal data class BuildDetailsMenuAction(val action: BuildDetailsAction, @StringRes val label: Int)
 
 @Serializable
@@ -62,30 +61,16 @@ internal data class BuildDetailsUiState(
     val incoming: BuildLaunchData,
     val current: BuildLaunchData = incoming,
     val configurationName: String? = null,
-    val tabs: List<BuildDetailsTab> = incoming.detailsTabs(),
-    val selected: BuildDetailsTab = BuildDetailsTab.Overview,
-    val counts: Map<BuildDetailsTab, Int> = emptyMap(),
     val confirmation: BuildConfirmation? = null,
     val operation: BuildDetailsOperation? = null,
     val preparingConfirmation: Boolean = false,
     val notice: BuildDetailsNotice? = null,
     val replacement: BuildDetailsReplacement? = null,
     val overviewRefresh: Long = 0,
-    val countFailures: Set<BuildDetailsTab> = emptySet(),
+    val countFailures: Set<BuildDetailsSection> = emptySet(),
     val prompt: BuildDetailsPromptUi? = null,
     val onboardingFailed: Boolean = false
 ) {
-    val tabLabels get() = tabs.associateWith { tab ->
-        BuildDetailsTabLabel(
-            tab.label(),
-            when {
-                tab in countFailures -> R.string.tab_with_unavailable_count
-                tab in counts -> R.string.tab_with_count
-                else -> R.string.tab_plain
-            },
-            counts[tab] ?: 0
-        )
-    }
     val title: String get() = current.number?.let { "#$it" } ?: "#${current.id}"
     val subtitle: String get() = current.configuration?.name ?: configurationName.orEmpty()
     val busy: Boolean get() = operation != null || preparingConfirmation
@@ -98,20 +83,25 @@ internal data class BuildDetailsUiState(
         if (!current.buildTypeId.isNullOrBlank()) add(BuildDetailsAction.Configuration)
         if (!current.configuration?.projectId.isNullOrBlank()) add(BuildDetailsAction.Project)
     }
+    val floatingActions: List<BuildDetailsMenuAction> get() = menu.filter { it.action == BuildDetailsAction.Share || it.action == BuildDetailsAction.Browser }
+    val primaryAction: BuildDetailsMenuAction get() = when {
+        current.isRunning -> BuildDetailsMenuAction(BuildDetailsAction.Cancel, R.string.action_stop_build)
+        current.isQueued -> BuildDetailsMenuAction(BuildDetailsAction.Cancel, R.string.text_remove_from_queue_button)
+        else -> BuildDetailsMenuAction(BuildDetailsAction.Restart, R.string.action_restart_build)
+    }
     val menu: List<BuildDetailsMenuAction> get() = actions.map { BuildDetailsMenuAction(it, it.label(current)) }
 }
-internal fun BuildDetailsTab.label(): Int = when (this) {
-    BuildDetailsTab.Overview -> R.string.tab_overview
-    BuildDetailsTab.Changes -> R.string.tab_changes
-    BuildDetailsTab.Tests -> R.string.tab_tests
-    BuildDetailsTab.BuildLog -> R.string.tab_build_log
-    BuildDetailsTab.Parameters -> R.string.tab_parameters
-    BuildDetailsTab.Artifacts -> R.string.tab_artifacts
-    BuildDetailsTab.Snapshots -> R.string.tab_snapshot_dependencies
+internal fun BuildDetailsSection.label(): Int = when (this) {
+    BuildDetailsSection.Changes -> R.string.tab_changes
+    BuildDetailsSection.Tests -> R.string.tab_tests
+    BuildDetailsSection.Parameters -> R.string.tab_parameters
+    BuildDetailsSection.Artifacts -> R.string.tab_artifacts
+    BuildDetailsSection.Snapshots -> R.string.tab_snapshot_dependencies
 }
 internal fun BuildDetailsAction.label(build: BuildLaunchData): Int = when (this) {
     BuildDetailsAction.Share -> R.string.action_share
     BuildDetailsAction.Browser -> R.string.action_browser
+    BuildDetailsAction.Log -> R.string.action_view_log
     BuildDetailsAction.Cancel -> if (build.isRunning) R.string.text_stop_button else R.string.text_remove_from_queue_button
     BuildDetailsAction.Restart -> R.string.text_restart_button
     BuildDetailsAction.Configuration -> R.string.action_configuration

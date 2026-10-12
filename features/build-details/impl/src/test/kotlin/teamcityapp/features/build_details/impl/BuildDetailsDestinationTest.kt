@@ -25,19 +25,19 @@ import teamcityapp.libraries.builds.*
 class BuildDetailsDestinationTest {
     private val base = BuildLaunchData("1", "/builds/1", changes = BuildCollectionLink("/changes"), tests = BuildTests("/tests"), artifacts = BuildCollectionLink("/artifacts"), snapshotDependencies = BuildCollectionLink(null))
 
-    @Test fun finishedSnapshotCreatesAllSevenTabsInInstalledOrder() {
-        assertEquals(BuildDetailsTab.entries, base.copy(state = "finished").detailsTabs())
+    @Test fun finishedSnapshotCreatesFiveSectionsInInstalledOrder() {
+        assertEquals(BuildDetailsSection.entries, base.copy(state = "finished").detailsSections())
     }
 
-    @Test fun runningAndQueuedSnapshotsExcludeUnavailableLogAndArtifactTabs() {
-        assertEquals(BuildDetailsTab.entries - BuildDetailsTab.Artifacts, base.copy(state = "running").detailsTabs())
-        assertEquals(BuildDetailsTab.entries - setOf(BuildDetailsTab.BuildLog, BuildDetailsTab.Artifacts), base.copy(state = "queued").detailsTabs())
+    @Test fun runningAndQueuedSnapshotsExcludeUnavailableArtifacts() {
+        assertEquals(BuildDetailsSection.entries - BuildDetailsSection.Artifacts, base.copy(state = "running").detailsSections())
+        assertEquals(BuildDetailsSection.entries - setOf(BuildDetailsSection.Artifacts), base.copy(state = "queued").detailsSections())
     }
 
     @Test fun absentUrlsOmitChangesTestsAndArtifactsButSnapshotWrapperPresenceRemainsMeaningful() {
         val snapshot = base.copy(changes = BuildCollectionLink(null), tests = BuildTests(null), artifacts = BuildCollectionLink(null))
-        assertEquals(listOf(BuildDetailsTab.Overview, BuildDetailsTab.BuildLog, BuildDetailsTab.Parameters, BuildDetailsTab.Snapshots), snapshot.detailsTabs())
-        assertFalse(snapshot.copy(snapshotDependencies = null).detailsTabs().contains(BuildDetailsTab.Snapshots))
+        assertEquals(listOf(BuildDetailsSection.Parameters, BuildDetailsSection.Snapshots), snapshot.detailsSections())
+        assertFalse(snapshot.copy(snapshotDependencies = null).detailsSections().contains(BuildDetailsSection.Snapshots))
     }
 
     @Test fun destinationSerializationPreservesCompleteSnapshotAndFallbackName() {

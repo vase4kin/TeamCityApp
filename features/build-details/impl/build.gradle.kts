@@ -34,7 +34,6 @@ dependencies {
     implementation(projects.features.buildOverview.api)
     implementation(projects.features.changes.api)
     implementation(projects.features.tests.api)
-    implementation(projects.features.buildLog.api)
     implementation(projects.features.properties.api)
     implementation(projects.features.buildArtifacts.api)
     implementation(projects.features.snapshotDependencies.api)
@@ -54,5 +53,6 @@ dependencies {
     implementation(libs.google.analytics)
     testImplementation(projects.features.bottomSheet.api)
     testImplementation(libs.coroutines.test)
+    testImplementation(libs.mockito.mockitoCore)
     kapt(libs.dagger.compiler)
 }

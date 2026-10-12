@@ -26,6 +26,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -42,6 +43,30 @@ class BuildOverviewScreenTest {
         compose.setContent { TeamCityTheme { BuildOverviewScreen(BuildOverviewUiState(list = ListUiState.Content(rows)), {}, {}, { clicked = it }) } }
         compose.onNodeWithTag("overview:row:Branch").performClick()
         assertEquals(rows.single { it.field == OverviewField.Branch }, clicked)
+    }
+
+    @Test fun groupedSectionAndLogHaveDistinctNavigationCallbacks() {
+        var selected: BuildDetailsSection? = null
+        var logs = 0
+        val state = buildOverviewState(ListUiState.Content(listOf(BuildOverviewFixtures.finished)), counts = mapOf(BuildDetailsSection.Tests to BuildDetailsCount.Available(16)))
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state, {}, {}, {}, onSection = { selected = it }, onLog = { logs++ }) } }
+        compose.onNodeWithTag("overview:log").performClick()
+        assertEquals(1, logs)
+        compose.onNodeWithTag("overview:section:Tests").performScrollTo().performClick()
+        assertEquals(BuildDetailsSection.Tests, selected)
+        compose.onNodeWithText("16").assertExists()
+    }
+
+    @Test fun unavailableCountHasItsOwnRetryAndStillOpensTheSection() {
+        var retries = 0
+        var selected: BuildDetailsSection? = null
+        val state = buildOverviewState(ListUiState.Content(listOf(BuildOverviewFixtures.finished)), counts = mapOf(BuildDetailsSection.Tests to BuildDetailsCount.Unavailable))
+        compose.setContent { TeamCityTheme { BuildOverviewScreen(state, {}, {}, {}, onSection = { selected = it }, onCountRetry = { retries++ }) } }
+        compose.onNodeWithTag("overview:retry-count:Tests").performScrollTo().performClick()
+        assertEquals(1, retries)
+        assertNull(selected)
+        compose.onNodeWithTag("overview:section:Tests").performClick()
+        assertEquals(BuildDetailsSection.Tests, selected)
     }
 
     @Test fun initialErrorOffersRetry() {

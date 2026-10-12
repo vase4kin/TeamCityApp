@@ -21,21 +21,11 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 import teamcityapp.libraries.builds.BuildLaunchData
 
-/** Each visit retains its incoming snapshot for tab construction, independently of refreshed actions. */
+/** Each visit retains its complete incoming snapshot, independently of refreshed actions. */
 @Serializable
 data class BuildDetailsDestination(val build: BuildLaunchData, val configurationName: String? = null, val forceOverviewRefresh: Boolean = false, val completion: BuildDetailsCompletion? = null) : NavKey
 
 @Serializable
 enum class BuildDetailsCompletion { Stopped, RemovedFromQueue }
 
-enum class BuildDetailsTab { Overview, Changes, Tests, BuildLog, Parameters, Artifacts, Snapshots }
-
-fun BuildLaunchData.detailsTabs(): List<BuildDetailsTab> = buildList {
-    add(BuildDetailsTab.Overview)
-    if (changes?.href != null) add(BuildDetailsTab.Changes)
-    if (tests?.href != null) add(BuildDetailsTab.Tests)
-    if (!isQueued) add(BuildDetailsTab.BuildLog)
-    add(BuildDetailsTab.Parameters)
-    if (artifacts?.href != null && !isQueued && !isRunning) add(BuildDetailsTab.Artifacts)
-    if (snapshotDependencies != null) add(BuildDetailsTab.Snapshots)
-}
+enum class BuildDetailsSection { Changes, Tests, Parameters, Artifacts, Snapshots }

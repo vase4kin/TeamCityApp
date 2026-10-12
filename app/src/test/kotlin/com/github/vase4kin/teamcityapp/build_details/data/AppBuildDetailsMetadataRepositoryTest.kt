@@ -53,8 +53,8 @@ class AppBuildDetailsMetadataRepositoryTest {
         val repository = repository(this)
         whenever(legacy.listChanges("/changes?opaque:42,count:2147483647&fields=count", true)).thenReturn(Single.just(Changes(emptyList(), 7)))
         whenever(legacy.listTestOccurrences("/tests?opaque:42,count:2147483647&fields=count", true)).thenReturn(Single.just(TestOccurrences(12)))
-        assertEquals(7, repository.count(build, BuildDetailsTab.Changes))
-        assertEquals(12, repository.count(build, BuildDetailsTab.Tests))
+        assertEquals(7, repository.count(build, BuildDetailsSection.Changes))
+        assertEquals(12, repository.count(build, BuildDetailsSection.Tests))
         verify(legacy).listChanges("/changes?opaque:42,count:2147483647&fields=count", true)
         verify(legacy).listTestOccurrences("/tests?opaque:42,count:2147483647&fields=count", true)
     }
@@ -63,7 +63,7 @@ class AppBuildDetailsMetadataRepositoryTest {
         val repository = repository(this)
         var disposed = false
         whenever(legacy.listChanges(any(), eq(true))).thenReturn(Single.never<Changes>().doOnDispose { disposed = true })
-        val request = async { repository.count(build, BuildDetailsTab.Changes) }
+        val request = async { repository.count(build, BuildDetailsSection.Changes) }
         runCurrent()
         request.cancel()
         runCurrent()
@@ -75,7 +75,7 @@ class AppBuildDetailsMetadataRepositoryTest {
         val repository = repository(this)
         val success = SingleSubject.create<Changes>()
         whenever(legacy.listChanges(any(), eq(true))).thenReturn(success)
-        val first = async { repository.count(build, BuildDetailsTab.Changes) }
+        val first = async { repository.count(build, BuildDetailsSection.Changes) }
         runCurrent()
         active = UserAccount("https://same-server", "bob", byteArrayOf(), false, true)
         success.onSuccess(Changes(emptyList(), 9))
@@ -83,7 +83,7 @@ class AppBuildDetailsMetadataRepositoryTest {
         assertTrue(first.isCancelled)
         val failure = SingleSubject.create<TestOccurrences>()
         whenever(legacy.listTestOccurrences(any(), eq(true))).thenReturn(failure)
-        val second = async { repository.count(build, BuildDetailsTab.Tests) }
+        val second = async { repository.count(build, BuildDetailsSection.Tests) }
         runCurrent()
         active = UserAccount("https://same-server", "carol", byteArrayOf(), false, true)
         failure.onError(IllegalStateException("old account offline"))

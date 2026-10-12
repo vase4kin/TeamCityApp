@@ -52,14 +52,14 @@ class TestsDestinationRegistration @Inject constructor() : FeatureDestination<Te
                 }
             }
         }
-        val count = host?.countStates?.get(BuildDetailsTab.Tests)?.let { count ->
+        val count = host?.countStates?.get(BuildDetailsSection.Tests)?.let { count ->
             when (count) {
                 is BuildDetailsCount.Available -> TestsCountState.Available(count.count)
                 BuildDetailsCount.Loading -> TestsCountState.Loading
                 BuildDetailsCount.Unavailable -> TestsCountState.Unavailable
             }
         }
-        DestinationArguments(arguments) { TestsRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsTab.Tests) } }) }
+        DestinationArguments(arguments) { TestsRoute(router, parentCount = count, onParentCountRetry = host?.let { { it.retryCount(BuildDetailsSection.Tests) } }) }
     }
 }
 

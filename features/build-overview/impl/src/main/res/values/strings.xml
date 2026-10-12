@@ -40,4 +40,26 @@
  <string name="overview_unknown_trigger">Unknown trigger type!</string>
  <string name="overview_queued_build">Queued build</string>
  <string name="overview_unavailable">Unavailable</string>
+ <string name="overview_view_log">View log</string>
+ <string name="overview_build_running">Build running</string>
+ <string name="overview_build_complete">Build complete</string>
+ <string name="overview_build_queued">Build queued</string>
+ <string name="overview_build_stopped">Build stopped</string>
+ <string name="overview_results">Results</string>
+ <string name="overview_execution">Execution</string>
+ <string name="overview_setup">Build setup</string>
+ <string name="overview_context">Configuration &amp; project</string>
+ <string name="overview_changes">Changes</string>
+ <string name="overview_changes_description">See what changed in this build</string>
+ <string name="overview_tests">Tests</string>
+ <string name="overview_tests_description">Review test results</string>
+ <string name="overview_artifacts">Artifacts</string>
+ <string name="overview_artifacts_description">Browse build files</string>
+ <string name="overview_parameters">Parameters</string>
+ <string name="overview_parameters_description">Values used by this build</string>
+ <string name="overview_dependencies">Dependencies</string>
+ <string name="overview_dependencies_description">Snapshot dependency builds</string>
+ <string name="overview_count_loading">Loading count</string>
+ <string name="overview_count_unavailable">Count unavailable</string>
+ <string name="overview_retry_count">Retry count</string>
 </resources>

@@ -46,7 +46,6 @@ internal class BuildDetailsViewModel @Inject constructor(
             incoming = incoming,
             current = current,
             configurationName = savedState[NAME],
-            selected = savedState.get<String>(SELECTED)?.let { name -> incoming.detailsTabs().firstOrNull { it.name == name } } ?: BuildDetailsTab.Overview,
             confirmation = savedState.get<String>(CONFIRMATION)?.let { Json.decodeFromString<BuildConfirmation>(it) },
             overviewRefresh = savedState.get<Long>(OVERVIEW_REFRESH) ?: 0,
             notice = savedState.get<String>(NOTICE)?.let { Json.decodeFromString<BuildDetailsNotice>(it) },
@@ -64,11 +63,6 @@ internal class BuildDetailsViewModel @Inject constructor(
     }
 
     fun viewed() = tracker.viewed()
-    fun select(tab: BuildDetailsTab) {
-        if (tab !in state.value.tabs) return
-        savedState[SELECTED] = tab.name
-        mutableState.value = state.value.copy(selected = tab)
-    }
     fun loaded(build: BuildLaunchData) {
         if (build.id != incoming.id) return
         savedState[CURRENT] = Json.encodeToString(build)
@@ -222,7 +216,6 @@ internal class BuildDetailsViewModel @Inject constructor(
         private const val REPLACEMENT_COMPLETION = "details.replacement-completion"
         private const val OVERVIEW_REFRESH = "details.overview.refresh"
         private const val CURRENT = "details.current"
-        private const val SELECTED = "details.tab"
         private const val CONFIRMATION = "details.confirmation"
         private const val QUEUED = "details.queued"
         private const val REPLACEMENT = "details.replacement"

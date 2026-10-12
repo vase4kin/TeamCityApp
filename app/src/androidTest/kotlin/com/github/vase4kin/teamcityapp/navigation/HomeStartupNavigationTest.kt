@@ -43,7 +43,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mockito.*
 import org.mockito.Spy
-import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.features.home.api.HomeDestination
 import teamcityapp.features.home.api.HomeTab
 import teamcityapp.features.navigation.api.navigation.ProjectDestination
@@ -73,7 +72,6 @@ class HomeStartupNavigationTest {
 
     @Inject lateinit var registry: DestinationRegistry
 
-    @Inject lateinit var consent: BuildLogConsentStorage
     private val app get() = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as TeamCityApplicationBase
     private val storage get() = app.appInjector.sharedUserStorage()
 
@@ -132,7 +130,6 @@ class HomeStartupNavigationTest {
     }
 
     @Test fun installedLauncherAliasHostsStartupAndPreservesConsentForTheSavedAccount() {
-        runBlocking { consent.setAcknowledged(true) }
         val alias = Intent().setComponent(ComponentName(app.packageName, "teamcityapp.features.splash.view.SplashActivity"))
         ActivityScenario.launch<MainActivity>(alias).use { scenario ->
             awaitRoot()
@@ -141,7 +138,6 @@ class HomeStartupNavigationTest {
                 assertEquals(MainActivity::class.java, it.javaClass)
                 assertTrue(it.supportFragmentManager.fragments.isEmpty())
             }
-            assertTrue(runBlocking { consent.acknowledged() })
         }
     }
 
@@ -242,13 +238,11 @@ class HomeStartupNavigationTest {
         assertTrue(persisted)
         ActivityScenario.launch<MainActivity>(encoded(HomeDestination(HomeTab.Agents))).use { scenario ->
             awaitTag("agents:list")
-            runBlocking { consent.setAcknowledged(true) }
             compose.onNodeWithContentDescription(app.getString(teamcityapp.features.agents.impl.R.string.agents_open_drawer)).performClick()
             awaitTag("drawer:list")
             compose.onNodeWithTag("drawer:account:${Mocks.URL.length}:${Mocks.URL}:Guest user").performClick()
             awaitRoot()
             assertEquals("Guest user", storage.activeUser.userName)
-            assertFalse(runBlocking { consent.acknowledged() })
             compose.onNodeWithTag("home:tab:Projects").assertIsSelected()
             select(HomeTab.Agents)
             awaitTag("agents:list")

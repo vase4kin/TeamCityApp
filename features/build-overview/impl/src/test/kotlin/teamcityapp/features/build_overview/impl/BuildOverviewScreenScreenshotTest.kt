@@ -32,6 +32,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -67,20 +68,26 @@ class BuildOverviewScreenScreenshotTest(private val stateName: String, private v
     @Test fun rendersState() {
         val build = BuildOverviewFixtures.build(stateName)
         val rows = overviewRows(build)
+        val counts = when (stateName) {
+            "counts_loading" -> mapOf(BuildDetailsSection.Changes to BuildDetailsCount.Loading, BuildDetailsSection.Tests to BuildDetailsCount.Loading)
+            "counts_partial_failed" -> mapOf(BuildDetailsSection.Changes to BuildDetailsCount.Available(1), BuildDetailsSection.Tests to BuildDetailsCount.Unavailable)
+            "counts_all_failed" -> mapOf(BuildDetailsSection.Changes to BuildDetailsCount.Unavailable, BuildDetailsSection.Tests to BuildDetailsCount.Unavailable)
+            else -> mapOf(BuildDetailsSection.Changes to BuildDetailsCount.Available(1), BuildDetailsSection.Tests to BuildDetailsCount.Available(16))
+        }
         val state = when (stateName) {
             "loading" -> BuildOverviewUiState()
             "error" -> BuildOverviewUiState(list = ListUiState.Error)
             "empty" -> BuildOverviewUiState(list = ListUiState.Empty())
-            "refreshing" -> BuildOverviewUiState(ListUiState.Content(rows, isRefreshing = true), build)
-            "refresh_failed" -> BuildOverviewUiState(ListUiState.Content(rows, refreshFailed = true), build)
-            else -> buildOverviewState(ListUiState.Content(listOf(build)))
+            "refreshing" -> buildOverviewState(ListUiState.Content(listOf(build), isRefreshing = true), counts = counts)
+            "refresh_failed" -> buildOverviewState(ListUiState.Content(listOf(build), refreshFailed = true), counts = counts)
+            else -> buildOverviewState(ListUiState.Content(listOf(build)), counts = counts)
         }
         compose.mainClock.autoAdvance = false
         compose.setContent { TeamCityTheme(darkTheme = variant.dark) { BuildOverviewScreen(state, {}, {}, {}) } }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("overview_${stateName}_${variant.name}.png")
-        if (stateName == "long_content" || stateName == "full_optional") {
+        if (stateName == "long_content" || stateName == "full_optional" || stateName.startsWith("hub_") || stateName.startsWith("counts_") || stateName == "partial_context" || stateName == "configuration_only") {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("overview:list").performScrollToNode(hasTestTag("overview:row:${rows.last().field}"))
             compose.mainClock.autoAdvance = false
@@ -100,7 +107,7 @@ class BuildOverviewScreenScreenshotTest(private val stateName: String, private v
                 Variant("tablet_$theme", 1000, 700, dark, 1f),
                 Variant("large_font_$theme", 360, 800, dark, 1.5f)
             )
-            listOf("loading", "error", "empty", "finished", "running", "queued", "queued_fallback", "failure", "status_error", "status_unknown", "cancelled", "cancelled_without_user", "user_trigger", "restarted", "deleted_user", "configuration_trigger", "deleted_configuration", "unknown_trigger", "missing_trigger_details", "personal", "minimal", "missing_dates", "full_optional", "refreshing", "refresh_failed", "long_content").flatMap { state ->
+            listOf("hub_finished", "hub_running", "hub_queued", "counts_loading", "counts_partial_failed", "counts_all_failed", "partial_context", "configuration_only", "loading", "error", "empty", "finished", "running", "queued", "queued_fallback", "failure", "status_error", "status_unknown", "cancelled", "cancelled_without_user", "user_trigger", "restarted", "deleted_user", "configuration_trigger", "deleted_configuration", "unknown_trigger", "missing_trigger_details", "personal", "minimal", "missing_dates", "full_optional", "refreshing", "refresh_failed", "long_content").flatMap { state ->
                 variants.map { arrayOf<Any>(state, it) }
             }
         }

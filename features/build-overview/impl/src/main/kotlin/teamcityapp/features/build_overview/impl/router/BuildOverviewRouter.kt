@@ -17,6 +17,7 @@
 package teamcityapp.features.build_overview.impl.router
 
 import kotlinx.coroutines.flow.Flow
+import teamcityapp.features.build_details.api.BuildDetailsSection
 import teamcityapp.features.build_overview.api.*
 import teamcityapp.features.build_overview.impl.OverviewRow
 import teamcityapp.libraries.builds.BuildLaunchData
@@ -27,5 +28,6 @@ interface BuildOverviewRouter {
     fun resumed(build: BuildLaunchData)
     fun row(row: OverviewRow)
     fun dispatch(action: BuildOverviewAction, build: BuildLaunchData, branch: String? = null)
+    fun section(section: BuildDetailsSection)
     fun dispose()
 }

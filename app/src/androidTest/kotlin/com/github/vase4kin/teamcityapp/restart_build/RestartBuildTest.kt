@@ -49,7 +49,8 @@ import com.github.vase4kin.teamcityapp.helper.any
 import com.github.vase4kin.teamcityapp.helper.awaitDisplayedText
 import com.github.vase4kin.teamcityapp.helper.capture
 import com.github.vase4kin.teamcityapp.helper.currentRootSnapshot
-import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsTab
+import com.github.vase4kin.teamcityapp.helper.tapBuildAction
+import com.github.vase4kin.teamcityapp.helper.tapBuildDetailsSection
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -94,11 +95,8 @@ class RestartBuildTest {
 
     private fun openOverviewMenu() {
         compose.waitUntil(10_000) { compose.onAllNodesWithTag("overview:list").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
+        compose.waitUntil(10_000) { compose.onAllNodesWithTag("details:actions").fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty() }
         compose.waitForIdle()
-        compose.waitUntil(10_000) {
-            compose.onAllNodesWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
-        }
-        compose.onNodeWithContentDescription(InstrumentationRegistry.getInstrumentation().targetContext.getString(teamcityapp.features.build_details.impl.R.string.action_more)).performClick()
     }
 
     private fun assertOverviewResult(expected: String) {
@@ -210,7 +208,7 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
+        compose.tapBuildAction("Restart")
 
         // Check dialog text is displayed
         compose.awaitDisplayedText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_the_build))
@@ -285,7 +283,7 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
+        compose.tapBuildAction("Restart")
 
         // Click on restart button
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
@@ -337,7 +335,7 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
+        compose.tapBuildAction("Restart")
 
         // Click on restart button
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
@@ -374,7 +372,7 @@ class RestartBuildTest {
         openOverviewMenu()
 
         // Click on context menu option
-        compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_menu_restart_build)).onFirst().performClick()
+        compose.tapBuildAction("Restart")
 
         // Click on restart button
         compose.onAllNodesWithText(InstrumentationRegistry.getInstrumentation().targetContext.getString(R.string.text_restart_button)).onFirst().performClick()
