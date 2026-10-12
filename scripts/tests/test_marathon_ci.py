@@ -212,10 +212,9 @@ class ChangedSelectionTest(unittest.TestCase):
             selected = json.loads((root / "selection/selection.json").read_text())
             self.assertEqual(selected["tests"], self.select(*paths)["tests"])
 
-    def test_build_log_sources_resources_and_mock_data_select_screen_and_lifecycle(self):
+    def test_build_log_sources_resources_and_mock_data_select_custom_tab_contract(self):
         expected = self.smoke | {
-            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogFragmentTest#testUserCanSeeBuildLog",
-            "com.github.vase4kin.teamcityapp.hilt.BuildLogViewLifecycleTest#retainedBuildLogCreatesAndDisposesItsWebViewOnEachTabVisit",
+            "com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#viewLogOpensTheActiveServersLogInACustomTab",
         }
         for path in ("app/src/main/java/com/github/vase4kin/teamcityapp/buildlog/view/BuildLogFragment.kt", "app/src/main/res/layout/fragment_build_log.xml", "app/src/mock/assets/fake_build_log.html"):
             with self.subTest(path=path):

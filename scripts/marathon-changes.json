@@ -1,7 +1,7 @@
 {
   "buildlog": {
     "paths": ["app/src/*/res/layout/*build_log*", "app/src/mock/assets/*build_log*"],
-    "tests": ["com.github.vase4kin.teamcityapp.hilt.BuildLogViewLifecycleTest#*"]
+    "tests": ["com.github.vase4kin.teamcityapp.buildlog.view.BuildLogCustomTabTest#*"]
   },
   "home": {
     "paths": ["app/src/*/res/layout/activity_home.xml", "app/src/*/res/layout/*projects*"],
