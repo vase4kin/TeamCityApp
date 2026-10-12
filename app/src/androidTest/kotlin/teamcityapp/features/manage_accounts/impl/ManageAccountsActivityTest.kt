@@ -271,6 +271,9 @@ class ManageAccountsActivityTest {
             compose.onNodeWithText("Remove").performClick()
             awaitDestination("login:submit")
             assertFalse(storage.hasUserAccounts())
+            // The platform may focus Login's form and show the IME on cloud devices.
+            // Dismiss it before testing that Back exits the replacement root.
+            androidx.test.espresso.Espresso.closeSoftKeyboard()
             androidx.test.espresso.Espresso.pressBackUnconditionally()
             compose.waitUntil(5_000) { scenario.state == Lifecycle.State.DESTROYED }
         }
