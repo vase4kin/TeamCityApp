@@ -333,8 +333,14 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 ## Version control
 
-- Use GitButler (`but`) for all version-control writes: commits, branches, pushes,
-  merges, history edits, and pull requests. Read-only Git commands are fine.
+- Use GitButler (`but`) for version-control writes: commits, branches, pushes,
+  merges, history edits, and pull requests, except for explicitly authorized PR
+  merges as described below. Read-only Git commands are fine.
+- When the user explicitly asks to merge a PR, `gh pr merge` is allowed without
+  additional confirmation or first attempting `but pr auto-merge`. Follow the
+  requested CI requirements and repository merge rules.
+  This exception applies only to merging the authorized PR; keep using GitButler
+  for other version-control writes, including PR creation and stack management.
 - Implement and verify before committing. Commit at a working checkpoint on the
   current session's GitButler branch, or create a dedicated `codex/` branch at
   commit time. Use a Conventional Commit message.
