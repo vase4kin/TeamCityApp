@@ -27,6 +27,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import teamcityapp.features.build_log.api.BuildLogSession
+import teamcityapp.features.build_log.impl.data.BuildLogConsentPreferences
+import teamcityapp.features.build_log.impl.data.DefaultBuildLogRepository
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 
@@ -43,25 +45,25 @@ class AppBuildLogRepositoryTest {
         whenever(account.teamcityUrl).thenReturn("https://teamcity.example")
         whenever(account.isGuestUser).thenReturn(true)
         whenever(account.isSslDisabled).thenReturn(true)
-        val repository = AppBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler), AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)))
+        val repository = DefaultBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler), BuildLogConsentPreferences(storage, context, StandardTestDispatcher(testScheduler)))
         assertEquals(BuildLogSession("https://teamcity.example/viewLog.html?buildId=42&tab=buildLog&guest=1", true, false), repository.session("42"))
     }
 
     @Test fun consentUsesThePreferenceThatHomeResetsOnAccountChanges() = runTest {
         whenever(storage.activeUser).thenReturn(account)
         whenever(account.teamcityUrl).thenReturn("https://teamcity.example")
-        val repository = AppBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler), AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)))
+        val repository = DefaultBuildLogRepository(storage, context, "", StandardTestDispatcher(testScheduler), BuildLogConsentPreferences(storage, context, StandardTestDispatcher(testScheduler)))
         assertTrue(repository.session("42").needsAuthentication)
         repository.acknowledgeAuthentication()
         assertFalse(repository.session("42").needsAuthentication)
-        AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)).setAcknowledged(false)
+        BuildLogConsentPreferences(storage, context, StandardTestDispatcher(testScheduler)).setAcknowledged(false)
         assertTrue(repository.session("42").needsAuthentication)
     }
 
     @Test fun mockFlavorOverridesOnlyTheLogUrl() = runTest {
         whenever(storage.activeUser).thenReturn(account)
         whenever(account.isSslDisabled).thenReturn(true)
-        val repository = AppBuildLogRepository(storage, context, "file:///android_asset/buildLog.html", StandardTestDispatcher(testScheduler), AppBuildLogConsentStorage(storage, context, StandardTestDispatcher(testScheduler)))
+        val repository = DefaultBuildLogRepository(storage, context, "file:///android_asset/buildLog.html", StandardTestDispatcher(testScheduler), BuildLogConsentPreferences(storage, context, StandardTestDispatcher(testScheduler)))
         assertEquals(BuildLogSession("file:///android_asset/buildLog.html", true, true), repository.session("42"))
     }
 }

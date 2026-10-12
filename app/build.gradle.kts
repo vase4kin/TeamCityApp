@@ -146,6 +146,8 @@ dependencies {
 
     implementation(projects.libraries.coroutines)
     implementation(projects.libraries.api)
+    implementation(projects.libraries.data)
+    implementation(projects.libraries.session)
     implementation(projects.libraries.resources)
     implementation(projects.libraries.theme)
     implementation(projects.libraries.chromeTabs)

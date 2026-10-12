@@ -24,6 +24,7 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.filter_builds.impl" }
 dependencies {
+    implementation(projects.libraries.data)
     implementation(projects.libraries.navigation)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)

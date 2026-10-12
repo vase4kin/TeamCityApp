@@ -20,8 +20,8 @@ import android.app.Application
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
-import com.github.vase4kin.teamcityapp.builds.data.homeBuildAccountKey
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
+import com.github.vase4kin.teamcityapp.integration.features.home.data.AppHomeRepository
+import com.github.vase4kin.teamcityapp.integration.filters.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import javax.inject.Provider
@@ -38,6 +38,7 @@ import org.robolectric.annotation.Config
 import teamcityapp.features.filter_bottom_sheet.api.QuickFilter
 import teamcityapp.features.home.api.*
 import teamcityapp.libraries.onboarding.OnboardingManager
+import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.storage.models.UserAccount
 
 @OptIn(ExperimentalCoroutinesApi::class)

@@ -19,8 +19,8 @@ package com.github.vase4kin.teamcityapp.overview.data
 
 import android.os.Bundle
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 internal val incomingOverview = BuildLaunchData(
     "42", "/queue/42", number = "old-number", state = "queued", webUrl = "https://ci.example/old",
@@ -40,6 +40,6 @@ internal val loadedOverview = incomingOverview.copy(
     artifacts = BuildCollectionLink("/latest-artifacts")
 )
 internal fun overviewArguments(build: BuildLaunchData = incomingOverview, name: String = "Incoming name") = Bundle().apply {
-    putSerializable(BundleExtractorValues.BUILD, AppBuildLaunchMapper().toLegacyBuild(build))
+    putSerializable(BundleExtractorValues.BUILD, BuildLaunchMapper().toLegacyBuild(build))
     putString(BundleExtractorValues.NAME, name)
 }

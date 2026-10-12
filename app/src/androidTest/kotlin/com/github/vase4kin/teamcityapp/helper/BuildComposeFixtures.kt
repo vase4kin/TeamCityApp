@@ -20,17 +20,17 @@ import android.os.Bundle
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
 import com.google.gson.Gson
 import org.hamcrest.Description
 import org.hamcrest.TypeSafeMatcher
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 /** Full snapshots ensure navigation tests detect a summary-only or stale-build bridge. */
 internal object BuildComposeFixtures {
-    val mapper = AppBuildLaunchMapper()
+    val mapper = BuildLaunchMapper()
     val incoming = BuildLaunchData(
         "42", "/queue/42", webUrl = "https://ci.example/old", number = "old-number", state = "queued",
         buildTypeId = "old-config", configuration = BuildConfigurationData("old-config", "Old configuration", "old-project", "Old project"),

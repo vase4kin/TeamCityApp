@@ -16,14 +16,15 @@
 
 package com.github.vase4kin.teamcityapp.manage_accounts.data
 
-import com.github.vase4kin.teamcityapp.account.session.AccountSession
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 import teamcityapp.features.manage_accounts.api.*
+import teamcityapp.features.manage_accounts.impl.data.DefaultManageAccountsRepository
 import teamcityapp.libraries.cache_manager.CacheManager
+import teamcityapp.libraries.session.AccountSession
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 
@@ -53,7 +54,7 @@ class ManageAccountsRepositoryImplTest {
     private val storage = Store()
     private val cache = mock(CacheManager::class.java)
     private var cleared = 0
-    private fun repo(dispatcher: CoroutineDispatcher) = ManageAccountsRepositoryImpl(storage, cache, AccountSession { cleared++ }, dispatcher)
+    private fun repo(dispatcher: CoroutineDispatcher) = DefaultManageAccountsRepository(storage, cache, AccountSession { cleared++ }, dispatcher)
 
     @Test fun mapsImmutableAccountsInStoredOrderWithoutCredentials() = runTest {
         val one = user(active = true, ssl = true)
@@ -141,7 +142,7 @@ class ManageAccountsRepositoryImplTest {
         val broken = mock(Storage::class.java)
         `when`(broken.userAccounts).thenThrow(IllegalStateException("store"))
         try {
-            ManageAccountsRepositoryImpl(broken, cache, AccountSession { cleared++ }, StandardTestDispatcher(testScheduler)).accounts()
+            DefaultManageAccountsRepository(broken, cache, AccountSession { cleared++ }, StandardTestDispatcher(testScheduler)).accounts()
             fail()
         } catch (e: IllegalStateException) {
             assertEquals("store", e.message)

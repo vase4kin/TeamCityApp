@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
+import teamcityapp.features.splash.impl.data.DefaultSplashRepository
 import teamcityapp.libraries.storage.Storage
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -27,20 +28,20 @@ class SplashRepositoryImplTest {
     @Test fun mapsExistingAccountsWithoutAccessingCredentials() = runTest {
         val store = mock(Storage::class.java)
         `when`(store.hasUserAccounts()).thenReturn(true)
-        assertTrue(SplashRepositoryImpl(store, StandardTestDispatcher(testScheduler)).hasAccounts())
+        assertTrue(DefaultSplashRepository(store, StandardTestDispatcher(testScheduler)).hasAccounts())
         verify(store).hasUserAccounts()
         verifyNoMoreInteractions(store)
     }
 
     @Test fun emptyStorageReturnsFalse() = runTest {
-        assertFalse(SplashRepositoryImpl(mock(Storage::class.java), StandardTestDispatcher(testScheduler)).hasAccounts())
+        assertFalse(DefaultSplashRepository(mock(Storage::class.java), StandardTestDispatcher(testScheduler)).hasAccounts())
     }
 
     @Test fun storageFailurePropagatesForTheViewModelToHandle() = runTest {
         val store = mock(Storage::class.java)
         `when`(store.hasUserAccounts()).thenThrow(IllegalStateException("store"))
         try {
-            SplashRepositoryImpl(store, StandardTestDispatcher(testScheduler)).hasAccounts()
+            DefaultSplashRepository(store, StandardTestDispatcher(testScheduler)).hasAccounts()
             fail()
         } catch (e: IllegalStateException) {
             assertEquals("store", e.message)
@@ -49,14 +50,14 @@ class SplashRepositoryImplTest {
 
     @Test fun cancellationBeforeIoRunsDoesNotReadStorage() = runTest {
         val store = mock(Storage::class.java)
-        val job = launch { SplashRepositoryImpl(store, StandardTestDispatcher(testScheduler)).hasAccounts() }
+        val job = launch { DefaultSplashRepository(store, StandardTestDispatcher(testScheduler)).hasAccounts() }
         job.cancelAndJoin()
         verifyNoInteractions(store)
     }
 
     @Test fun storageReadUsesInjectedIoDispatcher() = runTest(UnconfinedTestDispatcher()) {
         val store = mock(Storage::class.java)
-        val read = async { SplashRepositoryImpl(store, StandardTestDispatcher(testScheduler)).hasAccounts() }
+        val read = async { DefaultSplashRepository(store, StandardTestDispatcher(testScheduler)).hasAccounts() }
         assertFalse(read.isCompleted)
         verifyNoInteractions(store)
         runCurrent()

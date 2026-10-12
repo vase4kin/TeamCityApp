@@ -20,7 +20,6 @@ import android.app.Application
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
@@ -37,7 +36,9 @@ import org.robolectric.annotation.Config
 import retrofit2.HttpException
 import retrofit2.Response
 import teamcityapp.features.build_details.api.*
+import teamcityapp.features.build_details.impl.data.DefaultBuildDetailsRepository
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.storage.models.UserAccount
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -46,11 +47,11 @@ import teamcityapp.libraries.storage.models.UserAccount
 class ComposeBuildDetailsRepositoryTest {
     private val legacy = mock<Repository>()
     private val storage = mock<SharedUserStorage>()
-    private val mapper = AppBuildLaunchMapper()
+    private val mapper = BuildLaunchMapper()
     private var active = UserAccount("https://same-server", "alice", byteArrayOf(), false, true)
     private var resolutions = 0
     private val snapshot = BuildLaunchData("42", "opaque&build:42", state = "running", buildTypeId = "latest", branchName = "branch:opaque", properties = BuildProperties(listOf(BuildProperty("name", "value", true, "property", "/property")), "properties", "/properties"))
-    private fun repository(scope: TestScope) = ComposeBuildDetailsRepository(
+    private fun repository(scope: TestScope) = DefaultBuildDetailsRepository(
         Provider {
             resolutions++
             legacy

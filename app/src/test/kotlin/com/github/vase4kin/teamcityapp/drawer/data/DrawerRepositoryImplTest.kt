@@ -15,13 +15,14 @@
  */
 
 package com.github.vase4kin.teamcityapp.drawer.data
-import com.github.vase4kin.teamcityapp.account.session.AccountSession
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.Mockito.*
 import teamcityapp.features.drawer.api.*
+import teamcityapp.features.drawer.impl.data.DefaultDrawerRepository
+import teamcityapp.libraries.session.AccountSession
 import teamcityapp.libraries.storage.Storage
 import teamcityapp.libraries.storage.models.UserAccount
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -52,7 +53,7 @@ class DrawerRepositoryImplTest {
     private val storage = Store()
     private var cleared = 0
     private fun id(u: UserAccount) = DrawerAccountId(u.teamcityUrl, u.userName)
-    private fun repo(d: CoroutineDispatcher) = DrawerRepositoryImpl(storage, AccountSession { cleared++ }, d)
+    private fun repo(d: CoroutineDispatcher) = DefaultDrawerRepository(storage, AccountSession { cleared++ }, d)
 
     @Test fun mapsImmutableAccountsInStoredOrderWithoutCredentials() = runTest {
         val one = user(active = true, ssl = true)
@@ -103,7 +104,7 @@ class DrawerRepositoryImplTest {
         val broken = mock(Storage::class.java)
         `when`(broken.userAccounts).thenThrow(IllegalStateException("store"))
         try {
-            DrawerRepositoryImpl(broken, AccountSession { cleared++ }, StandardTestDispatcher(testScheduler)).select(DrawerAccountId("a", "b"))
+            DefaultDrawerRepository(broken, AccountSession { cleared++ }, StandardTestDispatcher(testScheduler)).select(DrawerAccountId("a", "b"))
             fail()
         } catch (e: IllegalStateException) {
             assertEquals("store", e.message)

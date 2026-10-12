@@ -40,8 +40,8 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule

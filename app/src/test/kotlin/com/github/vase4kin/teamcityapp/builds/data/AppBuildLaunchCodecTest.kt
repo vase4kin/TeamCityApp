@@ -26,9 +26,11 @@ import org.junit.Assert.*
 import org.junit.Test
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.builds.BuildProperties
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
+import teamcityapp.libraries.data.builds.LegacyBuildLaunchCodec
 
 class AppBuildLaunchCodecTest {
-    private val codec = AppBuildLaunchCodec(AppBuildLaunchMapper())
+    private val codec = LegacyBuildLaunchCodec(BuildLaunchMapper())
 
     @Test fun encodeRetainsInstalledSerializedBuildClass() {
         val encoded = codec.encode(completeLaunch())

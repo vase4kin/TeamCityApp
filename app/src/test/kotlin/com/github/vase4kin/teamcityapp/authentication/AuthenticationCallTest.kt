@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.authentication
 
 import android.app.Application
+import com.github.vase4kin.teamcityapp.integration.authentication.awaitAuthentication
 import java.io.IOException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async

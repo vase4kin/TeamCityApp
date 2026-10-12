@@ -60,7 +60,7 @@ class SettingsActivityTest {
 
     @Before fun before() {
         app.appInjector.sharedUserStorage().clearAll()
-        app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.dagger.modules.Mocks.URL, false)
+        app.appInjector.sharedUserStorage().saveGuestUserAccountAndSetItAsActive(com.github.vase4kin.teamcityapp.di.modules.Mocks.URL, false)
         runBlocking { repo.setTheme(ThemeMode.Light) }
     }
 

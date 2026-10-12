@@ -27,6 +27,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
 import teamcityapp.features.navigation.api.NavigationEntry
+import teamcityapp.features.navigation.impl.data.DefaultNavigationRepository
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 
@@ -48,14 +49,14 @@ class AppNavigationRepositoryTest {
         }
         val legacy = mock<Repository>()
         doReturn(Single.just(node(listOf(project, configuration)))).whenever(legacy).listBuildTypes("_Root", false)
-        val result = AppNavigationRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).entries("_Root", false)
+        val result = DefaultNavigationRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).entries("_Root", false)
         assertEquals(listOf(NavigationEntry.Project(ProjectReference("P", "Project"), "description"), NavigationEntry.Configuration(BuildConfigurationSummary("C", "Configuration", null, ProjectReference("P", "Project")))), result)
     }
 
     @Test fun refreshAndReturnPreserveTheirCachePoliciesAndEmptyNodes() = runTest {
         val legacy = mock<Repository>()
         doReturn(Single.just(node(emptyList()))).whenever(legacy).listBuildTypes(any(), any())
-        val repository = AppNavigationRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultNavigationRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
         assertTrue(repository.entries("project", false).isEmpty())
         assertTrue(repository.entries("project", true).isEmpty())
         verify(legacy).listBuildTypes("project", false)
@@ -66,7 +67,7 @@ class AppNavigationRepositoryTest {
         val legacy = mock<Repository>()
         var disposed = false
         doReturn(Single.never<NavigationNode>().doOnDispose { disposed = true }).whenever(legacy).listBuildTypes(any(), any())
-        val pending = async { AppNavigationRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).entries("project", false) }
+        val pending = async { DefaultNavigationRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).entries("project", false) }
         runCurrent()
         pending.cancel()
         runCurrent()
@@ -79,7 +80,7 @@ class AppNavigationRepositoryTest {
         doReturn(Single.just(node(emptyList()))).whenever(first).listBuildTypes(any(), any())
         doReturn(Single.just(node(emptyList()))).whenever(second).listBuildTypes(any(), any())
         var active = first
-        val repository = AppNavigationRepository(Provider { active }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultNavigationRepository(Provider { active }, StandardTestDispatcher(testScheduler))
         repository.entries("same-project", false)
         active = second
         repository.entries("same-project", false)

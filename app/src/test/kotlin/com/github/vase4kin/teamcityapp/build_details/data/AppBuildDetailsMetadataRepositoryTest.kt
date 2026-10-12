@@ -33,6 +33,7 @@ import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import teamcityapp.features.build_details.api.*
+import teamcityapp.features.build_details.impl.data.DefaultBuildDetailsMetadataRepository
 import teamcityapp.libraries.builds.*
 import teamcityapp.libraries.onboarding.OnboardingManager
 import teamcityapp.libraries.storage.models.UserAccount
@@ -46,7 +47,7 @@ class AppBuildDetailsMetadataRepositoryTest {
     private val onboarding = mock<OnboardingManager>()
     private var active = UserAccount("https://same-server", "alice", byteArrayOf(), false, true)
     private val build = BuildLaunchData("42", "/b", changes = BuildCollectionLink("/changes?opaque:42"), tests = BuildTests("/tests?opaque:42", 1, 2, 3, 6))
-    private fun repository(scope: TestScope) = AppBuildDetailsMetadataRepository(Provider { legacy }, storage, onboarding, StandardTestDispatcher(scope.testScheduler)).also { whenever(storage.activeUser).thenAnswer { active } }
+    private fun repository(scope: TestScope) = DefaultBuildDetailsMetadataRepository(Provider { legacy }, storage, onboarding, StandardTestDispatcher(scope.testScheduler)).also { whenever(storage.activeUser).thenAnswer { active } }
 
     @Test fun independentCountsPreserveOpaqueUrlsAndInstalledForceRefreshPolicy() = runTest {
         val repository = repository(this)

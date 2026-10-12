@@ -24,6 +24,11 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_details.impl" }
 dependencies {
+    implementation(projects.libraries.onboarding)
+    implementation(projects.libraries.session)
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
     implementation(projects.libraries.navigation)
     implementation(projects.libraries.chromeTabs)
     implementation(projects.features.buildOverview.api)

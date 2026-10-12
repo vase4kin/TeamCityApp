@@ -26,13 +26,13 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.features.splash.SplashRepositoryModule
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
 import com.github.vase4kin.teamcityapp.navigation.AppAccountFlowNavigation
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver
 import com.github.vase4kin.teamcityapp.navigation.MainActivity
-import com.github.vase4kin.teamcityapp.splash.dagger.SplashRepositoryModule
 import dagger.hilt.android.testing.*
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject

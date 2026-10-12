@@ -29,6 +29,6 @@ extensions.configure<LibraryExtension> {
 }
 
 dependencies {
-    implementation(projects.libraries.api)
+    api(projects.libraries.api)
     implementation(libs.androidx.annotationn)
 }

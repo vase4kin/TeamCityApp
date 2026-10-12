@@ -20,9 +20,10 @@ import android.app.Application
 import com.github.vase4kin.teamcityapp.agents.api.Agent as LegacyAgent
 import com.github.vase4kin.teamcityapp.agents.api.Agents
 import com.github.vase4kin.teamcityapp.api.Repository
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.Filter
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.FilterProvider
-import com.github.vase4kin.teamcityapp.home.data.HomeFilterEvents
+import com.github.vase4kin.teamcityapp.integration.features.agents.data.AppAgentsRepository
+import com.github.vase4kin.teamcityapp.integration.features.home.data.HomeFilterEvents
+import com.github.vase4kin.teamcityapp.integration.filters.filter.Filter
+import com.github.vase4kin.teamcityapp.integration.filters.filter.FilterProvider
 import io.reactivex.Single
 import javax.inject.Provider
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -43,8 +43,8 @@ import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.CanceledInfo
 import com.github.vase4kin.teamcityapp.buildlist.api.Triggered
 import com.github.vase4kin.teamcityapp.buildlist.api.User
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.BuildComposeFixtures
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule

@@ -19,8 +19,6 @@ package com.github.vase4kin.teamcityapp.navigation
 import android.content.Context
 import android.webkit.CookieManager
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
-import com.github.vase4kin.teamcityapp.builds.data.homeBuildAccountKey
-import com.github.vase4kin.teamcityapp.builds.data.requireCurrentHomeBuildAccount
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -30,6 +28,8 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import teamcityapp.features.build_log.api.BuildLogConsentStorage
 import teamcityapp.libraries.coroutines.MainDispatcher
+import teamcityapp.libraries.session.homeBuildAccountKey
+import teamcityapp.libraries.session.requireCurrentHomeBuildAccount
 
 interface AccountSessionPreparation {
     fun currentKey(): String

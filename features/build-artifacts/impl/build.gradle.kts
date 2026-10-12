@@ -23,6 +23,12 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.artifacts.impl" }
 dependencies {
+    testImplementation(libs.retrofit.gsonConverter)
+    testImplementation(libs.mockito.mockitoKotlin)
+    testImplementation(libs.mockito.mockitoCore)
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
     implementation(projects.libraries.navigation)
     implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildArtifacts.api)

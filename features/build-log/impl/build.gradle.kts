@@ -24,6 +24,9 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_log.impl" }
 dependencies {
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.storageModels)
+    implementation(projects.libraries.storage)
     implementation(libs.androidx.activity.compose)
     implementation(projects.libraries.navigation)
     implementation(projects.libraries.chromeTabs)

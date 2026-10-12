@@ -18,6 +18,7 @@ package com.github.vase4kin.teamcityapp.builds.data
 
 import org.junit.Assert.*
 import org.junit.Test
+import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.storage.models.UserAccount
 
 class HomeBuildAccountSnapshotTest {

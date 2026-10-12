@@ -20,7 +20,6 @@ package com.github.vase4kin.teamcityapp.overview.data
 import android.app.Application
 import com.github.vase4kin.teamcityapp.api.Repository
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
 import javax.inject.Provider
@@ -33,19 +32,21 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import teamcityapp.features.build_overview.impl.data.DefaultBuildOverviewRepository
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], application = Application::class)
 class AppBuildOverviewRepositoryTest {
-    private val mapper = AppBuildLaunchMapper()
+    private val mapper = BuildLaunchMapper()
 
     @Test fun detailRequestPreservesCacheFlagOpaqueHrefAndFullLoadedSnapshot() = runTest {
         val legacy = mock<Repository>()
         val response = mapper.toLegacyBuild(loadedOverview)
         doReturn(Single.just(response)).whenever(legacy).build("opaque/build:42&fields=all", false)
         doReturn(Single.just(response)).whenever(legacy).build("opaque/build:42&fields=all", true)
-        val repository = AppBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
+        val repository = DefaultBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
         assertEquals(loadedOverview, repository.build("opaque/build:42&fields=all", false))
         assertEquals(loadedOverview, repository.build("opaque/build:42&fields=all", true))
         verify(legacy).build("opaque/build:42&fields=all", true)
@@ -55,7 +56,7 @@ class AppBuildOverviewRepositoryTest {
         val legacy = mock<Repository>()
         var disposed = false
         doReturn(Single.never<Build>().doOnDispose { disposed = true }).whenever(legacy).build("href", true)
-        val repository = AppBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
+        val repository = DefaultBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
         val pending = async { repository.build("href", true) }
         runCurrent()
         pending.cancel()
@@ -68,7 +69,7 @@ class AppBuildOverviewRepositoryTest {
         val legacy = mock<Repository>()
         val response = SingleSubject.create<Build>()
         doReturn(response).whenever(legacy).build("/builds/42", true)
-        val repository = AppBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
+        val repository = DefaultBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
         var current = loadedOverview
         val pending = async { current = repository.build("/builds/42", true) }
         runCurrent()
@@ -85,7 +86,7 @@ class AppBuildOverviewRepositoryTest {
     @Test fun repositoryFailurePropagatesForTheFeatureRetainedErrorState() = runTest {
         val legacy = mock<Repository>()
         doReturn(Single.error<Build>(IllegalStateException("offline"))).whenever(legacy).build("href", true)
-        val repository = AppBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
+        val repository = DefaultBuildOverviewRepository(Provider { legacy }, mapper, StandardTestDispatcher(testScheduler))
         assertEquals("offline", runCatching { repository.build("href", true) }.exceptionOrNull()?.message)
     }
 
@@ -96,7 +97,7 @@ class AppBuildOverviewRepositoryTest {
         doReturn(Single.just(mapper.toLegacyBuild(loadedOverview))).whenever(second).build("href", true)
         var current = first
         var resolutions = 0
-        val repository = AppBuildOverviewRepository(
+        val repository = DefaultBuildOverviewRepository(
             Provider {
                 resolutions++
                 current

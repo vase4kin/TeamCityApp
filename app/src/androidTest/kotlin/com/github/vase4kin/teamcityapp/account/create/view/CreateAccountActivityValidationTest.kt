@@ -35,8 +35,8 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.R
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.account.create.dagger.CreateAccountActivityValidationTestAppModule
-import com.github.vase4kin.teamcityapp.dagger.modules.AppModule
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks.Companion.URL
+import com.github.vase4kin.teamcityapp.di.modules.AppModule
+import com.github.vase4kin.teamcityapp.di.modules.Mocks.Companion.URL
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.navigation.IncomingDestinationResolver

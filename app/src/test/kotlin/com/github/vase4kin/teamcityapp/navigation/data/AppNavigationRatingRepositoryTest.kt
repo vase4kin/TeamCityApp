@@ -23,6 +23,7 @@ import kotlinx.coroutines.test.*
 import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
+import teamcityapp.features.navigation.impl.data.DefaultNavigationRatingRepository
 import teamcityapp.libraries.remote.RemoteService
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,13 +34,13 @@ class AppNavigationRatingRepositoryTest {
 
     @Test fun persistedHandledChoiceSuppressesEligibilityLookup() = runTest {
         doReturn(true).whenever(preferences).getBoolean("rated", false)
-        assertFalse(AppNavigationRatingRepository(context, remote, StandardTestDispatcher(testScheduler)).isEligible())
+        assertFalse(DefaultNavigationRatingRepository(context, remote, StandardTestDispatcher(testScheduler)).isEligible())
         verifyNoInteractions(remote)
     }
 
     @Test fun unhandledChoiceUsesRemoteEligibility() = runTest {
         doReturn(true).whenever(remote).isNotChurn()
-        val repository = AppNavigationRatingRepository(context, remote, StandardTestDispatcher(testScheduler))
+        val repository = DefaultNavigationRatingRepository(context, remote, StandardTestDispatcher(testScheduler))
         assertTrue(repository.isEligible())
         doReturn(false).whenever(remote).isNotChurn()
         assertFalse(repository.isEligible())
@@ -49,7 +50,7 @@ class AppNavigationRatingRepositoryTest {
         val editor = mock<SharedPreferences.Editor>()
         doReturn(editor).whenever(preferences).edit()
         doReturn(editor).whenever(editor).putBoolean("rated", true)
-        AppNavigationRatingRepository(context, remote, StandardTestDispatcher(testScheduler)).markHandled()
+        DefaultNavigationRatingRepository(context, remote, StandardTestDispatcher(testScheduler)).markHandled()
         verify(editor).putBoolean("rated", true)
         verify(editor).apply()
     }

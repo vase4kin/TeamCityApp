@@ -36,9 +36,8 @@ import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomActivityTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -69,6 +68,7 @@ import teamcityapp.features.build_details.api.BuildDetailsDestination
 import teamcityapp.features.build_history.api.navigation.BuildHistoryDestination
 import teamcityapp.features.build_queue.impl.R as FeatureR
 import teamcityapp.features.filter_bottom_sheet.impl.R as QuickR
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.list_ui.R as ListR
 
 @HiltAndroidTest
@@ -184,7 +184,7 @@ class BuildQueueFragmentTest {
         openTab()
         awaitRow("1")
         row("1").performClick()
-        Assert.assertEquals(BuildDetailsDestination(AppBuildLaunchMapper().toLaunchData(build)), currentRootSnapshot().entries.last().destination)
+        Assert.assertEquals(BuildDetailsDestination(BuildLaunchMapper().toLaunchData(build)), currentRootSnapshot().entries.last().destination)
         Assert.assertTrue(currentRootSnapshot().entries.first().destination is teamcityapp.features.home.api.HomeDestination)
     }
 

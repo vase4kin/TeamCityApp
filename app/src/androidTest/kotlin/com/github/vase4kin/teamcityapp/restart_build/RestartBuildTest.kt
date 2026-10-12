@@ -41,7 +41,7 @@ import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
 import com.github.vase4kin.teamcityapp.base.extractor.BundleExtractorValues
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.CustomIntentsTestRule
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.TestUtils
@@ -236,11 +236,11 @@ class RestartBuildTest {
         // Check build is opened
         compose.waitUntil(10_000) {
             (currentRootSnapshot().entries.last().destination as? teamcityapp.features.build_details.api.BuildDetailsDestination)?.let {
-                it.forceOverviewRefresh && it.build == com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper().toLaunchData(build2)
+                it.forceOverviewRefresh && it.build == teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(build2)
             } == true
         }
         val destination = currentRootSnapshot().entries.last().destination as teamcityapp.features.build_details.api.BuildDetailsDestination
-        org.junit.Assert.assertEquals(com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper().toLaunchData(build2), destination.build)
+        org.junit.Assert.assertEquals(teamcityapp.libraries.data.builds.BuildLaunchMapper().toLaunchData(build2), destination.build)
         org.junit.Assert.assertTrue(destination.forceOverviewRefresh)
 
         // Checking Result was changed

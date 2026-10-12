@@ -26,15 +26,14 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.github.vase4kin.teamcityapp.TeamCityApplicationBase
 import com.github.vase4kin.teamcityapp.api.TeamCityService
-import com.github.vase4kin.teamcityapp.artifact.router.ComposeArtifactsPlatformModule
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
 import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilterImpl
-import com.github.vase4kin.teamcityapp.builds.data.AppBuildLaunchMapper
-import com.github.vase4kin.teamcityapp.dagger.modules.FakeTeamCityServiceImpl
-import com.github.vase4kin.teamcityapp.dagger.modules.Mocks
+import com.github.vase4kin.teamcityapp.di.modules.FakeTeamCityServiceImpl
+import com.github.vase4kin.teamcityapp.di.modules.Mocks
 import com.github.vase4kin.teamcityapp.helper.HiltApiTestRule
 import com.github.vase4kin.teamcityapp.helper.RootDestinationLauncher
 import com.github.vase4kin.teamcityapp.helper.TestUtils
+import com.github.vase4kin.teamcityapp.integration.platform.artifacts.ComposeArtifactsPlatformModule
 import dagger.hilt.android.testing.*
 import io.reactivex.Single
 import java.io.File
@@ -50,6 +49,7 @@ import org.mockito.Spy
 import teamcityapp.features.artifacts.api.*
 import teamcityapp.features.build_details.api.*
 import teamcityapp.libraries.builds.*
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 
 @OptIn(ExperimentalTestApi::class)
 @HiltAndroidTest
@@ -79,7 +79,7 @@ class BuildDetailsNavigationTest {
     @Inject lateinit var consent: teamcityapp.features.build_log.api.BuildLogConsentStorage
 
     @Inject lateinit var accountNavigation: teamcityapp.libraries.navigation.AccountFlowNavigation
-    private val mapper = AppBuildLaunchMapper()
+    private val mapper = BuildLaunchMapper()
     private val opened = mutableListOf<DownloadedArtifact>()
     private val browser = mutableListOf<String>()
 

@@ -29,6 +29,7 @@ import org.mockito.kotlin.*
 import teamcityapp.features.test_details.repository.models.TestOccurrence as LegacyTest
 import teamcityapp.features.tests.api.TestStatus
 import teamcityapp.features.tests.api.TestsFilter
+import teamcityapp.features.tests.impl.data.DefaultTestsRepository
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class AppTestsRepositoryTest {
@@ -47,7 +48,7 @@ class AppTestsRepositoryTest {
             LegacyTest("Other", "NEW_STATUS", "/tests/4")
         )
         doReturn(Single.just(page(rows, "opaque&start=10"))).whenever(legacy).listTestOccurrences("build:42,status:FAILURE,count:10", false)
-        val result = AppTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).tests("build:42", TestsFilter.Failed, null, false)
+        val result = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).tests("build:42", TestsFilter.Failed, null, false)
         assertEquals(listOf("5", "/tests/3", "/tests/2", "/tests/1", "/tests/4"), result.items.map { it.id })
         assertEquals(listOf(TestStatus.Failed, TestStatus.Passed, TestStatus.Ignored, TestStatus.Error, TestStatus.Ignored), result.items.map { it.status })
         assertEquals(rows.map { it.name }, result.items.map { it.name })
@@ -57,7 +58,7 @@ class AppTestsRepositoryTest {
     @Test fun formatsEachFilterAndPreservesForcedRefreshAndOpaqueAppendRequests() = runTest {
         val legacy = mock<Repository>()
         doReturn(Single.just(page(emptyList()))).whenever(legacy).listTestOccurrences(any(), any())
-        val repository = AppTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
         TestsFilter.entries.forEach { repository.tests("build:42", it, null, false) }
         repository.tests("build:42", TestsFilter.Passed, null, true)
         repository.tests("build:42", TestsFilter.Ignored, "opaque&start=10", true)
@@ -71,7 +72,7 @@ class AppTestsRepositoryTest {
     @Test fun emptyPagesDiscardStaleContinuation() = runTest {
         val legacy = mock<Repository>()
         doReturn(Single.just(page(emptyList(), "stale"))).whenever(legacy).listTestOccurrences(any(), any())
-        val result = AppTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).tests("build:42", TestsFilter.Failed, null, false)
+        val result = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler)).tests("build:42", TestsFilter.Failed, null, false)
         assertTrue(result.items.isEmpty())
         assertNull(result.nextHref)
     }
@@ -79,7 +80,7 @@ class AppTestsRepositoryTest {
     @Test fun missingIdsAndHrefsHaveStableDistinctPageKeys() = runTest {
         val legacy = mock<Repository>()
         doReturn(Single.just(page(listOf(LegacyTest(), LegacyTest())))).whenever(legacy).listTestOccurrences(any(), any())
-        val repository = AppTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
         val first = repository.tests("build:42", TestsFilter.Failed, null, false)
         assertEquals(listOf("build:42,status:FAILURE,count:10:0", "build:42,status:FAILURE,count:10:1"), first.items.map { it.id })
         assertEquals(first, repository.tests("build:42", TestsFilter.Failed, null, false))
@@ -89,7 +90,7 @@ class AppTestsRepositoryTest {
         val legacy = mock<Repository>()
         var disposals = 0
         doReturn(Single.never<TestOccurrences>().doOnDispose { disposals++ }).whenever(legacy).listTestOccurrences(any(), any())
-        val repository = AppTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
         val page = async { repository.tests("build:42", TestsFilter.Failed, null, false) }
         val count = async { repository.count("build:42") }
         runCurrent()
@@ -103,7 +104,7 @@ class AppTestsRepositoryTest {
         val legacy = mock<Repository>()
         val url = "build:42,count:${Int.MAX_VALUE}&fields=count"
         doReturn(Single.just(TestOccurrences(17))).whenever(legacy).listTestOccurrences(url, true)
-        val repository = AppTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultTestsRepository(Provider { legacy }, StandardTestDispatcher(testScheduler))
         assertEquals(17, repository.count("build:42"))
         doReturn(Single.error<TestOccurrences>(IllegalStateException("offline"))).whenever(legacy).listTestOccurrences(url, true)
         assertEquals("offline", runCatching { repository.count("build:42") }.exceptionOrNull()?.message)
@@ -115,7 +116,7 @@ class AppTestsRepositoryTest {
         doReturn(Single.just(page(emptyList()))).whenever(first).listTestOccurrences(any(), any())
         doReturn(Single.just(page(emptyList()))).whenever(second).listTestOccurrences(any(), any())
         var current = first
-        val repository = AppTestsRepository(Provider { current }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultTestsRepository(Provider { current }, StandardTestDispatcher(testScheduler))
         repository.tests("build:42", TestsFilter.Failed, null, false)
         current = second
         repository.tests("build:42", TestsFilter.Passed, "next", true)

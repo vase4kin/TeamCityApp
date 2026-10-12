@@ -23,6 +23,9 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.build_overview.impl" }
 dependencies {
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
     implementation(projects.libraries.navigation)
     implementation(projects.features.buildDetails.api)
     implementation(projects.features.buildOverview.api)

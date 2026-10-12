@@ -25,6 +25,8 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.splash.impl" }
 dependencies {
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.session)
     implementation(projects.libraries.navigation)
     implementation(projects.features.splash.api)
     implementation(projects.libraries.theme)

@@ -19,11 +19,12 @@ import com.github.vase4kin.teamcityapp.buildlist.filter.BuildListFilter
 import org.junit.Assert.*
 import org.junit.Test
 import teamcityapp.features.filter_builds.api.*
+import teamcityapp.features.filter_builds.impl.data.LegacyFilterBuildsResultAdapter
 class AppFilterBuildsResultAdapterTest {
     @Test fun everyStatusRetainsTheLegacyFilterPayload() {
         BuildStatusFilter.entries.forEach { status ->
             val selection = BuildFilter(status, "release", personal = true, pinned = true)
-            val legacy = AppFilterBuildsResultAdapter().serialize(selection) as BuildListFilter
+            val legacy = LegacyFilterBuildsResultAdapter().serialize(selection) as BuildListFilter
             val statusLocators = listOf("status:SUCCESS", "status:FAILURE", "status:ERROR", "canceled:true", "failedToStart:true", "running:true", "state:queued", "state:any,canceled:any,failedToStart:any")
             val pinned = if (status == BuildStatusFilter.Queued) "any" else "true"
             val count = if (status == BuildStatusFilter.Running || status == BuildStatusFilter.Queued) "" else ",count:10"

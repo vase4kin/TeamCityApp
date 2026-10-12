@@ -24,6 +24,12 @@ plugins {
 }
 extensions.configure<LibraryExtension> { namespace = "teamcityapp.features.run_build.impl" }
 dependencies {
+    testImplementation(libs.retrofit.gsonConverter)
+    testImplementation(libs.mockito.mockitoKotlin)
+    implementation(projects.features.filterBuilds.api)
+    implementation(libs.coroutines.rx2)
+    implementation(projects.libraries.coroutines)
+    implementation(projects.libraries.data)
     implementation(projects.libraries.navigation)
     implementation(platform(libs.google.firebaseBom))
     implementation(libs.google.analytics)

@@ -16,9 +16,10 @@
 
 package com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.data
 
-import com.github.vase4kin.teamcityapp.filter_bottom_sheet_dialog.filter.*
-import com.github.vase4kin.teamcityapp.home.data.FilterAppliedEvent
-import com.github.vase4kin.teamcityapp.home.data.HomeFilterEvents
+import com.github.vase4kin.teamcityapp.integration.features.home.data.FilterAppliedEvent
+import com.github.vase4kin.teamcityapp.integration.features.home.data.HomeFilterEvents
+import com.github.vase4kin.teamcityapp.integration.filters.data.AppQuickFilterRepository
+import com.github.vase4kin.teamcityapp.integration.filters.filter.*
 import kotlinx.coroutines.test.runTest
 import org.greenrobot.eventbus.EventBus
 import org.junit.Assert.*

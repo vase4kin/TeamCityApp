@@ -22,6 +22,7 @@ import android.app.Application
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
+import com.github.vase4kin.teamcityapp.integration.platform.artifacts.AppArtifactsRouterImpl
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import java.io.File
 import org.junit.Assert.*

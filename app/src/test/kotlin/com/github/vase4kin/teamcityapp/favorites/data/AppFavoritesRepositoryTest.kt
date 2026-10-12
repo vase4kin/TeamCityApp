@@ -30,6 +30,7 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.mockito.kotlin.*
 import teamcityapp.features.favorites.api.FavoriteConfigurations
+import teamcityapp.features.favorites.impl.data.DefaultFavoritesRepository
 import teamcityapp.libraries.build_configurations.BuildConfigurationSummary
 import teamcityapp.libraries.build_configurations.ProjectReference
 
@@ -51,7 +52,7 @@ class AppFavoritesRepositoryTest {
         val legacy = mock<Repository>()
         doReturn(Single.just(configuration("second", "Second", "Z"))).whenever(legacy).buildType("second", false)
         doReturn(Single.just(configuration("first", "First", "A"))).whenever(legacy).buildType("first", false)
-        val result = AppFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false)
+        val result = DefaultFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false)
         assertEquals(
             FavoriteConfigurations(
                 savedIds,
@@ -73,7 +74,7 @@ class AppFavoritesRepositoryTest {
         doReturn(Single.just(configuration("first"))).whenever(legacy).buildType("first", false)
         doReturn(Single.error<BuildType>(IllegalStateException("404"))).whenever(legacy).buildType("deleted", false)
         doReturn(Single.just(configuration("last"))).whenever(legacy).buildType("last", false)
-        val result = AppFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false)
+        val result = DefaultFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false)
         assertEquals(savedIds, result.savedIds)
         assertEquals(listOf("first", "last"), result.configurations.map { it.id })
         assertEquals(listOf("deleted"), result.unavailableIds)
@@ -90,7 +91,7 @@ class AppFavoritesRepositoryTest {
         val storage = storage(ids)
         val legacy = mock<Repository>()
         doReturn(Single.error<BuildType>(IllegalStateException("offline"))).whenever(legacy).buildType(any(), any())
-        val result = AppFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(true)
+        val result = DefaultFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(true)
         assertEquals(FavoriteConfigurations(ids, emptyList(), ids), result)
         verify(storage).favoriteBuildTypeIds
         verifyNoMoreInteractions(storage)
@@ -100,7 +101,7 @@ class AppFavoritesRepositoryTest {
         val storage = storage(emptyList())
         var resolutions = 0
         val legacy = mock<Repository>()
-        val repository = AppFavoritesRepository(
+        val repository = DefaultFavoritesRepository(
             storage,
             Provider {
                 resolutions++
@@ -117,7 +118,7 @@ class AppFavoritesRepositoryTest {
         val legacy = mock<Repository>()
         doReturn(Single.just(configuration("first"))).whenever(legacy).buildType(any(), any())
         var resolutions = 0
-        val repository = AppFavoritesRepository(
+        val repository = DefaultFavoritesRepository(
             storage(listOf("first", "second")),
             Provider {
                 resolutions++
@@ -138,7 +139,7 @@ class AppFavoritesRepositoryTest {
         val legacy = mock<Repository>()
         val details = mock<BuildType>()
         doReturn(Single.just(details)).whenever(legacy).buildType("saved-id", false)
-        val result = AppFavoritesRepository(storage(listOf("saved-id")), Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false)
+        val result = DefaultFavoritesRepository(storage(listOf("saved-id")), Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false)
         assertEquals(BuildConfigurationSummary("saved-id", "", null, ProjectReference("", "")), result.configurations.single())
         assertEquals(listOf("saved-id"), result.savedIds)
     }
@@ -151,7 +152,7 @@ class AppFavoritesRepositoryTest {
             doReturn(Single.never<BuildType>().doOnDispose { disposed += id }).whenever(legacy).buildType(id, false)
         }
         val storage = storage(ids)
-        val pending = async { AppFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false) }
+        val pending = async { DefaultFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false) }
         runCurrent()
         ids.forEach { verify(legacy).buildType(it, false) }
         pending.cancel()
@@ -166,7 +167,7 @@ class AppFavoritesRepositoryTest {
         val legacy = mock<Repository>()
         doReturn(Single.error<BuildType>(CancellationException("cancelled"))).whenever(legacy).buildType("first", false)
         doReturn(Single.just(configuration("second"))).whenever(legacy).buildType("second", false)
-        val repository = AppFavoritesRepository(storage(listOf("first", "second")), Provider { legacy }, StandardTestDispatcher(testScheduler))
+        val repository = DefaultFavoritesRepository(storage(listOf("first", "second")), Provider { legacy }, StandardTestDispatcher(testScheduler))
         val failure = runCatching { repository.favorites(false) }.exceptionOrNull()
         assertTrue(failure is CancellationException)
     }
@@ -177,7 +178,7 @@ class AppFavoritesRepositoryTest {
         val second = SingleSubject.create<BuildType>()
         doReturn(first).whenever(legacy).buildType("first", false)
         doReturn(second).whenever(legacy).buildType("second", false)
-        val pending = async { AppFavoritesRepository(storage(listOf("first", "second")), Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false) }
+        val pending = async { DefaultFavoritesRepository(storage(listOf("first", "second")), Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false) }
         runCurrent()
         assertTrue(first.hasObservers())
         assertTrue(second.hasObservers())
@@ -197,7 +198,7 @@ class AppFavoritesRepositoryTest {
         val pendingFirst = SingleSubject.create<BuildType>()
         doReturn(pendingFirst).whenever(legacy).buildType("first", false)
         doReturn(Single.just(configuration("second"))).whenever(legacy).buildType("second", false)
-        val pending = async { AppFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false) }
+        val pending = async { DefaultFavoritesRepository(storage, Provider { legacy }, StandardTestDispatcher(testScheduler)).favorites(false) }
         runCurrent()
         savedIds.clear()
         savedIds += "new-favorite"
@@ -221,7 +222,7 @@ class AppFavoritesRepositoryTest {
         doReturn(Single.just(configuration("new-account-favorite"))).whenever(secondAccount).buildType("new-account-favorite", false)
         var active = firstAccount
         var resolutions = 0
-        val repository = AppFavoritesRepository(
+        val repository = DefaultFavoritesRepository(
             storage,
             Provider {
                 resolutions++
