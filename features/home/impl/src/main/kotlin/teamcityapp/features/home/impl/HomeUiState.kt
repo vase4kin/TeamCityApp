@@ -32,6 +32,12 @@ data class HomeUiState(
     val prompt: HomePromptUi? = null,
     val onboardingFailed: Boolean = false
 ) {
+    @get:StringRes val retryMessageRes: Int? get() = when {
+        onboardingFailed -> R.string.home_onboarding_failed
+        badges.values.any { it is HomeBadge.Failed } -> R.string.home_counts_failed
+        else -> null
+    }
+
     @get:StringRes val retryLabelRes: Int get() = if (onboardingFailed) R.string.home_retry else R.string.home_retry_counts
 
     @get:StringRes val fabLabelRes: Int get() = if (selected == HomeTab.Favorites) R.string.home_add_favorite else R.string.home_filter

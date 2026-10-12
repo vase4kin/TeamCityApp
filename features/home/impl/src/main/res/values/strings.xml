@@ -47,6 +47,8 @@
     <string name="home_add_favorite">Add to favorites</string>
     <string name="home_count_failed">Count unavailable</string>
     <string name="home_retry_counts">Retry counts</string>
+    <string name="home_counts_failed">Some tab counts couldn’t be loaded.</string>
+    <string name="home_onboarding_failed">Home tips couldn’t be loaded.</string>
     <string name="home_continue">Got it</string>
     <string name="home_retry">Retry</string>
 </resources>

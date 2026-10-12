@@ -21,9 +21,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.unit.dp
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,6 +40,51 @@ import teamcityapp.libraries.theme.*
 @Config(sdk = [35], application = Application::class)
 class HomeScreenTest {
     @get:Rule val compose = createComposeRule()
+
+    @Test fun compactCountFailureStaysAboveTabsWithoutMovingTheToolbar() = assertCountFailureStaysInFooter(expanded = false)
+
+    @Test fun expandedCountFailureStaysBelowContentWithoutMovingTheToolbar() = assertCountFailureStaysInFooter(expanded = true)
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    private fun assertCountFailureStaysInFooter(expanded: Boolean) {
+        val healthy = HomeUiState(selected = HomeTab.Favorites, badges = mapOf(HomeTab.Favorites to HomeBadge.Count(1), HomeTab.Running to HomeBadge.Count(2), HomeTab.Agents to HomeBadge.Count(9)))
+        val state = mutableStateOf(healthy)
+        var retries = 0
+        compose.setContent {
+            TeamCityTheme {
+                HomeScreen(state.value, expanded, {}, {}, {
+                    retries++
+                    state.value = healthy
+                }, {}, remember { SnackbarHostState() }) {
+                    Scaffold(topBar = {
+                        CenterAlignedTopAppBar(title = { Text("Favorites toolbar", Modifier.testTag("test:toolbar-title")) }, windowInsets = WindowInsets(top = 24.dp))
+                    }) { padding -> Text("Favorite configuration", Modifier.padding(padding)) }
+                }
+            }
+        }
+        val title = compose.onNodeWithTag("test:toolbar-title").fetchSemanticsNode().boundsInRoot
+        compose.runOnIdle { state.value = healthy.copy(badges = healthy.badges + (HomeTab.Running to HomeBadge.Failed())) }
+        assertEquals(title, compose.onNodeWithTag("test:toolbar-title").fetchSemanticsNode().boundsInRoot)
+        assertTrue(title.top >= 24f)
+        val notice = compose.onNodeWithTag("home:retry-notice").assertIsDisplayed().fetchSemanticsNode().boundsInRoot
+        assertTrue(notice.top > title.bottom)
+        assertTrue(compose.onNodeWithTag("home:fab").fetchSemanticsNode().boundsInRoot.bottom <= notice.top)
+        if (!expanded) assertTrue(notice.bottom <= compose.onNodeWithTag("home:tab:Favorites").fetchSemanticsNode().boundsInRoot.top)
+        compose.onNodeWithTag("home:count:Favorites", useUnmergedTree = true).assertTextEquals("1")
+        compose.onNodeWithTag("home:count:Agents", useUnmergedTree = true).assertTextEquals("9")
+        compose.onNodeWithText("Retry counts").performClick()
+        assertEquals(1, retries)
+        compose.onNodeWithTag("home:retry-notice").assertDoesNotExist()
+        assertEquals(title, compose.onNodeWithTag("test:toolbar-title").fetchSemanticsNode().boundsInRoot)
+    }
+
+    @Test fun onboardingFailureUsesTheSameFooterAndRetryCallback() {
+        var retries = 0
+        compose.setContent { TeamCityTheme { HomeScreen(HomeUiState(onboardingFailed = true), false, {}, {}, { retries++ }, {}, remember { SnackbarHostState() }) { Text("Content") } } }
+        compose.onNodeWithText("Home tips couldn’t be loaded.").assertIsDisplayed()
+        compose.onNodeWithText("Retry").performClick()
+        assertEquals(1, retries)
+    }
 
     @Test fun drawerTipHighlightsItsChildControlAndOnlyDismissesTheTip() {
         var dismissals = 0

@@ -97,16 +97,32 @@ fun HomeScreen(
                     modifier = Modifier.weight(1f),
                     contentWindowInsets = WindowInsets(0, 0, 0, 0),
                     bottomBar = {
-                        if (!expanded) {
-                            NavigationBar {
-                                HomeTab.entries.forEach { tab ->
-                                    NavigationBarItem(
-                                        selected = state.selected == tab,
-                                        onClick = { onTabSelected(tab) },
-                                        icon = { TabIcon(tab) },
-                                        label = { Text(stringResource(labels.getValue(tab)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
-                                        modifier = Modifier.testTag("home:tab:${tab.name}")
+                        Surface {
+                            Column(
+                                Modifier.fillMaxWidth().windowInsetsPadding(
+                                    WindowInsets.safeDrawing.only(if (expanded) WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom else WindowInsetsSides.Horizontal)
+                                )
+                            ) {
+                                state.retryMessageRes?.let { message ->
+                                    ErrorNotice(
+                                        message = stringResource(message),
+                                        onRetry = onRetry,
+                                        actionLabel = stringResource(state.retryLabelRes),
+                                        modifier = Modifier.padding(horizontal = TeamCityDimensions.contentPadding, vertical = TeamCityDimensions.smallSpacing).testTag("home:retry-notice")
                                     )
+                                }
+                                if (!expanded) {
+                                    NavigationBar {
+                                        HomeTab.entries.forEach { tab ->
+                                            NavigationBarItem(
+                                                selected = state.selected == tab,
+                                                onClick = { onTabSelected(tab) },
+                                                icon = { TabIcon(tab) },
+                                                label = { Text(stringResource(labels.getValue(tab)), maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                                                modifier = Modifier.testTag("home:tab:${tab.name}")
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -123,10 +139,7 @@ fun HomeScreen(
                     },
                     snackbarHost = { SnackbarHost(snackbar) }
                 ) { padding ->
-                    Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
-                        if (state.badges.values.any { it is HomeBadge.Failed } || state.onboardingFailed) TextButton(onClick = onRetry) { Text(stringResource(state.retryLabelRes)) }
-                        Box(Modifier.weight(1f)) { content() }
-                    }
+                    Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) { content() }
                 }
             }
         }
