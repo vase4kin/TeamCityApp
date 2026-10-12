@@ -139,11 +139,36 @@ Mockito's test-only JVMTI agent keeps its supplied symbols explicitly.
 ## CI execution and caching
 
 CI starts `Build` (mock debug), `Build minified` (production R8 verification),
-`Checks` (lint), and `Unit tests` independently. The unit-test invocation also
-generates aggregate coverage after the test and compilation tasks;
-the same job uploads its XML directly to Codecov. Unit-test coverage runs on
-every branch, and its upload does not wait for APK builds or instrumentation
-tests. The report artifact includes XML and HTML.
+`Checks` (lint), and four unit-test shards in separate jobs. Build jobs and test
+shards wait for the test policy; formatting/lint starts immediately.
+The policy job runs all CI Python tests and uses `scripts/unit-test-ci.py plan`
+to discover every explicitly included Android module. Each module's existing
+`testMockDebugUnitTest` (app) or `testDebugUnitTest` (libraries/features) and
+opted-in Roborazzi verification run in exactly one shard; the included
+`:build-logic:test` runs once too. New modules are included automatically;
+unrecognized conventions or library flavors fail planning instead of skipping
+checks. Shards use two Gradle workers and do not cancel siblings on failure.
+The planner estimates relative work from Robolectric test classes and checked-in
+PNG counts, then distributes modules greedily across four shards.
+
+Each shard uploads its own JUnit and screenshot reports, including on failure.
+After successful tests, it packages the exact compiled debug/mockDebug classes
+(including dependencies) and its owned JaCoCo execution files. Coverage archives
+are workflow artifacts retained for one day, not Gradle cache entries.
+The final `Unit tests` job remains the required check and explicitly fails if
+any shard fails, is cancelled, or is skipped. It restores all four archives,
+rejecting missing execution data, mismatched plans, and conflicting class bytes,
+then runs only `:app:generateCodeCoverageReport`. The existing class filters,
+source directories, transformed-bytecode preference, XML/HTML output paths, and
+single `unit` Codecov upload are preserved. Aggregation does not recompile or
+rerun tests and does not wait for APK builds or instrumentation tests.
+
+To inspect the shard task lists locally:
+
+```sh
+python3 scripts/unit-test-ci.py plan
+python3 -m unittest discover -s scripts/tests
+```
 
 Both mock debug and minified production verification applications are built on
 every invocation. PR titles beginning with `chore:` or `chore(scope):` skip all
@@ -263,9 +288,14 @@ Instrumentation XML is saved as the `instrumentation-coverage` artifact.
 
 Gradle task-output caching and parallel module execution are enabled in
 `gradle.properties`. CI uses the enhanced Gradle cache provider for fallback
-restoration and separate job caches. Default-branch builds and same-repository
-PRs save caches; fork PRs only read them. The first run after switching providers
-can start cold, while subsequent runs of the same PR can reuse compiled outputs.
+restoration and separate job/matrix caches. Only runs on `refs/heads/dev` save
+Gradle caches; all PRs (including same-repository PRs), feature-branch manual runs,
+and the coverage aggregation job read caches without saving private copies.
+This protects shared dev entries from eviction under the repository cache quota.
+A cache miss still executes every assigned test; four shards bound the amount
+of test work on an individual runner. Existing private PR caches expire under
+GitHub's normal retention policy; no cache deletion or paid quota increase is
+required by this workflow change.
 
 ## Compose golden tests
 

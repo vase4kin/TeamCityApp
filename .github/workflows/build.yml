@@ -48,12 +48,19 @@ jobs:
       suite: ${{ steps.policy.outputs.suite }}
       collect_coverage: ${{ steps.policy.outputs.collect_coverage }}
       matrix: ${{ steps.policy.outputs.matrix }}
+      unit_test_matrix: ${{ steps.unit-plan.outputs.unit_test_matrix }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
         with:
           # Compare the complete PR branch or the push's before/after commits.
           fetch-depth: 0
+
+      - name: Verify CI scripts and plan unit-test shards
+        id: unit-plan
+        run: |
+          python3 -m unittest discover -s scripts/tests
+          python3 scripts/unit-test-ci.py plan
 
       - name: Select UI test policy and suite
         id: policy
@@ -86,8 +93,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: enhanced
-          # Same-repository PR reruns can reuse their compiled task outputs.
-          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          # Preserve shared dev caches instead of saving private PR copies.
+          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
 
       - name: Copy mock Google services configuration
         run: |
@@ -144,8 +151,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: enhanced
-          # Same-repository PR reruns can reuse their compiled task outputs.
-          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          # Preserve shared dev caches instead of saving private PR copies.
+          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
 
       - name: Prepare R8 verification configuration
         run: python3 scripts/prepare-r8-verification.py
@@ -196,8 +203,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: enhanced
-          # Same-repository PR reruns can reuse their compiled task outputs.
-          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          # Preserve shared dev caches instead of saving private PR copies.
+          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
 
       - name: Copy mock Google services configuration
         run: |
@@ -221,13 +228,14 @@ jobs:
           path: app/build/reports/lint-results-mockDebug.*
           if-no-files-found: warn
 
-  unit-tests:
-    name: Unit tests
-    permissions:
-      contents: read
-      id-token: write
+  unit-test-shards:
+    name: Unit tests (shard ${{ matrix.shard }})
+    needs: test-policy
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.test-policy.outputs.unit_test_matrix) }}
 
     steps:
       - name: Check out repository
@@ -243,8 +251,8 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: enhanced
-          # Same-repository PR reruns can reuse their compiled task outputs.
-          cache-read-only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          # Preserve shared dev caches instead of saving private PR copies.
+          cache-read-only: ${{ github.ref != 'refs/heads/dev' }}
 
       - name: Copy mock Google services configuration
         run: |
@@ -252,16 +260,31 @@ jobs:
           cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
           cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
 
-      - name: Run unit tests and generate coverage
+      - name: Run unit tests and verify screenshots
+        env:
+          UNIT_TEST_TASKS: ${{ matrix.tasks }}
         run: |
-          python3 -m unittest discover -s scripts/tests
-          ./gradlew :build-logic:test testMockDebugUnitTest testDebugUnitTest verifyRoborazziDebug :app:generateCodeCoverageReport --max-workers=2 --stacktrace
+          read -r -a tasks <<< "$UNIT_TEST_TASKS"
+          ./gradlew "${tasks[@]}" --max-workers=2 --stacktrace
+
+      - name: Package unit coverage inputs
+        env:
+          UNIT_TEST_SHARD: ${{ matrix.shard }}
+        run: python3 scripts/unit-test-ci.py pack --shard "$UNIT_TEST_SHARD" --output "unit-coverage-inputs/shard-$UNIT_TEST_SHARD.zip"
+
+      - name: Upload unit coverage inputs
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-coverage-inputs-${{ matrix.shard }}
+          path: unit-coverage-inputs/*.zip
+          if-no-files-found: error
+          retention-days: 1
 
       - name: Upload unit-test results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: unit-test-results
+          name: unit-test-results-${{ matrix.shard }}
           path: '**/build/test-results/**/*.xml'
           if-no-files-found: warn
 
@@ -269,11 +292,62 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: screenshot-reports
+          name: screenshot-reports-${{ matrix.shard }}
           path: |
             **/build/reports/roborazzi
             **/build/outputs/roborazzi
           if-no-files-found: warn
+
+  unit-tests:
+    # Keep the existing required check and fail it if any shard fails or is skipped.
+    name: Unit tests
+    needs: unit-test-shards
+    if: always()
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Require all unit-test shards to succeed
+        env:
+          SHARDS_RESULT: ${{ needs.unit-test-shards.result }}
+        run: test "$SHARDS_RESULT" = success
+
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: enhanced
+          # Aggregation has no test outputs to contribute to the shared cache.
+          cache-read-only: true
+
+      - name: Copy mock Google services configuration
+        run: |
+          mkdir -p app/src/mock/debug app/src/prod/debug
+          cp mock-mockDebug-google-services.json app/src/mock/debug/google-services.json
+          cp mock-prodDebug-google-services.json app/src/prod/debug/google-services.json
+
+      - name: Download unit coverage inputs
+        uses: actions/download-artifact@v7
+        with:
+          pattern: unit-coverage-inputs-*
+          path: unit-coverage-inputs
+          merge-multiple: true
+
+      - name: Generate aggregate unit coverage
+        run: |
+          python3 scripts/unit-test-ci.py restore --inputs unit-coverage-inputs
+          ./gradlew :app:generateCodeCoverageReport --max-workers=2 --stacktrace
 
       - name: Upload coverage report
         if: always()
