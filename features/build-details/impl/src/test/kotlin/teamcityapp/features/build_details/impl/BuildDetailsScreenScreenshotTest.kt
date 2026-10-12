@@ -28,6 +28,7 @@ import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.ExperimentalRoborazziApi
 import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Assert.assertEquals
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
@@ -165,6 +166,11 @@ class BuildDetailsScreenScreenshotTest(private val stateName: String, private va
         }
         compose.mainClock.advanceTimeBy(500)
         compose.waitForIdle()
+        if (stateName in listOf("finished", "running", "queued", "floating_content")) {
+            val toolbar = compose.onNodeWithTag("details:toolbar").fetchSemanticsNode().boundsInRoot
+            val action = compose.onNodeWithTag("details:action:${state.primaryAction.action}").fetchSemanticsNode().boundsInRoot
+            assertEquals("Primary action should match the floating toolbar height", toolbar.height, action.height, 0.5f)
+        }
         if (stateName.endsWith("_scrolled")) {
             compose.mainClock.autoAdvance = true
             compose.onNodeWithTag("details:scroll").performTouchInput { swipeUp(startY = height * .65f, endY = height * .35f, durationMillis = 1_000) }
