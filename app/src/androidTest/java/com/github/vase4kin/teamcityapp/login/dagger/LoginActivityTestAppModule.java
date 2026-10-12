@@ -22,6 +22,7 @@ import com.github.vase4kin.teamcityapp.BuildConfig;
 import com.github.vase4kin.teamcityapp.R;
 import com.github.vase4kin.teamcityapp.api.cache.CacheManagerImpl;
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders;
+import com.github.vase4kin.teamcityapp.api.cache.SharedRxCache;
 import com.github.vase4kin.teamcityapp.remote.RemoteServiceImpl;
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -30,7 +31,6 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.android.qualifiers.ApplicationContext;
-import io.rx_cache2.internal.RxCache;
 import io.victoralbertos.jolyglot.GsonSpeaker;
 import java.io.File;
 import javax.inject.Singleton;
@@ -86,16 +86,16 @@ public class LoginActivityTestAppModule {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected CacheProviders provideCacheProviders(RxCache rxCache) {
-        return rxCache.using(CacheProviders.class);
+    protected CacheProviders provideCacheProviders(SharedRxCache rxCache) {
+        return rxCache.getProviders();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Provides
     @Singleton
-    protected RxCache providesRxCache(@ApplicationContext Context context) {
+    protected SharedRxCache providesRxCache(@ApplicationContext Context context) {
         File cacheDir = context.getCacheDir();
-        return new RxCache.Builder().persistence(cacheDir, new GsonSpeaker());
+        return SharedRxCache.create(cacheDir, new GsonSpeaker());
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
@@ -134,7 +134,7 @@ public class LoginActivityTestAppModule {
     @Singleton
     @Provides
     protected CacheManager providesCacheManager(
-            RxCache rxCache, dagger.Lazy<CacheProviders> providers) {
+            SharedRxCache rxCache, dagger.Lazy<CacheProviders> providers) {
         return new CacheManagerImpl(rxCache, providers);
     }
 }
