@@ -56,15 +56,15 @@ class BuildOverviewViewModelTest {
         assertEquals(BuildOverviewFixtures.finished, vm.state.value.build)
     }
 
-    @Test fun runningInitialLoadForcesFreshDetails() = runTest(dispatcher) {
+    @Test fun runningInitialLoadAllowsFreshBulkCache() = runTest(dispatcher) {
         incoming = BuildOverviewFixtures.build("running")
         val vm = vm()
         observe(vm)
         runCurrent()
-        assertEquals(listOf(incoming.href to true), repository.calls)
+        assertEquals(listOf(incoming.href to false), repository.calls)
     }
 
-    @Test fun queuedInitialLoadPreservesTheLegacyCachePolicy() = runTest(dispatcher) {
+    @Test fun queuedInitialLoadAllowsFreshBulkCache() = runTest(dispatcher) {
         incoming = BuildOverviewFixtures.build("queued")
         val vm = vm()
         observe(vm)
@@ -139,7 +139,7 @@ class BuildOverviewViewModelTest {
         assertEquals(listOf(incoming.href to false, incoming.href to true), repository.calls)
     }
 
-    @Test fun pendingLoadCancelsImmediatelyAndRunningResubscriptionStillForces() = runTest(dispatcher) {
+    @Test fun pendingLoadCancelsImmediatelyAndRunningResubscriptionAllowsFreshCache() = runTest(dispatcher) {
         incoming = BuildOverviewFixtures.build("running")
         var cancelled = 0
         repository.load = { _, _ ->
@@ -157,7 +157,7 @@ class BuildOverviewViewModelTest {
         assertEquals(1, cancelled)
         observe(vm)
         runCurrent()
-        assertEquals(listOf(incoming.href to true, incoming.href to true), repository.calls)
+        assertEquals(listOf(incoming.href to false, incoming.href to false), repository.calls)
     }
 
     @Test fun completedDetailAndActionsSurviveConfigurationGapWithoutDuplicateWork() = runTest(dispatcher) {

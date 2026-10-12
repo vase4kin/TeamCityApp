@@ -38,7 +38,7 @@ class BuildOverviewViewModel @Inject constructor(private val savedStateHandle: S
     private var loaded = false
     private var currentHref = incoming.href
     private val loader = RefreshableListLoader(flowOf(incoming.href)) { _, force ->
-        val build = repository.build(currentHref, force || (!loaded && (incoming.isRunning || savedStateHandle.get<Boolean>(FORCE_INITIAL) == true)))
+        val build = repository.build(currentHref, force || (!loaded && savedStateHandle.get<Boolean>(FORCE_INITIAL) == true))
         currentCoroutineContext().ensureActive()
         currentHref = build.href
         loaded = true

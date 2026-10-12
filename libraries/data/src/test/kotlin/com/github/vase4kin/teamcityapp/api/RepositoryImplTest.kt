@@ -116,6 +116,25 @@ class RepositoryImplTest {
         assertEquals(listOf("running:truenull", "running:truecount"), keys.allValues.map { it.dynamicKey })
     }
 
+    @Test fun queuedProjectionsUseBoundedDistinctKeysAndKeepLegacyCountKeys() {
+        val fields = "count,build(id,href," + "statusText,".repeat(50) + "state)"
+        val upstream = Single.just(Builds(0, emptyList()))
+        for ((locator, selector) in listOf(null to fields, "buildType:A" to fields, null to "count", null to null)) {
+            `when`(teamCityService.listQueueBuilds(locator, selector)).thenReturn(upstream)
+        }
+        `when`(cacheProviders.listQueuedBuilds(eq(upstream), any<DynamicKey>(), any<EvictDynamicKey>())).thenReturn(upstream)
+        repository.listQueueBuilds(null, fields, false).blockingGet()
+        repository.listQueueBuilds("buildType:A", fields, true).blockingGet()
+        repository.listQueueBuilds(null, "count", false).blockingGet()
+        repository.listQueueBuilds(null, null, false).blockingGet()
+        val keys = argumentCaptor<DynamicKey>()
+        verify(cacheProviders, times(4)).listQueuedBuilds(eq(upstream), keys.capture(), any<EvictDynamicKey>())
+        val actual = keys.allValues.map { it.dynamicKey.toString() }
+        assertTrue(actual.take(2).all { it.length < 100 })
+        assertNotEquals(actual[0], actual[1])
+        assertEquals(listOf("nullcount", "nullnull"), actual.drop(2))
+    }
+
     @Test fun serverInfoUsesCacheAndMapsItsResult() = runTest {
         val upstream = Single.just(ServerInfo("network", "https://network.example"))
         val cached = ServerInfo("cached", "https://cached.example")

@@ -27,7 +27,6 @@ import com.github.vase4kin.teamcityapp.builds.data.completeBuildJson
 import com.github.vase4kin.teamcityapp.builds.data.completeLaunch
 import com.github.vase4kin.teamcityapp.integration.features.home.data.HomeFilterEvents
 import com.github.vase4kin.teamcityapp.integration.features.runningbuilds.data.AppRunningBuildsRepository
-import com.github.vase4kin.teamcityapp.integration.features.runningbuilds.data.RUNNING_BUILD_FIELDS
 import com.github.vase4kin.teamcityapp.integration.filters.filter.Filter
 import com.github.vase4kin.teamcityapp.integration.filters.filter.FilterProvider
 import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
@@ -58,8 +57,10 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import teamcityapp.features.build_overview.impl.data.DefaultBuildOverviewRepository
 import teamcityapp.features.running_builds.api.RunningBuildsFilter
 import teamcityapp.features.running_builds.api.RunningBuildsQuery
+import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
 import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.remote.url.UrlFormatter
 import teamcityapp.libraries.session.homeBuildAccountKey
@@ -97,13 +98,13 @@ class AppRunningBuildsRepositoryTest {
     @Test fun allUsesTheBulkProjectionAndListRefreshFlagWithoutDetailRequests() = runTest {
         val app = app(this)
         val row = build("1")
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.just(Builds(1, listOf(row))))
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, true)).thenReturn(Single.just(Builds(1, listOf(row))))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(1, listOf(row))))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(1, listOf(row))))
         assertEquals(listOf("1"), app.builds(allQuery(), false).map { it.id })
         assertEquals(listOf("1"), app.builds(allQuery(), true).map { it.id })
         assertEquals(2, providerCalls)
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, true)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, true)
         verifyNoMoreInteractions(legacy)
     }
 
@@ -120,8 +121,8 @@ class AppRunningBuildsRepositoryTest {
         val app = app(this)
         val first = SingleSubject.create<Builds>()
         val second = SingleSubject.create<Builds>()
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, true)).thenReturn(first)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, true)).thenReturn(second)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, true)).thenReturn(first)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, true)).thenReturn(second)
         val pending = async { app.builds(favoritesQuery(), true) }
         runCurrent()
         assertTrue(first.hasObservers())
@@ -137,23 +138,23 @@ class AppRunningBuildsRepositoryTest {
         val ids = mutableListOf("A", "B")
         val first = SingleSubject.create<Builds>()
         val second = SingleSubject.create<Builds>()
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, false)).thenReturn(first)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, false)).thenReturn(second)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(first)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, false)).thenReturn(second)
         val pending = async { app.builds(favoritesQuery(ids), false) }
         runCurrent()
         ids.clear()
         first.onSuccess(Builds(0, emptyList()))
         second.onSuccess(Builds(0, emptyList()))
         assertTrue(pending.await().isEmpty())
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, false)
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, false)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, false)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, false)
     }
 
     @Test fun cancellingFavoriteBatchDisposesEveryPendingListSubscription() = runTest {
         val app = app(this)
         var disposed = 0
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
         val pending = async { app.builds(favoritesQuery(), false) }
         runCurrent()
         pending.cancel()
@@ -165,8 +166,8 @@ class AppRunningBuildsRepositoryTest {
         val app = app(this)
         val failed = SingleSubject.create<Builds>()
         var disposed = false
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, false)).thenReturn(failed)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed = true })
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(failed)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed = true })
         supervisorScope {
             val pending = async { app.builds(favoritesQuery(), false) }
             runCurrent()
@@ -192,7 +193,7 @@ class AppRunningBuildsRepositoryTest {
             Single.just(Gson().fromJson(selected, Builds::class.java))
         }
         assertEquals(listOf(completeLaunch()), app.builds(allQuery(), false))
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)
         verifyNoMoreInteractions(legacy)
     }
 
@@ -228,7 +229,7 @@ class AppRunningBuildsRepositoryTest {
     @Test fun lateOldAccountBulkResponseCannotPublishContent() = runTest {
         val app = app(this)
         val response = SingleSubject.create<Builds>()
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(response)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(response)
         val query = allQuery()
         val pending = async { app.builds(query, false) }
         runCurrent()
@@ -241,7 +242,7 @@ class AppRunningBuildsRepositoryTest {
     @Test fun cancellingAllBuildsDisposesThePendingBulkSubscription() = runTest {
         val app = app(this)
         val response = SingleSubject.create<Builds>()
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(response)
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(response)
         val pending = async { app.builds(allQuery(), false) }
         runCurrent()
         assertTrue(response.hasObservers())
@@ -257,19 +258,19 @@ class AppRunningBuildsRepositoryTest {
         val app = app(this)
         val next = mock<Repository>()
         val response = SingleSubject.create<Builds>()
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(response)
-        whenever(next.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.just(Builds(0, emptyList())))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(response)
+        whenever(next.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(0, emptyList())))
         val pending = async { app.builds(allQuery(), false) }
         runCurrent()
         current = next
         response.onSuccess(Builds(1, listOf(build("1"))))
         assertEquals(listOf("1"), pending.await().map { it.id })
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)
         verifyNoMoreInteractions(legacy)
         active = account("bob")
         assertTrue(app.builds(allQuery(), false).isEmpty())
         assertEquals(2, providerCalls)
-        verify(next).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)
+        verify(next).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)
     }
 
     @Test fun queryObservesRetainedFilterFavoritesAccountAndUnregistersAfterCollection() = runTest {
@@ -320,8 +321,8 @@ class AppRunningBuildsRepositoryTest {
         active = alice
         val oldResponse = SingleSubject.create<Builds>()
         val next = mock<Repository>()
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, false)).thenReturn(oldResponse)
-        whenever(next.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:C", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.just(Builds(0, emptyList())))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(oldResponse)
+        whenever(next.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:C", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(0, emptyList())))
         val emitted = mutableListOf<List<teamcityapp.libraries.builds.BuildLaunchData>>()
         val collecting = backgroundScope.launch { app.query.collectLatest { emitted += app.builds(it, false) } }
         runCurrent()
@@ -345,7 +346,7 @@ class AppRunningBuildsRepositoryTest {
 
     @Test fun zeroCountIsAuthoritativeEvenWhenTheResponseContainsRows() = runTest {
         val app = app(this)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.just(Builds(0, listOf(build("1")))))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(0, listOf(build("1")))))
         assertTrue(app.builds(allQuery(), false).isEmpty())
         verify(legacy, never()).build(any(), any())
     }
@@ -360,21 +361,23 @@ class AppRunningBuildsRepositoryTest {
         whenever(service.listRunningBuilds(locator, null)).thenReturn(Single.just(Builds(1, listOf(build("123")))))
         session.listRunningBuilds(locator, null, false).blockingGet()
         val complete = Gson().fromJson(completeBuildJson, Build::class.java)
-        whenever(service.listRunningBuilds(locator, RUNNING_BUILD_FIELDS)).thenReturn(Single.just(Builds(1, listOf(complete))))
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(complete))))
         assertEquals(listOf(completeLaunch()), app.builds(allQuery(), false))
+        val overview = DefaultBuildOverviewRepository(Provider { session }, BuildLaunchMapper(), StandardTestDispatcher(testScheduler))
+        assertEquals(completeLaunch(), overview.build(complete.href, false))
         verify(service).listRunningBuilds(locator, null)
-        verify(service).listRunningBuilds(locator, RUNNING_BUILD_FIELDS)
+        verify(service).listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)
         verifyNoMoreInteractions(service)
     }
 
     @Test fun aHundredRunningBuildsNeedOnlyOneBulkRequest() = runTest {
         val app = app(this)
         val rows = (1..100).map { build("$it") }
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, true)).thenReturn(Single.just(Builds(rows.size, rows)))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(rows.size, rows)))
         val loaded = app.builds(allQuery(), true)
         assertEquals((1..100).map(Int::toString), loaded.map { it.id })
         assertTrue(loaded.all { it.isRunning })
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, true)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, true)
         verifyNoMoreInteractions(legacy)
         assertEquals(1, providerCalls)
     }
@@ -382,18 +385,18 @@ class AppRunningBuildsRepositoryTest {
     @Test fun favoritesRetainCompleteProjectedPayloadsWithoutDetailRequests() = runTest {
         val app = app(this)
         val complete = Gson().fromJson(completeBuildJson, Build::class.java)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, true)).thenReturn(Single.just(Builds(1, listOf(complete))))
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, true)).thenReturn(Single.just(Builds(0, emptyList())))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(1, listOf(complete))))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(0, emptyList())))
         assertEquals(listOf(completeLaunch()), app.builds(favoritesQuery(), true))
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", RUNNING_BUILD_FIELDS, true)
-        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", RUNNING_BUILD_FIELDS, true)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:A", BUILD_LAUNCH_FIELDS, true)
+        verify(legacy).listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false,buildType:B", BUILD_LAUNCH_FIELDS, true)
         verifyNoMoreInteractions(legacy)
     }
 
     @Test fun bulkPayloadPreservesAbsentEmptyAndPartialSections() = runTest {
         val app = app(this)
         val page = Gson().fromJson("""{"count":2,"build":[{"id":"1","href":"/builds/1","state":"running"},{"id":"2","href":"/builds/2","state":"running","buildType":{},"properties":{"property":[]},"testOccurrences":{"href":"/tests","count":0},"snapshot-dependencies":{}}]}""", Builds::class.java)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.just(page))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(page))
         val loaded = app.builds(allQuery(), false)
         assertNull(loaded[0].configuration)
         assertNull(loaded[0].properties)
@@ -409,7 +412,7 @@ class AppRunningBuildsRepositoryTest {
     @Test fun malformedBulkRowFailsWithoutFallingBackToADetailRequest() = runTest {
         val app = app(this)
         val invalid = Gson().fromJson("""{"id":"missing-href","state":"running"}""", Build::class.java)
-        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", RUNNING_BUILD_FIELDS, false)).thenReturn(Single.just(Builds(2, listOf(build("1"), invalid))))
+        whenever(legacy.listRunningBuilds("running:true,branch:default:any,personal:false,pinned:false", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(2, listOf(build("1"), invalid))))
         assertTrue(runCatching { app.builds(allQuery(), false) }.exceptionOrNull() is IllegalArgumentException)
         verify(legacy, never()).build(any(), any())
     }

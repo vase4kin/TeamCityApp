@@ -139,6 +139,31 @@ class SharedRxCacheTest {
         assertEquals(0, loaded.count)
     }
 
+    @Test fun activeBuildAgeLimitSurvivesRxCacheResettingRecordLifetimeAndDoesNotExpireFinishedBuilds() {
+        var elapsed = 0L
+        val policy = LiveBuildCachePolicy { System.currentTimeMillis() + elapsed }
+        val memory = SnapshotCacheMemory(policy)
+        val running = Record(build(1, "running"), true, 3_600_000L)
+        val queued = Record(Gson().fromJson("""{"id":"2","href":"/builds/2","state":"queued"}""", Build::class.java), true, 3_600_000L)
+        val finished = Record(Gson().fromJson("""{"id":"3","href":"/builds/3","state":"finished"}""", Build::class.java), true, 3_600_000L)
+        memory.put("running", running)
+        memory.put("queued", queued)
+        memory.put("finished", finished)
+        assertEquals(30_000L, running.lifeTime)
+        assertEquals(30_000L, queued.lifeTime)
+        assertEquals(3_600_000L, finished.lifeTime)
+        // RetrieveRecord overwrites these with the @LifeCache value after the memory read.
+        running.lifeTime = 3_600_000L
+        queued.lifeTime = 3_600_000L
+        elapsed = 20_000
+        assertSame(running, memory.getIfPresent<Build>("running"))
+        assertSame(queued, memory.getIfPresent<Build>("queued"))
+        elapsed = 31_000
+        assertNull(memory.getIfPresent<Build>("running"))
+        assertNull(memory.getIfPresent<Build>("queued"))
+        assertSame(finished, memory.getIfPresent<Build>("finished"))
+    }
+
     private fun build(id: Int, number: String): Build = Gson().fromJson(
         """{"id":"$id","href":"/builds/$id","state":"running","number":"$number"}""",
         Build::class.java

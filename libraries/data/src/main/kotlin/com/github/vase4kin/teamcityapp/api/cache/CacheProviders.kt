@@ -138,7 +138,8 @@ interface CacheProviders {
     ): Single<Builds>
 
     /**
-     * Cache build for 1 hour (we cache only builds which have finished state)
+     * Finished builds keep the legacy one-hour policy and namespace. SharedRxCache
+     * limits running/queued snapshots to 30 seconds in both memory and persistence.
      */
     @ProviderKey("build-1-hour")
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)

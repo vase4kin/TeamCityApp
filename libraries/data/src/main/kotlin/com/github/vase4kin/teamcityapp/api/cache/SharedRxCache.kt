@@ -48,12 +48,14 @@ class SharedRxCache private constructor(private val component: SharedRxCacheComp
 
     companion object {
         @JvmStatic
-        fun create(directory: File, serializer: JolyglotGenerics): SharedRxCache {
+        @JvmOverloads
+        fun create(directory: File, serializer: JolyglotGenerics, nowMillis: () -> Long = System::currentTimeMillis): SharedRxCache {
             require(directory.isDirectory && directory.canWrite()) { "A writable cache directory is required" }
             return SharedRxCache(
                 DaggerSharedRxCacheComponent.builder()
                     .directory(directory)
                     .serializer(serializer)
+                    .liveBuildPolicy(LiveBuildCachePolicy(nowMillis))
                     .useExpiredData(false)
                     .maxCacheSize(100)
                     .encryptionKey("")
@@ -75,6 +77,8 @@ internal interface SharedRxCacheComponent {
 
         @BindsInstance fun serializer(value: JolyglotGenerics): Builder
 
+        @BindsInstance fun liveBuildPolicy(value: LiveBuildCachePolicy): Builder
+
         @BindsInstance fun useExpiredData(value: Boolean): Builder
 
         @BindsInstance fun maxCacheSize(value: Int): Builder
@@ -91,10 +95,10 @@ internal interface SharedRxCacheComponent {
 @DisableInstallInCheck // Isolated legacy RxCache graph; these unqualified bindings must not enter Hilt.
 internal object SharedRxCacheModule {
     @Provides @Singleton
-    fun memory(): Memory = SnapshotCacheMemory()
+    fun memory(policy: LiveBuildCachePolicy): Memory = SnapshotCacheMemory(policy)
 
     @Provides @Singleton
-    fun persistence(disk: Disk): Persistence = disk
+    fun persistence(disk: Disk, policy: LiveBuildCachePolicy): Persistence = LiveBuildPersistence(disk, policy)
 
     @Provides @Singleton
     fun encryptor(): Encryptor = BuiltInEncryptor()

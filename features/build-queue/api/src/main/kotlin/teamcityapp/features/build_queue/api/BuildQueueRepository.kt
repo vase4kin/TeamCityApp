@@ -24,9 +24,8 @@ interface BuildQueueRepository {
     val query: Flow<BuildQueueQuery>
 
     /**
-     * Hydrates complete launch snapshots for the query's account/session. Reject stale account
-     * snapshots before requesting. Running summaries force fresh details; other cached details
-     * refresh when the summary/cached finished flag differs. forceRefresh evicts the list cache.
+     * Loads complete launch snapshots from a bulk fields projection for the query's account/session.
+     * Reject stale account snapshots before requesting. forceRefresh evicts the list cache.
      * Uses the live app/rest/buildQueue endpoint; preserve row order within each configuration.
      * Home continues to own the live count flow independently of this list.
      */

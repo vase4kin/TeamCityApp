@@ -18,8 +18,13 @@ package com.github.vase4kin.teamcityapp.queue.data
 
 import android.app.Application
 import com.github.vase4kin.teamcityapp.api.Repository
+import com.github.vase4kin.teamcityapp.api.RepositoryImpl
+import com.github.vase4kin.teamcityapp.api.TeamCityService
+import com.github.vase4kin.teamcityapp.api.cache.SharedRxCache
 import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import com.github.vase4kin.teamcityapp.buildlist.api.Builds
+import com.github.vase4kin.teamcityapp.builds.data.completeBuildJson
+import com.github.vase4kin.teamcityapp.builds.data.completeLaunch
 import com.github.vase4kin.teamcityapp.integration.features.home.data.HomeFilterEvents
 import com.github.vase4kin.teamcityapp.integration.features.queue.data.AppBuildQueueRepository
 import com.github.vase4kin.teamcityapp.integration.filters.filter.Filter
@@ -28,6 +33,7 @@ import com.github.vase4kin.teamcityapp.storage.SharedUserStorage
 import com.google.gson.Gson
 import io.reactivex.Single
 import io.reactivex.subjects.SingleSubject
+import io.victoralbertos.jolyglot.GsonSpeaker
 import javax.inject.Provider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,15 +47,19 @@ import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.test.*
 import org.greenrobot.eventbus.EventBus
 import org.junit.Assert.*
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.mockito.kotlin.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import teamcityapp.features.build_overview.impl.data.DefaultBuildOverviewRepository
 import teamcityapp.features.build_queue.api.BuildQueueFilter
 import teamcityapp.features.build_queue.api.BuildQueueQuery
-import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
 import teamcityapp.libraries.data.builds.BuildLaunchMapper
+import teamcityapp.libraries.remote.url.UrlFormatter
 import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.storage.models.UserAccount
 
@@ -57,6 +67,7 @@ import teamcityapp.libraries.storage.models.UserAccount
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [35], manifest = Config.NONE, application = Application::class)
 class AppBuildQueueRepositoryTest {
+    @get:Rule val folder = TemporaryFolder()
     private val legacy = mock<Repository>()
     private val storage = mock<SharedUserStorage>()
     private val filters = FilterProvider()
@@ -73,7 +84,7 @@ class AppBuildQueueRepositoryTest {
         storage,
         filters,
         bus,
-        BuildHydrator(BuildLaunchMapper()),
+        BuildLaunchMapper(),
         StandardTestDispatcher(scope.testScheduler)
     ).also {
         whenever(storage.activeUser).thenAnswer { active }
@@ -84,15 +95,14 @@ class AppBuildQueueRepositoryTest {
     @Test fun allUsesExactEndpointLocatorAndListRefreshFlagWithOneSession() = runTest {
         val app = app(this)
         val row = build("1")
-        whenever(legacy.listQueueBuilds(null, null, false)).thenReturn(Single.just(Builds(1, listOf(row))))
-        whenever(legacy.listQueueBuilds(null, null, true)).thenReturn(Single.just(Builds(1, listOf(row))))
-        whenever(legacy.build("/builds/1", false)).thenReturn(Single.just(row))
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(1, listOf(row))))
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(1, listOf(row))))
         assertEquals(listOf("1"), app.builds(allQuery(), false).map { it.id })
         assertEquals(listOf("1"), app.builds(allQuery(), true).map { it.id })
         assertEquals(2, providerCalls)
-        verify(legacy).listQueueBuilds(null, null, false)
-        verify(legacy).listQueueBuilds(null, null, true)
-        verify(legacy, times(2)).build("/builds/1", false)
+        verify(legacy).listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)
+        verify(legacy).listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true)
+        verify(legacy, never()).build(any(), any())
     }
 
     @Test fun emptyFavoritesUsesNoSessionOrEndpointAndNeverMutatesSavedIds() = runTest {
@@ -108,9 +118,8 @@ class AppBuildQueueRepositoryTest {
         val app = app(this)
         val first = SingleSubject.create<Builds>()
         val second = SingleSubject.create<Builds>()
-        whenever(legacy.listQueueBuilds("buildType:A", null, true)).thenReturn(first)
-        whenever(legacy.listQueueBuilds("buildType:B", null, true)).thenReturn(second)
-        listOf("1", "2", "3").forEach { id -> whenever(legacy.build("/builds/$id", false)).thenReturn(Single.just(build(id))) }
+        whenever(legacy.listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, true)).thenReturn(first)
+        whenever(legacy.listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, true)).thenReturn(second)
         val pending = async { app.builds(favoritesQuery(), true) }
         runCurrent()
         assertTrue(first.hasObservers())
@@ -126,23 +135,23 @@ class AppBuildQueueRepositoryTest {
         val ids = mutableListOf("A", "B")
         val first = SingleSubject.create<Builds>()
         val second = SingleSubject.create<Builds>()
-        whenever(legacy.listQueueBuilds("buildType:A", null, false)).thenReturn(first)
-        whenever(legacy.listQueueBuilds("buildType:B", null, false)).thenReturn(second)
+        whenever(legacy.listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(first)
+        whenever(legacy.listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, false)).thenReturn(second)
         val pending = async { app.builds(favoritesQuery(ids), false) }
         runCurrent()
         ids.clear()
         first.onSuccess(Builds(0, emptyList()))
         second.onSuccess(Builds(0, emptyList()))
         assertTrue(pending.await().isEmpty())
-        verify(legacy).listQueueBuilds("buildType:A", null, false)
-        verify(legacy).listQueueBuilds("buildType:B", null, false)
+        verify(legacy).listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, false)
+        verify(legacy).listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, false)
     }
 
     @Test fun cancellingFavoriteBatchDisposesEveryPendingListSubscription() = runTest {
         val app = app(this)
         var disposed = 0
-        whenever(legacy.listQueueBuilds("buildType:A", null, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
-        whenever(legacy.listQueueBuilds("buildType:B", null, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
+        whenever(legacy.listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
+        whenever(legacy.listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed++ })
         val pending = async { app.builds(favoritesQuery(), false) }
         runCurrent()
         pending.cancel()
@@ -154,8 +163,8 @@ class AppBuildQueueRepositoryTest {
         val app = app(this)
         val failed = SingleSubject.create<Builds>()
         var disposed = false
-        whenever(legacy.listQueueBuilds("buildType:A", null, false)).thenReturn(failed)
-        whenever(legacy.listQueueBuilds("buildType:B", null, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed = true })
+        whenever(legacy.listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(failed)
+        whenever(legacy.listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.never<Builds>().doOnDispose { disposed = true })
         supervisorScope {
             val pending = async { app.builds(favoritesQuery(), false) }
             runCurrent()
@@ -170,18 +179,16 @@ class AppBuildQueueRepositoryTest {
         verify(storage, never()).removeBuildTypeFromFavorites(any())
     }
 
-    @Test fun runningDetailsUseFreshHydrationAndRetainTheCompleteLaunchSnapshot() = runTest {
+    @Test fun bulkResponseRetainsTheCompleteLaunchSnapshotWithoutHydration() = runTest {
         val app = app(this)
-        val row = build("1", "running")
         val detail = Gson().fromJson("""{"id":"1","href":"/builds/1","state":"running","buildTypeId":"top","buildType":{"id":"nested","name":"Config"},"properties":{"property":[]},"testOccurrences":{"href":"/tests","count":2,"failed":2}}""", Build::class.java)
-        whenever(legacy.listQueueBuilds(null, null, false)).thenReturn(Single.just(Builds(1, listOf(row))))
-        whenever(legacy.build("/builds/1", true)).thenReturn(Single.just(detail))
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(1, listOf(detail))))
         val loaded = app.builds(allQuery(), false).single()
         assertEquals("top", loaded.buildTypeId)
         assertEquals("nested", loaded.configuration?.id)
         assertNotNull(loaded.properties)
         assertEquals(2, loaded.tests?.count)
-        verify(legacy).build("/builds/1", true)
+        verify(legacy, never()).build(any(), any())
         verify(legacy, never()).build("/builds/1", false)
     }
 
@@ -206,7 +213,7 @@ class AppBuildQueueRepositoryTest {
             storage,
             filters,
             bus,
-            BuildHydrator(BuildLaunchMapper()),
+            BuildLaunchMapper(),
             StandardTestDispatcher(testScheduler)
         )
         assertTrue(runCatching { app.builds(query, false) }.exceptionOrNull() is CancellationException)
@@ -217,7 +224,7 @@ class AppBuildQueueRepositoryTest {
     @Test fun lateOldAccountSummaryCannotStartDetailRequests() = runTest {
         val app = app(this)
         val response = SingleSubject.create<Builds>()
-        whenever(legacy.listQueueBuilds(null, null, false)).thenReturn(response)
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(response)
         val query = allQuery()
         val pending = async { app.builds(query, false) }
         runCurrent()
@@ -227,36 +234,22 @@ class AppBuildQueueRepositoryTest {
         verify(legacy, never()).build(any(), any())
     }
 
-    @Test fun lateOldAccountDetailCannotPublishContent() = runTest {
-        val app = app(this)
-        val response = SingleSubject.create<Build>()
-        whenever(legacy.listQueueBuilds(null, null, false)).thenReturn(Single.just(Builds(1, listOf(build("1")))))
-        whenever(legacy.build("/builds/1", false)).thenReturn(response)
-        val query = allQuery()
-        val pending = async { app.builds(query, false) }
-        runCurrent()
-        active = account("bob")
-        response.onSuccess(build("1"))
-        assertTrue(runCatching { pending.await() }.exceptionOrNull() is CancellationException)
-    }
-
     @Test fun eachBatchCapturesOneRepositoryAndNextAccountBatchResolvesNewSession() = runTest {
         val app = app(this)
         val next = mock<Repository>()
         val response = SingleSubject.create<Builds>()
-        whenever(legacy.listQueueBuilds(null, null, false)).thenReturn(response)
-        whenever(legacy.build("/builds/1", false)).thenReturn(Single.just(build("1")))
-        whenever(next.listQueueBuilds(null, null, false)).thenReturn(Single.just(Builds(0, emptyList())))
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(response)
+        whenever(next.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(0, emptyList())))
         val pending = async { app.builds(allQuery(), false) }
         runCurrent()
         current = next
         response.onSuccess(Builds(1, listOf(build("1"))))
         assertEquals(listOf("1"), pending.await().map { it.id })
-        verify(legacy).build("/builds/1", false)
+        verify(legacy, never()).build(any(), any())
         active = account("bob")
         assertTrue(app.builds(allQuery(), false).isEmpty())
         assertEquals(2, providerCalls)
-        verify(next).listQueueBuilds(null, null, false)
+        verify(next).listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)
     }
 
     @Test fun queryObservesRetainedFilterFavoritesAccountAndUnregistersAfterCollection() = runTest {
@@ -307,8 +300,8 @@ class AppBuildQueueRepositoryTest {
         active = alice
         val oldResponse = SingleSubject.create<Builds>()
         val next = mock<Repository>()
-        whenever(legacy.listQueueBuilds("buildType:A", null, false)).thenReturn(oldResponse)
-        whenever(next.listQueueBuilds("buildType:C", null, false)).thenReturn(Single.just(Builds(0, emptyList())))
+        whenever(legacy.listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, false)).thenReturn(oldResponse)
+        whenever(next.listQueueBuilds("buildType:C", BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(0, emptyList())))
         val emitted = mutableListOf<List<teamcityapp.libraries.builds.BuildLaunchData>>()
         val collecting = backgroundScope.launch { app.query.collectLatest { emitted += app.builds(it, false) } }
         runCurrent()
@@ -332,11 +325,60 @@ class AppBuildQueueRepositoryTest {
 
     @Test fun zeroCountIsAuthoritativeEvenWhenTheResponseContainsRows() = runTest {
         val app = app(this)
-        whenever(legacy.listQueueBuilds(null, null, false)).thenReturn(Single.just(Builds(0, listOf(build("1")))))
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(0, listOf(build("1")))))
         assertTrue(app.builds(allQuery(), false).isEmpty())
         verify(legacy, never()).build(any(), any())
     }
 
+    @Test fun aHundredQueuedBuildsNeedOnlyOneProjectedRequest() = runTest {
+        val app = app(this)
+        val rows = (1..100).map { build("$it") }
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(100, rows)))
+        val loaded = app.builds(allQuery(), true)
+        assertEquals((1..100).map(Int::toString), loaded.map { it.id })
+        assertTrue(loaded.all { it.isQueued })
+        verify(legacy).listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true)
+        verifyNoMoreInteractions(legacy)
+    }
+
+    @Test fun favoritesRetainAllDetailSectionsAndParametersFromTheProjection() = runTest {
+        val app = app(this)
+        val complete = Gson().fromJson(completeBuildJson.replace("\"future-state\"", "\"queued\""), Build::class.java)
+        whenever(legacy.listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(1, listOf(complete))))
+        whenever(legacy.listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, true)).thenReturn(Single.just(Builds(0, emptyList())))
+        assertEquals(listOf(completeLaunch().copy(state = "queued")), app.builds(favoritesQuery(), true))
+        verify(legacy).listQueueBuilds("buildType:A", BUILD_LAUNCH_FIELDS, true)
+        verify(legacy).listQueueBuilds("buildType:B", BUILD_LAUNCH_FIELDS, true)
+        verifyNoMoreInteractions(legacy)
+    }
+
+    @Test fun malformedBulkRowFailsWithoutPerIdFallback() = runTest {
+        val app = app(this)
+        val row = Gson().fromJson("""{"id":"1","state":"queued"}""", Build::class.java)
+        whenever(legacy.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, false)).thenReturn(Single.just(Builds(1, listOf(row))))
+        assertTrue(runCatching { app.builds(allQuery(), false) }.exceptionOrNull() is IllegalArgumentException)
+        verify(legacy, never()).build(any(), any())
+    }
+
+    @Test fun projectedQueueSkipsLegacySummariesAndOverviewReusesTheCompleteFreshSnapshot() = runTest {
+        val service = mock<TeamCityService>()
+        val cache = SharedRxCache.create(folder.newFolder(), GsonSpeaker()).providers
+        val session = RepositoryImpl(service, cache, mock<UrlFormatter>(), StandardTestDispatcher(testScheduler))
+        current = session
+        val app = app(this)
+        whenever(service.listQueueBuilds(null, null)).thenReturn(Single.just(Builds(1, listOf(build("123")))))
+        session.listQueueBuilds(null, null, false).blockingGet()
+        val complete = Gson().fromJson(completeBuildJson.replace("\"future-state\"", "\"queued\""), Build::class.java)
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(complete))))
+        val expected = completeLaunch().copy(state = "queued")
+        assertEquals(listOf(expected), app.builds(allQuery(), false))
+        val overview = DefaultBuildOverviewRepository(Provider { session }, BuildLaunchMapper(), StandardTestDispatcher(testScheduler))
+        assertEquals(expected, overview.build(complete.href, false))
+        verify(service).listQueueBuilds(null, null)
+        verify(service).listQueueBuilds(null, BUILD_LAUNCH_FIELDS)
+        verifyNoMoreInteractions(service)
+    }
+
     private fun account(name: String, ids: List<String> = emptyList()) = UserAccount("https://same-server", name, byteArrayOf(), false, true).apply { buildTypeIds = ids }
-    private fun build(id: String, state: String = "finished") = Gson().fromJson("""{"id":"$id","href":"/builds/$id","state":"$state"}""", Build::class.java)
+    private fun build(id: String, state: String = "queued") = Gson().fromJson("""{"id":"$id","href":"/builds/$id","state":"$state"}""", Build::class.java)
 }

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.github.vase4kin.teamcityapp.integration.features.runningbuilds.data
+package teamcityapp.libraries.data.builds
 
 /**
  * Fields consumed by BuildLaunchMapper, requested on every row in the collection.
  * Parameters and restart use the incoming property values, so they must be included.
  * Other sections need links/counts, not their potentially large item collections.
  */
-internal const val RUNNING_BUILD_FIELDS = "count,build(" +
+const val BUILD_LAUNCH_FIELDS = "count,build(" +
     "id,href,webUrl,number,state,status,statusText,branchName,buildTypeId," +
     "buildType(id,name,projectId,projectName,href)," +
     "queuedDate,startDate,finishDate,waitReason,startEstimate," +

@@ -40,7 +40,8 @@ import teamcityapp.features.build_queue.api.BuildQueueQuery
 import teamcityapp.features.build_queue.api.BuildQueueRepository
 import teamcityapp.libraries.builds.BuildLaunchData
 import teamcityapp.libraries.coroutines.IoDispatcher
-import teamcityapp.libraries.data.builds.BuildHydrator
+import teamcityapp.libraries.data.builds.BUILD_LAUNCH_FIELDS
+import teamcityapp.libraries.data.builds.BuildLaunchMapper
 import teamcityapp.libraries.session.homeBuildAccountKey
 import teamcityapp.libraries.session.requireCurrentHomeBuildAccount
 
@@ -50,7 +51,7 @@ class AppBuildQueueRepository @Inject constructor(
     private val storage: SharedUserStorage,
     private val filterProvider: FilterProvider,
     private val eventBus: EventBus,
-    private val hydrator: BuildHydrator,
+    private val mapper: BuildLaunchMapper,
     @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : BuildQueueRepository {
     override val query = callbackFlow {
@@ -67,17 +68,17 @@ class AppBuildQueueRepository @Inject constructor(
         if (query.filter == BuildQueueFilter.Favorites && savedIds.isEmpty()) return@withContext emptyList()
         val session = repository.get()
         requireCurrentHomeBuildAccount(storage, query.accountKey)
-        val summaries = if (query.filter == BuildQueueFilter.All) {
-            session.listQueueBuilds(null, null, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() }
+        val rows = if (query.filter == BuildQueueFilter.All) {
+            session.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() }
         } else {
             coroutineScope {
                 savedIds.map { id ->
-                    async { session.listQueueBuilds("buildType:$id", null, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() } }
+                    async { session.listQueueBuilds("buildType:$id", BUILD_LAUNCH_FIELDS, forceRefresh).await().let { page -> if (page.count == 0) emptyList() else page.objects.orEmpty().toList() } }
                 }.awaitAll().flatten()
             }
         }
         requireCurrentHomeBuildAccount(storage, query.accountKey)
-        val builds = hydrator.hydrate(session, summaries)
+        val builds = rows.map(mapper::toLaunchData)
         requireCurrentHomeBuildAccount(storage, query.accountKey)
         builds
     }
