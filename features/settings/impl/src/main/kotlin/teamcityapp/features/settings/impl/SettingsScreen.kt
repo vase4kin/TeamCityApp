@@ -39,6 +39,7 @@ import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.LoadingContent
 import teamcityapp.libraries.theme.ScreenNavigation
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityScreen
 import teamcityapp.libraries.theme.TeamCityTheme
 
@@ -68,7 +69,7 @@ fun SettingsScreen(
                     Text(stringResource(R.string.title_theme), style = MaterialTheme.typography.headlineMedium)
                     Text(stringResource(R.string.current_theme, stringResource(state.selectedThemeLabelRes)), Modifier.testTag("settings:current"), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (state.selected !in state.options) Text(stringResource(R.string.theme_unavailable), Modifier.testTag("settings:unavailable"), color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    if (state.saving) LinearProgressIndicator(Modifier.fillMaxWidth().testTag("settings:saving"))
+                    if (state.saving) TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth().testTag("settings:saving"))
                     if (state.saveFailed) {
                         ErrorNotice(stringResource(R.string.theme_save_error), onRetrySave, Modifier.testTag("settings:save_error"))
                     }

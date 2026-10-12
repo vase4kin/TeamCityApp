@@ -38,6 +38,7 @@ import teamcityapp.features.build_overview.api.BuildOverviewAction
 import teamcityapp.libraries.list_state.ListUiState
 import teamcityapp.libraries.list_ui.*
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.rememberTeamCityLazyListState
 import teamcityapp.libraries.theme.resolve
@@ -110,7 +111,7 @@ private fun OverviewStatusCard(row: OverviewRow, time: OverviewRow?, @StringRes 
         Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.smallSpacing)) {
                 if (row.icon == OverviewIcon.Running) {
-                    CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                    TeamCityLoadingIndicator(Modifier.size(24.dp))
                 } else {
                     Icon(painterResource(row.icon.drawable()), null, Modifier.size(24.dp))
                 }
@@ -141,7 +142,7 @@ private fun OverviewSectionRow(section: OverviewSectionUiState, onClick: () -> U
         }
         when (val count = section.count) {
             is BuildDetailsCount.Available -> Badge(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest, contentColor = MaterialTheme.colorScheme.onSurfaceVariant) { Text(count.count.toString()) }
-            BuildDetailsCount.Loading -> CircularProgressIndicator(Modifier.size(18.dp).semantics { contentDescription = countDescription.orEmpty() }, strokeWidth = 2.dp)
+            BuildDetailsCount.Loading -> TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize).semantics { contentDescription = countDescription.orEmpty() })
             BuildDetailsCount.Unavailable -> IconButton(onClick = onRetry, modifier = Modifier.testTag("overview:retry-count:${section.section.name}")) { Icon(painterResource(R.drawable.overview_retry), stringResource(R.string.overview_retry_count) + ": " + countDescription.orEmpty()) }
             null -> Unit
         }
@@ -170,7 +171,7 @@ internal fun OverviewRowContent(row: OverviewRow, onClick: () -> Unit, position:
                 contentColor = if (isError) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 if (row.icon == OverviewIcon.Running) {
-                    CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                    TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.iconSize))
                 } else {
                     Icon(painterResource(row.icon.drawable()), null, Modifier.size(TeamCityDimensions.iconSize))
                 }

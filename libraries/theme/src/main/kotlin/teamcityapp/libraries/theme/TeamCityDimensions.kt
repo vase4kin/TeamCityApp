@@ -47,10 +47,9 @@ object TeamCityDimensions {
     val largeIconSize = 32.dp
     val messageIconSize = 64.dp
     val emptyStateIconSize = 124.dp
-    val compactProgressIndicatorSize = 20.dp
-    val progressIndicatorSize = 32.dp
+    val compactProgressIndicatorSize = 24.dp
+    val progressIndicatorSize = 40.dp
     val modalProgressIndicatorSize = 48.dp
-    val progressStrokeWidth = 2.dp
     val lowElevation = 1.dp
     val loginLogoSize = 96.dp
     val splashLogoSize = 160.dp

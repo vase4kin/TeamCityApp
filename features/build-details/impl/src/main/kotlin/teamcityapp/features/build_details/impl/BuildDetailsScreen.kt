@@ -143,7 +143,7 @@ internal fun BuildDetailsScreen(
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(stringResource(operation.message))
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
+                    TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth())
                 }
             },
             confirmButton = {}

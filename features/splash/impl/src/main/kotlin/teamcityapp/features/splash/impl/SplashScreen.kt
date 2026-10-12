@@ -28,6 +28,7 @@ import androidx.compose.ui.res.*
 import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.libraries.theme.ErrorContent
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
 @Composable
@@ -50,7 +51,7 @@ fun SplashScreen(state: SplashUiState, modifier: Modifier = Modifier, onRetry: (
                         SplashLogo()
                         if (state == SplashUiState.Loading) {
                             Spacer(Modifier.height(TeamCityDimensions.extraLargeSpacing))
-                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize))
+                            TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize))
                         }
                     }
                 }

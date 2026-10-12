@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.Dp
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.MessageContent
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** Only adjacent rows in the same logical section share their inside corners. */
@@ -161,7 +162,7 @@ fun TeamCityListLoading(modifier: Modifier = Modifier) {
     val description = stringResource(R.string.list_loading)
     Column(modifier.fillMaxSize().semantics { stateDescription = description }) {
         Row(Modifier.padding(horizontal = TeamCityDimensions.largeContentPadding, vertical = TeamCityDimensions.contentPadding), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(TeamCityDimensions.mediumSpacing)) {
-            LoadingIndicator(Modifier.size(TeamCityDimensions.listLeadingContainerSize))
+            TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.listLeadingContainerSize))
             Text(description, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         }
         repeat(6) { TeamCityListLoadingRow(position = listRowPosition(it, 6)) }
@@ -187,7 +188,7 @@ fun TeamCityListLoadingRow(modifier: Modifier = Modifier, position: ListRowPosit
 fun TeamCityListAppendLoading(modifier: Modifier = Modifier) {
     val description = stringResource(R.string.list_loading_more)
     Box(modifier.fillMaxWidth().padding(TeamCityDimensions.sectionSpacing).semantics { stateDescription = description }, contentAlignment = Alignment.Center) {
-        LoadingIndicator(Modifier.size(TeamCityDimensions.listLeadingContainerSize))
+        TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.listLeadingContainerSize))
     }
 }
 

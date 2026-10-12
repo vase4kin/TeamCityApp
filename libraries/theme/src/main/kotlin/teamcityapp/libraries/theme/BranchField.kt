@@ -43,7 +43,7 @@ fun BranchField(branches: List<String>?, failed: Boolean, value: String, onChang
 
             branches == null -> Row(Modifier.padding(start = TeamCityDimensions.extraSmallSpacing, top = TeamCityDimensions.extraSmallSpacing), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                 Text(loading, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                CircularProgressIndicator(Modifier.padding(start = TeamCityDimensions.contentPadding).size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                TeamCityLoadingIndicator(Modifier.padding(start = TeamCityDimensions.contentPadding).size(TeamCityDimensions.compactProgressIndicatorSize))
             }
 
             branches.isEmpty() || (filter && branches.size <= 1) -> Text(empty, Modifier.padding(start = TeamCityDimensions.extraSmallSpacing, top = TeamCityDimensions.extraSmallSpacing), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

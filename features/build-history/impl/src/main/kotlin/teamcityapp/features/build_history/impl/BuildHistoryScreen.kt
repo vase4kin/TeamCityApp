@@ -49,6 +49,7 @@ import teamcityapp.libraries.theme.BindTeamCityAppBarToList
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.TeamCityAppBarSurface
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityTopAppBarColors
@@ -225,7 +226,7 @@ internal fun BuildHistoryScreen(
         QueuedBuildState.Loading -> AlertDialog(
             onDismissRequest = {},
             title = { Text(stringResource(R.string.history_opening)) },
-            text = { CircularProgressIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize).testTag("history:opening-progress")) },
+            text = { TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.progressIndicatorSize).testTag("history:opening-progress")) },
             confirmButton = {}
         )
 

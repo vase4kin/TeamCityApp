@@ -43,6 +43,8 @@ import teamcityapp.libraries.resources.R as SharedR
 import teamcityapp.libraries.theme.ErrorNotice
 import teamcityapp.libraries.theme.R as ThemeR
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLinearLoadingIndicator
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
 internal fun accountTag(id: DrawerAccountId) = "drawer:account:${id.serverUrl.length}:${id.serverUrl}:${id.userName}"
@@ -78,7 +80,7 @@ fun DrawerScreen(
                 when (val accounts = state.accounts) {
                     DrawerAccountsUiState.Loading -> item("loading") {
                         Row(Modifier.fillMaxWidth().padding(horizontal = TeamCityDimensions.extraLargeSpacing, vertical = TeamCityDimensions.contentPadding).testTag("drawer:loading"), verticalAlignment = Alignment.CenterVertically) {
-                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                            TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.iconSize))
                             Spacer(Modifier.width(TeamCityDimensions.contentPadding))
                             Text(stringResource(requireNotNull(state.accountsMessageRes)), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                         }
@@ -97,7 +99,7 @@ fun DrawerScreen(
                 if (state.selection is AccountSwitchUiState.Switching) {
                     item("switching") {
                         Column(Modifier.padding(horizontal = TeamCityDimensions.contentPadding).testTag("drawer:switching")) {
-                            LinearProgressIndicator(Modifier.fillMaxWidth())
+                            TeamCityLinearLoadingIndicator(Modifier.fillMaxWidth())
                             Text(stringResource(requireNotNull(state.selectionMessageRes)), Modifier.padding(TeamCityDimensions.contentPadding), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
                         }
                     }

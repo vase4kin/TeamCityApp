@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.build_history.api.BuildHistoryPrompt
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityExtendedFloatingActionButton
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 
 /** The extended FAB is separate so its label and trailing position survive toolbar collapse. */
@@ -74,7 +75,7 @@ internal fun BuildHistoryActions(
                         modifier = Modifier.testTag("history:favorite").onGloballyPositioned { onAnchor(BuildHistoryPrompt.Favorite, it.boundsInRoot()) }
                     ) {
                         if (favorite == FavoriteState.Loading || (favorite is FavoriteState.Available && favorite.updating)) {
-                            CircularProgressIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize), strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                            TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.compactProgressIndicatorSize))
                         } else {
                             Icon(
                                 painterResource(if (favorite is FavoriteState.Available && favorite.favorite) R.drawable.ic_history_favorite else R.drawable.ic_history_favorite_border),

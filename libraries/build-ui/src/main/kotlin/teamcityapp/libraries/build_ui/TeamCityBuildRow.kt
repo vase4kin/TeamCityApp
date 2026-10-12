@@ -32,6 +32,7 @@ import teamcityapp.libraries.list_ui.ListRowPosition
 import teamcityapp.libraries.list_ui.TeamCityListLeadingIcon
 import teamcityapp.libraries.list_ui.TeamCityListRow
 import teamcityapp.libraries.theme.TeamCityDimensions
+import teamcityapp.libraries.theme.TeamCityLoadingIndicator
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.resolve
 import teamcityapp.libraries.theme.teamCityStatusColors
@@ -75,7 +76,7 @@ fun TeamCityBuildRow(
         leadingContent = {
             TeamCityListLeadingIcon(containerColor = containerColor, contentColor = contentColor) {
                 if (build.isRunning) {
-                    CircularProgressIndicator(Modifier.size(TeamCityDimensions.iconSize).semantics { contentDescription = label }, color = contentColor, strokeWidth = TeamCityDimensions.progressStrokeWidth)
+                    TeamCityLoadingIndicator(Modifier.size(TeamCityDimensions.iconSize).semantics { contentDescription = label }, color = contentColor)
                 } else {
                     Icon(painterResource(icon), null, Modifier.size(TeamCityDimensions.iconSize))
                 }
