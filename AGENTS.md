@@ -34,8 +34,12 @@ to the requested behavior and the coherent migration slice needed to support it.
   including users on the same server, replaces old owners and cancels their work.
   Account preparation owns API/cache/cookie initialization and Build Log consent
   reset; signed-out sessions return to Login.
-- Existing Retrofit/Gson, RxJava 2, RxCache, encrypted SharedPreferences and the
-  separate Dagger account API graph remain behind suspend/Flow repository adapters.
+- `libraries/data` owns existing wire DTOs, Retrofit/Gson service/repository contracts,
+  RxJava/RxCache integration and shared build mapping. `libraries/session` owns encrypted
+  account storage, account identity/guards and opaque API-graph lifetime/clear contracts.
+  Independent suspend/Flow adapters belong to their feature implementations; app-dependent
+  filter/auth/platform bridges remain in `app/integration`. The concrete Dagger account
+  graph and Hilt composition remain in `app/di` until the separate graph migration.
   Preserve wire DTOs and their serialized class names for cache compatibility.
   Cancelling coroutine repository calls must dispose their Rx subscriptions.
   Room, broader DataStore migration and WorkManager remain target technologies.
@@ -48,7 +52,9 @@ to the requested behavior and the coherent migration slice needed to support it.
   consent, encrypted persistence, duplicate detection and API initialization.
   Pending submissions survive recreation without duplicate requests; passwords
   stay in memory and are cleared after successful persistence.
-- Home preserves five tabs, badge counts, filters, onboarding and drawer actions.
+- Sheet content must not draw its own handle; the Navigation 3 Material sheet host owns
+  the single built-in drag handle. Home preserves five tabs, badge counts, filters,
+  onboarding and drawer actions.
   Drawer, Quick Filter and Action Bottom Sheet use Compose sheets. Run Build and
   Filter Builds deliver typed results to History's originating visit. Legacy filter
   serialization remains behind app adapters to preserve existing request semantics.
@@ -82,8 +88,12 @@ to the requested behavior and the coherent migration slice needed to support it.
 
 ## Repository layout
 
-- `app/`: application, TeamCity API and cache integration, shared app flows, and
-  root navigation/account composition and legacy integration adapters.
+- `app/`: application/framework entry points, root navigation/account composition,
+  `di` bindings and app-dependent authentication/filter/platform `integration` adapters.
+- `libraries/data/`: network DTOs/contracts/cache integration and shared build mapping;
+  preserve serialized legacy packages even when source ownership moves.
+- `libraries/session/`: encrypted account storage, session identity and graph ownership
+  contracts; it must not depend on the app or a concrete Dagger component.
 - `features/`: feature `api`/`impl` modules. APIs own small contracts and plain
   public models; implementations own Compose UI, ViewModels, UI-scoped routers,
   private resources, behavioral tests, and screenshot baselines.

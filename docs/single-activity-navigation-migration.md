@@ -633,8 +633,8 @@ app/src/main/kotlin/com/github/vase4kin/teamcityapp/
   di/                           # app composition bindings, organized by responsibility
 app/src/main/java/               # Java only; keep existing DTO packages until compatibility is verified
 features/<feature>/impl/         # feature UI, ViewModel, mapping, tracker, destination/platform router
-libraries/teamcity-data/{api,impl}/ # proposed shared server repositories, network/cache implementations
-libraries/account-session/{api,impl}/ # proposed account identity, session/auth/storage contracts
+libraries/data/                 # proposed shared server repositories, network/cache implementations
+libraries/session/              # proposed account identity, session/auth/storage contracts
 ```
 
 The inventory found 15 Kotlin files under `app/src/main/java` and 28 Java files there. Move those Kotlin sources to matching `src/main/kotlin` package paths first, preserving their fully qualified names; no simultaneous package/model rewrite is needed. Keep Kotlin in the Kotlin roots for every variant and test source set as well. The current app Kotlin tree contains composition, compatibility and repository adapters rather than remaining screen UI.
@@ -652,3 +652,45 @@ Follow-up verification:
 - Mock app/instrumentation APK builds, production-debug Kotlin compilation, all-library lint, both app flavor lint tasks and formatting passed. The corrected instrumentation fixture was rebuilt and its formatting checked separately.
 - Exactly 48 existing onboarding PNGs were updated after comparison and visual review: 30 Home and 18 Build Details. All 168 History screenshot cases and all non-onboarding baselines remain unchanged. Both themes, compact/expanded layouts and enlarged text are covered.
 - The follow-up is saved in separate local cleanup, onboarding and documentation checkpoints on `codex/single-activity-navigation`. No push or pull request was created. App data/storage/package moves remain a proposal.
+
+
+## App structure extraction and single sheet handle (2026-10-12)
+
+The structure proposal above is now implemented with the approved names `libraries/data` and `libraries/session`. The extraction proceeded in independently compiled stages. Source-root moves preserved file contents; module/package changes preserve wire DTO class names, cache payloads, encrypted preference keys and account-session behavior.
+
+```text
+app/src/main/kotlin/com/github/vase4kin/teamcityapp/
+  TeamCityApplication*.kt        # installed application names and composition
+  navigation/                   # MainActivity, destination/account flow and aliases
+  di/
+    components/, modules/, scopes/ # existing account graph and root bindings
+    authentication/, navigation/, features/ # focused composition bindings
+  integration/
+    authentication/, session/   # app/platform-dependent account adapters
+    filters/, features/         # adapters coupled to the app filter-event boundary
+    platform/artifacts/         # app-owned file/platform launch integration
+app/src/main/java/               # Java only: AppModule
+features/<feature>/impl/.../data/ # independent feature repositories and mappings
+libraries/data/                  # existing Retrofit/Gson, RxCache, wire DTOs and build helpers
+libraries/session/               # encrypted account storage, identity, session ports and lazy API session
+```
+
+All 15 Kotlin files formerly under `app/src/main/java` now use the Kotlin root. The remaining 13 app variant/test/R8 Kotlin sources also use their matching Kotlin roots; Java roots contain Java only. Java wire/storage sources moved into their owning libraries with their original packages. `Collectible` belongs to the existing `libraries/api` contract, avoiding a data/session dependency cycle. `storage-models` exposes its existing public API dependency. The application and MainActivity framework names and installed aliases remain unchanged.
+
+Independent repositories/result adapters now belong to Navigation, Favorites, Changes, Tests, History, Overview, Snapshot Dependencies, Artifacts, Run Build, Build Details, Manage Accounts, Drawer, Splash, Build Log and Filter Builds. Shared build hydration/launch mapping/legacy decoding belong to `data`. Home, Agents, Running Builds, Queue and Quick Filter adapters remain under app integration because their filter-event coordination still belongs to the app. Authentication and artifact platform adapters remain app integrations for the same ownership reason. Feature implementations have no implementation-to-implementation dependencies.
+
+`session` owns the existing encrypted storage classes and account identity guard. Its generic `ApiSession` receives an opaque graph factory; the concrete Dagger component, factories, scopes and account-flow preparation remain in app DI. This preserves lazy initialization, credential-sensitive rebuilds, cancellation guards and clear behavior without making session depend on the app. Replacing that concrete graph with Hilt, migrating wire serialization and replacing legacy persistence remain separate work.
+
+Existing repository/session tests moved with their owners where internal access requires it; app boundary integration tests continue to exercise public adapters. New data tests lock persisted DTO class names, Gson wire fields and the legacy serializable filter round trip. No dependency versions or serialized model schemas changed.
+
+Drawer content and the shared Action/Quick Filter header no longer draw a handle. Navigation 3's Material sheet host supplies the single native handle. The root sheet integration suite asserts exactly one accessible drag handle for every hosted sheet. Exactly 216 current Drawer, Action and Quick Filter screenshot baselines were compared, visually reviewed and recorded across their existing state/theme/layout/font coverage.
+
+
+Verification with JDK 17:
+
+- All 3,507 local cases passed, including 2,432 Roborazzi screenshot cases and the new wire/filter compatibility guards. Data has 13 local cases; Session has seven.
+- All 389 API 37 emulator integration cases passed in one complete run. All eight root sheet cases pass the single-native-handle assertion, alongside account switching/restoration, downloads, WebView lifecycle, encrypted storage and existing feature workflows.
+- `testDebugUnitTest`, `:app:testMockDebugUnitTest`, `lintDebug`, `:app:lintMockDebug`, `:app:lintProdDebug`, `:app:assembleMockDebug`, `:app:assembleMockDebugAndroidTest`, `:app:compileProdDebugKotlin`, `spotlessApply` and `spotlessCheck` passed.
+- The final 13 variant/test source-root moves were independently rebuilt against both debug flavors, app tests, lint and formatting. `:app:compileProdR8VerificationKotlin` and `:app:compileProdR8VerificationAndroidTestKotlin -Pr8Verification` also passed; no R8 smoke-check code changed.
+- Source/dependency audits confirm unchanged wire/storage packages, no app dependencies from the new libraries and no feature implementation dependencies on other feature implementations.
+- Local checkpoints use the existing `codex/single-activity-navigation` branch. No push or pull request is part of this follow-up.
