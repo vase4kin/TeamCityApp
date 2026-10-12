@@ -48,7 +48,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import teamcityapp.features.properties.api.Property
-import teamcityapp.libraries.theme.R as ThemeR
+import teamcityapp.libraries.theme.MessageContent
 import teamcityapp.libraries.theme.TeamCityDimensions
 import teamcityapp.libraries.theme.TeamCityTheme
 import teamcityapp.libraries.theme.resolve
@@ -57,25 +57,10 @@ import teamcityapp.libraries.theme.resolve
 fun PropertiesScreen(state: PropertiesUiState, onCopy: (Property) -> Unit, modifier: Modifier = Modifier) {
     Surface(modifier = modifier.fillMaxSize()) {
         when (state) {
-            PropertiesUiState.Empty -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        painter = painterResource(ThemeR.drawable.ic_format_list_bulleted_black_24dp),
-                        contentDescription = null,
-                        modifier = Modifier.size(TeamCityDimensions.emptyStateIconSize),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = stringResource(R.string.empty_list_message_parameters),
-                        modifier = Modifier.padding(TeamCityDimensions.contentPadding),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
+            PropertiesUiState.Empty -> MessageContent(
+                message = stringResource(R.string.empty_list_message_parameters),
+                modifier = Modifier.fillMaxSize()
+            )
 
             is PropertiesUiState.Content -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
                 LazyColumn(Modifier.widthIn(max = TeamCityDimensions.screenContentMaxWidth).fillMaxSize().testTag("properties:list"), contentPadding = PaddingValues(TeamCityDimensions.contentPadding), verticalArrangement = Arrangement.spacedBy(TeamCityDimensions.propertyRowSpacing)) {
