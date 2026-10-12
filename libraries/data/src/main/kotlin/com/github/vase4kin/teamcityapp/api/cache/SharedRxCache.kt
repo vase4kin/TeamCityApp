@@ -42,7 +42,9 @@ import javax.inject.Singleton
  */
 class SharedRxCache private constructor(private val component: SharedRxCacheComponent) {
     private val processor by lazy { component.processor() }
-    val providers: CacheProviders by lazy { CacheProviderProxy.create(processor) }
+    val providers: CacheProviders by lazy {
+        SharedCacheProviders(CacheProviderProxy.create(processor), component.bulkBuildCache())
+    }
 
     fun evictAll(): Observable<Void> = processor.evictAll()
 
@@ -70,6 +72,9 @@ class SharedRxCache private constructor(private val component: SharedRxCacheComp
 @Component(modules = [SharedRxCacheModule::class])
 internal interface SharedRxCacheComponent {
     fun processor(): ProcessorProviders
+    fun bulkBuildCache(): SharedBulkBuildCache
+    fun memory(): Memory
+    fun persistence(): Persistence
 
     @Component.Builder
     interface Builder {
@@ -95,10 +100,10 @@ internal interface SharedRxCacheComponent {
 @DisableInstallInCheck // Isolated legacy RxCache graph; these unqualified bindings must not enter Hilt.
 internal object SharedRxCacheModule {
     @Provides @Singleton
-    fun memory(policy: LiveBuildCachePolicy): Memory = SnapshotCacheMemory(policy)
+    fun memory(policy: LiveBuildCachePolicy, state: BuildCacheState): Memory = SnapshotCacheMemory(policy, state)
 
     @Provides @Singleton
-    fun persistence(disk: Disk, policy: LiveBuildCachePolicy): Persistence = LiveBuildPersistence(disk, policy)
+    fun persistence(disk: Disk, policy: LiveBuildCachePolicy, state: BuildCacheState): Persistence = LiveBuildPersistence(disk, policy, state)
 
     @Provides @Singleton
     fun encryptor(): Encryptor = BuiltInEncryptor()
@@ -106,3 +111,9 @@ internal object SharedRxCacheModule {
     @Provides @Singleton
     fun processor(behavior: ProcessorProvidersBehaviour): ProcessorProviders = behavior
 }
+
+private class SharedCacheProviders(
+    providers: CacheProviders,
+    bulkBuildCache: BulkBuildCache
+) : CacheProviders by providers,
+    BulkBuildCache by bulkBuildCache

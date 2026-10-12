@@ -17,6 +17,7 @@
 package com.github.vase4kin.teamcityapp.api
 
 import com.github.vase4kin.teamcityapp.agents.api.Agents
+import com.github.vase4kin.teamcityapp.api.cache.BulkBuildCache
 import com.github.vase4kin.teamcityapp.api.cache.CacheProviders
 import com.github.vase4kin.teamcityapp.artifact.api.Files
 import com.github.vase4kin.teamcityapp.build_details.api.BuildCancelRequest
@@ -122,15 +123,26 @@ class RepositoryImpl(
      * {@inheritDoc}
      */
     override fun listRunningBuilds(locator: String, fields: String?, update: Boolean): Single<Builds> = cacheProviders.listRunningBuilds(
-        seedProjectedBuilds(teamCityService.listRunningBuilds(locator, fields), fields),
+        seedProjectedBuilds(teamCityService.listRunningBuilds(locator, fields), fields, "running:" + buildCollectionCacheKey(locator, fields)),
         DynamicKey(buildCollectionCacheKey(locator, fields)),
         EvictDynamicKey(update)
     )
 
-    private fun seedProjectedBuilds(upstream: Single<Builds>, fields: String?): Single<Builds> {
+    private fun seedProjectedBuilds(upstream: Single<Builds>, fields: String?, query: String): Single<Builds> {
         if (fields != BUILD_LAUNCH_FIELDS) return upstream
         // Seed only a fresh network response. A collection cache hit must not renew an old
         // individual snapshot's age. Count-only and legacy summaries cannot seed details.
+        val bulkCache = cacheProviders as? BulkBuildCache
+        if (bulkCache != null) {
+            return Single.defer {
+                val request = bulkCache.beginBulkBuilds(query)
+                upstream.map { page ->
+                    bulkCache.reconcileBulkBuilds(request, if (page.count == 0) emptyList() else page.objects.orEmpty())
+                    page
+                }
+            }
+        }
+        // Preserve compatibility for callers using the original RxCache provider implementation.
         return upstream.flatMap { page ->
             val rows = if (page.count == 0) emptyList() else page.objects.orEmpty()
             rows.forEach { row ->
@@ -157,7 +169,7 @@ class RepositoryImpl(
      * {@inheritDoc}
      */
     override fun listQueueBuilds(locator: String?, fields: String?, update: Boolean): Single<Builds> = cacheProviders.listQueuedBuilds(
-        seedProjectedBuilds(teamCityService.listQueueBuilds(locator, fields), fields),
+        seedProjectedBuilds(teamCityService.listQueueBuilds(locator, fields), fields, "queue:" + buildCollectionCacheKey(locator, fields)),
         DynamicKey(buildCollectionCacheKey(locator, fields)),
         EvictDynamicKey(update)
     )

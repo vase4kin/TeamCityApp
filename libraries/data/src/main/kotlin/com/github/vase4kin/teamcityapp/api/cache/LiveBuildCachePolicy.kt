@@ -36,14 +36,34 @@ internal class LiveBuildCachePolicy(private val nowMillis: () -> Long = System::
 }
 
 /** Apply the same age limit to old disk envelopes, including records from earlier app versions. */
-internal class LiveBuildPersistence(private val delegate: Persistence, private val policy: LiveBuildCachePolicy) : Persistence by delegate {
-    override fun <T> retrieveRecord(key: String, isEncrypted: Boolean, encryptKey: String): Record<T>? {
-        val record = delegate.retrieveRecord<T>(key, isEncrypted, encryptKey) ?: return null
-        return record.takeUnless(policy::expired)
+internal class LiveBuildPersistence(
+    private val delegate: Persistence,
+    private val policy: LiveBuildCachePolicy,
+    private val state: BuildCacheState
+) : Persistence by delegate {
+    override fun <T> retrieveRecord(key: String, isEncrypted: Boolean, encryptKey: String): Record<T>? = synchronized(state.lock) {
+        val record = delegate.retrieveRecord<T>(key, isEncrypted, encryptKey) ?: return@synchronized null
+        if (policy.expired(record)) return@synchronized null
+        if (record.data is Build) state.diskRead(key, record)
+        record
     }
 
-    override fun saveRecord(key: String, record: Record<*>, isEncrypted: Boolean, encryptKey: String) {
+    override fun saveRecord(key: String, record: Record<*>, isEncrypted: Boolean, encryptKey: String) = synchronized(state.lock) {
         policy.limitLifetime(record)
-        delegate.saveRecord(key, record, isEncrypted, encryptKey)
+        if (record.data is Build) {
+            state.diskWrite(key, record) { delegate.saveRecord(key, record, isEncrypted, encryptKey) }
+        } else {
+            delegate.saveRecord(key, record, isEncrypted, encryptKey)
+        }
+    }
+
+    override fun evict(key: String) = synchronized(state.lock) {
+        delegate.evict(key)
+        state.evict(key)
+    }
+
+    override fun evictAll() = synchronized(state.lock) {
+        delegate.evictAll()
+        state.clear()
     }
 }

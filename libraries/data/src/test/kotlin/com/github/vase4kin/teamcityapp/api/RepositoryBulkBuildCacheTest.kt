@@ -186,6 +186,174 @@ class RepositoryBulkBuildCacheTest {
         verify(service).build("/builds/1")
     }
 
+    @Test fun queuedBuildStartingImmediatelyEvictsItsOldSnapshotFromMemoryAndDisk() {
+        val directory = folder.newFolder()
+        val shared = SharedRxCache.create(directory, GsonSpeaker())
+        val repo = repository(shared)
+        val queued = build("1", "queued")
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(queued))))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        stubDetails(queued.href, build("1", "running"))
+        assertEquals("running", repo.build(queued.href, false).blockingGet().state)
+        // Reopening must not restore the disappeared queued record from disk either.
+        val legacyDisk = RxCache.Builder().persistence(directory, GsonSpeaker()).using(CacheProviders::class.java)
+        assertEquals("running", legacyDisk.build(Single.error(AssertionError("Read the replacement disk snapshot")), DynamicKey(queued.href), EvictDynamicKey(false)).blockingGet().state)
+        verify(service).build(queued.href)
+    }
+
+    @Test fun runningBuildFinishingImmediatelyInvalidatesItsSnapshotInMemoryAndOnDisk() {
+        val directory = folder.newFolder()
+        val shared = SharedRxCache.create(directory, GsonSpeaker())
+        val repo = repository(shared)
+        val running = build("1", "running")
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(running))))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        // A new cache instance reads disk, rather than the original memory.
+        val reopened = repository(SharedRxCache.create(directory, GsonSpeaker()))
+        stubDetails(running.href, build("1", "finished", 9))
+        assertEquals("finished", reopened.build(running.href, false).blockingGet().state)
+        assertEquals("finished", repo.build(running.href, false).blockingGet().state)
+        verify(service).build(running.href)
+    }
+
+    @Test fun queueDisappearancePreservesANewerRunningSnapshotFromAnotherRepositoryOnTheSharedCache() {
+        val repo = repository()
+        val other = repository()
+        val queued = build("1", "queued", 2)
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(queued))))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        val running = build("1", "running", 7)
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(running))))
+        other.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        val loaded = repo.build(queued.href, false).blockingGet()
+        assertEquals("running", loaded.state)
+        assertEquals(7, loaded.testOccurrences!!.count)
+        verify(service, never()).build(any())
+    }
+
+    @Test fun runningDisappearancePreservesNewerFinishedDetails() {
+        val repo = repository()
+        val row = build("1", "running")
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(row))))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        stubDetails(row.href, build("1", "finished", 9))
+        repo.build(row.href, true).blockingGet()
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        assertEquals("finished", repo.build(row.href, false).blockingGet().state)
+        verify(service).build(row.href)
+    }
+
+    @Test fun differentQueryMembershipNeverEvictsAnotherQuerysSnapshot() {
+        val repo = repository()
+        val first = build("1", "running")
+        val second = build("2", "running")
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(2, listOf(first, second))))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        val favorite = "$locator,buildType:A"
+        whenever(service.listRunningBuilds(favorite, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(first))))
+        repo.listRunningBuilds(favorite, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        assertEquals("2", repo.build(second.href, false).blockingGet().id)
+        // Removing the favorite invalidates its own row, while the All-only row remains cached.
+        whenever(service.listRunningBuilds(favorite, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listRunningBuilds(favorite, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        assertEquals("2", repo.build(second.href, false).blockingGet().id)
+        verify(service, never()).build(any())
+    }
+
+    @Test fun failedAndCancelledResponsesDoNotReconcileMembershipButTheNextSuccessDoes() {
+        val repo = repository()
+        val row = build("1", "queued")
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(row))))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.error(IllegalStateException("offline")))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test().awaitDone(10, java.util.concurrent.TimeUnit.SECONDS).assertError { true }
+        assertEquals("queued", repo.build(row.href, false).blockingGet().state)
+        val pending = SingleSubject.create<Builds>()
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(pending)
+        val observer = repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test()
+        assertTrue(pending.hasObservers())
+        observer.dispose()
+        pending.onSuccess(Builds(0, emptyList()))
+        assertEquals("queued", repo.build(row.href, false).blockingGet().state)
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        stubDetails(row.href, build("1", "running"))
+        assertEquals("running", repo.build(row.href, false).blockingGet().state)
+        verify(service).build(row.href)
+    }
+
+    @Test fun staleSameQueryResponseCannotInvalidateANewerMembershipSnapshot() {
+        val repo = repository()
+        val row = build("1", "queued")
+        cache.providers.build(Single.just(build("startup", "finished")), DynamicKey("/builds/startup"), EvictDynamicKey(false)).blockingGet()
+        val older = SingleSubject.create<Builds>()
+        val newer = SingleSubject.create<Builds>()
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(older, newer)
+        val first = repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test()
+        val second = repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test()
+        assertTrue(older.hasObservers() && newer.hasObservers())
+        newer.onSuccess(Builds(1, listOf(row)))
+        second.awaitDone(10, java.util.concurrent.TimeUnit.SECONDS).assertComplete().assertNoErrors()
+        older.onSuccess(Builds(0, emptyList()))
+        first.awaitDone(10, java.util.concurrent.TimeUnit.SECONDS).assertComplete().assertNoErrors()
+        assertEquals("queued", repo.build(row.href, false).blockingGet().state)
+        verify(service, never()).build(any())
+    }
+
+    @Test fun anOlderQueueResponseCannotOverwriteOrLaterInvalidateANewerRunningSnapshot() {
+        val repo = repository()
+        val queued = build("1", "queued")
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(queued))))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        val pending = SingleSubject.create<Builds>()
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(pending)
+        val older = repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test()
+        assertTrue(pending.hasObservers())
+        val running = build("1", "running", 7)
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(running))))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        pending.onSuccess(Builds(1, listOf(queued)))
+        older.awaitDone(10, java.util.concurrent.TimeUnit.SECONDS).assertComplete().assertNoErrors()
+        assertEquals("running", repo.build(queued.href, false).blockingGet().state)
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        assertEquals("running", repo.build(queued.href, false).blockingGet().state)
+        verify(service, never()).build(any())
+    }
+
+    @Test fun newerEqualPayloadFromAnotherQueryStillRetainsItsOwnCacheRevision() {
+        val repo = repository()
+        val row = build("1", "running")
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(row))))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        val favorite = "$locator,buildType:A"
+        whenever(service.listRunningBuilds(favorite, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(build("1", "running")))))
+        repo.listRunningBuilds(favorite, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        whenever(service.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(0, emptyList())))
+        repo.listRunningBuilds(locator, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        assertEquals("running", repo.build(row.href, false).blockingGet().state)
+        verify(service, never()).build(any())
+    }
+
+    @Test fun malformedResponseDoesNotEvictThePreviousMembership() {
+        val repo = repository()
+        val row = build("1", "queued")
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(row))))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).blockingGet()
+        val invalid = Gson().fromJson("""{"id":"2","state":"queued"}""", Build::class.java)
+        whenever(service.listQueueBuilds(null, BUILD_LAUNCH_FIELDS)).thenReturn(Single.just(Builds(1, listOf(invalid))))
+        repo.listQueueBuilds(null, BUILD_LAUNCH_FIELDS, true).test().awaitDone(10, java.util.concurrent.TimeUnit.SECONDS).assertError { true }
+        assertEquals("queued", repo.build(row.href, false).blockingGet().state)
+        verify(service, never()).build(any())
+    }
+
     private fun stubDetails(href: String, row: Build) {
         whenever(formatter.formatBasicUrl(href)).thenReturn(href)
         whenever(service.build(href)).thenReturn(Single.just(row))

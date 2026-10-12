@@ -39,6 +39,8 @@ import teamcityapp.features.test_details.repository.models.TestOccurrence
 /**
  * Cache providers
  */
+internal const val BUILD_CACHE_PROVIDER_KEY = "build-1-hour"
+
 interface CacheProviders {
 
     /**
@@ -141,7 +143,7 @@ interface CacheProviders {
      * Finished builds keep the legacy one-hour policy and namespace. SharedRxCache
      * limits running/queued snapshots to 30 seconds in both memory and persistence.
      */
-    @ProviderKey("build-1-hour")
+    @ProviderKey(BUILD_CACHE_PROVIDER_KEY)
     @LifeCache(duration = 1, timeUnit = TimeUnit.HOURS)
     fun build(
         buildSingle: Single<Build>,

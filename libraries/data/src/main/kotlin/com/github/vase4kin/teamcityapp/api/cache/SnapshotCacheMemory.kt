@@ -16,21 +16,25 @@
 
 package com.github.vase4kin.teamcityapp.api.cache
 
+import com.github.vase4kin.teamcityapp.buildlist.api.Build
 import io.rx_cache2.internal.Memory
 import io.rx_cache2.internal.Record
 import io.rx_cache2.internal.cache.memory.ReferenceMapMemory
 
 /** Retains RxCache's soft references, but never exposes an iterator over its live map. */
-internal class SnapshotCacheMemory(private val policy: LiveBuildCachePolicy = LiveBuildCachePolicy()) : Memory {
+internal class SnapshotCacheMemory(
+    private val policy: LiveBuildCachePolicy = LiveBuildCachePolicy(),
+    private val state: BuildCacheState = BuildCacheState()
+) : Memory {
     private val delegate = ReferenceMapMemory()
-    private val lock = Any()
+    private val lock get() = state.lock
 
     override fun <T> getIfPresent(key: String): Record<T>? = synchronized(lock) {
         delegate.getIfPresent<T>(key)?.takeUnless(policy::expired)
     }
     override fun <T> put(key: String, record: Record<T>) = synchronized(lock) {
         policy.limitLifetime(record)
-        delegate.put(key, record)
+        if (record.data !is Build || state.memoryWrite(key, record)) delegate.put(key, record)
     }
     override fun keySet(): Set<String> = synchronized(lock) { delegate.keySet().toSet() }
     override fun evict(key: String) = synchronized(lock) { delegate.evict(key) }
